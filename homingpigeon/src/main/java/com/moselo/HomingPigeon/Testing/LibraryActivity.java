@@ -1,5 +1,8 @@
 package com.moselo.HomingPigeon.Testing;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +12,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.moselo.HomingPigeon.Data.MessageEntity;
+import com.moselo.HomingPigeon.Data.MessageViewModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ToasterMessage;
 
@@ -30,12 +35,14 @@ public class LibraryActivity extends AppCompatActivity {
     private ImageView ivSend;
     private MessageAdapter adapter;
 
+    private MessageViewModel mViewModel;
+
     private enum STATE {
         LOGIN, CHAT
     }
 
     private STATE state = STATE.LOGIN;
-    List<MessageEntity> items = new ArrayList<>();
+    List<com.moselo.HomingPigeon.Data.MessageEntity> items = new ArrayList<>();
     private String username = "";
 
     @Override
@@ -45,6 +52,8 @@ public class LibraryActivity extends AppCompatActivity {
         rvChatlist = findViewById(R.id.rv_chatlist);
         etChat = findViewById(R.id.et_chat);
         ivSend = findViewById(R.id.iv_send);
+
+        mViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
 
         try {
             URI uri = new URI("wss://echo.websocket.org");
@@ -66,20 +75,21 @@ public class LibraryActivity extends AppCompatActivity {
                 @Override
                 public void onMessage(String message) {
                     Log.e(TAG, "onMessage: "+message );
+                    List<com.moselo.HomingPigeon.Data.MessageEntity> entities = new ArrayList<>();
                     if (0 == adapter.getItemCount()) {
-                        MessageEntity logEntity = new MessageEntity();
+                        com.moselo.HomingPigeon.Data.MessageEntity logEntity = new com.moselo.HomingPigeon.Data.MessageEntity();
                         logEntity.setMessage(message);
                         logEntity.setType(2);
-                        adapter.addItems(logEntity);
-                        Log.e(TAG, "onMessage:2 " );
+                        entities.add(logEntity);
                     } else {
-                        MessageEntity msgEntity = new MessageEntity();
+                        com.moselo.HomingPigeon.Data.MessageEntity msgEntity = new MessageEntity();
                         msgEntity.setMessage(message);
                         msgEntity.setType(1);
-                        msgEntity.setUsername(username);
-                        adapter.addItems(msgEntity);
-                        Log.e(TAG, "onMessage:3 " );
+                        msgEntity.setUserName(username);
+                        entities.add(msgEntity);
                     }
+
+                    mViewModel.insert(entities);
                 }
 
                 @Override
@@ -114,6 +124,13 @@ public class LibraryActivity extends AppCompatActivity {
         });
 
         adapter = new MessageAdapter(items);
+        mViewModel.getmAllMessage().observe(this, new Observer<List<com.moselo.HomingPigeon.Data.MessageEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<com.moselo.HomingPigeon.Data.MessageEntity> messageEntities) {
+                adapter.addItems(messageEntities);
+                rvChatlist.scrollToPosition(0);
+            }
+        });
         rvChatlist.setAdapter(adapter);
         rvChatlist.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         rvChatlist.setHasFixedSize(true);

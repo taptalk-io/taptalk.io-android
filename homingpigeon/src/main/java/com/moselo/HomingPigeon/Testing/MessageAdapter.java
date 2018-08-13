@@ -2,7 +2,6 @@ package com.moselo.HomingPigeon.Testing;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +12,20 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageVH> {
 
-    private List<MessageEntity> items;
+    private List<com.moselo.HomingPigeon.Data.MessageEntity> items;
 
-    public MessageAdapter(List<MessageEntity> items) {
+    public MessageAdapter(List<com.moselo.HomingPigeon.Data.MessageEntity> items) {
         this.items = items;
     }
 
-    public void addItems(MessageEntity entity){
+    public void addItems(com.moselo.HomingPigeon.Data.MessageEntity entity){
         items.add(0,entity);
         notifyItemInserted(0);
-//        notifyDataSetChanged();
+    }
+
+    public void addItems(List<com.moselo.HomingPigeon.Data.MessageEntity> entities){
+        items = entities;
+        notifyItemInserted(0);
     }
 
     @Override
@@ -44,12 +47,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageVH> {
 
     @Override
     public void onBindViewHolder(@NonNull MessageVH holder, int position) {
-        Log.e(LibraryActivity.class.getSimpleName(), "onBindViewHolder: " );
-        Log.e(LibraryActivity.class.getSimpleName(), "onBindViewHolder: "+items.get(position).getMessage() );
-        Log.e(LibraryActivity.class.getSimpleName(), "onBindViewHolder: "+items.get(position).getUsername());
-        MessageEntity mMessage = items.get(position);
-        holder.setMessage(items.get(position).getMessage());
-        holder.setUsername(items.get(position).getUsername());
+        com.moselo.HomingPigeon.Data.MessageEntity mMessage = items.get(position);
+        holder.setMessage(mMessage.getMessage());
+        holder.setUsername(mMessage.getUserName());
     }
 
     @Override
