@@ -14,14 +14,13 @@ import android.widget.ImageView;
 
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Data.MessageViewModel;
+import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.ToasterMessage;
 
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +44,46 @@ public class LibraryActivity extends AppCompatActivity {
     List<com.moselo.HomingPigeon.Data.MessageEntity> items = new ArrayList<>();
     private String username = "";
 
+    HomingPigeonSocketListener listener = new HomingPigeonSocketListener() {
+        @Override
+        public void onConnect() {
+            Log.e(TAG, "onConnect: " );
+            state = STATE.CHAT;
+            username = etChat.getText().toString();
+            ChatManager.getInstance().sendMessageText(username + " Has Joined the Chat");
+        }
+
+        @Override
+        public void onDisconnect() {
+            Log.e(TAG, "onConnect: " );
+            state = STATE.LOGIN;
+        }
+
+        @Override
+        public void onReconnect() {
+
+        }
+
+        @Override
+        public void onNewMessage(String message) {
+            List<com.moselo.HomingPigeon.Data.MessageEntity> entities = new ArrayList<>();
+            if (0 == adapter.getItemCount()) {
+                com.moselo.HomingPigeon.Data.MessageEntity logEntity = new com.moselo.HomingPigeon.Data.MessageEntity();
+                logEntity.setMessage(message);
+                logEntity.setType(2);
+                entities.add(logEntity);
+            } else {
+                com.moselo.HomingPigeon.Data.MessageEntity msgEntity = new MessageEntity();
+                msgEntity.setMessage(message);
+                msgEntity.setType(1);
+                msgEntity.setUserName(username);
+                entities.add(msgEntity);
+            }
+
+            mViewModel.insert(entities);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,58 +93,58 @@ public class LibraryActivity extends AppCompatActivity {
         ivSend = findViewById(R.id.iv_send);
 
         mViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        username = etChat.getText().toString();
 
-        try {
-            URI uri = new URI("wss://echo.websocket.org");
-            username = etChat.getText().toString();
-            mWsClient = new WebSocketClient(uri) {
-                @Override
-                public void onOpen(ServerHandshake handshakedata) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToasterMessage.showToast(LibraryActivity.this, "Connect");
-                        }
-                    });
-                    state = STATE.CHAT;
-                    username = etChat.getText().toString();
-                    mWsClient.send(username + " Has Joined the Chat");
-                }
-
-                @Override
-                public void onMessage(String message) {
-                    Log.e(TAG, "onMessage: "+message );
-                    List<com.moselo.HomingPigeon.Data.MessageEntity> entities = new ArrayList<>();
-                    if (0 == adapter.getItemCount()) {
-                        com.moselo.HomingPigeon.Data.MessageEntity logEntity = new com.moselo.HomingPigeon.Data.MessageEntity();
-                        logEntity.setMessage(message);
-                        logEntity.setType(2);
-                        entities.add(logEntity);
-                    } else {
-                        com.moselo.HomingPigeon.Data.MessageEntity msgEntity = new MessageEntity();
-                        msgEntity.setMessage(message);
-                        msgEntity.setType(1);
-                        msgEntity.setUserName(username);
-                        entities.add(msgEntity);
-                    }
-
-                    mViewModel.insert(entities);
-                }
-
-                @Override
-                public void onClose(int code, String reason, boolean remote) {
-
-                }
-
-                @Override
-                public void onError(Exception ex) {
-                    Log.e(TAG, "onError: ", ex);
-                }
-            };
-            ToasterMessage.showToast(LibraryActivity.this, "Masuk " + state);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            URI uri = new URI("wss://echo.websocket.org");
+//            mWsClient = new WebSocketClient(uri) {
+//                @Override
+//                public void onOpen(ServerHandshake handshakedata) {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            ToasterMessage.showToast(LibraryActivity.this, "Connect");
+//                        }
+//                    });
+//                    state = STATE.CHAT;
+//                    username = etChat.getText().toString();
+//                    mWsClient.send(username + " Has Joined the Chat");
+//                }
+//
+//                @Override
+//                public void onMessage(String message) {
+//                    Log.e(TAG, "onMessage: "+message );
+//                    List<com.moselo.HomingPigeon.Data.MessageEntity> entities = new ArrayList<>();
+//                    if (0 == adapter.getItemCount()) {
+//                        com.moselo.HomingPigeon.Data.MessageEntity logEntity = new com.moselo.HomingPigeon.Data.MessageEntity();
+//                        logEntity.setMessage(message);
+//                        logEntity.setType(2);
+//                        entities.add(logEntity);
+//                    } else {
+//                        com.moselo.HomingPigeon.Data.MessageEntity msgEntity = new MessageEntity();
+//                        msgEntity.setMessage(message);
+//                        msgEntity.setType(1);
+//                        msgEntity.setUserName(username);
+//                        entities.add(msgEntity);
+//                    }
+//
+//                    mViewModel.insert(entities);
+//                }
+//
+//                @Override
+//                public void onClose(int code, String reason, boolean remote) {
+//
+//                }
+//
+//                @Override
+//                public void onError(Exception ex) {
+//                    Log.e(TAG, "onError: ", ex);
+//                }
+//            };
+//            ToasterMessage.showToast(LibraryActivity.this, "Masuk " + state);
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
 
 //        mWsClient.connect();
 
@@ -113,12 +152,10 @@ public class LibraryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (STATE.LOGIN == state) {
-                    if (!mWsClient.isOpen()) {
-                        Log.e(TAG, "onClick: Masuk");
-                        mWsClient.connect();
-                    }
+                    ConnectionManager.getInstance().setSocketListener(listener);
+                    ConnectionManager.getInstance().tryToReconnect();
                 } else {
-                    mWsClient.send(etChat.getText().toString());
+                    ChatManager.getInstance().sendMessageText(etChat.getText().toString());
                 }
             }
         });
@@ -139,7 +176,6 @@ public class LibraryActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (null != mWsClient)
-            mWsClient.close();
+        ConnectionManager.getInstance().disconnectSocket();
     }
 }

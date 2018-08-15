@@ -9,8 +9,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
-
+        versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -47,4 +46,7 @@ dependencies {
     // Lifecycle components
     api "android.arch.lifecycle:extensions:1.1.1"
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+
+    //cwac dafe room
+    implementation "com.commonsware.cwac:saferoom:0.4.4"
 }
