@@ -1,11 +1,7 @@
 package com.moselo.HomingPigeon.Listener;
 
+import org.json.JSONObject;
+
 public interface HomingPigeonSocketListener {
-   void onConnect();
-
-   void onDisconnect();
-
-   void onReconnect();
-
-   void onNewMessage(String message);
+   void onNewMessage(String eventName, JSONObject emitData);
 }
