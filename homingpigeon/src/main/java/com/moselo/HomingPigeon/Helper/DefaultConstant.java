@@ -2,6 +2,10 @@ package com.moselo.HomingPigeon.Helper;
 
 public class DefaultConstant {
 
+    public static final class RoomDatabase{
+        public static final int kDatabaseVersion = 1;
+    }
+
     public static final class ConnectionEvent{
         public static final String kEventOpenRoom = "chat/openRoom";
         public static final String kSocketCloseRoom = "chat/closeRoom";

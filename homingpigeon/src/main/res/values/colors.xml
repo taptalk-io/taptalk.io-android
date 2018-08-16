@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6D3492</color>
+    <color name="colorPrimaryDark">#51276C</color>
+    <color name="colorAccent">#2ECCAD</color>
+    <color name="colorAccentLight">#A7EBDE</color>
+
+    <color name="color0">#FDC3A7</color>
+    <color name="color1">#D0E69D</color>
+    <color name="color2">#99D39E</color>
+    <color name="color3">#A9DDC7</color>
+    <color name="color4">#C6D3E9</color>
+    <color name="color5">#D5C0E2</color>
+    <color name="color6">#F599B5</color>
+    <color name="color7">#FFB3B8</color>
+    <color name="color8">#FDD38D</color>
+    <color name="color9">#B4E6F1</color>
+
+    <array name="random_colors">
+        <item>@color/color0</item>
+        <item>@color/color1</item>
+        <item>@color/color2</item>
+        <item>@color/color3</item>
+        <item>@color/color4</item>
+        <item>@color/color5</item>
+        <item>@color/color6</item>
+        <item>@color/color7</item>
+        <item>@color/color8</item>
+        <item>@color/color9</item>
+    </array>
+</resources>

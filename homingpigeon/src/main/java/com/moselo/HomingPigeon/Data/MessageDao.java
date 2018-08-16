@@ -11,9 +11,12 @@ import java.util.List;
 @Dao
 public interface MessageDao {
 
-    @Query("select * from message_table order by MessageID desc")
-    LiveData<List<MessageEntity>> getAllMessage();
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(MessageEntity messageEntity);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert (List<MessageEntity> messageEntities);
+    void insert(List<MessageEntity> messageEntities);
+
+    @Query("select * from message_table order by MessageID desc")
+    LiveData<List<MessageEntity>> getAllMessage();
 }

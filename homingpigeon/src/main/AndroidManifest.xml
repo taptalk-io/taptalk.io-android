@@ -2,10 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.moselo.HomingPigeon">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
         <activity android:name=".Testing.LibraryActivity" />
+        <activity android:name=".SampleApp.Activity.SampleLoginActivity" />
+        <activity android:name=".SampleApp.Activity.SampleRoomListActivity" />
+        <activity android:name=".SampleApp.Activity.SampleChatActivity"></activity>
     </application>
 
 </manifest>
