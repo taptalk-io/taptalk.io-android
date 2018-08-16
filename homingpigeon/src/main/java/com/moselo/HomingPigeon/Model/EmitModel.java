@@ -1,23 +1,42 @@
 package com.moselo.HomingPigeon.Model;
 
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import org.json.JSONObject;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+        "eventName",
+        "data"
+})
 public class EmitModel<T> {
 
-    private int emitType;
-    private T message;
+    @JsonProperty("eventName")
+    private String eventName;
+    @JsonProperty("data")
+    private T data;
 
-    public int getEmitType() {
-        return emitType;
+    @JsonProperty("eventName")
+    public String getEventName() {
+        return eventName;
     }
 
-    public void setEmitType(int emitType) {
-        this.emitType = emitType;
+    @JsonProperty("eventName")
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
-    public T getMessage() {
-        return message;
+    @JsonProperty("data")
+    public T getData() {
+        return data;
     }
 
-    public void setMessage(T message) {
-        this.message = message;
+    @JsonProperty("data")
+    public void setData(T data) {
+        this.data = data;
     }
 }

@@ -3,10 +3,15 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Model.EmitModel;
+import com.moselo.HomingPigeon.Model.MessageModel;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -15,12 +20,14 @@ import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class ConnectionManager {
 
     private static ConnectionManager instance;
     private WebSocketClient mWebSocketClient;
-    private String webSocketEndpoint = "wss://echo.websocket.org";
+    private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
     private URI webSocketUri;
     private HomingPigeonSocketListener listener;
     private Context appContext;
@@ -66,13 +73,31 @@ public class ConnectionManager {
 
             @Override
             public void onMessage(String message) {
-                JSONObject object = new JSONObject();
-                try {
-                    object.put("message",message);
-                    listener.onNewMessage(DefaultConstant.ConnectionEvent.kSocketSendMessage,object);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                Log.e(ConnectionManager.class.getSimpleName(), "onMessage2: "+message);
+//                JSONObject object = new JSONObject();
+//                try {
+//                    object.put("message",message);
+//                    listener.onNewMessage(DefaultConstant.ConnectionEvent.kSocketNewMessage,object);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+            }
+
+            @Override
+            public void onMessage(ByteBuffer bytes) {
+                String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
+                Log.e(ConnectionManager.class.getSimpleName(), tempMessage );
+                EmitModel<MessageModel> tempObject = Utils.getInstance().fromJSON(new TypeReference<EmitModel<MessageModel>>() {},tempMessage);
+                listener.onNewMessage(tempObject.getEventName(), tempObject.getData());
+//                JSONObject object = new JSONObject();
+//                try {
+//                    object.put("message",tempMessage);
+//                    Log.e(ConnectionManager.class.getSimpleName(), "onMessage: "+object.get("message"));
+//                    listener.onNewMessage(DefaultConstant.ConnectionEvent.kSocketNewMessage,object);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                super.onMessage(bytes);
             }
 
             @Override
@@ -110,7 +135,8 @@ public class ConnectionManager {
     }
 
     public void sendEmit(String messageString) {
-        mWebSocketClient.send(messageString);
+        Log.e(ConnectionManager.class.getSimpleName(), messageString +" & "+messageString.getBytes(StandardCharsets.UTF_8) );
+        mWebSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
     }
 
     public void connect() {

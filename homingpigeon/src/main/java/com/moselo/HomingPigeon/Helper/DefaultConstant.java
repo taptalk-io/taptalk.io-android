@@ -5,7 +5,7 @@ public class DefaultConstant {
     public static final class ConnectionEvent{
         public static final String kEventOpenRoom = "chat/openRoom";
         public static final String kSocketCloseRoom = "chat/closeRoom";
-        public static final String kSocketSendMessage = "chat/sendMessage";
+        public static final String kSocketNewMessage = "chat/sendMessage";
         public static final String kSocketUpdateMessage = "chat/updateMessage";
         public static final String kSocketDeleteMessage = "chat/deleteMessage";
         public static final String kSocketOpenMessage = "chat/openMessage";
