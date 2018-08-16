@@ -9,16 +9,34 @@ import java.util.List;
 public class MessageRepository {
 
     private MessageDao messageDao;
-    private LiveData<List<MessageEntity>> mAllMessage;
+    private LiveData<List<MessageEntity>> allMessages;
 
     public MessageRepository(Application application) {
         MessageDatabase db = MessageDatabase.getDatabase(application);
         messageDao = db.messageDao();
-        mAllMessage = messageDao.getAllMessage();
+        allMessages = messageDao.getAllMessage();
     }
 
-    public LiveData<List<MessageEntity>> getmAllMessage() {
-        return mAllMessage;
+    public LiveData<List<MessageEntity>> getAllMessages() {
+        return allMessages;
+    }
+
+    public void insert (MessageEntity message) {
+        new InsertAsyncTask(messageDao).execute(message);
+    }
+
+    private static class InsertAsyncTask extends AsyncTask<MessageEntity, Void, Void> {
+        private MessageDao asyncTaskDao;
+
+        InsertAsyncTask (MessageDao chatDao) {
+            asyncTaskDao = chatDao;
+        }
+
+        @Override
+        protected Void doInBackground(MessageEntity... messages) {
+            asyncTaskDao.insert(messages[0]);
+            return null;
+        }
     }
 
     public void insert(List<MessageEntity> messageEntities){

@@ -20,7 +20,6 @@ import com.moselo.HomingPigeon.Data.MessageViewModel;
 import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.R;
@@ -95,7 +94,7 @@ public class LibraryActivity extends AppCompatActivity {
         });
 
         adapter = new MessageAdapter(items);
-        mViewModel.getmAllMessage().observe(this, new Observer<List<com.moselo.HomingPigeon.Data.MessageEntity>>() {
+        mViewModel.getAllMessages().observe(this, new Observer<List<com.moselo.HomingPigeon.Data.MessageEntity>>() {
             @Override
             public void onChanged(@Nullable List<com.moselo.HomingPigeon.Data.MessageEntity> messageEntities) {
                 adapter.addItems(messageEntities);

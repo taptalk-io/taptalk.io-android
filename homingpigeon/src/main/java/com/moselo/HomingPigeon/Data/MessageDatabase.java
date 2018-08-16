@@ -7,8 +7,9 @@ import android.content.Context;
 import android.text.Editable;
 
 import com.commonsware.cwac.saferoom.SafeHelperFactory;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
 
-@Database(entities = {MessageEntity.class}, version = 1)
+@Database(entities = {MessageEntity.class}, version = DefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
 public abstract class MessageDatabase extends RoomDatabase{
 
     private static MessageDatabase database;
