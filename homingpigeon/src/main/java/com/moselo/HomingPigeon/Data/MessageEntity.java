@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "Message_Table")
 public class MessageEntity {
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "MessageID", index = true)
     private int id;

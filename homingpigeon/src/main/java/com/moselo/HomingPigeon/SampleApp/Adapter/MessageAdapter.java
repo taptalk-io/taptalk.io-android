@@ -14,6 +14,7 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Helper.Const;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -107,16 +108,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             tvMessage.setText(item.getMessage());
             tvTimestamp.setText("00:00");
             tvStatus.setText("S");
-//            SimpleDateFormat timeSdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.ENGLISH);
-//            tvTimestamp.setText(timeSdf.format(item.getTimestamp()).getTime());
-//            if (item.getStatus().equals("Sending")) clBubble.setAlpha(0.5f);
-//            else clBubble.setAlpha(1f);
         }
     }
 
     public void setMessages(List<MessageEntity> messages) {
-        chatMessages = messages;
-        notifyItemRangeChanged(0,getItemCount());
+        if (null != chatMessages) {
+            chatMessages = messages;
+            notifyItemRangeChanged(0, getItemCount());
+        }else {
+            chatMessages = new ArrayList<>();
+        }
     }
 
     public void addMessage(MessageEntity message) {

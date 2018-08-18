@@ -31,13 +31,13 @@ public class SampleLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sample_login);
 
         initView();
-        ConnectionManager.getInstance(getApplicationContext()).connect();
+        ConnectionManager.getInstance().connect();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ConnectionManager.getInstance(getApplicationContext()).close();
+        ConnectionManager.getInstance().close();
     }
 
     private void initView() {
@@ -93,6 +93,8 @@ public class SampleLoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SampleRoomListActivity.class);
             intent.putExtra(Const.K_MY_USERNAME, etUsername.getText().toString());
             startActivity(intent);
+
+            ConnectionManager.getInstance().connect();
         }
     }
 

@@ -17,7 +17,6 @@ public class ChatManager {
 
     private static ChatManager instance;
     private HomingPigeonChatListener chatListener;
-    private Context appContext;
 
     //untuk define socket listener
     HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
@@ -52,16 +51,15 @@ public class ChatManager {
         }
     };
 
-    public static ChatManager getInstance(Context appContext) {
+    public static ChatManager getInstance() {
         if (null == instance) {
-            instance = new ChatManager(appContext);
+            instance = new ChatManager();
         }
         return instance;
     }
 
-    public ChatManager(Context appContext) {
-        this.appContext = appContext;
-        ConnectionManager.getInstance(appContext).setSocketListener(socketListener);
+    public ChatManager() {
+        ConnectionManager.getInstance().setSocketListener(socketListener);
     }
 
     public void setChatListener(HomingPigeonChatListener chatListener) {
@@ -77,6 +75,6 @@ public class ChatManager {
         emitModel.setData(message);
         emitModel.setEventName(eventName);
         Log.e(ChatManager.class.getSimpleName(), emitModel.getData().toString() );
-        ConnectionManager.getInstance(appContext).sendEmit(Utils.getInstance().toJsonString(emitModel));
+        ConnectionManager.getInstance().sendEmit(Utils.getInstance().toJsonString(emitModel));
     }
 }

@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.moselo.HomingPigeon.SampleApp.Activity.SampleLoginActivity;
 import com.moselo.HomingPigeon.Testing.LibraryActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,5 +19,13 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SampleLoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.tv_hello:
+                break;
+        }
     }
 }

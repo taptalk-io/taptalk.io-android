@@ -85,10 +85,10 @@ public class LibraryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (STATE.LOGIN == state) {
-                    ChatManager.getInstance(LibraryActivity.this).setChatListener(chatListener);
-                    ConnectionManager.getInstance(LibraryActivity.this).connect();
+                    ChatManager.getInstance().setChatListener(chatListener);
+                    ConnectionManager.getInstance().connect();
                 } else {
-                    ChatManager.getInstance(LibraryActivity.this).sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage ,etChat.getText().toString());
+                    ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage ,etChat.getText().toString());
                 }
             }
         });
@@ -117,7 +117,7 @@ public class LibraryActivity extends AppCompatActivity {
                     Log.e(TAG, "Connecting nih!");
                     state = STATE.CHAT;
                     username = etChat.getText().toString();
-                    ChatManager.getInstance(LibraryActivity.this).sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, username + " Has Joined the Chat");
+                    ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, username + " Has Joined the Chat");
                     break;
                 case DefaultConstant.ConnectionBroadcast.kIsConnected:
                     break;
@@ -135,7 +135,7 @@ public class LibraryActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ConnectionManager.getInstance(LibraryActivity.this).close();
+        ConnectionManager.getInstance().close();
         BroadcastManager.unregister(this, receiver);
     }
 }

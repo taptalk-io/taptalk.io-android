@@ -8,7 +8,7 @@
         <activity android:name=".Testing.LibraryActivity" />
         <activity android:name=".SampleApp.Activity.SampleLoginActivity" />
         <activity android:name=".SampleApp.Activity.SampleRoomListActivity" />
-        <activity android:name=".SampleApp.Activity.SampleChatActivity"></activity>
+        <activity android:name=".SampleApp.Activity.SampleChatActivity" />
     </application>
 
 </manifest>

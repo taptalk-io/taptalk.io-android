@@ -8,6 +8,7 @@ import android.util.Log;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Model.EmitModel;
@@ -30,7 +31,6 @@ public class ConnectionManager {
     private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
     private URI webSocketUri;
     private HomingPigeonSocketListener listener;
-    private Context appContext;
 
     public enum ConnectionStatus {
         CONNECTING, CONNECTED, DISCONNECTED
@@ -39,20 +39,19 @@ public class ConnectionManager {
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
 
 
-    public static ConnectionManager getInstance(Context appContext) {
+    public static ConnectionManager getInstance() {
         if (null == instance) {
-            instance = new ConnectionManager(appContext);
+            instance = new ConnectionManager();
         }
 
         return instance;
     }
 
-    public ConnectionManager(Context appContext) {
+    public ConnectionManager() {
         try {
 
             webSocketUri = new URI(webSocketEndpoint);
             initWebSocketClient(webSocketUri);
-            this.appContext = appContext;
 
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -65,9 +64,10 @@ public class ConnectionManager {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 connectionStatus = ConnectionStatus.CONNECTING;
-                if (null != appContext) {
+                Log.e(ConnectionManager.class.getSimpleName(), "onOpen: "+HomingPigeon.appContext );
+                if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnecting);
-                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
             }
 
@@ -102,26 +102,26 @@ public class ConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                if (null != appContext) {
+                if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsDisconnected);
-                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
             }
 
             @Override
             public void onError(Exception ex) {
-                if (null != appContext) {
+                if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnectionError);
-                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
             }
 
             @Override
             public void reconnect() {
                 super.reconnect();
-                if (null != appContext) {
+                if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsReconnect);
-                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
             }
         };

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Data.MessageViewModel;
 import com.moselo.HomingPigeon.Helper.AESCrypto.JsEncryptor;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.R;
@@ -37,7 +38,7 @@ import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.TYPE_BUBBLE_RIGHT;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.TYPE_LOG;
 
-public class SampleChatActivity extends AppCompatActivity {
+public class SampleChatActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String TAG = "]]]]";
     private ChatManager chatManager;
@@ -114,22 +115,9 @@ public class SampleChatActivity extends AppCompatActivity {
             }
         });
 
-        ivSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                attemptSend();
-            }
-        });
+        ivSend.setOnClickListener(this);
 
-        ivToBottom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rvChatList.scrollToPosition(0);
-                ivToBottom.setVisibility(View.INVISIBLE);
-                tvBadgeUnread.setVisibility(View.INVISIBLE);
-                vm.setUnreadCount(0);
-            }
-        });
+        ivToBottom.setOnClickListener(this);
     }
 
     private void initViewModel() {
@@ -166,7 +154,7 @@ public class SampleChatActivity extends AppCompatActivity {
         objectMapper = new ObjectMapper();
         typeReference = new TypeReference<MessageEntity>() {};
 
-        chatManager = ChatManager.getInstance(getApplicationContext());
+        chatManager = ChatManager.getInstance();
         chatManager.setChatListener(new HomingPigeonChatListener() {
             @Override
             public void onSendTextMessage(String message) {
@@ -176,10 +164,9 @@ public class SampleChatActivity extends AppCompatActivity {
     }
 
     private void attemptSend() {
-        final String message = etChat.getText().toString().trim();
-
+        final String message = etChat.getText().toString();
+        ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, message);
         etChat.setText("");
-        chatManager.sendMessageText(message);
     }
 
 
@@ -216,4 +203,17 @@ public class SampleChatActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    public void onClick(View v) {
+        int viewID = v.getId();
+        if (viewID == R.id.iv_send) {
+            attemptSend();
+        }else if (viewID == R.id.iv_to_bottom){
+            rvChatList.scrollToPosition(0);
+            ivToBottom.setVisibility(View.INVISIBLE);
+            tvBadgeUnread.setVisibility(View.INVISIBLE);
+            vm.setUnreadCount(0);
+        }
+    }
 }
