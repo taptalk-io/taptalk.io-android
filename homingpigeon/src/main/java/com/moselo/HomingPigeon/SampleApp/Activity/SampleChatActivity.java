@@ -165,7 +165,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
 
     private void attemptSend() {
         final String message = etChat.getText().toString();
-        ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, message);
+//        ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, message);
         etChat.setText("");
     }
 

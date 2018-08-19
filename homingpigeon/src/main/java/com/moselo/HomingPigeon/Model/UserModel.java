@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "lastLogin"
 })
 
-public class UserRoom {
+public class UserModel {
 
     @JsonProperty("userID") private String userID;
     @Nullable @JsonProperty("name") private String name;

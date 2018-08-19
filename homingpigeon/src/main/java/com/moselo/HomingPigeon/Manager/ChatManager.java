@@ -68,13 +68,21 @@ public class ChatManager {
         this.chatListener = chatListener;
     }
 
-    public void sendMessageText(String eventName, String messageText) {
-        MessageModel message = new MessageModel();
-        EmitModel<MessageModel> emitModel = new EmitModel<>();
-        message.setMessage(messageText);
-        emitModel.setData(message);
-        emitModel.setEventName(eventName);
-        Log.e(ChatManager.class.getSimpleName(), emitModel.getData().toString() );
-        ConnectionManager.getInstance().sendEmit(Utils.getInstance().toJsonString(emitModel));
+//    public void sendMessageText(String eventName, String messageText) {
+//        MessageModel message = new MessageModel();
+//        EmitModel<MessageModel> emitModel = new EmitModel<>();
+//        message.setMessage(messageText);
+//        emitModel.setData(message);
+//        emitModel.setEventName(eventName);
+//        Log.e(ChatManager.class.getSimpleName(), emitModel.getData().toString() );
+//        ConnectionManager.getInstance().sendEmit(Utils.getInstance().toJsonString(emitModel));
+//    }
+
+    public void sendMessageText(String messageText){
+
+    }
+
+    private void sendMessage(String message){
+        ConnectionManager.getInstance().sendEmit(message);
     }
 }

@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.json.JSONObject;
 
+import java.util.Random;
+
 public class Utils {
 
     private static Utils instance;
@@ -50,5 +52,20 @@ public class Utils {
             Log.e(Utils.class.getSimpleName(), "fromJSON: ",e );
             return null;
         }
+    }
+
+    /**
+     * generate random string with given length
+     *
+     * @param length length for string to generate
+     * @return generated string
+     */
+    public static String generateRandomString(int length) {
+        String AB = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+        Random rnd = new Random();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        return sb.toString();
     }
 }

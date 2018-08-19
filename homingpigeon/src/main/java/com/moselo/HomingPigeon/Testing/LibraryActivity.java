@@ -88,7 +88,7 @@ public class LibraryActivity extends AppCompatActivity {
                     ChatManager.getInstance().setChatListener(chatListener);
                     ConnectionManager.getInstance().connect();
                 } else {
-                    ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage ,etChat.getText().toString());
+//                    ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage ,etChat.getText().toString());
                 }
             }
         });
@@ -117,7 +117,7 @@ public class LibraryActivity extends AppCompatActivity {
                     Log.e(TAG, "Connecting nih!");
                     state = STATE.CHAT;
                     username = etChat.getText().toString();
-                    ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, username + " Has Joined the Chat");
+//                    ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, username + " Has Joined the Chat");
                     break;
                 case DefaultConstant.ConnectionBroadcast.kIsConnected:
                     break;
