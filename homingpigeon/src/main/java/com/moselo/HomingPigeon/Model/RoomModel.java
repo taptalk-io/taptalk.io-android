@@ -21,7 +21,10 @@ public class RoomModel {
         this.roomID = roomID;
     }
 
-    public RoomModel Builder(String roomID){
+    public RoomModel() {
+    }
+
+    public static RoomModel Builder(String roomID){
         return new RoomModel(roomID);
     }
 

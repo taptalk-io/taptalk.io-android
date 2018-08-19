@@ -39,8 +39,11 @@ public class UserModel {
         this.userID = userID;
     }
 
-    public UserModel Builder(String userID){
+    public static UserModel Builder(String userID){
         return new UserModel(userID);
+    }
+
+    public UserModel() {
     }
 
     @JsonProperty("userID")

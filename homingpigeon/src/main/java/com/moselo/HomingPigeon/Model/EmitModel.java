@@ -20,6 +20,14 @@ public class EmitModel<T> {
     @JsonProperty("data")
     private T data;
 
+    public EmitModel(String eventName, T data) {
+        this.eventName = eventName;
+        this.data = data;
+    }
+
+    public EmitModel() {
+    }
+
     @JsonProperty("eventName")
     public String getEventName() {
         return eventName;

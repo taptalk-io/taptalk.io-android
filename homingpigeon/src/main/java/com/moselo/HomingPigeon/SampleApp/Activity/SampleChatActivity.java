@@ -2,8 +2,10 @@ package com.moselo.HomingPigeon.SampleApp.Activity;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -53,6 +56,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     private EditText etChat;
     private TextView tvAvatar, tvUsername, tvUserStatus, tvLastMessageTime, tvBadgeUnread;
     private ImageView ivSend, ivToBottom;
+    private String roomID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         tvUsername.setText(getIntent().getStringExtra(K_THEIR_USERNAME));
         tvUserStatus.setText("User Status");
         tvLastMessageTime.setVisibility(View.GONE);
+        roomID = getIntent().getStringExtra(DefaultConstant.K_ROOM_ID);
 
         adapter = new MessageAdapter(this, getIntent().getStringExtra(K_MY_USERNAME));
         llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
@@ -164,8 +169,9 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void attemptSend() {
-        final String message = etChat.getText().toString();
-//        ChatManager.getInstance().sendMessageText(DefaultConstant.ConnectionEvent.kSocketNewMessage, message);
+        String message = etChat.getText().toString();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(DefaultConstant.K_USER_ID,"0"));
         etChat.setText("");
     }
 

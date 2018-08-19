@@ -9,6 +9,8 @@ import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Model.EmitModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomModel;
+import com.moselo.HomingPigeon.Model.UserModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +31,7 @@ public class ChatManager {
                 case DefaultConstant.ConnectionEvent.kSocketCloseRoom :
                     break;
                 case DefaultConstant.ConnectionEvent.kSocketNewMessage :
-                    chatListener.onSendTextMessage(emitData.getMessage());
+                    if (null != chatListener) chatListener.onSendTextMessage(emitData.getMessage());
                     break;
                 case DefaultConstant.ConnectionEvent.kSocketUpdateMessage :
                     break;
@@ -68,18 +70,14 @@ public class ChatManager {
         this.chatListener = chatListener;
     }
 
-//    public void sendMessageText(String eventName, String messageText) {
-//        MessageModel message = new MessageModel();
-//        EmitModel<MessageModel> emitModel = new EmitModel<>();
-//        message.setMessage(messageText);
-//        emitModel.setData(message);
-//        emitModel.setEventName(eventName);
-//        Log.e(ChatManager.class.getSimpleName(), emitModel.getData().toString() );
-//        ConnectionManager.getInstance().sendEmit(Utils.getInstance().toJsonString(emitModel));
-//    }
-
-    public void sendTextMessage(String messageText){
-        
+    public void sendTextMessage(String messageText, String roomID, String userID){
+        RoomModel roomModel = RoomModel.Builder(roomID);
+        UserModel userModel = UserModel.Builder(userID);
+        MessageModel messageModel = MessageModel.Builder(messageText,roomModel
+                ,DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis()/1000,userModel);
+        EmitModel<MessageModel> emitModel = new EmitModel<>(DefaultConstant.ConnectionEvent.kSocketNewMessage,
+                messageModel);
+        sendMessage(Utils.getInstance().toJsonString(emitModel));
     }
 
     private void sendMessage(String message){

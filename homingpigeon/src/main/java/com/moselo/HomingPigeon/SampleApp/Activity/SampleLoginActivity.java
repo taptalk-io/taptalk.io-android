@@ -36,13 +36,11 @@ public class SampleLoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sample_login);
 
         initView();
-        ConnectionManager.getInstance().connect();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ConnectionManager.getInstance().close();
     }
 
     private void initView() {

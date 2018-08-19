@@ -70,7 +70,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     @Override
     public int getItemViewType(int position) {
         if (null != chatMessages) {
-            if (chatMessages.get(position).getUserName().equals(myUsername))
+            if (null != chatMessages.get(position).getUserName() && chatMessages.get(position).getUserName().equals(myUsername))
                 return TYPE_BUBBLE_RIGHT;
             else
                 return TYPE_BUBBLE_LEFT;

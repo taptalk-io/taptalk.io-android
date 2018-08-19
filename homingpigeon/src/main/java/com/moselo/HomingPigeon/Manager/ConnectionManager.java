@@ -64,7 +64,7 @@ public class ConnectionManager {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 connectionStatus = ConnectionStatus.CONNECTING;
-                Log.e(ConnectionManager.class.getSimpleName(), "onOpen: "+HomingPigeon.appContext );
+                Log.e(ConnectionManager.class.getSimpleName(), "onOpen: " + HomingPigeon.appContext);
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnecting);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -86,18 +86,10 @@ public class ConnectionManager {
             @Override
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
-                Log.e(ConnectionManager.class.getSimpleName(), tempMessage );
-                EmitModel<MessageModel> tempObject = Utils.getInstance().fromJSON(new TypeReference<EmitModel<MessageModel>>() {},tempMessage);
+                Log.e(ConnectionManager.class.getSimpleName(), tempMessage);
+                EmitModel<MessageModel> tempObject = Utils.getInstance().fromJSON(new TypeReference<EmitModel<MessageModel>>() {
+                }, tempMessage);
                 listener.onNewMessage(tempObject.getEventName(), tempObject.getData());
-//                JSONObject object = new JSONObject();
-//                try {
-//                    object.put("message",tempMessage);
-//                    Log.e(ConnectionManager.class.getSimpleName(), "onMessage: "+object.get("message"));
-//                    listener.onNewMessage(DefaultConstant.ConnectionEvent.kSocketNewMessage,object);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                super.onMessage(bytes);
             }
 
             @Override
@@ -135,15 +127,17 @@ public class ConnectionManager {
     }
 
     public void sendEmit(String messageString) {
-        Log.e(ConnectionManager.class.getSimpleName(), messageString +" & "+messageString.getBytes(StandardCharsets.UTF_8) );
-        mWebSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
+        if (mWebSocketClient.isOpen())
+            mWebSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
     }
 
     public void connect() {
         if (null != mWebSocketClient
                 && !mWebSocketClient.isOpen()
-                && !mWebSocketClient.isConnecting())
+                && !mWebSocketClient.isConnecting()) {
+            Log.e(ConnectionManager.class.getSimpleName(), "connect: " );
             mWebSocketClient.connect();
+        }
     }
 
     public void close() {

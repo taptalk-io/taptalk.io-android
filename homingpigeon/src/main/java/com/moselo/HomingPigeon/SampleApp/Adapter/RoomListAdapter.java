@@ -1,7 +1,9 @@
 package com.moselo.HomingPigeon.SampleApp.Adapter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.MessageEntity;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Activity.SampleChatActivity;
 
@@ -86,10 +90,14 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
+
                     Intent intent = new Intent(itemView.getContext(), SampleChatActivity.class);
                     intent.putExtra(K_MY_USERNAME, myUsername);
                     intent.putExtra(K_THEIR_USERNAME, item.getUserName());
                     intent.putExtra(K_COLOR, randomColor);
+                    intent.putExtra(DefaultConstant.K_ROOM_ID, Utils.getInstance()
+                            .arrangeRoomId(prefs.getString(DefaultConstant.K_USER_ID,"0"),"2"));
                     itemView.getContext().startActivity(intent);
                 }
             });

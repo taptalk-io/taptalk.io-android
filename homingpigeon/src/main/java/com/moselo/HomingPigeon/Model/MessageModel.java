@@ -48,7 +48,10 @@ public class MessageModel {
         this.user = user;
     }
 
-    public MessageModel Builder(String message, RoomModel room, int type, long created, UserModel user){
+    public MessageModel() {
+    }
+
+    public static MessageModel Builder(String message, RoomModel room, int type, long created, UserModel user){
         return new MessageModel(message, room, type, created, user);
     }
 

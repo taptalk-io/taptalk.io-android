@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.moselo.HomingPigeon.Data.MessageEntity;
+import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Adapter.RoomListAdapter;
 import com.moselo.HomingPigeon.SampleApp.Helper.Const;
@@ -39,5 +40,11 @@ public class SampleRoomListActivity extends AppCompatActivity {
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ConnectionManager.getInstance().close();
     }
 }

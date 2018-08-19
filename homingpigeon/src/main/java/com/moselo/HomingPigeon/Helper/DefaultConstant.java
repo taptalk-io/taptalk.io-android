@@ -28,5 +28,26 @@ public class DefaultConstant {
         public static final String kIsDisconnected = "kIsDisconnected";
     }
 
+    public static final class MessageType {
+        public static final int TYPE_TEXT = 1;
+        public static final int TYPE_IMAGE = 2;
+        public static final int TYPE_FILE = 4;
+        public static final int TYPE_LOCATION = 5;
+        public static final int TYPE_CONTACT = 6;
+        public static final int TYPE_STICKER = 3;
+        public static final int TYPE_NEW_USER = 1000;
+        public static final int TYPE_USER_LEAVE = 1001;
+        public static final int TYPE_SEE_SERVICES_N_PRICES = 8001;
+        public static final int TYPE_CONFIRM_MY_PAYMENT = 9004;
+        public static final int TYPE_READ_EXPERT_NOTES = 8005;
+        public static final int TYPE_PRODUCT = 9001;
+        public static final int TYPE_CATEGORY = 9002;
+        public static final int TYPE_ORDER_CARD = 9003;
+        public static final int TYPE_HIDDEN = 0x9196;
+        public static final int TYPE_WELCOME = 8006;
+        public static final int TYPE_ASK_PRODUCT = 9007;
+    }
+
     public static final String K_USER_ID = "kUserID";
+    public static final String K_ROOM_ID = "kRoomID";
 }
