@@ -6,6 +6,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
@@ -19,10 +20,13 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConnectionManager {
 
@@ -73,23 +77,19 @@ public class ConnectionManager {
 
             @Override
             public void onMessage(String message) {
-//                Log.e(ConnectionManager.class.getSimpleName(), "onMessage2: "+message);
-//                JSONObject object = new JSONObject();
-//                try {
-//                    object.put("message",message);
-//                    listener.onNewMessage(DefaultConstant.ConnectionEvent.kSocketNewMessage,object);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
             }
 
             @Override
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
                 Log.e(ConnectionManager.class.getSimpleName(), tempMessage);
-                EmitModel<MessageModel> tempObject = Utils.getInstance().fromJSON(new TypeReference<EmitModel<MessageModel>>() {
-                }, tempMessage);
-                listener.onNewMessage(tempObject.getEventName(), tempObject.getData());
+                try {
+                    Map<String, Object> response = new ObjectMapper().readValue(tempMessage, HashMap.class);
+                    Log.e(ConnectionManager.class.getSimpleName(), "onMessage: "+response.get("eventName").toString() );
+                    listener.onNewMessage(response.get("eventName").toString(), tempMessage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override

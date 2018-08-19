@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -24,30 +25,32 @@ public class ChatManager {
     HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
 
         @Override
-        public void onNewMessage(String eventName, MessageModel emitData) {
-            switch (eventName){
-                case DefaultConstant.ConnectionEvent.kEventOpenRoom :
+        public void onNewMessage(String eventName, String emitData) {
+            switch (eventName) {
+                case DefaultConstant.ConnectionEvent.kEventOpenRoom:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketCloseRoom :
+                case DefaultConstant.ConnectionEvent.kSocketCloseRoom:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketNewMessage :
-                    if (null != chatListener) chatListener.onSendTextMessage(emitData.getMessage());
+                case DefaultConstant.ConnectionEvent.kSocketNewMessage:
+                    EmitModel<MessageModel> tempObject = Utils.getInstance()
+                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
+                    if (null != chatListener) chatListener.onSendTextMessage(tempObject.getData().getMessage());
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketUpdateMessage :
+                case DefaultConstant.ConnectionEvent.kSocketUpdateMessage:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketDeleteMessage :
+                case DefaultConstant.ConnectionEvent.kSocketDeleteMessage:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketOpenMessage :
+                case DefaultConstant.ConnectionEvent.kSocketOpenMessage:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketStartTyping :
+                case DefaultConstant.ConnectionEvent.kSocketStartTyping:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketStopTyping :
+                case DefaultConstant.ConnectionEvent.kSocketStopTyping:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketAuthentication :
+                case DefaultConstant.ConnectionEvent.kSocketAuthentication:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketUserOnline :
+                case DefaultConstant.ConnectionEvent.kSocketUserOnline:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketUserOffline :
+                case DefaultConstant.ConnectionEvent.kSocketUserOffline:
                     break;
             }
         }
@@ -70,17 +73,17 @@ public class ChatManager {
         this.chatListener = chatListener;
     }
 
-    public void sendTextMessage(String messageText, String roomID, String userID){
+    public void sendTextMessage(String messageText, String roomID, String userID) {
         RoomModel roomModel = RoomModel.Builder(roomID);
         UserModel userModel = UserModel.Builder(userID);
-        MessageModel messageModel = MessageModel.Builder(messageText,roomModel
-                ,DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis()/1000,userModel);
+        MessageModel messageModel = MessageModel.Builder(messageText, roomModel
+                , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis() / 1000, userModel);
         EmitModel<MessageModel> emitModel = new EmitModel<>(DefaultConstant.ConnectionEvent.kSocketNewMessage,
                 messageModel);
         sendMessage(Utils.getInstance().toJsonString(emitModel));
     }
 
-    private void sendMessage(String message){
+    private void sendMessage(String message) {
         ConnectionManager.getInstance().sendEmit(message);
     }
 }
