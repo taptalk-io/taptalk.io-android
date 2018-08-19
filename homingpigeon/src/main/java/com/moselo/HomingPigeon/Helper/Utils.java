@@ -60,12 +60,29 @@ public class Utils {
      * @param length length for string to generate
      * @return generated string
      */
-    public static String generateRandomString(int length) {
+    public String generateRandomString(int length) {
         String AB = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
         Random rnd = new Random();
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i++)
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
         return sb.toString();
+    }
+
+    /**
+     * generate random number for temporary user ID
+     */
+    public int generateRandomNumber(int randomNum) {
+        Random rnd = new Random();
+        return rnd.nextInt(randomNum) + 1;
+    }
+
+    /**
+     * for generate roomID
+     */
+    public String arrangeRoomId(String userId, String friendId) {
+        int myId = (null != userId && !"null".equals(userId)) ? Integer.parseInt(userId) : 0;
+        int fId = (null != friendId && !"null".equals(friendId)) ? Integer.parseInt(friendId) : 0;
+        return myId < fId ? myId + "-" + fId : fId + "-" + myId;
     }
 }

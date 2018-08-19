@@ -78,8 +78,8 @@ public class ChatManager {
 //        ConnectionManager.getInstance().sendEmit(Utils.getInstance().toJsonString(emitModel));
 //    }
 
-    public void sendMessageText(String messageText){
-
+    public void sendTextMessage(String messageText){
+        
     }
 
     private void sendMessage(String message){

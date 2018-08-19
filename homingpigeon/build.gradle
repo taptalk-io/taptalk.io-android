@@ -57,4 +57,5 @@ dependencies {
 
     // AES Crypto
     implementation 'com.github.evgenyneu:js-evaluator-for-android:v4.0.0'
+
 }

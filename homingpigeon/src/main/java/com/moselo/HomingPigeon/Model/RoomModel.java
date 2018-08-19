@@ -14,16 +14,24 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class RoomModel {
 
-    @Nullable @JsonProperty("roomID") private String roomID;
+    @JsonProperty("roomID") private String roomID;
     @Nullable @JsonProperty("authorization") private String authorization;
 
-    @Nullable @JsonProperty("roomID")
+    public RoomModel(String roomID) {
+        this.roomID = roomID;
+    }
+
+    public RoomModel Builder(String roomID){
+        return new RoomModel(roomID);
+    }
+
+    @JsonProperty("roomID")
     public String getRoomID() {
         return roomID;
     }
 
     @JsonProperty("roomID")
-    public void setRoomID(@Nullable String roomID) {
+    public void setRoomID(String roomID) {
         this.roomID = roomID;
     }
 

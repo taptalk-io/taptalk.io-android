@@ -27,4 +27,6 @@ public class DefaultConstant {
         public static final String kIsReconnect = "kIsReconnect";
         public static final String kIsDisconnected = "kIsDisconnected";
     }
+
+    public static final String K_USER_ID = "kUserID";
 }

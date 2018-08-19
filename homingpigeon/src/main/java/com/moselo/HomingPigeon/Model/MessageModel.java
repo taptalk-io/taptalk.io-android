@@ -41,11 +41,15 @@ public class MessageModel {
 
     public MessageModel(String message, RoomModel room, int type, long created, UserModel user) {
         this.message = message;
-        messageID = Utils.generateRandomString(32);
+        messageID = Utils.getInstance().generateRandomString(32);
         this.room = room;
         this.type = type;
         this.created = created;
         this.user = user;
+    }
+
+    public MessageModel Builder(String message, RoomModel room, int type, long created, UserModel user){
+        return new MessageModel(message, room, type, created, user);
     }
 
     @JsonProperty("message")

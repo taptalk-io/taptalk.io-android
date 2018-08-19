@@ -35,6 +35,14 @@ public class UserModel {
     @Nullable @JsonProperty("userType") private String userType;
     @Nullable @JsonProperty("lastLogin") private Integer lastLogin;
 
+    public UserModel(String userID) {
+        this.userID = userID;
+    }
+
+    public UserModel Builder(String userID){
+        return new UserModel(userID);
+    }
+
     @JsonProperty("userID")
     public String getUserID() {
         return userID;

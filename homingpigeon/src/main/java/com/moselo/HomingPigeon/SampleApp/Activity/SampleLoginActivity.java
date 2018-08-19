@@ -2,9 +2,12 @@ package com.moselo.HomingPigeon.SampleApp.Activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
@@ -13,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Helper.Const;
@@ -79,10 +84,10 @@ public class SampleLoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        if (etUsername.getText().equals("")) {
+        if (etUsername.getText().toString().equals("")) {
             Toast.makeText(this, "Please fill your username.", Toast.LENGTH_SHORT).show();
         }
-        else if (etPassword.getText().equals("")) {
+        else if (etPassword.getText().toString().equals("")) {
             Toast.makeText(this, "Please fill your password.", Toast.LENGTH_SHORT).show();
         }
         else {
@@ -93,9 +98,17 @@ public class SampleLoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SampleRoomListActivity.class);
             intent.putExtra(Const.K_MY_USERNAME, etUsername.getText().toString());
             startActivity(intent);
-
             ConnectionManager.getInstance().connect();
+            getUserID();
+            finish();
         }
+    }
+
+    private void getUserID(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putString(DefaultConstant.K_USER_ID, Utils.getInstance().generateRandomNumber(1000000)+"")
+                .apply();
+        Log.e(SampleLoginActivity.class.getSimpleName(), "getUserID: "+ prefs.getString(DefaultConstant.K_USER_ID,"0"));
     }
 
     private void dismissKeyboard(Activity activity) {
