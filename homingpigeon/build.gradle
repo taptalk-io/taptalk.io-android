@@ -55,7 +55,4 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.9.3"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.9.4"
 
-    // AES Crypto
-    implementation 'com.github.evgenyneu:js-evaluator-for-android:v4.0.0'
-
 }

@@ -2,9 +2,10 @@ package com.moselo.HomingPigeon.Helper.AESCrypto;
 
 import android.app.Activity;
 
-import com.evgenii.jsevaluator.JsEvaluator;
-import com.evgenii.jsevaluator.interfaces.JsCallback;
-import com.evgenii.jsevaluator.interfaces.JsEvaluatorInterface;
+import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.AssetsFileReaderInterface;
+import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.JsCallback;
+import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.JsEncryptorInterface;
+import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.JsEvaluatorInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class JsEncryptor implements JsEncryptorInterface {
     private final String aesCryptoFileName = "aes_crypto";
     private final String jsRootDir = "javascript";
 
-    private static final String prefix = "HomingPigeon";
+    private static final String prefix = "homingpigeon";
 
     private ArrayList<String> mScriptsText;
 

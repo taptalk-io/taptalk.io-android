@@ -51,7 +51,7 @@ public class LibraryActivity extends AppCompatActivity {
 
     HomingPigeonChatListener chatListener = new HomingPigeonChatListener() {
         @Override
-        public void onSendTextMessage(String message) {
+        public void onNewTextMessage(String message) {
             List<com.moselo.HomingPigeon.Data.MessageEntity> entities = new ArrayList<>();
             if (0 == adapter.getItemCount()) {
                 com.moselo.HomingPigeon.Data.MessageEntity logEntity = new com.moselo.HomingPigeon.Data.MessageEntity();

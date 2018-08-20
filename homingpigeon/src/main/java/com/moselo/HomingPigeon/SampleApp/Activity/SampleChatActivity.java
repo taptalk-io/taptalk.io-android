@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -171,11 +172,12 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
 
     private void attemptSend() {
         String message = etChat.getText().toString();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(K_USER_ID,"0"));
-        etChat.setText("");
+        if (!TextUtils.isEmpty(message)) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(K_USER_ID, "0"));
+            etChat.setText("");
+        }
     }
-
 
     private void addLog(String message) {
         vm.insert(new MessageEntity("", TYPE_LOG, message));

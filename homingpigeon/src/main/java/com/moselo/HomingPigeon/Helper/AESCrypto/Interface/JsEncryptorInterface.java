@@ -1,6 +1,4 @@
-package com.moselo.HomingPigeon.Helper.AESCrypto;
-
-import com.evgenii.jsevaluator.interfaces.JsCallback;
+package com.moselo.HomingPigeon.Helper.AESCrypto.Interface;
 
 public interface JsEncryptorInterface {
     public void decrypt(String text, String password, JsCallback callback);

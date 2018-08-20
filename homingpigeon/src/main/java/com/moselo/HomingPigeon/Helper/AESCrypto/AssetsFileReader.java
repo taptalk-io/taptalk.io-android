@@ -3,6 +3,8 @@ package com.moselo.HomingPigeon.Helper.AESCrypto;
 import android.content.Context;
 import android.content.res.AssetManager;
 
+import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.AssetsFileReaderInterface;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
