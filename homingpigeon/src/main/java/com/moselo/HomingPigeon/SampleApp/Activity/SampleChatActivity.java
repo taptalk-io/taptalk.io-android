@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,10 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Data.MessageViewModel;
-import com.moselo.HomingPigeon.Helper.AESCrypto.JsEncryptor;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -53,12 +50,11 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     private String TAG = "]]]]";
     private ChatManager chatManager;
     private EncryptorManager encryptorManager;
+    HomingPigeonEncryptorListener encryptorListener;
     private MessageAdapter adapter;
     private LinearLayoutManager llm;
     private MessageViewModel vm;
-    private JsEncryptor jsEncryptor;
-    private ObjectMapper objectMapper;
-    private TypeReference<MessageEntity> typeReference;
+
 
     private RecyclerView rvChatList;
     private EditText etChat;
@@ -73,9 +69,9 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample_chat);
 
+        initHelper();
         initView();
         initViewModel();
-        initHelper();
     }
 
     @Override
@@ -146,7 +142,6 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         });
 
         ivSend.setOnClickListener(this);
-
         ivToBottom.setOnClickListener(this);
     }
 
@@ -158,8 +153,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
             public void onChanged(List<MessageEntity> chatMessages) {
                 if (adapter.getItemCount() == 0) {
                     Toast.makeText(SampleChatActivity.this, "Masuk OnChange", Toast.LENGTH_SHORT).show();
-                    for (MessageEntity entity : chatMessages)
-                    {
+                    for (MessageEntity entity : chatMessages) {
                         MessageModel model = MessageModel.Builder(entity.getMessage(),
                                 Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {},entity.getRoom()),
                                 entity.getType(),entity.getCreated(),
@@ -175,11 +169,11 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
                             Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, chatMessages.get(0).getUser()));
 
                     if (adapter.getItemAt(0).getMessageID().equals(chatMessages.get(0).getId())) {
-                        Log.e(TAG, "onChanged: "+model);
+                        Log.e(TAG, "onChanged: " + model);
                         adapter.setMessageAt(0, model);
                     }
                     else {
-                        Log.e(TAG, "onChanged: "+model);
+                        Log.e(TAG, "onChanged: " + model);
                         adapter.addMessage(model);
                     }
                 }
@@ -201,12 +195,13 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onEncryptResult(String encryptedMessage) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SampleChatActivity.this);
-                ChatManager.getInstance().sendTextMessage(encryptedMessage, roomID, prefs.getString(K_USER_ID, "0"));
+                UserModel user = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, prefs.getString(DefaultConstant.K_USER, "{}"));
+                ChatManager.getInstance().sendTextMessage(encryptedMessage, roomID, user);
             }
 
             @Override
             public void onDecryptResult(String decryptedMessage) {
-                addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, decryptedMessage);
+//                addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, decryptedMessage);
             }
 
             @Override
@@ -218,9 +213,8 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         chatManager = ChatManager.getInstance();
         chatManager.setChatListener(new HomingPigeonChatListener() {
             @Override
-            public void onNewTextMessage(String message) {
-                encryptorManager.decrypt(message, "homingpigeon");
-//                addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, message);
+            public void onNewTextMessage(MessageModel message) {
+                addMessage(message);
             }
         });
     }
@@ -229,8 +223,6 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         String message = etChat.getText().toString();
         if (!TextUtils.isEmpty(message)) {
             encryptorManager.encrypt(message, "homingpigeon");
-//            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//            ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(K_USER_ID, "0"));
             etChat.setText("");
         }
     }
