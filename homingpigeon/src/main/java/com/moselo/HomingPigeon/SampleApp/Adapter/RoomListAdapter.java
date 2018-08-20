@@ -20,6 +20,8 @@ import com.moselo.HomingPigeon.SampleApp.Activity.SampleChatActivity;
 
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER_ID;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
@@ -96,8 +98,8 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     intent.putExtra(K_MY_USERNAME, myUsername);
                     intent.putExtra(K_THEIR_USERNAME, item.getUserName());
                     intent.putExtra(K_COLOR, randomColor);
-                    intent.putExtra(DefaultConstant.K_ROOM_ID, Utils.getInstance()
-                            .arrangeRoomId(prefs.getString(DefaultConstant.K_USER_ID,"0"),"2"));
+                    intent.putExtra(K_ROOM_ID, Utils.getInstance()
+                            .arrangeRoomId(prefs.getString(K_USER_ID,"0"),"2"));
                     itemView.getContext().startActivity(intent);
                 }
             });

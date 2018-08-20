@@ -16,6 +16,18 @@ import com.moselo.HomingPigeon.Model.UserModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kEventOpenRoom;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketCloseRoom;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketNewMessage;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketStartTyping;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUpdateMessage;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOffline;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOnline;
+
 public class ChatManager {
 
     private static ChatManager instance;
@@ -27,30 +39,30 @@ public class ChatManager {
         @Override
         public void onNewMessage(String eventName, String emitData) {
             switch (eventName) {
-                case DefaultConstant.ConnectionEvent.kEventOpenRoom:
+                case kEventOpenRoom:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketCloseRoom:
+                case kSocketCloseRoom:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketNewMessage:
+                case kSocketNewMessage:
                     EmitModel<MessageModel> tempObject = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
-                    if (null != chatListener) chatListener.onSendTextMessage(tempObject.getData().getMessage());
+                    if (null != chatListener) chatListener.onNewTextMessage(tempObject.getData().getMessage());
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketUpdateMessage:
+                case kSocketUpdateMessage:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketDeleteMessage:
+                case kSocketDeleteMessage:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketOpenMessage:
+                case kSocketOpenMessage:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketStartTyping:
+                case kSocketStartTyping:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketStopTyping:
+                case kSocketStopTyping:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketAuthentication:
+                case kSocketAuthentication:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketUserOnline:
+                case kSocketUserOnline:
                     break;
-                case DefaultConstant.ConnectionEvent.kSocketUserOffline:
+                case kSocketUserOffline:
                     break;
             }
         }
@@ -78,8 +90,7 @@ public class ChatManager {
         UserModel userModel = UserModel.Builder(userID);
         MessageModel messageModel = MessageModel.Builder(messageText, roomModel
                 , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis() / 1000, userModel);
-        EmitModel<MessageModel> emitModel = new EmitModel<>(DefaultConstant.ConnectionEvent.kSocketNewMessage,
-                messageModel);
+        EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
         sendMessage(Utils.getInstance().toJsonString(emitModel));
     }
 

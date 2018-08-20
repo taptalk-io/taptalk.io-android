@@ -35,6 +35,7 @@ import com.moselo.HomingPigeon.SampleApp.Helper.Const;
 
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER_ID;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
@@ -162,7 +163,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         chatManager = ChatManager.getInstance();
         chatManager.setChatListener(new HomingPigeonChatListener() {
             @Override
-            public void onSendTextMessage(String message) {
+            public void onNewTextMessage(String message) {
                 addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, message);
             }
         });
@@ -171,7 +172,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     private void attemptSend() {
         String message = etChat.getText().toString();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(DefaultConstant.K_USER_ID,"0"));
+        ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(K_USER_ID,"0"));
         etChat.setText("");
     }
 
