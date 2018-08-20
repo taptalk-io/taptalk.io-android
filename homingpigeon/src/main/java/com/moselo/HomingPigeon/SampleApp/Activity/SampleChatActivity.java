@@ -29,7 +29,9 @@ import com.moselo.HomingPigeon.Data.MessageViewModel;
 import com.moselo.HomingPigeon.Helper.AESCrypto.JsEncryptor;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonEncryptorListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Adapter.MessageAdapter;
 import com.moselo.HomingPigeon.SampleApp.Helper.Const;
@@ -47,6 +49,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
 
     private String TAG = "]]]]";
     private ChatManager chatManager;
+    private EncryptorManager encryptorManager;
     private MessageAdapter adapter;
     private LinearLayoutManager llm;
     private MessageViewModel vm;
@@ -68,6 +71,19 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         initView();
         initViewModel();
         initHelper();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+        if (viewId == R.id.iv_send) {
+            attemptSend();
+        } else if (viewId == R.id.iv_to_bottom) {
+            rvChatList.scrollToPosition(0);
+            ivToBottom.setVisibility(View.INVISIBLE);
+            tvBadgeUnread.setVisibility(View.INVISIBLE);
+            vm.setUnreadCount(0);
+        }
     }
 
     private void initView() {
@@ -157,15 +173,31 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initHelper() {
-        jsEncryptor = JsEncryptor.evaluateAllScripts(this);
-        objectMapper = new ObjectMapper();
-        typeReference = new TypeReference<MessageEntity>() {};
+        encryptorManager = EncryptorManager.getInstance(this);
+        encryptorManager.setListener(new HomingPigeonEncryptorListener() {
+            @Override
+            public void onEncryptResult(String encryptedMessage) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SampleChatActivity.this);
+                ChatManager.getInstance().sendTextMessage(encryptedMessage, roomID, prefs.getString(K_USER_ID, "0"));
+            }
+
+            @Override
+            public void onDecryptResult(String decryptedMessage) {
+                addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, decryptedMessage);
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
 
         chatManager = ChatManager.getInstance();
         chatManager.setChatListener(new HomingPigeonChatListener() {
             @Override
             public void onNewTextMessage(String message) {
-                addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, message);
+                encryptorManager.decrypt(message, "homingpigeon");
+//                addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, message);
             }
         });
     }
@@ -173,8 +205,9 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     private void attemptSend() {
         String message = etChat.getText().toString();
         if (!TextUtils.isEmpty(message)) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(K_USER_ID, "0"));
+            encryptorManager.encrypt(message, "homingpigeon");
+//            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//            ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(K_USER_ID, "0"));
             etChat.setText("");
         }
     }
@@ -212,17 +245,4 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
 
         }
     };
-
-    @Override
-    public void onClick(View v) {
-        int viewID = v.getId();
-        if (viewID == R.id.iv_send) {
-            attemptSend();
-        }else if (viewID == R.id.iv_to_bottom){
-            rvChatList.scrollToPosition(0);
-            ivToBottom.setVisibility(View.INVISIBLE);
-            tvBadgeUnread.setVisibility(View.INVISIBLE);
-            vm.setUnreadCount(0);
-        }
-    }
 }

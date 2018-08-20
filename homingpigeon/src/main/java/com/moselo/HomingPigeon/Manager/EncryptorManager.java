@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.Manager;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -12,17 +13,19 @@ public class EncryptorManager {
 
     private static EncryptorManager instance;
     private JsEncryptor jsEncryptor;
+    private Activity activity;
     private HomingPigeonEncryptorListener listener;
 
-    public static EncryptorManager getInstance() {
+    public static EncryptorManager getInstance(Activity activity) {
         if (null == instance) {
-            instance =  new EncryptorManager();
+            instance =  new EncryptorManager(activity);
         }
         return instance;
     }
 
-    public EncryptorManager() {
-        jsEncryptor = JsEncryptor.evaluateAllScripts((AppCompatActivity) HomingPigeon.getAppContext());
+    public EncryptorManager(Activity activity) {
+        this.activity = activity;
+        jsEncryptor = JsEncryptor.evaluateAllScripts(activity);
     }
 
     public void setListener(HomingPigeonEncryptorListener listener) {
@@ -32,32 +35,42 @@ public class EncryptorManager {
         this.listener = listener;
     }
 
-    public void encrypt(String textToEncrypt, String encryptionKey) {
-        jsEncryptor.encrypt(textToEncrypt, encryptionKey, new JsCallback() {
+    public void encrypt(final String textToEncrypt, final String encryptionKey) {
+        activity.runOnUiThread(new Runnable() {
             @Override
-            public void onResult(String s) {
-                listener.onEncryptResult(s);
-            }
+            public void run() {
+                jsEncryptor.encrypt(textToEncrypt, encryptionKey, new JsCallback() {
+                    @Override
+                    public void onResult(String s) {
+                        listener.onEncryptResult(s);
+                    }
 
-            @Override
-            public void onError(String s) {
-                listener.onError(s);
-                Log.e(instance.getClass().getSimpleName(), "onError: " + s);
+                    @Override
+                    public void onError(String s) {
+                        listener.onError(s);
+                        Log.e(instance.getClass().getSimpleName(), "onError: " + s);
+                    }
+                });
             }
         });
     }
 
-    public void decrypt(String textToDecrypt, String encryptionKey) {
-        jsEncryptor.decrypt(textToDecrypt, encryptionKey, new JsCallback() {
+    public void decrypt(final String textToDecrypt, final String encryptionKey) {
+        activity.runOnUiThread(new Runnable() {
             @Override
-            public void onResult(String s) {
-                listener.onDecryptResult(s);
-            }
+            public void run() {
+                jsEncryptor.decrypt(textToDecrypt, encryptionKey, new JsCallback() {
+                    @Override
+                    public void onResult(String s) {
+                        listener.onDecryptResult(s);
+                    }
 
-            @Override
-            public void onError(String s) {
-                listener.onError(s);
-                Log.e(instance.getClass().getSimpleName(), "onError: " + s);
+                    @Override
+                    public void onError(String s) {
+                        listener.onError(s);
+                        Log.e(instance.getClass().getSimpleName(), "onError: " + s);
+                    }
+                });
             }
         });
     }
