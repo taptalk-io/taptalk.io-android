@@ -46,7 +46,7 @@ public class ChatManager {
                 case kSocketNewMessage:
                     EmitModel<MessageModel> tempObject = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
-                    if (null != chatListener) chatListener.onNewTextMessage(tempObject.getData().getMessage());
+                    if (null != chatListener) chatListener.onNewTextMessage(tempObject.getData());
                     break;
                 case kSocketUpdateMessage:
                     break;
@@ -85,9 +85,8 @@ public class ChatManager {
         this.chatListener = chatListener;
     }
 
-    public void sendTextMessage(String messageText, String roomID, String userID) {
+    public void sendTextMessage(String messageText, String roomID, UserModel userModel) {
         RoomModel roomModel = RoomModel.Builder(roomID);
-        UserModel userModel = UserModel.Builder(userID);
         MessageModel messageModel = MessageModel.Builder(messageText, roomModel
                 , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis() / 1000, userModel);
         EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);

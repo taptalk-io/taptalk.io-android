@@ -12,16 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Activity.SampleChatActivity;
 
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER_ID;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
@@ -80,13 +81,14 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
         void onBind(int position) {
             item = getItemAt(position);
-            Log.e("]]]]", "onBind: " + item.getUserName());
+            final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
+            final String userID = userModel.getUserID();
 
-            final int randomColor = getRandomColor(item.getUserName());
+            final int randomColor = getRandomColor(userModel.getName());
             avatarTint = ColorStateList.valueOf(randomColor);
-            tvAvatar.setText(item.getUserName().substring(0, 1).toUpperCase());
+            tvAvatar.setText(userModel.getName().substring(0, 1).toUpperCase());
             tvAvatar.setBackgroundTintList(avatarTint);
-            tvUsername.setText(item.getUserName());
+            tvUsername.setText(userModel.getName());
             tvLastMessage.setText(item.getMessage());
             tvLastMessageTime.setText("");
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -96,10 +98,10 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
                     Intent intent = new Intent(itemView.getContext(), SampleChatActivity.class);
                     intent.putExtra(K_MY_USERNAME, myUsername);
-                    intent.putExtra(K_THEIR_USERNAME, item.getUserName());
+                    intent.putExtra(K_THEIR_USERNAME, userModel.getName());
                     intent.putExtra(K_COLOR, randomColor);
                     intent.putExtra(K_ROOM_ID, Utils.getInstance()
-                            .arrangeRoomId(prefs.getString(K_USER_ID,"0"),"2"));
+                            .arrangeRoomId(userID,"2"));
                     itemView.getContext().startActivity(intent);
                 }
             });

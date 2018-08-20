@@ -20,6 +20,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,20 +28,22 @@ import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Data.MessageViewModel;
 import com.moselo.HomingPigeon.Helper.AESCrypto.JsEncryptor;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomModel;
+import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Adapter.MessageAdapter;
-import com.moselo.HomingPigeon.SampleApp.Helper.Const;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER_ID;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.TYPE_BUBBLE_RIGHT;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.TYPE_LOG;
 
 public class SampleChatActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,6 +61,8 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     private TextView tvAvatar, tvUsername, tvUserStatus, tvLastMessageTime, tvBadgeUnread;
     private ImageView ivSend, ivToBottom;
     private String roomID;
+    private UserModel myUserModel;
+    private List<MessageModel> chatMessageModels = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +91,10 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         tvUserStatus.setText("User Status");
         tvLastMessageTime.setVisibility(View.GONE);
         roomID = getIntent().getStringExtra(DefaultConstant.K_ROOM_ID);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},prefs.getString(K_USER,"{}"));
 
-        adapter = new MessageAdapter(this, getIntent().getStringExtra(K_MY_USERNAME));
+        adapter = new MessageAdapter(this);
         llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         rvChatList.setAdapter(adapter);
         rvChatList.setLayoutManager(llm);
@@ -131,16 +138,32 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         vm.setUsername(getIntent().getStringExtra(K_MY_USERNAME));
         vm.getAllMessages().observe(this, new Observer<List<MessageEntity>>() {
             @Override
-            public void onChanged(@Nullable List<MessageEntity> chatMessages) {
+            public void onChanged(List<MessageEntity> chatMessages) {
                 if (adapter.getItemCount() == 0) {
-                    adapter.setMessages(chatMessages);
+                    Toast.makeText(SampleChatActivity.this, "Masuk OnChange", Toast.LENGTH_SHORT).show();
+                    for (MessageEntity entity : chatMessages)
+                    {
+                        MessageModel model = MessageModel.Builder(entity.getMessage(),
+                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {},entity.getRoom()),
+                                entity.getType(),entity.getCreated(),
+                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()));
+                        chatMessageModels.add(model);
+                    }
+                    adapter.setMessages(chatMessageModels);
                 }
-                else if (null != chatMessages && 0 < chatMessages.size()) {
-                    if (adapter.getItemAt(0).getId() == chatMessages.get(0).getId()) {
-                        adapter.setMessageAt(0, chatMessages.get(0));
+                else if (0 < chatMessages.size()) {
+                    MessageModel model = MessageModel.Builder(chatMessages.get(0).getMessage(),
+                            Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {},chatMessages.get(0).getRoom()),
+                            chatMessages.get(0).getType(),chatMessages.get(0).getCreated(),
+                            Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, chatMessages.get(0).getUser()));
+
+                    if (adapter.getItemAt(0).getMessageID().equals(chatMessages.get(0).getId())) {
+                        Log.e(TAG, "onChanged: "+model);
+                        adapter.setMessageAt(0, model);
                     }
                     else {
-                        adapter.addMessage(chatMessages.get(0));
+                        Log.e(TAG, "onChanged: "+model);
+                        adapter.addMessage(model);
                     }
                 }
                 if (vm.isOnBottom()) {
@@ -163,26 +186,31 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         chatManager = ChatManager.getInstance();
         chatManager.setChatListener(new HomingPigeonChatListener() {
             @Override
-            public void onNewTextMessage(String message) {
-                addMessage(vm.getUsername(), TYPE_BUBBLE_RIGHT, message);
+            public void onNewTextMessage(MessageModel message) {
+                addMessage(message);
             }
         });
     }
 
     private void attemptSend() {
         String message = etChat.getText().toString();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        ChatManager.getInstance().sendTextMessage(message, roomID, prefs.getString(K_USER_ID,"0"));
+        ChatManager.getInstance().sendTextMessage(message,roomID,myUserModel);
         etChat.setText("");
     }
 
 
     private void addLog(String message) {
-        vm.insert(new MessageEntity("", TYPE_LOG, message));
+//        vm.insert(new MessageEntity("", TYPE_LOG, message));
     }
 
-    private void addMessage(String userName, int type, String message) {
-        vm.insert(new MessageEntity(userName, type, message));
+    private void addMessage(MessageModel messageModel) {
+
+        vm.insert(new MessageEntity(messageModel.getMessageID(),
+                Utils.getInstance().toJsonString(messageModel.getRoom()),
+                messageModel.getType(),
+                messageModel.getMessage(),
+                messageModel.getCreated(),
+                Utils.getInstance().toJsonString(messageModel.getUser())));
     }
 
     private void addMessage(MessageEntity chatMessage) {

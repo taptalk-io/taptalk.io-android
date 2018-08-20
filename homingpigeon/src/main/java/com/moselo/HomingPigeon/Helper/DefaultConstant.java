@@ -48,6 +48,6 @@ public class DefaultConstant {
         public static final int TYPE_ASK_PRODUCT = 9007;
     }
 
-    public static final String K_USER_ID = "kUserID";
+    public static final String K_USER = "kUser";
     public static final String K_ROOM_ID = "kRoomID";
 }

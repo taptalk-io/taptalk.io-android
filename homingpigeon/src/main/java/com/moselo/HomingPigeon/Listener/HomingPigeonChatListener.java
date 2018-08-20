@@ -1,6 +1,8 @@
 package com.moselo.HomingPigeon.Listener;
 
+import com.moselo.HomingPigeon.Model.MessageModel;
+
 public interface HomingPigeonChatListener {
 
-    void onNewTextMessage(String message);
+    void onNewTextMessage(MessageModel message);
 }
