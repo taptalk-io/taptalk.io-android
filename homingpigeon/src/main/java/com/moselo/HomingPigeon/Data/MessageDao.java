@@ -17,6 +17,6 @@ public interface MessageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(List<MessageEntity> messageEntities);
 
-    @Query("select * from message_table order by MessageID desc")
+    @Query("select * from message_table order by Created desc")
     LiveData<List<MessageEntity>> getAllMessage();
 }

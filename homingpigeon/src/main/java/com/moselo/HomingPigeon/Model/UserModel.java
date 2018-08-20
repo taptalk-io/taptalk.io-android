@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class UserModel {
 
     @JsonProperty("userID") private String userID;
-    @Nullable @JsonProperty("name") private String name;
+    @JsonProperty("name") private String name;
     @Nullable @JsonProperty("username") private String username;
     @Nullable @JsonProperty("email") private String email;
     @Nullable @JsonProperty("phoneNumber") private String phoneNumber;
@@ -35,12 +35,13 @@ public class UserModel {
     @Nullable @JsonProperty("userType") private String userType;
     @Nullable @JsonProperty("lastLogin") private Integer lastLogin;
 
-    public UserModel(String userID) {
+    public UserModel(String userID, String name) {
         this.userID = userID;
+        this.name = name;
     }
 
-    public static UserModel Builder(String userID){
-        return new UserModel(userID);
+    public static UserModel Builder(String userID, String name){
+        return new UserModel(userID, name);
     }
 
     public UserModel() {
@@ -56,13 +57,13 @@ public class UserModel {
         this.userID = userID;
     }
 
-    @Nullable @JsonProperty("name")
+    @JsonProperty("name")
     public String getName() {
         return name;
     }
 
     @JsonProperty("name")
-    public void setName(@Nullable String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
