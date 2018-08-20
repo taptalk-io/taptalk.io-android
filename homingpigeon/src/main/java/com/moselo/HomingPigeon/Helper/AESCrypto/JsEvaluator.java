@@ -6,6 +6,7 @@ package com.moselo.HomingPigeon.Helper.AESCrypto;
 //
 
 import android.content.Context;
+import android.util.Log;
 import android.webkit.WebView;
 
 import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.CallJavaResultInterface;
@@ -60,6 +61,7 @@ public class JsEvaluator implements CallJavaResultInterface, JsEvaluatorInterfac
     public void callFunction(String jsCode, JsCallback resultCallback, String name, Object... args) {
         jsCode = jsCode + "; " + JsFunctionCallFormatter.toString(name, args);
         this.evaluate(jsCode, resultCallback);
+        Log.e("]]]]", "callFunction jsCode: " + jsCode);
     }
 
     public void evaluate(String jsCode) {
@@ -70,6 +72,7 @@ public class JsEvaluator implements CallJavaResultInterface, JsEvaluatorInterfac
         String js = getJsForEval(jsCode);
         this.callback.set(resultCallback);
         this.getWebViewWrapper().loadJavaScript(js);
+        Log.e("]]]]", "evaluate js: " + js);
     }
 
     public void destroy() {
@@ -97,6 +100,7 @@ public class JsEvaluator implements CallJavaResultInterface, JsEvaluatorInterfac
         if (callbackLocal != null) {
             this.mHandler.post(new Runnable() {
                 public void run() {
+                    Log.e("]]]]", "jsCallFinished value: " + value);
                     if (value != null && value.startsWith("evgeniiJsEvaluatorException")) {
                         callbackLocal.onError(value.substring("evgeniiJsEvaluatorException".length()));
                     } else {

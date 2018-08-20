@@ -25,6 +25,8 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Data.MessageViewModel;
+import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.JsCallback;
+import com.moselo.HomingPigeon.Helper.AESCrypto.JsEncryptor;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -47,7 +49,7 @@ import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
 
 public class SampleChatActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private String TAG = "]]]]";
+    private String TAG = SampleChatActivity.class.getSimpleName();
     private ChatManager chatManager;
     private EncryptorManager encryptorManager;
     HomingPigeonEncryptorListener encryptorListener;
@@ -150,32 +152,62 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         vm.setUsername(getIntent().getStringExtra(K_MY_USERNAME));
         vm.getAllMessages().observe(this, new Observer<List<MessageEntity>>() {
             @Override
-            public void onChanged(List<MessageEntity> chatMessages) {
+            public void onChanged(final List<MessageEntity> chatMessages) {
                 if (adapter.getItemCount() == 0) {
                     Toast.makeText(SampleChatActivity.this, "Masuk OnChange", Toast.LENGTH_SHORT).show();
-                    for (MessageEntity entity : chatMessages) {
-                        MessageModel model = MessageModel.Builder(entity.getMessage(),
-                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {},entity.getRoom()),
-                                entity.getType(),entity.getCreated(),
-                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()));
-                        chatMessageModels.add(model);
+                    for (final MessageEntity entity : chatMessages) {
+                        JsEncryptor jsEncryptor = JsEncryptor.evaluateAllScripts(SampleChatActivity.this);
+                        jsEncryptor.decrypt(entity.getMessage(), "homingpigeon", new JsCallback() {
+                            @Override
+                            public void onResult(String s) {
+                                Log.e(TAG, "onResult: " + s);
+                                MessageModel model = MessageModel.Builder(s,
+                                        Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {},entity.getRoom()),
+                                        entity.getType(),entity.getCreated(),
+                                        Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()));
+                                chatMessageModels.add(model);
+                                if (chatMessages.size() == chatMessageModels.size()) {
+                                    adapter.setMessages(chatMessageModels);
+                                    rvChatList.scrollToPosition(0);
+                                    Log.e(TAG, "onResult 2: ");
+                                }
+                            }
+
+                            @Override
+                            public void onError(String s) {
+
+                            }
+                        });
                     }
-                    adapter.setMessages(chatMessageModels);
+
                 }
                 else if (0 < chatMessages.size()) {
-                    MessageModel model = MessageModel.Builder(chatMessages.get(0).getMessage(),
-                            Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {},chatMessages.get(0).getRoom()),
-                            chatMessages.get(0).getType(),chatMessages.get(0).getCreated(),
-                            Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, chatMessages.get(0).getUser()));
+                    JsEncryptor jsEncryptor = JsEncryptor.evaluateAllScripts(SampleChatActivity.this);
+                    jsEncryptor.decrypt(chatMessages.get(0).getMessage(), "homingpigeon", new JsCallback() {
+                        @Override
+                        public void onResult(String s) {
+                            MessageModel model = MessageModel.Builder(s,
+                                    Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {},chatMessages.get(0).getRoom()),
+                                    chatMessages.get(0).getType(),chatMessages.get(0).getCreated(),
+                                    Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, chatMessages.get(0).getUser()));
 
-                    if (adapter.getItemAt(0).getMessageID().equals(chatMessages.get(0).getId())) {
-                        Log.e(TAG, "onChanged: " + model);
-                        adapter.setMessageAt(0, model);
-                    }
-                    else {
-                        Log.e(TAG, "onChanged: " + model);
-                        adapter.addMessage(model);
-                    }
+                            if (adapter.getItemAt(0).getMessageID().equals(chatMessages.get(0).getId())) {
+                                Log.e(TAG, "onChanged: " + model);
+                                adapter.setMessageAt(0, model);
+                            }
+                            else {
+                                Log.e(TAG, "onChanged: " + model);
+                                adapter.addMessage(model);
+                            }
+                            rvChatList.scrollToPosition(0);
+
+                        }
+
+                        @Override
+                        public void onError(String s) {
+
+                        }
+                    });
                 }
                 if (vm.isOnBottom()) {
                     rvChatList.scrollToPosition(0);
