@@ -33,6 +33,7 @@ public class ConnectionManager {
     private static ConnectionManager instance;
     private WebSocketClient mWebSocketClient;
     private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
+//    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private HomingPigeonSocketListener listener;
 
@@ -94,6 +95,7 @@ public class ConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
+                Log.e(ConnectionManager.class.getSimpleName(), "onClose§: "+code+" "+reason );
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsDisconnected);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -102,6 +104,7 @@ public class ConnectionManager {
 
             @Override
             public void onError(Exception ex) {
+                Log.e(ConnectionManager.class.getSimpleName(), "onError: ",ex );
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnectionError);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);

@@ -88,7 +88,7 @@ public class ChatManager {
     public void sendTextMessage(String messageText, String roomID, UserModel userModel) {
         RoomModel roomModel = RoomModel.Builder(roomID);
         MessageModel messageModel = MessageModel.Builder(messageText, roomModel
-                , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis() / 1000, userModel);
+                , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
         EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
         sendMessage(Utils.getInstance().toJsonString(emitModel));
     }
