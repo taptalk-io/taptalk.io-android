@@ -27,7 +27,7 @@ import java.util.List;
 public class MessageModel {
 
     @JsonProperty("message") private String message;
-    @JsonProperty("messageID") private String messageID;
+    @Nullable @JsonProperty("messageID") private String messageID;
     @Nullable @JsonProperty("localID") private String localID;
     @JsonProperty("room") private RoomModel room;
     @JsonProperty("type") private int type;
@@ -41,7 +41,7 @@ public class MessageModel {
 
     public MessageModel(String message, RoomModel room, int type, long created, UserModel user) {
         this.message = message;
-        messageID = Utils.getInstance().generateRandomString(32);
+        localID = Utils.getInstance().generateRandomString(32);
         this.room = room;
         this.type = type;
         this.created = created;
@@ -55,13 +55,13 @@ public class MessageModel {
         return new MessageModel(message, room, type, created, user);
     }
 
-    @JsonProperty("message")
+    @Nullable @JsonProperty("message")
     public String getMessage() {
         return message;
     }
 
     @JsonProperty("message")
-    public void setMessage(String message) {
+    public void setMessage(@Nullable String message) {
         this.message = message;
     }
 

@@ -52,7 +52,6 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     private String TAG = SampleChatActivity.class.getSimpleName();
     private ChatManager chatManager;
     private EncryptorManager encryptorManager;
-    HomingPigeonEncryptorListener encryptorListener;
     private MessageAdapter adapter;
     private LinearLayoutManager llm;
     private MessageViewModel vm;
@@ -107,7 +106,8 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         tvLastMessageTime.setVisibility(View.GONE);
         roomID = getIntent().getStringExtra(DefaultConstant.K_ROOM_ID);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},prefs.getString(K_USER,"{}"));
+        myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        }, prefs.getString(K_USER, "{}"));
 
         adapter = new MessageAdapter(this);
         llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
@@ -123,8 +123,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
                         ivToBottom.setVisibility(View.INVISIBLE);
                         tvBadgeUnread.setVisibility(View.INVISIBLE);
                         vm.setUnreadCount(0);
-                    }
-                    else {
+                    } else {
                         vm.setOnBottom(false);
                         ivToBottom.setVisibility(View.VISIBLE);
                     }
@@ -227,7 +226,8 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
             @Override
             public void onEncryptResult(String encryptedMessage) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SampleChatActivity.this);
-                UserModel user = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, prefs.getString(DefaultConstant.K_USER, "{}"));
+                UserModel user = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                }, prefs.getString(DefaultConstant.K_USER, "{}"));
                 ChatManager.getInstance().sendTextMessage(encryptedMessage, roomID, user);
             }
 
@@ -265,7 +265,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
 
     private void addMessage(MessageModel messageModel) {
 
-        vm.insert(new MessageEntity(messageModel.getMessageID(),
+        vm.insert(new MessageEntity(messageModel.getLocalID(),
                 Utils.getInstance().toJsonString(messageModel.getRoom()),
                 messageModel.getType(),
                 messageModel.getMessage(),
