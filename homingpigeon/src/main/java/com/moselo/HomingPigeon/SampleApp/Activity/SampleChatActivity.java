@@ -1,11 +1,13 @@
 package com.moselo.HomingPigeon.SampleApp.Activity;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,11 +29,14 @@ import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Adapter.MessageAdapter;
 
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
@@ -153,6 +158,34 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     private void initViewModel() {
         mVM = ViewModelProviders.of(this).get(MessageViewModel.class);
         mVM.setUsername(getIntent().getStringExtra(K_MY_USERNAME));
+
+        mVM.getAllMessages().observe(this, new Observer<List<MessageEntity>>() {
+            @Override
+            public void onChanged(List<MessageEntity> messageEntities) {
+                try {
+                    if (0 == mVM.getMessageModels().size()) {
+                        List<MessageModel> models = new ArrayList<>();
+                        for (MessageEntity entity : messageEntities) {
+                            MessageModel model = MessageModel.BuilderDecrypt(entity.getMessage(),
+                                    Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
+                                    }, entity.getRoom()),
+                                    entity.getType(), entity.getCreated(),
+                                    Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                                    }, entity.getUser()));
+                            models.add(model);
+                        }
+                        mVM.setMessageModels(models);
+                        if (null != adapter){
+                            adapter.setMessages(models);
+                            rvChatList.scrollToPosition(0);
+                        }
+                    }
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                    Log.e("><><><", "onChanged: ",e );
+                }
+            }
+        });
     }
 
     private void initHelper() {
@@ -168,6 +201,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
                             rvChatList.scrollToPosition(0);
                         }
                     });
+                    addMessageToDatabase(message);
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
@@ -176,11 +210,15 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void addMessageToDatabase(MessageModel messageModel) {
-        mVM.insert(new MessageEntity(
-                messageModel.getLocalID(),
-                Utils.getInstance().toJsonString(messageModel.getRoom()),
-                messageModel.getType(), messageModel.getMessage(), messageModel.getCreated(),
-                Utils.getInstance().toJsonString(messageModel.getUser())
-        ));
+        try {
+            mVM.insert(new MessageEntity(
+                    messageModel.getLocalID(),
+                    Utils.getInstance().toJsonString(messageModel.getRoom()),
+                    messageModel.getType(), EncryptorManager.getInstance().encrypt(messageModel.getMessage()), messageModel.getCreated(),
+                    Utils.getInstance().toJsonString(messageModel.getUser())
+            ));
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
     }
 }

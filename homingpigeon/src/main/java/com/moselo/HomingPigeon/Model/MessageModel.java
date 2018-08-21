@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.moselo.HomingPigeon.Helper.AESCrypt;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Manager.EncryptorManager;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -60,7 +61,12 @@ public class MessageModel {
 
     public static MessageModel BuilderEncrypt(String message, RoomModel room, int type, long created, UserModel user) throws GeneralSecurityException {
         Log.e(MessageModel.class.getSimpleName(), message );
-        return new MessageModel(AESCrypt.encrypt("homingpigeon", message ), room, type, created, user);
+        return new MessageModel(EncryptorManager.getInstance().encrypt(message), room, type, created, user);
+    }
+
+    public static MessageModel BuilderDecrypt(String message, RoomModel room, int type, long created, UserModel user) throws GeneralSecurityException {
+        Log.e(MessageModel.class.getSimpleName(), message );
+        return new MessageModel(EncryptorManager.getInstance().decrypt(message), room, type, created, user);
     }
 
     @Nullable @JsonProperty("message")
