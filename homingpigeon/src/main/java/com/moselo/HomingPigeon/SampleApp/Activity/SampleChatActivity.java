@@ -152,7 +152,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         vm.getAllMessages().observe(this, new Observer<List<MessageEntity>>() {
             @Override
             public void onChanged(final List<MessageEntity> chatMessages) {
-                Log.e(TAG, "onChanged:2 "+chatMessages.size() );
+                Log.e(TAG, "onChanged:1 "+chatMessages.size() );
                 if (adapter.getItemCount() == 0) {
                     Log.e(TAG, "onChanged: "+chatMessages.size() );
                     for (MessageEntity entity : chatMessages) {
@@ -224,6 +224,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
             String message = etChat.getText().toString();
             if (!TextUtils.isEmpty(message)) {
 //            encryptorManager.encrypt(message, "homingpigeon");
+                Log.e(TAG, "attemptSend: "+AESCrypt.encrypt("homingpigeon", message ));
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SampleChatActivity.this);
                 UserModel user = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
                 }, prefs.getString(DefaultConstant.K_USER, "{}"));

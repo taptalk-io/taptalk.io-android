@@ -119,12 +119,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     }
 
     public void setMessages(List<MessageModel> messages) {
-        if (null != chatMessages) {
-            chatMessages = messages;
-            notifyItemRangeChanged(0, getItemCount());
-        }else {
+        if (null == chatMessages){
             chatMessages = new ArrayList<>();
         }
+
+        chatMessages = messages;
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     public void addMessage(MessageModel message) {
