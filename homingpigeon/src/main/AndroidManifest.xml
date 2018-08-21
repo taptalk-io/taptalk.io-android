@@ -5,10 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
-        <activity android:name=".Testing.LibraryActivity" />
+        <activity android:name=".SampleApp.Activity.SampleChatActivity" />
         <activity android:name=".SampleApp.Activity.SampleLoginActivity" />
         <activity android:name=".SampleApp.Activity.SampleRoomListActivity" />
-        <activity android:name=".SampleApp.Activity.SampleChatActivity" />
+        <activity android:name=".SampleApp.Activity.OldSampleChatActivity" />
     </application>
 
 </manifest>

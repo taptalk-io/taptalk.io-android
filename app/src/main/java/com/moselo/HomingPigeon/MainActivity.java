@@ -5,15 +5,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.SampleApp.Activity.SampleLoginActivity;
+import com.moselo.HomingPigeon.SampleApp.Activity.SampleRoomListActivity;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Intent intent = new Intent(this, SampleLoginActivity.class);
+        Intent intent;
+        if (null != DataManager.getInstance().getUserModel(this)){
+            intent = new Intent(this, SampleRoomListActivity.class);
+        }else {
+            intent = new Intent(this, SampleLoginActivity.class);
+        }
         startActivity(intent);
         finish();
     }

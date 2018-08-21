@@ -32,8 +32,8 @@ public class ConnectionManager {
 
     private static ConnectionManager instance;
     private WebSocketClient mWebSocketClient;
-//    private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
-    private String webSocketEndpoint = "ws://echo.websocket.org";
+    private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
+//    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private HomingPigeonSocketListener listener;
 
@@ -68,8 +68,7 @@ public class ConnectionManager {
         mWebSocketClient = new WebSocketClient(webSocketUri) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                connectionStatus = ConnectionStatus.CONNECTING;
-                Log.e(ConnectionManager.class.getSimpleName(), "onOpen: " + HomingPigeon.appContext);
+                connectionStatus = ConnectionStatus.CONNECTED;
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnecting);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -83,12 +82,9 @@ public class ConnectionManager {
             @Override
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
-                Log.e(ConnectionManager.class.getSimpleName(), tempMessage);
                 try {
                     Map<String, Object> response = new ObjectMapper().readValue(tempMessage, HashMap.class);
-                    Log.e(ConnectionManager.class.getSimpleName()+"%", "onMessage: "+response.get("eventName").toString() );
                     listener.onNewMessage(response.get("eventName").toString(), tempMessage);
-                    Log.e(ConnectionManager.class.getSimpleName()+"#", response.get("eventName").toString() );
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -96,7 +92,6 @@ public class ConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                Log.e(ConnectionManager.class.getSimpleName(), "onClose§: "+code+" "+reason );
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsDisconnected);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -132,7 +127,6 @@ public class ConnectionManager {
 
     public void sendEmit(String messageString) {
         if (mWebSocketClient.isOpen()) {
-            Log.e(ConnectionManager.class.getSimpleName()+"@", messageString );
             mWebSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
         }
     }
@@ -143,6 +137,7 @@ public class ConnectionManager {
                 && !mWebSocketClient.isConnecting()) {
             Log.e(ConnectionManager.class.getSimpleName(), "connect: " );
             mWebSocketClient.connect();
+            connectionStatus = ConnectionStatus.CONNECTING;
         }
     }
 
@@ -150,6 +145,7 @@ public class ConnectionManager {
         if (null != mWebSocketClient
                 && (mWebSocketClient.isOpen() || mWebSocketClient.isConnecting()))
             mWebSocketClient.close();
+        connectionStatus = ConnectionStatus.DISCONNECTED;
     }
 
     public ConnectionStatus getConnectionStatus() {

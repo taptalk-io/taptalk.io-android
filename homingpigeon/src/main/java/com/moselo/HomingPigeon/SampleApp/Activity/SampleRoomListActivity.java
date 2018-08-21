@@ -30,6 +30,10 @@ public class SampleRoomListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample_room_list);
 
+        if (ConnectionManager.ConnectionStatus.DISCONNECTED == ConnectionManager.getInstance().getConnectionStatus()){
+            ConnectionManager.getInstance().connect();
+        }
+
         initView();
     }
 

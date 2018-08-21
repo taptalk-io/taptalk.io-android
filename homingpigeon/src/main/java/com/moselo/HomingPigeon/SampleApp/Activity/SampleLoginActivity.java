@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
+import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.SampleApp.Helper.Const;
@@ -100,16 +101,14 @@ public class SampleLoginActivity extends AppCompatActivity {
             intent.putExtra(Const.K_MY_USERNAME, etUsername.getText().toString());
             startActivity(intent);
             ConnectionManager.getInstance().connect();
-            getUserID();
+            getUserID(Utils.getInstance().generateRandomNumber(1000000)+"", etUsername.getText().toString());
             finish();
         }
     }
 
-    private void getUserID(){
-        UserModel userModel = UserModel.Builder(Utils.getInstance().generateRandomNumber(1000000)+"", etUsername.getText().toString());
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(userModel))
-                .apply();
+    private void getUserID(String userID, String username){
+        UserModel userModel = UserModel.Builder(userID, username);
+        DataManager.getInstance().saveUserModel(this, userModel);
     }
 
     private void dismissKeyboard(Activity activity) {

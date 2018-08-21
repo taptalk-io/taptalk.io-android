@@ -50,4 +50,5 @@ public class DefaultConstant {
 
     public static final String K_USER = "kUser";
     public static final String K_ROOM_ID = "kRoomID";
+    public static final String EncryptKey = "homingpigeon";
 }
