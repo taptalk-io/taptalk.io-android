@@ -1,12 +1,15 @@
 package com.moselo.HomingPigeon.Model;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.moselo.HomingPigeon.Helper.AESCrypt;
 import com.moselo.HomingPigeon.Helper.Utils;
 
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -53,6 +56,11 @@ public class MessageModel {
 
     public static MessageModel Builder(String message, RoomModel room, int type, long created, UserModel user){
         return new MessageModel(message, room, type, created, user);
+    }
+
+    public static MessageModel BuilderEncrypt(String message, RoomModel room, int type, long created, UserModel user) throws GeneralSecurityException {
+        Log.e(MessageModel.class.getSimpleName(), message );
+        return new MessageModel(AESCrypt.encrypt("homingpigeon", message ), room, type, created, user);
     }
 
     @Nullable @JsonProperty("message")

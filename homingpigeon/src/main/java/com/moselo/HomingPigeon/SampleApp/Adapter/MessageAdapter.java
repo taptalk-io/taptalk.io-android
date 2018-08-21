@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,6 +126,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
         chatMessages = messages;
         notifyItemRangeChanged(0, getItemCount());
+//        notifyDataSetChanged();
+//        notifyItemRangeInserted(0,getItemCount());
+//        notifyAll();
+        Log.e(MessageAdapter.class.getSimpleName(), "setMessages: "+messages.get(0).getMessage() );
     }
 
     public void addMessage(MessageModel message) {

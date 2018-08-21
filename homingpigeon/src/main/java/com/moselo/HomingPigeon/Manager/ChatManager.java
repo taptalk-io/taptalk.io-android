@@ -16,6 +16,9 @@ import com.moselo.HomingPigeon.Model.UserModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.GeneralSecurityException;
+import java.util.logging.Handler;
+
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketAuthentication;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketCloseRoom;
@@ -46,6 +49,7 @@ public class ChatManager {
                 case kSocketNewMessage:
                     EmitModel<MessageModel> tempObject = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
+                    Log.e(ChatManager.class.getSimpleName()+"#", tempObject.getEventName() );
                     if (null != chatListener) chatListener.onNewTextMessage(tempObject.getData());
                     break;
                 case kSocketUpdateMessage:
@@ -87,10 +91,35 @@ public class ChatManager {
 
     public void sendTextMessage(String messageText, String roomID, UserModel userModel) {
         RoomModel roomModel = RoomModel.Builder(roomID);
-        MessageModel messageModel = MessageModel.Builder(messageText, roomModel
-                , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
-        EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
-        sendMessage(Utils.getInstance().toJsonString(emitModel));
+        Integer characterLimit = 1000;
+        Integer startIndex;
+        if (messageText.length() > characterLimit) {
+            Integer length = messageText.length();
+            for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
+                String substr = Utils.mySubString(messageText, startIndex, characterLimit);
+                MessageModel messageModel = null;
+                try {
+                    messageModel = MessageModel.BuilderEncrypt(substr, roomModel
+                            , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
+                    EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
+                    sendMessage(Utils.getInstance().toJsonString(emitModel));
+                    Log.e(ChatManager.class.getSimpleName(), substr );
+                } catch (GeneralSecurityException e) {
+                    Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: ",e );
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            MessageModel messageModel = null;
+            try {
+                messageModel = MessageModel.BuilderEncrypt(messageText, roomModel
+                        , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
+                EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
+                sendMessage(Utils.getInstance().toJsonString(emitModel));
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void sendMessage(String message) {

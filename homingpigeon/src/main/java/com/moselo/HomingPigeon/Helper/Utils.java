@@ -85,4 +85,12 @@ public class Utils {
         int fId = (null != friendId && !"null".equals(friendId)) ? Integer.parseInt(friendId) : 0;
         return myId < fId ? myId + "-" + fId : fId + "-" + myId;
     }
+
+    /**
+     * substring for chat above 100 char
+     *
+     */
+    public static String mySubString(String myString, int start, int length) {
+        return myString.substring(start, Math.min(start + length, myString.length()));
+    }
 }

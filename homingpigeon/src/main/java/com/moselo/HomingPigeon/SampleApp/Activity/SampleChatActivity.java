@@ -8,6 +8,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ChatAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -29,7 +30,6 @@ import com.moselo.HomingPigeon.Helper.AESCrypt;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonEncryptorListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
@@ -113,6 +113,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         rvChatList.setAdapter(adapter);
         rvChatList.setLayoutManager(llm);
+        rvChatList.setItemAnimator(new ChatAnimator());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             rvChatList.setOnScrollChangeListener(new View.OnScrollChangeListener() {
@@ -152,60 +153,56 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         vm.getAllMessages().observe(this, new Observer<List<MessageEntity>>() {
             @Override
             public void onChanged(final List<MessageEntity> chatMessages) {
-                Log.e(TAG, "onChanged:1 "+chatMessages.size() );
-                if (adapter.getItemCount() == 0) {
-                    Log.e(TAG, "onChanged: "+chatMessages.size() );
-                    for (MessageEntity entity : chatMessages) {
-                        Log.e(TAG, "onResult2: " + entity.getMessage().replace("homingpigeon", ""));
-                        try {
-                            Log.e(TAG, "onResult: homingpigeon" + AESCrypt.decrypt("homingpigeon", entity.getMessage().replace("homingpigeon", "")));
-                            MessageModel model = MessageModel.Builder(AESCrypt.decrypt("homingpigeon", entity.getMessage().replace("homingpigeon", "")),
-                                    Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
-                                    }, entity.getRoom()),
-                                    entity.getType(), entity.getCreated(),
-                                    Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                                    }, entity.getUser()));
-                            chatMessageModels.add(model);
-                        } catch (GeneralSecurityException e) {
-                            Log.e(TAG, "onChanged: ", e);
-                            e.printStackTrace();
-                        }
-                    }
-                    adapter.setMessages(chatMessageModels);
-                    rvChatList.scrollToPosition(0);
-                    Log.e(TAG, "onChanged:2 "+chatMessageModels.size() );
-
-                } else if (0 < chatMessages.size()) {
-                    MessageModel model = null;
+//                if (adapter.getItemCount() == 0) {
+                chatMessageModels.clear();
+                for (MessageEntity entity : chatMessages) {
+                    Log.e(TAG, "onResult2: " + entity.getMessage().replace("homingpigeon", ""));
                     try {
-                        model = MessageModel.Builder(AESCrypt.decrypt("homingpigeon", chatMessages.get(0).getMessage().replace("homingpigeon", "")),
+                        MessageModel model = MessageModel.Builder(AESCrypt.decrypt("homingpigeon", entity.getMessage().replace("homingpigeon", "")),
                                 Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
-                                }, chatMessages.get(0).getRoom()),
-                                chatMessages.get(0).getType(), chatMessages.get(0).getCreated(),
+                                }, entity.getRoom()),
+                                entity.getType(), entity.getCreated(),
                                 Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                                }, chatMessages.get(0).getUser()));
-                        Log.e(TAG, "onChanged: 3 "+ adapter.getItemAt(0).getLocalID()+" "+chatMessages.get(0).getId());
-                        if (adapter.getItemAt(0).getLocalID().equals(chatMessages.get(0).getId())) {
-                            Log.e(TAG, "onChanged5: " + model.getMessage());
-                            adapter.setMessageAt(0, model);
-                        } else {
-                            Log.e(TAG, "onChanged4: " + model.getMessage());
-                            adapter.addMessage(model);
-                        }
-                        rvChatList.scrollToPosition(0);
+                                }, entity.getUser()));
+                        chatMessageModels.add(model);
                     } catch (GeneralSecurityException e) {
+                        Log.e(TAG, "onChanged: ", e);
                         e.printStackTrace();
-                        Log.e(TAG, "onChanged: ",e );
                     }
                 }
-                if (vm.isOnBottom()) {
-                    rvChatList.scrollToPosition(0);
-                } else {
-                    tvBadgeUnread.setVisibility(View.VISIBLE);
-                    vm.setUnreadCount(vm.getUnreadCount() + 1);
-                    tvBadgeUnread.setText(vm.getUnreadCount() + "");
-                }
+                adapter.setMessages(chatMessageModels);
+                rvChatList.scrollToPosition(0);
+                Log.e(TAG + "%", "onResult2: ");
             }
+//                } else if (0 < chatMessages.size()) {
+//                    MessageModel model = null;
+//                    try {
+//                        Log.e(TAG + "@", AESCrypt.decrypt("homingpigeon", chatMessages.get(0).getMessage()));
+//                        model = MessageModel.Builder(AESCrypt.decrypt("homingpigeon", chatMessages.get(0).getMessage().replace("homingpigeon", "")),
+//                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
+//                                }, chatMessages.get(0).getRoom()),
+//                                chatMessages.get(0).getType(), chatMessages.get(0).getCreated(),
+//                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+//                                }, chatMessages.get(0).getUser()));
+//                        if (adapter.getItemAt(0).getLocalID().equals(chatMessages.get(0).getId())) {
+//                            adapter.setMessageAt(0, model);
+//                        } else {
+//                            adapter.addMessage(model);
+//                        }
+//                        rvChatList.scrollToPosition(0);
+//                    } catch (GeneralSecurityException e) {
+//                        e.printStackTrace();
+//                        Log.e(TAG, "onChanged: ", e);
+//                    }
+//                }
+//                if (vm.isOnBottom()) {
+//                    rvChatList.scrollToPosition(0);
+//                } else {
+//                    tvBadgeUnread.setVisibility(View.VISIBLE);
+//                    vm.setUnreadCount(vm.getUnreadCount() + 1);
+//                    tvBadgeUnread.setText(vm.getUnreadCount() + "");
+//                }
+//            }
         });
     }
 
@@ -214,6 +211,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         chatManager.setChatListener(new HomingPigeonChatListener() {
             @Override
             public void onNewTextMessage(MessageModel message) {
+                Log.e(TAG+"#", message.getMessage() );
                 addMessage(message);
             }
         });
@@ -224,11 +222,11 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
             String message = etChat.getText().toString();
             if (!TextUtils.isEmpty(message)) {
 //            encryptorManager.encrypt(message, "homingpigeon");
-                Log.e(TAG, "attemptSend: "+AESCrypt.encrypt("homingpigeon", message ));
+                Log.e(TAG, "attemptSend: " + AESCrypt.encrypt("homingpigeon", message));
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SampleChatActivity.this);
                 UserModel user = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
                 }, prefs.getString(DefaultConstant.K_USER, "{}"));
-                ChatManager.getInstance().sendTextMessage(AESCrypt.encrypt("homingpigeon", message), roomID, user);
+                ChatManager.getInstance().sendTextMessage(message, roomID, user);
                 etChat.setText("");
             }
         } catch (Exception e) {
@@ -241,6 +239,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void addMessage(MessageModel messageModel) {
+        Log.e(TAG+"&", messageModel.getMessage() );
 
         vm.insert(new MessageEntity(messageModel.getLocalID(),
                 Utils.getInstance().toJsonString(messageModel.getRoom()),

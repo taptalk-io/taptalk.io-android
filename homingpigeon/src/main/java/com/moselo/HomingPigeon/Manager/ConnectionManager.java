@@ -32,8 +32,8 @@ public class ConnectionManager {
 
     private static ConnectionManager instance;
     private WebSocketClient mWebSocketClient;
-    private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
-//    private String webSocketEndpoint = "ws://echo.websocket.org";
+//    private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
+    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private HomingPigeonSocketListener listener;
 
@@ -86,8 +86,9 @@ public class ConnectionManager {
                 Log.e(ConnectionManager.class.getSimpleName(), tempMessage);
                 try {
                     Map<String, Object> response = new ObjectMapper().readValue(tempMessage, HashMap.class);
-                    Log.e(ConnectionManager.class.getSimpleName(), "onMessage: "+response.get("eventName").toString() );
+                    Log.e(ConnectionManager.class.getSimpleName()+"%", "onMessage: "+response.get("eventName").toString() );
                     listener.onNewMessage(response.get("eventName").toString(), tempMessage);
+                    Log.e(ConnectionManager.class.getSimpleName()+"#", response.get("eventName").toString() );
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -130,8 +131,10 @@ public class ConnectionManager {
     }
 
     public void sendEmit(String messageString) {
-        if (mWebSocketClient.isOpen())
+        if (mWebSocketClient.isOpen()) {
+            Log.e(ConnectionManager.class.getSimpleName()+"@", messageString );
             mWebSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     public void connect() {
