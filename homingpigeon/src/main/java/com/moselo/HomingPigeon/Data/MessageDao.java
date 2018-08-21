@@ -19,4 +19,7 @@ public interface MessageDao {
 
     @Query("select * from message_table order by Created desc")
     LiveData<List<MessageEntity>> getAllMessage();
+
+    @Query("select * from message_table order by Created desc")
+    List<MessageEntity> getAllMessageList();
 }

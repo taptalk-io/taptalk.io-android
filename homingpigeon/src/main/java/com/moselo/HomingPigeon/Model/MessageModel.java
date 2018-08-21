@@ -69,7 +69,7 @@ public class MessageModel {
     }
 
     @JsonProperty("message")
-    public void setMessage(@Nullable String message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 

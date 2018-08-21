@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="#f0f0f0"
-    tools:context=".SampleApp.Activity.SampleChatActivity">
+    tools:context=".SampleApp.Activity.OldSampleChatActivity">
 
     <include layout="@layout/cell_user_room"
         android:id="@+id/action_bar"

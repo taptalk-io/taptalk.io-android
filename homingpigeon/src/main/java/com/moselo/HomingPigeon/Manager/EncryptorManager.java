@@ -4,74 +4,37 @@ import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.moselo.HomingPigeon.Helper.AESCrypt;
 import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.JsCallback;
 import com.moselo.HomingPigeon.Helper.AESCrypto.JsEncryptor;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Listener.HomingPigeonEncryptorListener;
+
+import java.security.GeneralSecurityException;
+
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.EncryptKey;
 
 public class EncryptorManager {
 
     private static EncryptorManager instance;
-    private JsEncryptor jsEncryptor;
-    private Activity activity;
-    private HomingPigeonEncryptorListener listener;
 
-    public static EncryptorManager getInstance(Activity activity) {
+    public static EncryptorManager getInstance() {
         if (null == instance) {
-            instance =  new EncryptorManager(activity);
+            instance =  new EncryptorManager();
         }
         return instance;
     }
 
-    public EncryptorManager(Activity activity) {
-        this.activity = activity;
-        jsEncryptor = JsEncryptor.evaluateAllScripts(activity);
+    public EncryptorManager() {
+
     }
 
-    public void setListener(HomingPigeonEncryptorListener listener) {
-        if (null != this.listener) {
-            this.listener = null;
-        }
-        this.listener = listener;
+    public String encrypt(String textToEncrypt) throws GeneralSecurityException {
+        return AESCrypt.encrypt(EncryptKey, textToEncrypt);
     }
 
-    public void encrypt(final String textToEncrypt, final String encryptionKey) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                jsEncryptor.encrypt(textToEncrypt, encryptionKey, new JsCallback() {
-                    @Override
-                    public void onResult(String s) {
-                        listener.onEncryptResult(s);
-                    }
-
-                    @Override
-                    public void onError(String s) {
-                        listener.onError(s);
-                        Log.e(instance.getClass().getSimpleName(), "onError: " + s);
-                    }
-                });
-            }
-        });
-    }
-
-    public void decrypt(final String textToDecrypt, final String encryptionKey) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                jsEncryptor.decrypt(textToDecrypt, encryptionKey, new JsCallback() {
-                    @Override
-                    public void onResult(String s) {
-                        listener.onDecryptResult(s);
-                    }
-
-                    @Override
-                    public void onError(String s) {
-                        listener.onError(s);
-                        Log.e(instance.getClass().getSimpleName(), "onError: " + s);
-                    }
-                });
-            }
-        });
+    public String decrypt(String textToDecrypt) throws GeneralSecurityException {
+        return AESCrypt.decrypt(EncryptKey, textToDecrypt);
     }
 }

@@ -4,6 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
+import com.moselo.HomingPigeon.Model.MessageModel;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MessageViewModel extends AndroidViewModel {
@@ -16,6 +19,15 @@ public class MessageViewModel extends AndroidViewModel {
     private boolean isConnected = false;
     private boolean isTyping = false;
     private boolean isOnBottom;
+    private List<MessageModel> messageModels = new ArrayList<>();
+
+    public List<MessageModel> getMessageModels() {
+        return messageModels;
+    }
+
+    public void setMessageModels(List<MessageModel> messageModels) {
+        this.messageModels = messageModels;
+    }
 
     public MessageViewModel(Application application) {
         super(application);
