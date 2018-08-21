@@ -27,6 +27,7 @@ import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
@@ -91,9 +92,7 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
         tvUserStatus.setText("User Status");
         tvLastMessageTime.setVisibility(View.GONE);
         roomID = getIntent().getStringExtra(DefaultConstant.K_ROOM_ID);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-        }, prefs.getString(K_USER, "{}"));
+        myUserModel = DataManager.getInstance().getUserModel(this);
 
         adapter = new MessageAdapter(this);
         adapter.setMessages(mVM.getMessageModels());

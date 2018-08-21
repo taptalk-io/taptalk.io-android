@@ -68,7 +68,7 @@ public class ConnectionManager {
         mWebSocketClient = new WebSocketClient(webSocketUri) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                connectionStatus = ConnectionStatus.CONNECTING;
+                connectionStatus = ConnectionStatus.CONNECTED;
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnecting);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -137,6 +137,7 @@ public class ConnectionManager {
                 && !mWebSocketClient.isConnecting()) {
             Log.e(ConnectionManager.class.getSimpleName(), "connect: " );
             mWebSocketClient.connect();
+            connectionStatus = ConnectionStatus.CONNECTING;
         }
     }
 
@@ -144,6 +145,7 @@ public class ConnectionManager {
         if (null != mWebSocketClient
                 && (mWebSocketClient.isOpen() || mWebSocketClient.isConnecting()))
             mWebSocketClient.close();
+        connectionStatus = ConnectionStatus.DISCONNECTED;
     }
 
     public ConnectionStatus getConnectionStatus() {
