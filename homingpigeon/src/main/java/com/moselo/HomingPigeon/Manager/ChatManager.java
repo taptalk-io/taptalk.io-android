@@ -49,7 +49,6 @@ public class ChatManager {
                 case kSocketNewMessage:
                     EmitModel<MessageModel> tempObject = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
-                    Log.e(ChatManager.class.getSimpleName()+"#", tempObject.getEventName() );
                     if (null != chatListener) chatListener.onNewTextMessage(tempObject.getData());
                     break;
                 case kSocketUpdateMessage:
@@ -103,9 +102,7 @@ public class ChatManager {
                             , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
                     EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
                     sendMessage(Utils.getInstance().toJsonString(emitModel));
-                    Log.e(ChatManager.class.getSimpleName(), substr );
                 } catch (GeneralSecurityException e) {
-                    Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: ",e );
                     e.printStackTrace();
                 }
             }

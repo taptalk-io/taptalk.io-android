@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.SampleApp.Adapter;
+package com.moselo.HomingPigeon.View.Adapter;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,15 +16,14 @@ import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.SampleApp.Activity.OldSampleChatActivity;
-import com.moselo.HomingPigeon.SampleApp.Activity.SampleChatActivity;
+import com.moselo.HomingPigeon.View.Activity.SampleChatActivity;
 
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_MY_USERNAME;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_MY_USERNAME;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
 public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListHolder> {
 

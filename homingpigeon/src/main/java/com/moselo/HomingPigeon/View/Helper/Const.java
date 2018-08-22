@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.SampleApp.Helper;
+package com.moselo.HomingPigeon.View.Helper;
 
 public class Const {
     public static final String K_EMAIL = "kEmail";

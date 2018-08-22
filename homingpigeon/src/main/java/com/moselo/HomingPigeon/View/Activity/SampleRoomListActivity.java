@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.SampleApp.Activity;
+package com.moselo.HomingPigeon.View.Activity;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,18 +8,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.moselo.HomingPigeon.Data.MessageEntity;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.SampleApp.Adapter.RoomListAdapter;
-import com.moselo.HomingPigeon.SampleApp.Helper.Const;
+import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
+import com.moselo.HomingPigeon.View.Helper.Const;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
-public class SampleRoomListActivity extends AppCompatActivity {
+public class SampleRoomListActivity extends BaseActivity {
 
     private RecyclerView rvContactList;
     private RoomListAdapter adapter;

@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.SampleApp.Activity;
+package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -35,16 +35,16 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.SampleApp.Adapter.MessageAdapter;
+import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_MY_USERNAME;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_MY_USERNAME;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
 @Deprecated
 public class OldSampleChatActivity extends AppCompatActivity implements View.OnClickListener {
@@ -165,7 +165,6 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
                                 }, entity.getUser()));
                         chatMessageModels.add(model);
                     } catch (GeneralSecurityException e) {
-                        Log.e(TAG, "onChanged: ", e);
                         e.printStackTrace();
                     }
                 }
@@ -175,7 +174,7 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
 //                } else if (0 < chatMessages.size()) {
 //                    MessageModel model = null;
 //                    try {
-//                        Log.e(TAG + "@", AESCrypt.decrypt("homingpigeon", chatMessages.get(0).getMessage()));
+//
 //                        model = MessageModel.Builder(AESCrypt.decrypt("homingpigeon", chatMessages.get(0).getMessage().replace("homingpigeon", "")),
 //                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
 //                                }, chatMessages.get(0).getRoom()),
@@ -190,7 +189,7 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
 //                        rvChatList.scrollToPosition(0);
 //                    } catch (GeneralSecurityException e) {
 //                        e.printStackTrace();
-//                        Log.e(TAG, "onChanged: ", e);
+//
 //                    }
 //                }
 //                if (vm.isOnBottom()) {
@@ -209,7 +208,6 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
         chatManager.setChatListener(new HomingPigeonChatListener() {
             @Override
             public void onNewTextMessage(MessageModel message) {
-                Log.e(TAG+"#", message.getMessage() );
                 addMessage(message);
             }
         });
@@ -220,7 +218,6 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
             String message = etChat.getText().toString();
             if (!TextUtils.isEmpty(message)) {
 //            encryptorManager.encrypt(message, "homingpigeon");
-                Log.e(TAG, "attemptSend: " + AESCrypt.encrypt("homingpigeon", message));
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(OldSampleChatActivity.this);
                 UserModel user = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
                 }, prefs.getString(DefaultConstant.K_USER, "{}"));
@@ -228,7 +225,6 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
                 etChat.setText("");
             }
         } catch (Exception e) {
-            Log.e(TAG, "attemptSend: ", e);
         }
     }
 
@@ -237,7 +233,6 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
     }
 
     private void addMessage(MessageModel messageModel) {
-        Log.e(TAG+"&", messageModel.getMessage() );
 
         vm.insert(new MessageEntity(messageModel.getLocalID(),
                 Utils.getInstance().toJsonString(messageModel.getRoom()),

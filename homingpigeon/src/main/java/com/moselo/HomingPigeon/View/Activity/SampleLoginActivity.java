@@ -1,13 +1,10 @@
-package com.moselo.HomingPigeon.SampleApp.Activity;
+package com.moselo.HomingPigeon.View.Activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,17 +13,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.SampleApp.Helper.Const;
+import com.moselo.HomingPigeon.View.Helper.Const;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
-
-public class SampleLoginActivity extends AppCompatActivity {
+public class SampleLoginActivity extends BaseActivity {
 
     private TextInputEditText etUsername;
     private TextInputEditText etPassword;

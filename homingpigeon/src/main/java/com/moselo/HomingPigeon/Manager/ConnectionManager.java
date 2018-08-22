@@ -33,7 +33,7 @@ public class ConnectionManager {
     private static ConnectionManager instance;
     private WebSocketClient mWebSocketClient;
     private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
-//    private String webSocketEndpoint = "ws://echo.websocket.org";
+    //    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private HomingPigeonSocketListener listener;
 
@@ -100,7 +100,6 @@ public class ConnectionManager {
 
             @Override
             public void onError(Exception ex) {
-                Log.e(ConnectionManager.class.getSimpleName(), "onError: ",ex );
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnectionError);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -132,23 +131,28 @@ public class ConnectionManager {
     }
 
     public void connect() {
-        if (null != mWebSocketClient
-                && !mWebSocketClient.isOpen()
-                && !mWebSocketClient.isConnecting()) {
-            Log.e(ConnectionManager.class.getSimpleName(), "connect: " );
+        if (ConnectionStatus.DISCONNECTED == connectionStatus) {
             mWebSocketClient.connect();
             connectionStatus = ConnectionStatus.CONNECTING;
         }
     }
 
     public void close() {
-        if (null != mWebSocketClient
-                && (mWebSocketClient.isOpen() || mWebSocketClient.isConnecting()))
+        if (ConnectionStatus.CONNECTED == connectionStatus
+                || ConnectionStatus.CONNECTING == connectionStatus) {
             mWebSocketClient.close();
-        connectionStatus = ConnectionStatus.DISCONNECTED;
+            connectionStatus = ConnectionStatus.DISCONNECTED;
+        }
     }
 
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;
+    }
+
+    public void reconnect() {
+        if (ConnectionStatus.DISCONNECTED != connectionStatus) {
+            mWebSocketClient.reconnect();
+            connectionStatus = ConnectionStatus.CONNECTING;
+        }
     }
 }

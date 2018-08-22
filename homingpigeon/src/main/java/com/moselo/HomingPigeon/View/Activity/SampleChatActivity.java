@@ -1,13 +1,13 @@
-package com.moselo.HomingPigeon.SampleApp.Activity;
+package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.SharedPreferences;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,28 +23,30 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Data.MessageViewModel;
+import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.SampleApp.Adapter.MessageAdapter;
+import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_COLOR;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_MY_USERNAME;
-import static com.moselo.HomingPigeon.SampleApp.Helper.Const.K_THEIR_USERNAME;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnectionError;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_MY_USERNAME;
+import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
-public class SampleChatActivity extends AppCompatActivity implements View.OnClickListener {
+public class SampleChatActivity extends BaseActivity implements View.OnClickListener {
 
     private String TAG = SampleChatActivity.class.getSimpleName();
 
@@ -61,8 +63,6 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
 
     //RoomDatabase
     private MessageViewModel mVM;
-
-    //Manager
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -220,4 +220,5 @@ public class SampleChatActivity extends AppCompatActivity implements View.OnClic
             e.printStackTrace();
         }
     }
+
 }
