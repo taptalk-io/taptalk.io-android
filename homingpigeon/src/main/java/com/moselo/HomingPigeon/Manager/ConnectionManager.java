@@ -92,6 +92,7 @@ public class ConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
+                connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsDisconnected);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -100,6 +101,7 @@ public class ConnectionManager {
 
             @Override
             public void onError(Exception ex) {
+                connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnectionError);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -150,7 +152,7 @@ public class ConnectionManager {
     }
 
     public void reconnect() {
-        if (ConnectionStatus.DISCONNECTED != connectionStatus) {
+        if (ConnectionStatus.DISCONNECTED == connectionStatus) {
             mWebSocketClient.reconnect();
             connectionStatus = ConnectionStatus.CONNECTING;
         }
