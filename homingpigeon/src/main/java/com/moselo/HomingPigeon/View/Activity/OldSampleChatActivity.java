@@ -205,7 +205,7 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
 
     private void initHelper() {
         chatManager = ChatManager.getInstance();
-        chatManager.setChatListener(new HomingPigeonChatListener() {
+        chatManager.addChatListener(new HomingPigeonChatListener() {
             @Override
             public void onNewTextMessage(MessageModel message) {
                 addMessage(message);

@@ -1,76 +1,69 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Listener.HomingPigeonNetworkListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
-import com.moselo.HomingPigeon.Model.EmitModel;
-import com.moselo.HomingPigeon.Model.MessageModel;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnecting;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
 
 public class ConnectionManager {
 
     private static ConnectionManager instance;
-    private WebSocketClient mWebSocketClient;
+    private WebSocketClient webSocketClient;
     private String webSocketEndpoint = "ws://35.198.219.49:8080/ws";
-    //    private String webSocketEndpoint = "ws://echo.websocket.org";
+//    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
-    private HomingPigeonSocketListener listener;
+    private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
+    private List<HomingPigeonSocketListener> socketListeners;
 
     public enum ConnectionStatus {
         CONNECTING, CONNECTED, DISCONNECTED
     }
 
-    private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
-
-
     public static ConnectionManager getInstance() {
-        if (null == instance) {
-            instance = new ConnectionManager();
-        }
-
-        return instance;
+        return instance == null ? (instance = new ConnectionManager()) : instance;
     }
 
     public ConnectionManager() {
         try {
-
             webSocketUri = new URI(webSocketEndpoint);
             initWebSocketClient(webSocketUri);
-
+            initNetworkListener();
+            socketListeners = new ArrayList<>();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
     private void initWebSocketClient(URI webSocketUri) {
-
-        mWebSocketClient = new WebSocketClient(webSocketUri) {
+        webSocketClient = new WebSocketClient(webSocketUri) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 connectionStatus = ConnectionStatus.CONNECTED;
+                Log.e("]]]]", "onOpen: " + connectionStatus);
                 if (null != HomingPigeon.appContext) {
-                    Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnecting);
+                    Intent intent = new Intent(kIsConnecting);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
             }
@@ -84,7 +77,10 @@ public class ConnectionManager {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
                 try {
                     Map<String, Object> response = new ObjectMapper().readValue(tempMessage, HashMap.class);
-                    listener.onNewMessage(response.get("eventName").toString(), tempMessage);
+                    if (null != socketListeners && !socketListeners.isEmpty()) {
+                        for (HomingPigeonSocketListener listener : socketListeners)
+                            listener.onNewMessage(response.get("eventName").toString(), tempMessage);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -93,8 +89,9 @@ public class ConnectionManager {
             @Override
             public void onClose(int code, String reason, boolean remote) {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
+                Log.e("]]]]", "onClose: " + connectionStatus);
                 if (null != HomingPigeon.appContext) {
-                    Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsDisconnected);
+                    Intent intent = new Intent(kIsDisconnected);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
             }
@@ -102,6 +99,7 @@ public class ConnectionManager {
             @Override
             public void onError(Exception ex) {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
+                Log.e("]]]]", "onError: " + connectionStatus);
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnectionError);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -111,6 +109,8 @@ public class ConnectionManager {
             @Override
             public void reconnect() {
                 super.reconnect();
+                connectionStatus = ConnectionStatus.CONNECTING;
+                Log.e("]]]]", "reconnect: " + connectionStatus);
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsReconnect);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
@@ -119,42 +119,87 @@ public class ConnectionManager {
         };
     }
 
-    public void setSocketListener(HomingPigeonSocketListener listener) {
-        if (null != this.listener) {
-            this.listener = null;
-        }
-        this.listener = listener;
+    private void initNetworkListener() {
+        HomingPigeonNetworkListener networkListener = new HomingPigeonNetworkListener() {
+            @Override
+            public void onNetworkAvailable() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ConnectionStatus.DISCONNECTED == connectionStatus/* && HomingPigeon.isForeground*/) {
+                            Log.e("]]]]", "onNetworkAvailable: connect()");
+                            connect();
+                        }
+                        else if (ConnectionStatus.CONNECTING == connectionStatus) {
+                            close();
+                            connect();
+                        }
+                    }
+                }, 200L);
+
+            }
+        };
+        NetworkStateManager.getInstance().addNetworkListener(networkListener);
+    }
+
+    public void addSocketListener(HomingPigeonSocketListener listener) {
+        socketListeners.add(listener);
+    }
+
+    public void removeSocketListener(HomingPigeonSocketListener listener) {
+        socketListeners.remove(listener);
+    }
+
+    public void removeSocketListenerAt(int index) {
+        socketListeners.remove(index);
+    }
+
+    public void clearSocketListener() {
+        socketListeners.clear();
     }
 
     public void sendEmit(String messageString) {
-        if (mWebSocketClient.isOpen()) {
-            mWebSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
+        if (webSocketClient.isOpen()) {
+            webSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
         }
     }
 
     public void connect() {
-        if (ConnectionStatus.DISCONNECTED == connectionStatus) {
-            mWebSocketClient.connect();
-            connectionStatus = ConnectionStatus.CONNECTING;
+        if (ConnectionStatus.DISCONNECTED == connectionStatus &&
+                NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)) {
+            try {
+                connectionStatus = ConnectionStatus.CONNECTING;
+                webSocketClient.connect();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void close() {
-        if (ConnectionStatus.CONNECTED == connectionStatus
-                || ConnectionStatus.CONNECTING == connectionStatus) {
-            mWebSocketClient.close();
-            connectionStatus = ConnectionStatus.DISCONNECTED;
+        if (ConnectionStatus.CONNECTED == connectionStatus ||
+                ConnectionStatus.CONNECTING == connectionStatus) {
+            try {
+                connectionStatus = ConnectionStatus.DISCONNECTED;
+                webSocketClient.close();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void reconnect() {
+        if (ConnectionStatus.DISCONNECTED == connectionStatus) {
+            try {
+                connectionStatus = ConnectionStatus.CONNECTING;
+                webSocketClient.reconnect();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;
-    }
-
-    public void reconnect() {
-        if (ConnectionStatus.DISCONNECTED == connectionStatus) {
-            mWebSocketClient.reconnect();
-            connectionStatus = ConnectionStatus.CONNECTING;
-        }
     }
 }

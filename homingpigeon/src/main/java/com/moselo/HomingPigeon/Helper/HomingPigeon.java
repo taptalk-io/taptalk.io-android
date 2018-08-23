@@ -5,16 +5,14 @@ import android.content.Context;
 import android.util.Log;
 
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
+import com.moselo.HomingPigeon.Manager.NetworkStateManager;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
     public static boolean isForeground = true;
 
     public static HomingPigeon init(Context context){
-        if (null == homingPigeon)
-            homingPigeon = new HomingPigeon(context);
-
-        return homingPigeon;
+        return homingPigeon == null ? (homingPigeon = new HomingPigeon(context)) : homingPigeon;
     }
 
     public HomingPigeon(Context appContext) {
@@ -24,6 +22,7 @@ public class HomingPigeon {
             public void onAppGotoForeground() {
                 Log.e(HomingPigeon.class.getSimpleName(), "onAppGotoForeground: connect" );
                 ConnectionManager.getInstance().connect();
+                NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
                 isForeground = true;
             }
 
@@ -31,6 +30,7 @@ public class HomingPigeon {
             public void onAppGotoBackground() {
                 Log.e(HomingPigeon.class.getSimpleName(), "onAppGotoForeground: disconnect" );
                 ConnectionManager.getInstance().close();
+                NetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
                 isForeground = false;
             }
         });

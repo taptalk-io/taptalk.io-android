@@ -188,7 +188,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     private void initHelper() {
-        ChatManager.getInstance().setChatListener(new HomingPigeonChatListener() {
+        ChatManager.getInstance().addChatListener(new HomingPigeonChatListener() {
             @Override
             public void onNewTextMessage(final MessageModel message) {
                 try {

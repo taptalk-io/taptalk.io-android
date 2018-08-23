@@ -10,6 +10,7 @@ import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
+import com.moselo.HomingPigeon.Manager.NetworkStateManager;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnectionError;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
@@ -31,7 +32,7 @@ public class BaseActivity extends AppCompatActivity {
                     ConnectionManager.getInstance().reconnect();
                     break;
                 case kIsDisconnected:
-                    if (HomingPigeon.isForeground)
+                    if (HomingPigeon.isForeground && NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext))
                         ConnectionManager.getInstance().reconnect();
                     break;
 

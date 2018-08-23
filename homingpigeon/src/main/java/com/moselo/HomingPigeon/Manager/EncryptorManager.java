@@ -20,10 +20,7 @@ public class EncryptorManager {
     private static EncryptorManager instance;
 
     public static EncryptorManager getInstance() {
-        if (null == instance) {
-            instance =  new EncryptorManager();
-        }
-        return instance;
+        return instance == null ? (instance = new EncryptorManager()) : instance;
     }
 
     public EncryptorManager() {

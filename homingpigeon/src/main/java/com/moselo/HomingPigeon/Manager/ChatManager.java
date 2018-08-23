@@ -1,8 +1,5 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -13,11 +10,9 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.security.GeneralSecurityException;
-import java.util.logging.Handler;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -34,11 +29,9 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSo
 public class ChatManager {
 
     private static ChatManager instance;
-    private HomingPigeonChatListener chatListener;
+    private List<HomingPigeonChatListener> chatListeners;
 
-    //untuk define socket listener
-    HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
-
+    private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
         public void onNewMessage(String eventName, String emitData) {
             switch (eventName) {
@@ -49,7 +42,10 @@ public class ChatManager {
                 case kSocketNewMessage:
                     EmitModel<MessageModel> tempObject = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
-                    if (null != chatListener) chatListener.onNewTextMessage(tempObject.getData());
+                    if (null != chatListeners && !chatListeners.isEmpty()) {
+                        for (HomingPigeonChatListener chatListener : chatListeners)
+                            chatListener.onNewTextMessage(tempObject.getData());
+                    }
                     break;
                 case kSocketUpdateMessage:
                     break;
@@ -72,20 +68,28 @@ public class ChatManager {
     };
 
     public static ChatManager getInstance() {
-        if (null == instance) {
-            instance = new ChatManager();
-        }
-        return instance;
+        return instance == null ? (instance = new ChatManager()) : instance;
     }
 
     public ChatManager() {
-        ConnectionManager.getInstance().setSocketListener(socketListener);
+        ConnectionManager.getInstance().addSocketListener(socketListener);
+        chatListeners = new ArrayList<>();
     }
 
-    public void setChatListener(HomingPigeonChatListener chatListener) {
-        if (null != this.chatListener)
-            this.chatListener = null;
-        this.chatListener = chatListener;
+    public void addChatListener(HomingPigeonChatListener chatListener) {
+        chatListeners.add(chatListener);
+    }
+
+    public void removeChatListener(HomingPigeonChatListener chatListener) {
+        chatListeners.remove(chatListener);
+    }
+
+    public void removeChatListenerAt(int index) {
+        chatListeners.remove(index);
+    }
+
+    public void clearChatListener() {
+        chatListeners.clear();
     }
 
     public void sendTextMessage(String messageText, String roomID, UserModel userModel) {
@@ -96,7 +100,7 @@ public class ChatManager {
             Integer length = messageText.length();
             for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
                 String substr = Utils.mySubString(messageText, startIndex, characterLimit);
-                MessageModel messageModel = null;
+                MessageModel messageModel;
                 try {
                     messageModel = MessageModel.BuilderEncrypt(substr, roomModel
                             , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
@@ -107,10 +111,10 @@ public class ChatManager {
                 }
             }
         } else {
-            MessageModel messageModel = null;
+            MessageModel messageModel;
             try {
-                messageModel = MessageModel.BuilderEncrypt(messageText, roomModel
-                        , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
+                messageModel = MessageModel.BuilderEncrypt(messageText, roomModel,
+                        DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
                 EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
                 sendMessage(Utils.getInstance().toJsonString(emitModel));
             } catch (GeneralSecurityException e) {
