@@ -9,16 +9,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.TimeAgo;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.View.Helper.Const.*;
@@ -85,6 +89,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
     public class MessageHolder extends RecyclerView.ViewHolder {
         private ConstraintLayout clBubble;
+        private LinearLayout llMessageStatus;
         private TextView tvUsername, tvMessage, tvTimestamp, tvStatus;
         private MessageModel item;
 
@@ -92,6 +97,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             super(itemView);
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
+            llMessageStatus = itemView.findViewById(R.id.ll_message_status);
             tvUsername = itemView.findViewById(R.id.tv_username);
             tvMessage = itemView.findViewById(R.id.tv_message);
             tvTimestamp = itemView.findViewById(R.id.tv_timestamp);
@@ -101,6 +107,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         public void onBind(int position) {
             item = getItemAt(position);
             randomColors = itemView.getContext().getResources().getIntArray(R.array.random_colors);
+            SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
             if (getItemViewType() == TYPE_BUBBLE_LEFT) {
                 tvUsername.setText(item.getUser().getName());
 //                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
@@ -109,8 +116,21 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 tvUsername.setVisibility(View.GONE);
             }
             tvMessage.setText(item.getMessage());
-            tvTimestamp.setText("00:00");
+            tvTimestamp.setText(timeSdf.format(item.getCreated()));
             tvStatus.setText("S");
+
+            llMessageStatus.setVisibility(View.GONE);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (llMessageStatus.getVisibility() == View.GONE) {
+                        llMessageStatus.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        llMessageStatus.setVisibility(View.GONE);
+                    }
+                }
+            });
         }
     }
 

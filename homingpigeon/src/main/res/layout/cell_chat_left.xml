@@ -17,7 +17,8 @@
         android:layout_gravity="start"
         android:background="@drawable/bg_chat_left"
         android:elevation="2dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:animateLayoutChanges="true">
 
         <TextView
             android:id="@+id/tv_username"
@@ -40,20 +41,39 @@
             android:textColor="#424242"
             app:layout_constraintTop_toBottomOf="@id/tv_username"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_timestamp"
+            app:layout_constraintBottom_toTopOf="@id/ll_message_status"
             tools:text="Text" />
+
+        <LinearLayout
+            android:id="@+id/ll_message_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/tv_message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
+            >
 
         <TextView
             android:id="@+id/tv_timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_gravity="end"
             android:textColor="#80424242"
             android:textSize="10sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_message"
-            app:layout_constraintStart_toStartOf="parent"
             tools:text="12:34" />
+
+            <TextView
+                android:id="@+id/tv_label_dash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_gravity="end"
+                android:text=" - "
+                android:textColor="#80424242"
+                android:textSize="10sp" />
 
         <TextView
             android:id="@+id/tv_status"
@@ -63,22 +83,9 @@
             android:layout_gravity="end"
             android:textColor="#80424242"
             android:textSize="10sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_message"
-            app:layout_constraintStart_toEndOf="@id/tv_label_dash"
             tools:text="R" />
 
-        <TextView
-            android:id="@+id/tv_label_dash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_gravity="end"
-            android:text=" - "
-            android:textColor="#80424242"
-            android:textSize="10sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_message"
-            app:layout_constraintStart_toEndOf="@id/tv_timestamp"
-            app:layout_constraintEnd_toStartOf="@id/tv_status" />
+        </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>
 

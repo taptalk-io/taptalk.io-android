@@ -97,8 +97,10 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         adapter = new MessageAdapter(this);
         adapter.setMessages(mVM.getMessageModels());
         llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        llm.setStackFromEnd(true);
         rvChatList.setAdapter(adapter);
         rvChatList.setLayoutManager(llm);
+        rvChatList.setHasFixedSize(false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             rvChatList.setOnScrollChangeListener(new View.OnScrollChangeListener() {
