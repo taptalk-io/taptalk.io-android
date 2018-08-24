@@ -1,5 +1,7 @@
 package com.moselo.HomingPigeon.Manager;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -93,6 +95,7 @@ public class ChatManager {
     }
 
     public void sendTextMessage(String messageText, String roomID, UserModel userModel) {
+        Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: "+messageText );
         RoomModel roomModel = RoomModel.Builder(roomID);
         Integer characterLimit = 1000;
         Integer startIndex;
