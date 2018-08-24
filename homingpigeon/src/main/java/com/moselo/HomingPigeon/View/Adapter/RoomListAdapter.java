@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
+import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -88,7 +89,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             tvAvatar.setBackgroundTintList(avatarTint);
             tvUsername.setText(userModel.getName());
             tvLastMessage.setText(item.getMessage());
-            tvLastMessageTime.setText("");
+            tvLastMessageTime.setText(TimeFormatter.formatClock(item.getCreated()));
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
