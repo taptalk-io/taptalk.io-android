@@ -13,16 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Helper.TimeAgo;
+import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.View.Helper.Const.*;
@@ -107,7 +105,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         public void onBind(int position) {
             item = getItemAt(position);
             randomColors = itemView.getContext().getResources().getIntArray(R.array.random_colors);
-            SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
             if (getItemViewType() == TYPE_BUBBLE_LEFT) {
                 tvUsername.setText(item.getUser().getName());
 //                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
@@ -116,7 +113,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 tvUsername.setVisibility(View.GONE);
             }
             tvMessage.setText(item.getMessage());
-            tvTimestamp.setText(timeSdf.format(item.getCreated()));
+            tvTimestamp.setText(TimeFormatter.formatClock(item.getCreated()));
             tvStatus.setText("S");
 
             llMessageStatus.setVisibility(View.GONE);

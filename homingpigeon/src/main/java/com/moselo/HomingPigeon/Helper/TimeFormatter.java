@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Fadhlan on 6/16/17.
  */
 
-public class TimeAgo {
+public class TimeFormatter {
     public static final List<Long> times = Arrays.asList(
             TimeUnit.DAYS.toMillis(365),
             TimeUnit.DAYS.toMillis(30),
@@ -35,14 +35,14 @@ public class TimeAgo {
         duration = Calendar.getInstance().getTimeInMillis() - past.getTimeInMillis();
 
         StringBuffer res = new StringBuffer();
-        for (int i = 0; i < TimeAgo.times.size(); i++) {
-            Long current = TimeAgo.times.get(i);
+        for (int i = 0; i < TimeFormatter.times.size(); i++) {
+            Long current = TimeFormatter.times.get(i);
             long temp = duration / current;
             if (temp > 0) {
-                if (TimeAgo.timesString.get(i).equals("second"))
+                if (TimeFormatter.timesString.get(i).equals("second"))
                     res.append("");
                 else {
-                    res.append(temp).append(" ").append(TimeAgo.timesString.get(i)).append(
+                    res.append(temp).append(" ").append(TimeFormatter.timesString.get(i)).append(
                             temp != 1 ? "s" : "").append(" ago");
                 }
                 break;
@@ -72,25 +72,25 @@ public class TimeAgo {
         if (timestamp == 0) {
             return "";
         } else if (timeGap <= midnightTimeGap) {
-            if (timeGap < TimeAgo.times.get(5)) {
+            if (timeGap < TimeFormatter.times.get(5)) {
                 if (type == TYPE_DEFAULT)
                     return "Just now";
                 else
                     return "Last Seen Recently";
-            } else if (timeGap < TimeAgo.times.get(4)) {
-                long numberOfMinutes = timeGap / TimeAgo.times.get(5);
+            } else if (timeGap < TimeFormatter.times.get(4)) {
+                long numberOfMinutes = timeGap / TimeFormatter.times.get(5);
                 if (timeGap < TimeUnit.MINUTES.toMillis(2))
                     return numberOfMinutes + " minute ago";
                 else
                     return numberOfMinutes + " minutes ago";
             } else {
-                long numberOfHour = timeGap / TimeAgo.times.get(4);
+                long numberOfHour = timeGap / TimeFormatter.times.get(4);
                 if (timeGap < TimeUnit.HOURS.toMillis(2))
                     return numberOfHour + " hour ago";
                 else
                     return numberOfHour + " hours ago";
             }
-        } else if (timeGap <= TimeAgo.times.get(3) + midnightTimeGap) {
+        } else if (timeGap <= TimeFormatter.times.get(3) + midnightTimeGap) {
             Date yesterdayTime = new Date(timestamp);
             SimpleDateFormat sdf = new SimpleDateFormat("HH : mm", Locale.ENGLISH);
             String time = sdf.format(yesterdayTime);
@@ -99,13 +99,13 @@ public class TimeAgo {
                 return "Yesterday at " + time;
             else
                 return "Last seen yesterday at " + time;
-        } else if (timeGap <= TimeAgo.times.get(3) * 6 + midnightTimeGap) {
-            long numberOfDays = timeGap / TimeAgo.times.get(3);
+        } else if (timeGap <= TimeFormatter.times.get(3) * 6 + midnightTimeGap) {
+            long numberOfDays = timeGap / TimeFormatter.times.get(3);
             if (timeGap < TimeUnit.DAYS.toMillis(2))
                 return numberOfDays + " day ago";
             else
                 return numberOfDays + " days ago";
-        } else if (timeGap <= TimeAgo.times.get(2)) {
+        } else if (timeGap <= TimeFormatter.times.get(2)) {
             if (type == TYPE_DEFAULT)
                 return "A week ago";
             else
@@ -126,5 +126,10 @@ public class TimeAgo {
 
     public static String durationString(long timestamp) {
         return durationString(timestamp, TYPE_DEFAULT);
+    }
+
+    public static String formatClock(long timestamp) {
+        SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        return timeSdf.format(timestamp);
     }
 }
