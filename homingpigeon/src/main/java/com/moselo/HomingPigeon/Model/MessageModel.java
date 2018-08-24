@@ -43,30 +43,29 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private int isSending;
     @Nullable @JsonProperty("isFailedSend") private int isFailedSend;
 
-    public MessageModel(String message, RoomModel room, int type, long created, UserModel user) {
-        this.message = message;
+    public MessageModel(String message, RoomModel room, int type, long created, UserModel user, int isSending) {
         localID = Utils.getInstance().generateRandomString(32);
+        this.message = message;
         this.room = room;
         this.type = type;
         this.created = created;
         this.user = user;
+        this.isSending = isSending;
     }
 
     public MessageModel() {
     }
 
     public static MessageModel Builder(String message, RoomModel room, int type, long created, UserModel user){
-        return new MessageModel(message, room, type, created, user);
+        return new MessageModel(message, room, type, created, user, 1);
     }
 
     public static MessageModel BuilderEncrypt(String message, RoomModel room, int type, long created, UserModel user) throws GeneralSecurityException {
-        Log.e(MessageModel.class.getSimpleName(), message );
-        return new MessageModel(EncryptorManager.getInstance().encrypt(message), room, type, created, user);
+        return new MessageModel(EncryptorManager.getInstance().encrypt(message), room, type, created, user, 1);
     }
 
     public static MessageModel BuilderDecrypt(String message, RoomModel room, int type, long created, UserModel user) throws GeneralSecurityException {
-        Log.e(MessageModel.class.getSimpleName(), message );
-        return new MessageModel(EncryptorManager.getInstance().decrypt(message), room, type, created, user);
+        return new MessageModel(EncryptorManager.getInstance().decrypt(message), room, type, created, user, 0);
     }
 
     @Nullable @JsonProperty("message")

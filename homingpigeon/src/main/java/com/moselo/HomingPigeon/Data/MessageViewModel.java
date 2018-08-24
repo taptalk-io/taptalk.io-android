@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,8 @@ public class MessageViewModel extends AndroidViewModel {
 
     private MessageRepository repository;
     private LiveData<List<MessageEntity>> allMessages;
-    private String username;
+    private UserModel myUserModel;
+    private String roomId;
     private int numUsers;
     private int unreadCount = 0;
     private boolean isConnected = false;
@@ -54,12 +56,20 @@ public class MessageViewModel extends AndroidViewModel {
         repository.insert(messageEntities);
     }
 
-    public String getUsername() {
-        return username;
+    public UserModel getMyUserModel() {
+        return myUserModel;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setMyUserModel(UserModel myUserModel) {
+        this.myUserModel = myUserModel;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 
     public int getNumUsers() {

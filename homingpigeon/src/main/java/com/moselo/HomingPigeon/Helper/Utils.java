@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.Helper;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -92,5 +93,14 @@ public class Utils {
      */
     public static String mySubString(String myString, int start, int length) {
         return myString.substring(start, Math.min(start + length, myString.length()));
+    }
+
+
+    /**
+     * converts Dp into Px
+     */
+    public static int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = HomingPigeon.appContext.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

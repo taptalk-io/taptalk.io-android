@@ -94,35 +94,92 @@ public class ChatManager {
         chatListeners.clear();
     }
 
-    public void sendTextMessage(String messageText, String roomID, UserModel userModel) {
-        Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: "+messageText );
-        RoomModel roomModel = RoomModel.Builder(roomID);
+    public MessageModel buildTextMessage(String message, String roomId, UserModel userModel) {
+        MessageModel messageModel;
+        RoomModel roomModel = RoomModel.Builder(roomId);
+        messageModel = MessageModel.Builder(
+                message,
+                roomModel,
+                DefaultConstant.MessageType.TYPE_TEXT,
+                System.currentTimeMillis(),
+                userModel);
+        return messageModel;
+    }
+
+    private MessageModel buildEncryptedTextMessage(String message, String roomId, UserModel userModel) {
+        MessageModel messageModel;
+        RoomModel roomModel = RoomModel.Builder(roomId);
+        try {
+            messageModel = MessageModel.BuilderEncrypt(
+                    message,
+                    roomModel,
+                    DefaultConstant.MessageType.TYPE_TEXT,
+                    System.currentTimeMillis(),
+                    userModel);
+            return messageModel;
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<MessageModel> buildEncryptedTextMessages(String message, String roomId, UserModel userModel) {
+        List<MessageModel> messageModels = new ArrayList<>();
         Integer characterLimit = 1000;
         Integer startIndex;
-        if (messageText.length() > characterLimit) {
-            Integer length = messageText.length();
+        Integer length = message.length();
+        if (length > characterLimit) {
             for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
-                String substr = Utils.mySubString(messageText, startIndex, characterLimit);
+                String substr = Utils.mySubString(message, startIndex, characterLimit);
                 MessageModel messageModel;
-                try {
-                    messageModel = MessageModel.BuilderEncrypt(substr, roomModel
-                            , DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
+                messageModel = buildEncryptedTextMessage(substr, roomId, userModel);
+                if (null != messageModel) messageModels.add(messageModel);
+            }
+        }
+        else {
+            MessageModel messageModel;
+            messageModel = buildEncryptedTextMessage(message, roomId, userModel);
+            messageModels.add(messageModel);
+        }
+        return messageModels;
+    }
+
+    public void sendTextMessage(String textMessage, String roomId, UserModel userModel) {
+        Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage);
+        Integer characterLimit = 1000;
+        Integer startIndex;
+        if (textMessage.length() > characterLimit) {
+            Integer length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
+                String substr = Utils.mySubString(textMessage, startIndex, characterLimit);
+                MessageModel messageModel;
+                messageModel = buildEncryptedTextMessage(substr, roomId, userModel);
+                if (null != messageModel) {
                     EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
                     sendMessage(Utils.getInstance().toJsonString(emitModel));
-                } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
                 }
             }
         } else {
             MessageModel messageModel;
-            try {
-                messageModel = MessageModel.BuilderEncrypt(messageText, roomModel,
-                        DefaultConstant.MessageType.TYPE_TEXT, System.currentTimeMillis(), userModel);
+            messageModel = buildEncryptedTextMessage(textMessage, roomId, userModel);
+            if (null != messageModel) {
                 EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
                 sendMessage(Utils.getInstance().toJsonString(emitModel));
-            } catch (GeneralSecurityException e) {
-                e.printStackTrace();
             }
+        }
+    }
+
+    public void sendTextMessage(MessageModel textMessage) {
+        Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage.getMessage());
+        EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, textMessage);
+        sendMessage(Utils.getInstance().toJsonString(emitModel));
+    }
+
+    public void sendTextMessage(List<MessageModel> textMessages) {
+        for (MessageModel textMessage : textMessages) {
+            Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage.getMessage());
+            EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, textMessage);
+            sendMessage(Utils.getInstance().toJsonString(emitModel));
         }
     }
 

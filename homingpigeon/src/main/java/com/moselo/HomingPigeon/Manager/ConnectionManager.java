@@ -32,7 +32,7 @@ public class ConnectionManager {
     private String TAG = ConnectionManager.class.getSimpleName();
     private static ConnectionManager instance;
     private WebSocketClient webSocketClient;
-    private String webSocketEndpoint = "wss://35.198.219.49:8080/wss";
+    private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon";
 //    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;

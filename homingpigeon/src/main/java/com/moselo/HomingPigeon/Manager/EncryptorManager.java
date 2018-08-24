@@ -1,15 +1,6 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-
 import com.moselo.HomingPigeon.Helper.AESCrypt;
-import com.moselo.HomingPigeon.Helper.AESCrypto.Interface.JsCallback;
-import com.moselo.HomingPigeon.Helper.AESCrypto.JsEncryptor;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Listener.HomingPigeonEncryptorListener;
 
 import java.security.GeneralSecurityException;
 

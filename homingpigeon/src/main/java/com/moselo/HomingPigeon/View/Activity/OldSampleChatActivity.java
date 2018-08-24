@@ -149,7 +149,7 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(MessageViewModel.class);
-        vm.setUsername(getIntent().getStringExtra(K_MY_USERNAME));
+//        vm.setUsername(getIntent().getStringExtra(K_MY_USERNAME));
         vm.getAllMessages().observe(this, new Observer<List<MessageEntity>>() {
             @Override
             public void onChanged(final List<MessageEntity> chatMessages) {
@@ -221,7 +221,7 @@ public class OldSampleChatActivity extends AppCompatActivity implements View.OnC
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(OldSampleChatActivity.this);
                 UserModel user = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
                 }, prefs.getString(DefaultConstant.K_USER, "{}"));
-                ChatManager.getInstance().sendTextMessage(message, roomID, user);
+//                ChatManager.getInstance().sendTextMessage(message, roomID, user);
                 etChat.setText("");
             }
         } catch (Exception e) {

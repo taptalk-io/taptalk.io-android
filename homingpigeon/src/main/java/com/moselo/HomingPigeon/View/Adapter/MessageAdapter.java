@@ -88,10 +88,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     public class MessageHolder extends RecyclerView.ViewHolder {
         private ConstraintLayout clBubble;
         private LinearLayout llMessageStatus;
-        private TextView tvUsername, tvMessage, tvTimestamp, tvStatus;
+        private TextView tvUsername, tvMessage, tvTimestamp, tvStatus, tvDash;
         private MessageModel item;
 
-        public MessageHolder(View itemView) {
+        MessageHolder(View itemView) {
             super(itemView);
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
@@ -100,9 +100,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             tvMessage = itemView.findViewById(R.id.tv_message);
             tvTimestamp = itemView.findViewById(R.id.tv_timestamp);
             tvStatus = itemView.findViewById(R.id.tv_status);
+            tvDash = itemView.findViewById(R.id.tv_label_dash);
         }
 
-        public void onBind(int position) {
+        void onBind(int position) {
             item = getItemAt(position);
             randomColors = itemView.getContext().getResources().getIntArray(R.array.random_colors);
             if (getItemViewType() == TYPE_BUBBLE_LEFT) {
@@ -113,8 +114,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 tvUsername.setVisibility(View.GONE);
             }
             tvMessage.setText(item.getMessage());
-            tvTimestamp.setText(TimeFormatter.formatClock(item.getCreated()));
-            tvStatus.setText("S");
+            if (1 == item.getIsSending()) {
+                tvStatus.setText("Sending...");
+                tvDash.setText("");
+                tvTimestamp.setText("");
+                clBubble.setAlpha(0.5f);
+                clBubble.setElevation(0f);
+            }
+            else {
+                tvStatus.setText("S");
+                tvDash.setText(" - ");
+                tvTimestamp.setText(TimeFormatter.formatClock(item.getCreated()));
+                clBubble.setAlpha(1f);
+                clBubble.setElevation((float) Utils.getInstance().dpToPx(2));
+            }
 
             llMessageStatus.setVisibility(View.GONE);
             itemView.setOnClickListener(new View.OnClickListener() {
