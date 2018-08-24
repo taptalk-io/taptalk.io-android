@@ -3,13 +3,18 @@ package com.moselo.HomingPigeon.Data;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
+import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MessageRepository {
 
     private MessageDao messageDao;
     private LiveData<List<MessageEntity>> allMessages;
+    private List<MessageEntity> allMessageList = new ArrayList<>();
 
     public MessageRepository(Application application) {
         MessageDatabase db = MessageDatabase.getDatabase(application);
@@ -19,6 +24,18 @@ public class MessageRepository {
 
     public LiveData<List<MessageEntity>> getAllMessages() {
         return allMessages;
+    }
+
+    public List<MessageEntity> getAllMessageList(final HomingPigeonGetChatListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                allMessageList = messageDao.getAllMessageList();
+                listener.onGetMessages(allMessageList);
+                Log.e(MessageRepository.class.getSimpleName(), "run: "+allMessageList.size() );
+            }
+        }).start();
+        return allMessageList;
     }
 
     public void insert (MessageEntity message) {

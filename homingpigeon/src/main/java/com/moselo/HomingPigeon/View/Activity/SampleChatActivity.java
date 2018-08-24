@@ -27,6 +27,7 @@ import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
@@ -46,7 +47,7 @@ import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
-public class SampleChatActivity extends BaseActivity implements View.OnClickListener {
+public class SampleChatActivity extends BaseActivity implements View.OnClickListener, HomingPigeonChatListener {
 
     private String TAG = SampleChatActivity.class.getSimpleName();
 
@@ -160,54 +161,40 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         mVM = ViewModelProviders.of(this).get(MessageViewModel.class);
         mVM.setUsername(getIntent().getStringExtra(K_MY_USERNAME));
 
-        mVM.getAllMessages().observe(this, new Observer<List<MessageEntity>>() {
+        mVM.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
-            public void onChanged(List<MessageEntity> messageEntities) {
-                try {
-                    if (0 == mVM.getMessageModels().size()) {
-                        List<MessageModel> models = new ArrayList<>();
-                        for (MessageEntity entity : messageEntities) {
-                            MessageModel model = MessageModel.BuilderDecrypt(entity.getMessage(),
-                                    Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
-                                    }, entity.getRoom()),
-                                    entity.getType(), entity.getCreated(),
-                                    Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                                    }, entity.getUser()));
-                            models.add(model);
-                        }
+            public void onGetMessages(List<MessageEntity> entities) {
+                final List<MessageModel> models = new ArrayList<>();
+                for (MessageEntity entity : entities) {
+                    try {
+                        MessageModel model = MessageModel.BuilderDecrypt(entity.getMessage(),
+                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
+                                }, entity.getRoom()),
+                                entity.getType(), entity.getCreated(),
+                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                                }, entity.getUser()));
+                        models.add(model);
                         mVM.setMessageModels(models);
-                        if (null != adapter){
-                            adapter.setMessages(models);
-                            rvChatList.scrollToPosition(0);
+                        if (null != adapter) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.setMessages(models);
+                                    rvChatList.scrollToPosition(0);
+                                }
+                            });
                         }
+
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
                     }
-                } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
-                    Log.e("><><><", "onChanged: ",e );
                 }
             }
         });
     }
 
     private void initHelper() {
-        ChatManager.getInstance().addChatListener(new HomingPigeonChatListener() {
-            @Override
-            public void onNewTextMessage(final MessageModel message) {
-                try {
-                    message.setMessage(EncryptorManager.getInstance().decrypt(message.getMessage()));
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.addMessage(message);
-                            rvChatList.scrollToPosition(0);
-                        }
-                    });
-                    addMessageToDatabase(message);
-                } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        ChatManager.getInstance().addChatListener(this);
     }
 
     private void addMessageToDatabase(MessageModel messageModel) {
@@ -223,4 +210,26 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ChatManager.getInstance().removeChatListener(this);
+    }
+
+    @Override
+    public void onNewTextMessage(final MessageModel message) {
+        try {
+            message.setMessage(EncryptorManager.getInstance().decrypt(message.getMessage()));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.addMessage(message);
+                    rvChatList.scrollToPosition(0);
+                }
+            });
+            addMessageToDatabase(message);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+    }
 }

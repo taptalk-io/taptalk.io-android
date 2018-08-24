@@ -20,7 +20,6 @@ public class HomingPigeon {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-                Log.e(HomingPigeon.class.getSimpleName(), "onAppGotoForeground: connect" );
                 ConnectionManager.getInstance().connect();
                 NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
                 isForeground = true;
@@ -28,7 +27,6 @@ public class HomingPigeon {
 
             @Override
             public void onAppGotoBackground() {
-                Log.e(HomingPigeon.class.getSimpleName(), "onAppGotoForeground: disconnect" );
                 ConnectionManager.getInstance().close();
                 NetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
                 isForeground = false;

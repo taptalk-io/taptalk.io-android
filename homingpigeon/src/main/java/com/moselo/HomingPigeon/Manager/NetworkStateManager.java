@@ -78,7 +78,6 @@ public class NetworkStateManager extends ConnectivityManager.NetworkCallback {
         super.onAvailable(network);
         if (!listeners.isEmpty()) {
             for (HomingPigeonNetworkListener listener : listeners) {
-                Log.e("]]]]", "onAvailable: ");
                 listener.onNetworkAvailable();
             }
         }

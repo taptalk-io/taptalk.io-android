@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
+import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Model.MessageModel;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class MessageViewModel extends AndroidViewModel {
     private boolean isTyping = false;
     private boolean isOnBottom;
     private List<MessageModel> messageModels = new ArrayList<>();
+    private List<MessageEntity> messageEntities = new ArrayList<>();
 
     public List<MessageModel> getMessageModels() {
         return messageModels;
@@ -43,7 +45,12 @@ public class MessageViewModel extends AndroidViewModel {
         repository.insert(messageEntity);
     }
 
+    public void getMessageEntities(HomingPigeonGetChatListener listener) {
+        messageEntities = repository.getAllMessageList(listener);
+    }
+
     public void insert (List<MessageEntity> messageEntities){
+
         repository.insert(messageEntities);
     }
 
