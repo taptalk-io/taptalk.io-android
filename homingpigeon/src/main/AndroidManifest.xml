@@ -9,7 +9,6 @@
         <activity android:name=".View.Activity.SampleChatActivity" />
         <activity android:name=".View.Activity.SampleLoginActivity" />
         <activity android:name=".View.Activity.SampleRoomListActivity" />
-        <activity android:name=".View.Activity.OldSampleChatActivity" />
     </application>
 
 </manifest>

@@ -42,12 +42,13 @@ public class SampleRoomListActivity extends BaseActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         //Dummy Rooms
-        MessageEntity roomDummy1 = new MessageEntity(""
-                ,"{}"
-                ,1
-                ,"LastMessage"
-                ,System.currentTimeMillis()/1000
-                ,prefs.getString(K_USER,"{}"));
+        MessageEntity roomDummy1 = new MessageEntity(
+                "", "",
+                "{}",
+                1,
+                "LastMessage",
+                System.currentTimeMillis()/1000,
+                prefs.getString(K_USER,"{}"));
         roomList.add(roomDummy1);
 
         adapter = new RoomListAdapter(roomList, getIntent().getStringExtra(Const.K_MY_USERNAME));

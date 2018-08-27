@@ -33,7 +33,7 @@ public class UserModel {
     @Nullable @JsonProperty("isPermit") private Boolean isPermit;
     @Nullable @JsonProperty("isFriend") private Boolean isFriend;
     @Nullable @JsonProperty("userType") private String userType;
-    @Nullable @JsonProperty("lastLogin") private Integer lastLogin;
+    @Nullable @JsonProperty("lastLogin") private Long lastLogin;
 
     public UserModel(String userID, String name) {
         this.userID = userID;
@@ -148,12 +148,12 @@ public class UserModel {
     }
 
     @Nullable @JsonProperty("lastLogin")
-    public Integer getLastLogin() {
+    public Long getLastLogin() {
         return lastLogin;
     }
 
     @JsonProperty("lastLogin")
-    public void setLastLogin(@Nullable Integer lastLogin) {
+    public void setLastLogin(@Nullable Long lastLogin) {
         this.lastLogin = lastLogin;
     }
 }

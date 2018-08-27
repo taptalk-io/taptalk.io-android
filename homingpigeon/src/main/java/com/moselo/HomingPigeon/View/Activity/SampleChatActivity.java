@@ -102,6 +102,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 for (MessageEntity entity : entities) {
                     try {
                         MessageModel model = MessageModel.BuilderDecrypt(
+                                entity.getLocalID(),
                                 entity.getMessage(),
                                 Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {}, entity.getRoom()),
                                 entity.getType(),
@@ -202,7 +203,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     private void addNewTextMessage(final MessageModel newMessage) {
         try {
-            newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage()));
+            newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalID()));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -241,10 +242,11 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private void addMessageToDatabase(MessageModel messageModel) {
         try {
             mVM.insert(new MessageEntity(
+                    messageModel.getMessageID(),
                     messageModel.getLocalID(),
                     Utils.getInstance().toJsonString(messageModel.getRoom()),
                     messageModel.getType(),
-                    EncryptorManager.getInstance().encrypt(messageModel.getMessage()),
+                    EncryptorManager.getInstance().encrypt(messageModel.getMessage(), messageModel.getLocalID()),
                     messageModel.getCreated(),
                     Utils.getInstance().toJsonString(messageModel.getUser())
             ));
