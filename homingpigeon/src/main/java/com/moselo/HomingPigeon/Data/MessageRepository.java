@@ -32,7 +32,6 @@ public class MessageRepository {
             public void run() {
                 allMessageList = messageDao.getAllMessageList();
                 listener.onGetMessages(allMessageList);
-                Log.e(MessageRepository.class.getSimpleName(), "run: "+allMessageList.size() );
             }
         }).start();
         return allMessageList;
