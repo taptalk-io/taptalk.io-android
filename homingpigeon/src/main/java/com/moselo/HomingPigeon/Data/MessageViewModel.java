@@ -51,6 +51,10 @@ public class MessageViewModel extends AndroidViewModel {
         messageEntities = repository.getAllMessageList(listener);
     }
 
+    public void getMessageByTimestamp(HomingPigeonGetChatListener listener, long lastTimestamp){
+        repository.getMessageTimestamp(listener, lastTimestamp);
+    }
+
     public void insert (List<MessageEntity> messageEntities){
 
         repository.insert(messageEntities);

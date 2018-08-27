@@ -37,6 +37,17 @@ public class MessageRepository {
         return allMessageList;
     }
 
+    public void getMessageTimestamp(final HomingPigeonGetChatListener listener, final long lastTimestamp){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp);
+                listener.onGetMessages(entities);
+                Log.e(MessageRepository.class.getSimpleName(), "run: "+entities.size() );
+            }
+        }).start();
+    }
+
     public void insert (MessageEntity message) {
         new InsertAsyncTask(messageDao).execute(message);
     }
