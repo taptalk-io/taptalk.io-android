@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon;
+package com.moselo.SampleApps;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.moselo.HomingPigeon", appContext.getPackageName());
+        assertEquals("com.moselo.HomingPigeon.jks", appContext.getPackageName());
     }
 }

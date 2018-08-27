@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    def globalConfig = rootProject.extensions.getByName("ext")
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.moselo.Homing_Pigeon"
@@ -12,8 +13,40 @@ android {
     }
 
     signingConfigs{
-        release{
+        release {
+            try {
+                def Properties props = new Properties()
+                def propFile = file(globalConfig.signingProps)
+                if (propFile.canRead()) {
+                    props.load(new FileInputStream(propFile))
 
+                    if (props != null
+                            && props.containsKey(globalConfig.keystoreFileName)
+                            && props.containsKey(globalConfig.keystorePasswordName)
+                            && props.containsKey(globalConfig.keyAliasName)
+                            && props.containsKey(globalConfig.keyPasswordName)) {
+
+                        def keystoreFile = file(props[globalConfig.keystoreFileName])
+                        if (keystoreFile.canRead()) {
+                            storeFile keystoreFile
+                            storePassword props[globalConfig.keystorePasswordName]
+                            keyAlias props[globalConfig.keyAliasName]
+                            keyPassword props[globalConfig.keyPasswordName]
+                        } else {
+                            println("[GRADLE BUILD ERR]: Keystore file not found: " + props[globalConfig.keystoreFileName])
+                            android.buildTypes.release.signingConfig = null
+                        }
+                    } else {
+                        println("[GRADLE BUILD ERR]: File signing.properties found but some entries missing")
+                        android.buildTypes.release.signingConfig = null
+                    }
+                } else {
+                    println("[GRADLE BUILD ERR]: File signing.properties not found")
+                    android.buildTypes.release.signingConfig = null
+                }
+            } catch (ex) {
+                throw new InvalidUserDataException("[GRADLE BUILD ERR]: Signing FAILED. Check signing config." + ex.message)
+            }
         }
     }
 

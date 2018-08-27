@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon;
+package com.moselo.SampleApps;
 
 import android.app.Application;
 
