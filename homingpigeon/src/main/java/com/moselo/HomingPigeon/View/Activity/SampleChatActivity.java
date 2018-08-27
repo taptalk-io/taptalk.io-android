@@ -104,7 +104,8 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                         MessageModel model = MessageModel.BuilderDecrypt(
                                 entity.getMessage(),
                                 Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {}, entity.getRoom()),
-                                entity.getType(), entity.getCreated(),
+                                entity.getType(),
+                                entity.getCreated(),
                                 Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()));
                         models.add(model);
                         mVM.setMessageModels(models);

@@ -124,19 +124,10 @@ public class ConnectionManager {
         HomingPigeonNetworkListener networkListener = new HomingPigeonNetworkListener() {
             @Override
             public void onNetworkAvailable() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (ConnectionStatus.DISCONNECTED == connectionStatus) {
-                            connect();
-                        }
-                        else if (ConnectionStatus.CONNECTING == connectionStatus) {
-                            close();
-                            connect();
-                        }
-                    }
-                }, 200L);
-
+                if (ConnectionStatus.CONNECTING == connectionStatus ||
+                        ConnectionStatus.DISCONNECTED == connectionStatus) {
+                    reconnect();
+                }
             }
         };
         NetworkStateManager.getInstance().addNetworkListener(networkListener);
