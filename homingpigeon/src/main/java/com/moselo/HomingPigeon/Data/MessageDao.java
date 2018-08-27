@@ -22,4 +22,6 @@ public interface MessageDao {
 
     @Query("select * from message_table order by Created desc")
     List<MessageEntity> getAllMessageList();
+
+    
 }
