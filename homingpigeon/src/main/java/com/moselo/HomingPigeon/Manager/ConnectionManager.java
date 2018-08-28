@@ -1,7 +1,6 @@
 package com.moselo.HomingPigeon.Manager;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -40,7 +39,8 @@ public class ConnectionManager {
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private List<HomingPigeonSocketListener> socketListeners;
 
-    private final int RECONNECT_TIMER = 500;
+    private int reconnectAttempt;
+    private final long RECONNECT_DELAY = 500;
 
     public enum ConnectionStatus {
         CONNECTING, CONNECTED, DISCONNECTED
@@ -56,6 +56,7 @@ public class ConnectionManager {
             initWebSocketClient(webSocketUri);
             initNetworkListener();
             socketListeners = new ArrayList<>();
+            reconnectAttempt = 0;
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -71,6 +72,7 @@ public class ConnectionManager {
                     Intent intent = new Intent(kIsConnecting);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
+                reconnectAttempt = 0;
             }
 
             @Override
@@ -186,6 +188,10 @@ public class ConnectionManager {
     public void reconnect() {
         if (ConnectionStatus.DISCONNECTED == connectionStatus) {
             connectionStatus = ConnectionStatus.CONNECTING;
+            if (reconnectAttempt < 120) reconnectAttempt++;
+            long delay = RECONNECT_DELAY * (long) reconnectAttempt;
+            Log.e(TAG, "reconnectAttempt: " + reconnectAttempt);
+            Log.e(TAG, "delay: " + delay);
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -195,7 +201,7 @@ public class ConnectionManager {
                         e.printStackTrace();
                     }
                 }
-            }, RECONNECT_TIMER);
+            }, delay);
         }
     }
 
