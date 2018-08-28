@@ -109,20 +109,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             public void onGetMessages(List<MessageEntity> entities) {
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
-                    try {
-                        MessageModel model = MessageModel.BuilderDecrypt(
-                                entity.getLocalID(),
-                                entity.getMessage(),
-                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
-                                }, entity.getRoom()),
-                                entity.getType(),
-                                entity.getCreated(),
-                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                                }, entity.getUser()));
-                        models.add(model);
-                    } catch (GeneralSecurityException e) {
-                        e.printStackTrace();
-                    }
+                    models.add(convertToModel(entity));
                 }
                 mVM.setMessageModels(models);
                 if (mVM.getMessageModels().size() > 0) {
@@ -172,20 +159,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             public void onGetMessages(List<MessageEntity> entities) {
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
-                    try {
-                        MessageModel model = MessageModel.BuilderDecrypt(
-                                entity.getLocalID(),
-                                entity.getMessage(),
-                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
-                                }, entity.getRoom()),
-                                entity.getType(),
-                                entity.getCreated(),
-                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                                }, entity.getUser()));
-                        models.add(model);
-                    } catch (GeneralSecurityException e) {
-                        e.printStackTrace();
-                    }
+                    models.add(convertToModel(entity));
                 }
 
                 mVM.setMessageModels(models);
@@ -298,25 +272,50 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     }
                 }
             });
-            addMessageToDatabase(newMessage);
+            mVM.insert(convertToEntity(newMessage));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
     }
 
-    private void addMessageToDatabase(MessageModel messageModel) {
+    private MessageModel convertToModel(MessageEntity entity) {
+        MessageModel model = new MessageModel();
         try {
-            mVM.insert(new MessageEntity(
-                    messageModel.getMessageID(),
-                    messageModel.getLocalID(),
-                    Utils.getInstance().toJsonString(messageModel.getRoom()),
-                    messageModel.getType(),
-                    EncryptorManager.getInstance().encrypt(messageModel.getMessage(), messageModel.getLocalID()),
-                    messageModel.getCreated(),
-                    Utils.getInstance().toJsonString(messageModel.getUser())
-            ));
+            model = MessageModel.BuilderDecrypt(
+                    entity.getLocalID(),
+                    entity.getMessage(),
+                    Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {}, entity.getRoom()),
+                    entity.getType(),
+                    entity.getCreated(),
+                    Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()),
+                    entity.getDeleted(),
+                    entity.getIsSending(),
+                    entity.getIsFailedSend());
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
+        return model;
+    }
+
+    private MessageEntity convertToEntity(MessageModel model) {
+        MessageEntity entity = new MessageEntity();
+        try {
+            entity = new MessageEntity(
+                    model.getMessageID(),
+                    model.getLocalID(),
+                    Utils.getInstance().toJsonString(model.getRoom()),
+                    model.getType(),
+                    EncryptorManager.getInstance().encrypt(model.getMessage(), model.getLocalID()),
+                    model.getCreated(),
+                    Utils.getInstance().toJsonString(model.getUser()),
+                    Utils.getInstance().toJsonString(model.getDeliveredTo()),
+                    Utils.getInstance().toJsonString(model.getSeenBy()),
+                    model.getDeleted(),
+                    model.getIsSending(),
+                    model.getIsFailedSend());
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        return entity;
     }
 }

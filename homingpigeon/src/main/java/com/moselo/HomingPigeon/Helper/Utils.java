@@ -79,7 +79,7 @@ public class Utils {
     }
 
     /**
-     * for generate roomID
+     * for generating roomID
      */
     public String arrangeRoomId(String userId, String friendId) {
         int myId = (null != userId && !"null".equals(userId)) ? Integer.parseInt(userId) : 0;
@@ -88,10 +88,9 @@ public class Utils {
     }
 
     /**
-     * substring for chat above 100 char
-     *
+     * substring for chat above char limit
      */
-    public static String mySubString(String myString, int start, int length) {
+    public String mySubString(String myString, int start, int length) {
         return myString.substring(start, Math.min(start + length, myString.length()));
     }
 
@@ -99,7 +98,7 @@ public class Utils {
     /**
      * converts Dp into Px
      */
-    public static int dpToPx(int dp) {
+    public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = HomingPigeon.appContext.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }

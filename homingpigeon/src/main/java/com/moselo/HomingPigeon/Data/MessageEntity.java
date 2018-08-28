@@ -50,6 +50,11 @@ public class MessageEntity {
         this.isFailedSend = isFailedSend;
     }
 
+    @Ignore
+    public MessageEntity() {
+
+    }
+
     @Nullable
     public String getMessageID() {
         return messageID;

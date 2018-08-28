@@ -44,31 +44,33 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private Integer isSending;
     @Nullable @JsonProperty("isFailedSend") private Integer isFailedSend;
 
-    public MessageModel(@NonNull String localID, String message, RoomModel room, int type, long created, UserModel user, int isSending) {
+    public MessageModel(@NonNull String localID, String message, RoomModel room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) {
         this.localID = localID;
         this.message = message;
         this.room = room;
         this.type = type;
         this.created = created;
         this.user = user;
+        this.deleted = deleted;
         this.isSending = isSending;
+        this.isFailedSend = isFailedSend;
     }
 
     public MessageModel() {
     }
 
-    public static MessageModel Builder(String message, RoomModel room, int type, long created, UserModel user){
+    public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user){
         String localID = Utils.getInstance().generateRandomString(32);
-        return new MessageModel(localID, message, room, type, created, user, 1);
+        return new MessageModel(localID, message, room, type, created, user, 0, 1, 0);
     }
 
-    public static MessageModel BuilderEncrypt(String message, RoomModel room, int type, long created, UserModel user) throws GeneralSecurityException {
+    public static MessageModel BuilderEncrypt(String message, RoomModel room, Integer type, Long created, UserModel user) throws GeneralSecurityException {
         String localID = Utils.getInstance().generateRandomString(32);
-        return new MessageModel(localID, EncryptorManager.getInstance().encrypt(message, localID), room, type, created, user, 1);
+        return new MessageModel(localID, EncryptorManager.getInstance().encrypt(message, localID), room, type, created, user, 0, 1, 0);
     }
 
-    public static MessageModel BuilderDecrypt(String localID, String message, RoomModel room, int type, long created, UserModel user) throws GeneralSecurityException {
-        return new MessageModel(localID, EncryptorManager.getInstance().decrypt(message, localID), room, type, created, user, 0);
+    public static MessageModel BuilderDecrypt(String localID, String message, RoomModel room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) throws GeneralSecurityException {
+        return new MessageModel(localID, EncryptorManager.getInstance().decrypt(message, localID), room, type, created, user, deleted, isSending, isFailedSend);
     }
 
     @Nullable

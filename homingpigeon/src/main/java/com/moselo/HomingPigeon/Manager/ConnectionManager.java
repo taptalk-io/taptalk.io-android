@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnecting;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
@@ -37,6 +39,8 @@ public class ConnectionManager {
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private List<HomingPigeonSocketListener> socketListeners;
+
+    private final int RECONNECT_TIMER = 500;
 
     public enum ConnectionStatus {
         CONNECTING, CONNECTED, DISCONNECTED
@@ -181,12 +185,17 @@ public class ConnectionManager {
 
     public void reconnect() {
         if (ConnectionStatus.DISCONNECTED == connectionStatus) {
-            try {
-                connectionStatus = ConnectionStatus.CONNECTING;
-                webSocketClient.reconnect();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
+            connectionStatus = ConnectionStatus.CONNECTING;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        webSocketClient.reconnect();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, RECONNECT_TIMER);
         }
     }
 

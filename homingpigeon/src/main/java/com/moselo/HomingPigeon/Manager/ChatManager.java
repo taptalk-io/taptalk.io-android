@@ -130,7 +130,7 @@ public class ChatManager {
         Integer length = message.length();
         if (length > characterLimit) {
             for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
-                String substr = Utils.mySubString(message, startIndex, characterLimit);
+                String substr = Utils.getInstance().mySubString(message, startIndex, characterLimit);
                 MessageModel messageModel;
                 messageModel = buildEncryptedTextMessage(substr, roomId, userModel);
                 if (null != messageModel) messageModels.add(messageModel);
@@ -151,7 +151,7 @@ public class ChatManager {
         if (textMessage.length() > characterLimit) {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
-                String substr = Utils.mySubString(textMessage, startIndex, characterLimit);
+                String substr = Utils.getInstance().mySubString(textMessage, startIndex, characterLimit);
                 MessageModel messageModel;
                 messageModel = buildEncryptedTextMessage(substr, roomId, userModel);
                 if (null != messageModel) {
