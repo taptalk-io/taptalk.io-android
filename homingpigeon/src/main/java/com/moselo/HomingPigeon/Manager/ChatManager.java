@@ -39,6 +39,7 @@ public class ChatManager {
     private List<HomingPigeonChatListener> chatListeners;
     private String activeRoom;
     private UserModel activeUser;
+    private List<MessageModel> unsentMessageList = new ArrayList<>();
 
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
@@ -224,6 +225,55 @@ public class ChatManager {
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (HomingPigeonChatListener chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);
+        }
+    }
+
+    private void buildAndSendTextMessage(MessageModel messageModel) {
+        EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
+        sendMessage(Utils.getInstance().toJsonString(emitModel));
+        if (null != chatListeners && !chatListeners.isEmpty()) {
+            for (HomingPigeonChatListener chatListener : chatListeners)
+                chatListener.onSendTextMessage(messageModel);
+        }
+    }
+
+    /**
+     * add sendMessage to unsentList
+     */
+    public void addToUnsentList(MessageModel messageModel){
+        unsentMessageList.add(messageModel);
+    }
+
+    /**
+     * Remove send Message to unsentList
+     */
+    public void removeFromUnsentList(String localID){
+        for (MessageModel item : unsentMessageList){
+            if (localID.equals(item.getLocalId()))
+            {
+                unsentMessageList.remove(item);
+                break;
+            }
+        }
+    }
+
+    public int countUnsentMessage() {
+        return unsentMessageList.size();
+    }
+
+    /**
+     * Sending all unsent message
+     */
+    public void sendUnsentMessage(){
+        Log.e("ClarisaRio", "sendUnsentMessage: " );
+        List<MessageModel> tempUnsentList = new ArrayList<>(unsentMessageList);
+        for (MessageModel model : tempUnsentList){
+            try {
+                model.setMessage(EncryptorManager.getInstance().encrypt(model.getMessage(),model.getLocalId()));
+                buildAndSendTextMessage(model);
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
         }
     }
 

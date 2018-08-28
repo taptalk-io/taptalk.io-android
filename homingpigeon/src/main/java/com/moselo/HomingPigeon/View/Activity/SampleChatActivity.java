@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -103,6 +104,12 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onReceiveTextMessageInActiveRoom(final MessageModel message) {
         message.setIsSending(0);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChatManager.getInstance().removeFromUnsentList(message.getLocalId());
+            }
+        }).start();
         addNewTextMessage(message);
     }
 
@@ -178,7 +185,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 }
 
                 mVM.setMessageModels(models);
-                if (0 < mVM.getMessageModels().size()){
+                if (0 < mVM.getMessageModels().size()) {
                     lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
                 }
                 if (null != adapter) {
@@ -244,17 +251,12 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         if (!TextUtils.isEmpty(message)) {
             etChat.setText("");
             ChatManager.getInstance().sendTextMessage(message);
-//            List<MessageModel> messages = ChatManager.getInstance().buildEncryptedTextMessages(
-//                    message,
-//                    mVM.getRoomId(),
-//                    mVM.getMyUserModel());
-//            ChatManager.getInstance().sendTextMessage(messages);
-//            for (MessageModel messageModel : messages) addNewTextMessage(messageModel);
         }
     }
 
     private void addNewTextMessage(final MessageModel newMessage) {
         try {
+            Log.e("RioClarisa", newMessage.getMessage() );
             newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalId()));
             runOnUiThread(new Runnable() {
                 @Override
@@ -263,13 +265,16 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     boolean isMessageAdded = false;
                     int index = 0;
                     for (MessageModel messageModel : adapter.getItems()) {
-                        if (null != messageModel.getLocalId() && messageModel.getLocalId().equals(newMessage.getLocalId())) {
+                        if (messageModel.getLocalId().equals(newMessage.getLocalId())) {
                             adapter.setMessageAt(index, newMessage);
                             isMessageAdded = true;
                             break;
                         } else index++;
                     }
-                    if (!isMessageAdded) adapter.addMessage(newMessage);
+                    if (!isMessageAdded) {
+                        adapter.addMessage(newMessage);
+                        ChatManager.getInstance().addToUnsentList(newMessage);
+                    }
 
                     //Scroll recycler to bottom or show unread badge
                     if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
