@@ -16,7 +16,7 @@ public class MessageModel {
 
     @Nullable @JsonProperty("messageID") private String messageId;
     @NonNull @JsonProperty("localID") private String localId;
-    @JsonProperty("room") private String room;
+    @JsonProperty("roomID") private String room;
     @JsonProperty("type") private int type;
     @JsonProperty("message") private String message;
     @JsonProperty("created") private Long created;
