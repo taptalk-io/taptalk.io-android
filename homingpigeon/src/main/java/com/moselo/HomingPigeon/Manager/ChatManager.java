@@ -193,7 +193,6 @@ public class ChatManager {
      * sending text messages
      */
     public void sendTextMessage(String textMessage) {
-        Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage);
         Integer characterLimit = 1000;
         Integer startIndex;
         if (textMessage.length() > characterLimit) {
@@ -265,7 +264,6 @@ public class ChatManager {
      * Sending all unsent message
      */
     public void sendUnsentMessage(){
-        Log.e("ClarisaRio", "sendUnsentMessage: " );
         List<MessageModel> tempUnsentList = new ArrayList<>(unsentMessageList);
         for (MessageModel model : tempUnsentList){
             try {

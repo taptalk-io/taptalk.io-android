@@ -256,7 +256,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     private void addNewTextMessage(final MessageModel newMessage) {
         try {
-            Log.e("RioClarisa", newMessage.getMessage() );
             newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalId()));
             runOnUiThread(new Runnable() {
                 @Override
