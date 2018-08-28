@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.SampleChatActivity;
@@ -99,7 +100,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     intent.putExtra(K_MY_USERNAME, myUsername);
                     intent.putExtra(K_THEIR_USERNAME, userModel.getName());
                     intent.putExtra(K_COLOR, randomColor);
-                    intent.putExtra(K_ROOM_ID, Utils.getInstance()
+                    intent.putExtra(K_ROOM_ID, ChatManager.getInstance()
                             .arrangeRoomId(userID,"2"));
                     itemView.getContext().startActivity(intent);
                 }

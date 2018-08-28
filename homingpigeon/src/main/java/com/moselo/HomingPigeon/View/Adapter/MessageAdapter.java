@@ -114,7 +114,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 tvUsername.setVisibility(View.GONE);
             }
             tvMessage.setText(item.getMessage());
-            if (1 == item.getIsSending()) {
+            if (null != item.getIsSending() && 1 == item.getIsSending()) {
                 tvStatus.setText("Sending...");
                 tvDash.setText("");
                 tvTimestamp.setText("");

@@ -1,7 +1,6 @@
 package com.moselo.HomingPigeon.Manager;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -23,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnecting;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
@@ -38,6 +39,9 @@ public class ConnectionManager {
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private List<HomingPigeonSocketListener> socketListeners;
 
+    private int reconnectAttempt;
+    private final long RECONNECT_DELAY = 500;
+
     public enum ConnectionStatus {
         CONNECTING, CONNECTED, DISCONNECTED
     }
@@ -52,6 +56,7 @@ public class ConnectionManager {
             initWebSocketClient(webSocketUri);
             initNetworkListener();
             socketListeners = new ArrayList<>();
+            reconnectAttempt = 0;
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -67,6 +72,7 @@ public class ConnectionManager {
                     Intent intent = new Intent(kIsConnecting);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
+                reconnectAttempt = 0;
             }
 
             @Override
@@ -181,12 +187,19 @@ public class ConnectionManager {
 
     public void reconnect() {
         if (ConnectionStatus.DISCONNECTED == connectionStatus) {
-            try {
-                connectionStatus = ConnectionStatus.CONNECTING;
-                webSocketClient.reconnect();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
+            connectionStatus = ConnectionStatus.CONNECTING;
+            if (reconnectAttempt < 120) reconnectAttempt++;
+            long delay = RECONNECT_DELAY * (long) reconnectAttempt;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        webSocketClient.reconnect();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, delay);
         }
     }
 

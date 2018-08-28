@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
@@ -102,7 +101,7 @@ public class SampleLoginActivity extends BaseActivity {
 
     private void getUserID(String userID, String username){
         UserModel userModel = UserModel.Builder(userID, username);
-        DataManager.getInstance().saveUserModel(this, userModel);
+        DataManager.getInstance().saveActiveUser(this, userModel);
     }
 
     private void dismissKeyboard(Activity activity) {

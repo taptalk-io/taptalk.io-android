@@ -14,20 +14,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Data.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
-import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.RoomModel;
-import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
 
@@ -80,6 +76,18 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        ChatManager.getInstance().setActiveRoom(mVM.getRoomId());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ChatManager.getInstance().setActiveRoom("");
+    }
+
+    @Override
     public void onClick(View v) {
         int viewId = v.getId();
         if (viewId == R.id.iv_send) {
@@ -93,34 +101,31 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onNewTextMessage(final MessageModel message) {
+    public void onReceiveTextMessageInActiveRoom(final MessageModel message) {
         message.setIsSending(0);
+        addNewTextMessage(message);
+    }
+
+    @Override
+    public void onReceiveTextMessageInOtherRoom(MessageModel message) {
+        // TODO: 28 August 2018 PUSH NOTIFICATION & SAVE MESSAGE TO DATABASE
+    }
+
+    @Override
+    public void onSendTextMessage(MessageModel message) {
         addNewTextMessage(message);
     }
 
     private void initViewModel() {
         mVM = ViewModelProviders.of(this).get(ChatViewModel.class);
         mVM.setRoomId(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
-        mVM.setMyUserModel(DataManager.getInstance().getUserModel(this));
+        mVM.setMyUserModel(DataManager.getInstance().getActiveUser(this));
         mVM.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
-                    try {
-                        MessageModel model = MessageModel.BuilderDecrypt(
-                                entity.getLocalID(),
-                                entity.getMessage(),
-                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
-                                }, entity.getRoom()),
-                                entity.getType(),
-                                entity.getCreated(),
-                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                                }, entity.getUser()));
-                        models.add(model);
-                    } catch (GeneralSecurityException e) {
-                        e.printStackTrace();
-                    }
+                    models.add(ChatManager.getInstance().convertToModel(entity));
                 }
                 mVM.setMessageModels(models);
                 if (mVM.getMessageModels().size() > 0) {
@@ -169,20 +174,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             public void onGetMessages(List<MessageEntity> entities) {
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
-                    try {
-                        MessageModel model = MessageModel.BuilderDecrypt(
-                                entity.getLocalID(),
-                                entity.getMessage(),
-                                Utils.getInstance().fromJSON(new TypeReference<RoomModel>() {
-                                }, entity.getRoom()),
-                                entity.getType(),
-                                entity.getCreated(),
-                                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                                }, entity.getUser()));
-                        models.add(model);
-                    } catch (GeneralSecurityException e) {
-                        e.printStackTrace();
-                    }
+                    models.add(ChatManager.getInstance().convertToModel(entity));
                 }
 
                 mVM.setMessageModels(models);
@@ -251,18 +243,19 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         String message = etChat.getText().toString();
         if (!TextUtils.isEmpty(message)) {
             etChat.setText("");
-            List<MessageModel> messages = ChatManager.getInstance().buildEncryptedTextMessages(
-                    message,
-                    mVM.getRoomId(),
-                    mVM.getMyUserModel());
-            ChatManager.getInstance().sendTextMessage(messages);
-            for (MessageModel messageModel : messages) addNewTextMessage(messageModel);
+            ChatManager.getInstance().sendTextMessage(message);
+//            List<MessageModel> messages = ChatManager.getInstance().buildEncryptedTextMessages(
+//                    message,
+//                    mVM.getRoomId(),
+//                    mVM.getMyUserModel());
+//            ChatManager.getInstance().sendTextMessage(messages);
+//            for (MessageModel messageModel : messages) addNewTextMessage(messageModel);
         }
     }
 
     private void addNewTextMessage(final MessageModel newMessage) {
         try {
-            newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalID()));
+            newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalId()));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -270,7 +263,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     boolean isMessageAdded = false;
                     int index = 0;
                     for (MessageModel messageModel : adapter.getItems()) {
-                        if (null != messageModel.getLocalID() && messageModel.getLocalID().equals(newMessage.getLocalID())) {
+                        if (null != messageModel.getLocalId() && messageModel.getLocalId().equals(newMessage.getLocalId())) {
                             adapter.setMessageAt(index, newMessage);
                             isMessageAdded = true;
                             break;
@@ -280,7 +273,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
                     //Scroll recycler to bottom or show unread badge
                     if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
-                            .getUserModel(SampleChatActivity.this).getUserID()) ||
+                            .getActiveUser(SampleChatActivity.this).getUserID()) ||
                             mVM.isOnBottom())
                         rvChatList.scrollToPosition(0);
                     else {
@@ -290,23 +283,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     }
                 }
             });
-            addMessageToDatabase(newMessage);
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void addMessageToDatabase(MessageModel messageModel) {
-        try {
-            mVM.insert(new MessageEntity(
-                    messageModel.getMessageID(),
-                    messageModel.getLocalID(),
-                    Utils.getInstance().toJsonString(messageModel.getRoom()),
-                    messageModel.getType(),
-                    EncryptorManager.getInstance().encrypt(messageModel.getMessage(), messageModel.getLocalID()),
-                    messageModel.getCreated(),
-                    Utils.getInstance().toJsonString(messageModel.getUser())
-            ));
+            mVM.insert(ChatManager.getInstance().convertToEntity(newMessage));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }

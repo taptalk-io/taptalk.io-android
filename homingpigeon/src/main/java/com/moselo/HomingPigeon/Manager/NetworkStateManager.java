@@ -47,7 +47,7 @@ public class NetworkStateManager extends ConnectivityManager.NetworkCallback {
                 NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState()) {
             return true;
         } else {
-            Toast.makeText(context, "No Network Available.", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "No Network Available.", Toast.LENGTH_SHORT).show();
             return false;
         }
     }

@@ -6,7 +6,6 @@ import android.arch.lifecycle.LiveData;
 
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 
@@ -74,7 +73,6 @@ public class ChatViewModel extends AndroidViewModel {
 
     public void setRoomId(String roomId) {
         this.roomId = roomId;
-        ChatManager.getInstance().setActiveRoom(roomId);
     }
 
     public int getNumUsers() {
