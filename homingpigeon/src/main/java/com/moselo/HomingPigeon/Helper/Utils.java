@@ -79,15 +79,6 @@ public class Utils {
     }
 
     /**
-     * for generating roomID
-     */
-    public String arrangeRoomId(String userId, String friendId) {
-        int myId = (null != userId && !"null".equals(userId)) ? Integer.parseInt(userId) : 0;
-        int fId = (null != friendId && !"null".equals(friendId)) ? Integer.parseInt(friendId) : 0;
-        return myId < fId ? myId + "-" + fId : fId + "-" + myId;
-    }
-
-    /**
      * substring for chat above char limit
      */
     public String mySubString(String myString, int start, int length) {

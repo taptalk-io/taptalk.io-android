@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.Data;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,23 +10,23 @@ import android.support.annotation.Nullable;
 @Entity(tableName = "Message_Table")
 public class MessageEntity {
 
-    @Nullable @ColumnInfo(name = "MessageID", index = true) private String messageID;
-    @PrimaryKey() @NonNull @ColumnInfo(name = "localID", index = true) private String localID;
-    @ColumnInfo(name = "Room") private String room;
-    @ColumnInfo(name = "MessageType") private Integer type;
-    @ColumnInfo(name = "Message") private String message;
-    @ColumnInfo(name = "Created") private Long created;
-    @ColumnInfo(name = "User") private String user;
+    @Nullable @ColumnInfo(name = "MessageID", index = true) private String messageId;
+    @PrimaryKey() @NonNull @ColumnInfo(name = "localID", index = true) private String localId;
+    @ColumnInfo(name = "room") private String roomId;
+    @ColumnInfo(name = "messageType") private Integer type;
+    @ColumnInfo(name = "message") private String message;
+    @ColumnInfo(name = "created") private Long created;
+    @ColumnInfo(name = "user") private String user;
     @Nullable @ColumnInfo(name = "deliveredTo") private String deliveredTo;
     @Nullable @ColumnInfo(name = "seenBy") private String seenBy;
     @Nullable @ColumnInfo(name = "deleted") private Integer deleted;
     @Nullable @ColumnInfo(name = "isSending") private Integer isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Integer isFailedSend;
 
-    public MessageEntity(@Nullable String messageID, @NonNull String localID, String room, int type, String message, long created, String user) {
-        this.messageID = messageID;
-        this.localID = localID;
-        this.room = room;
+    public MessageEntity(@Nullable String messageId, @NonNull String localId, String room, int type, String message, long created, String user) {
+        this.messageId = messageId;
+        this.localId = localId;
+        this.roomId = room;
         this.type = type;
         this.message = message;
         this.created = created;
@@ -35,10 +34,10 @@ public class MessageEntity {
     }
 
     @Ignore
-    public MessageEntity(@Nullable String messageID, @NonNull String localID, String room, int type, String message, long created, String user, @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted, @Nullable Integer isSending, @Nullable Integer isFailedSend) {
-        this.messageID = messageID;
-        this.localID = localID;
-        this.room = room;
+    public MessageEntity(@Nullable String messageId, @NonNull String localId, String room, int type, String message, long created, String user, @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted, @Nullable Integer isSending, @Nullable Integer isFailedSend) {
+        this.messageId = messageId;
+        this.localId = localId;
+        this.roomId = room;
         this.type = type;
         this.message = message;
         this.created = created;
@@ -50,35 +49,34 @@ public class MessageEntity {
         this.isFailedSend = isFailedSend;
     }
 
-    @Ignore
     public MessageEntity() {
 
     }
 
     @Nullable
-    public String getMessageID() {
-        return messageID;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setMessageID(@Nullable String messageID) {
-        this.messageID = messageID;
+    public void setMessageId(@Nullable String messageId) {
+        this.messageId = messageId;
     }
 
     @NonNull
-    public String getLocalID() {
-        return localID;
+    public String getLocalId() {
+        return localId;
     }
 
-    public void setLocalID(@NonNull String localID) {
-        this.localID = localID;
+    public void setLocalId(@NonNull String localId) {
+        this.localId = localId;
     }
 
-    public String getRoom() {
-        return room;
+    public String getRoomId() {
+        return roomId;
     }
 
-    public void setRoom(String room) {
-        this.room = room;
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 
     public Integer getType() {

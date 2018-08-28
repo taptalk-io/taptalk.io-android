@@ -190,8 +190,6 @@ public class ConnectionManager {
             connectionStatus = ConnectionStatus.CONNECTING;
             if (reconnectAttempt < 120) reconnectAttempt++;
             long delay = RECONNECT_DELAY * (long) reconnectAttempt;
-            Log.e(TAG, "reconnectAttempt: " + reconnectAttempt);
-            Log.e(TAG, "delay: " + delay);
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {

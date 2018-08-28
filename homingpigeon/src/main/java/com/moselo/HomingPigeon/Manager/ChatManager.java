@@ -1,15 +1,19 @@
 package com.moselo.HomingPigeon.Manager;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Data.MessageEntity;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Model.EmitModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.security.GeneralSecurityException;
@@ -27,11 +31,14 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSo
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOffline;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOnline;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class ChatManager {
 
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
+    private String activeRoom;
+    private UserModel activeUser;
 
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
@@ -42,11 +49,17 @@ public class ChatManager {
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
-                    EmitModel<MessageModel> tempObject = Utils.getInstance()
+                    EmitModel<MessageModel> messageEmit = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
-                    if (null != chatListeners && !chatListeners.isEmpty()) {
+                    // Receive message in active room
+                    if (null != chatListeners && !chatListeners.isEmpty() && messageEmit.getData().getRoom().equals(activeRoom)) {
                         for (HomingPigeonChatListener chatListener : chatListeners)
-                            chatListener.onNewTextMessage(tempObject.getData());
+                            chatListener.onReceiveTextMessageInActiveRoom(messageEmit.getData());
+                    }
+                    // Receive message outside active room
+                    else if (null != chatListeners && !chatListeners.isEmpty() && !messageEmit.getData().getRoom().equals(activeRoom)) {
+                        for (HomingPigeonChatListener chatListener : chatListeners)
+                            chatListener.onReceiveTextMessageInOtherRoom(messageEmit.getData());
                     }
                     break;
                 case kSocketUpdateMessage:
@@ -75,6 +88,9 @@ public class ChatManager {
 
     public ChatManager() {
         ConnectionManager.getInstance().addSocketListener(socketListener);
+        setActiveUser(Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},
+                PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
+                        .getString(K_USER, null)));
         chatListeners = new ArrayList<>();
     }
 
@@ -94,57 +110,88 @@ public class ChatManager {
         chatListeners.clear();
     }
 
-    public MessageModel buildTextMessage(String message, String roomId, UserModel userModel) {
-        MessageModel messageModel;
-        RoomModel roomModel = RoomModel.Builder(roomId);
-        messageModel = MessageModel.Builder(
-                message,
-                roomModel,
-                DefaultConstant.MessageType.TYPE_TEXT,
-                System.currentTimeMillis(),
-                userModel);
-        return messageModel;
+    public String getActiveRoom() {
+        return activeRoom;
     }
 
-    private MessageModel buildEncryptedTextMessage(String message, String roomId, UserModel userModel) {
-        MessageModel messageModel;
-        RoomModel roomModel = RoomModel.Builder(roomId);
+    public void setActiveRoom(String roomId) {
+        this.activeRoom = roomId;
+    }
+
+    public UserModel getActiveUser() {
+        return activeUser;
+    }
+
+    public void setActiveUser(UserModel user) {
+        this.activeUser = user;
+    }
+
+    public void saveActiveUser(Context context, UserModel user) {
+        this.activeUser = user;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
+    }
+
+    /**
+     * generate room ID
+     */
+    public String arrangeRoomId(String userId, String friendId) {
+        int myId = (null != userId && !"null".equals(userId)) ? Integer.parseInt(userId) : 0;
+        int fId = (null != friendId && !"null".equals(friendId)) ? Integer.parseInt(friendId) : 0;
+        return myId < fId ? myId + "-" + fId : fId + "-" + myId;
+    }
+
+    /**
+     * convert MessageEntity to MessageModel
+     */
+    public MessageModel convertToModel(MessageEntity entity) {
+        MessageModel model = new MessageModel();
         try {
-            messageModel = MessageModel.BuilderEncrypt(
-                    message,
-                    roomModel,
-                    DefaultConstant.MessageType.TYPE_TEXT,
-                    System.currentTimeMillis(),
-                    userModel);
-            return messageModel;
+            model = MessageModel.BuilderDecrypt(
+                    entity.getLocalId(),
+                    entity.getMessage(),
+                    entity.getRoomId(),
+                    entity.getType(),
+                    entity.getCreated(),
+                    Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()),
+                    entity.getDeleted(),
+                    entity.getIsSending(),
+                    entity.getIsFailedSend());
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
-        return null;
+        return model;
     }
 
-    public List<MessageModel> buildEncryptedTextMessages(String message, String roomId, UserModel userModel) {
-        List<MessageModel> messageModels = new ArrayList<>();
-        Integer characterLimit = 1000;
-        Integer startIndex;
-        Integer length = message.length();
-        if (length > characterLimit) {
-            for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
-                String substr = Utils.getInstance().mySubString(message, startIndex, characterLimit);
-                MessageModel messageModel;
-                messageModel = buildEncryptedTextMessage(substr, roomId, userModel);
-                if (null != messageModel) messageModels.add(messageModel);
-            }
+    /**
+     * convert MessageModel to MessageEntity
+     */
+    public MessageEntity convertToEntity(MessageModel model) {
+        MessageEntity entity = new MessageEntity();
+        try {
+            entity = new MessageEntity(
+                    model.getMessageId(),
+                    model.getLocalId(),
+                    model.getRoom(),
+                    model.getType(),
+                    EncryptorManager.getInstance().encrypt(model.getMessage(), model.getLocalId()),
+                    model.getCreated(),
+                    Utils.getInstance().toJsonString(model.getUser()),
+                    Utils.getInstance().toJsonString(model.getDeliveredTo()),
+                    Utils.getInstance().toJsonString(model.getSeenBy()),
+                    model.getDeleted(),
+                    model.getIsSending(),
+                    model.getIsFailedSend());
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
         }
-        else {
-            MessageModel messageModel;
-            messageModel = buildEncryptedTextMessage(message, roomId, userModel);
-            messageModels.add(messageModel);
-        }
-        return messageModels;
+        return entity;
     }
 
-    public void sendTextMessage(String textMessage, String roomId, UserModel userModel) {
+    /**
+     * sending text messages
+     */
+    public void sendTextMessage(String textMessage) {
         Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage);
         Integer characterLimit = 1000;
         Integer startIndex;
@@ -152,37 +199,37 @@ public class ChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
                 String substr = Utils.getInstance().mySubString(textMessage, startIndex, characterLimit);
-                MessageModel messageModel;
-                messageModel = buildEncryptedTextMessage(substr, roomId, userModel);
-                if (null != messageModel) {
-                    EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
-                    sendMessage(Utils.getInstance().toJsonString(emitModel));
-                }
+                buildAndSendTextMessage(substr);
             }
         } else {
-            MessageModel messageModel;
-            messageModel = buildEncryptedTextMessage(textMessage, roomId, userModel);
-            if (null != messageModel) {
-                EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
-                sendMessage(Utils.getInstance().toJsonString(emitModel));
-            }
+            buildAndSendTextMessage(textMessage);
         }
     }
 
-    public void sendTextMessage(MessageModel textMessage) {
-        Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage.getMessage());
-        EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, textMessage);
+    private void buildAndSendTextMessage(String message) {
+        MessageModel messageModel;
+        try {
+            messageModel = MessageModel.BuilderEncrypt(
+                    message,
+                    activeRoom,
+                    DefaultConstant.MessageType.TYPE_TEXT,
+                    System.currentTimeMillis(),
+                    activeUser);
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+            return;
+        }
+        EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
         sendMessage(Utils.getInstance().toJsonString(emitModel));
-    }
-
-    public void sendTextMessage(List<MessageModel> textMessages) {
-        for (MessageModel textMessage : textMessages) {
-            Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage.getMessage());
-            EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, textMessage);
-            sendMessage(Utils.getInstance().toJsonString(emitModel));
+        if (null != chatListeners && !chatListeners.isEmpty()) {
+            for (HomingPigeonChatListener chatListener : chatListeners)
+                chatListener.onSendTextMessage(messageModel);
         }
     }
 
+    /**
+     * sending emit to server
+     */
     private void sendMessage(String message) {
         ConnectionManager.getInstance().sendEmit(message);
     }

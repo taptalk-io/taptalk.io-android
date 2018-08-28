@@ -2,12 +2,9 @@ package com.moselo.HomingPigeon.Model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.moselo.HomingPigeon.Helper.AESCrypt;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 
@@ -15,25 +12,11 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "message",
-        "messageID",
-        "localID",
-        "room",
-        "type",
-        "created",
-        "user",
-        "deliveredTo",
-        "seenBy",
-        "deleted",
-        "isSending",
-        "isFailedSend",
-})
 public class MessageModel {
 
-    @Nullable @JsonProperty("messageID") private String messageID;
-    @NonNull @JsonProperty("localID") private String localID;
-    @JsonProperty("room") private RoomModel room;
+    @Nullable @JsonProperty("messageID") private String messageId;
+    @NonNull @JsonProperty("localID") private String localId;
+    @JsonProperty("room") private String room;
     @JsonProperty("type") private int type;
     @JsonProperty("message") private String message;
     @JsonProperty("created") private Long created;
@@ -44,8 +27,8 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private Integer isSending;
     @Nullable @JsonProperty("isFailedSend") private Integer isFailedSend;
 
-    public MessageModel(@NonNull String localID, String message, RoomModel room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) {
-        this.localID = localID;
+    public MessageModel(@NonNull String localId, String message, String room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) {
+        this.localId = localId;
         this.message = message;
         this.room = room;
         this.type = type;
@@ -59,43 +42,43 @@ public class MessageModel {
     public MessageModel() {
     }
 
-    public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user){
+    public static MessageModel Builder(String message, String room, Integer type, Long created, UserModel user){
         String localID = Utils.getInstance().generateRandomString(32);
         return new MessageModel(localID, message, room, type, created, user, 0, 1, 0);
     }
 
-    public static MessageModel BuilderEncrypt(String message, RoomModel room, Integer type, Long created, UserModel user) throws GeneralSecurityException {
+    public static MessageModel BuilderEncrypt(String message, String room, Integer type, Long created, UserModel user) throws GeneralSecurityException {
         String localID = Utils.getInstance().generateRandomString(32);
         return new MessageModel(localID, EncryptorManager.getInstance().encrypt(message, localID), room, type, created, user, 0, 1, 0);
     }
 
-    public static MessageModel BuilderDecrypt(String localID, String message, RoomModel room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) throws GeneralSecurityException {
+    public static MessageModel BuilderDecrypt(String localID, String message, String room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) throws GeneralSecurityException {
         return new MessageModel(localID, EncryptorManager.getInstance().decrypt(message, localID), room, type, created, user, deleted, isSending, isFailedSend);
     }
 
     @Nullable
-    public String getMessageID() {
-        return messageID;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setMessageID(@Nullable String messageID) {
-        this.messageID = messageID;
+    public void setMessageId(@Nullable String messageId) {
+        this.messageId = messageId;
     }
 
     @NonNull
-    public String getLocalID() {
-        return localID;
+    public String getLocalId() {
+        return localId;
     }
 
-    public void setLocalID(@NonNull String localID) {
-        this.localID = localID;
+    public void setLocalId(@NonNull String localId) {
+        this.localId = localId;
     }
 
-    public RoomModel getRoom() {
+    public String getRoom() {
         return room;
     }
 
-    public void setRoom(RoomModel room) {
+    public void setRoom(String room) {
         this.room = room;
     }
 

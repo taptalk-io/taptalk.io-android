@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent;
-        if (null != DataManager.getInstance().getUserModel(this)){
+        if (null != DataManager.getInstance().getActiveUser(this)){
             intent = new Intent(this, SampleRoomListActivity.class);
         }else {
             intent = new Intent(this, SampleLoginActivity.class);

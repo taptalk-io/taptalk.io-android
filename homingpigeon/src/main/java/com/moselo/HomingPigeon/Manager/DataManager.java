@@ -14,21 +14,18 @@ public class DataManager {
     private static DataManager instance;
 
     public static DataManager getInstance() {
-        if (null == instance) {
-            instance =  new DataManager();
-        }
-        return instance;
+        return instance == null ? (instance = new DataManager()) : instance;
     }
 
-    public UserModel getUserModel(Context context){
+    public UserModel getActiveUser(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
         }, prefs.getString(K_USER, null));
     }
 
-    public void saveUserModel(Context context, UserModel userModel){
+    public void saveActiveUser(Context context, UserModel user){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(userModel))
-                .apply();
+        prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
+        ChatManager.getInstance().setActiveUser(user);
     }
 }
