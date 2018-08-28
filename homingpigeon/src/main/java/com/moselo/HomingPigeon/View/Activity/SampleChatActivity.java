@@ -95,7 +95,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onNewTextMessage(final MessageModel message) {
-        Log.e(TAG, "onNewTextMessage: " + message.getLocalID());
         message.setIsSending(0);
         addNewTextMessage(message);
     }
@@ -110,7 +109,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
                     try {
-                        Log.e("RioClarisa", entity.getCreated() +" " );
                         MessageModel model = MessageModel.BuilderDecrypt(
                                 entity.getLocalID(),
                                 entity.getMessage(),
@@ -128,7 +126,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 mVM.setMessageModels(models);
                 if (mVM.getMessageModels().size() > 0) {
                     lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
-                    Log.e("RioClarisa", lastTimestamp + "timestamp" );
                 }
                 if (null != adapter) {
                     runOnUiThread(new Runnable() {
@@ -174,7 +171,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
                     try {
-                        Log.e("RioClarisa", entity.getCreated() +" " );
                         MessageModel model = MessageModel.BuilderDecrypt(
                                 entity.getLocalID(),
                                 entity.getMessage(),
@@ -193,18 +189,15 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 mVM.setMessageModels(models);
                 if (0 < mVM.getMessageModels().size()){
                     lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
-                    Log.e("RioClarisa", lastTimestamp +" timestamp" );
                 }
                 if (null != adapter) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e(TAG, "runOnUIThread" );
                             adapter.addMessage(models);
                         }
                     });
                 }
-                Log.e(TAG, entities.size() +" entitiy " );
                 state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
             }
         };
@@ -212,7 +205,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         rvChatList.addOnScrollListener(new EndlessScrollListener(llm) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                Log.e(TAG, state+" scroll Listener" );
                 if (state == STATE.LOADED && 0 < adapter.getItemCount()) {
                     mVM.getMessageByTimestamp(scrollChatListener, lastTimestamp);
                     state = STATE.WORKING;
@@ -286,7 +278,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                         } else index++;
                     }
                     if (!isMessageAdded) adapter.addMessage(newMessage);
-                    Log.e(TAG, "isMessageAdded: " + isMessageAdded);
 
                     //Scroll recycler to bottom or show unread badge
                     if (newMessage.getUser().getUserID().equals(DataManager.getInstance()

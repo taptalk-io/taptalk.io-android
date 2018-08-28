@@ -43,7 +43,6 @@ public class MessageRepository {
             public void run() {
                 List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp);
                 listener.onGetMessages(entities);
-                Log.e(MessageRepository.class.getSimpleName(), "run: "+entities.size() );
             }
         }).start();
     }
