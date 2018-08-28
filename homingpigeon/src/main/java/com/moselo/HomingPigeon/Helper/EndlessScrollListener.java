@@ -5,13 +5,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.NUM_OF_ITEM;
+
 /**
  * Created by Rionaldo on 6/6/17.
  */
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
 
-    private int visibleThreshold = 5;
+    private int visibleThreshold = NUM_OF_ITEM / 2;
     private int currentPage = 0;
     // The total number of items in the dataset after the last load
     private int previousTotalItemCount = 0;

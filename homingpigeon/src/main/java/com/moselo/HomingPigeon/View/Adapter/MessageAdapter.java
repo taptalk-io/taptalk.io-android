@@ -159,8 +159,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     }
 
     public void addMessage(List<MessageModel> messageModels) {
+        int lastIndex = getItemCount();
         chatMessages.addAll(messageModels);
-        notifyDataSetChanged();
+        notifyItemInserted(lastIndex);
     }
 
     public void setMessageAt(int position, MessageModel message) {
