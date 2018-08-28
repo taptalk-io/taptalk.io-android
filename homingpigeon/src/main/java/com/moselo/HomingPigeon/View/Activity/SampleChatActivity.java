@@ -110,6 +110,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
                     try {
+                        Log.e("RioClarisa", entity.getCreated() +" " );
                         MessageModel model = MessageModel.BuilderDecrypt(
                                 entity.getLocalID(),
                                 entity.getMessage(),
@@ -127,7 +128,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 mVM.setMessageModels(models);
                 if (mVM.getMessageModels().size() > 0) {
                     lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
-                    Log.e(TAG, lastTimestamp + "timestamp1" );
+                    Log.e("RioClarisa", lastTimestamp + "timestamp" );
                 }
                 if (null != adapter) {
                     runOnUiThread(new Runnable() {
@@ -173,6 +174,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 final List<MessageModel> models = new ArrayList<>();
                 for (MessageEntity entity : entities) {
                     try {
+                        Log.e("RioClarisa", entity.getCreated() +" " );
                         MessageModel model = MessageModel.BuilderDecrypt(
                                 entity.getLocalID(),
                                 entity.getMessage(),
@@ -191,7 +193,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 mVM.setMessageModels(models);
                 if (0 < mVM.getMessageModels().size()){
                     lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
-                    Log.e(TAG, lastTimestamp +" timestamp2" );
+                    Log.e("RioClarisa", lastTimestamp +" timestamp" );
                 }
                 if (null != adapter) {
                     runOnUiThread(new Runnable() {
