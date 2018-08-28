@@ -28,6 +28,10 @@ public class DefaultConstant {
         public static final String kIsDisconnected = "kIsDisconnected";
     }
 
+    public static final class DatabaseType{
+        public static final String MESSAGE_DB = "MessageDB";
+    }
+
     public static final class MessageType {
         public static final int TYPE_TEXT = 1;
         public static final int TYPE_IMAGE = 2;
@@ -52,4 +56,6 @@ public class DefaultConstant {
     public static final String K_ROOM_ID = "kRoomID";
     public static final String EncryptionKey = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final int NUM_OF_ITEM = 10;
+
+
 }

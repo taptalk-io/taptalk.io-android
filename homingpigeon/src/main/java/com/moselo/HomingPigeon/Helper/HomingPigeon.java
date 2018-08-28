@@ -2,10 +2,12 @@ package com.moselo.HomingPigeon.Helper;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
+import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
@@ -16,6 +18,7 @@ public class HomingPigeon {
     }
 
     public HomingPigeon(Context appContext) {
+        DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override

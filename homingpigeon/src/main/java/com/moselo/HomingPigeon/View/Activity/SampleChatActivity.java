@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,7 +16,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
-import com.moselo.HomingPigeon.Data.MessageViewModel;
+import com.moselo.HomingPigeon.Data.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -54,7 +53,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private LinearLayoutManager llm;
 
     // RoomDatabase
-    private MessageViewModel mVM;
+    private ChatViewModel mVM;
 
     //enum Scrolling
     private enum STATE {
@@ -100,7 +99,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     private void initViewModel() {
-        mVM = ViewModelProviders.of(this).get(MessageViewModel.class);
+        mVM = ViewModelProviders.of(this).get(ChatViewModel.class);
         mVM.setRoomId(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         mVM.setMyUserModel(DataManager.getInstance().getUserModel(this));
         mVM.getMessageEntities(new HomingPigeonGetChatListener() {
