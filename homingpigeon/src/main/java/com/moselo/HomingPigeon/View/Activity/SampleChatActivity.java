@@ -80,11 +80,14 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     protected void onResume() {
         super.onResume();
         ChatManager.getInstance().setActiveRoom(mVM.getRoomId());
+        etChat.setText(ChatManager.getInstance().getMessageFromDraft());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        String draft = etChat.getText().toString();
+        if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
         ChatManager.getInstance().setActiveRoom("");
     }
 

@@ -17,6 +17,7 @@ import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class ChatManager {
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
     private Map<String, MessageModel> messageQueue;
+    private Map<String, String> messageDrafts;
     private String activeRoom;
     private UserModel activeUser;
     private final Integer CHARACTER_LIMIT = 1000;
@@ -98,6 +100,7 @@ public class ChatManager {
                         .getString(K_USER, null)));
         chatListeners = new ArrayList<>();
         messageQueue = new LinkedHashMap<>();
+        messageDrafts = new HashMap<>();
     }
 
     public void addChatListener(HomingPigeonChatListener chatListener) {
@@ -230,6 +233,17 @@ public class ChatManager {
             for (HomingPigeonChatListener chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);
         }
+    }
+
+    /**
+     * save text to draft
+     */
+    public void saveMessageToDraft(String message) {
+        messageDrafts.put(activeRoom, message);
+    }
+
+    public String getMessageFromDraft() {
+        return messageDrafts.get(activeRoom);
     }
 
     /**
