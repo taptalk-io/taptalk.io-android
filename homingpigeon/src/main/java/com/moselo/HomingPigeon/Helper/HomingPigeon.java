@@ -20,10 +20,10 @@ public class HomingPigeon {
     public HomingPigeon(Context appContext) {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
+        ConnectionManager.getInstance().connect();
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-//                ConnectionManager.getInstance().connect();
                 NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
                 isForeground = true;
             }

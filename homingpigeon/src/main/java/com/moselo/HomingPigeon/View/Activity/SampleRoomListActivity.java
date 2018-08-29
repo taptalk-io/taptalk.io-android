@@ -32,10 +32,6 @@ public class SampleRoomListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample_room_list);
 
-        if (ConnectionManager.ConnectionStatus.DISCONNECTED == ConnectionManager.getInstance().getConnectionStatus()){
-            ConnectionManager.getInstance().connect();
-        }
-
         initView();
     }
 
@@ -70,11 +66,5 @@ public class SampleRoomListActivity extends BaseActivity {
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ConnectionManager.getInstance().close();
     }
 }

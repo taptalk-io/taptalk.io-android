@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
@@ -22,6 +23,9 @@ public interface MessageDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(List<MessageEntity> messageEntities);
+
+    @Query("delete from message_table where localID = :localId")
+    void delete(String localId);
 
     @Query("select * from message_table order by Created desc")
     LiveData<List<MessageEntity>> getAllMessage();

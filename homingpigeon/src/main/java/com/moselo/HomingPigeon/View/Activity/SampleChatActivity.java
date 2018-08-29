@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -50,15 +49,13 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private LinearLayoutManager llm;
 
     // RoomDatabase
-    private ChatViewModel mVM;
+    private ChatViewModel vm;
 
     //enum Scrolling
     private enum STATE {
         WORKING, LOADED, DONE
     }
-
     private STATE state = STATE.LOADED;
-    private long lastTimestamp = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,7 +76,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        ChatManager.getInstance().setActiveRoom(mVM.getRoomId());
+        ChatManager.getInstance().setActiveRoom(vm.getRoomId());
         etChat.setText(ChatManager.getInstance().getMessageFromDraft());
     }
 
@@ -100,7 +97,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             rvChatList.scrollToPosition(0);
             ivToBottom.setVisibility(View.INVISIBLE);
             tvBadgeUnread.setVisibility(View.INVISIBLE);
-            mVM.setUnreadCount(0);
+            vm.setUnreadCount(0);
         }
     }
 
@@ -118,46 +115,34 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
+    public void onRetrySendMessage(MessageModel message) {
+        vm.delete(message.getLocalId());
+        ChatManager.getInstance().sendTextMessage(message.getMessage());
+    }
+
+    @Override
     public void onSendTextMessage(MessageModel message) {
-        MessageModel pendingMessage = new MessageModel();
-        pendingMessage.setLocalId(message.getLocalId());
-        pendingMessage.setRoomId(message.getRoomId());
-        pendingMessage.setType(message.getType());
-        pendingMessage.setMessage(message.getMessage());
-        pendingMessage.setCreated(message.getCreated());
-        pendingMessage.setUser(message.getUser());
-        pendingMessage.setDeliveredTo(message.getDeliveredTo());
-        pendingMessage.setSeenBy(message.getSeenBy());
-        pendingMessage.setDeleted(message.getDeleted());
-        pendingMessage.setIsSending(message.getIsSending());
-        pendingMessage.setDeleted(message.getDeleted());
+        MessageModel pendingMessage = new MessageModel(
+                message.getLocalId(),
+                message.getMessage(),
+                message.getRoomId(),
+                message.getType(),
+                message.getCreated(),
+                message.getUser(),
+                message.getDeleted(),
+                message.getIsSending(),
+                message.getDeleted());
         addNewTextMessage(pendingMessage);
     }
 
     private void initViewModel() {
-        mVM = ViewModelProviders.of(this).get(ChatViewModel.class);
-        mVM.setRoomId(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
-        mVM.setMyUserModel(DataManager.getInstance().getActiveUser(this));
-        mVM.getMessageEntities(new HomingPigeonGetChatListener() {
+        vm = ViewModelProviders.of(this).get(ChatViewModel.class);
+        vm.setRoomId(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
+        vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
+        vm.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
-                final List<MessageModel> models = new ArrayList<>();
-                for (MessageEntity entity : entities) {
-                    models.add(ChatManager.getInstance().convertToModel(entity));
-                }
-                mVM.setMessageModels(models);
-                if (mVM.getMessageModels().size() > 0) {
-                    lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
-                }
-                if (null != adapter) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.setMessages(models);
-                            rvChatList.scrollToPosition(0);
-                        }
-                    });
-                }
+                loadMessageFromDatabase(entities);
             }
         });
     }
@@ -179,8 +164,8 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         tvUserStatus.setText("User Status");
         tvLastMessageTime.setVisibility(View.GONE);
 
-        adapter = new MessageAdapter(this);
-        adapter.setMessages(mVM.getMessageModels());
+        adapter = new MessageAdapter(this, this);
+        adapter.setMessages(vm.getMessageModels());
         llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         llm.setStackFromEnd(true);
         rvChatList.setAdapter(adapter);
@@ -190,24 +175,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         final HomingPigeonGetChatListener scrollChatListener = new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
-                final List<MessageModel> models = new ArrayList<>();
-                for (MessageEntity entity : entities) {
-                    models.add(ChatManager.getInstance().convertToModel(entity));
-                }
-
-                mVM.setMessageModels(models);
-                if (0 < mVM.getMessageModels().size()) {
-                    lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
-                }
-                if (null != adapter) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.addMessage(models);
-                        }
-                    });
-                }
-                state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+                loadMessageFromDatabase(entities);
             }
         };
 
@@ -215,7 +183,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < adapter.getItemCount()) {
-                    mVM.getMessageByTimestamp(scrollChatListener, lastTimestamp);
+                    vm.getMessageByTimestamp(scrollChatListener, vm.getLastTimestamp());
                     state = STATE.WORKING;
                 }
             }
@@ -226,12 +194,12 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 @Override
                 public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                     if (llm.findFirstVisibleItemPosition() == 0) {
-                        mVM.setOnBottom(true);
-                        mVM.setUnreadCount(0);
+                        vm.setOnBottom(true);
+                        vm.setUnreadCount(0);
                         ivToBottom.setVisibility(View.INVISIBLE);
                         tvBadgeUnread.setVisibility(View.INVISIBLE);
                     } else {
-                        mVM.setOnBottom(false);
+                        vm.setOnBottom(false);
                         ivToBottom.setVisibility(View.VISIBLE);
                     }
                 }
@@ -255,6 +223,40 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     private void initHelper() {
         ChatManager.getInstance().addChatListener(this);
+    }
+
+    private void loadMessageFromDatabase(List<MessageEntity> entities) {
+        final List<MessageModel> models = new ArrayList<>();
+        for (MessageEntity entity : entities) {
+            // Check for pending messages
+            if (null != entity.getIsSending() && 1 == entity.getIsSending()) {
+                entity.setIsSending(0);
+                entity.setIsFailedSend(1);
+            }
+            models.add(ChatManager.getInstance().convertToModel(entity));
+        }
+        vm.setMessageModels(models);
+        if (vm.getMessageModels().size() > 0) {
+            vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
+        }
+        if (null != adapter && 0 == adapter.getItems().size()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.setMessages(models);
+                    rvChatList.scrollToPosition(0);
+                }
+            });
+        }
+        else if (null != adapter) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.addMessage(models);
+                }
+            });
+            state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+        }
     }
 
     private void attemptSend() {
@@ -286,16 +288,16 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     //Scroll recycler to bottom or show unread badge
                     if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
                             .getActiveUser(SampleChatActivity.this).getUserID()) ||
-                            mVM.isOnBottom())
+                            vm.isOnBottom())
                         rvChatList.scrollToPosition(0);
                     else {
                         tvBadgeUnread.setVisibility(View.VISIBLE);
-                        tvBadgeUnread.setText(mVM.getUnreadCount() + "");
-                        mVM.setUnreadCount(mVM.getUnreadCount() + 1);
+                        tvBadgeUnread.setText(vm.getUnreadCount() + "");
+                        vm.setUnreadCount(vm.getUnreadCount() + 1);
                     }
                 }
             });
-            mVM.insert(ChatManager.getInstance().convertToEntity(newMessage));
+            vm.insert(ChatManager.getInstance().convertToEntity(newMessage));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }

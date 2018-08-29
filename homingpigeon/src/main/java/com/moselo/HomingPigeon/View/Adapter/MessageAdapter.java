@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -27,13 +28,14 @@ import static com.moselo.HomingPigeon.View.Helper.Const.*;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder> {
 
+    private HomingPigeonChatListener listener;
     private List<MessageModel> chatMessages;
     private int[] randomColors;
     private UserModel myUserModel;
-    private Context context;
 
-    public MessageAdapter(Context context) {
+    public MessageAdapter(Context context, HomingPigeonChatListener listener) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        this.listener = listener;
         myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},prefs.getString(K_USER,"{}"));
     }
 
@@ -103,7 +105,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             tvDash = itemView.findViewById(R.id.tv_label_dash);
         }
 
-        void onBind(int position) {
+        void onBind(final int position) {
             item = getItemAt(position);
             randomColors = itemView.getContext().getResources().getIntArray(R.array.random_colors);
             if (getItemViewType() == TYPE_BUBBLE_LEFT) {
@@ -114,30 +116,51 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 tvUsername.setVisibility(View.GONE);
             }
             tvMessage.setText(item.getMessage());
+
+            // Message is sending
             if (null != item.getIsSending() && 1 == item.getIsSending()) {
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextSub));
                 tvStatus.setText("Sending...");
                 tvDash.setText("");
                 tvTimestamp.setText("");
                 clBubble.setAlpha(0.5f);
                 clBubble.setElevation(0f);
+                llMessageStatus.setVisibility(View.GONE);
             }
+            // Message failed to send
+            else if (null != item.getIsFailedSend() && 1 == item.getIsFailedSend()) {
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextRed));
+                tvStatus.setText("Failed, tap to retry.");
+                tvDash.setText("");
+                tvTimestamp.setText("");
+                clBubble.setAlpha(0.5f);
+                clBubble.setElevation(0f);
+                llMessageStatus.setVisibility(View.VISIBLE);
+            }
+            // Message is delivered
             else {
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextSub));
                 tvStatus.setText("S");
                 tvDash.setText(" - ");
                 tvTimestamp.setText(TimeFormatter.formatClock(item.getCreated()));
                 clBubble.setAlpha(1f);
                 clBubble.setElevation((float) Utils.getInstance().dpToPx(2));
+                llMessageStatus.setVisibility(View.GONE);
             }
 
-            llMessageStatus.setVisibility(View.GONE);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (llMessageStatus.getVisibility() == View.GONE) {
-                        llMessageStatus.setVisibility(View.VISIBLE);
+                    if (1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
+                        removeMessageAt(position);
+                        listener.onRetrySendMessage(item);
                     }
                     else {
-                        llMessageStatus.setVisibility(View.GONE);
+                        if (llMessageStatus.getVisibility() == View.GONE) {
+                            llMessageStatus.setVisibility(View.VISIBLE);
+                        } else {
+                            llMessageStatus.setVisibility(View.GONE);
+                        }
                     }
                 }
             });
@@ -167,6 +190,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     public void setMessageAt(int position, MessageModel message) {
         chatMessages.set(position, message);
         notifyItemChanged(position);
+    }
+
+    public void removeMessageAt(int position) {
+        chatMessages.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     public List<MessageModel> getItems() {
