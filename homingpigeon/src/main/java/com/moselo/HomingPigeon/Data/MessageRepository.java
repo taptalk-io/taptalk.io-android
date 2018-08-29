@@ -26,7 +26,7 @@ public class MessageRepository {
         return allMessages;
     }
 
-    public List<MessageEntity> getAllMessageList(final HomingPigeonGetChatListener listener) {
+    public void getMessageList(final HomingPigeonGetChatListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -34,10 +34,9 @@ public class MessageRepository {
                 listener.onGetMessages(allMessageList);
             }
         }).start();
-        return allMessageList;
     }
 
-    public void getMessageTimestamp(final HomingPigeonGetChatListener listener, final long lastTimestamp){
+    public void getMessageList(final HomingPigeonGetChatListener listener, final long lastTimestamp){
         new Thread(new Runnable() {
             @Override
             public void run() {

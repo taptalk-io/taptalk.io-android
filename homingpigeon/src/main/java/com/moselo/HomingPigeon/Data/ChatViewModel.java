@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
+import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
@@ -12,9 +13,8 @@ import com.moselo.HomingPigeon.Model.UserModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageViewModel extends AndroidViewModel {
+public class ChatViewModel extends AndroidViewModel {
 
-    private MessageRepository repository;
     private LiveData<List<MessageEntity>> allMessages;
     private UserModel myUserModel;
     private String roomId;
@@ -34,10 +34,10 @@ public class MessageViewModel extends AndroidViewModel {
         this.messageModels = messageModels;
     }
 
-    public MessageViewModel(Application application) {
+    public ChatViewModel(Application application) {
         super(application);
-        repository = new MessageRepository(application);
-        allMessages = repository.getAllMessages();
+//        repository = new MessageRepository(application);
+        allMessages = DataManager.getInstance().getMessagesLiveData();
     }
 
     public LiveData<List<MessageEntity>> getAllMessages() {
@@ -45,20 +45,19 @@ public class MessageViewModel extends AndroidViewModel {
     }
 
     public void insert (MessageEntity messageEntity){
-        repository.insert(messageEntity);
+        DataManager.getInstance().insertToDatabase(messageEntity);
     }
 
     public void getMessageEntities(HomingPigeonGetChatListener listener) {
-        messageEntities = repository.getAllMessageList(listener);
+        DataManager.getInstance().getMessagesFromDatabase(listener);
     }
 
     public void getMessageByTimestamp(HomingPigeonGetChatListener listener, long lastTimestamp){
-        repository.getMessageTimestamp(listener, lastTimestamp);
+        DataManager.getInstance().getMessagesFromDatabase(listener,lastTimestamp);
     }
 
     public void insert (List<MessageEntity> messageEntities){
-
-        repository.insert(messageEntities);
+        DataManager.getInstance().insertToDatabase(messageEntities);
     }
 
     public UserModel getMyUserModel() {

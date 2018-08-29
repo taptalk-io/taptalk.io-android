@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnecting;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnected;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
 
 public class ConnectionManager {
@@ -69,7 +69,7 @@ public class ConnectionManager {
                 connectionStatus = ConnectionStatus.CONNECTED;
                 Log.e(TAG, "onOpen: " + connectionStatus);
                 if (null != HomingPigeon.appContext) {
-                    Intent intent = new Intent(kIsConnecting);
+                    Intent intent = new Intent(kIsConnected);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
                 reconnectAttempt = 0;

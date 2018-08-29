@@ -9,9 +9,11 @@ import android.util.Log;
 import com.moselo.HomingPigeon.Helper.BroadcastManager;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnected;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnectionError;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
 
@@ -20,7 +22,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BroadcastManager.register(this,receiver,kIsConnectionError, kIsDisconnected);
+        BroadcastManager.register(this,receiver,kIsConnectionError, kIsDisconnected, kIsConnected);
     }
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -35,7 +37,8 @@ public class BaseActivity extends AppCompatActivity {
                     if (HomingPigeon.isForeground && NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext))
                         ConnectionManager.getInstance().reconnect();
                     break;
-
+                case kIsConnected:
+                    break;
             }
         }
     };

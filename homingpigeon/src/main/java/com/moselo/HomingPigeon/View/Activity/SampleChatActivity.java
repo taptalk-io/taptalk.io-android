@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.MessageEntity;
-import com.moselo.HomingPigeon.Data.MessageViewModel;
+import com.moselo.HomingPigeon.Data.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -50,7 +50,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private LinearLayoutManager llm;
 
     // RoomDatabase
-    private MessageViewModel mVM;
+    private ChatViewModel mVM;
 
     //enum Scrolling
     private enum STATE {
@@ -109,7 +109,9 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onReceiveTextMessageInOtherRoom(MessageModel message) {
-        // TODO: 28 August 2018 PUSH NOTIFICATION & SAVE MESSAGE TO DATABASE
+        // TODO: 28 August 2018 REPLACE WITH PUSH NOTIFICATION / SAVE MESSAGE TO DATABASE
+        message.setIsSending(0);
+        addNewTextMessage(message);
     }
 
     @Override
@@ -130,7 +132,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     private void initViewModel() {
-        mVM = ViewModelProviders.of(this).get(MessageViewModel.class);
+        mVM = ViewModelProviders.of(this).get(ChatViewModel.class);
         mVM.setRoomId(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         mVM.setMyUserModel(DataManager.getInstance().getActiveUser(this));
         mVM.getMessageEntities(new HomingPigeonGetChatListener() {
@@ -191,7 +193,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 }
 
                 mVM.setMessageModels(models);
-                if (0 < mVM.getMessageModels().size()){
+                if (0 < mVM.getMessageModels().size()) {
                     lastTimestamp = models.get(mVM.getMessageModels().size() - 1).getCreated();
                 }
                 if (null != adapter) {
@@ -263,7 +265,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private void addNewTextMessage(final MessageModel newMessage) {
         try {
             newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalId()));
-            Log.e(TAG, "addNewTextMessage: " + newMessage.getMessage());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -271,7 +272,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     boolean isMessageAdded = false;
                     int index = 0;
                     for (MessageModel messageModel : adapter.getItems()) {
-                        if (null != messageModel.getLocalId() && messageModel.getLocalId().equals(newMessage.getLocalId())) {
+                        if (messageModel.getLocalId().equals(newMessage.getLocalId())) {
                             adapter.setMessageAt(index, newMessage);
                             isMessageAdded = true;
                             break;
