@@ -12,7 +12,7 @@ public class MessageEntity {
 
     @Nullable @ColumnInfo(name = "MessageID", index = true) private String messageId;
     @PrimaryKey() @NonNull @ColumnInfo(name = "localID", index = true) private String localId;
-    @ColumnInfo(name = "room") private String roomId;
+    @ColumnInfo(name = "roomID") private String roomId;
     @ColumnInfo(name = "messageType") private Integer type;
     @ColumnInfo(name = "message") private String message;
     @ColumnInfo(name = "created") private Long created;

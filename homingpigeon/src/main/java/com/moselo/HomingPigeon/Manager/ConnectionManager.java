@@ -73,6 +73,7 @@ public class ConnectionManager {
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
                 reconnectAttempt = 0;
+                ChatManager.getInstance().runMessageQueue();
             }
 
             @Override
@@ -83,7 +84,7 @@ public class ConnectionManager {
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
                 try {
-                    Map<String, Object> response = new ObjectMapper().readValue(tempMessage, HashMap.class);
+                    HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
                     if (null != socketListeners && !socketListeners.isEmpty()) {
                         for (HomingPigeonSocketListener listener : socketListeners)
                             listener.onNewMessage(response.get("eventName").toString(), tempMessage);
@@ -155,7 +156,7 @@ public class ConnectionManager {
         socketListeners.clear();
     }
 
-    public void sendEmit(String messageString) {
+    public void send(String messageString) {
         if (webSocketClient.isOpen()) {
             webSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
         }

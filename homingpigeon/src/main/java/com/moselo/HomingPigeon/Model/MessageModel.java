@@ -16,7 +16,7 @@ public class MessageModel {
 
     @Nullable @JsonProperty("messageID") private String messageId;
     @NonNull @JsonProperty("localID") private String localId;
-    @JsonProperty("room") private String room;
+    @JsonProperty("roomID") private String roomId;
     @JsonProperty("type") private int type;
     @JsonProperty("message") private String message;
     @JsonProperty("created") private Long created;
@@ -27,10 +27,10 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private Integer isSending;
     @Nullable @JsonProperty("isFailedSend") private Integer isFailedSend;
 
-    public MessageModel(@NonNull String localId, String message, String room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) {
+    public MessageModel(@NonNull String localId, String message, String roomId, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) {
         this.localId = localId;
         this.message = message;
-        this.room = room;
+        this.roomId = roomId;
         this.type = type;
         this.created = created;
         this.user = user;
@@ -74,12 +74,12 @@ public class MessageModel {
         this.localId = localId;
     }
 
-    public String getRoom() {
-        return room;
+    public String getRoomId() {
+        return roomId;
     }
 
-    public void setRoom(String room) {
-        this.room = room;
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 
     public int getType() {

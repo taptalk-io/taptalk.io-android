@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
@@ -18,7 +17,9 @@ import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -37,8 +38,10 @@ public class ChatManager {
 
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
+    private Map<String, MessageModel> messageQueue;
     private String activeRoom;
     private UserModel activeUser;
+    private final Integer CHARACTER_LIMIT = 1000;
 
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
@@ -52,15 +55,17 @@ public class ChatManager {
                     EmitModel<MessageModel> messageEmit = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
                     // Receive message in active room
-                    if (null != chatListeners && !chatListeners.isEmpty() && messageEmit.getData().getRoom().equals(activeRoom)) {
+                    if (null != chatListeners && !chatListeners.isEmpty() && messageEmit.getData().getRoomId().equals(activeRoom)) {
                         for (HomingPigeonChatListener chatListener : chatListeners)
                             chatListener.onReceiveTextMessageInActiveRoom(messageEmit.getData());
                     }
                     // Receive message outside active room
-                    else if (null != chatListeners && !chatListeners.isEmpty() && !messageEmit.getData().getRoom().equals(activeRoom)) {
+                    else if (null != chatListeners && !chatListeners.isEmpty() && !messageEmit.getData().getRoomId().equals(activeRoom)) {
                         for (HomingPigeonChatListener chatListener : chatListeners)
                             chatListener.onReceiveTextMessageInOtherRoom(messageEmit.getData());
                     }
+                    removeFromQueue(messageEmit.getData().getLocalId());
+                    runMessageQueue();
                     break;
                 case kSocketUpdateMessage:
                     break;
@@ -92,6 +97,7 @@ public class ChatManager {
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
                         .getString(K_USER, null)));
         chatListeners = new ArrayList<>();
+        messageQueue = new LinkedHashMap<>();
     }
 
     public void addChatListener(HomingPigeonChatListener chatListener) {
@@ -172,7 +178,7 @@ public class ChatManager {
             entity = new MessageEntity(
                     model.getMessageId(),
                     model.getLocalId(),
-                    model.getRoom(),
+                    model.getRoomId(),
                     model.getType(),
                     EncryptorManager.getInstance().encrypt(model.getMessage(), model.getLocalId()),
                     model.getCreated(),
@@ -192,21 +198,21 @@ public class ChatManager {
      * sending text messages
      */
     public void sendTextMessage(String textMessage) {
-        Log.e(ChatManager.class.getSimpleName(), "sendTextMessage: " + textMessage);
-        Integer characterLimit = 1000;
+        // Check if message exceeds character limit
         Integer startIndex;
-        if (textMessage.length() > characterLimit) {
+        if (textMessage.length() > CHARACTER_LIMIT) {
             Integer length = textMessage.length();
-            for (startIndex = 0; startIndex < length; startIndex += characterLimit) {
-                String substr = Utils.getInstance().mySubString(textMessage, startIndex, characterLimit);
-                buildAndSendTextMessage(substr);
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = Utils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                buildEncryptedTextMessage(substr);
             }
         } else {
-            buildAndSendTextMessage(textMessage);
+            buildEncryptedTextMessage(textMessage);
         }
+        runMessageQueue();
     }
 
-    private void buildAndSendTextMessage(String message) {
+    private void buildEncryptedTextMessage(String message) {
         MessageModel messageModel;
         try {
             messageModel = MessageModel.BuilderEncrypt(
@@ -219,8 +225,7 @@ public class ChatManager {
             e.printStackTrace();
             return;
         }
-        EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, messageModel);
-        sendMessage(Utils.getInstance().toJsonString(emitModel));
+        messageQueue.put(messageModel.getLocalId(), messageModel);
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (HomingPigeonChatListener chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);
@@ -228,9 +233,27 @@ public class ChatManager {
     }
 
     /**
+     * send pending messages from queue
+     */
+    public void runMessageQueue() {
+        if (!messageQueue.isEmpty()) {
+            Map.Entry<String, MessageModel> message = messageQueue.entrySet().iterator().next();
+            EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, message.getValue());
+            sendMessage(Utils.getInstance().toJsonString(emitModel));
+        }
+    }
+
+    /**
+     * remove delivered messages from queue
+     */
+    private void removeFromQueue(String messageId) {
+        messageQueue.remove(messageId);
+    }
+
+    /**
      * sending emit to server
      */
     private void sendMessage(String message) {
-        ConnectionManager.getInstance().sendEmit(message);
+        ConnectionManager.getInstance().send(message);
     }
 }

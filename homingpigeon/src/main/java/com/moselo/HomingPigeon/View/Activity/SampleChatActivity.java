@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -113,7 +114,19 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onSendTextMessage(MessageModel message) {
-        addNewTextMessage(message);
+        MessageModel pendingMessage = new MessageModel();
+        pendingMessage.setLocalId(message.getLocalId());
+        pendingMessage.setRoomId(message.getRoomId());
+        pendingMessage.setType(message.getType());
+        pendingMessage.setMessage(message.getMessage());
+        pendingMessage.setCreated(message.getCreated());
+        pendingMessage.setUser(message.getUser());
+        pendingMessage.setDeliveredTo(message.getDeliveredTo());
+        pendingMessage.setSeenBy(message.getSeenBy());
+        pendingMessage.setDeleted(message.getDeleted());
+        pendingMessage.setIsSending(message.getIsSending());
+        pendingMessage.setDeleted(message.getDeleted());
+        addNewTextMessage(pendingMessage);
     }
 
     private void initViewModel() {
@@ -244,18 +257,13 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         if (!TextUtils.isEmpty(message)) {
             etChat.setText("");
             ChatManager.getInstance().sendTextMessage(message);
-//            List<MessageModel> messages = ChatManager.getInstance().buildEncryptedTextMessages(
-//                    message,
-//                    mVM.getRoomId(),
-//                    mVM.getMyUserModel());
-//            ChatManager.getInstance().sendTextMessage(messages);
-//            for (MessageModel messageModel : messages) addNewTextMessage(messageModel);
         }
     }
 
     private void addNewTextMessage(final MessageModel newMessage) {
         try {
             newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalId()));
+            Log.e(TAG, "addNewTextMessage: " + newMessage.getMessage());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
