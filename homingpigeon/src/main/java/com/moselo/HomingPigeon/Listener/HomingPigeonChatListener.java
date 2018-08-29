@@ -9,4 +9,6 @@ public interface HomingPigeonChatListener {
     void onReceiveTextMessageInOtherRoom(MessageModel message);
 
     void onSendTextMessage(MessageModel message);
+
+    void onRetrySendMessage(MessageModel message);
 }

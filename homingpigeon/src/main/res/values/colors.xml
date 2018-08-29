@@ -5,6 +5,10 @@
     <color name="colorAccent">#2ECCAD</color>
     <color name="colorAccentLight">#A7EBDE</color>
 
+    <color name="colorTextMain">#424242</color>
+    <color name="colorTextSub">#80424242</color>
+    <color name="colorTextRed">#ED2929</color>
+
     <color name="color0">#FDC3A7</color>
     <color name="color1">#D0E69D</color>
     <color name="color2">#99D39E</color>

@@ -15,56 +15,60 @@ public class DatabaseManager {
     private static DatabaseManager instance;
 
     //for message Table
-    private MessageRepository messageRepo;
+    private MessageRepository messageRepository;
 
     public static DatabaseManager getInstance(){
-        if (null == instance)
-            instance = new DatabaseManager();
-
-        return instance;
+        return (null == instance) ? (instance = new DatabaseManager()) : instance;
     }
 
     public void setRepository(String databaseType, Application application){
         switch (databaseType){
             case MESSAGE_DB:
-                messageRepo = new MessageRepository(application);
+                messageRepository = new MessageRepository(application);
                 break;
         }
     }
 
+    public void insert(MessageEntity messageEntity){
+        if (null != messageRepository)
+            messageRepository.insert(messageEntity);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void insert(List<MessageEntity> messageEntities){
+        if (null != messageRepository)
+            messageRepository.insert(messageEntities);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void delete(String localId){
+        if (null != messageRepository)
+            messageRepository.delete(localId);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public LiveData<List<MessageEntity>> getMessagesLiveData(){
-        if (null != messageRepo)
-            return messageRepo.getAllMessages();
+        if (null != messageRepository)
+            return messageRepository.getAllMessages();
         else
-            throw new IllegalStateException("Message Repository was not initialized");
+            throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert (MessageEntity messageEntity){
-        if (null != messageRepo)
-            messageRepo.insert(messageEntity);
+    public void getMessages(HomingPigeonGetChatListener listener){
+        if (null != messageRepository)
+            messageRepository.getMessageList(listener);
         else
-            throw new IllegalStateException("Message Repository was not initialized");
-    }
-
-    public void insert (List<MessageEntity> messageEntities){
-        if (null != messageRepo)
-            messageRepo.insert(messageEntities);
-        else
-            throw new IllegalStateException("Message Repository was not initialized");
-    }
-
-    public void getMessages (HomingPigeonGetChatListener listener){
-        if (null != messageRepo)
-            messageRepo.getMessageList(listener);
-        else
-            throw new IllegalStateException("Message Repository was not initialized");
+            throw new IllegalStateException("Message Repository was not initialized.");
     }
 
     public void getMessages(HomingPigeonGetChatListener listener, long lastTimestamp){
-        if (null != messageRepo)
-            messageRepo.getMessageList(listener, lastTimestamp);
+        if (null != messageRepository)
+            messageRepository.getMessageList(listener, lastTimestamp);
         else
-            throw new IllegalStateException("Message Repository was not initialized");
+            throw new IllegalStateException("Message Repository was not initialized.");
     }
 
 }

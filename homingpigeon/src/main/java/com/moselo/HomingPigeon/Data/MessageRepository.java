@@ -22,31 +22,7 @@ public class MessageRepository {
         allMessages = messageDao.getAllMessage();
     }
 
-    public LiveData<List<MessageEntity>> getAllMessages() {
-        return allMessages;
-    }
-
-    public void getMessageList(final HomingPigeonGetChatListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                allMessageList = messageDao.getAllMessageList();
-                listener.onGetMessages(allMessageList);
-            }
-        }).start();
-    }
-
-    public void getMessageList(final HomingPigeonGetChatListener listener, final long lastTimestamp){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp);
-                listener.onGetMessages(entities);
-            }
-        }).start();
-    }
-
-    public void insert (MessageEntity message) {
+    public void insert(MessageEntity message) {
         new InsertAsyncTask(messageDao).execute(message);
     }
 
@@ -82,5 +58,38 @@ public class MessageRepository {
             }
             return null;
         }
+    }
+
+    public LiveData<List<MessageEntity>> getAllMessages() {
+        return allMessages;
+    }
+
+    public void getMessageList(final HomingPigeonGetChatListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                allMessageList = messageDao.getAllMessageList();
+                listener.onGetMessages(allMessageList);
+            }
+        }).start();
+    }
+
+    public void getMessageList(final HomingPigeonGetChatListener listener, final long lastTimestamp){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp);
+                listener.onGetMessages(entities);
+            }
+        }).start();
+    }
+
+    public void delete(final String localId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                messageDao.delete(localId);
+            }
+        }).start();
     }
 }

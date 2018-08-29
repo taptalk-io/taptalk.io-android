@@ -81,10 +81,10 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
         void onBind(int position) {
             item = getItemAt(position);
-            final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
-            final String userID = userModel.getUserID();
 
+            final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
             final int randomColor = getRandomColor(userModel.getName());
+
             avatarTint = ColorStateList.valueOf(randomColor);
             tvAvatar.setText(userModel.getName().substring(0, 1).toUpperCase());
             tvAvatar.setBackgroundTintList(avatarTint);
@@ -94,14 +94,11 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
-
                     Intent intent = new Intent(itemView.getContext(), SampleChatActivity.class);
                     intent.putExtra(K_MY_USERNAME, myUsername);
                     intent.putExtra(K_THEIR_USERNAME, userModel.getName());
                     intent.putExtra(K_COLOR, randomColor);
-                    intent.putExtra(K_ROOM_ID, ChatManager.getInstance()
-                            .arrangeRoomId(userID,"2"));
+                    intent.putExtra(K_ROOM_ID, item.getRoomId());
                     itemView.getContext().startActivity(intent);
                 }
             });

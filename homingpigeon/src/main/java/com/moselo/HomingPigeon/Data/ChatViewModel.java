@@ -16,23 +16,16 @@ import java.util.List;
 public class ChatViewModel extends AndroidViewModel {
 
     private LiveData<List<MessageEntity>> allMessages;
+    private List<MessageEntity> messageEntities = new ArrayList<>();
+    private List<MessageModel> messageModels = new ArrayList<>();
     private UserModel myUserModel;
     private String roomId;
+    private long lastTimestamp = 0;
     private int numUsers;
     private int unreadCount = 0;
     private boolean isConnected = false;
     private boolean isTyping = false;
     private boolean isOnBottom;
-    private List<MessageModel> messageModels = new ArrayList<>();
-    private List<MessageEntity> messageEntities = new ArrayList<>();
-
-    public List<MessageModel> getMessageModels() {
-        return messageModels;
-    }
-
-    public void setMessageModels(List<MessageModel> messageModels) {
-        this.messageModels = messageModels;
-    }
 
     public ChatViewModel(Application application) {
         super(application);
@@ -44,20 +37,32 @@ public class ChatViewModel extends AndroidViewModel {
         return allMessages;
     }
 
-    public void insert (MessageEntity messageEntity){
+    public void insert(MessageEntity messageEntity) {
         DataManager.getInstance().insertToDatabase(messageEntity);
+    }
+
+    public void insert(List<MessageEntity> messageEntities) {
+        DataManager.getInstance().insertToDatabase(messageEntities);
+    }
+
+    public void delete(String messageLocalId) {
+        DataManager.getInstance().deleteFromDatabase(messageLocalId);
     }
 
     public void getMessageEntities(HomingPigeonGetChatListener listener) {
         DataManager.getInstance().getMessagesFromDatabase(listener);
     }
 
-    public void getMessageByTimestamp(HomingPigeonGetChatListener listener, long lastTimestamp){
+    public void getMessageByTimestamp(HomingPigeonGetChatListener listener, long lastTimestamp) {
         DataManager.getInstance().getMessagesFromDatabase(listener,lastTimestamp);
     }
 
-    public void insert (List<MessageEntity> messageEntities){
-        DataManager.getInstance().insertToDatabase(messageEntities);
+    public List<MessageModel> getMessageModels() {
+        return messageModels;
+    }
+
+    public void setMessageModels(List<MessageModel> messageModels) {
+        this.messageModels = messageModels;
     }
 
     public UserModel getMyUserModel() {
@@ -75,6 +80,14 @@ public class ChatViewModel extends AndroidViewModel {
     public void setRoomId(String roomId) {
         this.roomId = roomId;
         ChatManager.getInstance().setActiveRoom(roomId);
+    }
+
+    public long getLastTimestamp() {
+        return lastTimestamp;
+    }
+
+    public void setLastTimestamp(long lastTimestamp) {
+        this.lastTimestamp = lastTimestamp;
     }
 
     public int getNumUsers() {
