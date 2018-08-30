@@ -56,17 +56,20 @@ public class ChatManager {
                 case kSocketNewMessage:
                     EmitModel<MessageModel> messageEmit = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
+                    MessageModel newMessage = messageEmit.getData();
+                    newMessage.setIsSending(0);
+                    DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(newMessage));
                     // Receive message in active room
-                    if (null != chatListeners && !chatListeners.isEmpty() && messageEmit.getData().getRoomId().equals(activeRoom)) {
+                    if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoomID().equals(activeRoom)) {
                         for (HomingPigeonChatListener chatListener : chatListeners)
-                            chatListener.onReceiveTextMessageInActiveRoom(messageEmit.getData());
+                            chatListener.onReceiveTextMessageInActiveRoom(newMessage);
                     }
                     // Receive message outside active room
-                    else if (null != chatListeners && !chatListeners.isEmpty() && !messageEmit.getData().getRoomId().equals(activeRoom)) {
+                    else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoomID().equals(activeRoom)) {
                         for (HomingPigeonChatListener chatListener : chatListeners)
-                            chatListener.onReceiveTextMessageInOtherRoom(messageEmit.getData());
+                            chatListener.onReceiveTextMessageInOtherRoom(newMessage);
                     }
-                    removeFromQueue(messageEmit.getData().getLocalId());
+                    removeFromQueue(newMessage.getLocalID());
                     runMessageQueue();
                     break;
                 case kSocketUpdateMessage:
@@ -157,9 +160,9 @@ public class ChatManager {
         MessageModel model = new MessageModel();
         try {
             model = MessageModel.BuilderDecrypt(
-                    entity.getLocalId(),
+                    entity.getLocalID(),
                     entity.getMessage(),
-                    entity.getRoomId(),
+                    entity.getRoomID(),
                     entity.getType(),
                     entity.getCreated(),
                     Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()),
@@ -179,11 +182,11 @@ public class ChatManager {
         MessageEntity entity = new MessageEntity();
         try {
             entity = new MessageEntity(
-                    model.getMessageId(),
-                    model.getLocalId(),
-                    model.getRoomId(),
+                    model.getMessageID(),
+                    model.getLocalID(),
+                    model.getRoomID(),
                     model.getType(),
-                    EncryptorManager.getInstance().encrypt(model.getMessage(), model.getLocalId()),
+                    EncryptorManager.getInstance().encrypt(model.getMessage(), model.getLocalID()),
                     model.getCreated(),
                     Utils.getInstance().toJsonString(model.getUser()),
                     Utils.getInstance().toJsonString(model.getDeliveredTo()),
@@ -228,7 +231,7 @@ public class ChatManager {
             e.printStackTrace();
             return;
         }
-        messageQueue.put(messageModel.getLocalId(), messageModel);
+        messageQueue.put(messageModel.getLocalID(), messageModel);
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (HomingPigeonChatListener chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);

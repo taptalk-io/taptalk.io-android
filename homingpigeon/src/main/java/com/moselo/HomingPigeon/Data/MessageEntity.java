@@ -10,9 +10,9 @@ import android.support.annotation.Nullable;
 @Entity(tableName = "Message_Table")
 public class MessageEntity {
 
-    @Nullable @ColumnInfo(name = "MessageID", index = true) private String messageId;
-    @PrimaryKey() @NonNull @ColumnInfo(name = "localID", index = true) private String localId;
-    @ColumnInfo(name = "roomID") private String roomId;
+    @Nullable @ColumnInfo(name = "MessageID", index = true) private String messageID;
+    @PrimaryKey() @NonNull @ColumnInfo(name = "localID", index = true) private String localID;
+    @ColumnInfo(name = "roomID") private String roomID;
     @ColumnInfo(name = "messageType") private Integer type;
     @ColumnInfo(name = "message") private String message;
     @ColumnInfo(name = "created") private Long created;
@@ -23,10 +23,10 @@ public class MessageEntity {
     @Nullable @ColumnInfo(name = "isSending") private Integer isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Integer isFailedSend;
 
-    public MessageEntity(@Nullable String messageId, @NonNull String localId, String room, int type, String message, long created, String user) {
-        this.messageId = messageId;
-        this.localId = localId;
-        this.roomId = room;
+    public MessageEntity(@Nullable String messageID, @NonNull String localID, String room, int type, String message, long created, String user) {
+        this.messageID = messageID;
+        this.localID = localID;
+        this.roomID = room;
         this.type = type;
         this.message = message;
         this.created = created;
@@ -34,10 +34,10 @@ public class MessageEntity {
     }
 
     @Ignore
-    public MessageEntity(@Nullable String messageId, @NonNull String localId, String room, int type, String message, long created, String user, @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted, @Nullable Integer isSending, @Nullable Integer isFailedSend) {
-        this.messageId = messageId;
-        this.localId = localId;
-        this.roomId = room;
+    public MessageEntity(@Nullable String messageID, @NonNull String localID, String room, int type, String message, long created, String user, @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted, @Nullable Integer isSending, @Nullable Integer isFailedSend) {
+        this.messageID = messageID;
+        this.localID = localID;
+        this.roomID = room;
         this.type = type;
         this.message = message;
         this.created = created;
@@ -54,29 +54,29 @@ public class MessageEntity {
     }
 
     @Nullable
-    public String getMessageId() {
-        return messageId;
+    public String getMessageID() {
+        return messageID;
     }
 
-    public void setMessageId(@Nullable String messageId) {
-        this.messageId = messageId;
+    public void setMessageID(@Nullable String messageID) {
+        this.messageID = messageID;
     }
 
     @NonNull
-    public String getLocalId() {
-        return localId;
+    public String getLocalID() {
+        return localID;
     }
 
-    public void setLocalId(@NonNull String localId) {
-        this.localId = localId;
+    public void setLocalID(@NonNull String localID) {
+        this.localID = localID;
     }
 
-    public String getRoomId() {
-        return roomId;
+    public String getRoomID() {
+        return roomID;
     }
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
+    public void setRoomID(String roomID) {
+        this.roomID = roomID;
     }
 
     public Integer getType() {

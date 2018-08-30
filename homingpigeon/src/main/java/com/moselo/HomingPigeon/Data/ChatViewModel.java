@@ -11,19 +11,20 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatViewModel extends AndroidViewModel {
 
     private LiveData<List<MessageEntity>> allMessages;
-    private List<MessageEntity> messageEntities = new ArrayList<>();
+    private Map<String, MessageModel> pendingMessages = new LinkedHashMap<>();
     private List<MessageModel> messageModels = new ArrayList<>();
     private UserModel myUserModel;
-    private String roomId;
+    private String roomID;
     private long lastTimestamp = 0;
     private int numUsers;
     private int unreadCount = 0;
-    private boolean isConnected = false;
     private boolean isTyping = false;
     private boolean isOnBottom;
 
@@ -37,16 +38,32 @@ public class ChatViewModel extends AndroidViewModel {
         return allMessages;
     }
 
-    public void insert(MessageEntity messageEntity) {
-        DataManager.getInstance().insertToDatabase(messageEntity);
+//    public void insert(MessageEntity messageEntity) {
+//        DataManager.getInstance().insertToDatabase(messageEntity);
+//    }
+//
+//    public void insert(List<MessageEntity> messageEntities) {
+//        DataManager.getInstance().insertToDatabase(messageEntities);
+//    }
+
+    public void delete(String messageLocalID) {
+        DataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
-    public void insert(List<MessageEntity> messageEntities) {
-        DataManager.getInstance().insertToDatabase(messageEntities);
+    public Map<String, MessageModel> getPendingMessages() {
+        return pendingMessages;
     }
 
-    public void delete(String messageLocalId) {
-        DataManager.getInstance().deleteFromDatabase(messageLocalId);
+    public void setPendingMessages(Map<String, MessageModel> pendingMessages) {
+        this.pendingMessages = pendingMessages;
+    }
+
+    public void addPendingMessage(MessageModel pendingMessage) {
+        pendingMessages.put(pendingMessage.getLocalID(), pendingMessage);
+    }
+
+    public void removePendingMessage(String localID) {
+        pendingMessages.remove(localID);
     }
 
     public void getMessageEntities(HomingPigeonGetChatListener listener) {
@@ -73,13 +90,13 @@ public class ChatViewModel extends AndroidViewModel {
         this.myUserModel = myUserModel;
     }
 
-    public String getRoomId() {
-        return roomId;
+    public String getRoomID() {
+        return roomID;
     }
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
-        ChatManager.getInstance().setActiveRoom(roomId);
+    public void setRoomID(String roomID) {
+        this.roomID = roomID;
+        ChatManager.getInstance().setActiveRoom(roomID);
     }
 
     public long getLastTimestamp() {
@@ -104,14 +121,6 @@ public class ChatViewModel extends AndroidViewModel {
 
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
-    }
-
-    public boolean isConnected() {
-        return isConnected;
-    }
-
-    public void setConnected(boolean connected) {
-        isConnected = connected;
     }
 
     public boolean isTyping() {

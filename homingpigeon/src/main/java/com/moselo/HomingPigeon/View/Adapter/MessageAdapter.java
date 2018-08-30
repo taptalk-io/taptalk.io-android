@@ -16,12 +16,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
+import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.View.Helper.Const.*;
@@ -30,13 +34,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
     private HomingPigeonChatListener listener;
     private List<MessageModel> chatMessages;
+    private Map<String, String> decryptedMessages;
     private int[] randomColors;
     private UserModel myUserModel;
 
     public MessageAdapter(Context context, HomingPigeonChatListener listener) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        this.listener = listener;
+        chatMessages = new ArrayList<>();
+        decryptedMessages = new HashMap<>();
         myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},prefs.getString(K_USER,"{}"));
+        this.listener = listener;
     }
 
     @Override
@@ -66,12 +73,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
     @Override
     public int getItemCount() {
-        if (null != chatMessages) {
-            return chatMessages.size();
-        }
-        else {
-            return 0;
-        }
+        return null != chatMessages ? chatMessages.size() : 0;
     }
 
     @Override
@@ -115,7 +117,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             else {
                 tvUsername.setVisibility(View.GONE);
             }
-            tvMessage.setText(item.getMessage());
+
+            // Check if hashmap contains decrypted message
+            String localID = item.getLocalID();
+            if (null == decryptedMessages.get(localID)) {
+                try {
+                    decryptedMessages.put(localID, EncryptorManager.getInstance().decrypt(item.getMessage(), localID));
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                }
+            }
+            tvMessage.setText(decryptedMessages.get(localID));
 
             // Message is sending
             if (null != item.getIsSending() && 1 == item.getIsSending()) {
@@ -152,8 +164,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 @Override
                 public void onClick(View v) {
                     if (1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
-                        removeMessageAt(position);
-                        listener.onRetrySendMessage(item);
+//                        removeMessageAt(position);
+//                        listener.onRetrySendMessage(item);
                     }
                     else {
                         if (llMessageStatus.getVisibility() == View.GONE) {
@@ -168,10 +180,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     }
 
     public void setMessages(List<MessageModel> messages) {
-        if (null == chatMessages){
-            chatMessages = new ArrayList<>();
-        }
-
         chatMessages = messages;
         notifyItemRangeChanged(0, getItemCount());
     }
@@ -181,15 +189,26 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         notifyItemInserted(0);
     }
 
-    public void addMessage(List<MessageModel> messageModels) {
+    public void addMessage(List<MessageModel> messages) {
         int lastIndex = getItemCount();
-        chatMessages.addAll(messageModels);
+        chatMessages.addAll(messages);
         notifyItemInserted(lastIndex);
     }
 
     public void setMessageAt(int position, MessageModel message) {
         chatMessages.set(position, message);
         notifyItemChanged(position);
+    }
+
+    public void setMessageWithID(String ID, MessageModel message) {
+        int size = getItemCount();
+        for (int index = 0; index < size; index++) {
+            if (chatMessages.get(index).getLocalID().equals(message.getLocalID())) {
+                chatMessages.set(index, message);
+                notifyItemChanged(index);
+                return;
+            }
+        }
     }
 
     public void removeMessageAt(int position) {

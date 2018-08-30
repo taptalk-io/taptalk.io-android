@@ -22,12 +22,10 @@ import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +74,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        ChatManager.getInstance().setActiveRoom(vm.getRoomId());
+        ChatManager.getInstance().setActiveRoom(vm.getRoomID());
         etChat.setText(ChatManager.getInstance().getMessageFromDraft());
     }
 
@@ -103,41 +101,30 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onReceiveTextMessageInActiveRoom(final MessageModel message) {
-        message.setIsSending(0);
         addNewTextMessage(message);
     }
 
     @Override
     public void onReceiveTextMessageInOtherRoom(MessageModel message) {
-        // TODO: 28 August 2018 REPLACE WITH PUSH NOTIFICATION / SAVE MESSAGE TO DATABASE
-        message.setIsSending(0);
+        // TODO: 28 August 2018 REPLACE
         addNewTextMessage(message);
     }
 
     @Override
     public void onRetrySendMessage(MessageModel message) {
-        vm.delete(message.getLocalId());
+        vm.delete(message.getLocalID());
         ChatManager.getInstance().sendTextMessage(message.getMessage());
     }
 
     @Override
     public void onSendTextMessage(MessageModel message) {
-        MessageModel pendingMessage = new MessageModel(
-                message.getLocalId(),
-                message.getMessage(),
-                message.getRoomId(),
-                message.getType(),
-                message.getCreated(),
-                message.getUser(),
-                message.getDeleted(),
-                message.getIsSending(),
-                message.getDeleted());
-        addNewTextMessage(pendingMessage);
+        addNewTextMessage(message);
+        vm.addPendingMessage(message);
     }
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
-        vm.setRoomId(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
+        vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
         vm.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
@@ -268,38 +255,31 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     private void addNewTextMessage(final MessageModel newMessage) {
-        try {
-            newMessage.setMessage(EncryptorManager.getInstance().decrypt(newMessage.getMessage(), newMessage.getLocalId()));
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // Overwrite if list already contains the same message
-                    boolean isMessageAdded = false;
-                    int index = 0;
-                    for (MessageModel messageModel : adapter.getItems()) {
-                        if (messageModel.getLocalId().equals(newMessage.getLocalId())) {
-                            adapter.setMessageAt(index, newMessage);
-                            isMessageAdded = true;
-                            break;
-                        } else index++;
-                    }
-                    if (!isMessageAdded) adapter.addMessage(newMessage);
-
-                    //Scroll recycler to bottom or show unread badge
-                    if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
-                            .getActiveUser(SampleChatActivity.this).getUserID()) ||
-                            vm.isOnBottom())
-                        rvChatList.scrollToPosition(0);
-                    else {
-                        tvBadgeUnread.setVisibility(View.VISIBLE);
-                        tvBadgeUnread.setText(vm.getUnreadCount() + "");
-                        vm.setUnreadCount(vm.getUnreadCount() + 1);
-                    }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Replace pending message with new message
+                String newID = newMessage.getLocalID();
+                if (null != vm.getPendingMessages().get(newID)) {
+                    adapter.setMessageWithID(newID, newMessage);
+                    vm.removePendingMessage(newID);
                 }
-            });
-            vm.insert(ChatManager.getInstance().convertToEntity(newMessage));
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
+                else {
+                    adapter.addMessage(newMessage);
+                }
+
+                //Scroll recycler to bottom or show unread badge
+                if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
+                        .getActiveUser(SampleChatActivity.this).getUserID()) ||
+                        vm.isOnBottom()){
+                    rvChatList.scrollToPosition(0);
+                }
+                else {
+                    tvBadgeUnread.setVisibility(View.VISIBLE);
+                    tvBadgeUnread.setText(vm.getUnreadCount() + "");
+                    vm.setUnreadCount(vm.getUnreadCount() + 1);
+                }
+            }
+        });
     }
 }

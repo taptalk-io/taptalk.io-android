@@ -14,9 +14,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageModel {
 
-    @Nullable @JsonProperty("messageID") private String messageId;
-    @NonNull @JsonProperty("localID") private String localId;
-    @JsonProperty("roomID") private String roomId;
+    @Nullable @JsonProperty("messageID") private String messageID;
+    @NonNull @JsonProperty("localID") private String localID;
+    @JsonProperty("roomID") private String roomID;
     @JsonProperty("type") private int type;
     @JsonProperty("message") private String message;
     @JsonProperty("created") private Long created;
@@ -27,10 +27,10 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private Integer isSending;
     @Nullable @JsonProperty("isFailedSend") private Integer isFailedSend;
 
-    public MessageModel(@NonNull String localId, String message, String roomId, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) {
-        this.localId = localId;
+    public MessageModel(@NonNull String localID, String message, String roomID, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) {
+        this.localID = localID;
         this.message = message;
-        this.roomId = roomId;
+        this.roomID = roomID;
         this.type = type;
         this.created = created;
         this.user = user;
@@ -56,30 +56,43 @@ public class MessageModel {
         return new MessageModel(localID, EncryptorManager.getInstance().decrypt(message, localID), room, type, created, user, deleted, isSending, isFailedSend);
     }
 
-    @Nullable
-    public String getMessageId() {
-        return messageId;
+    public static MessageModel BuilderDecrypt(MessageModel messageModel) throws GeneralSecurityException {
+        return new MessageModel(
+                messageModel.getLocalID(),
+                EncryptorManager.getInstance().decrypt(messageModel.getMessage(), messageModel.getLocalID()),
+                messageModel.getRoomID(),
+                messageModel.getType(),
+                messageModel.getCreated(),
+                messageModel.getUser(),
+                messageModel.getDeleted(),
+                messageModel.getIsSending(),
+                messageModel.getIsFailedSend());
     }
 
-    public void setMessageId(@Nullable String messageId) {
-        this.messageId = messageId;
+    @Nullable
+    public String getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(@Nullable String messageID) {
+        this.messageID = messageID;
     }
 
     @NonNull
-    public String getLocalId() {
-        return localId;
+    public String getLocalID() {
+        return localID;
     }
 
-    public void setLocalId(@NonNull String localId) {
-        this.localId = localId;
+    public void setLocalID(@NonNull String localID) {
+        this.localID = localID;
     }
 
-    public String getRoomId() {
-        return roomId;
+    public String getRoomID() {
+        return roomID;
     }
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
+    public void setRoomID(String roomID) {
+        this.roomID = roomID;
     }
 
     public int getType() {

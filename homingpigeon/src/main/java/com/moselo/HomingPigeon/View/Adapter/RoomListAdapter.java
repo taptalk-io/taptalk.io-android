@@ -98,7 +98,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     intent.putExtra(K_MY_USERNAME, myUsername);
                     intent.putExtra(K_THEIR_USERNAME, userModel.getName());
                     intent.putExtra(K_COLOR, randomColor);
-                    intent.putExtra(K_ROOM_ID, item.getRoomId());
+                    intent.putExtra(K_ROOM_ID, item.getRoomID());
                     itemView.getContext().startActivity(intent);
                 }
             });
