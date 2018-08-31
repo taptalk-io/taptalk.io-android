@@ -84,11 +84,20 @@ public class MessageRepository {
         }).start();
     }
 
-    public void delete(final String localId) {
+    public void delete(final String localID) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                messageDao.delete(localId);
+                messageDao.delete(localID);
+            }
+        }).start();
+    }
+
+    public void updatePendingStatus() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                messageDao.updatePendingStatus();
             }
         }).start();
     }

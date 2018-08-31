@@ -59,7 +59,7 @@ public class ChatManager {
                     MessageModel newMessage;
                     try {
                         // Decrypt received message
-                        newMessage = MessageModel.decryptMessage(messageEmit.getData());
+                        newMessage = MessageModel.BuilderDecrypt(messageEmit.getData());
                         newMessage.setIsSending(0);
 
                         // Insert decrypted message to database
@@ -244,7 +244,7 @@ public class ChatManager {
 
         // Add encrypted message to queue
         try {
-            messageQueue.put(messageModel.getLocalID(), MessageModel.encryptMessage(messageModel));
+            messageQueue.put(messageModel.getLocalID(), MessageModel.BuilderEncrypt(messageModel));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }

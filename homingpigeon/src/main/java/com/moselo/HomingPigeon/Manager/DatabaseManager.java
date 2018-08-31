@@ -36,16 +36,23 @@ public class DatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(List<MessageEntity> messageEntities){
+    public void insert(List<MessageEntity> messageEntities) {
         if (null != messageRepository)
             messageRepository.insert(messageEntities);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void delete(String localId){
+    public void delete(String localID) {
         if (null != messageRepository)
-            messageRepository.delete(localId);
+            messageRepository.delete(localID);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void updatePendingStatus() {
+        if (null != messageRepository)
+            messageRepository.updatePendingStatus();
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }

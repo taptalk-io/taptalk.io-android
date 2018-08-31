@@ -70,6 +70,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         ChatManager.getInstance().removeChatListener(this);
+        DataManager.getInstance().updatePendingStatus();
     }
 
     @Override
@@ -217,11 +218,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private void loadMessageFromDatabase(List<MessageEntity> entities) {
         final List<MessageModel> models = new ArrayList<>();
         for (MessageEntity entity : entities) {
-            // Check for pending messages
-            if (null != entity.getIsSending() && 1 == entity.getIsSending()) {
-                entity.setIsSending(0);
-                entity.setIsFailedSend(1);
-            }
             models.add(ChatManager.getInstance().convertToModel(entity));
         }
         vm.setMessageModels(models);
