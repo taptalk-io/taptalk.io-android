@@ -56,21 +56,34 @@ public class ChatManager {
                 case kSocketNewMessage:
                     EmitModel<MessageModel> messageEmit = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
-                    MessageModel newMessage = messageEmit.getData();
-                    newMessage.setIsSending(0);
-                    DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(newMessage));
-                    // Receive message in active room
-                    if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoomID().equals(activeRoom)) {
-                        for (HomingPigeonChatListener chatListener : chatListeners)
-                            chatListener.onReceiveTextMessageInActiveRoom(newMessage);
+                    MessageModel newMessage;
+                    try {
+                        // Decrypt received message
+                        newMessage = MessageModel.decryptMessage(messageEmit.getData());
+                        newMessage.setIsSending(0);
+
+                        // Insert decrypted message to database
+                        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(newMessage));
+
+                        // Receive message in active room
+                        if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoomID().equals(activeRoom)) {
+                            for (HomingPigeonChatListener chatListener : chatListeners)
+                                chatListener.onReceiveTextMessageInActiveRoom(newMessage);
+                        }
+                        // Receive message outside active room
+                        else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoomID().equals(activeRoom)) {
+                            for (HomingPigeonChatListener chatListener : chatListeners)
+                                chatListener.onReceiveTextMessageInOtherRoom(newMessage);
+                        }
+
+                        // Remove message from queue and re-check queue
+                        if (newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
+                            removeFromQueue(newMessage.getLocalID());
+                            runMessageQueue();
+                        }
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
                     }
-                    // Receive message outside active room
-                    else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoomID().equals(activeRoom)) {
-                        for (HomingPigeonChatListener chatListener : chatListeners)
-                            chatListener.onReceiveTextMessageInOtherRoom(newMessage);
-                    }
-                    removeFromQueue(newMessage.getLocalID());
-                    runMessageQueue();
                     break;
                 case kSocketUpdateMessage:
                     break;
@@ -167,47 +180,36 @@ public class ChatManager {
      * convert MessageEntity to MessageModel
      */
     public MessageModel convertToModel(MessageEntity entity) {
-        MessageModel model = new MessageModel();
-        try {
-            model = MessageModel.BuilderDecrypt(
-                    entity.getLocalID(),
-                    entity.getMessage(),
-                    entity.getRoomID(),
-                    entity.getType(),
-                    entity.getCreated(),
-                    Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()),
-                    entity.getDeleted(),
-                    entity.getIsSending(),
-                    entity.getIsFailedSend());
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
-        return model;
+        return new MessageModel(
+                entity.getMessageID(),
+                entity.getLocalID(),
+                entity.getMessage(),
+                entity.getRoomID(),
+                entity.getType(),
+                entity.getCreated(),
+                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()),
+                entity.getDeleted(),
+                entity.getIsSending(),
+                entity.getIsFailedSend());
     }
 
     /**
      * convert MessageModel to MessageEntity
      */
     public MessageEntity convertToEntity(MessageModel model) {
-        MessageEntity entity = new MessageEntity();
-        try {
-            entity = new MessageEntity(
-                    model.getMessageID(),
-                    model.getLocalID(),
-                    model.getRoomID(),
-                    model.getType(),
-                    EncryptorManager.getInstance().encrypt(model.getMessage(), model.getLocalID()),
-                    model.getCreated(),
-                    Utils.getInstance().toJsonString(model.getUser()),
-                    Utils.getInstance().toJsonString(model.getDeliveredTo()),
-                    Utils.getInstance().toJsonString(model.getSeenBy()),
-                    model.getDeleted(),
-                    model.getIsSending(),
-                    model.getIsFailedSend());
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
-        return entity;
+        return new MessageEntity(
+                model.getMessageID(),
+                model.getLocalID(),
+                model.getRoomID(),
+                model.getType(),
+                model.getMessage(),
+                model.getCreated(),
+                Utils.getInstance().toJsonString(model.getUser()),
+                Utils.getInstance().toJsonString(model.getDeliveredTo()),
+                Utils.getInstance().toJsonString(model.getSeenBy()),
+                model.getDeleted(),
+                model.getIsSending(),
+                model.getIsFailedSend());
     }
 
     /**
@@ -220,29 +222,34 @@ public class ChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = Utils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                buildEncryptedTextMessage(substr);
+                buildTextMessage(substr);
             }
         } else {
-            buildEncryptedTextMessage(textMessage);
+            buildTextMessage(textMessage);
         }
         runMessageQueue();
     }
 
-    private void buildEncryptedTextMessage(String message) {
-        MessageModel messageModel;
+    private void buildTextMessage(String message) {
+        // Create new MessageModel based on text
+        MessageModel messageModel = MessageModel.Builder(
+                message,
+                activeRoom,
+                DefaultConstant.MessageType.TYPE_TEXT,
+                System.currentTimeMillis(),
+                activeUser);
+
+        // Insert new MessageModel to database
+        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
+
+        // Add encrypted message to queue
         try {
-            messageModel = MessageModel.BuilderEncrypt(
-                    message,
-                    activeRoom,
-                    DefaultConstant.MessageType.TYPE_TEXT,
-                    System.currentTimeMillis(),
-                    activeUser);
+            messageQueue.put(messageModel.getLocalID(), MessageModel.encryptMessage(messageModel));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
-            return;
         }
-        messageQueue.put(messageModel.getLocalID(), messageModel);
-        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
+
+        // Call listener
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (HomingPigeonChatListener chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);
