@@ -120,7 +120,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
             // Check if hashmap contains decrypted message
             String localID = item.getLocalID();
-            if (null == decryptedMessages.get(localID)) {
+            if (!decryptedMessages.containsKey(localID)) {
                 try {
                     decryptedMessages.put(localID, EncryptorManager.getInstance().decrypt(item.getMessage(), localID));
                 } catch (GeneralSecurityException e) {
