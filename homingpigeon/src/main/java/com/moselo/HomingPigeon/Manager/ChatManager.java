@@ -232,6 +232,7 @@ public class ChatManager {
             return;
         }
         messageQueue.put(messageModel.getLocalID(), messageModel);
+        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (HomingPigeonChatListener chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);
