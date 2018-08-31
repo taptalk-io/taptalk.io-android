@@ -142,7 +142,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             // Message failed to send
             else if (null != item.getIsFailedSend() && 1 == item.getIsFailedSend()) {
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextRed));
-                tvStatus.setText("Send Failed.");
+                tvStatus.setText("Failed to send.");
                 tvDash.setText("");
                 tvTimestamp.setText("");
                 clBubble.setAlpha(0.5f);

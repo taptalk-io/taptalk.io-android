@@ -18,8 +18,8 @@ import java.util.Map;
 public class ChatViewModel extends AndroidViewModel {
 
     private LiveData<List<MessageEntity>> allMessages;
-    private Map<String, MessageModel> pendingMessages = new LinkedHashMap<>();
-    private List<MessageModel> messageModels = new ArrayList<>();
+    private Map<String, MessageModel> pendingMessages;
+    private List<MessageModel> messageModels;
     private UserModel myUserModel;
     private String roomID;
     private long lastTimestamp = 0;
@@ -32,6 +32,8 @@ public class ChatViewModel extends AndroidViewModel {
         super(application);
 //        repository = new MessageRepository(application);
         allMessages = DataManager.getInstance().getMessagesLiveData();
+        pendingMessages = new LinkedHashMap<>();
+        messageModels = new ArrayList<>();
     }
 
     public LiveData<List<MessageEntity>> getAllMessages() {

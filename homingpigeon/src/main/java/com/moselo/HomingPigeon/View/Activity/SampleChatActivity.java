@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -126,6 +127,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
+        vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
@@ -260,7 +262,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             public void run() {
                 // Replace pending message with new message
                 String newID = newMessage.getLocalID();
-                if (null != vm.getPendingMessages().get(newID)) {
+                if (vm.getPendingMessages().containsKey(newID)) {
                     adapter.setMessageWithID(newMessage);
                     vm.removePendingMessage(newID);
                 }

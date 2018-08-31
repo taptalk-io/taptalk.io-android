@@ -144,6 +144,16 @@ public class ChatManager {
         prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
     }
 
+    public Map<String, MessageModel> getMessageQueueInActiveRoom() {
+        Map<String, MessageModel> roomQueue = new LinkedHashMap<>();
+        for (Map.Entry<String, MessageModel> entry : messageQueue.entrySet()) {
+            if (entry.getValue().getRoomID().equals(activeRoom)) {
+                roomQueue.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return roomQueue;
+    }
+
     /**
      * generate room ID
      */
