@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Data;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Manager.DataManager;
@@ -66,6 +67,10 @@ public class ChatViewModel extends AndroidViewModel {
 
     public void removePendingMessage(String localID) {
         pendingMessages.remove(localID);
+    }
+
+    public void updatePendingMessage(MessageModel newMessage) {
+        pendingMessages.get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
     public void getMessageEntities(HomingPigeonGetChatListener listener) {

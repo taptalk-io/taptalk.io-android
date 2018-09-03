@@ -188,16 +188,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         notifyItemChanged(position);
     }
 
-    public void setMessageWithID(MessageModel message) {
-        int size = getItemCount();
-        for (int index = 0; index < size; index++) {
-            if (chatMessages.get(index).getLocalID().equals(message.getLocalID())) {
-                chatMessages.set(index, message);
-                notifyItemChanged(index);
-                return;
-            }
-        }
-    }
+//    public void setMessageWithID(MessageModel message) {
+//        int size = getItemCount();
+//        for (int index = 0; index < size; index++) {
+//            if (chatMessages.get(index).getLocalID().equals(message.getLocalID())) {
+//                chatMessages.set(index, message);
+//                notifyItemChanged(index);
+//                return;
+//            }
+//        }
+//    }
 
     public void removeMessageAt(int position) {
         chatMessages.remove(position);

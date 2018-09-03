@@ -259,8 +259,9 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 // Replace pending message with new message
                 String newID = newMessage.getLocalID();
                 if (vm.getPendingMessages().containsKey(newID)) {
-                    adapter.setMessageWithID(newMessage);
+                    vm.updatePendingMessage(newMessage);
                     vm.removePendingMessage(newID);
+                    adapter.notifyItemRangeChanged(0, adapter.getItemCount());
                 }
                 else {
                     adapter.addMessage(newMessage);

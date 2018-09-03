@@ -38,6 +38,7 @@ public class MessageModel {
         this.deleted = deleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
+        // TODO: 3 September 2018 ADD deliveredTo & seenBy
     }
 
     public MessageModel() {
@@ -204,5 +205,19 @@ public class MessageModel {
 
     public void setIsFailedSend(@Nullable Integer isFailedSend) {
         this.isFailedSend = isFailedSend;
+    }
+
+    public void updateValue(MessageModel model){
+        this.messageID = model.getMessageID();
+        this.localID = model.getLocalID();
+        this.message = model.getMessage();
+        this.roomID = model.getRoomID();
+        this.type = model.getType();
+        this.created = model.getCreated();
+        this.user = model.getUser();
+        this.deleted = model.getDeleted();
+        this.isSending = model.getIsSending();
+        this.isFailedSend = model.getIsFailedSend();
+        // TODO: 3 September 2018 ADD deliveredTo & seenBy
     }
 }
