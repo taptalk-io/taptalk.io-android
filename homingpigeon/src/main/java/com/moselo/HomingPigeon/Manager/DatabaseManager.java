@@ -57,6 +57,13 @@ public class DatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void updatePendingStatus(String localID) {
+        if (null != messageRepository)
+            messageRepository.updatePendingStatus(localID);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public LiveData<List<MessageEntity>> getMessagesLiveData(){
         if (null != messageRepository)
             return messageRepository.getAllMessages();

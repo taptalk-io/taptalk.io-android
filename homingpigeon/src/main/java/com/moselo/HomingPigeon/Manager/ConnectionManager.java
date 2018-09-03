@@ -73,7 +73,7 @@ public class ConnectionManager {
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
                 reconnectAttempt = 0;
-                ChatManager.getInstance().runMessageQueue();
+                //ChatManager.getInstance().runMessageQueue();
             }
 
             @Override

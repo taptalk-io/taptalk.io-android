@@ -35,4 +35,7 @@ public interface MessageDao {
 
     @Query("update message_table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();
+
+    @Query("update message_table set isFailedSend = 1, isSending = 0 where localID = :localID")
+    void updatePendingStatus(String localID);
 }

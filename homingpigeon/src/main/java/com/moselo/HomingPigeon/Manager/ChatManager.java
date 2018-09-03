@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
@@ -14,6 +15,9 @@ import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Model.EmitModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -34,12 +38,14 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSo
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOffline;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOnline;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.MessageQueue.MESSAGE;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.MessageQueue.NUM_OF_ATTEMPT;
 
 public class ChatManager {
 
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
-    private Map<String, MessageModel> messageQueue;
+    //    private Map<String, JSONObject> messageQueue;
     private Map<String, String> messageDrafts;
     private String activeRoom;
     private UserModel activeUser;
@@ -55,7 +61,8 @@ public class ChatManager {
                     break;
                 case kSocketNewMessage:
                     EmitModel<MessageModel> messageEmit = Utils.getInstance()
-                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {}, emitData);
+                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
+                            }, emitData);
                     MessageModel newMessage;
                     try {
                         // Decrypt received message
@@ -77,10 +84,10 @@ public class ChatManager {
                         }
 
                         // Remove message from queue and re-check queue
-                        if (newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
-                            removeFromQueue(newMessage.getLocalID());
-                            runMessageQueue();
-                        }
+                        //if (newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
+                        //removeFromQueue(newMessage.getLocalID());
+                        //runMessageQueue();
+                        //}
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -111,11 +118,12 @@ public class ChatManager {
 
     public ChatManager() {
         ConnectionManager.getInstance().addSocketListener(socketListener);
-        setActiveUser(Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},
+        setActiveUser(Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                                                   },
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
                         .getString(K_USER, null)));
         chatListeners = new ArrayList<>();
-        messageQueue = new LinkedHashMap<>();
+        //messageQueue = new LinkedHashMap<>();
         messageDrafts = new HashMap<>();
     }
 
@@ -157,15 +165,20 @@ public class ChatManager {
         prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
     }
 
-    public Map<String, MessageModel> getMessageQueueInActiveRoom() {
-        Map<String, MessageModel> roomQueue = new LinkedHashMap<>();
-        for (Map.Entry<String, MessageModel> entry : messageQueue.entrySet()) {
-            if (entry.getValue().getRoomID().equals(activeRoom)) {
-                roomQueue.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return roomQueue;
-    }
+//    public Map<String, MessageModel> getMessageQueueInActiveRoom() {
+//        Map<String, MessageModel> roomQueue = new LinkedHashMap<>();
+//        for (Map.Entry<String, JSONObject> entry : messageQueue.entrySet()) {
+//            try {
+//                MessageModel tempMessage = (MessageModel) entry.getValue().get(MESSAGE);
+//                if (tempMessage.getRoomID().equals(activeRoom)) {
+//                    roomQueue.put(entry.getKey(), (MessageModel) entry.getValue().get(MESSAGE));
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return roomQueue;
+//    }
 
     /**
      * generate room ID
@@ -187,7 +200,8 @@ public class ChatManager {
                 entity.getRoomID(),
                 entity.getType(),
                 entity.getCreated(),
-                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, entity.getUser()),
+                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                }, entity.getUser()),
                 entity.getDeleted(),
                 entity.getIsSending(),
                 entity.getIsFailedSend());
@@ -224,7 +238,10 @@ public class ChatManager {
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = Utils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 MessageModel messageModel = buildTextMessage(substr);
+
                 messageEntities.add(ChatManager.getInstance().convertToEntity(messageModel));
+
+                sendMessage(messageModel);
             }
             // Insert list to database
             DataManager.getInstance().insertToDatabase(messageEntities);
@@ -233,9 +250,11 @@ public class ChatManager {
 
             // Insert new message to database
             DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
+
+            sendMessage(messageModel);
         }
         // Run queue after list is updated
-        runMessageQueue();
+        //runMessageQueue();
     }
 
     private MessageModel buildTextMessage(String message) {
@@ -248,11 +267,14 @@ public class ChatManager {
                 activeUser);
 
         // Add encrypted message to queue
-        try {
-            messageQueue.put(messageModel.getLocalID(), MessageModel.BuilderEncrypt(messageModel));
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
+        //try {
+        //    JSONObject messageObject = new JSONObject();
+        //    messageObject.put(MESSAGE, MessageModel.BuilderEncrypt(messageModel));
+        //    messageObject.put(DefaultConstant.MessageQueue.NUM_OF_ATTEMPT, 0);
+        //    messageQueue.put(messageModel.getLocalID(), messageObject);
+        //} catch (GeneralSecurityException | JSONException e) {
+        //    e.printStackTrace();
+        //}
 
         // Call listener
         if (null != chatListeners && !chatListeners.isEmpty()) {
@@ -277,25 +299,52 @@ public class ChatManager {
     /**
      * send pending messages from queue
      */
-    public void runMessageQueue() {
-        if (!messageQueue.isEmpty()) {
-            Map.Entry<String, MessageModel> message = messageQueue.entrySet().iterator().next();
-            EmitModel<MessageModel> emitModel = new EmitModel<>(kSocketNewMessage, message.getValue());
-            sendMessage(Utils.getInstance().toJsonString(emitModel));
-        }
-    }
+//    public void runMessageQueue() {
+//        if (!messageQueue.isEmpty()) {
+//            Map.Entry<String, JSONObject> message = messageQueue.entrySet().iterator().next();
+//            EmitModel<MessageModel> emitModel = null;
+//            Log.e("KRIM", "runMessageQueue: ");
+//            try {
+//                emitModel = new EmitModel<>(kSocketNewMessage, (MessageModel) message.getValue().get(MESSAGE));
+//                message.getValue().put(NUM_OF_ATTEMPT, message.getValue().getInt(NUM_OF_ATTEMPT) + 1);
+//                if (message.getValue().getInt(NUM_OF_ATTEMPT) < 2)
+//                    sendMessage(Utils.getInstance().toJsonString(emitModel));
+//                else {
+//                    MessageModel tempMessage = MessageModel.BuilderDecrypt(emitModel.getData());
+//                    tempMessage.setIsFailedSend(1);
+//                    tempMessage.setIsSending(0);
+//                    DataManager.getInstance().updatePendingStatus(tempMessage.getLocalID());
+//                    removeFromQueue(tempMessage.getLocalID());
+//                    if (null != chatListeners && !chatListeners.isEmpty()) {
+//                        for (HomingPigeonChatListener chatListener : chatListeners)
+//                            chatListener.onSendFailed(tempMessage);
+//                    }
+//                    Log.e("KRIM", "runMessageQueue: "+ tempMessage);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                Log.e("KRIM", "runMessageQueue: ",e );
+//            }
+//        }
+//    }
 
     /**
      * remove delivered messages from queue
      */
-    private void removeFromQueue(String messageId) {
-        messageQueue.remove(messageId);
-    }
+//    private void removeFromQueue(String localID) {
+//        messageQueue.remove(localID);
+//    }
 
     /**
      * sending emit to server
      */
-    private void sendMessage(String message) {
-        ConnectionManager.getInstance().send(message);
+    private void sendMessage(MessageModel messageModel) {
+        EmitModel<MessageModel> emitModel = null;
+        try {
+            emitModel = new EmitModel<>(kSocketNewMessage, MessageModel.BuilderEncrypt(messageModel));
+            ConnectionManager.getInstance().send(Utils.getInstance().toJsonString(emitModel));
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -52,6 +52,11 @@ public class DefaultConstant {
         public static final int TYPE_ASK_PRODUCT = 9007;
     }
 
+    public static class MessageQueue{
+        public static final String NUM_OF_ATTEMPT = "numOfAttempt";
+        public static final String MESSAGE = "Message";
+    }
+
     public static final String K_USER = "kUser";
     public static final String K_ROOM_ID = "kRoomID";
     public static final String EncryptionKey = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";

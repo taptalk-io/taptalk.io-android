@@ -101,4 +101,13 @@ public class MessageRepository {
             }
         }).start();
     }
+
+    public void updatePendingStatus(final String localID) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                messageDao.updatePendingStatus(localID);
+            }
+        }).start();
+    }
 }

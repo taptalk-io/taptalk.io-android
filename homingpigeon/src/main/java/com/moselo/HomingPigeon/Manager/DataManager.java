@@ -55,6 +55,10 @@ public class DataManager {
         DatabaseManager.getInstance().updatePendingStatus();
     }
 
+    public void updatePendingStatus(String localID) {
+        DatabaseManager.getInstance().updatePendingStatus(localID);
+    }
+
     public LiveData<List<MessageEntity>> getMessagesLiveData() {
         return DatabaseManager.getInstance().getMessagesLiveData();
     }

@@ -119,6 +119,19 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
+    public void onSendFailed(final MessageModel message) {
+        vm.updatePendingMessage(message);
+        vm.removePendingMessage(message.getLocalID());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                Log.e("KRIM", "onSendFailed: "+message);
+            }
+        });
+    }
+
+    @Override
     public void onSendTextMessage(MessageModel message) {
         addNewTextMessage(message);
         vm.addPendingMessage(message);
@@ -128,7 +141,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
-        vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
+        //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
