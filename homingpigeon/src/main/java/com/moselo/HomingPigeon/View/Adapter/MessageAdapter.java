@@ -16,32 +16,28 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Manager.EncryptorManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.View.Helper.Const.*;
+import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_BUBBLE_LEFT;
+import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_BUBBLE_RIGHT;
+import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_LOG;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder> {
 
     private HomingPigeonChatListener listener;
     private List<MessageModel> chatMessages;
-    private Map<String, String> decryptedMessages;
     private int[] randomColors;
     private UserModel myUserModel;
 
     public MessageAdapter(Context context, HomingPigeonChatListener listener) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         chatMessages = new ArrayList<>();
-        decryptedMessages = new HashMap<>();
         myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},prefs.getString(K_USER,"{}"));
         this.listener = listener;
     }
@@ -118,16 +114,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 tvUsername.setVisibility(View.GONE);
             }
 
-            // Check if hashmap contains decrypted message
-            String localID = item.getLocalID();
-            if (!decryptedMessages.containsKey(localID)) {
-                try {
-                    decryptedMessages.put(localID, EncryptorManager.getInstance().decrypt(item.getMessage(), localID));
-                } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
-                }
-            }
-            tvMessage.setText(decryptedMessages.get(localID));
+            tvMessage.setText(item.getMessage());
 
             // Message is sending
             if (null != item.getIsSending() && 1 == item.getIsSending()) {
@@ -142,7 +129,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             // Message failed to send
             else if (null != item.getIsFailedSend() && 1 == item.getIsFailedSend()) {
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextRed));
-                tvStatus.setText("Send Failed.");
+                tvStatus.setText("Failed to send.");
                 tvDash.setText("");
                 tvTimestamp.setText("");
                 clBubble.setAlpha(0.5f);
@@ -163,7 +150,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
+                    if (null != item.getIsFailedSend() && null != item.getIsSending() &&
+                            1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
 //                        removeMessageAt(position);
 //                        listener.onRetrySendMessage(item);
                     }

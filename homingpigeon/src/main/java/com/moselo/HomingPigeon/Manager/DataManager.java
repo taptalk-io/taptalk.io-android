@@ -47,8 +47,12 @@ public class DataManager {
         DatabaseManager.getInstance().insert(messageEntities);
     }
 
-    public void deleteFromDatabase(String messageLocalId) {
-        DatabaseManager.getInstance().delete(messageLocalId);
+    public void deleteFromDatabase(String messageLocalID) {
+        DatabaseManager.getInstance().delete(messageLocalID);
+    }
+
+    public void updatePendingStatus() {
+        DatabaseManager.getInstance().updatePendingStatus();
     }
 
     public LiveData<List<MessageEntity>> getMessagesLiveData() {

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -69,6 +70,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         ChatManager.getInstance().removeChatListener(this);
+        DataManager.getInstance().updatePendingStatus();
     }
 
     @Override
@@ -126,6 +128,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
+        vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
@@ -215,11 +218,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private void loadMessageFromDatabase(List<MessageEntity> entities) {
         final List<MessageModel> models = new ArrayList<>();
         for (MessageEntity entity : entities) {
-            // Check for pending messages
-            if (null != entity.getIsSending() && 1 == entity.getIsSending()) {
-                entity.setIsSending(0);
-                entity.setIsFailedSend(1);
-            }
             models.add(ChatManager.getInstance().convertToModel(entity));
         }
         vm.setMessageModels(models);
@@ -260,7 +258,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             public void run() {
                 // Replace pending message with new message
                 String newID = newMessage.getLocalID();
-                if (null != vm.getPendingMessages().get(newID)) {
+                if (vm.getPendingMessages().containsKey(newID)) {
                     adapter.setMessageWithID(newMessage);
                     vm.removePendingMessage(newID);
                 }

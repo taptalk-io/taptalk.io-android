@@ -2,12 +2,9 @@ package com.moselo.HomingPigeon.Data;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
-
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 
 import java.util.List;
 
@@ -30,9 +27,12 @@ public interface MessageDao {
     @Query("select * from message_table order by Created desc")
     LiveData<List<MessageEntity>> getAllMessage();
 
-    @Query("select * from message_table order by Created desc limit "+numOfItem)
+    @Query("select * from message_table order by Created desc limit " + numOfItem)
     List<MessageEntity> getAllMessageList();
 
     @Query("select * from message_table where Created in (select distinct Created from message_table where Created < :lastTimestamp order by Created desc limit "+ numOfItem+" ) order by Created desc")
     List<MessageEntity> getAllMessageTimeStamp(Long lastTimestamp);
+
+    @Query("update message_table set isFailedSend = 1, isSending = 0 where isSending = 1")
+    void updatePendingStatus();
 }
