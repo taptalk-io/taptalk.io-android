@@ -216,21 +216,29 @@ public class ChatManager {
      * sending text messages
      */
     public void sendTextMessage(String textMessage) {
-        // Check if message exceeds character limit
         Integer startIndex;
+        // Check if message exceeds character limit
         if (textMessage.length() > CHARACTER_LIMIT) {
+            List<MessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = Utils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                buildTextMessage(substr);
+                MessageModel messageModel = buildTextMessage(substr);
+                messageEntities.add(ChatManager.getInstance().convertToEntity(messageModel));
             }
+            // Insert list to database
+            DataManager.getInstance().insertToDatabase(messageEntities);
         } else {
-            buildTextMessage(textMessage);
+            MessageModel messageModel = buildTextMessage(textMessage);
+
+            // Insert new message to database
+            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
         }
+        // Run queue after list is updated
         runMessageQueue();
     }
 
-    private void buildTextMessage(String message) {
+    private MessageModel buildTextMessage(String message) {
         // Create new MessageModel based on text
         MessageModel messageModel = MessageModel.Builder(
                 message,
@@ -238,9 +246,6 @@ public class ChatManager {
                 DefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
                 activeUser);
-
-        // Insert new MessageModel to database
-        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
 
         // Add encrypted message to queue
         try {
@@ -254,6 +259,8 @@ public class ChatManager {
             for (HomingPigeonChatListener chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);
         }
+
+        return messageModel;
     }
 
     /**
