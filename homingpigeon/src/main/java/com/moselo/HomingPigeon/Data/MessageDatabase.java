@@ -9,6 +9,8 @@ import android.text.Editable;
 import com.commonsware.cwac.saferoom.SafeHelperFactory;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.DB_ENCRYPT_PASS;
+
 @Database(entities = {MessageEntity.class}, version = DefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
 public abstract class MessageDatabase extends RoomDatabase{
 
@@ -17,7 +19,7 @@ public abstract class MessageDatabase extends RoomDatabase{
     public static MessageDatabase getDatabase(Context context){
         if (null == database){
             SafeHelperFactory factory = SafeHelperFactory.fromUser(
-                    Editable.Factory.getInstance().newEditable("MoseloOlesom"));
+                    Editable.Factory.getInstance().newEditable(DB_ENCRYPT_PASS));
             database = Room.databaseBuilder(context,
                     MessageDatabase.class, "message_database")
                     .openHelperFactory(factory)

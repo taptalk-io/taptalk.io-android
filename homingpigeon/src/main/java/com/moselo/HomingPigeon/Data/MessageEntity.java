@@ -10,9 +10,9 @@ import android.support.annotation.Nullable;
 @Entity(tableName = "Message_Table")
 public class MessageEntity {
 
-    @Nullable @ColumnInfo(name = "MessageID", index = true) private String messageID;
+    @Nullable @ColumnInfo(name = "MessageID") private String messageID;
     @PrimaryKey() @NonNull @ColumnInfo(name = "localID", index = true) private String localID;
-    @ColumnInfo(name = "roomID") private String roomID;
+    @ColumnInfo(name = "roomID", index = true) private String roomID;
     @ColumnInfo(name = "messageType") private Integer type;
     @ColumnInfo(name = "message") private String message;
     @ColumnInfo(name = "created") private Long created;
