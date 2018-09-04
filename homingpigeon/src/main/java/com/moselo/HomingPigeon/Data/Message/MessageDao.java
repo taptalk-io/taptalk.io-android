@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.Data;
+package com.moselo.HomingPigeon.Data.Message;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;

@@ -15,8 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Data.MessageEntity;
-import com.moselo.HomingPigeon.Data.ChatViewModel;
+import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;

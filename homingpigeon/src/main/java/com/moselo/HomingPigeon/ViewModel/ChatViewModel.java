@@ -1,10 +1,10 @@
-package com.moselo.HomingPigeon.Data;
+package com.moselo.HomingPigeon.ViewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.util.Log;
 
+import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.ChatManager;

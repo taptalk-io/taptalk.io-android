@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.Data;
+package com.moselo.HomingPigeon.Data.Message;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 public class MessageEntity {
 
     @Nullable @ColumnInfo(name = "MessageID") private String messageID;
-    @PrimaryKey() @NonNull @ColumnInfo(name = "localID", index = true) private String localID;
+    @PrimaryKey() @NonNull @ColumnInfo(name = "localID") private String localID;
     @ColumnInfo(name = "roomID", index = true) private String roomID;
     @ColumnInfo(name = "messageType") private Integer type;
     @ColumnInfo(name = "message") private String message;

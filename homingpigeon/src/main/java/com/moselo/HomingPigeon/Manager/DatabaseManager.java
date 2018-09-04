@@ -3,8 +3,8 @@ package com.moselo.HomingPigeon.Manager;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
-import com.moselo.HomingPigeon.Data.MessageEntity;
-import com.moselo.HomingPigeon.Data.MessageRepository;
+import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Data.Message.MessageRepository;
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
 
 import java.util.List;

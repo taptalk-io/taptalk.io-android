@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.Listener;
 
-import com.moselo.HomingPigeon.Data.MessageEntity;
+import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 
 import java.util.List;
 
