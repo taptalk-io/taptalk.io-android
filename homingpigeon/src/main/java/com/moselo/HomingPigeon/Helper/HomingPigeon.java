@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Helper;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
@@ -21,6 +22,7 @@ public class HomingPigeon {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
         ConnectionManager.getInstance().connect();
+        appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {

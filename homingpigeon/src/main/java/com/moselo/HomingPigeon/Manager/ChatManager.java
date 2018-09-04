@@ -67,6 +67,8 @@ public class ChatManager {
                     try {
                         // Decrypt received message
                         newMessage = MessageModel.BuilderDecrypt(messageEmit.getData());
+
+                        // TODO: 4 September 2018 TEMP 
                         newMessage.setIsSending(0);
 
                         // Insert decrypted message to database

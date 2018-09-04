@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.View.Activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.MessageEntity;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HomingPigeonService;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;

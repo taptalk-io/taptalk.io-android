@@ -70,7 +70,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         ChatManager.getInstance().removeChatListener(this);
-        DataManager.getInstance().updatePendingStatus();
     }
 
     @Override
@@ -126,7 +125,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             @Override
             public void run() {
                 adapter.notifyItemRangeChanged(0, adapter.getItemCount());
-                Log.e("KRIM", "onSendFailed: "+message);
             }
         });
     }
