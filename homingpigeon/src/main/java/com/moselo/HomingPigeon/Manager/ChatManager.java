@@ -18,8 +18,11 @@ import com.moselo.HomingPigeon.Model.UserModel;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -36,17 +39,27 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class ChatManager {
 
+    private final String TAG = ChatManager.class.getSimpleName();
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
-    //    private Map<String, JSONObject> messageQueue;
+    private Map<String, MessageModel> pendingMessages, waitingResponses;
     private Map<String, String> messageDrafts;
     private String activeRoom;
     private UserModel activeUser;
+    private boolean isCheckPendingArraySequenceActive = false;
     private final Integer CHARACTER_LIMIT = 1000;
+    private int pendingRetryAttempt = 0;
+    private int maxRetryAttempt = 10;
+    private int pendingRetryInterval = 60 * 1000;
 
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
-        public void onNewMessage(String eventName, String emitData) {
+        public void onSocketConnected() {
+            checkPendingMessages();
+        }
+
+        @Override
+        public void onReceiveNewEmit(String eventName, String emitData) {
             switch (eventName) {
                 case kEventOpenRoom:
                     break;
@@ -60,7 +73,12 @@ public class ChatManager {
                     try {
                         // Decrypt received message
                         newMessage = MessageModel.BuilderDecrypt(messageEmit.getData());
+
+                        // TODO: 4 September 2018 TEMP 
                         newMessage.setIsSending(0);
+
+                        // Remove from waiting response hashmap
+                        waitingResponses.remove(newMessage.getLocalID());
 
                         // Insert decrypted message to database
                         DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(newMessage));
@@ -75,19 +93,67 @@ public class ChatManager {
                             for (HomingPigeonChatListener chatListener : chatListeners)
                                 chatListener.onReceiveTextMessageInOtherRoom(newMessage);
                         }
-
-                        // Remove message from queue and re-check queue
-                        //if (newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
-                        //removeFromQueue(newMessage.getLocalID());
-                        //runMessageQueue();
-                        //}
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketUpdateMessage:
+                    EmitModel<MessageModel> messageUpdateEmit = Utils.getInstance()
+                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
+                            }, emitData);
+                    MessageModel messageUpdate;
+                    try {
+                        // Decrypt received message
+                        messageUpdate = MessageModel.BuilderDecrypt(messageUpdateEmit.getData());
+
+                        // TODO: 4 September 2018 TEMP
+                        messageUpdate.setIsSending(0);
+
+                        // Insert decrypted message to database
+                        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageUpdate));
+
+                        // Receive message in active room
+                        if (null != chatListeners && !chatListeners.isEmpty() && messageUpdate.getRoomID().equals(activeRoom)) {
+                            for (HomingPigeonChatListener chatListener : chatListeners)
+                                chatListener.onReceiveTextMessageInActiveRoom(messageUpdate);
+                        }
+                        // Receive message outside active room
+                        else if (null != chatListeners && !chatListeners.isEmpty() && !messageUpdate.getRoomID().equals(activeRoom)) {
+                            for (HomingPigeonChatListener chatListener : chatListeners)
+                                chatListener.onReceiveTextMessageInOtherRoom(messageUpdate);
+                        }
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case kSocketDeleteMessage:
+                    EmitModel<MessageModel> messageDeleteEmit = Utils.getInstance()
+                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
+                            }, emitData);
+                    MessageModel messageDelete;
+                    try {
+                        // Decrypt received message
+                        messageDelete = MessageModel.BuilderDecrypt(messageDeleteEmit.getData());
+
+                        // TODO: 4 September 2018 TEMP
+                        messageDelete.setIsSending(0);
+
+                        // Insert decrypted message to database
+                        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageDelete));
+
+                        // Receive message in active room
+                        if (null != chatListeners && !chatListeners.isEmpty() && messageDelete.getRoomID().equals(activeRoom)) {
+                            for (HomingPigeonChatListener chatListener : chatListeners)
+                                chatListener.onReceiveTextMessageInActiveRoom(messageDelete);
+                        }
+                        // Receive message outside active room
+                        else if (null != chatListeners && !chatListeners.isEmpty() && !messageDelete.getRoomID().equals(activeRoom)) {
+                            for (HomingPigeonChatListener chatListener : chatListeners)
+                                chatListener.onReceiveTextMessageInOtherRoom(messageDelete);
+                        }
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case kSocketOpenMessage:
                     break;
@@ -116,7 +182,8 @@ public class ChatManager {
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
                         .getString(K_USER, null)));
         chatListeners = new ArrayList<>();
-        //messageQueue = new LinkedHashMap<>();
+        pendingMessages = new LinkedHashMap<>();
+        waitingResponses = new LinkedHashMap<>();
         messageDrafts = new HashMap<>();
     }
 
@@ -158,20 +225,15 @@ public class ChatManager {
         prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
     }
 
-//    public Map<String, MessageModel> getMessageQueueInActiveRoom() {
-//        Map<String, MessageModel> roomQueue = new LinkedHashMap<>();
-//        for (Map.Entry<String, JSONObject> entry : messageQueue.entrySet()) {
-//            try {
-//                MessageModel tempMessage = (MessageModel) entry.getValue().get(MESSAGE);
-//                if (tempMessage.getRoomID().equals(activeRoom)) {
-//                    roomQueue.put(entry.getKey(), (MessageModel) entry.getValue().get(MESSAGE));
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return roomQueue;
-//    }
+    public Map<String, MessageModel> getMessageQueueInActiveRoom() {
+        Map<String, MessageModel> roomQueue = new LinkedHashMap<>();
+        for (Map.Entry<String, MessageModel> entry : pendingMessages.entrySet()) {
+            if (entry.getValue().getRoomID().equals(activeRoom)) {
+                roomQueue.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return roomQueue;
+    }
 
     /**
      * generate room ID
@@ -224,16 +286,18 @@ public class ChatManager {
      */
     public void sendTextMessage(String textMessage) {
         Integer startIndex;
-        // Check if message exceeds character limit
         if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
             List<MessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = Utils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 MessageModel messageModel = buildTextMessage(substr);
 
+                // Add entity to list
                 messageEntities.add(ChatManager.getInstance().convertToEntity(messageModel));
 
+                // Send truncated message
                 sendMessage(messageModel);
             }
             // Insert list to database
@@ -244,10 +308,11 @@ public class ChatManager {
             // Insert new message to database
             DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
 
+            // Send message
             sendMessage(messageModel);
         }
         // Run queue after list is updated
-        //runMessageQueue();
+        //checkPendingMessages();
     }
 
     private MessageModel buildTextMessage(String message) {
@@ -264,16 +329,10 @@ public class ChatManager {
         //    JSONObject messageObject = new JSONObject();
         //    messageObject.put(MESSAGE, MessageModel.BuilderEncrypt(messageModel));
         //    messageObject.put(DefaultConstant.MessageQueue.NUM_OF_ATTEMPT, 0);
-        //    messageQueue.put(messageModel.getLocalID(), messageObject);
+        //    pendingMessages.put(messageModel.getLocalID(), messageObject);
         //} catch (GeneralSecurityException | JSONException e) {
         //    e.printStackTrace();
         //}
-
-        // Call listener
-        if (null != chatListeners && !chatListeners.isEmpty()) {
-            for (HomingPigeonChatListener chatListener : chatListeners)
-                chatListener.onSendTextMessage(messageModel);
-        }
 
         return messageModel;
     }
@@ -292,52 +351,110 @@ public class ChatManager {
     /**
      * send pending messages from queue
      */
-//    public void runMessageQueue() {
-//        if (!messageQueue.isEmpty()) {
-//            Map.Entry<String, JSONObject> message = messageQueue.entrySet().iterator().next();
-//            EmitModel<MessageModel> emitModel = null;
-//            Log.e("KRIM", "runMessageQueue: ");
-//            try {
-//                emitModel = new EmitModel<>(kSocketNewMessage, (MessageModel) message.getValue().get(MESSAGE));
-//                message.getValue().put(NUM_OF_ATTEMPT, message.getValue().getInt(NUM_OF_ATTEMPT) + 1);
-//                if (message.getValue().getInt(NUM_OF_ATTEMPT) < 2)
-//                    sendMessage(Utils.getInstance().toJsonString(emitModel));
-//                else {
-//                    MessageModel tempMessage = MessageModel.BuilderDecrypt(emitModel.getData());
-//                    tempMessage.setIsFailedSend(1);
-//                    tempMessage.setIsSending(0);
-//                    DataManager.getInstance().updatePendingStatus(tempMessage.getLocalID());
-//                    removeFromQueue(tempMessage.getLocalID());
-//                    if (null != chatListeners && !chatListeners.isEmpty()) {
-//                        for (HomingPigeonChatListener chatListener : chatListeners)
-//                            chatListener.onSendFailed(tempMessage);
-//                    }
-//                    Log.e("KRIM", "runMessageQueue: "+ tempMessage);
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Log.e("KRIM", "runMessageQueue: ",e );
+    public void checkPendingMessages() {
+        if (!pendingMessages.isEmpty()) {
+//            for (Map.Entry<String, MessageModel> message : pendingMessages.entrySet()) {
+//                Log.e(TAG, "checkPendingMessages: " + message.getValue().getMessage());
+//                sendMessage(message.getValue());
 //            }
-//        }
-//    }
+//            pendingMessages.clear();
+
+            MessageModel message = pendingMessages.entrySet().iterator().next().getValue();
+            sendMessage(message);
+            pendingMessages.remove(message.getLocalID());
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    checkPendingMessages();
+                }
+            }, 100);
+        }
+    }
 
     /**
-     * remove delivered messages from queue
-     */
-//    private void removeFromQueue(String localID) {
-//        messageQueue.remove(localID);
-//    }
-
-    /**
-     * sending emit to server
+     * sending Message to server
      */
     private void sendMessage(MessageModel messageModel) {
-        EmitModel<MessageModel> emitModel = null;
-        try {
-            emitModel = new EmitModel<>(kSocketNewMessage, MessageModel.BuilderEncrypt(messageModel));
-            ConnectionManager.getInstance().send(Utils.getInstance().toJsonString(emitModel));
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
+        if (ConnectionManager.getInstance().getConnectionStatus() == ConnectionManager.ConnectionStatus.CONNECTED) {
+            // Call listener
+            if (null != chatListeners && !chatListeners.isEmpty()) {
+                for (HomingPigeonChatListener chatListener : chatListeners)
+                    chatListener.onSendTextMessage(messageModel);
+            }
+            waitingResponses.put(messageModel.getLocalID(), messageModel);
+
+            // Send message if socket is connected
+            try {
+                sendEmit(kSocketNewMessage, MessageModel.BuilderEncrypt(messageModel));
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Add message to queue if socket is not connected
+            pendingMessages.put(messageModel.getLocalID(), messageModel);
         }
+    }
+
+    /**
+     * Sending Emit to Server
+     */
+    private void sendEmit(String eventName, MessageModel messageModel) {
+        EmitModel<MessageModel> emitModel;
+        emitModel = new EmitModel<>(eventName, messageModel);
+        ConnectionManager.getInstance().send(Utils.getInstance().toJsonString(emitModel));
+    }
+
+    /**
+     * update pending status when app enters background and close socket
+     */
+    public void updateMessageWhenEnterBackground() {
+        insertToDatabase(waitingResponses);
+        checkPendingMessageExists();
+    }
+
+    public void insertToDatabase(Map<String, MessageModel> hashMap) {
+        List<MessageEntity> messages = new ArrayList<>();
+        for (Map.Entry<String, MessageModel> message : hashMap.entrySet()) {
+            messages.add(convertToEntity(message.getValue()));
+        }
+        DataManager.getInstance().insertToDatabase(messages);
+    }
+
+    private void checkPendingMessageExists() {
+        // TODO: 05/09/18 nnti cek file manager upload queue juga
+        if (0 < pendingMessages.size()) {
+            //contain pending message
+            if (isCheckPendingArraySequenceActive)
+                return;
+        } else {
+            if (maxRetryAttempt > pendingRetryAttempt) {
+                isCheckPendingArraySequenceActive = true;
+
+                pendingRetryAttempt++;
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        checkPendingMessageExists();
+                    }
+                }, pendingRetryInterval);
+            } else {
+                isCheckPendingArraySequenceActive = false;
+                insertPendingArrayAndUpdateMessage();
+            }
+        }
+    }
+
+    // TODO: 05/09/18 nnti masukin di crash listener
+    public void insertPendingArrayAndUpdateMessage() {
+        insertToDatabase(pendingMessages);
+        pendingMessages.clear();
+        DataManager.getInstance().updatePendingStatus();
+        disconnectSocket();
+    }
+
+    public void disconnectSocket() {
+        activeRoom = "";
+        ConnectionManager.getInstance().close();
     }
 }

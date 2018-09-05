@@ -54,6 +54,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private enum STATE {
         WORKING, LOADED, DONE
     }
+
     private STATE state = STATE.LOADED;
 
     @Override
@@ -70,7 +71,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     protected void onDestroy() {
         super.onDestroy();
         ChatManager.getInstance().removeChatListener(this);
-        DataManager.getInstance().updatePendingStatus();
     }
 
     @Override
@@ -113,6 +113,12 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
+    public void onSendTextMessage(MessageModel message) {
+        addNewTextMessage(message);
+        vm.addPendingMessage(message);
+    }
+
+    @Override
     public void onRetrySendMessage(MessageModel message) {
         vm.delete(message.getLocalID());
         ChatManager.getInstance().sendTextMessage(message.getMessage());
@@ -126,22 +132,15 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             @Override
             public void run() {
                 adapter.notifyItemRangeChanged(0, adapter.getItemCount());
-                Log.e("KRIM", "onSendFailed: "+message);
             }
         });
-    }
-
-    @Override
-    public void onSendTextMessage(MessageModel message) {
-        addNewTextMessage(message);
-        vm.addPendingMessage(message);
     }
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
-        //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
+        vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(vm.getRoomID(), new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
@@ -245,8 +244,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     rvChatList.scrollToPosition(0);
                 }
             });
-        }
-        else if (null != adapter) {
+        } else if (null != adapter) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -275,18 +273,16 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                     vm.updatePendingMessage(newMessage);
                     vm.removePendingMessage(newID);
                     adapter.notifyItemRangeChanged(0, adapter.getItemCount());
-                }
-                else {
+                } else {
                     adapter.addMessage(newMessage);
                 }
 
                 //Scroll recycler to bottom or show unread badge
                 if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
                         .getActiveUser(SampleChatActivity.this).getUserID()) ||
-                        vm.isOnBottom()){
+                        vm.isOnBottom()) {
                     rvChatList.scrollToPosition(0);
-                }
-                else {
+                } else {
                     tvBadgeUnread.setVisibility(View.VISIBLE);
                     tvBadgeUnread.setText(vm.getUnreadCount() + "");
                     vm.setUnreadCount(vm.getUnreadCount() + 1);

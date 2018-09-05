@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
+        <service
+            android:name=".Helper.HomingPigeonService"
+            android:stopWithTask="false"/>
         <activity android:name=".View.Activity.SampleChatActivity" />
         <activity android:name=".View.Activity.SampleLoginActivity" />
         <activity android:name=".View.Activity.SampleRoomListActivity" />

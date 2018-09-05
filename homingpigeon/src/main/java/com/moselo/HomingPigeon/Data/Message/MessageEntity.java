@@ -8,7 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-@Entity(tableName = "Message_Table", indices = @Index(value = "RoomID", unique = true))
+@Entity(tableName = "Message_Table", indices = @Index(value = "RoomID"))
 public class MessageEntity {
 
     @Nullable @ColumnInfo(name = "MessageID") private String messageID;

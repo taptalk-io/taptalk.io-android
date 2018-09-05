@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -73,7 +72,10 @@ public class ConnectionManager {
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
                 reconnectAttempt = 0;
-                //ChatManager.getInstance().runMessageQueue();
+                if (null != socketListeners && !socketListeners.isEmpty()) {
+                    for (HomingPigeonSocketListener listener : socketListeners)
+                        listener.onSocketConnected();
+                }
             }
 
             @Override
@@ -87,7 +89,7 @@ public class ConnectionManager {
                     HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
                     if (null != socketListeners && !socketListeners.isEmpty()) {
                         for (HomingPigeonSocketListener listener : socketListeners)
-                            listener.onNewMessage(response.get("eventName").toString(), tempMessage);
+                            listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

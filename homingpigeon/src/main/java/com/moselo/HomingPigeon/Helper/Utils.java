@@ -1,7 +1,6 @@
 package com.moselo.HomingPigeon.Helper;
 
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,11 +16,7 @@ public class Utils {
     private ObjectMapper objectMapper;
 
     public static Utils getInstance() {
-
-        if (null == instance)
-            instance = new Utils();
-
-        return instance;
+        return instance == null ? (instance = new Utils()) : instance;
     }
 
 
@@ -33,7 +28,6 @@ public class Utils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            Log.e(Utils.class.getSimpleName(), "toJsonString: ",e );
             return "{}";
         }
     }
@@ -50,7 +44,6 @@ public class Utils {
         try {
             return objectMapper.readValue(jsonPacket, type);
         } catch (Exception e) {
-            Log.e(Utils.class.getSimpleName(), "fromJSON: ",e );
             return null;
         }
     }
@@ -84,7 +77,6 @@ public class Utils {
     public String mySubString(String myString, int start, int length) {
         return myString.substring(start, Math.min(start + length, myString.length()));
     }
-
 
     /**
      * converts Dp into Px
