@@ -112,6 +112,12 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
+    public void onSendTextMessage(MessageModel message) {
+        addNewTextMessage(message);
+        vm.addPendingMessage(message);
+    }
+
+    @Override
     public void onRetrySendMessage(MessageModel message) {
         vm.delete(message.getLocalID());
         ChatManager.getInstance().sendTextMessage(message.getMessage());
@@ -129,17 +135,11 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         });
     }
 
-    @Override
-    public void onSendTextMessage(MessageModel message) {
-        addNewTextMessage(message);
-        vm.addPendingMessage(message);
-    }
-
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
-        //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
+        vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {

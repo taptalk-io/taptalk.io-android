@@ -51,6 +51,11 @@ public class ChatManager {
 
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
+        public void onSocketConnected() {
+            checkPendingMessages();
+        }
+
+        @Override
         public void onNewMessage(String eventName, String emitData) {
             switch (eventName) {
                 case kEventOpenRoom:
@@ -332,7 +337,7 @@ public class ChatManager {
             }
         }
         else {
-            // Socket not connected
+            // Add message to queue if socket is not connected
             messageQueue.put(messageModel.getLocalID(), messageModel);
         }
     }

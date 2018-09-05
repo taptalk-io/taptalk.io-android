@@ -72,7 +72,10 @@ public class ConnectionManager {
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
                 reconnectAttempt = 0;
-                ChatManager.getInstance().checkPendingMessages();
+                if (null != socketListeners && !socketListeners.isEmpty()) {
+                    for (HomingPigeonSocketListener listener : socketListeners)
+                        listener.onSocketConnected();
+                }
             }
 
             @Override
