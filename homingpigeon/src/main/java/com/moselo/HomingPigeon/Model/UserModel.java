@@ -25,6 +25,7 @@ public class UserModel {
 
     @JsonProperty("userID") private String userID;
     @JsonProperty("name") private String name;
+    @JsonProperty("avatarURL") private ImageURL avatarURL;
     @Nullable @JsonProperty("username") private String username;
     @Nullable @JsonProperty("email") private String email;
     @Nullable @JsonProperty("phoneNumber") private String phoneNumber;
@@ -65,6 +66,14 @@ public class UserModel {
     @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ImageURL getAvatarURL() {
+        return avatarURL;
+    }
+
+    public void setAvatarURL(ImageURL avatarURL) {
+        this.avatarURL = avatarURL;
     }
 
     @Nullable @JsonProperty("username")

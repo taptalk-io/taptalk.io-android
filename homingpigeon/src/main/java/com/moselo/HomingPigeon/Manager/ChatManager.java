@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
@@ -13,6 +14,7 @@ import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Model.EmitModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.security.GeneralSecurityException;
@@ -23,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -42,7 +47,7 @@ public class ChatManager {
     private final String TAG = ChatManager.class.getSimpleName();
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
-    private Map<String, MessageModel> pendingMessages, waitingResponses;
+    private Map<String, MessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
     private String activeRoom;
     private UserModel activeUser;
@@ -51,11 +56,12 @@ public class ChatManager {
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
+    private ScheduledExecutorService scheduler;
 
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
         public void onSocketConnected() {
-            checkPendingMessages();
+            checkAndSendPendingMessages();
         }
 
         @Override
@@ -69,30 +75,8 @@ public class ChatManager {
                     EmitModel<MessageModel> messageEmit = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
-                    MessageModel newMessage;
                     try {
-                        // Decrypt received message
-                        newMessage = MessageModel.BuilderDecrypt(messageEmit.getData());
-
-                        // TODO: 4 September 2018 TEMP 
-                        newMessage.setIsSending(0);
-
-                        // Remove from waiting response hashmap
-                        waitingResponses.remove(newMessage.getLocalID());
-
-                        // Insert decrypted message to database
-                        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(newMessage));
-
-                        // Receive message in active room
-                        if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoomID().equals(activeRoom)) {
-                            for (HomingPigeonChatListener chatListener : chatListeners)
-                                chatListener.onReceiveTextMessageInActiveRoom(newMessage);
-                        }
-                        // Receive message outside active room
-                        else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoomID().equals(activeRoom)) {
-                            for (HomingPigeonChatListener chatListener : chatListeners)
-                                chatListener.onReceiveTextMessageInOtherRoom(newMessage);
-                        }
+                        receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -101,27 +85,8 @@ public class ChatManager {
                     EmitModel<MessageModel> messageUpdateEmit = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
-                    MessageModel messageUpdate;
                     try {
-                        // Decrypt received message
-                        messageUpdate = MessageModel.BuilderDecrypt(messageUpdateEmit.getData());
-
-                        // TODO: 4 September 2018 TEMP
-                        messageUpdate.setIsSending(0);
-
-                        // Insert decrypted message to database
-                        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageUpdate));
-
-                        // Receive message in active room
-                        if (null != chatListeners && !chatListeners.isEmpty() && messageUpdate.getRoomID().equals(activeRoom)) {
-                            for (HomingPigeonChatListener chatListener : chatListeners)
-                                chatListener.onReceiveTextMessageInActiveRoom(messageUpdate);
-                        }
-                        // Receive message outside active room
-                        else if (null != chatListeners && !chatListeners.isEmpty() && !messageUpdate.getRoomID().equals(activeRoom)) {
-                            for (HomingPigeonChatListener chatListener : chatListeners)
-                                chatListener.onReceiveTextMessageInOtherRoom(messageUpdate);
-                        }
+                        receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageUpdateEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -130,27 +95,8 @@ public class ChatManager {
                     EmitModel<MessageModel> messageDeleteEmit = Utils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
-                    MessageModel messageDelete;
                     try {
-                        // Decrypt received message
-                        messageDelete = MessageModel.BuilderDecrypt(messageDeleteEmit.getData());
-
-                        // TODO: 4 September 2018 TEMP
-                        messageDelete.setIsSending(0);
-
-                        // Insert decrypted message to database
-                        DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageDelete));
-
-                        // Receive message in active room
-                        if (null != chatListeners && !chatListeners.isEmpty() && messageDelete.getRoomID().equals(activeRoom)) {
-                            for (HomingPigeonChatListener chatListener : chatListeners)
-                                chatListener.onReceiveTextMessageInActiveRoom(messageDelete);
-                        }
-                        // Receive message outside active room
-                        else if (null != chatListeners && !chatListeners.isEmpty() && !messageDelete.getRoomID().equals(activeRoom)) {
-                            for (HomingPigeonChatListener chatListener : chatListeners)
-                                chatListener.onReceiveTextMessageInOtherRoom(messageDelete);
-                        }
+                        receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageDeleteEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -184,6 +130,7 @@ public class ChatManager {
         chatListeners = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
+        incomingMessages = new LinkedHashMap<>();
         messageDrafts = new HashMap<>();
     }
 
@@ -228,7 +175,7 @@ public class ChatManager {
     public Map<String, MessageModel> getMessageQueueInActiveRoom() {
         Map<String, MessageModel> roomQueue = new LinkedHashMap<>();
         for (Map.Entry<String, MessageModel> entry : pendingMessages.entrySet()) {
-            if (entry.getValue().getRoomID().equals(activeRoom)) {
+            if (entry.getValue().getRoom().getRoomID().equals(activeRoom)) {
                 roomQueue.put(entry.getKey(), entry.getValue());
             }
         }
@@ -252,7 +199,7 @@ public class ChatManager {
                 entity.getMessageID(),
                 entity.getLocalID(),
                 entity.getMessage(),
-                entity.getRoomID(),
+                new RoomModel(entity.getRoomID(), entity.getRoomType()),
                 entity.getType(),
                 entity.getCreated(),
                 Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
@@ -269,14 +216,15 @@ public class ChatManager {
         return new MessageEntity(
                 model.getMessageID(),
                 model.getLocalID(),
-                model.getRoomID(),
+                model.getRoom().getRoomID(),
+                model.getRoom().getRoomType(),
                 model.getType(),
                 model.getMessage(),
                 model.getCreated(),
                 Utils.getInstance().toJsonString(model.getUser()),
                 Utils.getInstance().toJsonString(model.getDeliveredTo()),
                 Utils.getInstance().toJsonString(model.getSeenBy()),
-                model.getDeleted(),
+                model.getIsDeleted(),
                 model.getIsSending(),
                 model.getIsFailedSend());
     }
@@ -312,14 +260,14 @@ public class ChatManager {
             sendMessage(messageModel);
         }
         // Run queue after list is updated
-        //checkPendingMessages();
+        //checkAndSendPendingMessages();
     }
 
     private MessageModel buildTextMessage(String message) {
         // Create new MessageModel based on text
         MessageModel messageModel = MessageModel.Builder(
                 message,
-                activeRoom,
+                new RoomModel(activeRoom, 1),
                 DefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
                 activeUser);
@@ -351,21 +299,21 @@ public class ChatManager {
     /**
      * send pending messages from queue
      */
-    public void checkPendingMessages() {
+    public void checkAndSendPendingMessages() {
         if (!pendingMessages.isEmpty()) {
 //            for (Map.Entry<String, MessageModel> message : pendingMessages.entrySet()) {
-//                Log.e(TAG, "checkPendingMessages: " + message.getValue().getMessage());
+//                Log.e(TAG, "checkAndSendPendingMessages: " + message.getValue().getMessage());
 //                sendMessage(message.getValue());
 //            }
 //            pendingMessages.clear();
 
             MessageModel message = pendingMessages.entrySet().iterator().next().getValue();
-            sendMessage(message);
+            runSendMessageSequence(message);
             pendingMessages.remove(message.getLocalID());
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    checkPendingMessages();
+                    checkAndSendPendingMessages();
                 }
             }, 100);
         }
@@ -375,12 +323,17 @@ public class ChatManager {
      * sending Message to server
      */
     private void sendMessage(MessageModel messageModel) {
+        // Call listener
+        if (null != chatListeners && !chatListeners.isEmpty()) {
+            for (HomingPigeonChatListener chatListener : chatListeners)
+                chatListener.onSendTextMessage(messageModel);
+        }
+
+        runSendMessageSequence(messageModel);
+    }
+
+    private void runSendMessageSequence(MessageModel messageModel){
         if (ConnectionManager.getInstance().getConnectionStatus() == ConnectionManager.ConnectionStatus.CONNECTED) {
-            // Call listener
-            if (null != chatListeners && !chatListeners.isEmpty()) {
-                for (HomingPigeonChatListener chatListener : chatListeners)
-                    chatListener.onSendTextMessage(messageModel);
-            }
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
             // Send message if socket is connected
@@ -399,6 +352,7 @@ public class ChatManager {
      * Sending Emit to Server
      */
     private void sendEmit(String eventName, MessageModel messageModel) {
+        Log.e("riocv", Utils.getInstance().toJsonString(messageModel) );
         EmitModel<MessageModel> emitModel;
         emitModel = new EmitModel<>(eventName, messageModel);
         ConnectionManager.getInstance().send(Utils.getInstance().toJsonString(emitModel));
@@ -415,6 +369,7 @@ public class ChatManager {
     public void insertToDatabase(Map<String, MessageModel> hashMap) {
         List<MessageEntity> messages = new ArrayList<>();
         for (Map.Entry<String, MessageModel> message : hashMap.entrySet()) {
+            Log.e("riocv", message.getValue().getMessage()+" "+message.getValue().getIsSending() );
             messages.add(convertToEntity(message.getValue()));
         }
         DataManager.getInstance().insertToDatabase(messages);
@@ -447,8 +402,12 @@ public class ChatManager {
 
     // TODO: 05/09/18 nnti masukin di crash listener
     public void insertPendingArrayAndUpdateMessage() {
-        insertToDatabase(pendingMessages);
-        pendingMessages.clear();
+        scheduler.shutdown();
+        saveNewMessageToDatabase();
+        if (0 < pendingMessages.size()) {
+            insertToDatabase(pendingMessages);
+            pendingMessages.clear();
+        }
         DataManager.getInstance().updatePendingStatus();
         disconnectSocket();
     }
@@ -456,5 +415,60 @@ public class ChatManager {
     public void disconnectSocket() {
         activeRoom = "";
         ConnectionManager.getInstance().close();
+    }
+
+    /**
+     * this is when receive new message from socket
+     *
+     * @param newMessage
+     */
+    private void receiveMessageFromSocket(MessageModel newMessage, String eventName) {
+        // TODO: 4 September 2018 TEMP
+        newMessage.setIsSending(0);
+
+        // Remove from waiting response hashmap
+        if (kSocketNewMessage.equals(eventName))
+            waitingResponses.remove(newMessage.getLocalID());
+
+        // Insert decrypted message to database
+        incomingMessages.put(newMessage.getLocalID(), newMessage);
+
+        // Receive message in active room
+        if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoom().getRoomID().equals(activeRoom)) {
+            for (HomingPigeonChatListener chatListener : chatListeners)
+                chatListener.onReceiveTextMessageInActiveRoom(newMessage);
+        }
+        // Receive message outside active room
+        else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoom().getRoomID().equals(activeRoom)) {
+            for (HomingPigeonChatListener chatListener : chatListeners)
+                chatListener.onReceiveTextMessageInOtherRoom(newMessage);
+        }
+    }
+
+    // TODO: 05/09/18 nnti masukin di crash listener
+    public void saveNewMessageToDatabase() {
+        if (0 == incomingMessages.size())
+            return;
+
+        insertToDatabase(incomingMessages);
+        Log.e("riocv", "save new message");
+        incomingMessages.clear();
+    }
+
+    public void triggerSaveNewMessage() {
+        if (null == scheduler || scheduler.isShutdown()) {
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        } else {
+            scheduler.shutdown();
+            scheduler = Executors.newSingleThreadScheduledExecutor();
+        }
+
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("riocv", "scheduler");
+                saveNewMessageToDatabase();
+            }
+        },0,120, TimeUnit.SECONDS);
     }
 }

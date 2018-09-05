@@ -40,10 +40,14 @@ public class MessageEntity {
     }
 
     @Ignore
-    public MessageEntity(@Nullable String messageID, @NonNull String localID, String room, int type, String message, long created, String user, @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted, @Nullable Integer isSending, @Nullable Integer isFailedSend) {
+    public MessageEntity(@Nullable String messageID, @NonNull String localID,
+                         String room, int roomType, int type, String message, long created, String user,
+                         @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted,
+                         @Nullable Integer isSending, @Nullable Integer isFailedSend) {
         this.messageID = messageID;
         this.localID = localID;
         this.roomID = room;
+        this.roomType = roomType;
         this.type = type;
         this.message = message;
         this.created = created;

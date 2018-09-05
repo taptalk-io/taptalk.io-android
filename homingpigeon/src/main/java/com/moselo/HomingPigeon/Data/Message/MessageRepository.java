@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
@@ -57,6 +58,12 @@ public class MessageRepository {
                 mAsyncTaskDao.insert(lists[0]);
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.e("riocv", "onPostExecute: " );
         }
     }
 

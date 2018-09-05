@@ -9,42 +9,39 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "roomID",
-        "authorization",
+        "roomType",
 })
 
 public class RoomModel {
 
     @JsonProperty("roomID") private String roomID;
-    @Nullable @JsonProperty("authorization") private String authorization;
+    @JsonProperty("type") private int roomType;
 
-    public RoomModel(String roomID) {
+    public RoomModel(String roomID, int roomType) {
         this.roomID = roomID;
+        this.roomType = roomType;
     }
 
     public RoomModel() {
     }
 
-    public static RoomModel Builder(String roomID){
-        return new RoomModel(roomID);
+    public static RoomModel Builder(String roomID, int roomType){
+        return new RoomModel(roomID, roomType);
     }
 
-    @JsonProperty("roomID")
     public String getRoomID() {
         return roomID;
     }
 
-    @JsonProperty("roomID")
     public void setRoomID(String roomID) {
         this.roomID = roomID;
     }
 
-    @Nullable @JsonProperty("authorization")
-    public String getAuthorization() {
-        return authorization;
+    public int getRoomType() {
+        return roomType;
     }
 
-    @JsonProperty("authorization")
-    public void setAuthorization(@Nullable String authorization) {
-        this.authorization = authorization;
+    public void setRoomType(int roomType) {
+        this.roomType = roomType;
     }
 }

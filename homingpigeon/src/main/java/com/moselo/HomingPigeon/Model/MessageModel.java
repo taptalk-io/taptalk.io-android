@@ -16,26 +16,28 @@ public class MessageModel {
 
     @Nullable @JsonProperty("messageID") private String messageID;
     @NonNull @JsonProperty("localID") private String localID;
-    @JsonProperty("roomID") private String roomID;
+    @JsonProperty("room") private RoomModel room;
     @JsonProperty("type") private int type;
-    @JsonProperty("message") private String message;
+    @JsonProperty("body") private String message;
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private UserModel user;
     @Nullable @JsonProperty("deliveredTo") private List<Object> deliveredTo;
     @Nullable @JsonProperty("seenBy") private List<SeenByModel> seenBy;
-    @Nullable @JsonProperty("deleted") private Integer deleted;
+    @Nullable @JsonProperty("isDeleted") private Integer isDeleted;
     @Nullable @JsonProperty("isSending") private Integer isSending;
     @Nullable @JsonProperty("isFailedSend") private Integer isFailedSend;
 
-    public MessageModel(@Nullable String messageID, @NonNull String localID, String message, String roomID, Integer type, Long created, UserModel user, @Nullable Integer deleted, @Nullable Integer isSending, @Nullable Integer isFailedSend) {
+    public MessageModel(@Nullable String messageID, @NonNull String localID, String message, RoomModel room,
+                        Integer type, Long created, UserModel user, @Nullable Integer isDeleted,
+                        @Nullable Integer isSending, @Nullable Integer isFailedSend) {
         this.messageID = messageID;
         this.localID = localID;
         this.message = message;
-        this.roomID = roomID;
+        this.room = room;
         this.type = type;
         this.created = created;
         this.user = user;
-        this.deleted = deleted;
+        this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
         // TODO: 3 September 2018 ADD deliveredTo & seenBy
@@ -44,7 +46,7 @@ public class MessageModel {
     public MessageModel() {
     }
 
-    public static MessageModel Builder(String message, String room, Integer type, Long created, UserModel user) {
+    public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user) {
         String localID = Utils.getInstance().generateRandomString(32);
         return new MessageModel("", localID, message, room, type, created, user, 0, 1, 0);
     }
@@ -54,11 +56,11 @@ public class MessageModel {
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
                 EncryptorManager.getInstance().encrypt(messageModel.getMessage(), messageModel.getLocalID()),
-                messageModel.getRoomID(),
+                messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),
                 messageModel.getUser(),
-                messageModel.getDeleted(),
+                messageModel.getIsDeleted(),
                 messageModel.getIsSending(),
                 messageModel.getIsFailedSend());
     }
@@ -68,11 +70,11 @@ public class MessageModel {
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
                 EncryptorManager.getInstance().decrypt(messageModel.getMessage(), messageModel.getLocalID()),
-                messageModel.getRoomID(),
+                messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),
                 messageModel.getUser(),
-                messageModel.getDeleted(),
+                messageModel.getIsDeleted(),
                 messageModel.getIsSending(),
                 messageModel.getIsFailedSend());
     }
@@ -122,12 +124,12 @@ public class MessageModel {
         this.localID = localID;
     }
 
-    public String getRoomID() {
-        return roomID;
+    public RoomModel getRoom() {
+        return room;
     }
 
-    public void setRoomID(String roomID) {
-        this.roomID = roomID;
+    public void setRoom(RoomModel room) {
+        this.room = room;
     }
 
     public int getType() {
@@ -181,12 +183,12 @@ public class MessageModel {
     }
 
     @Nullable
-    public Integer getDeleted() {
-        return deleted;
+    public Integer getIsDeleted() {
+        return isDeleted;
     }
 
-    public void setDeleted(@Nullable Integer deleted) {
-        this.deleted = deleted;
+    public void setDeleted(@Nullable Integer isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
     @Nullable
@@ -211,11 +213,11 @@ public class MessageModel {
         this.messageID = model.getMessageID();
         this.localID = model.getLocalID();
         this.message = model.getMessage();
-        this.roomID = model.getRoomID();
+        this.room = model.getRoom();
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
-        this.deleted = model.getDeleted();
+        this.isDeleted = model.getIsDeleted();
         this.isSending = model.getIsSending();
         this.isFailedSend = model.getIsFailedSend();
         // TODO: 3 September 2018 ADD deliveredTo & seenBy

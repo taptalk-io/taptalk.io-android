@@ -3,11 +3,15 @@ package com.moselo.HomingPigeon.Helper;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
 
@@ -23,7 +27,10 @@ public class HomingPigeon {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
         ConnectionManager.getInstance().connect();
+
         appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
+        ChatManager.getInstance().triggerSaveNewMessage();
+
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
