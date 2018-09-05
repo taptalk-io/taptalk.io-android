@@ -9,16 +9,23 @@
     tools:context=".View.Activity.SampleChatActivity">
 
     <include layout="@layout/cell_user_room"
-        android:id="@+id/action_bar"
-        />
+        android:id="@+id/action_bar" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_chatlist"
+    <FrameLayout
+        android:id="@+id/ll_chatlist"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@id/action_bar"
-        app:layout_constraintBottom_toTopOf="@id/et_chat"/>
+        app:layout_constraintBottom_toTopOf="@id/et_chat">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_chatlist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:scrollbars="vertical"/>
+
+    </FrameLayout>
 
     <EditText
         android:id="@+id/et_chat"
@@ -31,7 +38,7 @@
         android:imeActionLabel="send"
         android:imeOptions="actionSend"
         android:background="#ffffff"
-        app:layout_constraintTop_toBottomOf="@id/rv_chatlist"
+        app:layout_constraintTop_toBottomOf="@id/ll_chatlist"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_send"
         app:layout_constraintStart_toStartOf="parent"/>

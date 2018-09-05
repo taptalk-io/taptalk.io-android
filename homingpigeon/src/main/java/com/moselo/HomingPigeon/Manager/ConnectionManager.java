@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,8 +32,8 @@ public class ConnectionManager {
     private String TAG = ConnectionManager.class.getSimpleName();
     private static ConnectionManager instance;
     private WebSocketClient webSocketClient;
-    private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon";
-//    private String webSocketEndpoint = "ws://echo.websocket.org";
+//    private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon";
+    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private List<HomingPigeonSocketListener> socketListeners;
@@ -73,7 +72,7 @@ public class ConnectionManager {
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
                 reconnectAttempt = 0;
-                //ChatManager.getInstance().runMessageQueue();
+                ChatManager.getInstance().checkPendingMessages();
             }
 
             @Override
