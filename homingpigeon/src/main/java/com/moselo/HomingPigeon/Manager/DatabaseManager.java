@@ -71,16 +71,16 @@ public class DatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessages(HomingPigeonGetChatListener listener){
+    public void getMessages(String roomID, HomingPigeonGetChatListener listener){
         if (null != messageRepository)
-            messageRepository.getMessageList(listener);
+            messageRepository.getMessageList(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessages(HomingPigeonGetChatListener listener, long lastTimestamp){
+    public void getMessages(String roomID, HomingPigeonGetChatListener listener, long lastTimestamp){
         if (null != messageRepository)
-            messageRepository.getMessageList(listener, lastTimestamp);
+            messageRepository.getMessageList(roomID, listener, lastTimestamp);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }

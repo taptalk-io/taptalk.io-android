@@ -20,11 +20,11 @@ public abstract class HomingPigeonDatabase extends RoomDatabase{
 
     public static HomingPigeonDatabase getDatabase(Context context){
         if (null == database){
-            SafeHelperFactory factory = SafeHelperFactory.fromUser(
-                    Editable.Factory.getInstance().newEditable(DB_ENCRYPT_PASS));
+//            SafeHelperFactory factory = SafeHelperFactory.fromUser(
+//                    Editable.Factory.getInstance().newEditable(DB_ENCRYPT_PASS));
             database = Room.databaseBuilder(context,
                     HomingPigeonDatabase.class, "message_database")
-                    .openHelperFactory(factory)
+//                    .openHelperFactory(factory)
                     .build();
         }
 

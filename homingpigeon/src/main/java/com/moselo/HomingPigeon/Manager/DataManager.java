@@ -63,11 +63,11 @@ public class DataManager {
         return DatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabase(HomingPigeonGetChatListener listener) {
-        DatabaseManager.getInstance().getMessages(listener);
+    public void getMessagesFromDatabase(String roomID, HomingPigeonGetChatListener listener) {
+        DatabaseManager.getInstance().getMessages(roomID, listener);
     }
 
-    public void getMessagesFromDatabase(HomingPigeonGetChatListener listener, long lastTimestamp) {
-        DatabaseManager.getInstance().getMessages(listener, lastTimestamp);
+    public void getMessagesFromDatabase(String roomID, HomingPigeonGetChatListener listener, long lastTimestamp) {
+        DatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
     }
 }

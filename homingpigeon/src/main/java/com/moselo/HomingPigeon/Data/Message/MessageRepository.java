@@ -64,21 +64,21 @@ public class MessageRepository {
         return allMessages;
     }
 
-    public void getMessageList(final HomingPigeonGetChatListener listener) {
+    public void getMessageList(final String roomID, final HomingPigeonGetChatListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                allMessageList = messageDao.getAllMessageList();
+                allMessageList = messageDao.getAllMessageList(roomID);
                 listener.onGetMessages(allMessageList);
             }
         }).start();
     }
 
-    public void getMessageList(final HomingPigeonGetChatListener listener, final long lastTimestamp){
+    public void getMessageList(final String roomID, final HomingPigeonGetChatListener listener, final long lastTimestamp){
         new Thread(new Runnable() {
             @Override
             public void run() {
-                List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp);
+                List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
                 listener.onGetMessages(entities);
             }
         }).start();

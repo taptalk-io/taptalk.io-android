@@ -27,11 +27,13 @@ public interface MessageDao {
     @Query("select * from message_table order by Created desc")
     LiveData<List<MessageEntity>> getAllMessage();
 
-    @Query("select * from message_table order by Created desc limit " + numOfItem)
-    List<MessageEntity> getAllMessageList();
+    @Query("select * from message_table where RoomID like :roomID order by Created desc limit " + numOfItem)
+    List<MessageEntity> getAllMessageList(String roomID);
 
-    @Query("select * from message_table where Created in (select distinct Created from message_table where Created < :lastTimestamp order by Created desc limit "+ numOfItem+" ) order by Created desc")
-    List<MessageEntity> getAllMessageTimeStamp(Long lastTimestamp);
+    @Query("select * from message_table where " +
+            "Created in (select distinct Created from message_table where Created < :lastTimestamp and RoomID like :roomID order by Created desc limit "+ numOfItem+" ) " +
+            "and RoomID like :roomID order by Created desc")
+    List<MessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);
 
     @Query("update message_table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();

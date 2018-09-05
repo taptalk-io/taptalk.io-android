@@ -142,7 +142,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
         //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
-        vm.getMessageEntities(new HomingPigeonGetChatListener() {
+        vm.getMessageEntities(vm.getRoomID(), new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
                 loadMessageFromDatabase(entities);
@@ -186,7 +186,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < adapter.getItemCount()) {
-                    vm.getMessageByTimestamp(scrollChatListener, vm.getLastTimestamp());
+                    vm.getMessageByTimestamp(vm.getRoomID(), scrollChatListener, vm.getLastTimestamp());
                     state = STATE.WORKING;
                 }
             }

@@ -73,12 +73,12 @@ public class ChatViewModel extends AndroidViewModel {
         pendingMessages.get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
-    public void getMessageEntities(HomingPigeonGetChatListener listener) {
-        DataManager.getInstance().getMessagesFromDatabase(listener);
+    public void getMessageEntities(String roomID, HomingPigeonGetChatListener listener) {
+        DataManager.getInstance().getMessagesFromDatabase(roomID, listener);
     }
 
-    public void getMessageByTimestamp(HomingPigeonGetChatListener listener, long lastTimestamp) {
-        DataManager.getInstance().getMessagesFromDatabase(listener,lastTimestamp);
+    public void getMessageByTimestamp(String roomID, HomingPigeonGetChatListener listener, long lastTimestamp) {
+        DataManager.getInstance().getMessagesFromDatabase(roomID, listener,lastTimestamp);
     }
 
     public List<MessageModel> getMessageModels() {

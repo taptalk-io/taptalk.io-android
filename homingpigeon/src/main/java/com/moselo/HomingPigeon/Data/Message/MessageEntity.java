@@ -3,16 +3,21 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-@Entity(tableName = "Message_Table")
+@Entity(tableName = "Message_Table", indices = @Index(value = "RoomID", unique = true))
 public class MessageEntity {
 
     @Nullable @ColumnInfo(name = "MessageID") private String messageID;
     @PrimaryKey() @NonNull @ColumnInfo(name = "localID") private String localID;
-    @ColumnInfo(name = "roomID", index = true) private String roomID;
+    @ColumnInfo(name = "RoomID") private String roomID;
+    @Nullable @ColumnInfo(name = "RoomName") private String roomName;
+    @Nullable @ColumnInfo(name = "RoomColor") private String roomColor;
+    @Nullable @ColumnInfo(name = "RoomType") private Integer roomType;
+    @Nullable @ColumnInfo(name = "RoomImage") private String roomImage;
     @ColumnInfo(name = "messageType") private Integer type;
     @ColumnInfo(name = "message") private String message;
     @ColumnInfo(name = "created") private Long created;
@@ -23,10 +28,11 @@ public class MessageEntity {
     @Nullable @ColumnInfo(name = "isSending") private Integer isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Integer isFailedSend;
 
-    public MessageEntity(@Nullable String messageID, @NonNull String localID, String room, int type, String message, long created, String user) {
+    public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID
+            , int type, String message, long created, String user) {
         this.messageID = messageID;
         this.localID = localID;
-        this.roomID = room;
+        this.roomID = roomID;
         this.type = type;
         this.message = message;
         this.created = created;
@@ -77,6 +83,42 @@ public class MessageEntity {
 
     public void setRoomID(String roomID) {
         this.roomID = roomID;
+    }
+
+    @Nullable
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(@Nullable String roomName) {
+        this.roomName = roomName;
+    }
+
+    @Nullable
+    public String getRoomColor() {
+        return roomColor;
+    }
+
+    public void setRoomColor(@Nullable String roomColor) {
+        this.roomColor = roomColor;
+    }
+
+    @Nullable
+    public Integer getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(@Nullable Integer roomType) {
+        this.roomType = roomType;
+    }
+
+    @Nullable
+    public String getRoomImage() {
+        return roomImage;
+    }
+
+    public void setRoomImage(@Nullable String roomImage) {
+        this.roomImage = roomImage;
     }
 
     public Integer getType() {
