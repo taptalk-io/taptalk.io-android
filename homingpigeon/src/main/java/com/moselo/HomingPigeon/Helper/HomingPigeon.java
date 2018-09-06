@@ -23,18 +23,18 @@ public class HomingPigeon {
         return homingPigeon == null ? (homingPigeon = new HomingPigeon(context)) : homingPigeon;
     }
 
-    public HomingPigeon(Context appContext) {
+    public HomingPigeon(final Context appContext) {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
         ConnectionManager.getInstance().connect();
 
-        appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
         ChatManager.getInstance().triggerSaveNewMessage();
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
                 NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
+                appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
                 isForeground = true;
             }
 

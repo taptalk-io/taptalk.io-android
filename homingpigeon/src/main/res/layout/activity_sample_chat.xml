@@ -72,7 +72,7 @@
         android:padding="12dp"
         android:src="@drawable/ic_keyboard_arrow_down"
         android:tint="#666666"
-        android:background="@drawable/bg_circle_f5f5f5"
+        android:background="@drawable/bg_circle_f3f3f3"
         android:elevation="4dp"
         app:layout_constraintBottom_toTopOf="@id/iv_send"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,21 +81,23 @@
 
     <TextView
         android:id="@+id/tv_badge_unread"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="4dp"
-        android:background="@drawable/bg_circle_primary"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
         android:translationX="4dp"
         android:translationY="-4dp"
+        android:elevation="6dp"
+        android:background="@drawable/bg_amethyst_mediumpurple_270_rounded_10dp"
         android:textAlignment="center"
         android:textColor="#ffffff"
-        android:textSize="10dp"
-        android:elevation="6dp"
+        android:textSize="11dp"
+        android:fontFamily="@font/latobold"
         app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
         app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
-        app:layout_constraintDimensionRatio="1:1"
         tools:text="1"
-        android:visibility="invisible"
-        />
+        android:visibility="invisible" />
 
 </android.support.constraint.ConstraintLayout>

@@ -96,7 +96,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
             llMessageStatus = itemView.findViewById(R.id.ll_message_status);
-            tvUsername = itemView.findViewById(R.id.tv_username);
+            tvUsername = itemView.findViewById(R.id.tv_full_name);
             tvMessage = itemView.findViewById(R.id.tv_message);
             tvTimestamp = itemView.findViewById(R.id.tv_timestamp);
             tvStatus = itemView.findViewById(R.id.tv_status);

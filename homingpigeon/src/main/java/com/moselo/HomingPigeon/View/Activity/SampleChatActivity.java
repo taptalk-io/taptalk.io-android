@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -151,7 +150,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     private void initView() {
         tvAvatar = findViewById(R.id.tv_avatar);
-        tvUsername = findViewById(R.id.tv_username);
+        tvUsername = findViewById(R.id.tv_full_name);
         tvUserStatus = findViewById(R.id.tv_last_message);
         tvLastMessageTime = findViewById(R.id.tv_last_message_time);
         rvChatList = findViewById(R.id.rv_chatlist);
@@ -270,25 +269,25 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             public void run() {
                 // Replace pending message with new message
                 String newID = newMessage.getLocalID();
+                boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
+                        .getInstance().getActiveUser(SampleChatActivity.this).getUserID());
                 if (vm.getPendingMessages().containsKey(newID)) {
+                    // Update pending message
                     vm.updatePendingMessage(newMessage);
                     adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getPendingMessages().get(newID)));
-                }
-                else if (vm.isOnBottom()) {
+                } else if (vm.isOnBottom()) {
                     // Scroll recycler to bottom
                     adapter.addMessage(newMessage);
                     rvChatList.scrollToPosition(0);
-                } else {
+                } else if (!ownMessage) {
                     // Show unread badge
                     adapter.addMessage(newMessage);
                     vm.setUnreadCount(vm.getUnreadCount() + 1);
                     tvBadgeUnread.setVisibility(View.VISIBLE);
                     tvBadgeUnread.setText(vm.getUnreadCount() + "");
                 }
-
                 // Remove pending message
-                if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
-                        .getActiveUser(SampleChatActivity.this).getUserID())) {
+                if (ownMessage) {
                     vm.removePendingMessage(newID);
                 }
             }

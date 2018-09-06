@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -63,16 +64,19 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
     class RoomListHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvAvatar, tvUsername, tvLastMessage, tvLastMessageTime;
+        private ImageView ivAvatar, ivMessageStatus;
+        private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
         private MessageEntity item;
 
         RoomListHolder(View itemView) {
             super(itemView);
 
-            tvAvatar = itemView.findViewById(R.id.tv_avatar);
-            tvUsername = itemView.findViewById(R.id.tv_username);
+            ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+            tvFullName = itemView.findViewById(R.id.tv_full_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
+            tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
             randomColors = itemView.getContext().getResources().getIntArray(R.array.pastel_colors);
         }
 
@@ -82,10 +86,11 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
             final int randomColor = getRandomColor(userModel.getName());
 
+            // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
             avatarTint = ColorStateList.valueOf(randomColor);
-            tvAvatar.setText(userModel.getName().substring(0, 1).toUpperCase());
-            tvAvatar.setBackgroundTintList(avatarTint);
-            tvUsername.setText(userModel.getName());
+//            tvAvatar.setText(userModel.getName().substring(0, 1).toUpperCase());
+            ivAvatar.setBackgroundTintList(avatarTint);
+            tvFullName.setText(userModel.getName());
             tvLastMessage.setText(item.getMessage());
             tvLastMessageTime.setText(TimeFormatter.formatClock(item.getCreated()));
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -99,6 +104,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     itemView.getContext().startActivity(intent);
                 }
             });
+            // TODO: 6 September 2018 CHANGE MESSAGE STATUS IMAGE AND UNREAD BADGE
         }
     }
 
