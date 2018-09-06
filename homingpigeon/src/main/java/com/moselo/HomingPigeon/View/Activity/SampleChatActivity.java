@@ -115,7 +115,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onSendTextMessage(MessageModel message) {
         addNewTextMessage(message);
-        vm.addPendingMessage(message);
+        vm.addMessagePointer(message);
     }
 
     @Override
@@ -126,8 +126,8 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onSendFailed(final MessageModel message) {
-        vm.updatePendingMessage(message);
-        vm.removePendingMessage(message.getLocalID());
+        vm.updateMessagePointer(message);
+        vm.removeMessagePointer(message.getLocalID());
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -140,7 +140,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
-        vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
+        //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(vm.getRoomID(), new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
@@ -270,9 +270,9 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             public void run() {
                 // Replace pending message with new message
                 String newID = newMessage.getLocalID();
-                if (vm.getPendingMessages().containsKey(newID)) {
-                    vm.updatePendingMessage(newMessage);
-                    adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getPendingMessages().get(newID)));
+                if (vm.getMessagePointer().containsKey(newID)) {
+                    vm.updateMessagePointer(newMessage);
+                    adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 }
                 else if (vm.isOnBottom()) {
                     // Scroll recycler to bottom
@@ -289,7 +289,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 // Remove pending message
                 if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
                         .getActiveUser(SampleChatActivity.this).getUserID())) {
-                    vm.removePendingMessage(newID);
+                    vm.removeMessagePointer(newID);
                 }
             }
         });

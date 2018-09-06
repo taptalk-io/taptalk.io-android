@@ -19,7 +19,7 @@ import java.util.Map;
 public class ChatViewModel extends AndroidViewModel {
 
     private LiveData<List<MessageEntity>> allMessages;
-    private Map<String, MessageModel> pendingMessages;
+    private Map<String, MessageModel> messagePointer;
     private List<MessageModel> messageModels;
     private UserModel myUserModel;
     private String roomID;
@@ -33,7 +33,7 @@ public class ChatViewModel extends AndroidViewModel {
         super(application);
 //        repository = new MessageRepository(application);
         allMessages = DataManager.getInstance().getMessagesLiveData();
-        pendingMessages = new LinkedHashMap<>();
+        messagePointer = new LinkedHashMap<>();
         messageModels = new ArrayList<>();
     }
 
@@ -53,24 +53,24 @@ public class ChatViewModel extends AndroidViewModel {
         DataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
-    public Map<String, MessageModel> getPendingMessages() {
-        return pendingMessages;
+    public Map<String, MessageModel> getMessagePointer() {
+        return messagePointer;
     }
 
-    public void setPendingMessages(Map<String, MessageModel> pendingMessages) {
-        this.pendingMessages = pendingMessages;
+    public void setMessagePointer(Map<String, MessageModel> messagePointer) {
+        this.messagePointer = messagePointer;
     }
 
-    public void addPendingMessage(MessageModel pendingMessage) {
-        pendingMessages.put(pendingMessage.getLocalID(), pendingMessage);
+    public void addMessagePointer(MessageModel pendingMessage) {
+        messagePointer.put(pendingMessage.getLocalID(), pendingMessage);
     }
 
-    public void removePendingMessage(String localID) {
-        pendingMessages.remove(localID);
+    public void removeMessagePointer(String localID) {
+        messagePointer.remove(localID);
     }
 
-    public void updatePendingMessage(MessageModel newMessage) {
-        pendingMessages.get(newMessage.getLocalID()).updateValue(newMessage);
+    public void updateMessagePointer(MessageModel newMessage) {
+        messagePointer.get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
     public void getMessageEntities(String roomID, HomingPigeonGetChatListener listener) {

@@ -22,15 +22,15 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BroadcastManager.register(this,receiver,kIsConnectionError, kIsDisconnected, kIsConnected);
+        BroadcastManager.register(this, receiver, kIsConnectionError, kIsDisconnected, kIsConnected);
     }
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            switch (action){
-                case kIsConnectionError :
+            switch (action) {
+                case kIsConnectionError:
                     ConnectionManager.getInstance().reconnect();
                     break;
                 case kIsDisconnected:
@@ -47,6 +47,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        BroadcastManager.unregister(this,receiver);
+        BroadcastManager.unregister(this, receiver);
     }
 }

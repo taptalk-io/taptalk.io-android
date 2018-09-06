@@ -355,7 +355,7 @@ public class ChatManager {
      * update pending status when app enters background and close socket
      */
     public void updateMessageWhenEnterBackground() {
-        saveWaitingMessageToDatabase();
+        //saveWaitingMessageToDatabase();
         checkPendingMessageExists();
     }
 
@@ -394,9 +394,10 @@ public class ChatManager {
 
     // TODO: 05/09/18 nnti masukin di crash listener
     public void insertPendingArrayAndUpdateMessage() {
-        scheduler.shutdown();
-        saveNewMessageToDatabase();
-        savePendingMessageToDatabase();
+        if (null != scheduler)
+            scheduler.shutdown();
+
+        saveUnsentMessage();
         DataManager.getInstance().updatePendingStatus();
         disconnectSocket();
     }
@@ -446,7 +447,7 @@ public class ChatManager {
     public void savePendingMessageToDatabase() {
         if (0 < pendingMessages.size()) {
             insertToDatabase(pendingMessages);
-            pendingMessages.clear();
+            //pendingMessages.clear();
         }
     }
 
