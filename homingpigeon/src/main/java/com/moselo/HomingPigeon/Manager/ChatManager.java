@@ -352,7 +352,6 @@ public class ChatManager {
      * Sending Emit to Server
      */
     private void sendEmit(String eventName, MessageModel messageModel) {
-        Log.e("riocv", Utils.getInstance().toJsonString(messageModel) );
         EmitModel<MessageModel> emitModel;
         emitModel = new EmitModel<>(eventName, messageModel);
         ConnectionManager.getInstance().send(Utils.getInstance().toJsonString(emitModel));
@@ -369,7 +368,6 @@ public class ChatManager {
     public void insertToDatabase(Map<String, MessageModel> hashMap) {
         List<MessageEntity> messages = new ArrayList<>();
         for (Map.Entry<String, MessageModel> message : hashMap.entrySet()) {
-            Log.e("riocv", message.getValue().getMessage()+" "+message.getValue().getIsSending() );
             messages.add(convertToEntity(message.getValue()));
         }
         DataManager.getInstance().insertToDatabase(messages);
@@ -451,7 +449,6 @@ public class ChatManager {
             return;
 
         insertToDatabase(incomingMessages);
-        Log.e("riocv", "save new message");
         incomingMessages.clear();
     }
 
@@ -466,9 +463,8 @@ public class ChatManager {
         scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                Log.e("riocv", "scheduler");
                 saveNewMessageToDatabase();
             }
-        },0,120, TimeUnit.SECONDS);
+        },0,5, TimeUnit.SECONDS);
     }
 }

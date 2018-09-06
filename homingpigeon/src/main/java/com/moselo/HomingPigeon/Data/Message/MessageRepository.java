@@ -63,7 +63,6 @@ public class MessageRepository {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Log.e("riocv", "onPostExecute: " );
         }
     }
 

@@ -188,21 +188,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         notifyItemChanged(position);
     }
 
-//    public void setMessageWithID(MessageModel message) {
-//        int size = getItemCount();
-//        for (int index = 0; index < size; index++) {
-//            if (chatMessages.get(index).getLocalID().equals(message.getLocalID())) {
-//                chatMessages.set(index, message);
-//                notifyItemChanged(index);
-//                return;
-//            }
-//        }
-//    }
 
     public void removeMessageAt(int position) {
         chatMessages.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(0, getItemCount());
+        notifyItemRangeChanged(0, position+1);
     }
 
     public List<MessageModel> getItems() {
@@ -212,13 +202,4 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     public MessageModel getItemAt(int position) {
         return chatMessages.get(position);
     }
-
-//    private int getUsernameColor(String username) {
-//        int hash = 7;
-//        for (int i = 0, len = username.length(); i < len; i++) {
-//            hash = username.codePointAt(i) + (hash << 5) - hash;
-//        }
-//        int index = Math.abs(hash % randomColors.length);
-//        return randomColors[index];
-//    }
 }

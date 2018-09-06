@@ -78,7 +78,7 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void getMessageByTimestamp(String roomID, HomingPigeonGetChatListener listener, long lastTimestamp) {
-        DataManager.getInstance().getMessagesFromDatabase(roomID, listener,lastTimestamp);
+        DataManager.getInstance().getMessagesFromDatabase(roomID, listener, lastTimestamp);
     }
 
     public List<MessageModel> getMessageModels() {

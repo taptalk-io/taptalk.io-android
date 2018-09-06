@@ -257,9 +257,10 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     private void attemptSend() {
         String message = etChat.getText().toString();
-        if (!TextUtils.isEmpty(message)) {
+        if (!TextUtils.isEmpty(message.trim())) {
             etChat.setText("");
             ChatManager.getInstance().sendTextMessage(message);
+            rvChatList.scrollToPosition(0);
         }
     }
 
@@ -271,8 +272,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 String newID = newMessage.getLocalID();
                 if (vm.getPendingMessages().containsKey(newID)) {
                     vm.updatePendingMessage(newMessage);
-                    vm.removePendingMessage(newID);
-                    adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                    adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getPendingMessages().get(newID)));
                 } else {
                     adapter.addMessage(newMessage);
                 }
@@ -281,7 +281,8 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
                         .getActiveUser(SampleChatActivity.this).getUserID()) ||
                         vm.isOnBottom()) {
-                    rvChatList.scrollToPosition(0);
+//                    rvChatList.scrollToPosition(0);
+                    vm.removePendingMessage(newID);
                 } else {
                     tvBadgeUnread.setVisibility(View.VISIBLE);
                     tvBadgeUnread.setText(vm.getUnreadCount() + "");
