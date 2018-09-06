@@ -4,9 +4,17 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 
 public interface HomingPigeonChatListener {
 
-    void onReceiveTextMessageInActiveRoom(MessageModel message);
+    void onReceiveMessageInActiveRoom(MessageModel message);
 
-    void onReceiveTextMessageInOtherRoom(MessageModel message);
+    void onUpdateMessageInActiveRoom(MessageModel message);
+
+    void onDeleteMessageInActiveRoom(MessageModel message);
+
+    void onReceiveMessageInOtherRoom(MessageModel message);
+
+    void onUpdateMessageInOtherRoom(MessageModel message);
+
+    void onDeleteMessageInOtherRoom(MessageModel message);
 
     void onSendTextMessage(MessageModel message);
 

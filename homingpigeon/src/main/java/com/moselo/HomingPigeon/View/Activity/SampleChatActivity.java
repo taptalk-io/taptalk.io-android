@@ -101,20 +101,44 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onReceiveTextMessageInActiveRoom(final MessageModel message) {
+    public void onReceiveMessageInActiveRoom(final MessageModel message) {
         addNewTextMessage(message);
     }
 
     @Override
-    public void onReceiveTextMessageInOtherRoom(MessageModel message) {
+    public void onUpdateMessageInActiveRoom(MessageModel message) {
+        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+        addNewTextMessage(message);
+    }
+
+    @Override
+    public void onDeleteMessageInActiveRoom(MessageModel message) {
+        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+        addNewTextMessage(message);
+    }
+
+    @Override
+    public void onReceiveMessageInOtherRoom(MessageModel message) {
         // TODO: 28 August 2018 REPLACE
+        addNewTextMessage(message);
+    }
+
+    @Override
+    public void onUpdateMessageInOtherRoom(MessageModel message) {
+        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+        addNewTextMessage(message);
+    }
+
+    @Override
+    public void onDeleteMessageInOtherRoom(MessageModel message) {
+        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
         addNewTextMessage(message);
     }
 
     @Override
     public void onSendTextMessage(MessageModel message) {
         addNewTextMessage(message);
-        vm.addPendingMessage(message);
+        vm.addMessagePointer(message);
     }
 
     @Override
@@ -125,8 +149,8 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onSendFailed(final MessageModel message) {
-        vm.updatePendingMessage(message);
-        vm.removePendingMessage(message.getLocalID());
+        vm.updateMessagePointer(message);
+        vm.removeMessagePointer(message.getLocalID());
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -139,7 +163,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
-        vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
+        //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(vm.getRoomID(), new HomingPigeonGetChatListener() {
             @Override
             public void onGetMessages(List<MessageEntity> entities) {
@@ -229,7 +253,9 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private void loadMessageFromDatabase(List<MessageEntity> entities) {
         final List<MessageModel> models = new ArrayList<>();
         for (MessageEntity entity : entities) {
-            models.add(ChatManager.getInstance().convertToModel(entity));
+            MessageModel model = ChatManager.getInstance().convertToModel(entity);
+            models.add(model);
+            vm.addMessagePointer(model);
         }
         vm.setMessageModels(models);
         if (vm.getMessageModels().size() > 0) {
@@ -271,11 +297,11 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 String newID = newMessage.getLocalID();
                 boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
                         .getInstance().getActiveUser(SampleChatActivity.this).getUserID());
-                if (vm.getPendingMessages().containsKey(newID)) {
-                    // Update pending message
-                    vm.updatePendingMessage(newMessage);
-                    adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getPendingMessages().get(newID)));
-                } else if (vm.isOnBottom()) {
+                if (vm.getMessagePointer().containsKey(newID)) {
+                    vm.updateMessagePointer(newMessage);
+                    adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                }
+                else if (vm.isOnBottom()) {
                     // Scroll recycler to bottom
                     adapter.addMessage(newMessage);
                     rvChatList.scrollToPosition(0);
@@ -288,9 +314,15 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 }
                 // Remove pending message
                 if (ownMessage) {
-                    vm.removePendingMessage(newID);
+                    vm.removeMessagePointer(newID);
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ChatManager.getInstance().saveUnsentMessage();
     }
 }

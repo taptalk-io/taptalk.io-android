@@ -22,19 +22,21 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BroadcastManager.register(this,receiver,kIsConnectionError, kIsDisconnected, kIsConnected);
+        BroadcastManager.register(this, receiver, kIsConnectionError, kIsDisconnected, kIsConnected);
     }
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            switch (action){
-                case kIsConnectionError :
+            switch (action) {
+                case kIsConnectionError:
                     ConnectionManager.getInstance().reconnect();
                     break;
                 case kIsDisconnected:
-                    if (HomingPigeon.isForeground && NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext))
+                    Log.e("Conne", "check disconnected: " );
+                    if (HomingPigeon.isForeground && NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)
+                            && ConnectionManager.ConnectionStatus.DISCONNECTED == ConnectionManager.getInstance().getConnectionStatus())
                         ConnectionManager.getInstance().reconnect();
                     break;
                 case kIsConnected:
@@ -46,6 +48,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        BroadcastManager.unregister(this,receiver);
+        BroadcastManager.unregister(this, receiver);
     }
 }

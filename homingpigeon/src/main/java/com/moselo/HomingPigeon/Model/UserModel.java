@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "gender",
         "isPermit",
         "isFriend",
-        "userType",
+        "userRole",
         "lastLogin"
 })
 
@@ -33,7 +33,7 @@ public class UserModel {
     @Nullable @JsonProperty("gender") private String gender;
     @Nullable @JsonProperty("isPermit") private Boolean isPermit;
     @Nullable @JsonProperty("isFriend") private Boolean isFriend;
-    @Nullable @JsonProperty("userType") private String userType;
+    @Nullable @JsonProperty("userRole") private String userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
 
     public UserModel(String userID, String name) {
@@ -146,14 +146,14 @@ public class UserModel {
         isFriend = friend;
     }
 
-    @Nullable @JsonProperty("userType")
+    @Nullable @JsonProperty("userRole")
     public String getUserType() {
-        return userType;
+        return userRole;
     }
 
-    @JsonProperty("userType")
-    public void setUserType(@Nullable String userType) {
-        this.userType = userType;
+    @JsonProperty("userRole")
+    public void setUserType(@Nullable String userRole) {
+        this.userRole = userRole;
     }
 
     @Nullable @JsonProperty("lastLogin")

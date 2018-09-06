@@ -18,6 +18,16 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAG
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
     public static boolean isForeground = true;
+    private Thread.UncaughtExceptionHandler defaultUEH;
+
+    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+        @Override
+        public void uncaughtException(Thread thread, Throwable throwable) {
+            ChatManager.getInstance().disconnectSocket();
+            ChatManager.getInstance().insertPendingArrayAndUpdateMessage();
+            defaultUEH.uncaughtException(thread, throwable);
+        }
+    };
 
     public static HomingPigeon init(Context context) {
         return homingPigeon == null ? (homingPigeon = new HomingPigeon(context)) : homingPigeon;
@@ -28,13 +38,14 @@ public class HomingPigeon {
         HomingPigeon.appContext = appContext;
         ConnectionManager.getInstance().connect();
 
-        ChatManager.getInstance().triggerSaveNewMessage();
-
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-                NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
                 appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
+                NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
+                ChatManager.getInstance().triggerSaveNewMessage();
+                defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+                Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
                 isForeground = true;
             }
 

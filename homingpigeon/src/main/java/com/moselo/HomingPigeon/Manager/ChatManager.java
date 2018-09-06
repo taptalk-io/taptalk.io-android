@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
@@ -249,12 +248,12 @@ public class ChatManager {
                 sendMessage(messageModel);
             }
             // Insert list to database
-            DataManager.getInstance().insertToDatabase(messageEntities);
+//            DataManager.getInstance().insertToDatabase(messageEntities);
         } else {
             MessageModel messageModel = buildTextMessage(textMessage);
 
             // Insert new message to database
-            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
+//            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
 
             // Send message
             sendMessage(messageModel);
@@ -326,7 +325,7 @@ public class ChatManager {
         runSendMessageSequence(messageModel);
     }
 
-    private void runSendMessageSequence(MessageModel messageModel){
+    private void runSendMessageSequence(MessageModel messageModel) {
         if (ConnectionManager.getInstance().getConnectionStatus() == ConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
@@ -355,7 +354,7 @@ public class ChatManager {
      * update pending status when app enters background and close socket
      */
     public void updateMessageWhenEnterBackground() {
-        insertToDatabase(waitingResponses);
+        //saveWaitingMessageToDatabase();
         checkPendingMessageExists();
     }
 
@@ -394,12 +393,10 @@ public class ChatManager {
 
     // TODO: 05/09/18 nnti masukin di crash listener
     public void insertPendingArrayAndUpdateMessage() {
-        scheduler.shutdown();
-        saveNewMessageToDatabase();
-        if (0 < pendingMessages.size()) {
-            insertToDatabase(pendingMessages);
-            pendingMessages.clear();
-        }
+        if (null != scheduler)
+            scheduler.shutdown();
+
+        saveUnsentMessage();
         DataManager.getInstance().updatePendingStatus();
         disconnectSocket();
     }
@@ -427,13 +424,25 @@ public class ChatManager {
 
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoom().getRoomID().equals(activeRoom)) {
-            for (HomingPigeonChatListener chatListener : chatListeners)
-                chatListener.onReceiveTextMessageInActiveRoom(newMessage);
+            for (HomingPigeonChatListener chatListener : chatListeners) {
+                if (kSocketNewMessage.equals(eventName))
+                    chatListener.onReceiveMessageInActiveRoom(newMessage);
+                else if (kSocketUpdateMessage.equals(eventName))
+                    chatListener.onUpdateMessageInActiveRoom(newMessage);
+                else if (kSocketDeleteMessage.equals(eventName))
+                    chatListener.onDeleteMessageInActiveRoom(newMessage);
+            }
         }
         // Receive message outside active room
         else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoom().getRoomID().equals(activeRoom)) {
-            for (HomingPigeonChatListener chatListener : chatListeners)
-                chatListener.onReceiveTextMessageInOtherRoom(newMessage);
+            for (HomingPigeonChatListener chatListener : chatListeners) {
+                if (kSocketNewMessage.equals(eventName))
+                    chatListener.onReceiveMessageInOtherRoom(newMessage);
+                else if (kSocketUpdateMessage.equals(eventName))
+                    chatListener.onUpdateMessageInOtherRoom(newMessage);
+                else if (kSocketDeleteMessage.equals(eventName))
+                    chatListener.onDeleteMessageInOtherRoom(newMessage);
+            }
         }
     }
 
@@ -444,6 +453,20 @@ public class ChatManager {
 
         insertToDatabase(incomingMessages);
         incomingMessages.clear();
+    }
+
+    public void savePendingMessageToDatabase() {
+        if (0 < pendingMessages.size()) {
+            insertToDatabase(pendingMessages);
+            //pendingMessages.clear();
+        }
+    }
+
+    public void saveWaitingMessageToDatabase() {
+        if (0 == waitingResponses.size())
+            return;
+
+        insertToDatabase(waitingResponses);
     }
 
     public void triggerSaveNewMessage() {
@@ -459,6 +482,12 @@ public class ChatManager {
             public void run() {
                 saveNewMessageToDatabase();
             }
-        },0,5, TimeUnit.SECONDS);
+        }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    public void saveUnsentMessage() {
+        saveNewMessageToDatabase();
+        savePendingMessageToDatabase();
+        saveWaitingMessageToDatabase();
     }
 }
