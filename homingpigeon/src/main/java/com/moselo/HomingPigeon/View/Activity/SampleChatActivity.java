@@ -230,7 +230,9 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     private void loadMessageFromDatabase(List<MessageEntity> entities) {
         final List<MessageModel> models = new ArrayList<>();
         for (MessageEntity entity : entities) {
-            models.add(ChatManager.getInstance().convertToModel(entity));
+            MessageModel model = ChatManager.getInstance().convertToModel(entity);
+            models.add(model);
+            vm.addMessagePointer(model);
         }
         vm.setMessageModels(models);
         if (vm.getMessageModels().size() > 0) {
