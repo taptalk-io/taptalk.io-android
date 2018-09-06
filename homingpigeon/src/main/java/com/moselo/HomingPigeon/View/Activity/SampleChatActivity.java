@@ -294,4 +294,10 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ChatManager.getInstance().saveUnsentMessage();
+    }
 }

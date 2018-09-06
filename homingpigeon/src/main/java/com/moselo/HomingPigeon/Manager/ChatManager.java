@@ -249,12 +249,12 @@ public class ChatManager {
                 sendMessage(messageModel);
             }
             // Insert list to database
-            DataManager.getInstance().insertToDatabase(messageEntities);
+//            DataManager.getInstance().insertToDatabase(messageEntities);
         } else {
             MessageModel messageModel = buildTextMessage(textMessage);
 
             // Insert new message to database
-            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
+//            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
 
             // Send message
             sendMessage(messageModel);
@@ -326,7 +326,7 @@ public class ChatManager {
         runSendMessageSequence(messageModel);
     }
 
-    private void runSendMessageSequence(MessageModel messageModel){
+    private void runSendMessageSequence(MessageModel messageModel) {
         if (ConnectionManager.getInstance().getConnectionStatus() == ConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
@@ -355,7 +355,7 @@ public class ChatManager {
      * update pending status when app enters background and close socket
      */
     public void updateMessageWhenEnterBackground() {
-        insertToDatabase(waitingResponses);
+        saveWaitingMessageToDatabase();
         checkPendingMessageExists();
     }
 
@@ -396,10 +396,7 @@ public class ChatManager {
     public void insertPendingArrayAndUpdateMessage() {
         scheduler.shutdown();
         saveNewMessageToDatabase();
-        if (0 < pendingMessages.size()) {
-            insertToDatabase(pendingMessages);
-            pendingMessages.clear();
-        }
+        savePendingMessageToDatabase();
         DataManager.getInstance().updatePendingStatus();
         disconnectSocket();
     }
@@ -446,6 +443,20 @@ public class ChatManager {
         incomingMessages.clear();
     }
 
+    public void savePendingMessageToDatabase() {
+        if (0 < pendingMessages.size()) {
+            insertToDatabase(pendingMessages);
+            pendingMessages.clear();
+        }
+    }
+
+    public void saveWaitingMessageToDatabase() {
+        if (0 == waitingResponses.size())
+            return;
+
+        insertToDatabase(waitingResponses);
+    }
+
     public void triggerSaveNewMessage() {
         if (null == scheduler || scheduler.isShutdown()) {
             scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -459,6 +470,12 @@ public class ChatManager {
             public void run() {
                 saveNewMessageToDatabase();
             }
-        },0,5, TimeUnit.SECONDS);
+        }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    public void saveUnsentMessage() {
+        saveNewMessageToDatabase();
+        savePendingMessageToDatabase();
+        saveWaitingMessageToDatabase();
     }
 }
