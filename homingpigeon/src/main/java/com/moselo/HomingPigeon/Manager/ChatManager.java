@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
@@ -425,13 +424,25 @@ public class ChatManager {
 
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoom().getRoomID().equals(activeRoom)) {
-            for (HomingPigeonChatListener chatListener : chatListeners)
-                chatListener.onReceiveTextMessageInActiveRoom(newMessage);
+            for (HomingPigeonChatListener chatListener : chatListeners) {
+                if (kSocketNewMessage.equals(eventName))
+                    chatListener.onReceiveMessageInActiveRoom(newMessage);
+                else if (kSocketUpdateMessage.equals(eventName))
+                    chatListener.onUpdateMessageInActiveRoom(newMessage);
+                else if (kSocketDeleteMessage.equals(eventName))
+                    chatListener.onDeleteMessageInActiveRoom(newMessage);
+            }
         }
         // Receive message outside active room
         else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoom().getRoomID().equals(activeRoom)) {
-            for (HomingPigeonChatListener chatListener : chatListeners)
-                chatListener.onReceiveTextMessageInOtherRoom(newMessage);
+            for (HomingPigeonChatListener chatListener : chatListeners) {
+                if (kSocketNewMessage.equals(eventName))
+                    chatListener.onReceiveMessageInOtherRoom(newMessage);
+                else if (kSocketUpdateMessage.equals(eventName))
+                    chatListener.onUpdateMessageInOtherRoom(newMessage);
+                else if (kSocketDeleteMessage.equals(eventName))
+                    chatListener.onDeleteMessageInOtherRoom(newMessage);
+            }
         }
     }
 

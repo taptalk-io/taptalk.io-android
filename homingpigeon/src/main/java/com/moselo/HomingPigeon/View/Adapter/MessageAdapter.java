@@ -152,7 +152,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 public void onClick(View v) {
                     if (null != item.getIsFailedSend() && null != item.getIsSending() &&
                             1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
-                        removeMessageAt(position);
+                        //removeMessageAt(position);
+                        removeMessage(item);
                         listener.onRetrySendMessage(item);
                     }
                     else {
@@ -193,6 +194,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         chatMessages.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(0, position+1);
+    }
+
+    public void removeMessage(MessageModel message) {
+        int position = getItems().indexOf(message);
+        chatMessages.remove(position);
+        notifyItemRemoved(position);
+        //notifyItemRangeChanged(0, position);
     }
 
     public List<MessageModel> getItems() {

@@ -33,16 +33,15 @@ public class HomingPigeon {
         return homingPigeon == null ? (homingPigeon = new HomingPigeon(context)) : homingPigeon;
     }
 
-    public HomingPigeon(Context appContext) {
+    public HomingPigeon(final Context appContext) {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
         ConnectionManager.getInstance().connect();
 
-        appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
-
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
+                appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
                 NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
                 ChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();

@@ -34,6 +34,7 @@ public class BaseActivity extends AppCompatActivity {
                     ConnectionManager.getInstance().reconnect();
                     break;
                 case kIsDisconnected:
+                    Log.e("Conne", "check disconnected: " );
                     if (HomingPigeon.isForeground && NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)
                             && ConnectionManager.ConnectionStatus.DISCONNECTED == ConnectionManager.getInstance().getConnectionStatus())
                         ConnectionManager.getInstance().reconnect();
