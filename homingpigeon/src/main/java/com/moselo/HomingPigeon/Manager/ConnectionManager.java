@@ -189,21 +189,21 @@ public class ConnectionManager {
     }
 
     public void reconnect() {
-        if (ConnectionStatus.DISCONNECTED == connectionStatus) {
-            connectionStatus = ConnectionStatus.CONNECTING;
-            if (reconnectAttempt < 120) reconnectAttempt++;
-            long delay = RECONNECT_DELAY * (long) reconnectAttempt;
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
+        if (reconnectAttempt < 120) reconnectAttempt++;
+        long delay = RECONNECT_DELAY * (long) reconnectAttempt;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (ConnectionStatus.DISCONNECTED == connectionStatus) {
+                    connectionStatus = ConnectionStatus.CONNECTING;
                     try {
                         webSocketClient.reconnect();
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
                     }
                 }
-            }, delay);
-        }
+            }
+        }, delay);
     }
 
     public ConnectionStatus getConnectionStatus() {

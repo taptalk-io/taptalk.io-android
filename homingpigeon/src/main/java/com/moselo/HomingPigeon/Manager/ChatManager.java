@@ -301,12 +301,6 @@ public class ChatManager {
      */
     public void checkAndSendPendingMessages() {
         if (!pendingMessages.isEmpty()) {
-//            for (Map.Entry<String, MessageModel> message : pendingMessages.entrySet()) {
-//                Log.e(TAG, "checkAndSendPendingMessages: " + message.getValue().getMessage());
-//                sendMessage(message.getValue());
-//            }
-//            pendingMessages.clear();
-
             MessageModel message = pendingMessages.entrySet().iterator().next().getValue();
             runSendMessageSequence(message);
             pendingMessages.remove(message.getLocalID());
@@ -315,7 +309,7 @@ public class ChatManager {
                 public void run() {
                     checkAndSendPendingMessages();
                 }
-            }, 100);
+            }, 50);
         }
     }
 

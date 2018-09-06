@@ -273,20 +273,23 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 if (vm.getPendingMessages().containsKey(newID)) {
                     vm.updatePendingMessage(newMessage);
                     adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getPendingMessages().get(newID)));
-                } else {
-                    adapter.addMessage(newMessage);
                 }
-
-                //Scroll recycler to bottom or show unread badge
-                if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
-                        .getActiveUser(SampleChatActivity.this).getUserID()) ||
-                        vm.isOnBottom()) {
-//                    rvChatList.scrollToPosition(0);
-                    vm.removePendingMessage(newID);
+                else if (vm.isOnBottom()) {
+                    // Scroll recycler to bottom
+                    adapter.addMessage(newMessage);
+                    rvChatList.scrollToPosition(0);
                 } else {
+                    // Show unread badge
+                    adapter.addMessage(newMessage);
+                    vm.setUnreadCount(vm.getUnreadCount() + 1);
                     tvBadgeUnread.setVisibility(View.VISIBLE);
                     tvBadgeUnread.setText(vm.getUnreadCount() + "");
-                    vm.setUnreadCount(vm.getUnreadCount() + 1);
+                }
+
+                // Remove pending message
+                if (newMessage.getUser().getUserID().equals(DataManager.getInstance()
+                        .getActiveUser(SampleChatActivity.this).getUserID())) {
+                    vm.removePendingMessage(newID);
                 }
             }
         });
