@@ -73,7 +73,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             tvUsername = itemView.findViewById(R.id.tv_username);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
-            randomColors = itemView.getContext().getResources().getIntArray(R.array.random_colors);
+            randomColors = itemView.getContext().getResources().getIntArray(R.array.pastel_colors);
         }
 
         void onBind(int position) {

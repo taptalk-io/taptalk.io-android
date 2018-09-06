@@ -5,8 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".View.Activity.SampleRoomListActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_contact_list"
+    <fragment
+        class="com.moselo.HomingPigeon.View.Fragment.SampleRoomListFragment"
+        android:id="@+id/f_contact_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
