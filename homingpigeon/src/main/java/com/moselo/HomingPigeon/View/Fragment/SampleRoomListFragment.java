@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,9 +19,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
@@ -29,19 +31,21 @@ import com.moselo.HomingPigeon.View.Helper.Const;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class SampleRoomListFragment extends Fragment {
 
     private Activity activity;
-    private LinearLayout llButtonSearch, llConnectionStatus;
-    private TextView tvButtonEdit, tvConnectionStatus;
-    private ImageView ivButtonNewChat, ivConnectionStatus;
+    private ConstraintLayout clButtonSearch;
+    private LinearLayout llConnectionStatus;
+    private TextView tvConnectionStatus;
+    private ImageView ivConnectionStatus;
     private ProgressBar pbConnecting;
     private RecyclerView rvContactList;
     private RoomListAdapter adapter;
-    private List<MessageEntity> roomList;
+    private List<MessageModel> roomList;
 
     public SampleRoomListFragment() {
         roomList = new ArrayList<>();
@@ -68,33 +72,39 @@ public class SampleRoomListFragment extends Fragment {
     }
 
     private void initView(View view) {
-        //Dummy Rooms
+        // Dummy Rooms
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, prefs.getString(K_USER, ""));
+        UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        }, prefs.getString(K_USER, ""));
         String userId = myUser.getUserID();
-        MessageEntity roomDummy1 = new MessageEntity(
+        RoomModel room1 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, userId), 1);
+        RoomModel room2 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "999999"), 1);
+        MessageModel roomDummy1 = new MessageModel(
                 "", "",
-                ChatManager.getInstance().arrangeRoomId(userId, userId),
-                1,
                 "LastMessage",
-                System.currentTimeMillis()/1000,
-                prefs.getString(K_USER,"{}"));
-        String dummyUser2 = Utils.getInstance().toJsonString(new UserModel("0", "BAMBANGS"));
-        MessageEntity roomDummy2 = new MessageEntity(
-                "", "",
-                ChatManager.getInstance().arrangeRoomId(userId, "0"),
+                room1,
                 1,
-                "mas bambang's room",
-                0,
-                dummyUser2);
+                System.currentTimeMillis() / 1000,
+                myUser,
+                0, 0, 0);
+        UserModel dummyUser2 = new UserModel("999999", "BAMBANGS");
+        MessageModel roomDummy2 = new MessageModel(
+                "", "",
+                "Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang.",
+                room2,
+                1,
+                0L,
+                dummyUser2,
+                0, 0, 0);
         roomList.add(roomDummy1);
         roomList.add(roomDummy2);
+        // End Dummy
 
-        llButtonSearch = view.findViewById(R.id.ll_button_search);
+        Objects.requireNonNull(getActivity()).getWindow().setBackgroundDrawable(null);
+
+        clButtonSearch = view.findViewById(R.id.cl_button_search);
         llConnectionStatus = view.findViewById(R.id.ll_connection_status);
-        tvButtonEdit = view.findViewById(R.id.tv_button_edit);
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
-        ivButtonNewChat = view.findViewById(R.id.iv_button_new_chat);
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         pbConnecting = view.findViewById(R.id.pb_connecting);
 
@@ -103,5 +113,16 @@ public class SampleRoomListFragment extends Fragment {
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
+
+        clButtonSearch.setOnClickListener(searchClickListener);
     }
+
+    private View.OnClickListener searchClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // TODO: 7 September 2018 START ACTIVITY
+        }
+    };
+
+    // TODO: 7 September 2018 CONNECTION STATUS CALLBACK
 }

@@ -39,7 +39,8 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     // View
     private RecyclerView rvChatList;
     private EditText etChat;
-    private TextView tvAvatar, tvUsername, tvUserStatus, tvLastMessageTime, tvBadgeUnread;
+    private ImageView ivAvatar;
+    private TextView tvUsername, tvUserStatus, tvLastMessageTime, tvBadgeUnread;
     private ImageView ivSend, ivToBottom;
 
     // RecyclerView
@@ -173,7 +174,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     }
 
     private void initView() {
-        tvAvatar = findViewById(R.id.tv_avatar);
+        ivAvatar = findViewById(R.id.iv_avatar);
         tvUsername = findViewById(R.id.tv_full_name);
         tvUserStatus = findViewById(R.id.tv_last_message);
         tvLastMessageTime = findViewById(R.id.tv_last_message_time);
@@ -183,8 +184,8 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         ivSend = findViewById(R.id.iv_send);
         ivToBottom = findViewById(R.id.iv_to_bottom);
 
-        tvAvatar.setText(getIntent().getStringExtra(K_THEIR_USERNAME).substring(0, 1).toUpperCase());
-        tvAvatar.setBackgroundTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+//        ivAvatar.setText(getIntent().getStringExtra(K_THEIR_USERNAME).substring(0, 1).toUpperCase());
+        ivAvatar.setBackgroundTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
         tvUsername.setText(getIntent().getStringExtra(K_THEIR_USERNAME));
         tvUserStatus.setText("User Status");
         tvLastMessageTime.setVisibility(View.GONE);

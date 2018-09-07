@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.SampleChatActivity;
@@ -27,12 +28,12 @@ import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
 public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListHolder> {
 
-    private List<MessageEntity> roomList;
+    private List<MessageModel> roomList;
     private ColorStateList avatarTint;
     private String myUsername;
     private int[] randomColors;
 
-    public RoomListAdapter(List<MessageEntity> roomList, String myUsername) {
+    public RoomListAdapter(List<MessageModel> roomList, String myUsername) {
         this.roomList = roomList;
         this.myUsername = myUsername;
     }
@@ -54,24 +55,25 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         return 0;
     }
 
-    public List<MessageEntity> getItems() {
+    public List<MessageModel> getItems() {
         return roomList;
     }
 
-    public MessageEntity getItemAt(int position) {
+    public MessageModel getItemAt(int position) {
         return roomList.get(position);
     }
 
     class RoomListHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivAvatar, ivMessageStatus;
+        private ImageView ivAvatar, ivAvatarIcon, ivMessageStatus;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
-        private MessageEntity item;
+        private MessageModel item;
 
         RoomListHolder(View itemView) {
             super(itemView);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
@@ -82,14 +84,15 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
         void onBind(int position) {
             item = getItemAt(position);
-
-            final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
+//            final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
+            final UserModel userModel = item.getUser();
             final int randomColor = getRandomColor(userModel.getName());
 
             // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
             avatarTint = ColorStateList.valueOf(randomColor);
 //            tvAvatar.setText(userModel.getName().substring(0, 1).toUpperCase());
             ivAvatar.setBackgroundTintList(avatarTint);
+            // TODO: 7 September 2018 SET AVATAR ICON
             tvFullName.setText(userModel.getName());
             tvLastMessage.setText(item.getMessage());
             tvLastMessageTime.setText(TimeFormatter.formatClock(item.getCreated()));
@@ -100,7 +103,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     intent.putExtra(K_MY_USERNAME, myUsername);
                     intent.putExtra(K_THEIR_USERNAME, userModel.getName());
                     intent.putExtra(K_COLOR, randomColor);
-                    intent.putExtra(K_ROOM_ID, item.getRoomID());
+                    intent.putExtra(K_ROOM_ID, item.getRoom().getRoomID());
                     itemView.getContext().startActivity(intent);
                 }
             });
