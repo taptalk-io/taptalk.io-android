@@ -155,6 +155,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                         //removeMessageAt(position);
                         removeMessage(item);
                         listener.onRetrySendMessage(item);
+                        throw new IllegalStateException("ini cmn test loh"); // TODO: 07/09/18 apus bangsat ini 
                     }
                     else {
                         if (llMessageStatus.getVisibility() == View.GONE) {

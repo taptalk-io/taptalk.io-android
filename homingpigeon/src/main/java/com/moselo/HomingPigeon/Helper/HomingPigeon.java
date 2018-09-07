@@ -37,6 +37,7 @@ public class HomingPigeon {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
         ConnectionManager.getInstance().connect();
+        DataManager.getInstance().updatePendingStatus();
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -51,6 +52,7 @@ public class HomingPigeon {
 
             @Override
             public void onAppGotoBackground() {
+                Log.e("riocv", "onAppGotoBackground: " );
                 ConnectionManager.getInstance().close();
                 NetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
                 ChatManager.getInstance().updateMessageWhenEnterBackground();

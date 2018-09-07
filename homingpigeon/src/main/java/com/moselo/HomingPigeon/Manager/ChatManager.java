@@ -355,6 +355,7 @@ public class ChatManager {
      */
     public void updateMessageWhenEnterBackground() {
         //saveWaitingMessageToDatabase();
+        saveUnsentMessage();
         checkPendingMessageExists();
     }
 
@@ -393,11 +394,10 @@ public class ChatManager {
 
     // TODO: 05/09/18 nnti masukin di crash listener
     public void insertPendingArrayAndUpdateMessage() {
+        saveUnsentMessage();
         if (null != scheduler)
             scheduler.shutdown();
-
-        saveUnsentMessage();
-        DataManager.getInstance().updatePendingStatus();
+        //DataManager.getInstance().updatePendingStatus();
         disconnectSocket();
     }
 
@@ -486,8 +486,25 @@ public class ChatManager {
     }
 
     public void saveUnsentMessage() {
-        saveNewMessageToDatabase();
-        savePendingMessageToDatabase();
-        saveWaitingMessageToDatabase();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                saveNewMessageToDatabase();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                savePendingMessageToDatabase();
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                saveWaitingMessageToDatabase();
+            }
+        }).start();
     }
 }

@@ -20,7 +20,7 @@ public class HomingPigeonService extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         Log.e(HomingPigeonService.class.getSimpleName(), "onTaskRemoved: ");
-        ChatManager.getInstance().insertPendingArrayAndUpdateMessage();
+        //ChatManager.getInstance().insertPendingArrayAndUpdateMessage();
         stopSelf();
     }
 }
