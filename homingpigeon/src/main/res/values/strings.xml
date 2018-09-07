@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">HomingPigeon</string>
+
+    <!--Connection Status-->
+    <string name="connected">Connected</string>
+    <string name="connecting">Connecting</string>
+    <string name="offline">Offline</string>
+    <string name="network_error">Network Error</string>
+
+    <!--General-->
     <string name="edit">Edit</string>
     <string name="search">Search</string>
-    <string name="connecting">Connecting</string>
 </resources>

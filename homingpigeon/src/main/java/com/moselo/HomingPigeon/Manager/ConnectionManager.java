@@ -104,6 +104,10 @@ public class ConnectionManager {
                     Intent intent = new Intent(kIsDisconnected);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
                 }
+                if (null != socketListeners && !socketListeners.isEmpty()) {
+                    for (HomingPigeonSocketListener listener : socketListeners)
+                        listener.onSocketDisconnected();
+                }
             }
 
             @Override
@@ -113,6 +117,10 @@ public class ConnectionManager {
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnectionError);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
+                }
+                if (null != socketListeners && !socketListeners.isEmpty()) {
+                    for (HomingPigeonSocketListener listener : socketListeners)
+                        listener.onSocketError();
                 }
             }
 
@@ -124,6 +132,10 @@ public class ConnectionManager {
                 if (null != HomingPigeon.appContext) {
                     Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsReconnect);
                     LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
+                }
+                if (null != socketListeners && !socketListeners.isEmpty()) {
+                    for (HomingPigeonSocketListener listener : socketListeners)
+                        listener.onSocketConnecting();
                 }
             }
         };

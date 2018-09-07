@@ -64,6 +64,21 @@ public class ChatManager {
         }
 
         @Override
+        public void onSocketDisconnected() {
+
+        }
+
+        @Override
+        public void onSocketConnecting() {
+
+        }
+
+        @Override
+        public void onSocketError() {
+
+        }
+
+        @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
             switch (eventName) {
                 case kEventOpenRoom:
