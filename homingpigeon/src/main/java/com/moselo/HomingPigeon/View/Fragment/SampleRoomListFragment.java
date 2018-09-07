@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -52,6 +53,7 @@ public class SampleRoomListFragment extends Fragment {
     private TextView tvConnectionStatus;
     private ImageView ivConnectionStatus;
     private ProgressBar pbConnecting;
+    private FloatingActionButton fabNewChat;
     private RecyclerView rvContactList;
     private RoomListAdapter adapter;
 //    private TransitionDrawable connectionStatusBackground;
@@ -126,6 +128,7 @@ public class SampleRoomListFragment extends Fragment {
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         pbConnecting = view.findViewById(R.id.pb_connecting);
+        fabNewChat = view.findViewById(R.id.fab_new_chat);
 
 //        connectionStatusDrawables = new Drawable[4];
 //        connectionStatusDrawables[0] = activity.getDrawable(R.drawable.bg_status_connected);
@@ -142,7 +145,8 @@ public class SampleRoomListFragment extends Fragment {
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
 
-        clButtonSearch.setOnClickListener(searchClickListener);
+        clButtonSearch.setOnClickListener(searchButtonClickListener);
+        fabNewChat.setOnClickListener(newChatButtonListener);
     }
 
     private void initConnectionStatus() {
@@ -151,13 +155,21 @@ public class SampleRoomListFragment extends Fragment {
             socketListener.onSocketDisconnected();
     }
 
-    private View.OnClickListener searchClickListener = new View.OnClickListener() {
+    View.OnClickListener searchButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            // TODO: 7 September 2018 START ACTIVITY
+
         }
     };
 
+    View.OnClickListener newChatButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
+
+    // Update connection status UI
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
