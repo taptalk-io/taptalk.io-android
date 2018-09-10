@@ -28,8 +28,9 @@ public class MessageEntity {
     @Nullable @ColumnInfo(name = "isSending") private Integer isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Integer isFailedSend;
 
-    public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID
-            , int type, String message, long created, String user) {
+    @Ignore
+    public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
+                         int type, String message, long created, String user) {
         this.messageID = messageID;
         this.localID = localID;
         this.roomID = roomID;

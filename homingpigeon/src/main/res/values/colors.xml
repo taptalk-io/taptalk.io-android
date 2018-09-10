@@ -1,26 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6D3492</color>
-    <color name="colorPrimaryDark">#51276C</color>
-    <color name="colorAccent">#2ECCAD</color>
-    <color name="colorAccentLight">#A7EBDE</color>
+    <color name="colorPrimary">#6d3492</color>
+    <color name="colorPrimaryDark">#51276c</color>
+    <color name="colorAccent">#2eccad</color>
+    <color name="colorAccentLight">#a7ebde</color>
 
-    <color name="colorTextMain">#424242</color>
-    <color name="colorTextSub">#80424242</color>
-    <color name="colorTextRed">#ED2929</color>
+    <color name="colorTextTitle">@color/black_44</color>
+    <color name="colorTextContent">@color/grey_9b</color>
 
-    <color name="color0">#FDC3A7</color>
-    <color name="color1">#D0E69D</color>
-    <color name="color2">#99D39E</color>
-    <color name="color3">#A9DDC7</color>
-    <color name="color4">#C6D3E9</color>
-    <color name="color5">#D5C0E2</color>
-    <color name="color6">#F599B5</color>
-    <color name="color7">#FFB3B8</color>
-    <color name="color8">#FDD38D</color>
-    <color name="color9">#B4E6F1</color>
+    <color name="amethyst">#9954c2</color>
+    <color name="mediumPurple">#784198</color>
+    <color name="brightBlue">#007aff</color>
+    <color name="aquaMarine">#3de1c1</color>
+    <color name="tealish">#2eccad</color>
+    <color name="greenBlue">#00b793</color>
+    <color name="vibrantGreen">#19c700</color>
+    <color name="radioactiveGreen">#38ee3b</color>
+    <color name="toxicGreen">#4bd62e</color>
+    <color name="orangeYellow">#ff9f00</color>
+    <color name="tangerine">#ffa107</color>
+    <color name="butterscotch">#ffb438</color>
+    <color name="brightRed">#ff2323</color>
+    <color name="tomato">#ec2c2b</color>
+    <color name="red">#d90a0a</color>
 
-    <array name="random_colors">
+    <color name="white">#ffffff</color>
+    <color name="white_f8">#f8f8f8</color>
+    <color name="white_f3">#f3f3f3</color>
+    <color name="grey_ea">#eaeaea</color>
+    <color name="grey_e4">#e4e4e4</color>
+    <color name="grey_d9">#d9d9d9</color>
+    <color name="grey_cb">#cbcbcb</color>
+    <color name="grey_9b">#9b9b9b</color>
+    <color name="black_44">#444444</color>
+    <color name="black_2c">#2c2c2c</color>
+    <color name="black">#000000</color>
+
+    <color name="transparent">#00ffffff</color>
+    <color name="transparent_grey">#2e000000</color>
+
+    <color name="color0">#fdc3a7</color>
+    <color name="color1">#d0e69d</color>
+    <color name="color2">#99d39e</color>
+    <color name="color3">#a9ddc7</color>
+    <color name="color4">#c6d3e9</color>
+    <color name="color5">#d5c0e2</color>
+    <color name="color6">#f599b5</color>
+    <color name="color7">#ffb3b8</color>
+    <color name="color8">#fdd38d</color>
+    <color name="color9">#b4e6f1</color>
+
+    <array name="pastel_colors">
         <item>@color/color0</item>
         <item>@color/color1</item>
         <item>@color/color2</item>

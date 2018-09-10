@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:animateLayoutChanges="true"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <!--<android.support.constraint.ConstraintLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="56dp"-->
+    <!--android:background="@color/white"-->
+    <!--android:elevation="2dp">-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/tv_button_edit"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:fontFamily="@font/latoregular"-->
+    <!--android:foreground="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:padding="8dp"-->
+    <!--android:text="@string/edit"-->
+    <!--android:textColor="@color/greenBlue"-->
+    <!--android:textSize="17sp"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<LinearLayout-->
+    <!--android:id="@+id/ll_button_search"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="28dp"-->
+    <!--android:layout_marginEnd="56dp"-->
+    <!--android:layout_marginStart="56dp"-->
+    <!--android:background="@drawable/bg_white_stroke_e4_1dp_rounded_14dp"-->
+    <!--android:foreground="?attr/selectableItemBackground"-->
+    <!--android:gravity="center_vertical"-->
+    <!--android:orientation="horizontal"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent">-->
+
+    <!--<ImageView-->
+    <!--android:layout_width="14dp"-->
+    <!--android:layout_height="14dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:src="@drawable/ic_keyboard_arrow_down" />-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:fontFamily="@font/latoregular"-->
+    <!--android:text="@string/search"-->
+    <!--android:textColor="@color/grey_9b"-->
+    <!--android:textSize="13dp" />-->
+
+    <!--</LinearLayout>-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_button_new_chat"-->
+    <!--android:layout_width="22dp"-->
+    <!--android:layout_height="22dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:foreground="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:src="@drawable/ic_sign_in"-->
+    <!--android:tint="@color/greenBlue"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--</android.support.constraint.ConstraintLayout>-->
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_button_search"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/white"
+        android:elevation="2dp"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/iv_search_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_search_grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="72dp"
+            android:layout_marginStart="72dp"
+            android:fontFamily="@font/latoregular"
+            android:text="@string/search"
+            android:textColor="@color/grey_9b"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_selection"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/greenBlue">
+
+        <ImageView
+            android:id="@+id/iv_button_cancel_selection"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_back_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_selection_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:fontFamily="@font/latoregular"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_button_cancel_selection"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_mute"
+            tools:text="1"
+            />
+
+        <ImageView
+            android:id="@+id/iv_button_mute"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_mute_white"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_delete"
+            />
+
+        <ImageView
+            android:id="@+id/iv_button_delete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_delete_white"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_more"
+            />
+
+        <ImageView
+            android:id="@+id/iv_button_more"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more_options_white"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_connection_status"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/bg_status_connecting"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
+        app:layout_constraintTop_toBottomOf="@+id/cl_button_search">
+
+        <TextView
+            android:id="@+id/tv_connection_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/latobold"
+            android:text="@string/connecting"
+            android:textColor="@color/white"
+            android:textSize="12dp" />
+
+        <ProgressBar
+            android:id="@+id/pb_connecting"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp"
+            android:progressTint="@color/white" />
+
+        <ImageView
+            android:id="@+id/iv_connection_status"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_sign_in"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_contact_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_connection_status" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_new_chat"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_circle_aquamarine_tealish_radial_stroke_greenblue_1dp"
+        android:src="@drawable/ic_new_chat_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

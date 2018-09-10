@@ -4,18 +4,23 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "roomID",
-        "roomType",
-})
 
 public class RoomModel {
 
     @JsonProperty("roomID") private String roomID;
-    @JsonProperty("type") private int roomType;
+    @JsonProperty("roomName") private String roomName;
+    @JsonProperty("roomColor") private String roomColor;
+    @JsonProperty("roomImage") private String roomImage;
+    @JsonProperty("roomType") private int roomType;
+    @JsonProperty("unreadCount") private int unreadCount;
+    @JsonProperty("isMuted") private int isMuted;
+    @Nullable @JsonProperty("groupParticipants") private List<UserModel> groupParticipants;
+    @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
+    private boolean isSelected;
 
     public RoomModel(String roomID, int roomType) {
         this.roomID = roomID;
@@ -37,11 +42,77 @@ public class RoomModel {
         this.roomID = roomID;
     }
 
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
+    }
+
+    public String getRoomColor() {
+        return roomColor;
+    }
+
+    public void setRoomColor(String roomColor) {
+        this.roomColor = roomColor;
+    }
+
     public int getRoomType() {
         return roomType;
     }
 
     public void setRoomType(int roomType) {
         this.roomType = roomType;
+    }
+
+    public String getRoomImage() {
+        return roomImage;
+    }
+
+    public void setRoomImage(String roomImage) {
+        this.roomImage = roomImage;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
+
+    public int isMuted() {
+        return isMuted;
+    }
+
+    public void setMuted(int isMuted) {
+        this.isMuted = isMuted;
+    }
+
+    @Nullable
+    public List<UserModel> getGroupParticipants() {
+        return groupParticipants;
+    }
+
+    public void setGroupParticipants(@Nullable List<UserModel> groupParticipants) {
+        this.groupParticipants = groupParticipants;
+    }
+
+    @Nullable
+    public Integer getNumOfParticipants() {
+        return numOfParticipants;
+    }
+
+    public void setNumOfParticipants(@Nullable Integer numOfParticipants) {
+        this.numOfParticipants = numOfParticipants;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

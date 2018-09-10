@@ -47,7 +47,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
         int layout = -1;
         switch (viewType) {
             case TYPE_LOG:
-                layout = R.layout.layout_chat_log;
+                layout = R.layout.cell_chat_log;
                 break;
             case TYPE_BUBBLE_LEFT:
                 layout = R.layout.cell_chat_left;
@@ -96,7 +96,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
             llMessageStatus = itemView.findViewById(R.id.ll_message_status);
-            tvUsername = itemView.findViewById(R.id.tv_username);
+            tvUsername = itemView.findViewById(R.id.tv_full_name);
             tvMessage = itemView.findViewById(R.id.tv_message);
             tvTimestamp = itemView.findViewById(R.id.tv_timestamp);
             tvStatus = itemView.findViewById(R.id.tv_status);
@@ -105,7 +105,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
         void onBind(final int position) {
             item = getItemAt(position);
-            randomColors = itemView.getContext().getResources().getIntArray(R.array.random_colors);
+            randomColors = itemView.getContext().getResources().getIntArray(R.array.pastel_colors);
             if (getItemViewType() == TYPE_BUBBLE_LEFT) {
                 tvUsername.setText(item.getUser().getName());
 //                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
@@ -118,7 +118,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
             // Message is sending
             if (null != item.getIsSending() && 1 == item.getIsSending()) {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextSub));
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextContent));
                 tvStatus.setText("Sending...");
                 tvDash.setText("");
                 tvTimestamp.setText("");
@@ -128,7 +128,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             }
             // Message failed to send
             else if (null != item.getIsFailedSend() && 1 == item.getIsFailedSend()) {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextRed));
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
                 tvStatus.setText("Failed, tap to retry.");
                 tvDash.setText("");
                 tvTimestamp.setText("");
@@ -138,7 +138,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             }
             // Message is delivered
             else {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextSub));
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextContent));
                 tvStatus.setText("S");
                 tvDash.setText(" - ");
                 tvTimestamp.setText(TimeFormatter.formatClock(item.getCreated()));
@@ -147,21 +147,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 llMessageStatus.setVisibility(View.GONE);
             }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (null != item.getIsFailedSend() && null != item.getIsSending() &&
-                            1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
-                        //removeMessageAt(position);
-                        removeMessage(item);
-                        listener.onRetrySendMessage(item);
-                    }
-                    else {
-                        if (llMessageStatus.getVisibility() == View.GONE) {
-                            llMessageStatus.setVisibility(View.VISIBLE);
-                        } else {
-                            llMessageStatus.setVisibility(View.GONE);
-                        }
+            itemView.setOnClickListener(v -> {
+                if (null != item.getIsFailedSend() && null != item.getIsSending() &&
+                        1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
+                    removeMessage(item);
+                    listener.onRetrySendMessage(item);
+                }
+                else {
+                    if (llMessageStatus.getVisibility() == View.GONE) {
+                        llMessageStatus.setVisibility(View.VISIBLE);
+                    } else {
+                        llMessageStatus.setVisibility(View.GONE);
                     }
                 }
             });
