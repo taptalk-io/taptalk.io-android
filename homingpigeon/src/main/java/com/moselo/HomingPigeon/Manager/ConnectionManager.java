@@ -26,6 +26,7 @@ import java.util.TimerTask;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnected;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
+import static com.moselo.HomingPigeon.Manager.ConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class ConnectionManager {
 
@@ -35,7 +36,7 @@ public class ConnectionManager {
     private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon";
     //    private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
-    private ConnectionStatus connectionStatus = ConnectionStatus.NOT_CONNECTED;
+    private ConnectionStatus connectionStatus = NOT_CONNECTED;
     private List<HomingPigeonSocketListener> socketListeners;
 
     private int reconnectAttempt;
@@ -148,7 +149,7 @@ public class ConnectionManager {
                 if (ConnectionStatus.CONNECTING == connectionStatus ||
                         ConnectionStatus.DISCONNECTED == connectionStatus) {
                     reconnect();
-                } else if (ConnectionStatus.NOT_CONNECTED == connectionStatus) {
+                } else if (NOT_CONNECTED == connectionStatus) {
                     connect();
                 }
             }
@@ -179,7 +180,7 @@ public class ConnectionManager {
     }
 
     public void connect() {
-        if ((ConnectionStatus.DISCONNECTED == connectionStatus || ConnectionStatus.NOT_CONNECTED == connectionStatus) &&
+        if ((ConnectionStatus.DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
                 NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)) {
             try {
                 connectionStatus = ConnectionStatus.CONNECTING;
