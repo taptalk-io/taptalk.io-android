@@ -119,13 +119,15 @@ public class SampleRoomListFragment extends Fragment {
             String userId = myUser.getUserID();
             RoomModel room1 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, userId), 1);
             RoomModel room2 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "999999"), 1);
+            room1.setUnreadCount(11);
             room2.setMuted(true);
+            room2.setUnreadCount(999);
             MessageModel roomDummy1 = new MessageModel(
                     "", "abc123",
                     "LastMessage",
                     room1,
                     1,
-                    System.currentTimeMillis() / 1000,
+                    System.currentTimeMillis(),
                     myUser,
                     0, 0, 0);
             UserModel dummyUser2 = new UserModel("999999", "BAMBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANGS");
@@ -134,7 +136,7 @@ public class SampleRoomListFragment extends Fragment {
                     "Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang.",
                     room2,
                     1,
-                    0L,
+                    9999L,
                     dummyUser2,
                     0, 0, 0);
             vm.getRoomList().add(roomDummy1);

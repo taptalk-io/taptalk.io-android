@@ -118,7 +118,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             // Set name, last message, and timestamp text
             tvFullName.setText(userModel.getName());
             tvLastMessage.setText(item.getMessage());
-            tvLastMessageTime.setText(TimeFormatter.formatClock(item.getCreated()));
+            tvLastMessageTime.setText(TimeFormatter.durationString(item.getCreated()));
 
             // Check if room is muted
             if (item.getRoom().isMuted()) {
@@ -132,8 +132,13 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             // TODO: 6 September 2018 CHANGE MESSAGE STATUS IMAGE
 
             // Show unread count
-            if (0 < item.getRoom().getUnreadCount()) {
+            int unreadCount = item.getRoom().getUnreadCount();
+            if (0 < unreadCount && unreadCount < 100) {
                 tvBadgeUnread.setText(item.getRoom().getUnreadCount() + "");
+                ivMessageStatus.setVisibility(View.GONE);
+                tvBadgeUnread.setVisibility(View.VISIBLE);
+            } else if (unreadCount >= 100) {
+                tvBadgeUnread.setText(R.string.over_99);
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else {
