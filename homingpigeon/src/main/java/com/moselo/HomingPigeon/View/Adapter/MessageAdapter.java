@@ -147,22 +147,19 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 llMessageStatus.setVisibility(View.GONE);
             }
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (null != item.getIsFailedSend() && null != item.getIsSending() &&
-                            1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
-                        //removeMessageAt(position);
-                        removeMessage(item);
-                        listener.onRetrySendMessage(item);
-                        throw new IllegalStateException("ini cmn test loh"); // TODO: 07/09/18 apus bangsat ini 
-                    }
-                    else {
-                        if (llMessageStatus.getVisibility() == View.GONE) {
-                            llMessageStatus.setVisibility(View.VISIBLE);
-                        } else {
-                            llMessageStatus.setVisibility(View.GONE);
-                        }
+            itemView.setOnClickListener(v -> {
+                if (null != item.getIsFailedSend() && null != item.getIsSending() &&
+                        1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
+                    //removeMessageAt(position);
+                    removeMessage(item);
+                    listener.onRetrySendMessage(item);
+                    throw new IllegalStateException("ini cmn test loh"); // TODO: 07/09/18 apus bangsat ini
+                }
+                else {
+                    if (llMessageStatus.getVisibility() == View.GONE) {
+                        llMessageStatus.setVisibility(View.VISIBLE);
+                    } else {
+                        llMessageStatus.setVisibility(View.GONE);
                     }
                 }
             });
