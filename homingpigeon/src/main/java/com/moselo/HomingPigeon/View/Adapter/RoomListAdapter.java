@@ -31,7 +31,7 @@ import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
 public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListHolder> {
 
-//    private List<MessageModel> roomList;
+    //    private List<MessageModel> roomList;
     private RoomListViewModel vm;
     private RoomListListener roomListListener;
     private ColorStateList avatarTint;
@@ -72,7 +72,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     class RoomListHolder extends RecyclerView.ViewHolder {
 
         private ConstraintLayout clContainer;
-        private ImageView ivAvatar, ivAvatarIcon, ivMessageStatus;
+        private ImageView ivAvatar, ivAvatarIcon, ivMute, ivMessageStatus;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
         private MessageModel item;
 
@@ -82,6 +82,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             clContainer = itemView.findViewById(R.id.cl_container);
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
+            ivMute = itemView.findViewById(R.id.iv_mute);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
@@ -118,6 +119,16 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             tvFullName.setText(userModel.getName());
             tvLastMessage.setText(item.getMessage());
             tvLastMessageTime.setText(TimeFormatter.formatClock(item.getCreated()));
+
+            // Check if room is muted
+            if (item.getRoom().isMuted()) {
+                ivMute.setVisibility(View.VISIBLE);
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.bg_9b9b9b_rounded_10dp));
+            } else {
+                ivMute.setVisibility(View.GONE);
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.bg_amethyst_mediumpurple_270_rounded_10dp));
+            }
+
             // TODO: 6 September 2018 CHANGE MESSAGE STATUS IMAGE
 
             // Show unread count
@@ -125,8 +136,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                 tvBadgeUnread.setText(item.getRoom().getUnreadCount() + "");
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setVisibility(View.GONE);
             }

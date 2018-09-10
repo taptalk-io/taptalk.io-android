@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -98,10 +99,9 @@ public class SampleRoomListFragment extends Fragment {
         roomListListener = (messageModel, isSelected) -> {
             if (null != messageModel && isSelected) {
                 vm.getSelectedRooms().put(messageModel.getLocalID(), messageModel);
-            } else if(null != messageModel) {
+            } else if (null != messageModel) {
                 vm.getSelectedRooms().remove(messageModel.getLocalID());
             }
-
             if (vm.getSelectedCount() > 0) {
                 showSelectionActionBar();
             } else {
@@ -119,6 +119,7 @@ public class SampleRoomListFragment extends Fragment {
             String userId = myUser.getUserID();
             RoomModel room1 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, userId), 1);
             RoomModel room2 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "999999"), 1);
+            room2.setMuted(true);
             MessageModel roomDummy1 = new MessageModel(
                     "", "abc123",
                     "LastMessage",
@@ -127,7 +128,7 @@ public class SampleRoomListFragment extends Fragment {
                     System.currentTimeMillis() / 1000,
                     myUser,
                     0, 0, 0);
-            UserModel dummyUser2 = new UserModel("999999", "BAMBANGS");
+            UserModel dummyUser2 = new UserModel("999999", "BAMBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANGS");
             MessageModel roomDummy2 = new MessageModel(
                     "", "def456",
                     "Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang.",
@@ -217,6 +218,41 @@ public class SampleRoomListFragment extends Fragment {
         clSelection.setVisibility(View.INVISIBLE);
     }
 
+    private void setStatusConnected() {
+        activity.runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connected);
+            tvConnectionStatus.setText(getString(R.string.connected));
+            ivConnectionStatus.setImageResource(R.drawable.ic_connected_white);
+            ivConnectionStatus.setVisibility(View.VISIBLE);
+            pbConnecting.setVisibility(View.GONE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+
+            new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
+        });
+    }
+
+    private void setStatusConnecting() {
+        if (!NetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+
+        activity.runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connecting);
+            tvConnectionStatus.setText(R.string.connecting);
+            ivConnectionStatus.setVisibility(View.GONE);
+            pbConnecting.setVisibility(View.VISIBLE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void setStatusWaitingForNetwork() {
+        activity.runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_offline);
+            tvConnectionStatus.setText(R.string.waiting_for_network);
+            ivConnectionStatus.setVisibility(View.GONE);
+            pbConnecting.setVisibility(View.VISIBLE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
     // Update connection status UI
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
@@ -226,53 +262,22 @@ public class SampleRoomListFragment extends Fragment {
 
         @Override
         public void onSocketConnected() {
-            activity.runOnUiThread(() -> {
-                llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connected);
-                tvConnectionStatus.setText(R.string.connected);
-                ivConnectionStatus.setImageResource(R.drawable.ic_connected_white);
-                ivConnectionStatus.setVisibility(View.VISIBLE);
-                pbConnecting.setVisibility(View.GONE);
-                llConnectionStatus.setVisibility(View.VISIBLE);
-
-                new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
-            });
+            setStatusConnected();
         }
 
         @Override
         public void onSocketDisconnected() {
-            activity.runOnUiThread(() -> {
-                llConnectionStatus.setBackgroundResource(R.drawable.bg_status_offline);
-                tvConnectionStatus.setText(R.string.offline);
-                ivConnectionStatus.setImageResource(R.drawable.ic_offline_white);
-                ivConnectionStatus.setVisibility(View.VISIBLE);
-                pbConnecting.setVisibility(View.GONE);
-                llConnectionStatus.setVisibility(View.VISIBLE);
-            });
+            setStatusWaitingForNetwork();
         }
 
         @Override
         public void onSocketConnecting() {
-            if (!NetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
-
-            activity.runOnUiThread(() -> {
-                llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connecting);
-                tvConnectionStatus.setText(R.string.connecting);
-                ivConnectionStatus.setVisibility(View.GONE);
-                pbConnecting.setVisibility(View.VISIBLE);
-                llConnectionStatus.setVisibility(View.VISIBLE);
-            });
+            setStatusConnecting();
         }
 
         @Override
         public void onSocketError() {
-            activity.runOnUiThread(() -> {
-                llConnectionStatus.setBackgroundResource(R.drawable.bg_status_error);
-                tvConnectionStatus.setText(R.string.network_error);
-                ivConnectionStatus.setImageResource(R.drawable.ic_network_error_white);
-                ivConnectionStatus.setVisibility(View.VISIBLE);
-                pbConnecting.setVisibility(View.GONE);
-                llConnectionStatus.setVisibility(View.VISIBLE);
-            });
+            setStatusWaitingForNetwork();
         }
     };
 }

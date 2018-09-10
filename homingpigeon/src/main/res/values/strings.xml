@@ -6,6 +6,7 @@
     <string name="connecting">Connecting</string>
     <string name="offline">Offline</string>
     <string name="network_error">Network Error</string>
+    <string name="waiting_for_network">Waiting for Network</string>
 
     <!--General-->
     <string name="edit">Edit</string>
