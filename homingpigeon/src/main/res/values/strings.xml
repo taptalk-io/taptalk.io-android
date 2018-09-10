@@ -11,4 +11,6 @@
     <!--General-->
     <string name="edit">Edit</string>
     <string name="search">Search</string>
+    <string name="no_chats">No Chats</string>
+    <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
 </resources>

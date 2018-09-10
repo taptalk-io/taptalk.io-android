@@ -49,7 +49,7 @@ public class SampleRoomListFragment extends Fragment {
     private String TAG = SampleRoomListFragment.class.getSimpleName();
     private Activity activity;
     private ConstraintLayout clButtonSearch, clSelection;
-    private LinearLayout llConnectionStatus;
+    private LinearLayout llConnectionStatus, llRoomEmpty;
     private TextView tvSelectionCount, tvConnectionStatus;
     private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivConnectionStatus;
     private ProgressBar pbConnecting;
@@ -147,6 +147,7 @@ public class SampleRoomListFragment extends Fragment {
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
         llConnectionStatus = view.findViewById(R.id.ll_connection_status);
+        llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         tvSelectionCount = view.findViewById(R.id.tv_selection_count);
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
         ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
@@ -166,6 +167,12 @@ public class SampleRoomListFragment extends Fragment {
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
+
+        if (0 == vm.getRoomList().size()) {
+            llRoomEmpty.setVisibility(View.VISIBLE);
+        } else {
+            llRoomEmpty.setVisibility(View.GONE);
+        }
 
         clButtonSearch.setOnClickListener(v -> {
 
