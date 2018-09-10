@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.View.Fragment;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Listener.RoomListListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
@@ -37,9 +39,11 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
 import com.moselo.HomingPigeon.View.Helper.Const;
+import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
@@ -48,21 +52,20 @@ public class SampleRoomListFragment extends Fragment {
 
     private String TAG = SampleRoomListFragment.class.getSimpleName();
     private Activity activity;
-    private ConstraintLayout clButtonSearch;
+    private ConstraintLayout clButtonSearch, clSelection;
     private LinearLayout llConnectionStatus;
-    private TextView tvConnectionStatus;
-    private ImageView ivConnectionStatus;
+    private TextView tvSelectionAmount, tvConnectionStatus;
+    private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivConnectionStatus;
     private ProgressBar pbConnecting;
     private FloatingActionButton fabNewChat;
     private RecyclerView rvContactList;
     private RoomListAdapter adapter;
+    private RoomListListener roomListListener;
+    private RoomListViewModel vm;
 //    private TransitionDrawable connectionStatusBackground;
 //    private Drawable connectionStatusDrawables[];
 
-    private List<MessageModel> roomList;
-
     public SampleRoomListFragment() {
-        roomList = new ArrayList<>();
     }
 
     public static SampleRoomListFragment newInstance() {
@@ -82,6 +85,8 @@ public class SampleRoomListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initViewModel();
+        initListener();
         initView(view);
         initConnectionStatus();
     }
@@ -92,40 +97,74 @@ public class SampleRoomListFragment extends Fragment {
         ConnectionManager.getInstance().removeSocketListener(socketListener);
     }
 
+    private void initViewModel() {
+        vm = ViewModelProviders.of(this).get(RoomListViewModel.class);
+    }
+
+    private void initListener() {
+        roomListListener = (messageModel, isSelected) -> {
+            if (null != messageModel && isSelected) {
+                vm.getSelectedRooms().put(messageModel.getLocalID(), messageModel);
+            } else if(null != messageModel) {
+                vm.getSelectedRooms().remove(messageModel.getLocalID());
+            }
+
+            if (vm.getSelectedCount() > 0) {
+                vm.setSelecting(true);
+                clButtonSearch.setElevation(0);
+                clButtonSearch.setVisibility(View.INVISIBLE);
+                clSelection.setVisibility(View.VISIBLE);
+            } else {
+                vm.setSelecting(false);
+                clButtonSearch.setElevation(Utils.getInstance().dpToPx(2));
+                clButtonSearch.setVisibility(View.VISIBLE);
+                clSelection.setVisibility(View.INVISIBLE);
+            }
+        };
+    }
+
     private void initView(View view) {
         // Dummy Rooms
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-        }, prefs.getString(K_USER, ""));
-        String userId = myUser.getUserID();
-        RoomModel room1 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, userId), 1);
-        RoomModel room2 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "999999"), 1);
-        MessageModel roomDummy1 = new MessageModel(
-                "", "",
-                "LastMessage",
-                room1,
-                1,
-                System.currentTimeMillis() / 1000,
-                myUser,
-                0, 0, 0);
-        UserModel dummyUser2 = new UserModel("999999", "BAMBANGS");
-        MessageModel roomDummy2 = new MessageModel(
-                "", "",
-                "Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang.",
-                room2,
-                1,
-                0L,
-                dummyUser2,
-                0, 0, 0);
-        roomList.add(roomDummy1);
-        roomList.add(roomDummy2);
+        if (vm.getRoomList().size() == 0) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+            }, prefs.getString(K_USER, ""));
+            String userId = myUser.getUserID();
+            RoomModel room1 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, userId), 1);
+            RoomModel room2 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "999999"), 1);
+            MessageModel roomDummy1 = new MessageModel(
+                    "", "abc123",
+                    "LastMessage",
+                    room1,
+                    1,
+                    System.currentTimeMillis() / 1000,
+                    myUser,
+                    0, 0, 0);
+            UserModel dummyUser2 = new UserModel("999999", "BAMBANGS");
+            MessageModel roomDummy2 = new MessageModel(
+                    "", "def456",
+                    "Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang.",
+                    room2,
+                    1,
+                    0L,
+                    dummyUser2,
+                    0, 0, 0);
+            vm.getRoomList().add(roomDummy1);
+            vm.getRoomList().add(roomDummy2);
+        }
         // End Dummy
 
         Objects.requireNonNull(getActivity()).getWindow().setBackgroundDrawable(null);
 
         clButtonSearch = view.findViewById(R.id.cl_button_search);
+        clSelection = view.findViewById(R.id.cl_selection);
         llConnectionStatus = view.findViewById(R.id.ll_connection_status);
+        tvSelectionAmount = view.findViewById(R.id.tv_selection_amount);
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
+        ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
+        ivButtonMute = view.findViewById(R.id.iv_button_mute);
+        ivButtonDelete = view.findViewById(R.id.iv_button_delete);
+        ivButtonMore = view.findViewById(R.id.iv_button_more);
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         pbConnecting = view.findViewById(R.id.pb_connecting);
         fabNewChat = view.findViewById(R.id.fab_new_chat);
@@ -139,7 +178,7 @@ public class SampleRoomListFragment extends Fragment {
 //        llConnectionStatus.setBackground(connectionStatusBackground);
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
 
-        adapter = new RoomListAdapter(roomList, activity.getIntent().getStringExtra(Const.K_MY_USERNAME));
+        adapter = new RoomListAdapter(vm, activity.getIntent().getStringExtra(Const.K_MY_USERNAME), roomListListener);
         rvContactList = view.findViewById(R.id.rv_contact_list);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -150,6 +189,27 @@ public class SampleRoomListFragment extends Fragment {
         });
 
         fabNewChat.setOnClickListener(v -> {
+
+        });
+
+        ivButtonCancelSelection.setOnClickListener(v -> {
+            for (Map.Entry<String, MessageModel> entry : vm.getSelectedRooms().entrySet()) {
+                entry.getValue().getRoom().setSelected(false);
+            }
+            vm.getSelectedRooms().clear();
+            roomListListener.onRoomSelected(null, false);
+            adapter.notifyDataSetChanged();
+        });
+
+        ivButtonMute.setOnClickListener(v -> {
+
+        });
+
+        ivButtonDelete.setOnClickListener(v -> {
+
+        });
+
+        ivButtonMore.setOnClickListener(v -> {
 
         });
     }

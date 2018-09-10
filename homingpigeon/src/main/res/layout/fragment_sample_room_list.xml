@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:animateLayoutChanges="true"
     android:background="@color/white"
     android:orientation="vertical">
@@ -107,6 +108,69 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_selection"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/greenBlue">
+
+        <ImageView
+            android:id="@+id/iv_button_cancel_selection"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_back_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_selection_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:fontFamily="@font/latoregular"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_button_cancel_selection"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_mute"
+            tools:text="1"
+            />
+
+        <ImageView
+            android:id="@+id/iv_button_mute"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_mute_white"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_delete"
+            />
+
+        <ImageView
+            android:id="@+id/iv_button_delete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_delete_white"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_more"
+            />
+
+        <ImageView
+            android:id="@+id/iv_button_more"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_more_options_white"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    </android.support.constraint.ConstraintLayout>
+
     <LinearLayout
         android:id="@+id/ll_connection_status"
         android:layout_width="match_parent"
@@ -149,7 +213,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:overScrollMode="never"
-        android:paddingTop="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_connection_status" />
 

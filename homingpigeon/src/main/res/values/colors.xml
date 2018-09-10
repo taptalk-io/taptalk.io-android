@@ -36,6 +36,9 @@
     <color name="black_2c">#2c2c2c</color>
     <color name="black">#000000</color>
 
+    <color name="transparent">#00ffffff</color>
+    <color name="transparent_grey">#2e000000</color>
+
     <color name="color0">#fdc3a7</color>
     <color name="color1">#d0e69d</color>
     <color name="color2">#99d39e</color>
