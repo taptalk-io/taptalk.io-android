@@ -373,7 +373,7 @@ public class ChatManager {
             //contain pending message
             if (isCheckPendingArraySequenceActive)
                 return;
-        } else {
+
             if (maxRetryAttempt > pendingRetryAttempt) {
                 isCheckPendingArraySequenceActive = true;
 
@@ -387,17 +387,16 @@ public class ChatManager {
                 }, pendingRetryInterval);
             } else {
                 isCheckPendingArraySequenceActive = false;
-                insertPendingArrayAndUpdateMessage();
+                saveIncomingMessageAndDisconnect();
             }
-        }
+        } else disconnectSocket();
     }
 
     // TODO: 05/09/18 nnti masukin di crash listener
-    public void insertPendingArrayAndUpdateMessage() {
+    public void saveIncomingMessageAndDisconnect() {
         saveUnsentMessage();
         if (null != scheduler)
             scheduler.shutdown();
-        //DataManager.getInstance().updatePendingStatus();
         disconnectSocket();
     }
 
@@ -467,6 +466,7 @@ public class ChatManager {
             return;
 
         insertToDatabase(waitingResponses);
+        waitingResponses.clear();
     }
 
     public void triggerSaveNewMessage() {

@@ -3,15 +3,11 @@ package com.moselo.HomingPigeon.Helper;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
 
@@ -23,8 +19,7 @@ public class HomingPigeon {
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread thread, Throwable throwable) {
-            ChatManager.getInstance().disconnectSocket();
-            ChatManager.getInstance().insertPendingArrayAndUpdateMessage();
+            ChatManager.getInstance().saveIncomingMessageAndDisconnect();
             defaultUEH.uncaughtException(thread, throwable);
         }
     };
@@ -52,7 +47,6 @@ public class HomingPigeon {
 
             @Override
             public void onAppGotoBackground() {
-                Log.e("riocv", "onAppGotoBackground: " );
                 ConnectionManager.getInstance().close();
                 NetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
                 ChatManager.getInstance().updateMessageWhenEnterBackground();
