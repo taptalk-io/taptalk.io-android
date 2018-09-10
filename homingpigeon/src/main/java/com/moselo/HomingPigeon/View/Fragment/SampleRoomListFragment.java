@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -16,7 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,8 +38,6 @@ import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
 import com.moselo.HomingPigeon.View.Helper.Const;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -54,7 +49,7 @@ public class SampleRoomListFragment extends Fragment {
     private Activity activity;
     private ConstraintLayout clButtonSearch, clSelection;
     private LinearLayout llConnectionStatus;
-    private TextView tvSelectionAmount, tvConnectionStatus;
+    private TextView tvSelectionCount, tvConnectionStatus;
     private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivConnectionStatus;
     private ProgressBar pbConnecting;
     private FloatingActionButton fabNewChat;
@@ -62,8 +57,6 @@ public class SampleRoomListFragment extends Fragment {
     private RoomListAdapter adapter;
     private RoomListListener roomListListener;
     private RoomListViewModel vm;
-//    private TransitionDrawable connectionStatusBackground;
-//    private Drawable connectionStatusDrawables[];
 
     public SampleRoomListFragment() {
     }
@@ -110,15 +103,9 @@ public class SampleRoomListFragment extends Fragment {
             }
 
             if (vm.getSelectedCount() > 0) {
-                vm.setSelecting(true);
-                clButtonSearch.setElevation(0);
-                clButtonSearch.setVisibility(View.INVISIBLE);
-                clSelection.setVisibility(View.VISIBLE);
+                showSelectionActionBar();
             } else {
-                vm.setSelecting(false);
-                clButtonSearch.setElevation(Utils.getInstance().dpToPx(2));
-                clButtonSearch.setVisibility(View.VISIBLE);
-                clSelection.setVisibility(View.INVISIBLE);
+                hideSelectionActionBar();
             }
         };
     }
@@ -159,7 +146,7 @@ public class SampleRoomListFragment extends Fragment {
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
         llConnectionStatus = view.findViewById(R.id.ll_connection_status);
-        tvSelectionAmount = view.findViewById(R.id.tv_selection_amount);
+        tvSelectionCount = view.findViewById(R.id.tv_selection_count);
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
         ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
         ivButtonMute = view.findViewById(R.id.iv_button_mute);
@@ -169,14 +156,9 @@ public class SampleRoomListFragment extends Fragment {
         pbConnecting = view.findViewById(R.id.pb_connecting);
         fabNewChat = view.findViewById(R.id.fab_new_chat);
 
-//        connectionStatusDrawables = new Drawable[4];
-//        connectionStatusDrawables[0] = activity.getDrawable(R.drawable.bg_status_connected);
-//        connectionStatusDrawables[1] = activity.getDrawable(R.drawable.bg_status_connecting);
-//        connectionStatusDrawables[2] = activity.getDrawable(R.drawable.bg_status_offline);
-//        connectionStatusDrawables[3] = activity.getDrawable(R.drawable.bg_status_error);
-//        connectionStatusBackground = new TransitionDrawable(connectionStatusDrawables);
-//        llConnectionStatus.setBackground(connectionStatusBackground);
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+
+        if (vm.isSelecting()) showSelectionActionBar();
 
         adapter = new RoomListAdapter(vm, activity.getIntent().getStringExtra(Const.K_MY_USERNAME), roomListListener);
         rvContactList = view.findViewById(R.id.rv_contact_list);
@@ -197,8 +179,8 @@ public class SampleRoomListFragment extends Fragment {
                 entry.getValue().getRoom().setSelected(false);
             }
             vm.getSelectedRooms().clear();
-            roomListListener.onRoomSelected(null, false);
             adapter.notifyDataSetChanged();
+            hideSelectionActionBar();
         });
 
         ivButtonMute.setOnClickListener(v -> {
@@ -218,6 +200,21 @@ public class SampleRoomListFragment extends Fragment {
         ConnectionManager.getInstance().addSocketListener(socketListener);
         if (!NetworkStateManager.getInstance().hasNetworkConnection(getContext()))
             socketListener.onSocketDisconnected();
+    }
+
+    private void showSelectionActionBar() {
+        vm.setSelecting(true);
+        tvSelectionCount.setText(vm.getSelectedCount() + "");
+        clButtonSearch.setElevation(0);
+        clButtonSearch.setVisibility(View.INVISIBLE);
+        clSelection.setVisibility(View.VISIBLE);
+    }
+
+    private void hideSelectionActionBar() {
+        vm.setSelecting(false);
+        clButtonSearch.setElevation(Utils.getInstance().dpToPx(2));
+        clButtonSearch.setVisibility(View.VISIBLE);
+        clSelection.setVisibility(View.INVISIBLE);
     }
 
     // Update connection status UI
