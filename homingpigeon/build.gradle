@@ -64,4 +64,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.9.3"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.9.4"
 
+    //OKHTTP
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+
 }

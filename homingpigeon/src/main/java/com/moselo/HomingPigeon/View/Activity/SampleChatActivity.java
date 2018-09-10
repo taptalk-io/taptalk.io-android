@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
@@ -186,6 +187,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         rvChatList.setAdapter(adapter);
         rvChatList.setLayoutManager(llm);
         rvChatList.setHasFixedSize(false);
+        OverScrollDecoratorHelper.setUpOverScroll(rvChatList,OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         final HomingPigeonGetChatListener scrollChatListener = this::loadMessageFromDatabase;
 
@@ -223,6 +225,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
 
         ivSend.setOnClickListener(this);
         ivToBottom.setOnClickListener(this);
+
     }
 
     private void initHelper() {
@@ -270,7 +273,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
                 vm.updateMessagePointer(newMessage);
                 adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             }
-            else if (vm.isOnBottom()) {
+            else if (vm.isOnBottom() || ownMessage) {
                 // Scroll recycler to bottom
                 adapter.addMessage(newMessage);
                 rvChatList.scrollToPosition(0);
