@@ -17,9 +17,9 @@ public class RoomModel {
     @JsonProperty("roomImage") private String roomImage;
     @JsonProperty("roomType") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
-    @JsonProperty("isMuted") private int isMuted;
     @Nullable @JsonProperty("groupParticipants") private List<UserModel> groupParticipants;
     @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
+    private boolean isMuted;
     private boolean isSelected;
 
     public RoomModel(String roomID, int roomType) {
@@ -82,14 +82,6 @@ public class RoomModel {
         this.unreadCount = unreadCount;
     }
 
-    public int isMuted() {
-        return isMuted;
-    }
-
-    public void setMuted(int isMuted) {
-        this.isMuted = isMuted;
-    }
-
     @Nullable
     public List<UserModel> getGroupParticipants() {
         return groupParticipants;
@@ -106,6 +98,14 @@ public class RoomModel {
 
     public void setNumOfParticipants(@Nullable Integer numOfParticipants) {
         this.numOfParticipants = numOfParticipants;
+    }
+
+    public boolean isMuted() {
+        return isMuted;
+    }
+
+    public void setMuted(boolean muted) {
+        isMuted = muted;
     }
 
     public boolean isSelected() {

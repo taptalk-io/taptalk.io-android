@@ -216,6 +216,51 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_connection_status" />
 
+    <LinearLayout
+        android:id="@+id/ll_room_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:background="@color/white_f3"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_connection_status"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:src="@drawable/ic_offline_white"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="64dp"
+            android:gravity="center"
+            android:text="@string/no_chats"
+            android:textSize="16sp"
+            android:textColor="@color/colorTextTitle"
+            android:fontFamily="@font/neueeinstellungbold"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="78dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginEnd="64dp"
+            android:gravity="center_horizontal"
+            android:text="@string/new_chat_guide"
+            android:textSize="13sp"
+            android:textColor="@color/colorTextTitle"
+            android:fontFamily="@font/neueeinstellungregular"
+            android:lineSpacingExtra="6sp"
+            />
+
+    </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_new_chat"
         android:layout_width="56dp"
