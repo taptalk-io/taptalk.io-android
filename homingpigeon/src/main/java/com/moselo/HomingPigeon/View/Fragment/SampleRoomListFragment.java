@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -49,10 +50,11 @@ public class SampleRoomListFragment extends Fragment {
     private String TAG = SampleRoomListFragment.class.getSimpleName();
     private Activity activity;
     private ConstraintLayout clButtonSearch, clSelection;
+    private FrameLayout flSetupContainer;
     private LinearLayout llConnectionStatus, llRoomEmpty;
     private TextView tvSelectionCount, tvConnectionStatus;
     private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivConnectionStatus;
-    private ProgressBar pbConnecting;
+    private ProgressBar pbConnecting, pbSettingUp;
     private FloatingActionButton fabNewChat;
     private RecyclerView rvContactList;
     private RoomListAdapter adapter;
@@ -148,6 +150,7 @@ public class SampleRoomListFragment extends Fragment {
 
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
+        flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llConnectionStatus = view.findViewById(R.id.ll_connection_status);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         tvSelectionCount = view.findViewById(R.id.tv_selection_count);
@@ -158,14 +161,30 @@ public class SampleRoomListFragment extends Fragment {
         ivButtonMore = view.findViewById(R.id.iv_button_more);
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         pbConnecting = view.findViewById(R.id.pb_connecting);
+        pbSettingUp = view.findViewById(R.id.pb_setting_up);
         fabNewChat = view.findViewById(R.id.fab_new_chat);
+        rvContactList = view.findViewById(R.id.rv_contact_list);
 
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        pbSettingUp.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.amethyst), PorterDuff.Mode.SRC_IN);
+
+        // TODO: 12 September 2018 HANDLE SETUP CHAT
+        if (vm.getRoomList().size() == 0) {
+            fabNewChat.setVisibility(View.GONE);
+            new Handler().postDelayed(() -> flSetupContainer.animate()
+                    .alpha(0)
+                    .setDuration(300L)
+                    .withEndAction(() -> {
+                        flSetupContainer.setVisibility(View.GONE);
+                        fabNewChat.setVisibility(View.VISIBLE);
+                    }).start(), 2000L);
+        } else {
+            flSetupContainer.setVisibility(View.GONE);
+        }
 
         if (vm.isSelecting()) showSelectionActionBar();
 
         adapter = new RoomListAdapter(vm, activity.getIntent().getStringExtra(Const.K_MY_USERNAME), roomListListener);
-        rvContactList = view.findViewById(R.id.rv_contact_list);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
@@ -204,6 +223,8 @@ public class SampleRoomListFragment extends Fragment {
         ivButtonMore.setOnClickListener(v -> {
 
         });
+
+        flSetupContainer.setOnClickListener(v -> {});
     }
 
     private void initConnectionStatus() {
