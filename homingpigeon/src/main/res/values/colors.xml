@@ -38,6 +38,7 @@
 
     <color name="transparent">#00ffffff</color>
     <color name="transparent_grey">#2e000000</color>
+    <color name="transparent_charcoal">#6604040f</color>
 
     <color name="color0">#fdc3a7</color>
     <color name="color1">#d0e69d</color>
