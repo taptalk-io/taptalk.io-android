@@ -20,14 +20,6 @@ public class DefaultConstant {
         public static final String kSocketUserOffline = "user/offline";
     }
 
-    public static final class ConnectionBroadcast{
-        public static final String kIsConnecting = "kIsConnecting";
-        public static final String kIsConnected = "kIsConnected";
-        public static final String kIsConnectionError = "kIsConnectionError";
-        public static final String kIsReconnect = "kIsReconnect";
-        public static final String kIsDisconnected = "kIsDisconnected";
-    }
-
     public static final class DatabaseType{
         public static final String MESSAGE_DB = "MessageDB";
     }

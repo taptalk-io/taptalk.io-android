@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsConnected;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionBroadcast.kIsDisconnected;
 import static com.moselo.HomingPigeon.Manager.ConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class ConnectionManager {
@@ -67,11 +65,6 @@ public class ConnectionManager {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 connectionStatus = ConnectionStatus.CONNECTED;
-                Log.e(TAG, "onOpen: " + connectionStatus);
-                if (null != HomingPigeon.appContext) {
-                    Intent intent = new Intent(kIsConnected);
-                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
-                }
                 reconnectAttempt = 0;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
@@ -101,10 +94,6 @@ public class ConnectionManager {
             public void onClose(int code, String reason, boolean remote) {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 Log.e(TAG, "onClose: " + reason);
-                if (null != HomingPigeon.appContext) {
-                    Intent intent = new Intent(kIsDisconnected);
-                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
-                }
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketDisconnected();
@@ -115,10 +104,6 @@ public class ConnectionManager {
             public void onError(Exception ex) {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 Log.e(TAG, "onError: " + ex.getMessage());
-                if (null != HomingPigeon.appContext) {
-                    Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsConnectionError);
-                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
-                }
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketError();
@@ -130,10 +115,6 @@ public class ConnectionManager {
                 super.reconnect();
                 connectionStatus = ConnectionStatus.CONNECTING;
                 Log.e(TAG, "reconnect: " + connectionStatus);
-                if (null != HomingPigeon.appContext) {
-                    Intent intent = new Intent(DefaultConstant.ConnectionBroadcast.kIsReconnect);
-                    LocalBroadcastManager.getInstance(HomingPigeon.appContext).sendBroadcast(intent);
-                }
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketConnecting();
@@ -143,15 +124,12 @@ public class ConnectionManager {
     }
 
     private void initNetworkListener() {
-        HomingPigeonNetworkListener networkListener = new HomingPigeonNetworkListener() {
-            @Override
-            public void onNetworkAvailable() {
-                if (ConnectionStatus.CONNECTING == connectionStatus ||
-                        ConnectionStatus.DISCONNECTED == connectionStatus) {
-                    reconnect();
-                } else if (NOT_CONNECTED == connectionStatus) {
-                    connect();
-                }
+        HomingPigeonNetworkListener networkListener = () -> {
+            if (ConnectionStatus.CONNECTING == connectionStatus ||
+                    ConnectionStatus.DISCONNECTED == connectionStatus) {
+                reconnect();
+            } else if (NOT_CONNECTED == connectionStatus) {
+                connect();
             }
         };
         NetworkStateManager.getInstance().addNetworkListener(networkListener);

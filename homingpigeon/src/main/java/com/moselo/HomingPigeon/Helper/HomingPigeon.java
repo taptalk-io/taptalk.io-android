@@ -47,7 +47,6 @@ public class HomingPigeon {
 
             @Override
             public void onAppGotoBackground() {
-                ConnectionManager.getInstance().close();
                 NetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
                 ChatManager.getInstance().updateMessageWhenEnterBackground();
                 isForeground = false;

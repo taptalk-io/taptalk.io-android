@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
@@ -60,12 +61,15 @@ public class ChatManager {
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
         public void onSocketConnected() {
+            Log.e(TAG, "onSocketConnected: ");
             checkAndSendPendingMessages();
         }
 
         @Override
         public void onSocketDisconnected() {
-
+            if (HomingPigeon.isForeground && NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)
+                    && ConnectionManager.ConnectionStatus.DISCONNECTED == ConnectionManager.getInstance().getConnectionStatus())
+                ConnectionManager.getInstance().reconnect();
         }
 
         @Override
@@ -75,7 +79,7 @@ public class ChatManager {
 
         @Override
         public void onSocketError() {
-
+            ConnectionManager.getInstance().reconnect();
         }
 
         @Override
@@ -384,6 +388,7 @@ public class ChatManager {
 
     private void checkPendingMessageExists() {
         // TODO: 05/09/18 nnti cek file manager upload queue juga
+        Log.e(TAG, "checkPendingMessageExists: " + pendingMessages.size());
         if (0 < pendingMessages.size()) {
             //contain pending message
             if (isCheckPendingArraySequenceActive)
