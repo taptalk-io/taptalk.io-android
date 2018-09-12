@@ -295,5 +295,6 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     public void onBackPressed() {
         super.onBackPressed();
         ChatManager.getInstance().saveUnsentMessage();
+        ChatManager.getInstance().deleteActiveRoom();
     }
 }

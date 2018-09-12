@@ -409,7 +409,7 @@ public class ChatManager {
                 isCheckPendingArraySequenceActive = false;
                 saveIncomingMessageAndDisconnect();
             }
-        } else disconnectSocket();
+        } else ConnectionManager.getInstance().close();
     }
 
     // TODO: 05/09/18 nnti masukin di crash listener
@@ -417,12 +417,11 @@ public class ChatManager {
         saveUnsentMessage();
         if (null != scheduler)
             scheduler.shutdown();
-        disconnectSocket();
+        ConnectionManager.getInstance().close();
     }
 
-    public void disconnectSocket() {
+    public void deleteActiveRoom() {
         activeRoom = "";
-        ConnectionManager.getInstance().close();
     }
 
     /**
