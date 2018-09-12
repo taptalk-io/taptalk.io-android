@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:animateLayoutChanges="true"
     android:background="@color/white"
     android:orientation="vertical">
+
 
     <!--<android.support.constraint.ConstraintLayout-->
     <!--android:layout_width="match_parent"-->
@@ -128,19 +129,18 @@
             android:id="@+id/tv_selection_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
             android:layout_marginEnd="16dp"
-            android:textColor="@color/white"
-            android:textSize="16sp"
+            android:layout_marginStart="32dp"
+            android:ellipsize="end"
             android:fontFamily="@font/latoregular"
             android:maxLines="1"
-            android:ellipsize="end"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/white"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_button_cancel_selection"
             app:layout_constraintEnd_toStartOf="@id/iv_button_mute"
-            tools:text="1"
-            />
+            app:layout_constraintStart_toEndOf="@id/iv_button_cancel_selection"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
 
         <ImageView
             android:id="@+id/iv_button_mute"
@@ -148,8 +148,7 @@
             android:layout_height="48dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_mute_white"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_delete"
-            />
+            app:layout_constraintEnd_toStartOf="@id/iv_button_delete" />
 
         <ImageView
             android:id="@+id/iv_button_delete"
@@ -157,8 +156,7 @@
             android:layout_height="48dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_delete_white"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_more"
-            />
+            app:layout_constraintEnd_toStartOf="@id/iv_button_more" />
 
         <ImageView
             android:id="@+id/iv_button_more"
@@ -166,8 +164,7 @@
             android:layout_height="48dp"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_more_options_white"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -220,44 +217,42 @@
         android:id="@+id/ll_room_empty"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:gravity="center"
         android:background="@color/white_f3"
+        android:gravity="center"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_connection_status"
-        android:visibility="gone">
+        app:layout_constraintTop_toBottomOf="@id/ll_connection_status">
 
         <ImageView
             android:layout_width="220dp"
             android:layout_height="220dp"
-            android:src="@drawable/ic_offline_white"/>
+            android:src="@drawable/ic_offline_white" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="24dp"
-            android:layout_marginStart="64dp"
             android:layout_marginEnd="64dp"
+            android:layout_marginStart="64dp"
+            android:fontFamily="@font/neueeinstellungbold"
             android:gravity="center"
             android:text="@string/no_chats"
-            android:textSize="16sp"
             android:textColor="@color/colorTextTitle"
-            android:fontFamily="@font/neueeinstellungbold"
-            />
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:layout_marginBottom="78dp"
-            android:layout_marginStart="64dp"
             android:layout_marginEnd="64dp"
-            android:gravity="center_horizontal"
-            android:text="@string/new_chat_guide"
-            android:textSize="13sp"
-            android:textColor="@color/colorTextTitle"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="12dp"
             android:fontFamily="@font/neueeinstellungregular"
+            android:gravity="center_horizontal"
             android:lineSpacingExtra="6sp"
-            />
+            android:text="@string/new_chat_guide"
+            android:textColor="@color/colorTextTitle"
+            android:textSize="13sp" />
 
     </LinearLayout>
 

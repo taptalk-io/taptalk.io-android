@@ -159,13 +159,13 @@ public class SampleRoomListFragment extends Fragment {
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         pbConnecting = view.findViewById(R.id.pb_connecting);
         fabNewChat = view.findViewById(R.id.fab_new_chat);
+        rvContactList = view.findViewById(R.id.rv_contact_list);
 
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
 
         if (vm.isSelecting()) showSelectionActionBar();
 
         adapter = new RoomListAdapter(vm, activity.getIntent().getStringExtra(Const.K_MY_USERNAME), roomListListener);
-        rvContactList = view.findViewById(R.id.rv_contact_list);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
