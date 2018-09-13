@@ -20,7 +20,7 @@ import java.util.List;
 
 public class NewChatActivity extends AppCompatActivity {
 
-    LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup;
+    LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
     ImageView ivButtonBack, ivButtonSearch;
     TextView tvTitle;
     RecyclerView rvContactList;
@@ -62,6 +62,7 @@ public class NewChatActivity extends AppCompatActivity {
         llButtonNewContact = findViewById(R.id.ll_button_new_contact);
         llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
         llButtonNewGroup = findViewById(R.id.ll_button_new_group);
+        llBlockedContacts = findViewById(R.id.ll_blocked_contacts);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonSearch = findViewById(R.id.iv_button_search);
         tvTitle = findViewById(R.id.tv_title);
@@ -101,6 +102,10 @@ public class NewChatActivity extends AppCompatActivity {
         });
 
         llButtonNewGroup.setOnClickListener(v -> {
+
+        });
+
+        llBlockedContacts.setOnClickListener(v -> {
 
         });
     }
