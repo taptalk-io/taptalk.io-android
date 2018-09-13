@@ -19,8 +19,7 @@ public class HomingPigeonService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        Log.e(HomingPigeonService.class.getSimpleName(), "onTaskRemoved: ");
-        //ChatManager.getInstance().saveIncomingMessageAndDisconnect();
+        ChatManager.getInstance().saveIncomingMessageAndDisconnect();
         stopSelf();
     }
 }

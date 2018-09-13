@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.Helper;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,8 @@ import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+import com.moselo.HomingPigeon.View.Activity.SampleLoginActivity;
+import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
 
@@ -31,8 +34,10 @@ public class HomingPigeon {
     public HomingPigeon(final Context appContext) {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
-        ConnectionManager.getInstance().connect();
-        DataManager.getInstance().updatePendingStatus();
+        if (DataManager.getInstance().checkActiveUser(appContext))
+            ConnectionManager.getInstance().connect();
+
+        DataManager.getInstance().updateSendingMessageToFailed();
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -52,6 +57,21 @@ public class HomingPigeon {
                 isForeground = false;
             }
         });
+    }
+
+    public static void checkActiveUserToShowPage(Activity activity) {
+        if (null != activity) {
+            Intent intent;
+            if (DataManager.getInstance().checkActiveUser(activity)) {
+                intent = new Intent(activity, SampleRoomListActivity.class);
+            } else {
+                intent = new Intent(activity, SampleLoginActivity.class);
+            }
+            activity.startActivity(intent);
+            activity.finish();
+        } else {
+            throw new NullPointerException("The Activity that passed was null");
+        }
     }
 
     public static Context appContext;

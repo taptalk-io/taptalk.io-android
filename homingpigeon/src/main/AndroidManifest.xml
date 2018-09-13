@@ -8,10 +8,12 @@
     <application>
         <service
             android:name=".Helper.HomingPigeonService"
-            android:stopWithTask="false"/>
+            android:stopWithTask="false" />
+
         <activity android:name=".View.Activity.SampleChatActivity" />
         <activity android:name=".View.Activity.SampleLoginActivity" />
         <activity android:name=".View.Activity.SampleRoomListActivity" />
+        <activity android:name=".View.Activity.BarcodeScannerActivity"></activity>
     </application>
 
 </manifest>

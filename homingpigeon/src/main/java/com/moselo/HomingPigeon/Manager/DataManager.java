@@ -29,13 +29,20 @@ public class DataManager {
         }, prefs.getString(K_USER, null));
     }
 
+    public boolean checkActiveUser(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (null == Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, prefs.getString(K_USER, null)))
+            return false;
+        else return true;
+    }
+
     public void saveActiveUser(Context context, UserModel user) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
         ChatManager.getInstance().setActiveUser(user);
     }
 
-    public void initDatabaseManager(String databaseType, Application application ){
+    public void initDatabaseManager(String databaseType, Application application) {
         DatabaseManager.getInstance().setRepository(databaseType, application);
     }
 
@@ -51,11 +58,11 @@ public class DataManager {
         DatabaseManager.getInstance().delete(messageLocalID);
     }
 
-    public void updatePendingStatus() {
+    public void updateSendingMessageToFailed() {
         DatabaseManager.getInstance().updatePendingStatus();
     }
 
-    public void updatePendingStatus(String localID) {
+    public void updateSendingMessageToFailed(String localID) {
         DatabaseManager.getInstance().updatePendingStatus(localID);
     }
 

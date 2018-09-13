@@ -52,6 +52,8 @@ public class ChatManager {
     private String activeRoom;
     private UserModel activeUser;
     private boolean isCheckPendingArraySequenceActive = false;
+    private boolean isPendingMessageExist = false;
+    private boolean isFileUploadExist = false;
     private final Integer CHARACTER_LIMIT = 1000;
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
@@ -374,8 +376,12 @@ public class ChatManager {
      */
     public void updateMessageWhenEnterBackground() {
         //saveWaitingMessageToDatabase();
+        setPendingRetryAttempt(0);
+        isCheckPendingArraySequenceActive = false;
+        if (null != scheduler && !scheduler.isShutdown())
+            scheduler.shutdown();
         saveUnsentMessage();
-        checkPendingMessageExists();
+        checkPendingBackgroundTask();
     }
 
     public void insertToDatabase(Map<String, MessageModel> hashMap) {
@@ -386,36 +392,38 @@ public class ChatManager {
         DataManager.getInstance().insertToDatabase(messages);
     }
 
-    private void checkPendingMessageExists() {
+    private void checkPendingBackgroundTask() {
         // TODO: 05/09/18 nnti cek file manager upload queue juga
-        Log.e(TAG, "checkPendingMessageExists: " + pendingMessages.size());
-        if (0 < pendingMessages.size()) {
-            //contain pending message
-            if (isCheckPendingArraySequenceActive)
-                return;
+        isPendingMessageExist = false;
+        isFileUploadExist = false;
 
-            if (maxRetryAttempt > pendingRetryAttempt) {
-                isCheckPendingArraySequenceActive = true;
+        if (0 < pendingMessages.size())
+            isPendingMessageExist = true;
 
-                pendingRetryAttempt++;
+        if (isCheckPendingArraySequenceActive)
+            return;
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        checkPendingMessageExists();
-                    }
-                }, pendingRetryInterval);
-            } else {
-                isCheckPendingArraySequenceActive = false;
-                saveIncomingMessageAndDisconnect();
-            }
-        } else ConnectionManager.getInstance().close();
+        // TODO: 13/09/18 check file progress upload
+
+        if ((isPendingMessageExist || isFileUploadExist) && maxRetryAttempt > pendingRetryAttempt) {
+            Log.e(TAG, "checkPendingBackgroundTask: "+pendingRetryAttempt );
+            isCheckPendingArraySequenceActive = true;
+            pendingRetryAttempt++;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Log.e(TAG, "run: " );
+                    checkPendingBackgroundTask();
+                }
+            }, pendingRetryInterval);
+            isCheckPendingArraySequenceActive = false;
+        } else saveIncomingMessageAndDisconnect();
     }
 
     // TODO: 05/09/18 nnti masukin di crash listener
     public void saveIncomingMessageAndDisconnect() {
         saveUnsentMessage();
-        if (null != scheduler)
+        if (null != scheduler && !scheduler.isShutdown())
             scheduler.shutdown();
         ConnectionManager.getInstance().close();
     }
@@ -505,25 +513,14 @@ public class ChatManager {
     }
 
     public void saveUnsentMessage() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                saveNewMessageToDatabase();
-            }
-        }).start();
+        new Thread(() -> saveNewMessageToDatabase()).start();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                savePendingMessageToDatabase();
-            }
-        }).start();
+        new Thread(() -> savePendingMessageToDatabase()).start();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                saveWaitingMessageToDatabase();
-            }
-        }).start();
+        new Thread(() -> saveWaitingMessageToDatabase()).start();
+    }
+
+    public void setPendingRetryAttempt(int counter) {
+        pendingRetryAttempt = counter;
     }
 }
