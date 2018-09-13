@@ -1,6 +1,11 @@
 package com.moselo.HomingPigeon.View.Activity;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
@@ -17,6 +24,8 @@ import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.CAMERA_PERMISSION;
 
 public class NewChatActivity extends AppCompatActivity {
 
@@ -75,7 +84,7 @@ public class NewChatActivity extends AppCompatActivity {
         for (int i = 1; i <= size; i++) {
             if (i == size ||
                     vm.getContactList().get(i).getName().charAt(0) !=
-                    vm.getContactList().get(i - 1).getName().charAt(0)) {
+                            vm.getContactList().get(i - 1).getName().charAt(0)) {
                 List<UserModel> contactSubList = vm.getContactList().subList(previousInitialIndexStart, i);
                 contactList.add(contactSubList);
                 previousInitialIndexStart = i;
@@ -98,7 +107,7 @@ public class NewChatActivity extends AppCompatActivity {
         });
 
         llButtonScanQR.setOnClickListener(v -> {
-
+            openQRScanner();
         });
 
         llButtonNewGroup.setOnClickListener(v -> {
@@ -108,5 +117,25 @@ public class NewChatActivity extends AppCompatActivity {
         llBlockedContacts.setOnClickListener(v -> {
 
         });
+    }
+
+    private void openQRScanner() {
+        if (Utils.getInstance().hasPermissions(NewChatActivity.this, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(NewChatActivity.this, BarcodeScannerActivity.class);
+            startActivity(intent);
+        }else {
+            ActivityCompat.requestPermissions(NewChatActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case CAMERA_PERMISSION :
+                    openQRScanner();
+                    break;
+            }
+        }
     }
 }

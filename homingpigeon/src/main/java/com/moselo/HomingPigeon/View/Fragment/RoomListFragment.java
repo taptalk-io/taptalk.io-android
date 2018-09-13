@@ -202,8 +202,6 @@ public class RoomListFragment extends Fragment {
         }
 
         clButtonSearch.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), BarcodeScannerActivity.class);
-            startActivity(intent);
         });
 
         fabNewChat.setOnClickListener(v -> {
