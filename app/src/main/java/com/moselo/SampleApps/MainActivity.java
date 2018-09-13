@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.View.Activity.SampleLoginActivity;
-import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.LoginActivity;
+import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -17,9 +17,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Intent intent;
         if (null != DataManager.getInstance().getActiveUser(this)){
-            intent = new Intent(this, SampleRoomListActivity.class);
+            intent = new Intent(this, RoomListActivity.class);
         }else {
-            intent = new Intent(this, SampleLoginActivity.class);
+            intent = new Intent(this, LoginActivity.class);
         }
         startActivity(intent);
         finish();

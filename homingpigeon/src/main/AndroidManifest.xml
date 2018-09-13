@@ -5,15 +5,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <application>
+    <application
+        android:theme="@style/AppTheme">
         <service
             android:name=".Helper.HomingPigeonService"
             android:stopWithTask="false" />
 
-        <activity android:name=".View.Activity.SampleChatActivity" />
-        <activity android:name=".View.Activity.SampleLoginActivity" />
-        <activity android:name=".View.Activity.SampleRoomListActivity" />
-        <activity android:name=".View.Activity.SampleNewChatActivity" />
+        <activity android:name=".View.Activity.ChatActivity" />
+        <activity android:name=".View.Activity.LoginActivity" />
+        <activity android:name=".View.Activity.RoomListActivity" />
+        <activity android:name=".View.Activity.NewChatActivity" />
     </application>
 
 </manifest>

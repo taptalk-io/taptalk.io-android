@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.View.Fragment;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -21,10 +22,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
@@ -35,7 +36,8 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.NewChatActivity;
+import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
 import com.moselo.HomingPigeon.View.Helper.Const;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
@@ -45,10 +47,11 @@ import java.util.Objects;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
-public class SampleRoomListFragment extends Fragment {
+public class RoomListFragment extends Fragment {
 
-    private String TAG = SampleRoomListFragment.class.getSimpleName();
+    private String TAG = RoomListFragment.class.getSimpleName();
     private Activity activity;
+
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
     private LinearLayout llConnectionStatus, llRoomEmpty;
@@ -56,17 +59,18 @@ public class SampleRoomListFragment extends Fragment {
     private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivConnectionStatus;
     private ProgressBar pbConnecting, pbSettingUp;
     private FloatingActionButton fabNewChat;
+
     private RecyclerView rvContactList;
     private RoomListAdapter adapter;
     private RoomListListener roomListListener;
     private RoomListViewModel vm;
 
-    public SampleRoomListFragment() {
+    public RoomListFragment() {
     }
 
-    public static SampleRoomListFragment newInstance() {
+    public static RoomListFragment newInstance() {
         Bundle args = new Bundle();
-        SampleRoomListFragment fragment = new SampleRoomListFragment();
+        RoomListFragment fragment = new RoomListFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,7 +78,7 @@ public class SampleRoomListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = (SampleRoomListActivity) getActivity();
+        activity = (RoomListActivity) getActivity();
         return inflater.inflate(R.layout.fragment_sample_room_list, container, false);
     }
 
@@ -188,6 +192,7 @@ public class SampleRoomListFragment extends Fragment {
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
+        OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         if (0 == vm.getRoomList().size()) {
             llRoomEmpty.setVisibility(View.VISIBLE);
@@ -200,7 +205,8 @@ public class SampleRoomListFragment extends Fragment {
         });
 
         fabNewChat.setOnClickListener(v -> {
-
+            Intent intent = new Intent(getContext(), NewChatActivity.class);
+            startActivity(intent);
         });
 
         ivButtonCancelSelection.setOnClickListener(v -> {
