@@ -1,6 +1,21 @@
 <resources>
     <string name="app_name">HomingPigeon</string>
 
+    <!--Title/Menu-->
+    <string name="new_chat">New Chat</string>
+    <string name="new_contact">New Contact</string>
+    <string name="new_group">New Group</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="show_qr_code">Show QR Code</string>
+
+    <!--Chat Room List-->
+    <string name="setting_up_your_chatroom">Setting up your chatroom</string>
+    <string name="make_sure_you_have_a_stable_connection">Make sure you have a stable connection</string>
+
+    <!--Contacts-->
+    <string name="view_blocked_contacts">Can’t find the contact you were looking for?\nTry viewing your</string>
+    <string name="blocked_contacts">Blocked Contacts</string>
+
     <!--Connection Status-->
     <string name="connected">Connected</string>
     <string name="connecting">Connecting</string>
@@ -17,6 +32,5 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="scan_qr_code">Scan QR Code</string>
-    <string name="show_qr_code">Show QR Code</string>
+
 </resources>

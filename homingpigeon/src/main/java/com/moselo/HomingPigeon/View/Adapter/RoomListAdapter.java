@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.SampleChatActivity;
+import com.moselo.HomingPigeon.View.Activity.ChatActivity;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
 import java.util.List;
@@ -36,7 +36,6 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     private RoomListListener roomListListener;
     private ColorStateList avatarTint;
     private String myUsername;
-    private int[] randomColors;
 
     public RoomListAdapter(/*List<MessageModel> roomList*/RoomListViewModel vm, String myUsername, RoomListListener roomListListener) {
         this.vm = vm;
@@ -88,14 +87,13 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
-            randomColors = itemView.getContext().getResources().getIntArray(R.array.pastel_colors);
         }
 
         void onBind(int position) {
             item = getItemAt(position);
 //            final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
             final UserModel userModel = item.getUser();
-            final int randomColor = getRandomColor(userModel.getName());
+            final int randomColor = Utils.getInstance().getRandomColor(userModel.getName());
 
             // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
             avatarTint = ColorStateList.valueOf(randomColor);
@@ -154,7 +152,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     notifyItemChanged(position);
                 } else {
                     // Open chat room on click
-                    Intent intent = new Intent(itemView.getContext(), SampleChatActivity.class);
+                    Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                     intent.putExtra(K_MY_USERNAME, myUsername);
                     intent.putExtra(K_THEIR_USERNAME, userModel.getName());
                     intent.putExtra(K_COLOR, randomColor);
@@ -172,14 +170,5 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                 return true;
             });
         }
-    }
-
-    public int getRandomColor(String s) {
-        int hash = 7;
-        for (int i = 0, len = s.length(); i < len; i++) {
-            hash = s.codePointAt(i) + (hash << 5) - hash;
-        }
-        int index = Math.abs(hash % randomColors.length);
-        return randomColors[index];
     }
 }

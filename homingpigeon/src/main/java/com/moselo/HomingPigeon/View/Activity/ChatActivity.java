@@ -32,9 +32,9 @@ import java.util.List;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
-public class SampleChatActivity extends BaseActivity implements View.OnClickListener, HomingPigeonChatListener {
+public class ChatActivity extends BaseActivity implements View.OnClickListener, HomingPigeonChatListener {
 
-    private String TAG = SampleChatActivity.class.getSimpleName();
+    private String TAG = ChatActivity.class.getSimpleName();
 
     // View
     private RecyclerView rvChatList;
@@ -60,7 +60,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sample_chat);
+        setContentView(R.layout.activity_chat);
 
         initViewModel();
         initView();
@@ -187,7 +187,7 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
         rvChatList.setAdapter(adapter);
         rvChatList.setLayoutManager(llm);
         rvChatList.setHasFixedSize(false);
-        OverScrollDecoratorHelper.setUpOverScroll(rvChatList,OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        OverScrollDecoratorHelper.setUpOverScroll(rvChatList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         final HomingPigeonGetChatListener scrollChatListener = this::loadMessageFromDatabase;
 
@@ -268,12 +268,11 @@ public class SampleChatActivity extends BaseActivity implements View.OnClickList
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
             boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
-                    .getInstance().getActiveUser(SampleChatActivity.this).getUserID());
+                    .getInstance().getActiveUser(ChatActivity.this).getUserID());
             if (vm.getMessagePointer().containsKey(newID)) {
                 vm.updateMessagePointer(newMessage);
                 adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            }
-            else if (vm.isOnBottom() || ownMessage) {
+            } else if (vm.isOnBottom() || ownMessage) {
                 // Scroll recycler to bottom
                 adapter.addMessage(newMessage);
                 rvChatList.scrollToPosition(0);

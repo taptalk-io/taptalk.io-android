@@ -9,8 +9,8 @@ import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
-import com.moselo.HomingPigeon.View.Activity.SampleLoginActivity;
-import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.LoginActivity;
+import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
 
@@ -63,9 +63,9 @@ public class HomingPigeon {
         if (null != activity) {
             Intent intent;
             if (DataManager.getInstance().checkActiveUser(activity)) {
-                intent = new Intent(activity, SampleRoomListActivity.class);
+                intent = new Intent(activity, RoomListActivity.class);
             } else {
-                intent = new Intent(activity, SampleLoginActivity.class);
+                intent = new Intent(activity, LoginActivity.class);
             }
             activity.startActivity(intent);
             activity.finish();

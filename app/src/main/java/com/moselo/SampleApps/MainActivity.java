@@ -7,8 +7,8 @@ import android.view.View;
 
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.View.Activity.SampleLoginActivity;
-import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.LoginActivity;
+import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

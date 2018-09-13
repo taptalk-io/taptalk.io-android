@@ -5,14 +5,19 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.app.Activity;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moselo.HomingPigeon.R;
 
 import org.json.JSONObject;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class Utils {
@@ -108,5 +113,28 @@ public class Utils {
 
     public int getScreeHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
+    /**
+     * generate random color
+     */
+    public int getRandomColor(String s) {
+        int[] randomColors = HomingPigeon.appContext.getResources().getIntArray(R.array.pastel_colors);
+        int hash = 7;
+        for (int i = 0, len = s.length(); i < len; i++) {
+            hash = s.codePointAt(i) + (hash << 5) - hash;
+        }
+        int index = Math.abs(hash % randomColors.length);
+        return randomColors[index];
+    }
+
+    public void dismissKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
+        view.clearFocus();
     }
 }

@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6d3492</color>
-    <color name="colorPrimaryDark">#51276c</color>
-    <color name="colorAccent">#2eccad</color>
-    <color name="colorAccentLight">#a7ebde</color>
+    <color name="colorPrimary">@color/warmPurple</color>
+    <color name="colorPrimaryDark">@color/darkPurple</color>
+    <color name="colorAccent">@color/tealish</color>
+    <color name="colorAccentLight">@color/lightTeal</color>
 
     <color name="colorTextTitle">@color/black_44</color>
     <color name="colorTextContent">@color/grey_9b</color>
 
     <color name="amethyst">#9954c2</color>
     <color name="mediumPurple">#784198</color>
+    <color name="warmPurple">#6d3492</color>
+    <color name="darkPurple">#51276c</color>
     <color name="brightBlue">#007aff</color>
     <color name="aquaMarine">#3de1c1</color>
+    <color name="lightTeal">#a7ebde</color>
     <color name="tealish">#2eccad</color>
     <color name="greenBlue">#00b793</color>
+    <color name="leafyGreen">#3bc73d</color>
     <color name="vibrantGreen">#19c700</color>
-    <color name="radioactiveGreen">#38ee3b</color>
-    <color name="toxicGreen">#4bd62e</color>
+    <color name="green">#2db80f</color>
     <color name="orangeYellow">#ff9f00</color>
     <color name="tangerine">#ffa107</color>
     <color name="butterscotch">#ffb438</color>

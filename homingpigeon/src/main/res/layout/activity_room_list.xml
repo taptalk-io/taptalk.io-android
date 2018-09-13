@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.Activity.SampleRoomListActivity">
+    tools:context=".View.Activity.RoomListActivity">
 
     <fragment
-        class="com.moselo.HomingPigeon.View.Fragment.SampleRoomListFragment"
+        class="com.moselo.HomingPigeon.View.Fragment.RoomListFragment"
         android:id="@+id/f_contact_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

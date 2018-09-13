@@ -18,13 +18,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
@@ -36,7 +37,8 @@ import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.BarcodeScannerActivity;
-import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.NewChatActivity;
+import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
 import com.moselo.HomingPigeon.View.Helper.Const;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
@@ -46,27 +48,30 @@ import java.util.Objects;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
-public class SampleRoomListFragment extends Fragment {
+public class RoomListFragment extends Fragment {
 
-    private String TAG = SampleRoomListFragment.class.getSimpleName();
+    private String TAG = RoomListFragment.class.getSimpleName();
     private Activity activity;
+
     private ConstraintLayout clButtonSearch, clSelection;
+    private FrameLayout flSetupContainer;
     private LinearLayout llConnectionStatus, llRoomEmpty;
     private TextView tvSelectionCount, tvConnectionStatus;
     private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivConnectionStatus;
-    private ProgressBar pbConnecting;
+    private ProgressBar pbConnecting, pbSettingUp;
     private FloatingActionButton fabNewChat;
+
     private RecyclerView rvContactList;
     private RoomListAdapter adapter;
     private RoomListListener roomListListener;
     private RoomListViewModel vm;
 
-    public SampleRoomListFragment() {
+    public RoomListFragment() {
     }
 
-    public static SampleRoomListFragment newInstance() {
+    public static RoomListFragment newInstance() {
         Bundle args = new Bundle();
-        SampleRoomListFragment fragment = new SampleRoomListFragment();
+        RoomListFragment fragment = new RoomListFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,7 +79,7 @@ public class SampleRoomListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = (SampleRoomListActivity) getActivity();
+        activity = (RoomListActivity) getActivity();
         return inflater.inflate(R.layout.fragment_sample_room_list, container, false);
     }
 
@@ -150,6 +155,7 @@ public class SampleRoomListFragment extends Fragment {
 
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
+        flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llConnectionStatus = view.findViewById(R.id.ll_connection_status);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         tvSelectionCount = view.findViewById(R.id.tv_selection_count);
@@ -160,17 +166,34 @@ public class SampleRoomListFragment extends Fragment {
         ivButtonMore = view.findViewById(R.id.iv_button_more);
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         pbConnecting = view.findViewById(R.id.pb_connecting);
+        pbSettingUp = view.findViewById(R.id.pb_setting_up);
         fabNewChat = view.findViewById(R.id.fab_new_chat);
+        rvContactList = view.findViewById(R.id.rv_contact_list);
 
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+        pbSettingUp.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.amethyst), PorterDuff.Mode.SRC_IN);
+
+        // TODO: 12 September 2018 HANDLE SETUP CHAT
+        if (vm.getRoomList().size() == 0) {
+            fabNewChat.setVisibility(View.GONE);
+            new Handler().postDelayed(() -> flSetupContainer.animate()
+                    .alpha(0)
+                    .setDuration(300L)
+                    .withEndAction(() -> {
+                        flSetupContainer.setVisibility(View.GONE);
+                        fabNewChat.setVisibility(View.VISIBLE);
+                    }).start(), 2000L);
+        } else {
+            flSetupContainer.setVisibility(View.GONE);
+        }
 
         if (vm.isSelecting()) showSelectionActionBar();
 
         adapter = new RoomListAdapter(vm, activity.getIntent().getStringExtra(Const.K_MY_USERNAME), roomListListener);
-        rvContactList = view.findViewById(R.id.rv_contact_list);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
+        OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         if (0 == vm.getRoomList().size()) {
             llRoomEmpty.setVisibility(View.VISIBLE);
@@ -184,7 +207,8 @@ public class SampleRoomListFragment extends Fragment {
         });
 
         fabNewChat.setOnClickListener(v -> {
-
+            Intent intent = new Intent(getContext(), NewChatActivity.class);
+            startActivity(intent);
         });
 
         ivButtonCancelSelection.setOnClickListener(v -> {
@@ -207,6 +231,8 @@ public class SampleRoomListFragment extends Fragment {
         ivButtonMore.setOnClickListener(v -> {
 
         });
+
+        flSetupContainer.setOnClickListener(v -> {});
     }
 
     private void initConnectionStatus() {
