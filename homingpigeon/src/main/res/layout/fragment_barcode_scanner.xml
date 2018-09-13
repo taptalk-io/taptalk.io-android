@@ -71,7 +71,7 @@
 
     <TextView
         android:id="@+id/tv_show_qr_code"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="15sp"
         android:textColor="#ffffff"
@@ -81,6 +81,8 @@
         android:text="Show your QR code by tapping the button below"
         app:layout_constraintBottom_toTopOf="@id/btn_show_qr_code"
         android:layout_marginBottom="8dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="99dp"
@@ -97,8 +99,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Show QR Code"
+        android:text="@string/show_qr_code"
         android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:textSize="17sp"
+        android:letterSpacing="-0.01"
         />
 
 </android.support.constraint.ConstraintLayout>

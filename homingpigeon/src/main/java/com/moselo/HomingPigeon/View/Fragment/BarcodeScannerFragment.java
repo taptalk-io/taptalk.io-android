@@ -14,13 +14,16 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.QRDetection;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.View.Activity.BarcodeScannerActivity;
 
 import java.io.IOException;
 
@@ -29,6 +32,10 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.C
 public class BarcodeScannerFragment extends Fragment {
 
     private SurfaceView svScanner;
+    private Button btnShowQRCode;
+
+    private CameraSource cameraSource;
+    private BarcodeDetector barcodeDetector;
 
     public BarcodeScannerFragment() {
         // Required empty public constructor
@@ -56,15 +63,22 @@ public class BarcodeScannerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        svScanner = view.findViewById(R.id.sv_scanner);
-
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(getContext())
+        barcodeDetector = new BarcodeDetector.Builder(getContext())
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
-        final CameraSource cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
+        barcodeDetector.setProcessor(new QRDetection());
+
+        cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
                 .setAutoFocusEnabled(true)
                 .build();
+
+        initView(view);
+    }
+
+    private void initView(View view) {
+        svScanner = view.findViewById(R.id.sv_scanner);
+        btnShowQRCode = view.findViewById(R.id.btn_show_qr_code);
 
         svScanner.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -88,6 +102,14 @@ public class BarcodeScannerFragment extends Fragment {
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
                 cameraSource.stop();
+            }
+        });
+
+        btnShowQRCode.setOnClickListener(v -> {
+            try {
+                ((BarcodeScannerActivity) getActivity()).showQR();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

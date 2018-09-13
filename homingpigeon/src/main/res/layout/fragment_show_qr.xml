@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".View.Fragment.ShowQRFragment">
+
+    <ImageView
+        android:id="@+id/iv_qr_code"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="34dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_scan_area_white" />
+
+    <Button
+        android:id="@+id/btn_scan_qr_code"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/bg_aquamarine_tealish_radial_stroke_greenblue_1dp_rounded_6dp"
+        android:text="@string/scan_qr_code"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:letterSpacing="-0.01"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_scan_qr_code"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:textColor="@color/grey_9b"
+        android:letterSpacing="-0.01"
+        android:lineSpacingExtra="4sp"
+        android:gravity="center_horizontal"
+        android:text="To scan other&apos;s QR code, please tap the
+button below"
+        app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="14dp"
+        android:layout_marginStart="14dp"
+        />
+
+
+</android.support.constraint.ConstraintLayout>

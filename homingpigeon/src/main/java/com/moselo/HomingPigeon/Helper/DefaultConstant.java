@@ -46,6 +46,7 @@ public class DefaultConstant {
 
     public static final class BarcodeScannerState {
         public static final int STATE_SCAN = 1;
+        public static final int STATE_SHOW = 2;
     }
 
     public static final class PermissionRequest {
