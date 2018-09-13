@@ -25,9 +25,10 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_back_green_blue"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="32dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"/>
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="22dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="10dp"/>
 
         <TextView
             android:id="@+id/tv_toolbar_title"
