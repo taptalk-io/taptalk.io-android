@@ -1,5 +1,10 @@
 package com.moselo.HomingPigeon.Helper;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,5 +89,24 @@ public class Utils {
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = HomingPigeon.appContext.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    public int getScreeHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 }

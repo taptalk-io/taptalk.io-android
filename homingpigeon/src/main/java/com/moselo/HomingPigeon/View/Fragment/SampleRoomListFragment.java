@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.View.Fragment;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.View.Activity.BarcodeScannerActivity;
 import com.moselo.HomingPigeon.View.Activity.SampleRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
 import com.moselo.HomingPigeon.View.Helper.Const;
@@ -177,7 +179,8 @@ public class SampleRoomListFragment extends Fragment {
         }
 
         clButtonSearch.setOnClickListener(v -> {
-
+            Intent intent = new Intent(getActivity(), BarcodeScannerActivity.class);
+            startActivity(intent);
         });
 
         fabNewChat.setOnClickListener(v -> {
