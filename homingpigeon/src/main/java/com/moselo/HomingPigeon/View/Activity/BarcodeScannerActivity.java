@@ -28,7 +28,6 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_barcode_scanner);
 
         // TODO: 14/09/18 make logic for QR code scanner
-        // TODO: 14/09/18 Add Permission request before open this page
 
         fBarcodeScanner = (BarcodeScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scan_qr_code);
         fShowQR = (ShowQRFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_show_qr_code);
