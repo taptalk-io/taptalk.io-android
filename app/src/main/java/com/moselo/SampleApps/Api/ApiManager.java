@@ -1,9 +1,9 @@
-package com.moselo.HomingPigeon.Manager;
+package com.moselo.SampleApps.Api;
 
 import android.util.Log;
 
-import com.moselo.HomingPigeon.Api.ApiConnection;
-import com.moselo.HomingPigeon.Api.HomingPigeonApiService;
+import com.moselo.SampleApps.Api.ApiConnection;
+import com.moselo.SampleApps.Api.HomingPigeonApiService;
 
 import rx.Observable;
 import rx.Subscriber;

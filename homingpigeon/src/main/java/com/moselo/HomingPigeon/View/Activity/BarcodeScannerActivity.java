@@ -43,7 +43,7 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         tvToolbarTitle.setText(getResources().getText(R.string.scan_qr_code));
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.fade_in,0,0,R.anim.fade_out)
+                //.setCustomAnimations(R.anim.fade_in,0,0,R.anim.fade_out)
                 .show(fBarcodeScanner)
                 .hide(fShowQR)
                 .commit();
@@ -54,7 +54,7 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         tvToolbarTitle.setText(getResources().getText(R.string.show_qr_code));
         getSupportFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.fade_in,0,0,R.anim.fade_out)
+                //.setCustomAnimations(R.anim.fade_in,0,0,R.anim.fade_out)
                 .show(fShowQR)
                 .hide(fBarcodeScanner)
                 .commit();
