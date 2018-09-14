@@ -10,16 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.ContactInitialAdapter;
 import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
 import java.util.ArrayList;
@@ -34,7 +32,7 @@ public class NewChatActivity extends AppCompatActivity {
     TextView tvTitle;
     RecyclerView rvContactList;
 
-    ContactListAdapter adapter;
+    ContactInitialAdapter adapter;
     ContactListViewModel vm;
 
     @Override
@@ -52,18 +50,20 @@ public class NewChatActivity extends AppCompatActivity {
 
     private void initView() {
         //Dummy Contacts
-        UserModel u0 = new UserModel("u0", "Ababa");
-        UserModel u1 = new UserModel("u1", "Bambang 1");
-        UserModel u2 = new UserModel("u2", "Bambang 2");
-        UserModel u3 = new UserModel("u3", "Bambang 3");
-        UserModel u4 = new UserModel("u4", "Caca");
-        UserModel u5 = new UserModel("u5", "Coco");
-        vm.getContactList().add(u0);
-        vm.getContactList().add(u1);
-        vm.getContactList().add(u2);
-        vm.getContactList().add(u3);
-        vm.getContactList().add(u4);
-        vm.getContactList().add(u5);
+        if (vm.getContactList().size() == 0) {
+            UserModel u0 = new UserModel("u0", "Ababa");
+            UserModel u1 = new UserModel("u1", "Bambang 1");
+            UserModel u2 = new UserModel("u2", "Bambang 2");
+            UserModel u3 = new UserModel("u3", "Bambang 3");
+            UserModel u4 = new UserModel("u4", "Caca");
+            UserModel u5 = new UserModel("u5", "Coco");
+            vm.getContactList().add(u0);
+            vm.getContactList().add(u1);
+            vm.getContactList().add(u2);
+            vm.getContactList().add(u3);
+            vm.getContactList().add(u4);
+            vm.getContactList().add(u5);
+        }
         //End Dummy
 
         getWindow().setBackgroundDrawable(null);
@@ -91,7 +91,7 @@ public class NewChatActivity extends AppCompatActivity {
             }
         }
 
-        adapter = new ContactListAdapter(contactList);
+        adapter = new ContactInitialAdapter(contactList);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
@@ -99,7 +99,8 @@ public class NewChatActivity extends AppCompatActivity {
         ivButtonBack.setOnClickListener(v -> onBackPressed());
 
         ivButtonSearch.setOnClickListener(v -> {
-
+            Intent intent = new Intent(this, SearchContactActivity.class);
+            startActivity(intent);
         });
 
         llButtonNewContact.setOnClickListener(v -> {
@@ -123,7 +124,7 @@ public class NewChatActivity extends AppCompatActivity {
         if (Utils.getInstance().hasPermissions(NewChatActivity.this, Manifest.permission.CAMERA)) {
             Intent intent = new Intent(NewChatActivity.this, BarcodeScannerActivity.class);
             startActivity(intent);
-        }else {
+        } else {
             ActivityCompat.requestPermissions(NewChatActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
         }
     }
@@ -132,7 +133,7 @@ public class NewChatActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
-                case CAMERA_PERMISSION :
+                case CAMERA_PERMISSION:
                     openQRScanner();
                     break;
             }

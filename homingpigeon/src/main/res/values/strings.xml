@@ -13,8 +13,9 @@
     <string name="make_sure_you_have_a_stable_connection">Make sure you have a stable connection</string>
 
     <!--Contacts-->
-    <string name="view_blocked_contacts">Can’t find the contact you were looking for?\nTry viewing your</string>
-    <string name="blocked_contacts">Blocked Contacts</string>
+    <string name="search_for_contacts">Search for Contacts</string>
+    <string name="cant_find_contact">Can’t find the contact you were looking for?</string>
+    <string name="view_blocked_contacts">View Blocked Contacts</string>
 
     <!--Connection Status-->
     <string name="connected">Connected</string>
@@ -29,8 +30,6 @@
     <string name="no_chats">No Chats</string>
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
     <string name="over_99">99+</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cant_find_person">Can’t find who you are looking for?</string>
 
 </resources>
