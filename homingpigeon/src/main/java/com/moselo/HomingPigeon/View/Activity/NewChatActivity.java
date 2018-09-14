@@ -57,12 +57,16 @@ public class NewChatActivity extends AppCompatActivity {
             UserModel u3 = new UserModel("u3", "Bambang 3");
             UserModel u4 = new UserModel("u4", "Caca");
             UserModel u5 = new UserModel("u5", "Coco");
+            UserModel u6 = new UserModel("u6", "123asd");
+            UserModel u7 = new UserModel("u7", "!!!11111!!!");
             vm.getContactList().add(u0);
             vm.getContactList().add(u1);
             vm.getContactList().add(u2);
             vm.getContactList().add(u3);
             vm.getContactList().add(u4);
             vm.getContactList().add(u5);
+            vm.getContactList().add(u6);
+            vm.getContactList().add(u7);
         }
         //End Dummy
 
@@ -107,9 +111,7 @@ public class NewChatActivity extends AppCompatActivity {
 
         });
 
-        llButtonScanQR.setOnClickListener(v -> {
-            openQRScanner();
-        });
+        llButtonScanQR.setOnClickListener(v -> openQRScanner());
 
         llButtonNewGroup.setOnClickListener(v -> {
 

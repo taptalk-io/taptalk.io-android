@@ -15,48 +15,48 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.SubContactListHolder> {
+public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.ContactListHolder> {
 
-    private List<UserModel> subContactList;
+    private List<UserModel> contactList;
     private ColorStateList avatarTint;
 
-    public ContactListAdapter(List<UserModel> subContactList) {
-        this.subContactList = subContactList;
+    public ContactListAdapter(List<UserModel> contactList) {
+        this.contactList = contactList;
     }
 
     @NonNull
     @Override
-    public SubContactListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new SubContactListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_user_contact, parent, false));
+    public ContactListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ContactListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_user_contact, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SubContactListHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ContactListHolder holder, int position) {
         holder.onBind(position);
     }
 
     @Override
     public int getItemCount() {
-        if (null != subContactList) return subContactList.size();
+        if (null != contactList) return contactList.size();
         return 0;
     }
 
     public List<UserModel> getItems() {
-        return subContactList;
+        return contactList;
     }
 
     public UserModel getItemAt(int position) {
-        return subContactList.get(position);
+        return contactList.get(position);
     }
 
-    class SubContactListHolder extends RecyclerView.ViewHolder {
+    class ContactListHolder extends RecyclerView.ViewHolder {
 
         private ImageView ivAvatar, ivAvatarIcon;
         private TextView tvFullName;
         private View vSeparator;
         private UserModel item;
 
-        SubContactListHolder(View itemView) {
+        ContactListHolder(View itemView) {
             super(itemView);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
