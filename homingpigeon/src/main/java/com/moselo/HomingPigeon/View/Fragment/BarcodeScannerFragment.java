@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -31,6 +32,7 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.C
 
 public class BarcodeScannerFragment extends Fragment {
 
+    private static final String TAG = BarcodeScannerFragment.class.getSimpleName() ;
     private SurfaceView svScanner;
     private Button btnShowQRCode;
 
@@ -67,7 +69,7 @@ public class BarcodeScannerFragment extends Fragment {
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
-        barcodeDetector.setProcessor(new QRDetection());
+        barcodeDetector.setProcessor(new QRDetection(getActivity()));
 
         cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
                 .setAutoFocusEnabled(true)
@@ -83,15 +85,7 @@ public class BarcodeScannerFragment extends Fragment {
         svScanner.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
-                    return;
-                }
-                try {
-                    cameraSource.start(svScanner.getHolder());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                startCameraSource();
             }
 
             @Override
@@ -112,5 +106,30 @@ public class BarcodeScannerFragment extends Fragment {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void startCameraSource() {
+        Log.e(TAG, "startCameraSource: "+ (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ));
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+        }else {
+            try {
+                cameraSource.start(svScanner.getHolder());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e(TAG, "startCameraSource: ",e );
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case CAMERA_PERMISSION :
+                    startCameraSource();
+                    break;
+            }
+        }
     }
 }

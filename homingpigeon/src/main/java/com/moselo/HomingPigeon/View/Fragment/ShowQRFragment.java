@@ -55,7 +55,7 @@ public class ShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap("Rionaldo");
+            bitmap = encodeAsBitmap("Homing-Pigeon");
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();
