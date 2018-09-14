@@ -22,15 +22,17 @@ public class MessageEntity {
     @ColumnInfo(name = "message") private String message;
     @ColumnInfo(name = "created") private Long created;
     @ColumnInfo(name = "user") private String user;
+    @ColumnInfo(name = "recipientID") private String recipientID;
     @Nullable @ColumnInfo(name = "deliveredTo") private String deliveredTo;
     @Nullable @ColumnInfo(name = "seenBy") private String seenBy;
     @Nullable @ColumnInfo(name = "deleted") private Integer deleted;
     @Nullable @ColumnInfo(name = "isSending") private Integer isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Integer isFailedSend;
+    @Nullable @ColumnInfo(name = "updated") private Long updated;
 
     @Ignore
     public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
-                         int type, String message, long created, String user) {
+                         Integer type, String message, long created, String user, String recipientID) {
         this.messageID = messageID;
         this.localID = localID;
         this.roomID = roomID;
@@ -38,13 +40,14 @@ public class MessageEntity {
         this.message = message;
         this.created = created;
         this.user = user;
+        this.recipientID = recipientID;
     }
 
     @Ignore
     public MessageEntity(@Nullable String messageID, @NonNull String localID,
-                         String room, int roomType, int type, String message, long created, String user,
+                         String room, Integer roomType, Integer type, String message, long created, String user, String recipientID,
                          @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted,
-                         @Nullable Integer isSending, @Nullable Integer isFailedSend) {
+                         @Nullable Integer isSending, @Nullable Integer isFailedSend, @Nullable Long updated) {
         this.messageID = messageID;
         this.localID = localID;
         this.roomID = room;
@@ -53,11 +56,13 @@ public class MessageEntity {
         this.message = message;
         this.created = created;
         this.user = user;
+        this.recipientID = recipientID;
         this.deliveredTo = deliveredTo;
         this.seenBy = seenBy;
         this.deleted = deleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
+        this.updated = updated;
     }
 
     public MessageEntity() {
@@ -158,6 +163,14 @@ public class MessageEntity {
         this.user = user;
     }
 
+    public String getRecipientID() {
+        return recipientID;
+    }
+
+    public void setRecipientID(String recipientID) {
+        this.recipientID = recipientID;
+    }
+
     @Nullable
     public String getDeliveredTo() {
         return deliveredTo;
@@ -201,5 +214,14 @@ public class MessageEntity {
 
     public void setIsFailedSend(@Nullable Integer isFailedSend) {
         this.isFailedSend = isFailedSend;
+    }
+
+    @Nullable
+    public Long getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(@Nullable Long updated) {
+        this.updated = updated;
     }
 }

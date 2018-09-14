@@ -14,6 +14,7 @@ import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class DataManager {
@@ -40,6 +41,18 @@ public class DataManager {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
         ChatManager.getInstance().setActiveUser(user);
+    }
+
+    // TODO: 14/09/18 TEMP
+    public String getRecipientID(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(K_RECIPIENT_ID, "0");
+    }
+
+    // TODO: 14/09/18 TEMP
+    public void saveRecipientID(Context context, String recipientID) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(K_RECIPIENT_ID, recipientID).apply();
     }
 
     public void initDatabaseManager(String databaseType, Application application) {

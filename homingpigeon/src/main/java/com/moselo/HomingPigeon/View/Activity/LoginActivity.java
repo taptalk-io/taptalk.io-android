@@ -78,8 +78,8 @@ public class LoginActivity extends BaseActivity {
             Intent intent = new Intent(this, RoomListActivity.class);
             intent.putExtra(Const.K_MY_USERNAME, etUsername.getText().toString());
             startActivity(intent);
-            ConnectionManager.getInstance().connect();
             getUserID(getDummyUserID(etUsername.getText().toString())+ "", etUsername.getText().toString());
+            ConnectionManager.getInstance().connect();
             finish();
         }
     }

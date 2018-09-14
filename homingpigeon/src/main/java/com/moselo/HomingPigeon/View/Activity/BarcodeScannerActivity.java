@@ -27,8 +27,6 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_barcode_scanner);
 
-        // TODO: 14/09/18 make logic for QR code scanner
-
         fBarcodeScanner = (BarcodeScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scan_qr_code);
         fShowQR = (ShowQRFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_show_qr_code);
         tvToolbarTitle = findViewById(R.id.tv_toolbar_title);

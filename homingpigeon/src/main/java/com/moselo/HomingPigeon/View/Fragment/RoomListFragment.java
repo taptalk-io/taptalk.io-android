@@ -325,7 +325,7 @@ public class RoomListFragment extends Fragment {
                 room1,
                 1,
                 9999L,
-                dummyUser1,
+                dummyUser1,"1",
                 0, 0, 0);
 
         UserModel dummyUser2 = new UserModel("2", "Dominic Vedericho");
@@ -335,7 +335,7 @@ public class RoomListFragment extends Fragment {
                 room2,
                 1,
                 9999L,
-                dummyUser2,
+                dummyUser2,"2",
                 0, 0, 0);
 
         UserModel dummyUser3 = new UserModel("3", "Rionaldo Aureri Linggautama");
@@ -345,7 +345,7 @@ public class RoomListFragment extends Fragment {
                 room3,
                 1,
                 9999L,
-                dummyUser3,
+                dummyUser3,"3",
                 0, 0, 0);
 
         UserModel dummyUser4 = new UserModel("4", "Kevin Reynaldo");
@@ -355,7 +355,7 @@ public class RoomListFragment extends Fragment {
                 room4,
                 1,
                 9999L,
-                dummyUser4,
+                dummyUser4,"4",
                 0, 0, 0);
 
         UserModel dummyUser5 = new UserModel("5", "Welly Kencana");
@@ -365,7 +365,7 @@ public class RoomListFragment extends Fragment {
                 room5,
                 1,
                 9999L,
-                dummyUser5,
+                dummyUser5,"5",
                 0, 0, 0);
 
         UserModel dummyUser6 = new UserModel("6", "Jony");
@@ -375,7 +375,7 @@ public class RoomListFragment extends Fragment {
                 room6,
                 1,
                 9999L,
-                dummyUser6,
+                dummyUser6,"6",
                 0, 0, 0);
 
         UserModel dummyUser7 = new UserModel("7", "Michael Tansy");
@@ -385,7 +385,7 @@ public class RoomListFragment extends Fragment {
                 room7,
                 1,
                 9999L,
-                dummyUser7,
+                dummyUser7,"7",
                 0, 0, 0);
 
         UserModel dummyUser8 = new UserModel("8", "Richard Fang");
@@ -395,7 +395,7 @@ public class RoomListFragment extends Fragment {
                 room8,
                 1,
                 9999L,
-                dummyUser8,
+                dummyUser8,"8",
                 0, 0, 0);
 
         UserModel dummyUser9 = new UserModel("9", "Erwin Andreas");
@@ -405,7 +405,7 @@ public class RoomListFragment extends Fragment {
                 room9,
                 1,
                 9999L,
-                dummyUser9,
+                dummyUser9,"9",
                 0, 0, 0);
 
         UserModel dummyUser10 = new UserModel("10", "Jefry Lorentono");
@@ -415,7 +415,7 @@ public class RoomListFragment extends Fragment {
                 room10,
                 1,
                 9999L,
-                dummyUser10,
+                dummyUser10,"10",
                 0, 0, 0);
 
         UserModel dummyUser11 = new UserModel("11", "Cundy Sunardy");
@@ -425,7 +425,7 @@ public class RoomListFragment extends Fragment {
                 room11,
                 1,
                 9999L,
-                dummyUser11,
+                dummyUser11,"11",
                 0, 0, 0);
 
         UserModel dummyUser12 = new UserModel("12", "Rizka Fatmawati");
@@ -435,7 +435,7 @@ public class RoomListFragment extends Fragment {
                 room12,
                 1,
                 9999L,
-                dummyUser12,
+                dummyUser12,"12",
                 0, 0, 0);
 
         UserModel dummyUser13 = new UserModel("13", "Test 1");
@@ -445,7 +445,7 @@ public class RoomListFragment extends Fragment {
                 room13,
                 1,
                 9999L,
-                dummyUser13,
+                dummyUser13,"13",
                 0, 0, 0);
 
         UserModel dummyUser14 = new UserModel("14", "Test 2");
@@ -455,7 +455,7 @@ public class RoomListFragment extends Fragment {
                 room14,
                 1,
                 9999L,
-                dummyUser14,
+                dummyUser14,"14",
                 0, 0, 0);
 
         UserModel dummyUser15 = new UserModel("15", "Test 3");
@@ -465,7 +465,7 @@ public class RoomListFragment extends Fragment {
                 room15,
                 1,
                 9999L,
-                dummyUser15,
+                dummyUser15,"15",
                 0, 0, 0);
 
         vm.getRoomList().add(roomDummy1);

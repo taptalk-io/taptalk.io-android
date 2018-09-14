@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
@@ -138,6 +140,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     public void onSendTextMessage(MessageModel message) {
         addNewTextMessage(message);
         vm.addMessagePointer(message);
+        Log.e(TAG, "onSendTextMessage: "+ Utils.getInstance().toJsonString(message));
     }
 
     @Override

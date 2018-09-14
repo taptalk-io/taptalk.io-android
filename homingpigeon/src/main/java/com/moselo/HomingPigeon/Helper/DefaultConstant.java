@@ -54,6 +54,7 @@ public class DefaultConstant {
     }
 
     public static final String K_USER = "kUser";
+    public static final String K_RECIPIENT_ID = "kRecipientID";
     public static final String K_ROOM_ID = "kRoomID";
     public static final int NUM_OF_ITEM = 50;
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";

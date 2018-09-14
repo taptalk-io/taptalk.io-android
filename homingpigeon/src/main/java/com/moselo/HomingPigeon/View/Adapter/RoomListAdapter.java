@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
+import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -170,6 +171,8 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                         intent.putExtra(K_COLOR, randomColor);
                         intent.putExtra(K_ROOM_ID, item.getRoom().getRoomID());
                         itemView.getContext().startActivity(intent);
+
+                        DataManager.getInstance().saveRecipientID(itemView.getContext(), item.getRecipientID());
                     }else {
                         Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
                     }

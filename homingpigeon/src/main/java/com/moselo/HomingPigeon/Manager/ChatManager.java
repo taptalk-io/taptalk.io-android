@@ -224,6 +224,7 @@ public class ChatManager {
                 entity.getCreated(),
                 Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
                 }, entity.getUser()),
+                entity.getRecipientID(),
                 entity.getDeleted(),
                 entity.getIsSending(),
                 entity.getIsFailedSend());
@@ -242,11 +243,13 @@ public class ChatManager {
                 model.getMessage(),
                 model.getCreated(),
                 Utils.getInstance().toJsonString(model.getUser()),
+                model.getRecipientID(),
                 Utils.getInstance().toJsonString(model.getDeliveredTo()),
                 Utils.getInstance().toJsonString(model.getSeenBy()),
                 model.getIsDeleted(),
                 model.getIsSending(),
-                model.getIsFailedSend());
+                model.getIsFailedSend(),
+                model.getUpdated());
     }
 
     /**
@@ -290,7 +293,7 @@ public class ChatManager {
                 new RoomModel(activeRoom, 1),
                 DefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
-                activeUser);
+                activeUser, DataManager.getInstance().getRecipientID(HomingPigeon.appContext));
 
         // Add encrypted message to queue
         //try {
@@ -420,7 +423,6 @@ public class ChatManager {
         } else saveIncomingMessageAndDisconnect();
     }
 
-    // TODO: 05/09/18 nnti masukin di crash listener
     public void saveIncomingMessageAndDisconnect() {
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
@@ -472,7 +474,6 @@ public class ChatManager {
         }
     }
 
-    // TODO: 05/09/18 nnti masukin di crash listener
     public void saveNewMessageToDatabase() {
         if (0 == incomingMessages.size())
             return;

@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Model;
 
 import android.support.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,11 +12,11 @@ import java.util.List;
 
 public class RoomModel {
 
-    @JsonProperty("roomID") private String roomID;
-    @JsonProperty("roomName") private String roomName;
-    @JsonProperty("roomColor") private String roomColor;
-    @JsonProperty("roomImage") private String roomImage;
-    @JsonProperty("roomType") private int roomType;
+    @JsonProperty("roomID") @JsonAlias("id") private String roomID;
+    @JsonProperty("name") private String roomName;
+    @JsonProperty("color") private String roomColor;
+    @JsonProperty("image") private ImageURL roomImage;
+    @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
     @Nullable @JsonProperty("groupParticipants") private List<UserModel> groupParticipants;
     @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
@@ -66,11 +67,11 @@ public class RoomModel {
         this.roomType = roomType;
     }
 
-    public String getRoomImage() {
+    public ImageURL getRoomImage() {
         return roomImage;
     }
 
-    public void setRoomImage(String roomImage) {
+    public void setRoomImage(ImageURL roomImage) {
         this.roomImage = roomImage;
     }
 

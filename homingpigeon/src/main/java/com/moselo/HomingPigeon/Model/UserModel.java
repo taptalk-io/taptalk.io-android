@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Model;
 
 import android.support.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -23,18 +24,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class UserModel {
 
-    @JsonProperty("userID") private String userID;
-    @JsonProperty("name") private String name;
-    @JsonProperty("avatarURL") private ImageURL avatarURL;
+    @JsonProperty("userID") @JsonAlias("id") private String userID;
+    @JsonProperty("fullname") private String name;
+    @JsonProperty("imageURL") private ImageURL avatarURL;
     @Nullable @JsonProperty("username") private String username;
     @Nullable @JsonProperty("email") private String email;
-    @Nullable @JsonProperty("phoneNumber") private String phoneNumber;
+    @Nullable @JsonProperty("phone") private String phoneNumber;
     @Nullable @JsonProperty("birthdate") private String birthdate;
     @Nullable @JsonProperty("gender") private String gender;
     @Nullable @JsonProperty("isPermit") private Boolean isPermit;
     @Nullable @JsonProperty("isFriend") private Boolean isFriend;
     @Nullable @JsonProperty("userRole") private String userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
+    @Nullable @JsonProperty("created") private Long created;
+    @Nullable @JsonProperty("updated") private Long updated;
 
     public UserModel(String userID, String name) {
         this.userID = userID;
@@ -48,22 +51,22 @@ public class UserModel {
     public UserModel() {
     }
 
-    @JsonProperty("userID")
+    @JsonProperty("userID") @JsonAlias("id")
     public String getUserID() {
         return userID;
     }
 
-    @JsonProperty("userID")
+    @JsonProperty("userID") @JsonAlias("id")
     public void setUserID(String userID) {
         this.userID = userID;
     }
 
-    @JsonProperty("name")
+    @JsonProperty("fullname")
     public String getName() {
         return name;
     }
 
-    @JsonProperty("name")
+    @JsonProperty("fullname")
     public void setName(String name) {
         this.name = name;
     }
@@ -96,12 +99,12 @@ public class UserModel {
         this.email = email;
     }
 
-    @Nullable @JsonProperty("phoneNumber")
+    @Nullable @JsonProperty("phone")
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    @JsonProperty("phoneNumber")
+    @JsonProperty("phone")
     public void setPhoneNumber(@Nullable String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -164,5 +167,32 @@ public class UserModel {
     @JsonProperty("lastLogin")
     public void setLastLogin(@Nullable Long lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    @Nullable
+    public String getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(@Nullable String userRole) {
+        this.userRole = userRole;
+    }
+
+    @Nullable
+    public Long getCreated() {
+        return created;
+    }
+
+    public void setCreated(@Nullable Long created) {
+        this.created = created;
+    }
+
+    @Nullable
+    public Long getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(@Nullable Long updated) {
+        this.updated = updated;
     }
 }

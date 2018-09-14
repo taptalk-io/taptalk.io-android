@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -14,21 +15,23 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageModel {
 
-    @Nullable @JsonProperty("messageID") private String messageID;
+    @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
     @NonNull @JsonProperty("localID") private String localID;
     @JsonProperty("room") private RoomModel room;
     @JsonProperty("type") private int type;
     @JsonProperty("body") private String message;
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private UserModel user;
+    @JsonProperty("recipientID") private String recipientID;
     @Nullable @JsonProperty("deliveredTo") private List<Object> deliveredTo;
     @Nullable @JsonProperty("seenBy") private List<SeenByModel> seenBy;
     @Nullable @JsonProperty("isDeleted") private Integer isDeleted;
     @Nullable @JsonProperty("isSending") private Integer isSending;
     @Nullable @JsonProperty("isFailedSend") private Integer isFailedSend;
+    @Nullable @JsonProperty("updated") private Long updated;
 
     public MessageModel(@Nullable String messageID, @NonNull String localID, String message, RoomModel room,
-                        Integer type, Long created, UserModel user, @Nullable Integer isDeleted,
+                        Integer type, Long created, UserModel user, String recipientID, @Nullable Integer isDeleted,
                         @Nullable Integer isSending, @Nullable Integer isFailedSend) {
         this.messageID = messageID;
         this.localID = localID;
@@ -37,6 +40,7 @@ public class MessageModel {
         this.type = type;
         this.created = created;
         this.user = user;
+        this.recipientID = recipientID;
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
@@ -46,9 +50,9 @@ public class MessageModel {
     public MessageModel() {
     }
 
-    public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user) {
+    public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user, String recipientID) {
         String localID = Utils.getInstance().generateRandomString(32);
-        return new MessageModel("", localID, message, room, type, created, user, 0, 1, 0);
+        return new MessageModel("", localID, message, room, type, created, user, recipientID, 0, 1, 0);
     }
 
     public static MessageModel BuilderEncrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -60,6 +64,7 @@ public class MessageModel {
                 messageModel.getType(),
                 messageModel.getCreated(),
                 messageModel.getUser(),
+                messageModel.getRecipientID(),
                 messageModel.getIsDeleted(),
                 messageModel.getIsSending(),
                 messageModel.getIsFailedSend());
@@ -74,37 +79,11 @@ public class MessageModel {
                 messageModel.getType(),
                 messageModel.getCreated(),
                 messageModel.getUser(),
+                messageModel.getRecipientID(),
                 messageModel.getIsDeleted(),
                 messageModel.getIsSending(),
                 messageModel.getIsFailedSend());
     }
-
-//    public static MessageModel BuilderEncrypt(String message, String room, Integer type, Long created, UserModel user) throws GeneralSecurityException {
-//        String localID = Utils.getInstance().generateRandomString(32);
-//        return new MessageModel(localID, EncryptorManager.getInstance().encrypt(message, localID), room, type, created, user, 0, 1, 0);
-//    }
-
-//    public static MessageModel BuilderEncrypt(String message, String room, Integer type, Long created, UserModel user) throws GeneralSecurityException {
-//        String localID = Utils.getInstance().generateRandomString(32);
-//        return new MessageModel(localID, EncryptorManager.getInstance().encrypt(message, localID), room, type, created, user, 0, 1, 0);
-//    }
-//
-//    public static MessageModel BuilderDecrypt(String localID, String message, String room, Integer type, Long created, UserModel user, Integer deleted, Integer isSending, Integer isFailedSend) throws GeneralSecurityException {
-//        return new MessageModel(localID, EncryptorManager.getInstance().decrypt(message, localID), room, type, created, user, deleted, isSending, isFailedSend);
-//    }
-//
-//    public static MessageModel BuilderDecrypt(MessageModel messageModel) throws GeneralSecurityException {
-//        return new MessageModel(
-//                messageModel.getLocalID(),
-//                EncryptorManager.getInstance().decrypt(messageModel.getMessage(), messageModel.getLocalID()),
-//                messageModel.getRoomID(),
-//                messageModel.getType(),
-//                messageModel.getCreated(),
-//                messageModel.getUser(),
-//                messageModel.getDeleted(),
-//                messageModel.getIsSending(),
-//                messageModel.getIsFailedSend());
-//    }
 
     @Nullable
     public String getMessageID() {
@@ -164,6 +143,14 @@ public class MessageModel {
         this.user = user;
     }
 
+    public String getRecipientID() {
+        return recipientID;
+    }
+
+    public void setRecipientID(String recipientID) {
+        this.recipientID = recipientID;
+    }
+
     @Nullable
     public List<Object> getDeliveredTo() {
         return deliveredTo;
@@ -187,7 +174,7 @@ public class MessageModel {
         return isDeleted;
     }
 
-    public void setDeleted(@Nullable Integer isDeleted) {
+    public void setIsDeleted(@Nullable Integer isDeleted) {
         this.isDeleted = isDeleted;
     }
 
@@ -207,6 +194,15 @@ public class MessageModel {
 
     public void setIsFailedSend(@Nullable Integer isFailedSend) {
         this.isFailedSend = isFailedSend;
+    }
+
+    @Nullable
+    public Long getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(@Nullable Long updated) {
+        this.updated = updated;
     }
 
     public void updateValue(MessageModel model){

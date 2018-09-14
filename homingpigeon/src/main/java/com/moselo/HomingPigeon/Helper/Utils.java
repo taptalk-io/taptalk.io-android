@@ -7,6 +7,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.app.Activity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -54,6 +55,7 @@ public class Utils {
         try {
             return objectMapper.readValue(jsonPacket, type);
         } catch (Exception e) {
+            Log.e(Utils.class.getSimpleName(), "fromJSON: ",e );
             return null;
         }
     }

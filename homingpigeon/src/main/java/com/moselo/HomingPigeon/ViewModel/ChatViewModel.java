@@ -26,6 +26,7 @@ public class ChatViewModel extends AndroidViewModel {
     private long lastTimestamp = 0;
     private int numUsers;
     private int unreadCount = 0;
+    private String otherUserID = "0";
     private boolean isTyping = false;
     private boolean isOnBottom;
 
@@ -151,5 +152,15 @@ public class ChatViewModel extends AndroidViewModel {
             return allMessages.getValue().size();
         }
         return 0;
+    }
+
+    // TODO: 14/09/18 ini harus di ganti untuk flow Chat Group (ini cuma bisa chat 1v1)
+    public String getOtherUserID() {
+        try {
+            String[] tempUserID = roomID.split("-");
+            return otherUserID = tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
+        }catch (Exception e){
+            return "0";
+        }
     }
 }
