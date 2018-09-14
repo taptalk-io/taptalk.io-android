@@ -32,7 +32,7 @@ public class ConnectionManager {
     private static ConnectionManager instance;
     private WebSocketClient webSocketClient;
     private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon";
-    //    private String webSocketEndpoint = "ws://echo.websocket.org";
+//        private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
     private List<HomingPigeonSocketListener> socketListeners;

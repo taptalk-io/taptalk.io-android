@@ -20,6 +20,7 @@ public class HomingPigeonService extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         ChatManager.getInstance().saveIncomingMessageAndDisconnect();
+        ChatManager.getInstance().deleteActiveRoom();
         stopSelf();
     }
 }

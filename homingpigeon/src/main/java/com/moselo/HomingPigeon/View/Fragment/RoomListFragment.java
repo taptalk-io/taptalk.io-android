@@ -120,34 +120,7 @@ public class RoomListFragment extends Fragment {
     private void initView(View view) {
         // Dummy Rooms
         if (vm.getRoomList().size() == 0) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-            UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
-            }, prefs.getString(K_USER, ""));
-            String userId = myUser.getUserID();
-            RoomModel room1 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, userId), 1);
-            RoomModel room2 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "999999"), 1);
-            room1.setUnreadCount(11);
-            room2.setMuted(true);
-            room2.setUnreadCount(999);
-            MessageModel roomDummy1 = new MessageModel(
-                    "", "abc123",
-                    "LastMessage",
-                    room1,
-                    1,
-                    System.currentTimeMillis(),
-                    myUser,
-                    0, 0, 0);
-            UserModel dummyUser2 = new UserModel("999999", "BAMBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANGS");
-            MessageModel roomDummy2 = new MessageModel(
-                    "", "def456",
-                    "Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang Mas Bambang.",
-                    room2,
-                    1,
-                    9999L,
-                    dummyUser2,
-                    0, 0, 0);
-            vm.getRoomList().add(roomDummy1);
-            vm.getRoomList().add(roomDummy2);
+            setDummyRooms();
         }
         // End Dummy
 
@@ -230,7 +203,8 @@ public class RoomListFragment extends Fragment {
 
         });
 
-        flSetupContainer.setOnClickListener(v -> {});
+        flSetupContainer.setOnClickListener(v -> {
+        });
     }
 
     private void initConnectionStatus() {
@@ -316,4 +290,198 @@ public class RoomListFragment extends Fragment {
             setStatusWaitingForNetwork();
         }
     };
+
+
+    // TODO: 14/09/18 Harus dihilangkan pas ada flow fixnya
+    private void setDummyRooms() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        }, prefs.getString(K_USER, ""));
+        String userId = myUser.getUserID();
+
+        RoomModel room1 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "1"), 1);
+        RoomModel room2 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "2"), 1);
+        RoomModel room3 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "3"), 1);
+        RoomModel room4 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "4"), 1);
+        RoomModel room5 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "5"), 1);
+        RoomModel room6 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "6"), 1);
+        RoomModel room7 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "7"), 1);
+        RoomModel room8 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "8"), 1);
+        RoomModel room9 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "9"), 1);
+        RoomModel room10 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "10"), 1);
+        RoomModel room11 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "11"), 1);
+        RoomModel room12 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "12"), 1);
+        RoomModel room13 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "13"), 1);
+        RoomModel room14 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "14"), 1);
+        RoomModel room15 = new RoomModel(ChatManager.getInstance().arrangeRoomId(userId, "15"), 1);
+        room1.setUnreadCount(11);
+        room2.setMuted(true);
+        room2.setUnreadCount(999);
+
+        UserModel dummyUser1 = new UserModel("1", "Ritchie Nathaniel");
+        MessageModel roomDummy1 = new MessageModel(
+                "", "def456",
+                "",
+                room1,
+                1,
+                9999L,
+                dummyUser1,
+                0, 0, 0);
+
+        UserModel dummyUser2 = new UserModel("2", "Dominic Vedericho");
+        MessageModel roomDummy2 = new MessageModel(
+                "", "def456",
+                "",
+                room2,
+                1,
+                9999L,
+                dummyUser2,
+                0, 0, 0);
+
+        UserModel dummyUser3 = new UserModel("3", "Rionaldo Aureri Linggautama");
+        MessageModel roomDummy3 = new MessageModel(
+                "", "def456",
+                "",
+                room3,
+                1,
+                9999L,
+                dummyUser3,
+                0, 0, 0);
+
+        UserModel dummyUser4 = new UserModel("4", "Kevin Reynaldo");
+        MessageModel roomDummy4 = new MessageModel(
+                "", "def456",
+                "",
+                room4,
+                1,
+                9999L,
+                dummyUser4,
+                0, 0, 0);
+
+        UserModel dummyUser5 = new UserModel("5", "Welly Kencana");
+        MessageModel roomDummy5 = new MessageModel(
+                "", "def456",
+                "",
+                room5,
+                1,
+                9999L,
+                dummyUser5,
+                0, 0, 0);
+
+        UserModel dummyUser6 = new UserModel("6", "Jony");
+        MessageModel roomDummy6 = new MessageModel(
+                "", "def456",
+                "",
+                room6,
+                1,
+                9999L,
+                dummyUser6,
+                0, 0, 0);
+
+        UserModel dummyUser7 = new UserModel("7", "Michael Tansy");
+        MessageModel roomDummy7 = new MessageModel(
+                "", "def456",
+                "",
+                room7,
+                1,
+                9999L,
+                dummyUser7,
+                0, 0, 0);
+
+        UserModel dummyUser8 = new UserModel("8", "Richard Fang");
+        MessageModel roomDummy8 = new MessageModel(
+                "", "def456",
+                "",
+                room8,
+                1,
+                9999L,
+                dummyUser8,
+                0, 0, 0);
+
+        UserModel dummyUser9 = new UserModel("9", "Erwin Andreas");
+        MessageModel roomDummy9 = new MessageModel(
+                "", "def456",
+                "",
+                room9,
+                1,
+                9999L,
+                dummyUser9,
+                0, 0, 0);
+
+        UserModel dummyUser10 = new UserModel("10", "Jefry Lorentono");
+        MessageModel roomDummy10 = new MessageModel(
+                "", "def456",
+                "",
+                room10,
+                1,
+                9999L,
+                dummyUser10,
+                0, 0, 0);
+
+        UserModel dummyUser11 = new UserModel("11", "Cundy Sunardy");
+        MessageModel roomDummy11 = new MessageModel(
+                "", "def456",
+                "",
+                room11,
+                1,
+                9999L,
+                dummyUser11,
+                0, 0, 0);
+
+        UserModel dummyUser12 = new UserModel("12", "Rizka Fatmawati");
+        MessageModel roomDummy12 = new MessageModel(
+                "", "def456",
+                "",
+                room12,
+                1,
+                9999L,
+                dummyUser12,
+                0, 0, 0);
+
+        UserModel dummyUser13 = new UserModel("13", "Test 1");
+        MessageModel roomDummy13 = new MessageModel(
+                "", "def456",
+                "",
+                room13,
+                1,
+                9999L,
+                dummyUser13,
+                0, 0, 0);
+
+        UserModel dummyUser14 = new UserModel("14", "Test 2");
+        MessageModel roomDummy14 = new MessageModel(
+                "", "def456",
+                "",
+                room14,
+                1,
+                9999L,
+                dummyUser14,
+                0, 0, 0);
+
+        UserModel dummyUser15 = new UserModel("15", "Test 3");
+        MessageModel roomDummy15 = new MessageModel(
+                "", "def456",
+                "",
+                room15,
+                1,
+                9999L,
+                dummyUser15,
+                0, 0, 0);
+
+        vm.getRoomList().add(roomDummy1);
+        vm.getRoomList().add(roomDummy2);
+        vm.getRoomList().add(roomDummy3);
+        vm.getRoomList().add(roomDummy4);
+        vm.getRoomList().add(roomDummy5);
+        vm.getRoomList().add(roomDummy6);
+        vm.getRoomList().add(roomDummy7);
+        vm.getRoomList().add(roomDummy8);
+        vm.getRoomList().add(roomDummy9);
+        vm.getRoomList().add(roomDummy10);
+        vm.getRoomList().add(roomDummy11);
+        vm.getRoomList().add(roomDummy12);
+        vm.getRoomList().add(roomDummy13);
+        vm.getRoomList().add(roomDummy14);
+        vm.getRoomList().add(roomDummy15);
+    }
 }

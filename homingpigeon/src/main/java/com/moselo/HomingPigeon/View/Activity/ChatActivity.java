@@ -121,19 +121,17 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onReceiveMessageInOtherRoom(MessageModel message) {
         // TODO: 28 August 2018 REPLACE
-        addNewTextMessage(message);
+
     }
 
     @Override
     public void onUpdateMessageInOtherRoom(MessageModel message) {
         // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-        addNewTextMessage(message);
     }
 
     @Override
     public void onDeleteMessageInOtherRoom(MessageModel message) {
         // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-        addNewTextMessage(message);
     }
 
     @Override

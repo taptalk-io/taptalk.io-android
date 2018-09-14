@@ -1,8 +1,10 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
@@ -25,6 +29,7 @@ import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
@@ -152,12 +157,22 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     notifyItemChanged(position);
                 } else {
                     // Open chat room on click
-                    Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
-                    intent.putExtra(K_MY_USERNAME, myUsername);
-                    intent.putExtra(K_THEIR_USERNAME, userModel.getName());
-                    intent.putExtra(K_COLOR, randomColor);
-                    intent.putExtra(K_ROOM_ID, item.getRoom().getRoomID());
-                    itemView.getContext().startActivity(intent);
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
+                    UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                    }, prefs.getString(K_USER, ""));
+
+                    String myUserID = myUser.getUserID();
+
+                    if (!(myUserID+"-"+myUserID).equals(item.getRoom().getRoomID())) {
+                        Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
+                        intent.putExtra(K_MY_USERNAME, myUsername);
+                        intent.putExtra(K_THEIR_USERNAME, userModel.getName());
+                        intent.putExtra(K_COLOR, randomColor);
+                        intent.putExtra(K_ROOM_ID, item.getRoom().getRoomID());
+                        itemView.getContext().startActivity(intent);
+                    }else {
+                        Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
