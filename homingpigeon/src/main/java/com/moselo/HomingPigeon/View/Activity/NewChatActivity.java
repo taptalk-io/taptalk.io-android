@@ -116,7 +116,8 @@ public class NewChatActivity extends AppCompatActivity {
         });
 
         llBlockedContacts.setOnClickListener(v -> {
-
+            Intent intent = new Intent(this, BlockedListActivity.class);
+            startActivity(intent);
         });
     }
 

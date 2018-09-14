@@ -7,6 +7,7 @@
     <string name="new_group">New Group</string>
     <string name="scan_qr_code">Scan QR Code</string>
     <string name="show_qr_code">Show QR Code</string>
+    <string name="blocked_list">Blocked List</string>
 
     <!--Chat Room List-->
     <string name="setting_up_your_chatroom">Setting up your chatroom</string>
@@ -15,7 +16,9 @@
     <!--Contacts-->
     <string name="search_for_contacts">Search for Contacts</string>
     <string name="cant_find_contact">Can’t find the contact you were looking for?</string>
+    <string name="cant_find_person">Can’t find who you are looking for?</string>
     <string name="view_blocked_contacts">View Blocked Contacts</string>
+    <string name="add_new_contact">Add New Contact</string>
 
     <!--Connection Status-->
     <string name="connected">Connected</string>
@@ -30,6 +33,5 @@
     <string name="no_chats">No Chats</string>
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
     <string name="over_99">99+</string>
-    <string name="cant_find_person">Can’t find who you are looking for?</string>
 
 </resources>
