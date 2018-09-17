@@ -104,7 +104,7 @@ public class NewChatActivity extends AppCompatActivity {
         });
 
         llButtonNewContact.setOnClickListener(v -> {
-
+            openNewUsername();
         });
 
         llButtonScanQR.setOnClickListener(v -> {
@@ -138,5 +138,10 @@ public class NewChatActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    private void openNewUsername() {
+        Intent intent = new Intent(NewChatActivity.this, NewContactActivity.class);
+        startActivity(intent);
     }
 }
