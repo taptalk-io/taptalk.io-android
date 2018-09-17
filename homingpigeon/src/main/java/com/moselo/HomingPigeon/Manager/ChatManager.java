@@ -96,6 +96,7 @@ public class ChatManager {
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
                     try {
+                        Log.e(TAG, "onReceiveNewEmit: "+Utils.getInstance().toJsonString(MessageModel.BuilderDecrypt(messageEmit.getData())) );
                         receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();

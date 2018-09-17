@@ -15,7 +15,7 @@ public class RoomModel {
     @JsonProperty("roomID") @JsonAlias("id") private String roomID;
     @JsonProperty("name") private String roomName;
     @JsonProperty("color") private String roomColor;
-    @JsonProperty("image") private ImageURL roomImage;
+    @JsonProperty("imageURL") private ImageURL roomImage;
     @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
     @Nullable @JsonProperty("groupParticipants") private List<UserModel> groupParticipants;
