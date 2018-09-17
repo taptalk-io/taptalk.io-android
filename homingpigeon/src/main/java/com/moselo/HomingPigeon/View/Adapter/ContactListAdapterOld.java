@@ -3,12 +3,13 @@ package com.moselo.HomingPigeon.View.Adapter;
 import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Helper.BaseViewHolder;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.ContactListListener;
 import com.moselo.HomingPigeon.Model.UserModel;
@@ -16,37 +17,50 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<UserModel>> {
+@Deprecated
+public class ContactListAdapterOld extends RecyclerView.Adapter<ContactListAdapterOld.ContactListHolder> {
 
+    private List<UserModel> contactList;
     private ContactListListener listener;
     private ColorStateList avatarTint;
-    private int viewType, initialPosition;
+    private int viewType;
 
     public static final int NONE = 0;
     public static final int CHAT = 1;
     public static final int SELECT = 2;
     public static final int SELECTED_MEMBER = 3;
 
-    public ContactListAdapter(int viewType, List<UserModel> contactList) {
-        setItems(contactList);
+    public ContactListAdapterOld(int viewType, List<UserModel> contactList) {
         this.viewType = viewType;
+        this.contactList = contactList;
     }
 
-    public ContactListAdapter(int viewType, List<UserModel> contactList, @Nullable ContactListListener listener) {
-        setItems(contactList);
+    public ContactListAdapterOld(int viewType, List<UserModel> contactList, @Nullable ContactListListener listener) {
         this.viewType = viewType;
+        this.contactList = contactList;
         this.listener = listener;
     }
 
     @NonNull
     @Override
-    public BaseViewHolder<UserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ContactListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case SELECTED_MEMBER:
-                return new SelectedGroupMemberHolder(parent, R.layout.cell_group_member);
+                return new ContactListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_group_member, parent, false));
             default:
-                return new ContactListHolder(parent, R.layout.cell_user_contact);
+                return new ContactListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_user_contact, parent, false));
         }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ContactListHolder holder, int position) {
+        holder.onBind(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        if (null != contactList) return contactList.size();
+        return 0;
     }
 
     @Override
@@ -54,14 +68,23 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
         return viewType;
     }
 
-    class ContactListHolder extends BaseViewHolder<UserModel> {
+    public List<UserModel> getItems() {
+        return contactList;
+    }
+
+    public UserModel getItemAt(int position) {
+        return contactList.get(position);
+    }
+
+    class ContactListHolder extends RecyclerView.ViewHolder {
 
         private ImageView ivAvatar, ivAvatarIcon, ivSelection;
         private TextView tvFullName;
         private View vSeparator;
+        private UserModel item;
 
-        public ContactListHolder(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
+        ContactListHolder(View itemView) {
+            super(itemView);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
@@ -70,8 +93,8 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
             vSeparator = itemView.findViewById(R.id.v_separator);
         }
 
-        @Override
-        protected void onBind(UserModel item, int position) {
+        void onBind(int position) {
+            item = getItemAt(position);
             final int randomColor = Utils.getInstance().getRandomColor(item.getName());
 
             // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
@@ -117,36 +140,10 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
         }
     }
 
-    class SelectedGroupMemberHolder extends BaseViewHolder<UserModel> {
+    class SelectedGroupMemberHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivAvatar;
-        private TextView tvFullName;
-
-        protected SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-
-            ivAvatar = itemView.findViewById(R.id.iv_avatar);
-            tvFullName = itemView.findViewById(R.id.tv_full_name);
-        }
-
-        @Override
-        protected void onBind(UserModel item, int position) {
-            final int randomColor = Utils.getInstance().getRandomColor(item.getName());
-
-            // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
-            avatarTint = ColorStateList.valueOf(randomColor);
-            ivAvatar.setBackgroundTintList(avatarTint);
-
-            // Set name
-            String fullName = item.getName();
-            if (fullName.contains(" ")) {
-                tvFullName.setText(fullName.substring(0, fullName.indexOf(' ')));
-            } else tvFullName.setText(fullName);
-
-            itemView.setOnClickListener(v -> {
-                removeItem(item);
-                listener.onContactRemoved(item);
-            });
+        public SelectedGroupMemberHolder(View itemView) {
+            super(itemView);
         }
     }
 }

@@ -18,6 +18,7 @@
         <activity android:name=".View.Activity.NewChatActivity" />
         <activity android:name=".View.Activity.SearchContactActivity" />
         <activity android:name=".View.Activity.BlockedListActivity" />
+        <activity android:name=".View.Activity.CreateNewGroupActivity" />
     </application>
 
 </manifest>

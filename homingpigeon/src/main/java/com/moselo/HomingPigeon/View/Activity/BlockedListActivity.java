@@ -52,7 +52,7 @@ public class BlockedListActivity extends AppCompatActivity {
         ivButtonBack = findViewById(R.id.iv_button_back);
         rvBlockedList = findViewById(R.id.rv_blocked_list);
 
-        adapter = new ContactListAdapter(vm.getFilteredContacts());
+        adapter = new ContactListAdapter(ContactListAdapter.NONE, vm.getFilteredContacts());
         rvBlockedList.setAdapter(adapter);
         rvBlockedList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvBlockedList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);

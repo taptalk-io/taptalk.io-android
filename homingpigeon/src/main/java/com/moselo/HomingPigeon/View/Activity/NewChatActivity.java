@@ -18,6 +18,7 @@ import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.ContactInitialAdapter;
+import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
 import java.util.ArrayList;
@@ -82,7 +83,6 @@ public class NewChatActivity extends AppCompatActivity {
         rvContactList = findViewById(R.id.rv_contact_list);
 
         // Separate contact list by initial
-        List<List<UserModel>> contactList = new ArrayList<>();
         int previousInitialIndexStart = 0;
         int size = vm.getContactList().size();
         for (int i = 1; i <= size; i++) {
@@ -90,12 +90,12 @@ public class NewChatActivity extends AppCompatActivity {
                     vm.getContactList().get(i).getName().charAt(0) !=
                             vm.getContactList().get(i - 1).getName().charAt(0)) {
                 List<UserModel> contactSubList = vm.getContactList().subList(previousInitialIndexStart, i);
-                contactList.add(contactSubList);
+                vm.getSeparatedContacts().add(contactSubList);
                 previousInitialIndexStart = i;
             }
         }
 
-        adapter = new ContactInitialAdapter(contactList);
+        adapter = new ContactInitialAdapter(ContactListAdapter.CHAT, vm.getSeparatedContacts());
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
@@ -114,7 +114,8 @@ public class NewChatActivity extends AppCompatActivity {
         llButtonScanQR.setOnClickListener(v -> openQRScanner());
 
         llButtonNewGroup.setOnClickListener(v -> {
-
+            Intent intent = new Intent(this, CreateNewGroupActivity.class);
+            startActivity(intent);
         });
 
         llBlockedContacts.setOnClickListener(v -> {

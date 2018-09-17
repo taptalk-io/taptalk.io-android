@@ -35,6 +35,7 @@ public class UserModel {
     @Nullable @JsonProperty("isFriend") private Boolean isFriend;
     @Nullable @JsonProperty("userRole") private String userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
+    private boolean isSelected;
 
     public UserModel(String userID, String name) {
         this.userID = userID;
@@ -147,12 +148,12 @@ public class UserModel {
     }
 
     @Nullable @JsonProperty("userRole")
-    public String getUserType() {
+    public String getUserRole() {
         return userRole;
     }
 
     @JsonProperty("userRole")
-    public void setUserType(@Nullable String userRole) {
+    public void setUserRole(@Nullable String userRole) {
         this.userRole = userRole;
     }
 
@@ -164,5 +165,13 @@ public class UserModel {
     @JsonProperty("lastLogin")
     public void setLastLogin(@Nullable Long lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

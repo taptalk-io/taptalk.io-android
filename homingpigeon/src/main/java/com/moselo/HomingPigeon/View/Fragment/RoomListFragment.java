@@ -151,7 +151,7 @@ public class RoomListFragment extends Fragment {
         }
         // End Dummy
 
-        Objects.requireNonNull(getActivity()).getWindow().setBackgroundDrawable(null);
+        activity.getWindow().setBackgroundDrawable(null);
 
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);

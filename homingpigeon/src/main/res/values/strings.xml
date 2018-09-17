@@ -27,11 +27,14 @@
     <string name="network_error">Network Error</string>
     <string name="waiting_for_network">Waiting for Network</string>
 
-    <!--General-->
-    <string name="edit">Edit</string>
-    <string name="search">Search</string>
-    <string name="no_chats">No Chats</string>
+    <!--Guides-->
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
-    <string name="over_99">99+</string>
+    <string name="scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
 
+    <!--General-->
+    <string name="continue_s">Continue</string>
+    <string name="edit">Edit</string>
+    <string name="no_chats">No Chats</string>
+    <string name="over_99">99+</string>
+    <string name="search">Search</string>
 </resources>

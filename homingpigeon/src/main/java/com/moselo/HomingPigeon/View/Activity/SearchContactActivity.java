@@ -71,7 +71,7 @@ public class SearchContactActivity extends AppCompatActivity {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new ContactListAdapter(vm.getFilteredContacts());
+        adapter = new ContactListAdapter(ContactListAdapter.CHAT, vm.getFilteredContacts());
         rvSearchResults.setAdapter(adapter);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
