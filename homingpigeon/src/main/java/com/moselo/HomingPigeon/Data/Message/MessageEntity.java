@@ -25,9 +25,9 @@ public class MessageEntity {
     @ColumnInfo(name = "recipientID") private String recipientID;
     @Nullable @ColumnInfo(name = "deliveredTo") private String deliveredTo;
     @Nullable @ColumnInfo(name = "seenBy") private String seenBy;
-    @Nullable @ColumnInfo(name = "deleted") private Integer deleted;
-    @Nullable @ColumnInfo(name = "isSending") private Integer isSending;
-    @Nullable @ColumnInfo(name = "isFailedSend") private Integer isFailedSend;
+    @Nullable @ColumnInfo(name = "isDeleted") private Boolean isDeleted;
+    @Nullable @ColumnInfo(name = "isSending") private Boolean isSending;
+    @Nullable @ColumnInfo(name = "isFailedSend") private Boolean isFailedSend;
     @Nullable @ColumnInfo(name = "updated") private Long updated;
 
     @Ignore
@@ -46,8 +46,8 @@ public class MessageEntity {
     @Ignore
     public MessageEntity(@Nullable String messageID, @NonNull String localID,
                          String room, Integer roomType, Integer type, String message, long created, String user, String recipientID,
-                         @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Integer deleted,
-                         @Nullable Integer isSending, @Nullable Integer isFailedSend, @Nullable Long updated) {
+                         @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Boolean isDeleted,
+                         @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated) {
         this.messageID = messageID;
         this.localID = localID;
         this.roomID = room;
@@ -59,7 +59,7 @@ public class MessageEntity {
         this.recipientID = recipientID;
         this.deliveredTo = deliveredTo;
         this.seenBy = seenBy;
-        this.deleted = deleted;
+        this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
         this.updated = updated;
@@ -190,29 +190,29 @@ public class MessageEntity {
     }
 
     @Nullable
-    public Integer getDeleted() {
-        return deleted;
+    public Boolean getDeleted() {
+        return isDeleted;
     }
 
-    public void setDeleted(@Nullable Integer deleted) {
-        this.deleted = deleted;
+    public void setDeleted(@Nullable Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
     @Nullable
-    public Integer getIsSending() {
+    public Boolean getIsSending() {
         return isSending;
     }
 
-    public void setIsSending(@Nullable Integer isSending) {
+    public void setIsSending(@Nullable Boolean isSending) {
         this.isSending = isSending;
     }
 
     @Nullable
-    public Integer getIsFailedSend() {
+    public Boolean getIsFailedSend() {
         return isFailedSend;
     }
 
-    public void setIsFailedSend(@Nullable Integer isFailedSend) {
+    public void setIsFailedSend(@Nullable Boolean isFailedSend) {
         this.isFailedSend = isFailedSend;
     }
 

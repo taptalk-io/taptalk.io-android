@@ -326,7 +326,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser1,"1",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser2 = new UserModel("2", "Dominic Vedericho");
         MessageModel roomDummy2 = new MessageModel(
@@ -336,7 +336,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser2,"2",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser3 = new UserModel("3", "Rionaldo Aureri Linggautama");
         MessageModel roomDummy3 = new MessageModel(
@@ -346,7 +346,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser3,"3",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser4 = new UserModel("4", "Kevin Reynaldo");
         MessageModel roomDummy4 = new MessageModel(
@@ -356,7 +356,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser4,"4",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser5 = new UserModel("5", "Welly Kencana");
         MessageModel roomDummy5 = new MessageModel(
@@ -366,7 +366,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser5,"5",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser6 = new UserModel("6", "Jony");
         MessageModel roomDummy6 = new MessageModel(
@@ -376,7 +376,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser6,"6",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser7 = new UserModel("7", "Michael Tansy");
         MessageModel roomDummy7 = new MessageModel(
@@ -386,7 +386,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser7,"7",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser8 = new UserModel("8", "Richard Fang");
         MessageModel roomDummy8 = new MessageModel(
@@ -396,7 +396,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser8,"8",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser9 = new UserModel("9", "Erwin Andreas");
         MessageModel roomDummy9 = new MessageModel(
@@ -406,7 +406,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser9,"9",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser10 = new UserModel("10", "Jefry Lorentono");
         MessageModel roomDummy10 = new MessageModel(
@@ -416,7 +416,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser10,"10",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser11 = new UserModel("11", "Cundy Sunardy");
         MessageModel roomDummy11 = new MessageModel(
@@ -426,7 +426,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser11,"11",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser12 = new UserModel("12", "Rizka Fatmawati");
         MessageModel roomDummy12 = new MessageModel(
@@ -436,7 +436,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser12,"12",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser13 = new UserModel("13", "Test 1");
         MessageModel roomDummy13 = new MessageModel(
@@ -446,7 +446,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser13,"13",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser14 = new UserModel("14", "Test 2");
         MessageModel roomDummy14 = new MessageModel(
@@ -456,7 +456,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser14,"14",
-                0, 0, 0);
+                false, false, false);
 
         UserModel dummyUser15 = new UserModel("15", "Test 3");
         MessageModel roomDummy15 = new MessageModel(
@@ -466,7 +466,7 @@ public class RoomListFragment extends Fragment {
                 1,
                 9999L,
                 dummyUser15,"15",
-                0, 0, 0);
+                false, false, false);
 
         vm.getRoomList().add(roomDummy1);
         vm.getRoomList().add(roomDummy2);

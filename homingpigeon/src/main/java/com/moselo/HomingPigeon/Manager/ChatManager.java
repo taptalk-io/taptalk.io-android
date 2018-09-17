@@ -442,7 +442,7 @@ public class ChatManager {
      */
     private void receiveMessageFromSocket(MessageModel newMessage, String eventName) {
         // TODO: 4 September 2018 TEMP
-        newMessage.setIsSending(0);
+        newMessage.setIsSending(false);
 
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))

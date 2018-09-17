@@ -25,14 +25,14 @@ public class MessageModel {
     @JsonProperty("recipientID") private String recipientID;
     @Nullable @JsonProperty("deliveredTo") private List<Object> deliveredTo;
     @Nullable @JsonProperty("seenBy") private List<SeenByModel> seenBy;
-    @Nullable @JsonProperty("isDeleted") private Integer isDeleted;
-    @Nullable @JsonProperty("isSending") private Integer isSending;
-    @Nullable @JsonProperty("isFailedSend") private Integer isFailedSend;
+    @Nullable @JsonProperty("isDeleted") private Boolean isDeleted;
+    @Nullable @JsonProperty("isSending") private Boolean isSending;
+    @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
 
     public MessageModel(@Nullable String messageID, @NonNull String localID, String message, RoomModel room,
-                        Integer type, Long created, UserModel user, String recipientID, @Nullable Integer isDeleted,
-                        @Nullable Integer isSending, @Nullable Integer isFailedSend) {
+                        Integer type, Long created, UserModel user, String recipientID, @Nullable Boolean isDeleted,
+                        @Nullable Boolean isSending, @Nullable Boolean isFailedSend) {
         this.messageID = messageID;
         this.localID = localID;
         this.message = message;
@@ -52,7 +52,7 @@ public class MessageModel {
 
     public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user, String recipientID) {
         String localID = Utils.getInstance().generateRandomString(32);
-        return new MessageModel("", localID, message, room, type, created, user, recipientID, 0, 1, 0);
+        return new MessageModel("", localID, message, room, type, created, user, recipientID, false, true, false);
     }
 
     public static MessageModel BuilderEncrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -170,29 +170,29 @@ public class MessageModel {
     }
 
     @Nullable
-    public Integer getIsDeleted() {
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
 
-    public void setIsDeleted(@Nullable Integer isDeleted) {
+    public void setIsDeleted(@Nullable Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 
     @Nullable
-    public Integer getIsSending() {
+    public Boolean getIsSending() {
         return isSending;
     }
 
-    public void setIsSending(@Nullable Integer isSending) {
+    public void setIsSending(@Nullable Boolean isSending) {
         this.isSending = isSending;
     }
 
     @Nullable
-    public Integer getIsFailedSend() {
+    public Boolean getIsFailedSend() {
         return isFailedSend;
     }
 
-    public void setIsFailedSend(@Nullable Integer isFailedSend) {
+    public void setIsFailedSend(@Nullable Boolean isFailedSend) {
         this.isFailedSend = isFailedSend;
     }
 

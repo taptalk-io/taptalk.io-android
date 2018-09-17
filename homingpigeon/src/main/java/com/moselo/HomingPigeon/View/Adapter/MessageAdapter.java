@@ -117,7 +117,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             tvMessage.setText(item.getMessage());
 
             // Message is sending
-            if (null != item.getIsSending() && 1 == item.getIsSending()) {
+            if (null != item.getIsSending() && item.getIsSending()) {
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextContent));
                 tvStatus.setText("Sending...");
                 tvDash.setText("");
@@ -127,7 +127,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
                 llMessageStatus.setVisibility(View.GONE);
             }
             // Message failed to send
-            else if (null != item.getIsFailedSend() && 1 == item.getIsFailedSend()) {
+            else if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
                 tvStatus.setText("Failed, tap to retry.");
                 tvDash.setText("");
@@ -149,7 +149,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
 
             itemView.setOnClickListener(v -> {
                 if (null != item.getIsFailedSend() && null != item.getIsSending() &&
-                        1 == item.getIsFailedSend() && 1 != item.getIsSending()) {
+                        item.getIsFailedSend() && !item.getIsSending()) {
                     removeMessage(item);
                     listener.onRetrySendMessage(item);
                 }

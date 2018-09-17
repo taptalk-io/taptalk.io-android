@@ -32,4 +32,7 @@
     <string name="over_99">99+</string>
     <string name="cant_find_person">Can’t find who you are looking for?</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
