@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.View.Activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
@@ -14,6 +15,7 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.ViewModel.NewContactViewModel;
 
 public class NewContactActivity extends BaseActivity {
 
@@ -35,11 +37,14 @@ public class NewContactActivity extends BaseActivity {
     TextView tvUserName;
     LinearLayout llEmpty;
 
+    NewContactViewModel newContactVM;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_contact);
 
+        initViewModel();
         initView();
         setupDummyData();
     }
@@ -129,6 +134,10 @@ public class NewContactActivity extends BaseActivity {
             cvUserCard.setVisibility(View.GONE);
             llEmpty.setVisibility(View.GONE);
         });
+    }
+
+    private void initViewModel() {
+        newContactVM = ViewModelProviders.of(this).get(NewContactViewModel.class);
     }
 
     // TODO: 17/09/18 must be deleted if the real data comes
