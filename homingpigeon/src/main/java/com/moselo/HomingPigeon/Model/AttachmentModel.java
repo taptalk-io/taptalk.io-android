@@ -1,0 +1,78 @@
+package com.moselo.HomingPigeon.Model;
+
+import com.moselo.HomingPigeon.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class AttachmentModel {
+    private int icon;
+    private int titleIds;
+    private int id;
+
+    public AttachmentModel(int icon, int titleIds, int id) {
+        this.icon = icon;
+        this.titleIds = titleIds;
+        this.id = id;
+    }
+
+    public int getIcon() {
+        return icon;
+    }
+
+    public void setIcon(int icon) {
+        this.icon = icon;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getTitleIds() {
+        return titleIds;
+    }
+
+    public void setTitleIds(int titleIds) {
+        this.titleIds = titleIds;
+    }
+
+    public static List<AttachmentModel> createAttachMenu() {
+        int[] imageResIds = {
+                R.drawable.ic_documents_green_blue,
+                R.drawable.ic_camera_green_blue,
+                R.drawable.ic_gallery_green_blue,
+                R.drawable.ic_audio_green_blue,
+                R.drawable.ic_location_green_blue,
+                R.drawable.ic_contact_green_blue
+        };
+
+        int[] titleResIds = {
+                R.string.document,
+                R.string.camera,
+                R.string.gallery,
+                R.string.audio,
+                R.string.location,
+                R.string.contact
+        };
+
+        int[] ids = {
+                R.id.bt_document,
+                R.id.bt_camera,
+                R.id.bt_gallery,
+                R.id.bt_audio,
+                R.id.bt_location,
+                R.id.bt_contact
+        };
+
+        List<AttachmentModel> attachMenus = new ArrayList<>();
+        for (int index = 0; index < 6; index++) {
+            attachMenus.add(new AttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+
+        return attachMenus;
+    }
+}

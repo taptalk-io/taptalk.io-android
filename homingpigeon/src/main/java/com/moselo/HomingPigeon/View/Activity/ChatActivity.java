@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.View.BottomSheet.AttachmentBottomSheet;
 import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
@@ -100,6 +101,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             ivToBottom.setVisibility(View.INVISIBLE);
             tvBadgeUnread.setVisibility(View.INVISIBLE);
             vm.setUnreadCount(0);
+        } else if (viewId == R.id.iv_avatar) {
+            openAttachMenu();
         }
     }
 
@@ -226,7 +229,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
         ivSend.setOnClickListener(this);
         ivToBottom.setOnClickListener(this);
-
+        ivAvatar.setOnClickListener(this);
     }
 
     private void initHelper() {
@@ -296,5 +299,10 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         super.onBackPressed();
         ChatManager.getInstance().saveUnsentMessage();
         ChatManager.getInstance().deleteActiveRoom();
+    }
+
+    private void openAttachMenu() {
+        AttachmentBottomSheet attachBottomSheet = new AttachmentBottomSheet();
+        attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 }
