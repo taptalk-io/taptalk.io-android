@@ -76,19 +76,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_label_results"
-                android:layout_width="match_parent"
-                android:layout_height="34dp"
-                android:fontFamily="@font/latobold"
-                android:gravity="start|center_vertical"
-                android:letterSpacing="0.09"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:text="Search Results"
-                android:textAllCaps="true"
-                android:textColor="@color/mediumPurple"
-                android:textSize="11sp" />
+            <!--<TextView-->
+                <!--android:id="@+id/tv_label_results"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="34dp"-->
+                <!--android:fontFamily="@font/latobold"-->
+                <!--android:gravity="start|center_vertical"-->
+                <!--android:letterSpacing="0.09"-->
+                <!--android:paddingEnd="16dp"-->
+                <!--android:paddingStart="16dp"-->
+                <!--android:text="Search Results"-->
+                <!--android:textAllCaps="true"-->
+                <!--android:textColor="@color/mediumPurple"-->
+                <!--android:textSize="11sp" />-->
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_search_results"
