@@ -44,5 +44,7 @@
     <string name="location">Location</string>
     <string name="contact">Contact</string>
     <string name="search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
+    <string name="add_to_contacts">Add to Contacts</string>
+    <string name="chat_now">Chat Now</string>
 
 </resources>
