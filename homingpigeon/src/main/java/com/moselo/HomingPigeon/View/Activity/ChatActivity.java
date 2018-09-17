@@ -178,7 +178,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         ivAvatar.setBackgroundTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
         tvUsername.setText(getIntent().getStringExtra(K_THEIR_USERNAME));
         tvUserStatus.setText("User Status");
-        tvLastMessageTime.setVisibility(View.GONE);
 
         adapter = new MessageAdapter(this, this);
         adapter.setMessages(vm.getMessageModels());
