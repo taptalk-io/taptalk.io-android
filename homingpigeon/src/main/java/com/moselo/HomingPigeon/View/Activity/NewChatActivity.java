@@ -12,8 +12,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -31,6 +33,7 @@ public class NewChatActivity extends AppCompatActivity {
     ImageView ivButtonBack, ivButtonSearch;
     TextView tvTitle;
     RecyclerView rvContactList;
+    ScrollView svNewChat;
 
     ContactInitialAdapter adapter;
     ContactListViewModel vm;
@@ -76,6 +79,9 @@ public class NewChatActivity extends AppCompatActivity {
         ivButtonSearch = findViewById(R.id.iv_button_search);
         tvTitle = findViewById(R.id.tv_title);
         rvContactList = findViewById(R.id.rv_contact_list);
+        svNewChat = findViewById(R.id.sv_new_chat);
+
+        OverScrollDecoratorHelper.setUpOverScroll(svNewChat);
 
         // Separate contact list by initial
         List<List<UserModel>> contactList = new ArrayList<>();

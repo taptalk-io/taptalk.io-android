@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.Helper.OverScrolled;
+package com.moselo.HomingPigeon.Helper.OverScrolled.Adapter;
 
 import android.graphics.Canvas;
 import android.support.v7.widget.LinearLayoutManager;
@@ -6,6 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+
+import com.moselo.HomingPigeon.Helper.OverScrolled.IOverScrollDecoratorAdapter;
 
 import java.util.List;
 
