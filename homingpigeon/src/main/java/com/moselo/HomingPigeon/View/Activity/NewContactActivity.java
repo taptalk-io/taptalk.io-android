@@ -47,6 +47,7 @@ public class NewContactActivity extends BaseActivity {
         initViewModel();
         initView();
         setupDummyData();
+        Utils.showKeyboard(this, etSearch);
     }
 
     private void initView() {

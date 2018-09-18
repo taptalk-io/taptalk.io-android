@@ -130,6 +130,9 @@ public class Utils {
         return randomColors[index];
     }
 
+    /**
+     * dismiss Keyboard
+     */
     public void dismissKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
@@ -138,5 +141,14 @@ public class Utils {
         }
         Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
         view.clearFocus();
+    }
+
+    /**
+     * Show Keyboard
+     */
+    public static void showKeyboard(Activity activity, View view) {
+        view.requestFocus();
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 }

@@ -31,7 +31,7 @@
     <!--Guides-->
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
     <string name="scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
-    
+
     <!--Attachment-->
     <string name="document">Document</string>
     <string name="camera">Camera</string>

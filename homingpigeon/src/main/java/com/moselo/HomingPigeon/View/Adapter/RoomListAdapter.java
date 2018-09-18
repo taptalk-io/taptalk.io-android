@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
+import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
@@ -165,6 +166,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     String myUserID = myUser.getUserID();
 
                     if (!(myUserID+"-"+myUserID).equals(item.getRoom().getRoomID())) {
+                        ChatManager.getInstance().saveUnsentMessage();
                         Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                         intent.putExtra(K_MY_USERNAME, myUsername);
                         intent.putExtra(K_THEIR_USERNAME, userModel.getName());
