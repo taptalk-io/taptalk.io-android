@@ -7,9 +7,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.RecyclerView;
 import android.view.HapticFeedbackConstants;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,9 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.BaseViewHolder;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
+import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
@@ -27,23 +27,21 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.ChatActivity;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
-import java.util.List;
-
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
-public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomListHolder> {
+public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
 
-    //    private List<MessageModel> roomList;
     private RoomListViewModel vm;
     private RoomListListener roomListListener;
     private ColorStateList avatarTint;
     private String myUsername;
 
-    public RoomListAdapter(/*List<MessageModel> roomList*/RoomListViewModel vm, String myUsername, RoomListListener roomListListener) {
+    public RoomListAdapter(RoomListViewModel vm, String myUsername, RoomListListener roomListListener) {
+        setItems(vm.getRoomList(), false);
         this.vm = vm;
         this.myUsername = myUsername;
         this.roomListListener = roomListListener;
@@ -51,39 +49,24 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
 
     @NonNull
     @Override
-    public RoomListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new RoomListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_user_room, parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull RoomListHolder holder, int position) {
-        holder.onBind(position);
+    public BaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new RoomListVH(parent, R.layout.cell_user_room);
     }
 
     @Override
     public int getItemCount() {
-        if (null != vm.getRoomList()) return vm.getRoomList().size();
-        return 0;
+        return super.getItemCount();
     }
 
-    public List<MessageModel> getItems() {
-        return vm.getRoomList();
-    }
-
-    public MessageModel getItemAt(int position) {
-        return vm.getRoomList().get(position);
-    }
-
-    class RoomListHolder extends RecyclerView.ViewHolder {
+    public class RoomListVH extends BaseViewHolder<MessageModel> {
 
         private ConstraintLayout clContainer;
         private ImageView ivAvatar, ivAvatarIcon, ivMute, ivMessageStatus;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
         private MessageModel item;
 
-        RoomListHolder(View itemView) {
-            super(itemView);
-
+        protected RoomListVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
             clContainer = itemView.findViewById(R.id.cl_container);
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
@@ -95,9 +78,8 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
         }
 
-        void onBind(int position) {
-            item = getItemAt(position);
-//            final UserModel userModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},item.getUser());
+        @Override
+        protected void onBind(MessageModel item, int position) {
             final UserModel userModel = item.getUser();
             final int randomColor = Utils.getInstance().getRandomColor(userModel.getName());
 
@@ -165,6 +147,7 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
                     String myUserID = myUser.getUserID();
 
                     if (!(myUserID+"-"+myUserID).equals(item.getRoom().getRoomID())) {
+                        ChatManager.getInstance().saveUnsentMessage();
                         Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                         intent.putExtra(K_MY_USERNAME, myUsername);
                         intent.putExtra(K_THEIR_USERNAME, userModel.getName());

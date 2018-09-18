@@ -28,12 +28,12 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
     public static final int SELECTED_MEMBER = 3;
 
     public ContactListAdapter(int viewType, List<UserModel> contactList) {
-        setItems(contactList);
+        setItems(contactList, false);
         this.viewType = viewType;
     }
 
     public ContactListAdapter(int viewType, List<UserModel> contactList, @Nullable ContactListListener listener) {
-        setItems(contactList);
+        setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
     }

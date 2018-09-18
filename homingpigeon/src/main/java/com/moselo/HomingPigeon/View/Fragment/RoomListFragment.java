@@ -36,7 +36,6 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.BarcodeScannerActivity;
 import com.moselo.HomingPigeon.View.Activity.NewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
@@ -44,7 +43,6 @@ import com.moselo.HomingPigeon.View.Helper.Const;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
 import java.util.Map;
-import java.util.Objects;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 

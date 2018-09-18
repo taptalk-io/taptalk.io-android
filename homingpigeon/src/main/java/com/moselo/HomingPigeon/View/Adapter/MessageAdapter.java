@@ -5,14 +5,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.BaseViewHolder;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -20,7 +19,6 @@ import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
@@ -28,71 +26,54 @@ import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_BUBBLE_LEFT;
 import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_BUBBLE_RIGHT;
 import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_LOG;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder> {
+public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
 
     private HomingPigeonChatListener listener;
-    private List<MessageModel> chatMessages;
-    private int[] randomColors;
     private UserModel myUserModel;
 
     public MessageAdapter(Context context, HomingPigeonChatListener listener) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        chatMessages = new ArrayList<>();
         myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},prefs.getString(K_USER,"{}"));
         this.listener = listener;
     }
 
+    @NonNull
     @Override
-    public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        int layout = -1;
-        switch (viewType) {
-            case TYPE_LOG:
-                layout = R.layout.cell_chat_log;
-                break;
-            case TYPE_BUBBLE_LEFT:
-                layout = R.layout.cell_chat_left;
-                break;
+    public BaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (viewType){
             case TYPE_BUBBLE_RIGHT:
-                layout = R.layout.cell_chat_right;
-                break;
+                return new MessageHolder(parent, R.layout.cell_chat_right);
+            case TYPE_BUBBLE_LEFT:
+                return new MessageHolder(parent, R.layout.cell_chat_left);
+            default:
+                return new MessageHolder(parent, R.layout.cell_chat_log);
         }
-        View v = LayoutInflater
-                .from(parent.getContext())
-                .inflate(layout, parent, false);
-        return new MessageHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MessageHolder messageHolder, int position) {
-        messageHolder.onBind(position);
     }
 
     @Override
     public int getItemCount() {
-        return null != chatMessages ? chatMessages.size() : 0;
+        return super.getItemCount();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (null != chatMessages) {
-            if (myUserModel.getUserID().equals(chatMessages.get(position).getUser().getUserID()))
+        if (null != getItems()) {
+            if (myUserModel.getUserID().equals(getItems().get(position).getUser().getUserID()))
                 return TYPE_BUBBLE_RIGHT;
             else
                 return TYPE_BUBBLE_LEFT;
-        }
-        else {
-            return TYPE_LOG;
-        }
+        }else return TYPE_LOG;
     }
 
-    public class MessageHolder extends RecyclerView.ViewHolder {
+    public class MessageHolder extends BaseViewHolder<MessageModel> {
+
         private ConstraintLayout clBubble;
         private LinearLayout llMessageStatus;
         private TextView tvUsername, tvMessage, tvTimestamp, tvStatus, tvDash;
         private MessageModel item;
 
-        MessageHolder(View itemView) {
-            super(itemView);
+        protected MessageHolder(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
             llMessageStatus = itemView.findViewById(R.id.ll_message_status);
@@ -103,9 +84,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             tvDash = itemView.findViewById(R.id.tv_label_dash);
         }
 
-        void onBind(final int position) {
-            item = getItemAt(position);
-            randomColors = itemView.getContext().getResources().getIntArray(R.array.pastel_colors);
+        @Override
+        protected void onBind(MessageModel item, int position) {
+//            item = getItemAt(position);
+
             if (getItemViewType() == TYPE_BUBBLE_LEFT) {
                 tvUsername.setText(item.getUser().getName());
 //                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
@@ -165,45 +147,28 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
     }
 
     public void setMessages(List<MessageModel> messages) {
-        chatMessages = messages;
-        notifyItemRangeChanged(0, getItemCount());
+        setItems(messages, true);
     }
 
     public void addMessage(MessageModel message) {
-        chatMessages.add(0, message);
-        notifyItemInserted(0);
+        addItem(0, message);
     }
 
     public void addMessage(List<MessageModel> messages) {
-        int lastIndex = getItemCount();
-        chatMessages.addAll(messages);
-        notifyItemInserted(lastIndex);
+        addItem(messages, true);
     }
 
     public void setMessageAt(int position, MessageModel message) {
-        chatMessages.set(position, message);
+        setItemAt(position, message);
         notifyItemChanged(position);
     }
 
 
     public void removeMessageAt(int position) {
-        chatMessages.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(0, position+1);
+        removeItemAt(position);
     }
 
     public void removeMessage(MessageModel message) {
-        int position = getItems().indexOf(message);
-        chatMessages.remove(position);
-        notifyItemRemoved(position);
-        //notifyItemRangeChanged(0, position);
-    }
-
-    public List<MessageModel> getItems() {
-        return chatMessages;
-    }
-
-    public MessageModel getItemAt(int position) {
-        return chatMessages.get(position);
+        removeItem(message);
     }
 }

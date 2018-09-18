@@ -33,9 +33,10 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder<T>> extends
         items.set(index, t);
     }
 
-    final public void setItems(List<T> items) {
+    final public void setItems(List<T> items, boolean notifyRangeChange) {
         this.items = items;
-        notifyDataSetChanged();
+        if (notifyRangeChange) notifyItemRangeChanged(0, getItemCount());
+        else notifyDataSetChanged();
     }
 
     final public void updateItem(T item, int index) {
@@ -55,6 +56,11 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder<T>> extends
     final public void addItem(T item) {
         this.items.add(item);
         notifyItemInserted(this.items.size() - 1);
+    }
+
+    final public void addItem(int index, T item) {
+        this.items.add(index, item);
+        notifyItemInserted(0);
     }
 
     final public void addItem(List<T> items, boolean isNotify) {
@@ -84,6 +90,11 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder<T>> extends
         int position = items.indexOf(item);
         this.items.remove(item);
         notifyItemRemoved(position);
+    }
+
+    final public void removeItemAt(int index) {
+        this.items.remove(index);
+        notifyItemRemoved(index);
     }
 
     final public void removeItem(List<T> items) {
