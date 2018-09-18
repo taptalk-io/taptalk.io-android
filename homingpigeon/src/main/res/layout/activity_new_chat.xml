@@ -10,19 +10,17 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/iv_button_back"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
+            android:padding="16dp"
             android:src="@drawable/ic_back_white"
             android:tint="@color/greenBlue"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,12 +47,10 @@
 
         <ImageView
             android:id="@+id/iv_button_search"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="12dp"
+            android:padding="16dp"
             android:src="@drawable/ic_search_grey"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,11 +59,11 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <ScrollView
-        android:id="@+id/sv_new_chat"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsv_new_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="?attr/actionBarSize"
         android:overScrollMode="never">
 
         <LinearLayout
@@ -206,6 +202,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </FrameLayout>

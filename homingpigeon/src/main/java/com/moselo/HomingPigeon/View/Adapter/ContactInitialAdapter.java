@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.Listener.ContactListListener;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
@@ -16,9 +17,18 @@ import java.util.List;
 public class ContactInitialAdapter extends RecyclerView.Adapter<ContactInitialAdapter.ContactListHolder> {
 
     private List<List<UserModel>> contactList;
+    private ContactListListener listener;
+    private int viewType;
 
-    public ContactInitialAdapter(List<List<UserModel>> contactList) {
+    public ContactInitialAdapter(int viewType, List<List<UserModel>> contactList) {
+        this.viewType = viewType;
         this.contactList = contactList;
+    }
+
+    public ContactInitialAdapter(int viewType, List<List<UserModel>> contactList, ContactListListener listener) {
+        this.viewType = viewType;
+        this.contactList = contactList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -65,7 +75,7 @@ public class ContactInitialAdapter extends RecyclerView.Adapter<ContactInitialAd
 
             tvInitial.setText(String.valueOf(item.get(0).getName().charAt(0)));
 
-            adapter = new ContactListAdapter(getItemAt(position));
+            adapter = new ContactListAdapter(viewType, getItemAt(position), listener);
             rvContactInitial.setAdapter(adapter);
             rvContactInitial.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.VERTICAL, false));
             rvContactInitial.setHasFixedSize(false);

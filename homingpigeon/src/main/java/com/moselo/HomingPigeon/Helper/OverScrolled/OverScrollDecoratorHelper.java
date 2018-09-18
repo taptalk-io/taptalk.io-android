@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.Helper.OverScrolled;
 
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ScrollView;
 
@@ -22,8 +23,8 @@ public class OverScrollDecoratorHelper {
         }
     }
 
-    public static IOverScrollDecor setUpOverScroll(ScrollView scrollView) {
-        return new VerticalOverScrollBounceEffectDecorator(new ScrollViewOverScrollDecorAdapter(scrollView));
+    public static IOverScrollDecor setUpOverScroll(NestedScrollView nestedScrollView) {
+        return new VerticalOverScrollBounceEffectDecorator(new ScrollViewOverScrollDecorAdapter(nestedScrollView));
     }
 
 }

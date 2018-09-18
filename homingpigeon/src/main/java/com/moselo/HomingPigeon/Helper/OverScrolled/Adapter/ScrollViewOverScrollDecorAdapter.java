@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.Helper.OverScrolled.Adapter;
 
+import android.support.v4.widget.NestedScrollView;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -7,9 +8,9 @@ import com.moselo.HomingPigeon.Helper.OverScrolled.IOverScrollDecoratorAdapter;
 
 public class ScrollViewOverScrollDecorAdapter implements IOverScrollDecoratorAdapter {
 
-    protected final ScrollView mView;
+    protected final NestedScrollView mView;
 
-    public ScrollViewOverScrollDecorAdapter(ScrollView view) {
+    public ScrollViewOverScrollDecorAdapter(NestedScrollView view) {
         mView = view;
     }
 

@@ -1,109 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.Fragment.BarcodeScannerFragment"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    tools:context=".View.Fragment.BarcodeScannerFragment">
 
     <SurfaceView
         android:id="@+id/sv_scanner"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_scan_area"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_scan_area_white"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="34dp"
-        />
+        android:src="@drawable/ic_scan_area_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/bg_top"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/transparent_charcoal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/iv_scan_area"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/bg_bottom"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/transparent_charcoal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_scan_area"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_scan_area" />
 
     <View
         android:id="@+id/bg_start"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/transparent_charcoal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/iv_scan_area"
-        app:layout_constraintTop_toBottomOf="@id/bg_top"
         app:layout_constraintBottom_toTopOf="@id/bg_bottom"
-        />
+        app:layout_constraintEnd_toStartOf="@id/iv_scan_area"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bg_top" />
 
     <View
         android:id="@+id/bg_end"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/transparent_charcoal"
-        app:layout_constraintStart_toEndOf="@id/iv_scan_area"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bg_top"
         app:layout_constraintBottom_toTopOf="@id/bg_bottom"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_scan_area"
+        app:layout_constraintTop_toBottomOf="@id/bg_top" />
 
     <TextView
         android:id="@+id/tv_show_qr_code"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
-        android:textColor="#ffffff"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="99dp"
+        android:fontFamily="@font/latoregular"
+        android:gravity="center_horizontal"
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="4sp"
-        android:gravity="center_horizontal"
         android:text="Show your QR code by tapping the button below"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@id/btn_show_qr_code"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginEnd="14dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="99dp"
-        />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_show_qr_code"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_aquamarine_tealish_radial_stroke_greenblue_1dp_rounded_6dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="@string/show_qr_code"
-        android:textColor="@color/white"
-        android:textAllCaps="false"
-        android:textSize="17sp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/bg_aquamarine_tealish_radial_stroke_greenblue_1dp_rounded_6dp"
+        android:fontFamily="@font/latobold"
         android:letterSpacing="-0.01"
-        />
+        android:text="@string/show_qr_code"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

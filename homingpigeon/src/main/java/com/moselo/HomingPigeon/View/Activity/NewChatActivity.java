@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +21,7 @@ import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.ContactInitialAdapter;
+import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class NewChatActivity extends AppCompatActivity {
     ImageView ivButtonBack, ivButtonSearch;
     TextView tvTitle;
     RecyclerView rvContactList;
-    ScrollView svNewChat;
+    NestedScrollView nsvNewChat;
 
     ContactInitialAdapter adapter;
     ContactListViewModel vm;
@@ -60,12 +62,16 @@ public class NewChatActivity extends AppCompatActivity {
             UserModel u3 = new UserModel("u3", "Bambang 3");
             UserModel u4 = new UserModel("u4", "Caca");
             UserModel u5 = new UserModel("u5", "Coco");
+            UserModel u6 = new UserModel("u6", "123asd");
+            UserModel u7 = new UserModel("u7", "!!!11111!!!");
             vm.getContactList().add(u0);
             vm.getContactList().add(u1);
             vm.getContactList().add(u2);
             vm.getContactList().add(u3);
             vm.getContactList().add(u4);
             vm.getContactList().add(u5);
+            vm.getContactList().add(u6);
+            vm.getContactList().add(u7);
         }
         //End Dummy
 
@@ -79,12 +85,11 @@ public class NewChatActivity extends AppCompatActivity {
         ivButtonSearch = findViewById(R.id.iv_button_search);
         tvTitle = findViewById(R.id.tv_title);
         rvContactList = findViewById(R.id.rv_contact_list);
-        svNewChat = findViewById(R.id.sv_new_chat);
+        nsvNewChat = findViewById(R.id.nsv_new_chat);
 
-        OverScrollDecoratorHelper.setUpOverScroll(svNewChat);
+        OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
 
         // Separate contact list by initial
-        List<List<UserModel>> contactList = new ArrayList<>();
         int previousInitialIndexStart = 0;
         int size = vm.getContactList().size();
         for (int i = 1; i <= size; i++) {
@@ -92,12 +97,12 @@ public class NewChatActivity extends AppCompatActivity {
                     vm.getContactList().get(i).getName().charAt(0) !=
                             vm.getContactList().get(i - 1).getName().charAt(0)) {
                 List<UserModel> contactSubList = vm.getContactList().subList(previousInitialIndexStart, i);
-                contactList.add(contactSubList);
+                vm.getSeparatedContacts().add(contactSubList);
                 previousInitialIndexStart = i;
             }
         }
 
-        adapter = new ContactInitialAdapter(contactList);
+        adapter = new ContactInitialAdapter(ContactListAdapter.CHAT, vm.getSeparatedContacts());
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
@@ -113,16 +118,16 @@ public class NewChatActivity extends AppCompatActivity {
             openNewUsername();
         });
 
-        llButtonScanQR.setOnClickListener(v -> {
-            openQRScanner();
-        });
+        llButtonScanQR.setOnClickListener(v -> openQRScanner());
 
         llButtonNewGroup.setOnClickListener(v -> {
-
+            Intent intent = new Intent(this, CreateNewGroupActivity.class);
+            startActivity(intent);
         });
 
         llBlockedContacts.setOnClickListener(v -> {
-
+            Intent intent = new Intent(this, BlockedListActivity.class);
+            startActivity(intent);
         });
     }
 

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_f3"
-    tools:context=".View.Activity.SearchContactActivity">
+    android:animateLayoutChanges="true"
+    android:background="@color/white_f8"
+    tools:context=".View.Activity.CreateNewGroupActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
@@ -66,71 +67,61 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_height="0dp"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintBottom_toTopOf="@id/ll_group_members"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 
-        <LinearLayout
+    <LinearLayout
+        android:id="@+id/ll_group_members"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/grey_d9" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/latobold"
+            android:letterSpacing="0.09"
+            android:textColor="@color/mediumPurple"
+            android:textSize="11sp"
+            tools:text="Group Members (5/50)" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_group_members"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="10dp" />
 
-            <!--<TextView-->
-                <!--android:id="@+id/tv_label_results"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="34dp"-->
-                <!--android:fontFamily="@font/latobold"-->
-                <!--android:gravity="start|center_vertical"-->
-                <!--android:letterSpacing="0.09"-->
-                <!--android:paddingEnd="16dp"-->
-                <!--android:paddingStart="16dp"-->
-                <!--android:text="Search Results"-->
-                <!--android:textAllCaps="true"-->
-                <!--android:textColor="@color/mediumPurple"-->
-                <!--android:textSize="11sp" />-->
+        <Button
+            android:id="@+id/btn_continue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_aquamarine_tealish_radial_stroke_greenblue_1dp_rounded_6dp"
+            android:fontFamily="@font/latobold"
+            android:letterSpacing="-0.01"
+            android:text="@string/continue_s"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_search_results"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:overScrollMode="never" />
+    </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/ll_add_new_contact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="14dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/neueeinstellungregular"
-                    android:gravity="center"
-                    android:text="@string/cant_find_person"
-                    android:textColor="@color/colorTextTitle"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/neueeinstellungbold"
-                    android:gravity="center"
-                    android:text="@string/add_new_contact"
-                    android:textColor="@color/greenBlue"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
-
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>

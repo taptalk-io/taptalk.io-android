@@ -22,6 +22,7 @@
         android:textSize="24dp"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_full_name"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="A" />
 

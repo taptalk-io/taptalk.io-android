@@ -55,7 +55,7 @@ public class SearchContactActivity extends AppCompatActivity {
             vm.getContactList().add(u3);
             vm.getContactList().add(u4);
             vm.getContactList().add(u5);
-            vm.getFilteredContacts().addAll(vm.getContactList());
+//            vm.getFilteredContacts().addAll(vm.getContactList());
         }
         //End Dummy
     }
@@ -71,7 +71,7 @@ public class SearchContactActivity extends AppCompatActivity {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new ContactListAdapter(vm.getFilteredContacts());
+        adapter = new ContactListAdapter(ContactListAdapter.CHAT, vm.getFilteredContacts());
         rvSearchResults.setAdapter(adapter);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -103,7 +103,7 @@ public class SearchContactActivity extends AppCompatActivity {
             vm.getFilteredContacts().clear();
             String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
             if (searchKeyword.isEmpty()) {
-                vm.getFilteredContacts().addAll(vm.getContactList());
+                vm.getFilteredContacts().clear();
             } else {
                 for (UserModel user : vm.getContactList()) {
                     if (user.getName().toLowerCase().contains(searchKeyword)) {

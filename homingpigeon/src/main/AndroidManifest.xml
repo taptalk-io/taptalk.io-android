@@ -17,7 +17,9 @@
         <activity android:name=".View.Activity.RoomListActivity" />
         <activity android:name=".View.Activity.NewChatActivity" />
         <activity android:name=".View.Activity.SearchContactActivity" />
-        <activity android:name=".View.Activity.NewContactActivity"></activity>
+        <activity android:name=".View.Activity.NewContactActivity" />
+        <activity android:name=".View.Activity.BlockedListActivity" />
+        <activity android:name=".View.Activity.CreateNewGroupActivity" />
     </application>
 
 </manifest>

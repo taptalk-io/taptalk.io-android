@@ -25,11 +25,12 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_aquamarine_tealish_radial_stroke_greenblue_1dp_rounded_6dp"
+        android:fontFamily="@font/latobold"
+        android:letterSpacing="-0.01"
         android:text="@string/scan_qr_code"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="17sp"
-        android:letterSpacing="-0.01"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -38,20 +39,19 @@
         android:id="@+id/tv_scan_qr_code"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
-        android:textColor="@color/grey_9b"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/latoregular"
+        android:gravity="center_horizontal"
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="4sp"
-        android:gravity="center_horizontal"
-        android:text="To scan other&apos;s QR code, please tap the
-button below"
+        android:text="@string/scan_qr_code_guide"
+        android:textColor="@color/grey_9b"
+        android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="14dp"
-        android:layout_marginStart="14dp"
-        />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>
