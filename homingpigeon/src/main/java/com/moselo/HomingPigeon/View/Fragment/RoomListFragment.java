@@ -320,7 +320,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser1 = new UserModel("1", "Ritchie Nathaniel");
         MessageModel roomDummy1 = new MessageModel(
-                "", "def456",
+                "", "a0123456789012345678901234567890",
                 "",
                 room1,
                 1,
@@ -330,7 +330,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser2 = new UserModel("2", "Dominic Vedericho");
         MessageModel roomDummy2 = new MessageModel(
-                "", "def456",
+                "", "b0123456789012345678901234567890",
                 "",
                 room2,
                 1,
@@ -340,7 +340,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser3 = new UserModel("3", "Rionaldo Aureri Linggautama");
         MessageModel roomDummy3 = new MessageModel(
-                "", "def456",
+                "", "c0123456789012345678901234567890",
                 "",
                 room3,
                 1,
@@ -350,7 +350,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser4 = new UserModel("4", "Kevin Reynaldo");
         MessageModel roomDummy4 = new MessageModel(
-                "", "def456",
+                "", "d0123456789012345678901234567890",
                 "",
                 room4,
                 1,
@@ -360,7 +360,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser5 = new UserModel("5", "Welly Kencana");
         MessageModel roomDummy5 = new MessageModel(
-                "", "def456",
+                "", "e0123456789012345678901234567890",
                 "",
                 room5,
                 1,
@@ -370,7 +370,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser6 = new UserModel("6", "Jony");
         MessageModel roomDummy6 = new MessageModel(
-                "", "def456",
+                "", "f0123456789012345678901234567890",
                 "",
                 room6,
                 1,
@@ -380,7 +380,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser7 = new UserModel("7", "Michael Tansy");
         MessageModel roomDummy7 = new MessageModel(
-                "", "def456",
+                "", "g0123456789012345678901234567890",
                 "",
                 room7,
                 1,
@@ -390,7 +390,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser8 = new UserModel("8", "Richard Fang");
         MessageModel roomDummy8 = new MessageModel(
-                "", "def456",
+                "", "h0123456789012345678901234567890",
                 "",
                 room8,
                 1,
@@ -400,7 +400,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser9 = new UserModel("9", "Erwin Andreas");
         MessageModel roomDummy9 = new MessageModel(
-                "", "def456",
+                "", "i0123456789012345678901234567890",
                 "",
                 room9,
                 1,
@@ -410,7 +410,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser10 = new UserModel("10", "Jefry Lorentono");
         MessageModel roomDummy10 = new MessageModel(
-                "", "def456",
+                "", "j0123456789012345678901234567890",
                 "",
                 room10,
                 1,
@@ -420,7 +420,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser11 = new UserModel("11", "Cundy Sunardy");
         MessageModel roomDummy11 = new MessageModel(
-                "", "def456",
+                "", "k0123456789012345678901234567890",
                 "",
                 room11,
                 1,
@@ -430,7 +430,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser12 = new UserModel("12", "Rizka Fatmawati");
         MessageModel roomDummy12 = new MessageModel(
-                "", "def456",
+                "", "l0123456789012345678901234567890",
                 "",
                 room12,
                 1,
@@ -440,7 +440,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser13 = new UserModel("13", "Test 1");
         MessageModel roomDummy13 = new MessageModel(
-                "", "def456",
+                "", "m0123456789012345678901234567890",
                 "",
                 room13,
                 1,
@@ -450,7 +450,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser14 = new UserModel("14", "Test 2");
         MessageModel roomDummy14 = new MessageModel(
-                "", "def456",
+                "", "n0123456789012345678901234567890",
                 "",
                 room14,
                 1,
@@ -460,7 +460,7 @@ public class RoomListFragment extends Fragment {
 
         UserModel dummyUser15 = new UserModel("15", "Test 3");
         MessageModel roomDummy15 = new MessageModel(
-                "", "def456",
+                "", "o0123456789012345678901234567890",
                 "",
                 room15,
                 1,
