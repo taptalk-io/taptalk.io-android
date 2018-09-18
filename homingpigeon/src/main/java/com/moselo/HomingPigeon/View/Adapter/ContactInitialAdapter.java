@@ -78,7 +78,9 @@ public class ContactInitialAdapter extends RecyclerView.Adapter<ContactInitialAd
         void onBind(int position) {
             item = getItemAt(position);
 
-            tvInitial.setText(String.valueOf(item.get(0).getName().charAt(0)));
+            char initial = item.get(0).getName().charAt(0);
+            if (!Character.isAlphabetic(initial)) initial = '#';
+            tvInitial.setText(String.valueOf(initial));
 
             adapter = new ContactListAdapter(viewType, getItemAt(position), listener);
             rvContactInitial.setAdapter(adapter);

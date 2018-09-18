@@ -116,6 +116,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             UserModel u5 = new UserModel("u5", "Coco");
             UserModel u6 = new UserModel("u6", "123asd");
             UserModel u7 = new UserModel("u7", "!!!11111!!!");
+            UserModel u8 = new UserModel("u8", "!!wkwkwk!!");
             vm.getContactList().add(u0);
             vm.getContactList().add(u1);
             vm.getContactList().add(u2);
@@ -124,6 +125,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             vm.getContactList().add(u5);
             vm.getContactList().add(u6);
             vm.getContactList().add(u7);
+            vm.getContactList().add(u8);
             vm.getFilteredContacts().addAll(vm.getContactList());
         }
         //End Dummy
