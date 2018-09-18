@@ -9,11 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.HorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -124,20 +126,13 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         rvContactList = findViewById(R.id.rv_contact_list);
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
-        // Separate contact list by initial
-        int previousInitialIndexStart = 0;
-        int size = vm.getFilteredContacts().size();
-        for (int i = 1; i <= size; i++) {
-            if (i == size ||
-                    vm.getFilteredContacts().get(i).getName().charAt(0) !=
-                            vm.getFilteredContacts().get(i - 1).getName().charAt(0)) {
-                List<UserModel> contactSubList = vm.getFilteredContacts().subList(previousInitialIndexStart, i);
-                vm.getSeparatedContacts().add(contactSubList);
-                previousInitialIndexStart = i;
-            }
-        }
+        vm.setSeparatedContacts(Utils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
 
-        etSearch.addTextChangedListener(searchTextWatcher);
+//        etSearch.addTextChangedListener(searchTextWatcher);
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
+            return true;
+        });
 
         contactListAdapter = new ContactInitialAdapter(ContactListAdapter.SELECT, vm.getSeparatedContacts(), listener);
         rvContactList.setAdapter(contactListAdapter);
@@ -148,10 +143,16 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         selectedMembersAdapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        //OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         updateSelectedMemberDecoration();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
+
+        ivButtonCancel.setOnClickListener(v -> {
+            etSearch.setText("");
+            etSearch.clearFocus();
+            Utils.getInstance().dismissKeyboard(this);
+        });
     }
 
     private void updateSelectedMemberDecoration() {
@@ -163,6 +164,25 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 0, 0));
     }
 
+    private void updateFilteredContacts(String searchKeyword) {
+        vm.getSeparatedContacts().clear();
+        vm.getFilteredContacts().clear();
+        //String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
+        if (searchKeyword.isEmpty()) {
+            vm.getFilteredContacts().addAll(vm.getContactList());
+        } else {
+            List<UserModel> filteredContacts = new ArrayList<>();
+            for (UserModel user : vm.getContactList()) {
+                if (user.getName().toLowerCase().contains(searchKeyword)) {
+                    filteredContacts.add(user);
+                }
+            }
+            vm.getFilteredContacts().addAll(filteredContacts);
+        }
+        vm.setSeparatedContacts(Utils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        contactListAdapter.setItems(vm.getSeparatedContacts());
+    }
+
     private TextWatcher searchTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -171,18 +191,9 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            vm.getFilteredContacts().clear();
-            String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
-            if (searchKeyword.isEmpty()) {
-                vm.setFilteredContacts(vm.getContactList());
-            } else {
-                for (UserModel user : vm.getContactList()) {
-                    if (user.getName().toLowerCase().contains(searchKeyword)) {
-                        vm.getFilteredContacts().add(user);
-                    }
-                }
-            }
-            contactListAdapter.notifyDataSetChanged();
+            etSearch.removeTextChangedListener(this);
+            updateFilteredContacts(s.toString().toLowerCase().trim());
+            etSearch.addTextChangedListener(this);
         }
 
         @Override

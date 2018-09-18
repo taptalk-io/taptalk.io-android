@@ -14,10 +14,13 @@ import android.view.inputmethod.InputMethodManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -138,5 +141,24 @@ public class Utils {
         }
         Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
         view.clearFocus();
+    }
+
+    /**
+     * separate contact list by initial
+     */
+    public List<List<UserModel>> separateContactsByInitial(List<UserModel> contacts) {
+        List<List<UserModel>> separatedContacts = new ArrayList<>();
+        int previousInitialIndexStart = 0;
+        int size = contacts.size();
+        for (int i = 1; i <= size; i++) {
+            if (i == size ||
+                    contacts.get(i).getName().charAt(0) !=
+                            contacts.get(i - 1).getName().charAt(0)) {
+                List<UserModel> contactSubList = contacts.subList(previousInitialIndexStart, i);
+                separatedContacts.add(contactSubList);
+                previousInitialIndexStart = i;
+            }
+        }
+        return separatedContacts;
     }
 }

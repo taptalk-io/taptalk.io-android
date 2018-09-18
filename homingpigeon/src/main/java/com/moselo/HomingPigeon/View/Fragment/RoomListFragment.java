@@ -254,6 +254,8 @@ public class RoomListFragment extends Fragment {
     }
 
     private void setStatusWaitingForNetwork() {
+        if (NetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.bg_status_offline);
             tvConnectionStatus.setText(R.string.waiting_for_network);
