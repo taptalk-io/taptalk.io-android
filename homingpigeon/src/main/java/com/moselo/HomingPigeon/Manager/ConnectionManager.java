@@ -94,7 +94,8 @@ public class ConnectionManager {
             public void onClose(int code, String reason, boolean remote) {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 Log.e(TAG, "onClose: " + reason);
-                if (null != socketListeners && !socketListeners.isEmpty()) {
+                Log.e(TAG, "onClose: " + (null != socketListeners && !socketListeners.isEmpty() && !ChatManager.getInstance().isFinishChatFlow()));
+                if (null != socketListeners && !socketListeners.isEmpty() && !ChatManager.getInstance().isFinishChatFlow()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketDisconnected();
                 }
@@ -104,7 +105,7 @@ public class ConnectionManager {
             public void onError(Exception ex) {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 Log.e(TAG, "onError: " + ex.getMessage());
-                if (null != socketListeners && !socketListeners.isEmpty()) {
+                if (null != socketListeners && !socketListeners.isEmpty() && !ChatManager.getInstance().isFinishChatFlow()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketError();
                 }
