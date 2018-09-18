@@ -31,7 +31,8 @@
     <!--Guides-->
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
     <string name="scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
-    
+    <string name="search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
+
     <!--Attachment-->
     <string name="document">Document</string>
     <string name="camera">Camera</string>
@@ -39,9 +40,6 @@
     <string name="audio">Audio</string>
     <string name="location">Location</string>
     <string name="contact">Contact</string>
-    <string name="search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
-    <string name="add_to_contacts">Add to Contacts</string>
-    <string name="chat_now">Chat Now</string>
 
     <!--General-->
     <string name="continue_s">Continue</string>
@@ -49,4 +47,7 @@
     <string name="no_chats">No Chats</string>
     <string name="over_99">99+</string>
     <string name="search">Search</string>
+    <string name="add_to_contacts">Add to Contacts</string>
+    <string name="chat_now">Chat Now</string>
+    <string name="group_member_count">Group Members (%d/50)</string>
 </resources>

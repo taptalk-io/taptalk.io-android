@@ -8,8 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +32,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
     LinearLayout llGroupMembers;
     ImageView ivButtonBack, ivButtonCancel;
+    TextView tvMemberCount;
     EditText etSearch;
     Button btnContinue;
     RecyclerView rvContactList, rvGroupMembers;
@@ -61,6 +60,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         listener = new ContactListListener() {
             @Override
             public void onContactSelected(UserModel contact, boolean isSelected) {
+                Utils.getInstance().dismissKeyboard(CreateNewGroupActivity.this);
                 if (isSelected) {
                     vm.getSelectedContacts().add(contact);
                     selectedMembersAdapter.notifyItemInserted(vm.getSelectedContacts().size());
@@ -76,10 +76,12 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
+                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size()));
             }
 
             @Override
             public void onContactRemoved(UserModel contact) {
+                Utils.getInstance().dismissKeyboard(CreateNewGroupActivity.this);
                 if (vm.getFilteredContacts().contains(contact)) {
                     int index = vm.getFilteredContacts().indexOf(contact);
                     vm.getFilteredContacts().get(index).setSelected(false);
@@ -91,6 +93,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
+                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size()));
             }
         };
     }
@@ -123,18 +126,13 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         llGroupMembers = findViewById(R.id.ll_group_members);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonCancel = findViewById(R.id.iv_button_cancel);
+        tvMemberCount = findViewById(R.id.tv_member_count);
         etSearch = findViewById(R.id.et_search);
         btnContinue = findViewById(R.id.btn_continue);
         rvContactList = findViewById(R.id.rv_contact_list);
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
         vm.setSeparatedContacts(Utils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
-
-        etSearch.addTextChangedListener(searchTextWatcher);
-        etSearch.setOnEditorActionListener((v, actionId, event) -> {
-            updateFilteredContacts(etSearch.getText().toString().toLowerCase());
-            return true;
-        });
 
         contactListAdapter = new ContactInitialAdapter(ContactListAdapter.SELECT, vm.getSeparatedContacts(), listener);
         rvContactList.setAdapter(contactListAdapter);
@@ -145,8 +143,14 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         selectedMembersAdapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         updateSelectedMemberDecoration();
+
+        etSearch.addTextChangedListener(searchTextWatcher);
+        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+            updateFilteredContacts(etSearch.getText().toString().toLowerCase());
+            return true;
+        });
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
 
@@ -154,6 +158,10 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             etSearch.setText("");
             etSearch.clearFocus();
             Utils.getInstance().dismissKeyboard(this);
+        });
+
+        btnContinue.setOnClickListener(v -> {
+
         });
     }
 

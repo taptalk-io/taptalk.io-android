@@ -19,7 +19,8 @@
         <activity android:name=".View.Activity.SearchContactActivity" />
         <activity android:name=".View.Activity.NewContactActivity" />
         <activity android:name=".View.Activity.BlockedListActivity" />
-        <activity android:name=".View.Activity.CreateNewGroupActivity" />
+        <activity android:name=".View.Activity.CreateNewGroupActivity"
+            android:windowSoftInputMode="adjustNothing"/>
     </application>
 
 </manifest>

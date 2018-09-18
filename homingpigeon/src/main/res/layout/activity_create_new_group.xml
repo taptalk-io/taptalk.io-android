@@ -93,12 +93,14 @@
             android:background="@color/grey_d9" />
 
         <TextView
+            android:id="@+id/tv_member_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/latobold"
             android:letterSpacing="0.09"
+            android:textAllCaps="true"
             android:textColor="@color/mediumPurple"
             android:textSize="11sp"
             tools:text="Group Members (5/50)" />
