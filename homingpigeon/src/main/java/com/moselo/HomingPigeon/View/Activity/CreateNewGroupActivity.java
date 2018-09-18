@@ -80,9 +80,11 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
             @Override
             public void onContactRemoved(UserModel contact) {
-                int index = vm.getFilteredContacts().indexOf(contact);
-                vm.getFilteredContacts().get(index).setSelected(false);
-                contactListAdapter.notifyItemRangeChanged(0, vm.getFilteredContacts().size() - 1);
+                if (vm.getFilteredContacts().contains(contact)) {
+                    int index = vm.getFilteredContacts().indexOf(contact);
+                    vm.getFilteredContacts().get(index).setSelected(false);
+                    contactListAdapter.notifyDataSetChanged();
+                }
                 if (vm.getSelectedContacts().size() > 0) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                     new Handler().postDelayed(() -> updateSelectedMemberDecoration(), 200L);
@@ -128,9 +130,9 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         vm.setSeparatedContacts(Utils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
 
-//        etSearch.addTextChangedListener(searchTextWatcher);
+        etSearch.addTextChangedListener(searchTextWatcher);
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
-            updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
+            updateFilteredContacts(etSearch.getText().toString().toLowerCase());
             return true;
         });
 
@@ -167,8 +169,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     private void updateFilteredContacts(String searchKeyword) {
         vm.getSeparatedContacts().clear();
         vm.getFilteredContacts().clear();
-        //String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
-        if (searchKeyword.isEmpty()) {
+        if (searchKeyword.trim().isEmpty()) {
             vm.getFilteredContacts().addAll(vm.getContactList());
         } else {
             List<UserModel> filteredContacts = new ArrayList<>();
@@ -192,7 +193,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             etSearch.removeTextChangedListener(this);
-            updateFilteredContacts(s.toString().toLowerCase().trim());
+            updateFilteredContacts(s.toString().toLowerCase());
             etSearch.addTextChangedListener(this);
         }
 
