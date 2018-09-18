@@ -16,17 +16,14 @@ public class ContactListViewModel extends AndroidViewModel {
     private List<UserModel> filteredContacts;
     private List<UserModel> selectedContacts;
     private List<List<UserModel>> separatedContacts;
+    private boolean isSelecting;
 
     public ContactListViewModel(@NonNull Application application) {
         super(application);
-        contactList = new ArrayList<>();
-        filteredContacts = new ArrayList<>();
-        selectedContacts = new ArrayList<>();
-        separatedContacts = new ArrayList<>();
     }
 
     public List<UserModel> getContactList() {
-        return contactList;
+        return contactList == null ? contactList = new ArrayList<>() : contactList;
     }
 
     public void setContactList(List<UserModel> contactList) {
@@ -34,7 +31,7 @@ public class ContactListViewModel extends AndroidViewModel {
     }
 
     public List<UserModel> getFilteredContacts() {
-        return filteredContacts;
+        return filteredContacts == null ? filteredContacts = new ArrayList<>() : filteredContacts;
     }
 
     public void setFilteredContacts(List<UserModel> filteredContacts) {
@@ -42,7 +39,7 @@ public class ContactListViewModel extends AndroidViewModel {
     }
 
     public List<UserModel> getSelectedContacts() {
-        return selectedContacts;
+        return selectedContacts == null ? selectedContacts = new ArrayList<>() : selectedContacts;
     }
 
     public void setSelectedContacts(List<UserModel> selectedContacts) {
@@ -50,10 +47,18 @@ public class ContactListViewModel extends AndroidViewModel {
     }
 
     public List<List<UserModel>> getSeparatedContacts() {
-        return separatedContacts;
+        return separatedContacts == null ? separatedContacts = new ArrayList<>() : separatedContacts;
     }
 
     public void setSeparatedContacts(List<List<UserModel>> separatedContacts) {
         this.separatedContacts = separatedContacts;
+    }
+
+    public boolean isSelecting() {
+        return isSelecting;
+    }
+
+    public void setSelecting(boolean selecting) {
+        isSelecting = selecting;
     }
 }

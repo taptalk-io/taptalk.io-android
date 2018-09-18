@@ -31,8 +31,8 @@ import java.util.List;
 public class CreateNewGroupActivity extends AppCompatActivity {
 
     LinearLayout llGroupMembers;
-    ImageView ivButtonBack, ivButtonCancel;
-    TextView tvMemberCount;
+    ImageView ivButtonBack, ivButtonAction;
+    TextView tvTitle, tvMemberCount;
     EditText etSearch;
     Button btnContinue;
     RecyclerView rvContactList, rvGroupMembers;
@@ -134,7 +134,9 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         llGroupMembers = findViewById(R.id.ll_group_members);
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivButtonCancel = findViewById(R.id.iv_button_cancel);
+        ivButtonAction = findViewById(R.id.iv_button_action);
+        tvTitle = findViewById(R.id.tv_title);
+        tvMemberCount = findViewById(R.id.tv_member_count);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etSearch = findViewById(R.id.et_search);
         btnContinue = findViewById(R.id.btn_continue);
@@ -163,15 +165,35 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
 
-        ivButtonCancel.setOnClickListener(v -> {
-            etSearch.setText("");
-            etSearch.clearFocus();
-            Utils.getInstance().dismissKeyboard(this);
+        ivButtonAction.setOnClickListener(v -> {
+            if (vm.isSelecting()) {
+                showToolbar();
+            } else {
+                showSearchBar();
+            }
         });
 
         btnContinue.setOnClickListener(v -> {
 
         });
+    }
+
+    private void showToolbar() {
+        vm.setSelecting(false);
+        tvTitle.setVisibility(View.VISIBLE);
+        etSearch.setVisibility(View.GONE);
+        etSearch.setText("");
+        etSearch.clearFocus();
+        ivButtonAction.setImageResource(R.drawable.ic_search_grey);
+        Utils.getInstance().dismissKeyboard(this);
+    }
+
+    private void showSearchBar() {
+        vm.setSelecting(true);
+        tvTitle.setVisibility(View.GONE);
+        etSearch.setVisibility(View.VISIBLE);
+        etSearch.requestFocus();
+        ivButtonAction.setImageResource(R.drawable.ic_close_grey);
     }
 
     private void updateSelectedMemberDecoration() {

@@ -19,16 +19,14 @@ public class RoomListViewModel extends AndroidViewModel {
 
     public RoomListViewModel(@NonNull Application application) {
         super(application);
-        roomList = new ArrayList<>();
-        selectedRooms = new LinkedHashMap<>();
     }
 
     public List<MessageModel> getRoomList() {
-        return roomList;
+        return roomList == null ? roomList = new ArrayList<>() : roomList;
     }
 
     public Map<String, MessageModel> getSelectedRooms() {
-        return selectedRooms;
+        return selectedRooms == null ? selectedRooms = new LinkedHashMap<>() : selectedRooms;
     }
 
     public void setSelectedRooms(Map<String, MessageModel> selectedRooms) {
