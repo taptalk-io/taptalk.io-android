@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
 import com.moselo.HomingPigeon.View.BottomSheet.AttachmentBottomSheet;
 import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
@@ -27,7 +28,6 @@ import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

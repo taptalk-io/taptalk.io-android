@@ -12,8 +12,7 @@ import android.view.ViewGroup;
  * @see {https://gist.github.com/aurae/ebf8ec212e4296aebb24}
  */
 public abstract class BaseViewHolder<T>
-        extends RecyclerView.ViewHolder
-        /*implements View.OnClickListener, View.OnLongClickListener*/ {
+        extends RecyclerView.ViewHolder {
     private T item;
     protected final int marginBottom;
     protected final int marginTop;
@@ -22,7 +21,6 @@ public abstract class BaseViewHolder<T>
         super(itemView);
         marginTop = ((ViewGroup.MarginLayoutParams) itemView.getLayoutParams()).topMargin;
         marginBottom = ((ViewGroup.MarginLayoutParams) itemView.getLayoutParams()).bottomMargin;
-//        setupItemView();
     }
 
     protected BaseViewHolder(ViewGroup parent, @LayoutRes int itemLayoutId) {
@@ -30,14 +28,7 @@ public abstract class BaseViewHolder<T>
                 .inflate(itemLayoutId, parent, false));
         marginTop = ((ViewGroup.MarginLayoutParams) itemView.getLayoutParams()).topMargin;
         marginBottom = ((ViewGroup.MarginLayoutParams) itemView.getLayoutParams()).bottomMargin;
-//        setupItemView();
     }
-
-//    private void setupItemView() {
-//        ButterKnife.bind(this, itemView);
-//        itemView.setOnClickListener(this);
-//        itemView.setOnLongClickListener(this);
-//    }
 
     public final void performBind(T item, int position) {
         this.item = item;
@@ -49,20 +40,6 @@ public abstract class BaseViewHolder<T>
     }
 
     protected abstract void onBind(T item, int position);
-
-//    protected abstract void onClick(View view, T item);
-//
-//    protected abstract boolean onLongClick(View view, T item);
-//
-//    @Override
-//    final public void onClick(View view) {
-//        onClick(view, item);
-//    }
-//
-//    @Override
-//    final public boolean onLongClick(View view) {
-//        return onLongClick(view, item);
-//    }
 
     public int getMarginBottom() {
         return marginBottom;
