@@ -60,10 +60,12 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 if (isSelected) {
                     vm.getSelectedContacts().add(contact);
                     selectedMembersAdapter.notifyItemInserted(vm.getSelectedContacts().size());
+                    updateSelectedMemberDecoration(0);
                 } else {
                     int index = vm.getSelectedContacts().indexOf(contact);
                     vm.getSelectedContacts().remove(contact);
                     selectedMembersAdapter.notifyItemRemoved(index);
+                    updateSelectedMemberDecoration(1);
                 }
                 if (vm.getSelectedContacts().size() > 0) {
                     llGroupMembers.setVisibility(View.VISIBLE);
@@ -79,6 +81,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 contactListAdapter.notifyItemRangeChanged(0, vm.getFilteredContacts().size() - 1);
                 if (vm.getSelectedContacts().size() > 0) {
                     llGroupMembers.setVisibility(View.VISIBLE);
+                    updateSelectedMemberDecoration(1);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
@@ -143,12 +146,19 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         selectedMembersAdapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rvGroupMembers.addItemDecoration(new HorizontalDecoration(0, 0,
-                0, Utils.getInstance().dpToPx(16), selectedMembersAdapter.getItemCount(),
-                0, 0));
         //OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        updateSelectedMemberDecoration(0);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
+    }
+
+    private void updateSelectedMemberDecoration(int itemRemoved) {
+        if (rvGroupMembers.getItemDecorationCount() > 0) {
+            rvGroupMembers.removeItemDecorationAt(0);
+        }
+        rvGroupMembers.addItemDecoration(new HorizontalDecoration(0, 0,
+                0, Utils.getInstance().dpToPx(16), selectedMembersAdapter.getItemCount() + itemRemoved,
+                0, 0));
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {
