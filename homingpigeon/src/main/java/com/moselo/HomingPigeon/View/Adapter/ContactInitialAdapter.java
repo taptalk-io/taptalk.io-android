@@ -56,6 +56,11 @@ public class ContactInitialAdapter extends RecyclerView.Adapter<ContactInitialAd
         return contactList.get(position);
     }
 
+    public void setItems(List<List<UserModel>> contactList) {
+        this.contactList = contactList;
+        notifyDataSetChanged();
+    }
+
     class ContactListHolder extends RecyclerView.ViewHolder {
 
         private RecyclerView rvContactInitial;

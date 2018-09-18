@@ -78,13 +78,13 @@ public class SearchContactActivity extends AppCompatActivity {
         ivButtonBack.setOnClickListener(v -> onBackPressed());
 
         ivButtonCancel.setOnClickListener(v -> {
-            if (etSearch.getText().toString().isEmpty()) {
-                onBackPressed();
-            } else {
+//            if (etSearch.getText().toString().isEmpty()) {
+//                onBackPressed();
+//            } else {
                 etSearch.setText("");
                 etSearch.clearFocus();
                 Utils.getInstance().dismissKeyboard(this);
-            }
+//            }
         });
 
         llAddNewContact.setOnClickListener(v -> {

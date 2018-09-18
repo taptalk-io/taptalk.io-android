@@ -89,18 +89,7 @@ public class NewChatActivity extends AppCompatActivity {
 
         OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
 
-        // Separate contact list by initial
-        int previousInitialIndexStart = 0;
-        int size = vm.getContactList().size();
-        for (int i = 1; i <= size; i++) {
-            if (i == size ||
-                    vm.getContactList().get(i).getName().charAt(0) !=
-                            vm.getContactList().get(i - 1).getName().charAt(0)) {
-                List<UserModel> contactSubList = vm.getContactList().subList(previousInitialIndexStart, i);
-                vm.getSeparatedContacts().add(contactSubList);
-                previousInitialIndexStart = i;
-            }
-        }
+        vm.setSeparatedContacts(Utils.getInstance().separateContactsByInitial(vm.getContactList()));
 
         adapter = new ContactInitialAdapter(ContactListAdapter.CHAT, vm.getSeparatedContacts());
         rvContactList.setAdapter(adapter);
