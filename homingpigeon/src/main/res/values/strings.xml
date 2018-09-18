@@ -49,5 +49,5 @@
     <string name="search">Search</string>
     <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
-    <string name="group_member_count">Group Members (%d/50)</string>
+    <string name="group_member_count">Group Members (%d/%d)</string>
 </resources>

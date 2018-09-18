@@ -20,7 +20,7 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
 
     private ContactListListener listener;
     private ColorStateList avatarTint;
-    private int viewType, initialPosition;
+    private int viewType;
 
     public static final int NONE = 0;
     public static final int CHAT = 1;
@@ -108,9 +108,10 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
                         // TODO: 17 September 2018 OPEN CHAT ROOM
                         break;
                     case SELECT:
-                        item.setSelected(!item.isSelected());
-                        listener.onContactSelected(item, item.isSelected());
-                        notifyItemChanged(position);
+                        if (listener.onContactSelected(item, !item.isSelected())) {
+                            item.setSelected(!item.isSelected());
+                            notifyItemChanged(position);
+                        }
                         break;
                 }
             });

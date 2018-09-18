@@ -42,6 +42,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     ContactListListener listener;
     ContactListViewModel vm;
 
+    private static final int GROUP_MEMBER_LIMIT = 50;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +61,13 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     private void initListener() {
         listener = new ContactListListener() {
             @Override
-            public void onContactSelected(UserModel contact, boolean isSelected) {
+            public boolean onContactSelected(UserModel contact, boolean isSelected) {
                 Utils.getInstance().dismissKeyboard(CreateNewGroupActivity.this);
                 if (isSelected) {
+                    if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
+                        // TODO: 18 September 2018 SHOW DIALOG
+                        return false;
+                    }
                     vm.getSelectedContacts().add(contact);
                     selectedMembersAdapter.notifyItemInserted(vm.getSelectedContacts().size());
                     updateSelectedMemberDecoration();
@@ -76,7 +82,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size()));
+                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                return true;
             }
 
             @Override
@@ -93,7 +100,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size()));
+                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
             }
         };
     }
