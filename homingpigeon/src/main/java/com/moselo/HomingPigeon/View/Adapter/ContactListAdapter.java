@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.View.Adapter;
 import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,12 +16,16 @@ import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<UserModel>> {
 
     private ContactListListener listener;
     private ColorStateList avatarTint;
-    private int viewType, initialPosition;
+    private String myID;
+    private int viewType;
+    private boolean isRemoving;
 
     public static final int NONE = 0;
     public static final int CHAT = 1;
@@ -36,6 +41,13 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
+    }
+
+    public ContactListAdapter(int viewType, List<UserModel> contactList, @Nullable ContactListListener listener, String myID) {
+        setItems(contactList, false);
+        this.viewType = viewType;
+        this.listener = listener;
+        this.myID = myID;
     }
 
     @NonNull
@@ -60,7 +72,7 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
         private TextView tvFullName;
         private View vSeparator;
 
-        public ContactListHolder(ViewGroup parent, int itemLayoutId) {
+        ContactListHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
@@ -108,9 +120,10 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
                         // TODO: 17 September 2018 OPEN CHAT ROOM
                         break;
                     case SELECT:
-                        item.setSelected(!item.isSelected());
-                        listener.onContactSelected(item, item.isSelected());
-                        notifyItemChanged(position);
+                        if (null != listener && listener.onContactSelected(item, !item.isSelected())) {
+                            item.setSelected(!item.isSelected());
+                            notifyItemChanged(position);
+                        }
                         break;
                 }
             });
@@ -119,13 +132,14 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
 
     class SelectedGroupMemberHolder extends BaseViewHolder<UserModel> {
 
-        private ImageView ivAvatar;
+        private ImageView ivAvatar, ivAvatarIcon;
         private TextView tvFullName;
 
-        protected SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
+        SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
         }
 
@@ -133,19 +147,51 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
         protected void onBind(UserModel item, int position) {
             final int randomColor = Utils.getInstance().getRandomColor(item.getName());
 
+            // TODO: 19 September 2018 CURRENTLY USING TIMER TO PREVENT DATA INCONSISTENCY WHEN RAPIDLY REMOVING ITEMS
+            isRemoving = true;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isRemoving = false;
+                }
+            }, 200L);
+
             // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
             avatarTint = ColorStateList.valueOf(randomColor);
             ivAvatar.setBackgroundTintList(avatarTint);
 
             // Set name
             String fullName = item.getName();
-            if (fullName.contains(" ")) {
+            if (item.getUserID().equals(myID)) {
+                tvFullName.setText(R.string.you);
+            } else if (fullName.contains(" ")) {
                 tvFullName.setText(fullName.substring(0, fullName.indexOf(' ')));
             } else tvFullName.setText(fullName);
 
+            // TODO: 19 September 2018 UPDATE EXPERT ICON
+            // Update avatar icon
+            if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("1")*/) {
+                ivAvatarIcon.setVisibility(View.GONE);
+            } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
+                ivAvatarIcon.setVisibility(View.VISIBLE);
+                ivAvatarIcon.setImageResource(R.drawable.ic_verified);
+            } else {
+                ivAvatarIcon.setVisibility(View.VISIBLE);
+                ivAvatarIcon.setImageResource(R.drawable.ic_close_red_circle);
+            }
+
             itemView.setOnClickListener(v -> {
-                removeItem(item);
-                listener.onContactRemoved(item);
+                if (null != listener && !item.getUserID().equals(myID) && !isRemoving) {
+                    isRemoving = true;
+                    removeItem(item);
+                    listener.onContactRemoved(item);
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            isRemoving = false;
+                        }
+                    }, 500L);
+                }
             });
         }
     }

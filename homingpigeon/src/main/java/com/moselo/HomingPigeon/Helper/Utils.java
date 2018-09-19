@@ -160,6 +160,7 @@ public class Utils {
      */
     public List<List<UserModel>> separateContactsByInitial(List<UserModel> contacts) {
         List<List<UserModel>> separatedContacts = new ArrayList<>();
+        List<UserModel> nonAlphabeticContacts = new ArrayList<>();
         int previousInitialIndexStart = 0;
         int size = contacts.size();
         for (int i = 1; i <= size; i++) {
@@ -167,10 +168,15 @@ public class Utils {
                     contacts.get(i).getName().charAt(0) !=
                             contacts.get(i - 1).getName().charAt(0)) {
                 List<UserModel> contactSubList = contacts.subList(previousInitialIndexStart, i);
-                separatedContacts.add(contactSubList);
+                if (Character.isAlphabetic(contactSubList.get(0).getName().charAt(0))) {
+                    separatedContacts.add(contactSubList);
+                } else {
+                    nonAlphabeticContacts.addAll(contactSubList);
+                }
                 previousInitialIndexStart = i;
             }
         }
+        if (!nonAlphabeticContacts.isEmpty()) separatedContacts.add(nonAlphabeticContacts);
         return separatedContacts;
     }
 }

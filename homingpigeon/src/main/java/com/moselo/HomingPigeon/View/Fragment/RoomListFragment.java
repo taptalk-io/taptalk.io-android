@@ -39,11 +39,11 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.NewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
-import com.moselo.HomingPigeon.View.Helper.Const;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
 import java.util.Map;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class RoomListFragment extends Fragment {
@@ -160,7 +160,7 @@ public class RoomListFragment extends Fragment {
 
         if (vm.isSelecting()) showSelectionActionBar();
 
-        adapter = new RoomListAdapter(vm, activity.getIntent().getStringExtra(Const.K_MY_USERNAME), roomListListener);
+        adapter = new RoomListAdapter(vm, activity.getIntent().getStringExtra(K_MY_USERNAME), roomListListener);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);

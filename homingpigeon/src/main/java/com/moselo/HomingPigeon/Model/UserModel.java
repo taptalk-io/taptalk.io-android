@@ -1,5 +1,7 @@
 package com.moselo.HomingPigeon.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -22,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "lastLogin"
 })
 
-public class UserModel {
+public class UserModel implements Parcelable {
 
     @JsonProperty("userID") @JsonAlias("id") private String userID;
     @JsonProperty("fullname") private String name;
@@ -195,4 +197,58 @@ public class UserModel {
     public void setSelected(boolean selected) {
         isSelected = selected;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.userID);
+        dest.writeString(this.name);
+        dest.writeParcelable(this.avatarURL, flags);
+        dest.writeString(this.username);
+        dest.writeString(this.email);
+        dest.writeString(this.phoneNumber);
+        dest.writeString(this.birthdate);
+        dest.writeString(this.gender);
+        dest.writeValue(this.isPermit);
+        dest.writeValue(this.isFriend);
+        dest.writeString(this.userRole);
+        dest.writeValue(this.lastLogin);
+        dest.writeValue(this.created);
+        dest.writeValue(this.updated);
+        dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
+    }
+
+    protected UserModel(Parcel in) {
+        this.userID = in.readString();
+        this.name = in.readString();
+        this.avatarURL = in.readParcelable(ImageURL.class.getClassLoader());
+        this.username = in.readString();
+        this.email = in.readString();
+        this.phoneNumber = in.readString();
+        this.birthdate = in.readString();
+        this.gender = in.readString();
+        this.isPermit = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isFriend = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.userRole = in.readString();
+        this.lastLogin = (Long) in.readValue(Long.class.getClassLoader());
+        this.created = (Long) in.readValue(Long.class.getClassLoader());
+        this.updated = (Long) in.readValue(Long.class.getClassLoader());
+        this.isSelected = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<UserModel> CREATOR = new Parcelable.Creator<UserModel>() {
+        @Override
+        public UserModel createFromParcel(Parcel source) {
+            return new UserModel(source);
+        }
+
+        @Override
+        public UserModel[] newArray(int size) {
+            return new UserModel[size];
+        }
+    };
 }

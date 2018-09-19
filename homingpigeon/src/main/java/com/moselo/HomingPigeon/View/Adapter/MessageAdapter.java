@@ -21,10 +21,10 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_LEFT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_RIGHT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_LOG;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_BUBBLE_LEFT;
-import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_BUBBLE_RIGHT;
-import static com.moselo.HomingPigeon.View.Helper.Const.TYPE_LOG;
 
 public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
 
@@ -33,14 +33,15 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
     public MessageAdapter(Context context, HomingPigeonChatListener listener) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {},prefs.getString(K_USER,"{}"));
+        myUserModel = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        }, prefs.getString(K_USER, "{}"));
         this.listener = listener;
     }
 
     @NonNull
     @Override
     public BaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (viewType){
+        switch (viewType) {
             case TYPE_BUBBLE_RIGHT:
                 return new MessageHolder(parent, R.layout.cell_chat_right);
             case TYPE_BUBBLE_LEFT:
@@ -62,7 +63,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 return TYPE_BUBBLE_RIGHT;
             else
                 return TYPE_BUBBLE_LEFT;
-        }else return TYPE_LOG;
+        } else return TYPE_LOG;
     }
 
     public class MessageHolder extends BaseViewHolder<MessageModel> {
@@ -91,8 +92,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             if (getItemViewType() == TYPE_BUBBLE_LEFT) {
                 tvUsername.setText(item.getUser().getName());
 //                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
-            }
-            else {
+            } else {
                 tvUsername.setVisibility(View.GONE);
             }
 
@@ -134,8 +134,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                         item.getFailedSend() && !item.getSending()) {
                     removeMessage(item);
                     listener.onRetrySendMessage(item);
-                }
-                else {
+                } else {
                     if (llMessageStatus.getVisibility() == View.GONE) {
                         llMessageStatus.setVisibility(View.VISIBLE);
                     } else {

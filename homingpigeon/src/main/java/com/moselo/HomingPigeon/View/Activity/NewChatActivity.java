@@ -13,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -24,10 +23,7 @@ import com.moselo.HomingPigeon.View.Adapter.ContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.CAMERA_PERMISSION;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
 public class NewChatActivity extends AppCompatActivity {
 
@@ -64,6 +60,7 @@ public class NewChatActivity extends AppCompatActivity {
             UserModel u5 = new UserModel("u5", "Coco");
             UserModel u6 = new UserModel("u6", "123asd");
             UserModel u7 = new UserModel("u7", "!!!11111!!!");
+            UserModel u8 = new UserModel("u8", "!!wkwkwk!!");
             vm.getContactList().add(u0);
             vm.getContactList().add(u1);
             vm.getContactList().add(u2);
@@ -72,6 +69,7 @@ public class NewChatActivity extends AppCompatActivity {
             vm.getContactList().add(u5);
             vm.getContactList().add(u6);
             vm.getContactList().add(u7);
+            vm.getContactList().add(u8);
         }
         //End Dummy
 
@@ -125,7 +123,7 @@ public class NewChatActivity extends AppCompatActivity {
             Intent intent = new Intent(NewChatActivity.this, BarcodeScannerActivity.class);
             startActivity(intent);
         } else {
-            ActivityCompat.requestPermissions(NewChatActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+            ActivityCompat.requestPermissions(NewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
         }
     }
 
@@ -133,7 +131,7 @@ public class NewChatActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
-                case CAMERA_PERMISSION:
+                case PERMISSION_CAMERA:
                     openQRScanner();
                     break;
             }

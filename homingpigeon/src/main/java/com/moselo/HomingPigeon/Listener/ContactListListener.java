@@ -4,7 +4,7 @@ import com.moselo.HomingPigeon.Model.UserModel;
 
 public interface ContactListListener {
 
-    void onContactSelected(UserModel contact, boolean isSelected);
+    boolean onContactSelected(UserModel contact, boolean isSelected);
 
     void onContactRemoved(UserModel contact);
 }

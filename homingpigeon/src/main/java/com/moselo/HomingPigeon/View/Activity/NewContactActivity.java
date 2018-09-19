@@ -21,23 +21,14 @@ import com.moselo.HomingPigeon.ViewModel.NewContactViewModel;
 public class NewContactActivity extends BaseActivity {
 
     private static final String TAG = NewContactActivity.class.getSimpleName();
+
+    ImageView ivButtonBack, ivButtonCancel, ivExpertCover;
+    CircleImageView civAvatarExpert, civAvatarUser;
+    TextView tvSearchUsernameMessage, tvBtnAddContactExpert, tvExpertName, tvExpertCategory, tvBtnAddContactUser, tvUserName;
+    
     EditText etSearch;
-    ImageView ivButtonBack;
-    ImageView ivButtonCancel;
-    TextView tvSearchUsernameMessage;
-    CardView cvExpertCard;
-    ImageView ivExpertCover;
-    CircleImageView civAvatarExpert;
-    TextView tvBtnAddContactExpert;
-    LinearLayout llBtnChatNowExpert;
-    TextView tvExpertName;
-    TextView tvExpertCategory;
-    CardView cvUserCard;
-    CircleImageView civAvatarUser;
-    TextView tvBtnAddContactUser;
-    LinearLayout llBtnChatNowUser;
-    TextView tvUserName;
-    LinearLayout llEmpty;
+    CardView cvExpertCard, cvUserCard;
+    LinearLayout llBtnChatNowExpert, llBtnChatNowUser, llEmpty;
 
     NewContactViewModel newContactVM;
 
@@ -85,7 +76,7 @@ public class NewContactActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (0 == s.toString().length()){
+                if (0 == s.toString().length()) {
                     tvSearchUsernameMessage.setTextColor(View.VISIBLE);
                     cvExpertCard.setVisibility(View.GONE);
                     cvUserCard.setVisibility(View.GONE);

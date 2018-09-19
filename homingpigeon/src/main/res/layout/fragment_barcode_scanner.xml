@@ -89,7 +89,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:background="@drawable/bg_aquamarine_tealish_radial_stroke_greenblue_1dp_rounded_6dp"
+        android:background="@drawable/bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp"
         android:fontFamily="@font/latobold"
         android:letterSpacing="-0.01"
         android:text="@string/show_qr_code"

@@ -1,9 +1,7 @@
 package com.moselo.HomingPigeon.View.Fragment;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,15 +18,13 @@ import android.widget.Button;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.QRDetection;
-import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.BarcodeScannerActivity;
 
 import java.io.IOException;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.CAMERA_PERMISSION;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
 public class BarcodeScannerFragment extends Fragment {
 
@@ -111,7 +107,7 @@ public class BarcodeScannerFragment extends Fragment {
     public void startCameraSource() {
         Log.e(TAG, "startCameraSource: "+ (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ));
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION);
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
         }else {
             try {
                 cameraSource.start(svScanner.getHolder());
@@ -126,7 +122,7 @@ public class BarcodeScannerFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
-                case CAMERA_PERMISSION :
+                case PERMISSION_CAMERA:
                     startCameraSource();
                     break;
             }

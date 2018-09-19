@@ -23,39 +23,27 @@ public class ChatViewModel extends AndroidViewModel {
     private List<MessageModel> messageModels;
     private UserModel myUserModel;
     private String roomID;
+    private String otherUserID = "0";
     private long lastTimestamp = 0;
     private int numUsers;
     private int unreadCount = 0;
-    private String otherUserID = "0";
-    private boolean isTyping = false;
-    private boolean isOnBottom;
+    private boolean isOnBottom, isTyping;
 
     public ChatViewModel(Application application) {
         super(application);
-//        repository = new MessageRepository(application);
         allMessages = DataManager.getInstance().getMessagesLiveData();
-        messagePointer = new LinkedHashMap<>();
-        messageModels = new ArrayList<>();
     }
 
     public LiveData<List<MessageEntity>> getAllMessages() {
         return allMessages;
     }
 
-//    public void insert(MessageEntity messageEntity) {
-//        DataManager.getInstance().insertToDatabase(messageEntity);
-//    }
-//
-//    public void insert(List<MessageEntity> messageEntities) {
-//        DataManager.getInstance().insertToDatabase(messageEntities);
-//    }
-
     public void delete(String messageLocalID) {
         DataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
     public Map<String, MessageModel> getMessagePointer() {
-        return messagePointer;
+        return messagePointer == null ? messagePointer = new LinkedHashMap<>() : messagePointer;
     }
 
     public void setMessagePointer(Map<String, MessageModel> messagePointer) {
@@ -83,7 +71,7 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public List<MessageModel> getMessageModels() {
-        return messageModels;
+        return messageModels == null ? messageModels = new ArrayList<>() : messageModels;
     }
 
     public void setMessageModels(List<MessageModel> messageModels) {
