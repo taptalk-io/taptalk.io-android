@@ -2,9 +2,12 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -16,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -30,7 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.RequestCode.CREATE_GROUP;
 
 public class CreateNewGroupActivity extends AppCompatActivity {
@@ -71,7 +78,12 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     }
 
     private void initViewModel() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        }, prefs.getString(K_USER, ""));
+
         vm = ViewModelProviders.of(this).get(ContactListViewModel.class);
+        vm.getSelectedContacts().add(myUser);
     }
 
     private void initListener() {
@@ -93,7 +105,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                     selectedMembersAdapter.notifyItemRemoved(index);
                     new Handler().postDelayed(() -> updateSelectedMemberDecoration(), 200L);
                 }
-                if (vm.getSelectedContacts().size() > 0) {
+                if (vm.getSelectedContacts().size() > 1) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
@@ -110,7 +122,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                     vm.getFilteredContacts().get(index).setSelected(false);
                     contactListAdapter.notifyDataSetChanged();
                 }
-                if (vm.getSelectedContacts().size() > 0) {
+                if (vm.getSelectedContacts().size() > 1) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                     new Handler().postDelayed(() -> updateSelectedMemberDecoration(), 200L);
                 } else {
@@ -167,7 +179,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        selectedMembersAdapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
+        selectedMembersAdapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener, vm.getSelectedContacts().get(0).getUserID());
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
@@ -191,6 +203,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         btnContinue.setOnClickListener(v -> {
             Intent intent = new Intent(this, GroupSubjectActivity.class);
+            intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
             startActivityForResult(intent, CREATE_GROUP);
         });

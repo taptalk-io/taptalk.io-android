@@ -64,4 +64,5 @@
     <string name="search">Search</string>
     <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
+    <string name="you">You</string>
 </resources>

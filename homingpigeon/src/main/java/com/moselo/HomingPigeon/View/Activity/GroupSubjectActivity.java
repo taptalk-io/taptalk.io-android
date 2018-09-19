@@ -35,6 +35,7 @@ import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.GroupViewModel;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.RequestCode.PICK_GROUP_IMAGE;
@@ -105,7 +106,8 @@ public class GroupSubjectActivity extends AppCompatActivity {
         vm = ViewModelProviders.of(this).get(GroupViewModel.class);
 
         if (null != getIntent().getExtras()) {
-            vm.setGroupMembers(getIntent().getExtras().getParcelableArrayList(GROUP_MEMBERS));
+            vm.setMyID(getIntent().getStringExtra(MY_ID));
+            vm.setGroupMembers(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
         }
     }
 
@@ -121,7 +123,7 @@ public class GroupSubjectActivity extends AppCompatActivity {
 
         etGroupName.addTextChangedListener(groupNameWatcher);
 
-        adapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getGroupMembers());
+        adapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getGroupMembers(), null, vm.getMyID());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new HorizontalDecoration(0, 0,

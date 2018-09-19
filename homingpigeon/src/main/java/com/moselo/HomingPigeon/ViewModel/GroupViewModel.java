@@ -12,7 +12,7 @@ import java.util.List;
 
 public class GroupViewModel extends AndroidViewModel {
 
-    private String groupName;
+    private String groupName, myID;
     private Uri groupImage;
     private List<UserModel> groupMembers;
 
@@ -26,6 +26,14 @@ public class GroupViewModel extends AndroidViewModel {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getMyID() {
+        return myID;
+    }
+
+    public void setMyID(String myID) {
+        this.myID = myID;
     }
 
     public Uri getGroupImage() {
