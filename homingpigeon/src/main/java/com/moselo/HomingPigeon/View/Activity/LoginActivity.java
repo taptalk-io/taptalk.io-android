@@ -7,14 +7,14 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Helper.Const;
+
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 
 public class LoginActivity extends BaseActivity {
 
@@ -76,7 +76,7 @@ public class LoginActivity extends BaseActivity {
             vOverlay.setVisibility(View.VISIBLE);
 
             Intent intent = new Intent(this, RoomListActivity.class);
-            intent.putExtra(Const.K_MY_USERNAME, etUsername.getText().toString());
+            intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
             startActivity(intent);
             getUserID(getDummyUserID(etUsername.getText().toString())+ "", etUsername.getText().toString());
             ConnectionManager.getInstance().connect();

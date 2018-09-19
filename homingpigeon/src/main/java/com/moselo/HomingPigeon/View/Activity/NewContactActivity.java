@@ -19,23 +19,12 @@ import com.moselo.HomingPigeon.ViewModel.NewContactViewModel;
 
 public class NewContactActivity extends BaseActivity {
 
+    ImageView ivButtonBack, ivButtonCancel, ivExpertCover;
+    CircleImageView civAvatarExpert, civAvatarUser;
+    TextView tvSearchUsernameMessage, tvBtnAddContactExpert, tvExpertName, tvExpertCategory, tvBtnAddContactUser, tvUserName;
     EditText etSearch;
-    ImageView ivButtonBack;
-    ImageView ivButtonCancel;
-    TextView tvSearchUsernameMessage;
-    CardView cvExpertCard;
-    ImageView ivExpertCover;
-    CircleImageView civAvatarExpert;
-    TextView tvBtnAddContactExpert;
-    LinearLayout llBtnChatNowExpert;
-    TextView tvExpertName;
-    TextView tvExpertCategory;
-    CardView cvUserCard;
-    CircleImageView civAvatarUser;
-    TextView tvBtnAddContactUser;
-    LinearLayout llBtnChatNowUser;
-    TextView tvUserName;
-    LinearLayout llEmpty;
+    CardView cvExpertCard, cvUserCard;
+    LinearLayout llBtnChatNowExpert, llBtnChatNowUser, llEmpty;
 
     NewContactViewModel newContactVM;
 

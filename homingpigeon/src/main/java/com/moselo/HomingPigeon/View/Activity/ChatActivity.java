@@ -32,8 +32,8 @@ import com.moselo.HomingPigeon.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
-import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_THEIR_USERNAME;
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener, HomingPigeonChatListener {
 

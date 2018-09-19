@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,10 @@ import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.RequestCode.CREATE_GROUP;
+
 public class CreateNewGroupActivity extends AppCompatActivity {
 
     LinearLayout llGroupMembers;
@@ -42,8 +47,6 @@ public class CreateNewGroupActivity extends AppCompatActivity {
     ContactListListener listener;
     ContactListViewModel vm;
 
-    private static final int GROUP_MEMBER_LIMIT = 50;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +55,19 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         initViewModel();
         initListener();
         initView();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case RESULT_OK:
+                switch (requestCode) {
+                    case CREATE_GROUP:
+                        finish();
+                        break;
+                }
+        }
     }
 
     private void initViewModel() {
@@ -174,7 +190,9 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         });
 
         btnContinue.setOnClickListener(v -> {
-
+            Intent intent = new Intent(this, GroupSubjectActivity.class);
+            intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
+            startActivityForResult(intent, CREATE_GROUP);
         });
     }
 

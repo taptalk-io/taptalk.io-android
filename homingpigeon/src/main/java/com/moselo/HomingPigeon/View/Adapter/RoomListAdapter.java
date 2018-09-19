@@ -27,11 +27,11 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.ChatActivity;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_THEIR_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.View.Helper.Const.K_COLOR;
-import static com.moselo.HomingPigeon.View.Helper.Const.K_MY_USERNAME;
-import static com.moselo.HomingPigeon.View.Helper.Const.K_THEIR_USERNAME;
 
 public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
 

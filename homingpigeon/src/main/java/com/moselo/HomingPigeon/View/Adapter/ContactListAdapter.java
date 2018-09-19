@@ -108,7 +108,7 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
                         // TODO: 17 September 2018 OPEN CHAT ROOM
                         break;
                     case SELECT:
-                        if (listener.onContactSelected(item, !item.isSelected())) {
+                        if (null != listener && listener.onContactSelected(item, !item.isSelected())) {
                             item.setSelected(!item.isSelected());
                             notifyItemChanged(position);
                         }
@@ -120,13 +120,14 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
 
     class SelectedGroupMemberHolder extends BaseViewHolder<UserModel> {
 
-        private ImageView ivAvatar;
+        private ImageView ivAvatar, ivAvatarIcon;
         private TextView tvFullName;
 
         protected SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
             ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
         }
 
@@ -144,9 +145,19 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
                 tvFullName.setText(fullName.substring(0, fullName.indexOf(' ')));
             } else tvFullName.setText(fullName);
 
+            // TODO: 19 September 2018 UPDATE EXPERT ICON
+            // Update avatar icon
+            if (null == listener /*&& item.getUserRole().equals("1")*/) {
+                ivAvatarIcon.setVisibility(View.GONE);
+            } /*else if (null == listener && item.getUserRole().equals("2")) {
+                ivAvatarIcon.setImageResource(R.drawable.ic_verified);
+            }*/
+
             itemView.setOnClickListener(v -> {
-                removeItem(item);
-                listener.onContactRemoved(item);
+                if (null != listener) {
+                    removeItem(item);
+                    listener.onContactRemoved(item);
+                }
             });
         }
     }

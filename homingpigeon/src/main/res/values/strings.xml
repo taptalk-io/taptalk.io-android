@@ -8,6 +8,7 @@
     <string name="scan_qr_code">Scan QR Code</string>
     <string name="show_qr_code">Show QR Code</string>
     <string name="blocked_list">Blocked List</string>
+    <string name="group_subject">Group Subject</string>
 
     <!--Chat Room List-->
     <string name="setting_up_your_chatroom">Setting up your chatroom</string>
@@ -28,10 +29,20 @@
     <string name="network_error">Network Error</string>
     <string name="waiting_for_network">Waiting for Network</string>
 
+    <!--Group Chat-->
+    <string name="group_member_count">Group Members (%d/%d)</string>
+    <string name="group_name">Group Name</string>
+    <string name="group_picture">Group Picture</string>
+    <string name="create_group">Create Group</string>
+
     <!--Guides-->
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
     <string name="scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
     <string name="search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
+    <string name="change_group_image_guide">Tap icon to change group profile image</string>
+
+    <!--Error Message-->
+    <string name="error_message_group_name_empty">Please enter a group name.</string>
 
     <!--Attachment-->
     <string name="document">Document</string>
@@ -41,6 +52,10 @@
     <string name="location">Location</string>
     <string name="contact">Contact</string>
 
+    <!--Intent-->
+    <string name="intent_pick_image">image/*</string>
+    <string name="intent_select_picture">Select Picture</string>
+
     <!--General-->
     <string name="continue_s">Continue</string>
     <string name="edit">Edit</string>
@@ -49,5 +64,4 @@
     <string name="search">Search</string>
     <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
-    <string name="group_member_count">Group Members (%d/%d)</string>
 </resources>
