@@ -95,7 +95,7 @@ public class ConnectionManager {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 Log.e(TAG, "onClose: " + reason);
                 Log.e(TAG, "onClose: " + (null != socketListeners && !socketListeners.isEmpty() && !ChatManager.getInstance().isFinishChatFlow()));
-                if (null != socketListeners && !socketListeners.isEmpty() && !ChatManager.getInstance().isFinishChatFlow()) {
+                if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketDisconnected();
                 }
@@ -105,7 +105,7 @@ public class ConnectionManager {
             public void onError(Exception ex) {
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 Log.e(TAG, "onError: " + ex.getMessage());
-                if (null != socketListeners && !socketListeners.isEmpty() && !ChatManager.getInstance().isFinishChatFlow()) {
+                if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketError();
                 }
@@ -190,7 +190,7 @@ public class ConnectionManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (ConnectionStatus.DISCONNECTED == connectionStatus) {
+                if (ConnectionStatus.DISCONNECTED == connectionStatus && !ChatManager.getInstance().isFinishChatFlow()) {
                     connectionStatus = ConnectionStatus.CONNECTING;
                     try {
                         webSocketClient.reconnect();
