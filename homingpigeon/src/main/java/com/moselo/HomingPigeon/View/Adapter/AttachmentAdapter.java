@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
+import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Model.AttachmentModel;
 import com.moselo.HomingPigeon.R;
 
@@ -36,6 +37,7 @@ public class AttachmentAdapter extends BaseAdapter<AttachmentModel, BaseViewHold
         private ImageView ivAttachIcon;
         private TextView tvAttachTitle;
         private View vAttachMenuSeparator;
+        private int position = -1;
 
         protected AttachmentVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -49,7 +51,9 @@ public class AttachmentAdapter extends BaseAdapter<AttachmentModel, BaseViewHold
             ivAttachIcon.setImageDrawable(itemView.getResources().getDrawable(item.getIcon()));
             tvAttachTitle.setText(itemView.getResources().getText(item.getTitleIds()));
 
-            if (getItemCount()-1 == position)
+            this.position = position;
+
+            if (getItemCount() - 1 == position)
                 vAttachMenuSeparator.setVisibility(View.GONE);
             else vAttachMenuSeparator.setVisibility(View.VISIBLE);
 
@@ -58,7 +62,27 @@ public class AttachmentAdapter extends BaseAdapter<AttachmentModel, BaseViewHold
 
         @Override
         public void onClick(View v) {
+            if (position % 2 == 0)
+                new HomingPigeonDialog(itemView.getContext(),
+                        "Title Here",
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.",
+                        "Primary",
+                        "Secondary") {
+                    @Override
+                    public void onClick(View v) {
 
+                    }
+                }.show();
+            else
+                new HomingPigeonDialog(itemView.getContext(),
+                        "Title Here",
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.",
+                        "Primary") {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                }.show();
         }
 
     }

@@ -54,6 +54,7 @@ public class ChatManager {
     private boolean isCheckPendingArraySequenceActive = false;
     private boolean isPendingMessageExist = false;
     private boolean isFileUploadExist = false;
+    private boolean isFinishChatFlow = false;
     private final Integer CHARACTER_LIMIT = 1000;
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
@@ -65,6 +66,7 @@ public class ChatManager {
         public void onSocketConnected() {
             Log.e(TAG, "onSocketConnected: ");
             checkAndSendPendingMessages();
+            isFinishChatFlow = false;
         }
 
         @Override
@@ -425,6 +427,8 @@ public class ChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
+        Log.e("ConnectionManager", "saveIncomingMessageAndDisconnect: " );
+        isFinishChatFlow = true;
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
             scheduler.shutdown();
@@ -524,5 +528,13 @@ public class ChatManager {
 
     public void setPendingRetryAttempt(int counter) {
         pendingRetryAttempt = counter;
+    }
+
+    public boolean isFinishChatFlow() {
+        return isFinishChatFlow;
+    }
+
+    public void setFinishChatFlow(boolean finishChatFlow) {
+        isFinishChatFlow = finishChatFlow;
     }
 }
