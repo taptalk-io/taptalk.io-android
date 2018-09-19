@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import com.moselo.HomingPigeon.ViewModel.NewContactViewModel;
 
 public class NewContactActivity extends BaseActivity {
 
+    private static final String TAG = NewContactActivity.class.getSimpleName();
     EditText etSearch;
     ImageView ivButtonBack;
     ImageView ivButtonCancel;

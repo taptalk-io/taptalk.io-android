@@ -247,11 +247,13 @@ public class ChatManager {
                 model.getCreated(),
                 Utils.getInstance().toJsonString(model.getUser()),
                 model.getRecipientID(),
-                Utils.getInstance().toJsonString(model.getDeliveredTo()),
-                Utils.getInstance().toJsonString(model.getSeenBy()),
-                model.getIsDeleted(),
-                model.getIsSending(),
-                model.getIsFailedSend(),
+                model.getHasRead(),
+                model.getRead(),
+                model.getDelivered(),
+                model.getHidden(),
+                model.getDeleted(),
+                model.getSending(),
+                model.getFailedSend(),
                 model.getUpdated());
     }
 
@@ -446,7 +448,7 @@ public class ChatManager {
      */
     private void receiveMessageFromSocket(MessageModel newMessage, String eventName) {
         // TODO: 4 September 2018 TEMP
-        newMessage.setIsSending(false);
+        newMessage.setSending(false);
 
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))

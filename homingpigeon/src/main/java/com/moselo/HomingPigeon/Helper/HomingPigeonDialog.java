@@ -12,9 +12,8 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.BaseActivity;
 
-public abstract class HomingPigeonDialog extends Dialog implements View.OnClickListener {
+public class HomingPigeonDialog extends Dialog implements View.OnClickListener{
 
     private static final String TAG = HomingPigeonDialog.class.getSimpleName();
     public Context context;
@@ -23,24 +22,32 @@ public abstract class HomingPigeonDialog extends Dialog implements View.OnClickL
     private String dialogTitle = "", dialogMessage = "", textSecondary = "", textPrimary = "";
     int layout;
 
+    //listener
+    View.OnClickListener primaryListener = null;
+    View.OnClickListener secondaryListener = null;
+
     public HomingPigeonDialog(Context context, String dialogTitle, String dialogMessage,
-                              String textPrimary, String textSecondary) {
+                              String textPrimary, View.OnClickListener primaryListener,
+                              String textSecondary, View.OnClickListener secondaryListener) {
         super(context);
         this.context = context;
         this.dialogTitle = dialogTitle;
         this.dialogMessage = dialogMessage;
         this.textPrimary = textPrimary;
+        this.primaryListener = primaryListener;
         this.textSecondary = textSecondary;
+        this.secondaryListener = secondaryListener;
         layout = 1;
     }
 
     public HomingPigeonDialog(Context context, String dialogTitle, String dialogMessage,
-                              String textPrimary) {
+                              String textPrimary, View.OnClickListener primaryListener) {
         super(context);
         this.context = context;
         this.dialogTitle = dialogTitle;
         this.dialogMessage = dialogMessage;
         this.textPrimary = textPrimary;
+        this.primaryListener = primaryListener;
         layout = 2;
     }
 
@@ -90,10 +97,16 @@ public abstract class HomingPigeonDialog extends Dialog implements View.OnClickL
     }
 
     @Override
-    public abstract void onClick(View v);
-
-    @Override
     public void show() {
         super.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (R.id.tv_primary_btn == v.getId() && null != primaryListener) {
+            primaryListener.onClick(v);
+        } else if (R.id.tv_secondary_btn == v.getId() && null != secondaryListener) {
+            secondaryListener.onClick(v);
+        }
     }
 }
