@@ -35,6 +35,8 @@
     <string name="group_picture">Group Picture</string>
     <string name="create_group">Create Group</string>
     <string name="type_group_name">Type group name</string>
+    <string name="cannot_add_more_people">Cannot add more people</string>
+    <string name="group_limit_reached">The max limit number of people in one group chat has been reached</string>
 
     <!--Guides-->
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
@@ -66,4 +68,5 @@
     <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
     <string name="you">You</string>
+    <string name="ok">OK</string>
 </resources>

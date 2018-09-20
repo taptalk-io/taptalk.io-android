@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -93,7 +94,12 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (isSelected) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
-                        // TODO: 18 September 2018 SHOW DIALOG
+                        // TODO: 20 September 2018 CHANGE DIALOG LISTENER
+                        new HomingPigeonDialog(
+                                CreateNewGroupActivity.this,
+                                getString(R.string.cannot_add_more_people),
+                                getString(R.string.group_limit_reached),
+                                getString(R.string.ok), null).show();
                         return false;
                     }
                     vm.getSelectedContacts().add(contact);
