@@ -99,7 +99,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             tvMessage.setText(item.getMessage());
 
             // Message is sending
-            if (null != item.getIsSending() && item.getIsSending()) {
+            if (null != item.getSending() && item.getSending()) {
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextContent));
                 tvStatus.setText("Sending...");
                 tvDash.setText("");
@@ -109,7 +109,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 llMessageStatus.setVisibility(View.GONE);
             }
             // Message failed to send
-            else if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
+            else if (null != item.getFailedSend() && item.getFailedSend()) {
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
                 tvStatus.setText("Failed, tap to retry.");
                 tvDash.setText("");
@@ -130,8 +130,8 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             }
 
             itemView.setOnClickListener(v -> {
-                if (null != item.getIsFailedSend() && null != item.getIsSending() &&
-                        item.getIsFailedSend() && !item.getIsSending()) {
+                if (null != item.getFailedSend() && null != item.getSending() &&
+                        item.getFailedSend() && !item.getSending()) {
                     removeMessage(item);
                     listener.onRetrySendMessage(item);
                 } else {

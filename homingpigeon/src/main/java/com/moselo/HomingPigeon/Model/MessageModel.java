@@ -23,8 +23,10 @@ public class MessageModel {
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private UserModel user;
     @JsonProperty("recipientID") private String recipientID;
-    @Nullable @JsonProperty("deliveredTo") private List<Object> deliveredTo;
-    @Nullable @JsonProperty("seenBy") private List<SeenByModel> seenBy;
+    @Nullable @JsonProperty("hasRead") private Boolean hasRead;
+    @Nullable @JsonProperty("isRead") private Boolean isRead;
+    @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
+    @Nullable @JsonProperty("isHidden") private Boolean isHidden;
     @Nullable @JsonProperty("isDeleted") private Boolean isDeleted;
     @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
@@ -65,9 +67,9 @@ public class MessageModel {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.getIsDeleted(),
-                messageModel.getIsSending(),
-                messageModel.getIsFailedSend());
+                messageModel.getDeleted(),
+                messageModel.getSending(),
+                messageModel.getFailedSend());
     }
 
     public static MessageModel BuilderDecrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -80,9 +82,9 @@ public class MessageModel {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.getIsDeleted(),
-                messageModel.getIsSending(),
-                messageModel.getIsFailedSend());
+                messageModel.getDeleted(),
+                messageModel.getSending(),
+                messageModel.getFailedSend());
     }
 
     @Nullable
@@ -152,48 +154,66 @@ public class MessageModel {
     }
 
     @Nullable
-    public List<Object> getDeliveredTo() {
-        return deliveredTo;
+    public Boolean getHasRead() {
+        return hasRead;
     }
 
-    public void setDeliveredTo(@Nullable List<Object> deliveredTo) {
-        this.deliveredTo = deliveredTo;
-    }
-
-    @Nullable
-    public List<SeenByModel> getSeenBy() {
-        return seenBy;
-    }
-
-    public void setSeenBy(@Nullable List<SeenByModel> seenBy) {
-        this.seenBy = seenBy;
+    public void setHasRead(@Nullable Boolean hasRead) {
+        this.hasRead = hasRead;
     }
 
     @Nullable
-    public Boolean getIsDeleted() {
+    public Boolean getRead() {
+        return isRead;
+    }
+
+    public void setRead(@Nullable Boolean read) {
+        isRead = read;
+    }
+
+    @Nullable
+    public Boolean getDelivered() {
+        return isDelivered;
+    }
+
+    public void setDelivered(@Nullable Boolean delivered) {
+        isDelivered = delivered;
+    }
+
+    @Nullable
+    public Boolean getHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(@Nullable Boolean hidden) {
+        isHidden = hidden;
+    }
+
+    @Nullable
+    public Boolean getDeleted() {
         return isDeleted;
     }
 
-    public void setIsDeleted(@Nullable Boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void setDeleted(@Nullable Boolean deleted) {
+        isDeleted = deleted;
     }
 
     @Nullable
-    public Boolean getIsSending() {
+    public Boolean getSending() {
         return isSending;
     }
 
-    public void setIsSending(@Nullable Boolean isSending) {
-        this.isSending = isSending;
+    public void setSending(@Nullable Boolean sending) {
+        isSending = sending;
     }
 
     @Nullable
-    public Boolean getIsFailedSend() {
+    public Boolean getFailedSend() {
         return isFailedSend;
     }
 
-    public void setIsFailedSend(@Nullable Boolean isFailedSend) {
-        this.isFailedSend = isFailedSend;
+    public void setFailedSend(@Nullable Boolean failedSend) {
+        isFailedSend = failedSend;
     }
 
     @Nullable
@@ -213,9 +233,9 @@ public class MessageModel {
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
-        this.isDeleted = model.getIsDeleted();
-        this.isSending = model.getIsSending();
-        this.isFailedSend = model.getIsFailedSend();
+        this.isDeleted = model.getDeleted();
+        this.isSending = model.getSending();
+        this.isFailedSend = model.getFailedSend();
         // TODO: 3 September 2018 ADD deliveredTo & seenBy
     }
 }

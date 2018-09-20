@@ -23,8 +23,10 @@ public class MessageEntity {
     @ColumnInfo(name = "created") private Long created;
     @ColumnInfo(name = "user") private String user;
     @ColumnInfo(name = "recipientID") private String recipientID;
-    @Nullable @ColumnInfo(name = "deliveredTo") private String deliveredTo;
-    @Nullable @ColumnInfo(name = "seenBy") private String seenBy;
+    @Nullable @ColumnInfo(name = "hasRead") private Boolean hasRead;
+    @Nullable @ColumnInfo(name = "isRead") private Boolean isRead;
+    @Nullable @ColumnInfo(name = "isDelivered") private Boolean isDelivered;
+    @Nullable @ColumnInfo(name = "isHidden") private Boolean isHidden;
     @Nullable @ColumnInfo(name = "isDeleted") private Boolean isDeleted;
     @Nullable @ColumnInfo(name = "isSending") private Boolean isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Boolean isFailedSend;
@@ -46,7 +48,8 @@ public class MessageEntity {
     @Ignore
     public MessageEntity(@Nullable String messageID, @NonNull String localID,
                          String room, Integer roomType, Integer type, String message, long created, String user, String recipientID,
-                         @Nullable String deliveredTo, @Nullable String seenBy, @Nullable Boolean isDeleted,
+                         @Nullable Boolean hasRead, @Nullable Boolean isRead,
+                         @Nullable Boolean isDelivered, @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                          @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated) {
         this.messageID = messageID;
         this.localID = localID;
@@ -57,8 +60,10 @@ public class MessageEntity {
         this.created = created;
         this.user = user;
         this.recipientID = recipientID;
-        this.deliveredTo = deliveredTo;
-        this.seenBy = seenBy;
+        this.hasRead = hasRead;
+        this.isRead = isRead;
+        this.isDelivered = isDelivered;
+        this.isHidden = isHidden;
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
@@ -172,21 +177,39 @@ public class MessageEntity {
     }
 
     @Nullable
-    public String getDeliveredTo() {
-        return deliveredTo;
+    public Boolean getHasRead() {
+        return hasRead;
     }
 
-    public void setDeliveredTo(@Nullable String deliveredTo) {
-        this.deliveredTo = deliveredTo;
+    public void setHasRead(@Nullable Boolean hasRead) {
+        this.hasRead = hasRead;
     }
 
     @Nullable
-    public String getSeenBy() {
-        return seenBy;
+    public Boolean getIsRead() {
+        return isRead;
     }
 
-    public void setSeenBy(@Nullable String seenBy) {
-        this.seenBy = seenBy;
+    public void setIsRead(@Nullable Boolean read) {
+        isRead = read;
+    }
+
+    @Nullable
+    public Boolean getDelivered() {
+        return isDelivered;
+    }
+
+    public void setDelivered(@Nullable Boolean delivered) {
+        isDelivered = delivered;
+    }
+
+    @Nullable
+    public Boolean getHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(@Nullable Boolean hidden) {
+        isHidden = hidden;
     }
 
     @Nullable

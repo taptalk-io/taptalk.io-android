@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
@@ -67,22 +68,21 @@ public class AttachmentAdapter extends BaseAdapter<AttachmentModel, BaseViewHold
                         "Title Here",
                         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.",
                         "Primary",
-                        "Secondary") {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                }.show();
+                        v1 -> {
+                            Toast.makeText(itemView.getContext(), "Primary", Toast.LENGTH_SHORT).show();
+                        },
+                        "Secondary",
+                        v2 -> {
+                            Toast.makeText(itemView.getContext(), "Secondary", Toast.LENGTH_SHORT).show();
+                        }).show();
             else
                 new HomingPigeonDialog(itemView.getContext(),
                         "Title Here",
                         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.",
-                        "Primary") {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                }.show();
+                        "Primary",
+                        v2 -> {
+                            Toast.makeText(itemView.getContext(), "Primary", Toast.LENGTH_SHORT).show();
+                        }).show();
         }
 
     }
