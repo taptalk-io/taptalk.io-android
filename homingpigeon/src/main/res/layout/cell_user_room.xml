@@ -20,9 +20,9 @@
         android:gravity="center"
         android:textColor="#ffffff"
         android:textSize="24dp"
+        app:layout_constraintEnd_toStartOf="@id/tv_full_name"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tv_full_name"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="A" />
 
@@ -36,22 +36,17 @@
 
     <TextView
         android:id="@+id/tv_full_name"
+        style="@style/HomingPigeonContactName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/neueeinstellungbold"
-        android:gravity="start"
-        android:maxLines="1"
-        android:textColor="@color/colorTextTitle"
-        android:textSize="14sp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_last_message"
         app:layout_constraintEnd_toEndOf="@id/iv_mute"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/iv_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_avatar"
         app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constrainedWidth="true"
         tools:text="Username" />
 
     <ImageView
@@ -68,16 +63,12 @@
 
     <TextView
         android:id="@+id/tv_last_message"
+        style="@style/HomingPigeonRoomMessage"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="4dp"
         android:layout_marginStart="8dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/latoregular"
-        android:gravity="start"
         android:maxLines="2"
-        android:textColor="@color/colorTextContent"
-        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
         app:layout_constraintStart_toEndOf="@id/iv_avatar"
@@ -86,15 +77,12 @@
 
     <TextView
         android:id="@+id/tv_last_message_time"
+        style="@style/HomingPigeonMessageStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="8dp"
-        android:fontFamily="@font/latoregular"
         android:gravity="end"
-        android:maxLines="1"
-        android:textColor="@color/colorTextContent"
-        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="@id/tv_full_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_mute"

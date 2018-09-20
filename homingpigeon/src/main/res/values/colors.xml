@@ -5,9 +5,6 @@
     <color name="colorAccent">@color/tealish</color>
     <color name="colorAccentLight">@color/lightTeal</color>
 
-    <color name="colorTextTitle">@color/black_44</color>
-    <color name="colorTextContent">@color/grey_9b</color>
-
     <color name="amethyst">#9954c2</color>
     <color name="mediumPurple">#784198</color>
     <color name="warmPurple">#6d3492</color>

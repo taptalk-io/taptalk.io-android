@@ -100,7 +100,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
             // Message is sending
             if (null != item.getSending() && item.getSending()) {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextContent));
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
                 tvStatus.setText("Sending...");
                 tvDash.setText("");
                 tvTimestamp.setText("");
@@ -120,7 +120,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             }
             // Message is delivered
             else {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorTextContent));
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
                 tvStatus.setText("S");
                 tvDash.setText(" - ");
                 tvTimestamp.setText(TimeFormatter.formatClock(item.getCreated()));

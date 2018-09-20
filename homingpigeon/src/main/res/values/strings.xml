@@ -69,4 +69,6 @@
     <string name="chat_now">Chat Now</string>
     <string name="you">You</string>
     <string name="ok">OK</string>
+    <string name="oops">Oops…</string>
+    <string name="could_not_find_any_results">Could not find any results</string>
 </resources>

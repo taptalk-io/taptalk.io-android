@@ -30,16 +30,10 @@
 
         <TextView
             android:id="@+id/tv_title"
+            style="@style/HomingPigeonToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="@font/neueeinstellungbold"
-            android:gravity="center"
-            android:letterSpacing="-0.02"
-            android:maxLines="1"
             android:text="@string/new_chat"
-            android:textColor="@color/colorTextTitle"
-            android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/iv_button_search"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -87,14 +81,11 @@
                     android:src="@drawable/ic_new_contact_green" />
 
                 <TextView
+                    style="@style/HomingPigeonMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:fontFamily="@font/latoregular"
-                    android:letterSpacing="-0.02"
-                    android:text="@string/new_contact"
-                    android:textColor="@color/colorTextTitle"
-                    android:textSize="15sp" />
+                    android:text="@string/new_contact" />
 
             </LinearLayout>
 
@@ -119,14 +110,11 @@
                     android:src="@drawable/ic_scan_green" />
 
                 <TextView
+                    style="@style/HomingPigeonMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:fontFamily="@font/latoregular"
-                    android:letterSpacing="-0.02"
-                    android:text="@string/scan_qr_code"
-                    android:textColor="@color/colorTextTitle"
-                    android:textSize="15sp" />
+                    android:text="@string/scan_qr_code" />
 
             </LinearLayout>
 
@@ -151,14 +139,11 @@
                     android:src="@drawable/ic_new_group_green" />
 
                 <TextView
+                    style="@style/HomingPigeonMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:fontFamily="@font/latoregular"
-                    android:letterSpacing="-0.02"
-                    android:text="@string/new_group"
-                    android:textColor="@color/colorTextTitle"
-                    android:textSize="15sp" />
+                    android:text="@string/new_group" />
 
             </LinearLayout>
 

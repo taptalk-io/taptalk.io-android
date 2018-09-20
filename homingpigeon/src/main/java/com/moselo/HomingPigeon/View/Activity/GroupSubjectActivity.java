@@ -34,7 +34,6 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.GroupViewModel;
 
-import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_MEMBERS;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
@@ -43,7 +42,6 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.RequestCode.PICK_GR
 
 public class GroupSubjectActivity extends AppCompatActivity {
 
-    private final String TAG = GroupSubjectActivity.class.getSimpleName();
     private ImageView ivButtonBack, ivCamera;
     private CircleImageView civGroupImage;
     private TextView tvTitle, tvMemberCount;
@@ -103,13 +101,6 @@ public class GroupSubjectActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        Intent intent = new Intent(this, CreateNewGroupActivity.class);
-//        intent.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
-//        startActivity(intent);
-//    }
-
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(GroupViewModel.class);
 
@@ -140,6 +131,7 @@ public class GroupSubjectActivity extends AppCompatActivity {
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
         tvMemberCount.setText(String.format(getString(R.string.group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
+        btnCreateGroup.setBackgroundResource(R.drawable.bg_d9d9d9_rounded_6dp);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
 
