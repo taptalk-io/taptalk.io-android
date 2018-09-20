@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -20,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -91,6 +89,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             @Override
             public boolean onContactSelected(UserModel contact, boolean isSelected) {
                 Utils.getInstance().dismissKeyboard(CreateNewGroupActivity.this);
+                new Handler().post(waitAnimationsToFinishRunnable);
                 if (isSelected) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 18 September 2018 SHOW DIALOG
@@ -98,12 +97,12 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                     }
                     vm.getSelectedContacts().add(contact);
                     selectedMembersAdapter.notifyItemInserted(vm.getSelectedContacts().size());
+                    rvGroupMembers.scrollToPosition(vm.getSelectedContacts().size() - 1);
                     updateSelectedMemberDecoration();
                 } else {
                     int index = vm.getSelectedContacts().indexOf(contact);
                     vm.getSelectedContacts().remove(contact);
                     selectedMembersAdapter.notifyItemRemoved(index);
-                    new Handler().postDelayed(() -> updateSelectedMemberDecoration(), 200L);
                 }
                 if (vm.getSelectedContacts().size() > 1) {
                     llGroupMembers.setVisibility(View.VISIBLE);
@@ -117,6 +116,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
             @Override
             public void onContactRemoved(UserModel contact) {
                 Utils.getInstance().dismissKeyboard(CreateNewGroupActivity.this);
+                selectedMembersAdapter.removeItem(contact);
+                new Handler().post(waitAnimationsToFinishRunnable);
                 if (vm.getFilteredContacts().contains(contact)) {
                     int index = vm.getFilteredContacts().indexOf(contact);
                     vm.getFilteredContacts().get(index).setSelected(false);
@@ -124,7 +125,6 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 }
                 if (vm.getSelectedContacts().size() > 1) {
                     llGroupMembers.setVisibility(View.VISIBLE);
-                    new Handler().postDelayed(() -> updateSelectedMemberDecoration(), 200L);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
@@ -183,7 +183,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
-        updateSelectedMemberDecoration();
+        new Handler().post(waitAnimationsToFinishRunnable);
 
         etSearch.addTextChangedListener(searchTextWatcher);
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
@@ -270,6 +270,20 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         @Override
         public void afterTextChanged(Editable s) {
 
+        }
+    };
+
+    private Runnable waitAnimationsToFinishRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (rvGroupMembers.isAnimating()) {
+                // RecyclerView is still animating
+                rvGroupMembers.getItemAnimator().isRunning(() -> new Handler().post(waitAnimationsToFinishRunnable));
+            } else {
+                // RecyclerView has finished animating
+                selectedMembersAdapter.setAnimating(false);
+                updateSelectedMemberDecoration();
+            }
         }
     };
 }
