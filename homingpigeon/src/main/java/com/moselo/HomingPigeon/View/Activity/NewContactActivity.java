@@ -43,7 +43,8 @@ public class NewContactActivity extends BaseActivity {
         Utils.showKeyboard(this, etSearch);
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         etSearch = findViewById(R.id.et_search);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonCancel = findViewById(R.id.iv_button_cancel);

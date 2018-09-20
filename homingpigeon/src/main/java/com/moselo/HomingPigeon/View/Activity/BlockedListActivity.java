@@ -13,7 +13,7 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
-public class BlockedListActivity extends AppCompatActivity {
+public class BlockedListActivity extends BaseActivity {
 
     ImageView ivButtonBack;
     RecyclerView rvBlockedList;
@@ -46,7 +46,8 @@ public class BlockedListActivity extends AppCompatActivity {
         //End Dummy
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         getWindow().setBackgroundDrawable(null);
 
         ivButtonBack = findViewById(R.id.iv_button_back);

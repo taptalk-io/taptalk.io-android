@@ -1,12 +1,9 @@
 package com.moselo.HomingPigeon.View.Activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Fragment.BarcodeScannerFragment;
 import com.moselo.HomingPigeon.View.Fragment.ShowQRFragment;
@@ -14,7 +11,7 @@ import com.moselo.HomingPigeon.View.Fragment.ShowQRFragment;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.BarcodeScannerState.STATE_SCAN;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.BarcodeScannerState.STATE_SHOW;
 
-public class BarcodeScannerActivity extends AppCompatActivity {
+public class BarcodeScannerActivity extends BaseActivity {
 
     private BarcodeScannerFragment fBarcodeScanner;
     private ShowQRFragment fShowQR;
@@ -27,13 +24,18 @@ public class BarcodeScannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_barcode_scanner);
 
+        initView();
+        showScanner();
+    }
+
+    @Override
+    protected void initView() {
         fBarcodeScanner = (BarcodeScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scan_qr_code);
         fShowQR = (ShowQRFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_show_qr_code);
         tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
         ivBack = findViewById(R.id.iv_back);
 
         ivBack.setOnClickListener(v -> onBackPressed());
-        showScanner();
     }
 
     public void showScanner() {

@@ -19,7 +19,7 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
-public class SearchContactActivity extends AppCompatActivity {
+public class SearchContactActivity extends BaseActivity {
 
     LinearLayout llAddNewContact;
     ImageView ivButtonBack, ivButtonCancel;
@@ -61,7 +61,8 @@ public class SearchContactActivity extends AppCompatActivity {
         //End Dummy
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         getWindow().setBackgroundDrawable(null);
 
         llAddNewContact = findViewById(R.id.ll_add_new_contact);

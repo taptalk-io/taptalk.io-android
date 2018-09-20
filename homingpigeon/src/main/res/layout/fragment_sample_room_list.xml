@@ -11,7 +11,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_button_search"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
@@ -45,8 +45,9 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_selection"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/greenBlue">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/greenBlue"
+        android:transitionName="searchBar">
 
         <ImageView
             android:id="@+id/iv_button_cancel_selection"

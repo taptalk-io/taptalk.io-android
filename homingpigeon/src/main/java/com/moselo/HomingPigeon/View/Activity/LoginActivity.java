@@ -37,7 +37,8 @@ public class LoginActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         etUsername = findViewById(R.id.et_username);
         etPassword = findViewById(R.id.et_password);
         tvSignIn = findViewById(R.id.tv_sign_in);

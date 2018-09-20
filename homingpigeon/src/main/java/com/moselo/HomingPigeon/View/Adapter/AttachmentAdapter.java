@@ -70,6 +70,7 @@ public class AttachmentAdapter extends BaseAdapter<AttachmentModel, BaseViewHold
                         "Primary",
                         v1 -> {
                             Toast.makeText(itemView.getContext(), "Primary", Toast.LENGTH_SHORT).show();
+
                         },
                         "Secondary",
                         v2 -> {

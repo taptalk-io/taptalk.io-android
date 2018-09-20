@@ -13,6 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/white"
         android:elevation="2dp"
+        android:transitionName="searchBar"
         android:foreground="?attr/selectableItemBackground">
 
         <ImageView

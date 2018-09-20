@@ -3,10 +3,9 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
-import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,22 +69,19 @@ public class MessageRepository {
         return allMessages;
     }
 
-    public void getMessageList(final String roomID, final HomingPigeonGetChatListener listener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                allMessageList = messageDao.getAllMessageList(roomID);
-                listener.onGetMessages(allMessageList);
-            }
+    public void getMessageList(final String roomID, final HomingPigeonDatabaseListener listener) {
+        new Thread(() -> {
+            allMessageList = messageDao.getAllMessageList(roomID);
+            listener.onSelectFinished(allMessageList);
         }).start();
     }
 
-    public void getMessageList(final String roomID, final HomingPigeonGetChatListener listener, final long lastTimestamp){
+    public void getMessageList(final String roomID, final HomingPigeonDatabaseListener listener, final long lastTimestamp){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
-                listener.onGetMessages(entities);
+                listener.onSelectFinished(entities);
             }
         }).start();
     }

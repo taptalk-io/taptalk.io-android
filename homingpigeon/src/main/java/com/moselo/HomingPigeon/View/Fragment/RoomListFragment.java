@@ -77,7 +77,7 @@ public class RoomListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = (RoomListActivity) getActivity();
+        activity = getActivity();
         return inflater.inflate(R.layout.fragment_sample_room_list, container, false);
     }
 
@@ -173,6 +173,7 @@ public class RoomListFragment extends Fragment {
         }
 
         clButtonSearch.setOnClickListener(v -> {
+            ((RoomListActivity) getActivity()).showSearchChat();
         });
 
         fabNewChat.setOnClickListener(v -> {

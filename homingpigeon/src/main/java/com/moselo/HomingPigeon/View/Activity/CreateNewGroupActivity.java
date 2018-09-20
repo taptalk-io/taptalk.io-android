@@ -40,7 +40,7 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.RequestCode.CREATE_GROUP;
 
-public class CreateNewGroupActivity extends AppCompatActivity {
+public class CreateNewGroupActivity extends BaseActivity {
 
     LinearLayout llGroupMembers;
     ImageView ivButtonBack, ivButtonAction;
@@ -133,7 +133,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         };
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {
             UserModel u0 = new UserModel("u0", "Ababa");

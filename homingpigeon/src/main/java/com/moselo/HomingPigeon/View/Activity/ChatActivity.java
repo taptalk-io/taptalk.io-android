@@ -23,7 +23,7 @@ import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
@@ -167,7 +167,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         vm.getMessageEntities(vm.getRoomID(), this::loadMessageFromDatabase);
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         ivAvatar = findViewById(R.id.iv_avatar);
         tvUsername = findViewById(R.id.tv_full_name);
         tvUserStatus = findViewById(R.id.tv_last_message);
@@ -192,7 +193,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         rvChatList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvChatList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        final HomingPigeonGetChatListener scrollChatListener = this::loadMessageFromDatabase;
+        final HomingPigeonDatabaseListener scrollChatListener = this::loadMessageFromDatabase;
 
         rvChatList.addOnScrollListener(new EndlessScrollListener(llm) {
             @Override

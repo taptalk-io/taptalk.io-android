@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
-import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
@@ -51,22 +51,28 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void addMessagePointer(MessageModel pendingMessage) {
+        if (null == messagePointer) messagePointer = new LinkedHashMap<>();
+
         messagePointer.put(pendingMessage.getLocalID(), pendingMessage);
     }
 
     public void removeMessagePointer(String localID) {
+        if (null == messagePointer) messagePointer = new LinkedHashMap<>();
+
         messagePointer.remove(localID);
     }
 
     public void updateMessagePointer(MessageModel newMessage) {
+        if (null == messagePointer) messagePointer = new LinkedHashMap<>();
+
         messagePointer.get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
-    public void getMessageEntities(String roomID, HomingPigeonGetChatListener listener) {
+    public void getMessageEntities(String roomID, HomingPigeonDatabaseListener listener) {
         DataManager.getInstance().getMessagesFromDatabase(roomID, listener);
     }
 
-    public void getMessageByTimestamp(String roomID, HomingPigeonGetChatListener listener, long lastTimestamp) {
+    public void getMessageByTimestamp(String roomID, HomingPigeonDatabaseListener listener, long lastTimestamp) {
         DataManager.getInstance().getMessagesFromDatabase(roomID, listener, lastTimestamp);
     }
 

@@ -8,8 +8,9 @@ import android.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.Utils;
-import com.moselo.HomingPigeon.Listener.HomingPigeonGetChatListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
@@ -63,12 +64,20 @@ public class DataManager {
         DatabaseManager.getInstance().insert(messageEntity);
     }
 
+    public void insertToDatabase(RecentSearchEntity recentSearchEntity) {
+        DatabaseManager.getInstance().insert(recentSearchEntity);
+    }
+
     public void insertToDatabase(List<MessageEntity> messageEntities) {
         DatabaseManager.getInstance().insert(messageEntities);
     }
 
     public void deleteFromDatabase(String messageLocalID) {
         DatabaseManager.getInstance().delete(messageLocalID);
+    }
+
+    public void deleteFromDatabase(RecentSearchEntity recentSearchEntity) {
+        DatabaseManager.getInstance().delete(recentSearchEntity);
     }
 
     public void updateSendingMessageToFailed() {
@@ -83,11 +92,15 @@ public class DataManager {
         return DatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabase(String roomID, HomingPigeonGetChatListener listener) {
+    public void getMessagesFromDatabase(String roomID, HomingPigeonDatabaseListener listener) {
         DatabaseManager.getInstance().getMessages(roomID, listener);
     }
 
-    public void getMessagesFromDatabase(String roomID, HomingPigeonGetChatListener listener, long lastTimestamp) {
+    public void getMessagesFromDatabase(String roomID, HomingPigeonDatabaseListener listener, long lastTimestamp) {
         DatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
+    }
+
+    public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
+        return DataManager.getInstance().getRecentSearchLive();
     }
 }

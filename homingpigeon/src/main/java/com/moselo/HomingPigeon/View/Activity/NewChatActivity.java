@@ -25,7 +25,7 @@ import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
-public class NewChatActivity extends AppCompatActivity {
+public class NewChatActivity extends BaseActivity {
 
     LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
     ImageView ivButtonBack, ivButtonSearch;
@@ -49,7 +49,8 @@ public class NewChatActivity extends AppCompatActivity {
         vm = ViewModelProviders.of(this).get(ContactListViewModel.class);
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {
             UserModel u0 = new UserModel("u0", "Ababa");

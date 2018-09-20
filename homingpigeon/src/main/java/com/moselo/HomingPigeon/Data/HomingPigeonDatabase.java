@@ -9,11 +9,13 @@ import android.text.Editable;
 import com.commonsware.cwac.saferoom.SafeHelperFactory;
 import com.moselo.HomingPigeon.Data.Message.MessageDao;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchDao;
+import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DB_ENCRYPT_PASS;
 
-@Database(entities = {MessageEntity.class}, version = DefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
+@Database(entities = {MessageEntity.class, RecentSearchEntity.class}, version = DefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
 public abstract class HomingPigeonDatabase extends RoomDatabase{
 
     private static HomingPigeonDatabase database;
@@ -32,4 +34,5 @@ public abstract class HomingPigeonDatabase extends RoomDatabase{
     }
 
     public abstract MessageDao messageDao();
+    public abstract RecentSearchDao recentSearchDao();
 }

@@ -14,6 +14,7 @@ import com.moselo.HomingPigeon.View.Activity.LoginActivity;
 import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.SEARCH_DB;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
@@ -34,6 +35,7 @@ public class HomingPigeon {
 
     public HomingPigeon(final Context appContext) {
         DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
+        DataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
         if (DataManager.getInstance().checkActiveUser(appContext))
             ConnectionManager.getInstance().connect();

@@ -4,6 +4,6 @@ import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 
 import java.util.List;
 
-public interface HomingPigeonGetChatListener {
-    void onGetMessages(List<MessageEntity> entities);
+public interface HomingPigeonDatabaseListener {
+    void onSelectFinished(List<MessageEntity> entities);
 }

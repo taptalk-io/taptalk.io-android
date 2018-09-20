@@ -22,6 +22,7 @@ public class DefaultConstant {
 
     public static final class DatabaseType {
         public static final String MESSAGE_DB = "MessageDB";
+        public static final String SEARCH_DB = "SearchDB";
     }
 
     public static final class MessageType {

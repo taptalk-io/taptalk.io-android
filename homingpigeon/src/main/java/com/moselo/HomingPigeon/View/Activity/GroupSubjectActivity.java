@@ -40,7 +40,7 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 
-public class GroupSubjectActivity extends AppCompatActivity {
+public class GroupSubjectActivity extends BaseActivity {
 
     private final String TAG = GroupSubjectActivity.class.getSimpleName();
     private ImageView ivButtonBack, ivCamera;
@@ -111,7 +111,8 @@ public class GroupSubjectActivity extends AppCompatActivity {
         }
     }
 
-    private void initView() {
+    @Override
+    protected void initView() {
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivCamera = findViewById(R.id.iv_camera);
         civGroupImage = findViewById(R.id.civ_group_image);
