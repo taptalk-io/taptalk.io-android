@@ -32,6 +32,7 @@ import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_MEMBERS;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
@@ -203,6 +204,7 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         btnContinue.setOnClickListener(v -> {
             Intent intent = new Intent(this, GroupSubjectActivity.class);
+//            intent.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
             startActivityForResult(intent, CREATE_GROUP);
@@ -223,8 +225,8 @@ public class CreateNewGroupActivity extends AppCompatActivity {
         vm.setSelecting(true);
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
-        etSearch.requestFocus();
         ivButtonAction.setImageResource(R.drawable.ic_close_grey);
+        Utils.getInstance().showKeyboard(this, etSearch);
     }
 
     private void updateSelectedMemberDecoration() {

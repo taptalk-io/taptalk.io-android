@@ -34,6 +34,7 @@
     <string name="group_name">Group Name</string>
     <string name="group_picture">Group Picture</string>
     <string name="create_group">Create Group</string>
+    <string name="type_group_name">Type group name</string>
 
     <!--Guides-->
     <string name="new_chat_guide">You can start a new chat by tapping the icon on the bottom right corner</string>
