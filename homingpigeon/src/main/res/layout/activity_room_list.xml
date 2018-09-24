@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.Activity.RoomListActivity">
+    tools:context=".View.Activity.RoomListActivity"
+    android:background="@color/white_f3">
 
     <fragment
         android:id="@+id/fragment_room_list"

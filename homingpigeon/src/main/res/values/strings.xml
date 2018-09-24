@@ -75,6 +75,6 @@
     <string name="ok">OK</string>
     <string name="oops">Oops…</string>
     <string name="could_not_find_any_results">Could not find any results</string>
-    <string name="recent_searches">Recent Searches</string>
-    <string name="clear_history">Clear history</string>
+    <string name="recent_searches">RECENT SEARCHES</string>
+    <string name="clear_history">CLEAR HISTORY</string>
 </resources>

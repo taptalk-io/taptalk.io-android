@@ -4,9 +4,16 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
+import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
+import com.moselo.HomingPigeon.Model.SearchChatModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchChatViewModel extends AndroidViewModel {
 
-    public boolean isSearchActive = false;
+    private boolean isSearchActive = false;
+    private List<SearchChatModel> searchList;
 
     public SearchChatViewModel(@NonNull Application application) {
         super(application);
@@ -18,5 +25,20 @@ public class SearchChatViewModel extends AndroidViewModel {
 
     public void setSearchActive(boolean searchActive) {
         isSearchActive = searchActive;
+    }
+
+    public List<SearchChatModel> getSearchList() {
+        return null != searchList? searchList : new ArrayList<>();
+    }
+
+    public void setSearchList(List<SearchChatModel> searchList) {
+        this.searchList = searchList;
+    }
+
+    public void addSearchList(SearchChatModel model) {
+        if (null == searchList)
+            searchList = new ArrayList<>();
+
+        searchList.add(model);
     }
 }
