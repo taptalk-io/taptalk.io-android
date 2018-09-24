@@ -51,11 +51,6 @@ public class DefaultConstant {
         public static final int TYPE_BUBBLE_LEFT = 2;
     }
 
-    public static final class BarcodeScannerState {
-        public static final int STATE_SCAN = 1;
-        public static final int STATE_SHOW = 2;
-    }
-
     public static final class Extras {
         public static final String MY_ID = "myID";
         public static final String GROUP_MEMBERS = "groupMembers";

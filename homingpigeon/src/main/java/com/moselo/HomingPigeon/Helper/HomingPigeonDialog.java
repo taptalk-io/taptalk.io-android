@@ -76,6 +76,7 @@ public class HomingPigeonDialog extends Dialog {
                 dismiss();
         }
     }
+
     private void initiateButton(@IdRes int id, String text) {
         TextView view = findViewById(id);
         if (!text.equals("")) {
@@ -103,8 +104,8 @@ public class HomingPigeonDialog extends Dialog {
         //listener
         protected View.OnClickListener emptyListener = v -> {};
         protected View.OnClickListener primaryListener = emptyListener;
-        protected boolean primaryIsDismiss = false;
         protected View.OnClickListener secondaryListener = emptyListener;
+        protected boolean primaryIsDismiss = false;
         protected boolean secondaryIsDismiss = false;
 
         public Builder(Context context) {
@@ -141,8 +142,20 @@ public class HomingPigeonDialog extends Dialog {
             return this;
         }
 
+        public Builder setPrimaryButtonListener(View.OnClickListener primaryListener) {
+            this.primaryIsDismiss = true;
+            this.primaryListener = primaryListener;
+            return this;
+        }
+
         public Builder setSecondaryButtonListener(boolean isDismissOnClick, View.OnClickListener secondaryListener) {
             this.secondaryIsDismiss = isDismissOnClick;
+            this.secondaryListener = secondaryListener;
+            return this;
+        }
+
+        public Builder setSecondaryButtonListener(View.OnClickListener secondaryListener) {
+            this.secondaryIsDismiss = true;
             this.secondaryListener = secondaryListener;
             return this;
         }

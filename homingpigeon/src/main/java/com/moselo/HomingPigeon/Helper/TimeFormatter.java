@@ -28,32 +28,6 @@ public class TimeFormatter {
     public static final int TYPE_DEFAULT = 0;
     public static final int TYPE_ONLINE_STATUS = 1;
 
-    public static String toDuration(long time) {
-        long duration;
-        Calendar past = Calendar.getInstance();
-        past.setTime(new Date(time));
-        duration = Calendar.getInstance().getTimeInMillis() - past.getTimeInMillis();
-
-        StringBuffer res = new StringBuffer();
-        for (int i = 0; i < TimeFormatter.times.size(); i++) {
-            Long current = TimeFormatter.times.get(i);
-            long temp = duration / current;
-            if (temp > 0) {
-                if (TimeFormatter.timesString.get(i).equals("second"))
-                    res.append("");
-                else {
-                    res.append(temp).append(" ").append(TimeFormatter.timesString.get(i)).append(
-                            temp != 1 ? "s" : "").append(" ago");
-                }
-                break;
-            }
-        }
-        if ("".equals(res.toString()))
-            return "just now";
-        else
-            return res.toString();
-    }
-
     public static String durationString(long timestamp, int type) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();

@@ -8,16 +8,16 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Fragment.BarcodeScannerFragment;
 import com.moselo.HomingPigeon.View.Fragment.ShowQRFragment;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.BarcodeScannerState.STATE_SCAN;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.BarcodeScannerState.STATE_SHOW;
-
 public class BarcodeScannerActivity extends BaseActivity {
-
     private BarcodeScannerFragment fBarcodeScanner;
     private ShowQRFragment fShowQR;
     private TextView tvToolbarTitle;
     private ImageView ivBack;
-    private int state;
+
+    private enum ScanState {
+        SCAN, SHOW
+    }
+    private ScanState state = ScanState.SCAN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class BarcodeScannerActivity extends BaseActivity {
     }
 
     public void showScanner() {
-        state = STATE_SCAN;
+        state = ScanState.SCAN;
         tvToolbarTitle.setText(getResources().getText(R.string.scan_qr_code));
         getSupportFragmentManager()
                 .beginTransaction()
@@ -50,7 +50,7 @@ public class BarcodeScannerActivity extends BaseActivity {
     }
 
     public void showQR() {
-        state = STATE_SHOW;
+        state = ScanState.SHOW;
         tvToolbarTitle.setText(getResources().getText(R.string.show_qr_code));
         getSupportFragmentManager()
                 .beginTransaction()
