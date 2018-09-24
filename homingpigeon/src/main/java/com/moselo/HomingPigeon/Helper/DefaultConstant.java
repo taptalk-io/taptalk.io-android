@@ -54,6 +54,8 @@ public class DefaultConstant {
     public static final class Extras {
         public static final String MY_ID = "myID";
         public static final String GROUP_MEMBERS = "groupMembers";
+        public static final String GROUP_NAME = "kGroupName";
+        public static final String GROUP_IMAGE = "kGroupImage";
     }
 
     public static final class RequestCode {

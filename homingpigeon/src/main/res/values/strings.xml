@@ -47,6 +47,7 @@
 
     <!--Error Message-->
     <string name="error_message_group_name_empty">Please enter a group name.</string>
+    <string name="failed_to_load_image">Failed to load image.</string>
 
     <!--Attachment-->
     <string name="document">Document</string>

@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import com.moselo.HomingPigeon.Model.GroupModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.ArrayList;
@@ -12,20 +13,19 @@ import java.util.List;
 
 public class GroupViewModel extends AndroidViewModel {
 
-    private String groupName, myID;
-    private Uri groupImage;
-    private List<UserModel> groupMembers;
+    private GroupModel groupData;
+    private String myID;
 
     public GroupViewModel(@NonNull Application application) {
         super(application);
     }
 
-    public String getGroupName() {
-        return groupName;
+    public GroupModel getGroupData() {
+        return groupData == null ? groupData = new GroupModel() : groupData;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroupData(GroupModel groupData) {
+        this.groupData = groupData;
     }
 
     public String getMyID() {
@@ -34,21 +34,5 @@ public class GroupViewModel extends AndroidViewModel {
 
     public void setMyID(String myID) {
         this.myID = myID;
-    }
-
-    public Uri getGroupImage() {
-        return groupImage;
-    }
-
-    public void setGroupImage(Uri groupImage) {
-        this.groupImage = groupImage;
-    }
-
-    public List<UserModel> getGroupMembers() {
-        return null == groupMembers ? groupMembers = new ArrayList<>() : groupMembers;
-    }
-
-    public void setGroupMembers(List<UserModel> groupMembers) {
-        this.groupMembers = groupMembers;
     }
 }
