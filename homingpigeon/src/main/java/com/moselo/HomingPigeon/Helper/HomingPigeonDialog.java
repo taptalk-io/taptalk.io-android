@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.UiThread;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -13,42 +15,15 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.R;
 
-public class HomingPigeonDialog extends Dialog implements View.OnClickListener{
+public class HomingPigeonDialog extends Dialog {
 
     private static final String TAG = HomingPigeonDialog.class.getSimpleName();
-    public Context context;
-    public Dialog dialog;
-    public TextView title, message, secondary, primary;
-    private String dialogTitle = "", dialogMessage = "", textSecondary = "", textPrimary = "";
-    int layout;
+    protected final Builder mBuilder;
+    protected TextView title, message, primary, secondary;
 
-    //listener
-    View.OnClickListener primaryListener = null;
-    View.OnClickListener secondaryListener = null;
-
-    public HomingPigeonDialog(Context context, String dialogTitle, String dialogMessage,
-                              String textPrimary, View.OnClickListener primaryListener,
-                              String textSecondary, View.OnClickListener secondaryListener) {
-        super(context);
-        this.context = context;
-        this.dialogTitle = dialogTitle;
-        this.dialogMessage = dialogMessage;
-        this.textPrimary = textPrimary;
-        this.primaryListener = primaryListener;
-        this.textSecondary = textSecondary;
-        this.secondaryListener = secondaryListener;
-        layout = 1;
-    }
-
-    public HomingPigeonDialog(Context context, String dialogTitle, String dialogMessage,
-                              String textPrimary, View.OnClickListener primaryListener) {
-        super(context);
-        this.context = context;
-        this.dialogTitle = dialogTitle;
-        this.dialogMessage = dialogMessage;
-        this.textPrimary = textPrimary;
-        this.primaryListener = primaryListener;
-        layout = 2;
+    public HomingPigeonDialog(Builder builder) {
+        super(builder.context);
+        mBuilder = builder;
     }
 
     @Override
@@ -67,27 +42,49 @@ public class HomingPigeonDialog extends Dialog implements View.OnClickListener{
         primary = findViewById(R.id.tv_primary_btn);
         secondary = findViewById(R.id.tv_secondary_btn);
 
-        setTextInTextView(title, dialogTitle);
-        setTextInTextView(message, dialogMessage);
+        setTextInTextView(title, mBuilder.dialogTitle);
+        setTextInTextView(message, mBuilder.dialogMessage);
 
-        switch (layout) {
+        switch (mBuilder.layout) {
             case 1:
-                secondary.setVisibility(View.VISIBLE);
-                initiateButton(R.id.tv_secondary_btn, textSecondary);
-                initiateButton(R.id.tv_primary_btn, textPrimary);
+                secondary.setVisibility(View.GONE);
+                initiateButton(R.id.tv_primary_btn, mBuilder.textPrimary);
                 break;
             case 2:
-                secondary.setVisibility(View.GONE);
-                initiateButton(R.id.tv_primary_btn, textPrimary);
+                secondary.setVisibility(View.VISIBLE);
+                initiateButton(R.id.tv_secondary_btn, mBuilder.textSecondary);
+                initiateButton(R.id.tv_primary_btn, mBuilder.textPrimary);
                 break;
         }
+
     }
 
+    private class OnClickListener implements View.OnClickListener{
+        private View.OnClickListener listener;
+        private boolean isDismissOnClick;
+
+        public OnClickListener(View.OnClickListener listener, boolean isDismissOnClick) {
+            this.listener = listener;
+            this.isDismissOnClick = isDismissOnClick;
+        }
+
+        @Override
+        public void onClick(View v) {
+            listener.onClick(v);
+
+            if (isDismissOnClick)
+                dismiss();
+        }
+    }
     private void initiateButton(@IdRes int id, String text) {
         TextView view = findViewById(id);
         if (!text.equals("")) {
             view.setText(text);
-            view.setOnClickListener(this);
+
+            if (view.getId() == R.id.tv_primary_btn && null != mBuilder.primaryListener)
+                view.setOnClickListener(new OnClickListener(mBuilder.primaryListener, mBuilder.primaryIsDismiss));
+            else if (view.getId() == R.id.tv_secondary_btn && null != mBuilder.primaryListener)
+                view.setOnClickListener(new OnClickListener(mBuilder.secondaryListener, mBuilder.secondaryIsDismiss));
         }
     }
 
@@ -96,17 +93,72 @@ public class HomingPigeonDialog extends Dialog implements View.OnClickListener{
         else view.setText(text);
     }
 
-    @Override
-    public void show() {
-        super.show();
-    }
+    public static class Builder {
+        protected Context context;
 
-    @Override
-    public void onClick(View v) {
-        if (R.id.tv_primary_btn == v.getId() && null != primaryListener) {
-            primaryListener.onClick(v);
-        } else if (R.id.tv_secondary_btn == v.getId() && null != secondaryListener) {
-            secondaryListener.onClick(v);
+        protected String dialogTitle = "", dialogMessage = "", textSecondary = "", textPrimary = "";
+        protected int layout = 1; //1 one Button, 2 two button
+        protected HomingPigeonDialog dialog;
+
+        //listener
+        protected View.OnClickListener emptyListener = v -> {};
+        protected View.OnClickListener primaryListener = emptyListener;
+        protected boolean primaryIsDismiss = false;
+        protected View.OnClickListener secondaryListener = emptyListener;
+        protected boolean secondaryIsDismiss = false;
+
+        public Builder(Context context) {
+            this.context = context;
+        }
+
+        public Builder() {
+        }
+
+        public Builder setTitle(String dialogTitle) {
+            this.dialogTitle = dialogTitle;
+            return this;
+        }
+
+        public Builder setMessage(String dialogMessage) {
+            this.dialogMessage = dialogMessage;
+            return this;
+        }
+
+        public Builder setPrimaryButtonTitle(String textPrimary) {
+            this.textPrimary = textPrimary;
+            return this;
+        }
+
+        public Builder setSecondaryButtonTitle(String textSecondary) {
+            this.textSecondary = textSecondary;
+            layout = 2;
+            return this;
+        }
+
+        public Builder setPrimaryButtonListener(boolean isDismissOnClick, View.OnClickListener primaryListener) {
+            this.primaryListener = primaryListener;
+            this.primaryIsDismiss = isDismissOnClick;
+            return this;
+        }
+
+        public Builder setSecondaryButtonListener(boolean isDismissOnClick, View.OnClickListener secondaryListener) {
+            this.secondaryIsDismiss = isDismissOnClick;
+            this.secondaryListener = secondaryListener;
+            return this;
+        }
+
+        @UiThread
+        public HomingPigeonDialog build() {
+            HomingPigeonDialog dialog = new HomingPigeonDialog(this);
+            this.dialog = dialog;
+            return dialog;
+        }
+
+        @UiThread
+        public HomingPigeonDialog show() {
+            HomingPigeonDialog dialog = build();
+            dialog.show();
+            return dialog;
         }
     }
 }

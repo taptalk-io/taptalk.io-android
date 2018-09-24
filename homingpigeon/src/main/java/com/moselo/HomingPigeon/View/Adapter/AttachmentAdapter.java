@@ -64,26 +64,21 @@ public class AttachmentAdapter extends BaseAdapter<AttachmentModel, BaseViewHold
         @Override
         public void onClick(View v) {
             if (position % 2 == 0)
-                new HomingPigeonDialog(itemView.getContext(),
-                        "Title Here",
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.",
-                        "Primary",
-                        v1 -> {
-                            Toast.makeText(itemView.getContext(), "Primary", Toast.LENGTH_SHORT).show();
-
-                        },
-                        "Secondary",
-                        v2 -> {
-                            Toast.makeText(itemView.getContext(), "Secondary", Toast.LENGTH_SHORT).show();
-                        }).show();
+                new HomingPigeonDialog.Builder(itemView.getContext())
+                        .setTitle("Title Here")
+                        .setMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.")
+                        .setPrimaryButtonTitle("Primary")
+                        .setPrimaryButtonListener(false, v1 -> Toast.makeText(itemView.getContext(), "Primary Button", Toast.LENGTH_SHORT).show())
+                        .setSecondaryButtonTitle("Secondary")
+                        .setSecondaryButtonListener(true, v12 -> Toast.makeText(itemView.getContext(), "Secondary Button", Toast.LENGTH_SHORT).show())
+                        .show();
             else
-                new HomingPigeonDialog(itemView.getContext(),
-                        "Title Here",
-                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.",
-                        "Primary",
-                        v2 -> {
-                            Toast.makeText(itemView.getContext(), "Primary", Toast.LENGTH_SHORT).show();
-                        }).show();
+                new HomingPigeonDialog.Builder(itemView.getContext())
+                        .setTitle("Title Here")
+                        .setMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.")
+                        .setPrimaryButtonTitle("Primary")
+                        .setPrimaryButtonListener(true, v1 -> Toast.makeText(itemView.getContext(), "Primary Button", Toast.LENGTH_SHORT).show())
+                        .show();
         }
 
     }
