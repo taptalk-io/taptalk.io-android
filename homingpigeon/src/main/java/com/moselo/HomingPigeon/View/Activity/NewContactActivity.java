@@ -40,7 +40,7 @@ public class NewContactActivity extends BaseActivity {
         initViewModel();
         initView();
         setupDummyData();
-        Utils.showKeyboard(this, etSearch);
+        Utils.getInstance().showKeyboard(this, etSearch);
     }
 
     @Override

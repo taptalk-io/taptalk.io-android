@@ -32,16 +32,10 @@
 
         <TextView
             android:id="@+id/tv_title"
+            style="@style/HomingPigeonToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="@font/neueeinstellungbold"
-            android:gravity="center"
-            android:letterSpacing="-0.02"
-            android:maxLines="1"
             android:text="@string/new_group"
-            android:textColor="@color/colorTextTitle"
-            android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -49,19 +43,12 @@
 
         <EditText
             android:id="@+id/et_search"
+            style="@style/HomingPigeonSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/transparent"
-            android:fontFamily="@font/latoregular"
             android:hint="@string/search_for_contacts"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:maxLines="1"
             android:paddingEnd="16dp"
-            android:paddingStart="32dp"
-            android:textColor="@color/colorTextTitle"
-            android:textColorHint="@color/colorTextContent"
-            android:textSize="16sp"
+            android:paddingStart="16dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -105,15 +92,11 @@
 
         <TextView
             android:id="@+id/tv_member_count"
+            style="@style/HomingPigeonSectionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:fontFamily="@font/latobold"
-            android:letterSpacing="0.09"
-            android:textAllCaps="true"
-            android:textColor="@color/mediumPurple"
-            android:textSize="11sp"
             tools:text="Group Members (5/50)" />
 
         <android.support.v7.widget.RecyclerView
@@ -124,19 +107,15 @@
 
         <Button
             android:id="@+id/btn_continue"
+            style="@style/HomingPigeonButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="28dp"
-            android:background="@drawable/bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp"
-            android:fontFamily="@font/latobold"
-            android:letterSpacing="-0.01"
             android:text="@string/continue_s"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="17sp" />
+            android:textAllCaps="false" />
 
     </LinearLayout>
 

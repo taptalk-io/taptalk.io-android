@@ -7,15 +7,12 @@
 
     <TextView
         android:id="@+id/tv_initial"
+        style="@style/HomingPigeonSectionLabel"
         android:layout_width="match_parent"
         android:layout_height="34dp"
-        android:fontFamily="@font/latobold"
         android:gravity="start|center_vertical"
-        android:letterSpacing="0.09"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
-        android:textColor="@color/mediumPurple"
-        android:textSize="11sp"
         tools:text="A" />
 
     <android.support.v7.widget.RecyclerView

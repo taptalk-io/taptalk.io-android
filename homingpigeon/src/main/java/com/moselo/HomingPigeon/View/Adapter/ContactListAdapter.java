@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.View.Adapter;
 import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,8 +15,6 @@ import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<UserModel>> {
 
@@ -25,7 +22,7 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
     private ColorStateList avatarTint;
     private String myID;
     private int viewType;
-    private boolean isRemoving;
+    private boolean isAnimating = true;
 
     public static final int NONE = 0;
     public static final int CHAT = 1;
@@ -121,6 +118,7 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
                         break;
                     case SELECT:
                         if (null != listener && listener.onContactSelected(item, !item.isSelected())) {
+                            isAnimating = true;
                             item.setSelected(!item.isSelected());
                             notifyItemChanged(position);
                         }
@@ -147,15 +145,6 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
         protected void onBind(UserModel item, int position) {
             final int randomColor = Utils.getInstance().getRandomColor(item.getName());
 
-            // TODO: 19 September 2018 CURRENTLY USING TIMER TO PREVENT DATA INCONSISTENCY WHEN RAPIDLY REMOVING ITEMS
-            isRemoving = true;
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    isRemoving = false;
-                }
-            }, 200L);
-
             // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
             avatarTint = ColorStateList.valueOf(randomColor);
             ivAvatar.setBackgroundTintList(avatarTint);
@@ -181,18 +170,15 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
             }
 
             itemView.setOnClickListener(v -> {
-                if (null != listener && !item.getUserID().equals(myID) && !isRemoving) {
-                    isRemoving = true;
-                    removeItem(item);
+                if (null != listener && !item.getUserID().equals(myID) && !isAnimating) {
+                    isAnimating = true;
                     listener.onContactRemoved(item);
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            isRemoving = false;
-                        }
-                    }, 500L);
                 }
             });
         }
+    }
+
+    public void setAnimating(boolean animating) {
+        isAnimating = animating;
     }
 }

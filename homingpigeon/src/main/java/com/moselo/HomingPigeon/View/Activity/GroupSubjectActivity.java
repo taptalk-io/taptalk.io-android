@@ -42,7 +42,6 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.RequestCode.PICK_GR
 
 public class GroupSubjectActivity extends BaseActivity {
 
-    private final String TAG = GroupSubjectActivity.class.getSimpleName();
     private ImageView ivButtonBack, ivCamera;
     private CircleImageView civGroupImage;
     private TextView tvTitle, tvMemberCount;
@@ -105,7 +104,7 @@ public class GroupSubjectActivity extends BaseActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(GroupViewModel.class);
 
-        if (null != getIntent().getExtras()) {
+        if (null != vm && null != getIntent().getExtras()) {
             vm.setMyID(getIntent().getStringExtra(MY_ID));
             vm.setGroupMembers(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
         }
@@ -133,6 +132,7 @@ public class GroupSubjectActivity extends BaseActivity {
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
         tvMemberCount.setText(String.format(getString(R.string.group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
+        btnCreateGroup.setBackgroundResource(R.drawable.bg_d9d9d9_rounded_6dp);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
 

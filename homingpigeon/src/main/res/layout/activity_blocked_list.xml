@@ -30,17 +30,11 @@
 
         <TextView
             android:id="@+id/tv_title"
+            style="@style/HomingPigeonToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="?attr/actionBarSize"
-            android:ellipsize="end"
-            android:fontFamily="@font/neueeinstellungbold"
-            android:gravity="center"
-            android:letterSpacing="-0.02"
-            android:maxLines="1"
             android:text="@string/blocked_list"
-            android:textColor="@color/colorTextTitle"
-            android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -52,6 +46,6 @@
         android:id="@+id/rv_blocked_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="64dp"/>
+        android:layout_marginTop="64dp" />
 
 </FrameLayout>

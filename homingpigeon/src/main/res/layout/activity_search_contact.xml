@@ -29,28 +29,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:id="@+id/v_dummy_focus"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true" />
-
         <EditText
             android:id="@+id/et_search"
+            style="@style/HomingPigeonSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/transparent"
-            android:fontFamily="@font/latoregular"
             android:hint="@string/search_for_contacts"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:maxLines="1"
             android:paddingEnd="16dp"
-            android:paddingStart="32dp"
-            android:textColor="@color/colorTextTitle"
-            android:textColorHint="@color/colorTextContent"
-            android:textSize="16sp"
+            android:paddingStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_cancel"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -80,20 +66,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!--<TextView-->
-                <!--android:id="@+id/tv_label_results"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="34dp"-->
-                <!--android:fontFamily="@font/latobold"-->
-                <!--android:gravity="start|center_vertical"-->
-                <!--android:letterSpacing="0.09"-->
-                <!--android:paddingEnd="16dp"-->
-                <!--android:paddingStart="16dp"-->
-                <!--android:text="Search Results"-->
-                <!--android:textAllCaps="true"-->
-                <!--android:textColor="@color/mediumPurple"-->
-                <!--android:textSize="11sp" />-->
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_search_results"
                 android:layout_width="match_parent"
@@ -119,7 +91,7 @@
                     android:fontFamily="@font/neueeinstellungregular"
                     android:gravity="center"
                     android:text="@string/cant_find_person"
-                    android:textColor="@color/colorTextTitle"
+                    android:textColor="@color/black_44"
                     android:textSize="13sp" />
 
                 <TextView
