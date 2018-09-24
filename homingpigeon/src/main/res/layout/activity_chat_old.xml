@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="#f0f0f0"
+    tools:context=".View.Activity.ChatActivity">
+
+    <include
+        android:id="@+id/action_bar"
+        layout="@layout/cell_user_room" />
+
+    <FrameLayout
+        android:id="@+id/ll_chatlist"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/et_chat"
+        app:layout_constraintTop_toBottomOf="@id/action_bar">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_chatlist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:overScrollMode="never"
+            android:scrollbars="vertical" />
+
+    </FrameLayout>
+
+    <EditText
+        android:id="@+id/et_chat"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="#ffffff"
+        android:hint="Type your message"
+        android:imeActionId="@+id/send"
+        android:imeActionLabel="send"
+        android:imeOptions="actionSend"
+        android:paddingEnd="12dp"
+        android:paddingStart="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/iv_send"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_chatlist" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#cccccc"
+        app:layout_constraintBottom_toTopOf="@id/iv_send"
+        app:layout_constraintEnd_toStartOf="@id/iv_send"
+        app:layout_constraintTop_toTopOf="@id/et_chat" />
+
+    <ImageView
+        android:id="@+id/iv_send"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@color/colorPrimary"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="12dp"
+        android:src="@drawable/ic_send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/et_chat" />
+
+    <ImageView
+        android:id="@+id/iv_to_bottom"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_circle_f3f3f3"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:src="@drawable/ic_keyboard_arrow_down"
+        android:tint="#666666"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/iv_send"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_badge_unread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_amethyst_mediumpurple_270_rounded_10dp"
+        android:elevation="6dp"
+        android:fontFamily="@font/latobold"
+        android:paddingBottom="4dp"
+        android:paddingEnd="7dp"
+        android:paddingStart="7dp"
+        android:paddingTop="4dp"
+        android:textAlignment="center"
+        android:textColor="#ffffff"
+        android:textSize="11dp"
+        android:translationX="4dp"
+        android:translationY="-4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
+        app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
+        tools:text="1" />
+
+</android.support.constraint.ConstraintLayout>

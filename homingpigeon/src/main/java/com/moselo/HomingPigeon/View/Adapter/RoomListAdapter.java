@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
@@ -27,6 +28,7 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.ChatActivity;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
@@ -150,7 +152,7 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
                         ChatManager.getInstance().saveUnsentMessage();
                         Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                         intent.putExtra(K_MY_USERNAME, myUsername);
-                        intent.putExtra(K_THEIR_USERNAME, userModel.getName());
+                        intent.putExtra(ROOM_NAME, userModel.getName());
                         intent.putExtra(K_COLOR, randomColor);
                         intent.putExtra(K_ROOM_ID, item.getRoom().getRoomID());
                         itemView.getContext().startActivity(intent);

@@ -52,6 +52,7 @@ public class DefaultConstant {
     }
 
     public static final class Extras {
+        public static final String ROOM_NAME = "roomName";
         public static final String MY_ID = "myID";
         public static final String GROUP_MEMBERS = "groupMembers";
         public static final String GROUP_NAME = "kGroupName";
