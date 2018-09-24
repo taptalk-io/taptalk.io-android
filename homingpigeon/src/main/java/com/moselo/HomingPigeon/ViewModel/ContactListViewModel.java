@@ -16,6 +16,8 @@ public class ContactListViewModel extends AndroidViewModel {
     private List<UserModel> filteredContacts;
     private List<UserModel> selectedContacts;
     private List<List<UserModel>> separatedContacts;
+    private String groupImage;
+    private String groupName;
     private boolean isSelecting;
 
     public ContactListViewModel(@NonNull Application application) {
@@ -52,6 +54,22 @@ public class ContactListViewModel extends AndroidViewModel {
 
     public void setSeparatedContacts(List<List<UserModel>> separatedContacts) {
         this.separatedContacts = separatedContacts;
+    }
+
+    public String getGroupImage() {
+        return groupImage;
+    }
+
+    public void setGroupImage(String groupImage) {
+        this.groupImage = groupImage;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public boolean isSelecting() {

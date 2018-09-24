@@ -34,7 +34,9 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.ContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.GroupViewModel;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_IMAGE;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
@@ -68,23 +70,9 @@ public class GroupSubjectActivity extends AppCompatActivity {
             case RESULT_OK:
                 switch (requestCode) {
                     case PICK_GROUP_IMAGE:
-                        vm.setGroupImage(data.getData());
-                        if (null != vm.getGroupImage()) {
-                            GlideApp.with(GroupSubjectActivity.this).load(vm.getGroupImage()).listener(new RequestListener<Drawable>() {
-                                @Override
-                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                    civGroupImage.setImageResource(R.drawable.bg_circle_d9d9d9);
-                                    Toast.makeText(GroupSubjectActivity.this, "Failed to load image.", Toast.LENGTH_SHORT).show();
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                    ivCamera.setVisibility(View.GONE);
-                                    return false;
-                                }
-                            }).into(civGroupImage);
-                        }
+                        if (null == data.getData()) return;
+                        vm.getGroupData().setGroupImage(data.getData().toString());
+                        loadGroupImage();
                         break;
                 }
         }
@@ -101,13 +89,21 @@ public class GroupSubjectActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        if (null != vm.getGroupData().getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupData().getGroupName());
+        if (null != vm.getGroupData().getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupData().getGroupImage().toString());
+        setResult(RESULT_CANCELED, intent);
+        finish();
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(GroupViewModel.class);
-
-        if (null != vm && null != getIntent().getExtras()) {
-            vm.setMyID(getIntent().getStringExtra(MY_ID));
-            vm.setGroupMembers(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
-        }
+        vm.setMyID(getIntent().getStringExtra(MY_ID));
+        vm.getGroupData().setGroupMembers(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
+        vm.getGroupData().setGroupName(getIntent().getStringExtra(GROUP_NAME));
+        vm.getGroupData().setGroupImage(getIntent().getStringExtra(GROUP_IMAGE));
     }
 
     private void initView() {
@@ -122,7 +118,7 @@ public class GroupSubjectActivity extends AppCompatActivity {
 
         etGroupName.addTextChangedListener(groupNameWatcher);
 
-        adapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getGroupMembers(), null, vm.getMyID());
+        adapter = new ContactListAdapter(ContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupMembers(), null, vm.getMyID());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new HorizontalDecoration(0, 0,
@@ -132,6 +128,8 @@ public class GroupSubjectActivity extends AppCompatActivity {
 
         tvMemberCount.setText(String.format(getString(R.string.group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
         btnCreateGroup.setBackgroundResource(R.drawable.bg_d9d9d9_rounded_6dp);
+        loadGroupName();
+        loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
 
@@ -139,7 +137,7 @@ public class GroupSubjectActivity extends AppCompatActivity {
 
         btnCreateGroup.setOnClickListener(v -> {
             String groupName = etGroupName.getText().toString();
-            if (!groupName.trim().isEmpty() && vm.getGroupMembers().size() > 0) {
+            if (!groupName.trim().isEmpty() && vm.getGroupData().getGroupMembers().size() > 0) {
                 // TODO: 19 September 2018 CREATE AND OPEN GROUP
                 Toast.makeText(this, "Group Created!", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK);
@@ -161,6 +159,30 @@ public class GroupSubjectActivity extends AppCompatActivity {
         }
     }
 
+    private void loadGroupName() {
+        if (null == vm.getGroupData().getGroupName()) return;
+        etGroupName.setText(vm.getGroupData().getGroupName());
+    }
+
+    private void loadGroupImage() {
+        if (null == vm.getGroupData().getGroupImage()) return;
+        GlideApp.with(GroupSubjectActivity.this).load(vm.getGroupData().getGroupImage()).listener(new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                civGroupImage.setImageResource(R.drawable.bg_circle_d9d9d9);
+                Toast.makeText(GroupSubjectActivity.this, R.string.failed_to_load_image, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                ivCamera.setVisibility(View.GONE);
+                return false;
+            }
+        }).into(civGroupImage);
+
+    }
+
     private TextWatcher groupNameWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -171,8 +193,10 @@ public class GroupSubjectActivity extends AppCompatActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
                 btnCreateGroup.setBackgroundResource(R.drawable.bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp);
+                vm.getGroupData().setGroupName(s.toString());
             } else {
                 btnCreateGroup.setBackgroundResource(R.drawable.bg_d9d9d9_rounded_6dp);
+                vm.getGroupData().setGroupName("");
             }
         }
 

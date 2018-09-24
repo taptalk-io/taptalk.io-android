@@ -33,8 +33,9 @@ import com.moselo.HomingPigeon.ViewModel.ContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_IMAGE;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.GROUP_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.GROUP_MEMBER_LIMIT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
@@ -72,6 +73,15 @@ public class CreateNewGroupActivity extends AppCompatActivity {
                 switch (requestCode) {
                     case CREATE_GROUP:
                         finish();
+                        break;
+                }
+            case RESULT_CANCELED:
+                switch (requestCode) {
+                    case CREATE_GROUP:
+                        if (null != data) {
+                            vm.setGroupName(data.getStringExtra(GROUP_NAME));
+                            vm.setGroupImage(data.getStringExtra(GROUP_IMAGE));
+                        }
                         break;
                 }
         }
@@ -210,9 +220,10 @@ public class CreateNewGroupActivity extends AppCompatActivity {
 
         btnContinue.setOnClickListener(v -> {
             Intent intent = new Intent(this, GroupSubjectActivity.class);
-//            intent.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
+            if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());
+            if (null != vm.getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
             startActivityForResult(intent, CREATE_GROUP);
         });
     }
