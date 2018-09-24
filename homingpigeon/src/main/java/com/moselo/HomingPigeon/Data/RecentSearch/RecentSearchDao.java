@@ -19,6 +19,9 @@ public interface RecentSearchDao {
     @Delete
     void delete(RecentSearchEntity entity);
 
+    @Delete
+    void delete(List<RecentSearchEntity> entities);
+
     @Update
     void update(RecentSearchEntity entity);
 

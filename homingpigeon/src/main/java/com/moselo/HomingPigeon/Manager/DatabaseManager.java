@@ -73,6 +73,13 @@ public class DatabaseManager {
             throw new IllegalStateException("Recent Search Repository was not initialized");
     }
 
+    public void delete(List<RecentSearchEntity> recentSearchEntities) {
+        if (null != searchRepository)
+            searchRepository.delete(recentSearchEntities);
+        else
+            throw new IllegalStateException("Recent Search Repository was not initialized");
+    }
+
     public void updatePendingStatus() {
         if (null != messageRepository)
             messageRepository.updatePendingStatus();

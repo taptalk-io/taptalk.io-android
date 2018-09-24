@@ -80,6 +80,10 @@ public class DataManager {
         DatabaseManager.getInstance().delete(recentSearchEntity);
     }
 
+    public void deleteFromDatabase(List<RecentSearchEntity> recentSearchEntities) {
+        DatabaseManager.getInstance().delete(recentSearchEntities);
+    }
+
     public void updateSendingMessageToFailed() {
         DatabaseManager.getInstance().updatePendingStatus();
     }
