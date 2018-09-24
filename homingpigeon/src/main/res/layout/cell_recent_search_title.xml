@@ -8,26 +8,39 @@
 
     <TextView
         android:id="@+id/tv_recent_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:fontFamily="@font/latobold"
         android:letterSpacing="0.09"
+        android:text="@string/recent_searches"
         android:textColor="@color/mediumPurple"
         android:textSize="12sp"
+        android:layout_marginEnd="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Recent Searches" />
+        app:layout_constraintEnd_toStartOf="@id/tv_clear_history"/>
 
     <TextView
+        android:id="@+id/tv_clear_history"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:textColor="@color/grey_9b"
-        android:letterSpacing="0.09"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/latobold"
         android:gravity="end"
-        tools:text="Clear history"
-        />
+        android:letterSpacing="0.09"
+        android:text="@string/clear_history"
+        android:textColor="@color/grey_9b"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/grey_ea"/>
 
 </android.support.constraint.ConstraintLayout>

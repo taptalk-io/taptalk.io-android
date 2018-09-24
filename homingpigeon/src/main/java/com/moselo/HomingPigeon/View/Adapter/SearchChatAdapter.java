@@ -4,6 +4,7 @@ import android.view.ViewGroup;
 
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
 import com.moselo.HomingPigeon.Model.SearchChatModel;
+import com.moselo.HomingPigeon.R;
 
 public class SearchChatAdapter extends BaseAdapter<SearchChatModel, BaseViewHolder<SearchChatModel>> {
 
@@ -11,7 +12,7 @@ public class SearchChatAdapter extends BaseAdapter<SearchChatModel, BaseViewHold
     public BaseViewHolder<SearchChatModel> onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (SearchChatModel.MyReturnType.values()[viewType]){
             case RECENT_TITLE:
-                return null;
+                return new RecentTitleVH(parent, R.layout.cell_recent_search_title);
             case RECENT_ITEM:
                 return null;
             case SECTION_TITLE:
@@ -30,5 +31,17 @@ public class SearchChatAdapter extends BaseAdapter<SearchChatModel, BaseViewHold
     @Override
     public int getItemViewType(int position) {
         return getItems().get(position).getMyReturnType().ordinal();
+    }
+
+    public class RecentTitleVH extends BaseViewHolder<SearchChatModel> {
+
+        protected RecentTitleVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+        }
+
+        @Override
+        protected void onBind(SearchChatModel item, int position) {
+
+        }
     }
 }

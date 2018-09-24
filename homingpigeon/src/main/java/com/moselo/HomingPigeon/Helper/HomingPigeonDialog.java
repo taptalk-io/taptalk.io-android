@@ -112,9 +112,6 @@ public class HomingPigeonDialog extends Dialog {
             this.context = context;
         }
 
-        public Builder() {
-        }
-
         public Builder setTitle(String dialogTitle) {
             this.dialogTitle = dialogTitle;
             return this;

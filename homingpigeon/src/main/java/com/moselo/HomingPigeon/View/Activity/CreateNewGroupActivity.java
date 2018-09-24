@@ -95,11 +95,14 @@ public class CreateNewGroupActivity extends BaseActivity {
                 if (isSelected) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
-                        new HomingPigeonDialog(
-                                CreateNewGroupActivity.this,
-                                getString(R.string.cannot_add_more_people),
-                                getString(R.string.group_limit_reached),
-                                getString(R.string.ok), null).show();
+                        new HomingPigeonDialog.Builder(CreateNewGroupActivity.this)
+                        .setTitle(getString(R.string.cannot_add_more_people))
+                        .setMessage(getString(R.string.group_limit_reached))
+                        .setPrimaryButtonTitle("OK")
+                        .setPrimaryButtonListener(v -> {
+
+                        })
+                        .show();
                         return false;
                     }
                     vm.getSelectedContacts().add(contact);
