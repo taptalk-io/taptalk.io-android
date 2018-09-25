@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -174,16 +175,18 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
     public class ProductVH extends BaseViewHolder<MessageModel> {
 
-        RecyclerView rlProductList;
+        RecyclerView rvProductList;
 
         protected ProductVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
-            rlProductList = itemView.findViewById(R.id.rv_product_list);
+            rvProductList = itemView.findViewById(R.id.rv_product_list);
         }
 
         @Override
         protected void onBind(MessageModel item, int position) {
-
+            rvProductList.setAdapter(new ProductListAdapter(item, myUserModel));
+            rvProductList.setHasFixedSize(false);
+            rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
         }
     }
 

@@ -18,17 +18,13 @@ public class ProductListAdapter extends BaseAdapter<ProductModel, BaseViewHolder
     private List<ProductModel> items = new ArrayList<>();
     private MessageModel messageModel;
     private UserModel myUserModel;
-    private int youID = -1;
-    private String otherName;
 
-    public ProductListAdapter(MessageModel messageModel, UserModel myUserModel, int youID, String otherName) {
+    public ProductListAdapter(MessageModel messageModel, UserModel myUserModel) {
         setItems(Utils.getInstance().fromJSON(
                 new TypeReference<List<ProductModel>>() {},
                 messageModel.getMessage()),false);
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
-        this.youID = youID;
-        this.otherName = otherName;
     }
 
     @Override
