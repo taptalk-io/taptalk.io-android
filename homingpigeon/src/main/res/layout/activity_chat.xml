@@ -185,6 +185,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/white"
+        android:animateLayoutChanges="true"
         app:layout_constraintBottom_toTopOf="@id/rv_custom_keyboard">
 
         <View
@@ -225,6 +226,7 @@
             android:textColor="@color/black_44"
             android:textColorHint="@color/grey_9b"
             android:textSize="15sp"
+            app:layout_goneMarginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_send"
             app:layout_constraintStart_toEndOf="@id/iv_chat_menu"

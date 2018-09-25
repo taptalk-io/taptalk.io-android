@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -10,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -19,19 +21,19 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
-import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Helper.Utils;
-import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
-import com.moselo.HomingPigeon.View.BottomSheet.AttachmentBottomSheet;
-import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
+import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
+import com.moselo.HomingPigeon.View.BottomSheet.AttachmentBottomSheet;
+import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +48,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     // View
     private RecyclerView rvMessageList, rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clEmptyChat;
+    private ConstraintLayout clEmptyChat, clChatInput;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
@@ -96,6 +98,13 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
         ChatManager.getInstance().setActiveRoom("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ChatManager.getInstance().saveUnsentMessage();
+        ChatManager.getInstance().deleteActiveRoom();
     }
 
     @Override
@@ -150,6 +159,23 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         runOnUiThread(() -> adapter.notifyItemRangeChanged(0, adapter.getItemCount()));
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        // Clear EditText focus when clicking outside chat input
+        if (ev.getAction() == MotionEvent.ACTION_UP) {
+            View v = getCurrentFocus();
+            if (null != v && v instanceof EditText) {
+                Rect outRect = new Rect();
+                clChatInput.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+                    v.clearFocus();
+                    Utils.getInstance().dismissKeyboard(ChatActivity.this);
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
         vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
@@ -162,6 +188,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     protected void initView() {
         flMessageList = findViewById(R.id.fl_message_list);
         clEmptyChat = findViewById(R.id.cl_empty_chat);
+        clChatInput = findViewById(R.id.cl_chat_input);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivRoomIcon = findViewById(R.id.iv_room_icon);
         ivButtonChatMenu = findViewById(R.id.iv_chat_menu);
@@ -203,7 +230,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         } else {
             // Chat is empty
             // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION
-            tvChatEmptyGuide.setText(Html.fromHtml("<b><font fgcolor='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert\ndon't forget to check out his/her services!"));
+            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert\ndon't forget to check out his/her services!"));
             tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
             civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
         }
@@ -234,13 +261,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             });
         }
 
-        etChat.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == R.id.send || actionId == EditorInfo.IME_NULL) {
-                attemptSend();
-                return true;
-            }
-            return false;
-        });
+        etChat.setOnEditorActionListener(chatEditorActionListener);
+        etChat.setOnFocusChangeListener(chatFocusChangeListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonChatMenu.setOnClickListener(v -> {
@@ -268,7 +290,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
         }
 
-        Log.e(TAG, "loadMessageFromDatabase: "+adapter.getItems().size() );
         runOnUiThread(() -> {
             if (null != adapter && 0 == adapter.getItems().size()) {
                 // First load
@@ -340,15 +361,29 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         vm.setUnreadCount(0);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        ChatManager.getInstance().saveUnsentMessage();
-        ChatManager.getInstance().deleteActiveRoom();
-    }
-
     private void openAttachMenu() {
         AttachmentBottomSheet attachBottomSheet = new AttachmentBottomSheet();
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
+
+    // Send message on IME action
+    private TextView.OnEditorActionListener chatEditorActionListener = (v, actionId, event) -> {
+        if (actionId == R.id.send || actionId == EditorInfo.IME_NULL) {
+            attemptSend();
+            return true;
+        }
+        return false;
+    };
+
+    // Show/hide keyboard menu
+    private View.OnFocusChangeListener chatFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                ivButtonChatMenu.setVisibility(View.GONE);
+            } else {
+                ivButtonChatMenu.setVisibility(View.VISIBLE);
+            }
+        }
+    };
 }
