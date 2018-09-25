@@ -7,7 +7,8 @@ public class SearchChatModel {
     public enum MyReturnType {
         RECENT_TITLE, RECENT_ITEM,
         SECTION_TITLE, CHAT_ITEM,
-        MESSAGE_ITEM, CONTACT_ITEM
+        MESSAGE_ITEM, CONTACT_ITEM,
+        EMPTY_STATE
     }
 
     private MyReturnType myReturnType;

@@ -44,6 +44,7 @@
     <string name="scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
     <string name="search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
     <string name="change_group_image_guide">Tap icon to change group profile image</string>
+    <string name="chat_other_user_is_expert"><b><font fgcolor='#784198'>%s</font></b> is an expert\ndon’t forget to check out his/her services!</string>
 
     <!--Error Message-->
     <string name="error_message_group_name_empty">Please enter a group name.</string>
@@ -70,11 +71,11 @@
     <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
     <string name="you">You</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="ok">OK</string>
     <string name="oops">Oops…</string>
     <string name="could_not_find_any_results">Could not find any results</string>
-    <string name="recent_searches">RECENT SEARCHES</string>
-    <string name="clear_history">CLEAR HISTORY</string>
+    <string name="recent_searches">Recent Searches</string>
+    <string name="clear_history">Clear history</string>
+    <string name="send_a_message">Send a message…</string>
+    <string name="send">Send</string>
 </resources>

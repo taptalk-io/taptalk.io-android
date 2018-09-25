@@ -8,19 +8,170 @@
     android:background="#f0f0f0"
     tools:context=".View.Activity.ChatActivity">
 
-    <include
-        android:id="@+id/action_bar"
-        layout="@layout/cell_user_room" />
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="2dp"
+        android:foreground="?attr/selectableItemBackground">
 
-    <FrameLayout
-        android:id="@+id/ll_chatlist"
+        <ImageView
+            android:id="@+id/iv_button_back"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/ic_back_white"
+            android:tint="@color/greenBlue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_room_name"
+            style="@style/HomingPigeonRoomName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_room_status"
+            app:layout_constraintEnd_toStartOf="@id/civ_room_image"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Room Name" />
+
+        <View
+            android:id="@+id/v_room_status_badge"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:background="@drawable/bg_circle_vibrantgreen"
+            app:layout_constraintBottom_toBottomOf="@id/tv_room_status"
+            app:layout_constraintEnd_toStartOf="@id/tv_room_status"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_room_status" />
+
+        <TextView
+            android:id="@+id/tv_room_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:fontFamily="@font/latoregular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="3sp"
+            android:textColor="@color/grey_9b"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/v_room_status_badge"
+            app:layout_constraintTop_toBottomOf="@id/tv_room_name"
+            tools:text="Active Now" />
+
+        <com.moselo.HomingPigeon.Helper.CircleImageView
+            android:id="@+id/civ_room_image"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_margin="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/bg_circle_d9d9d9"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_room_name"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_room_icon"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:src="@drawable/ic_verified"
+            app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
+            app:layout_constraintEnd_toEndOf="@id/civ_room_image" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/et_chat"
-        app:layout_constraintTop_toBottomOf="@id/action_bar">
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_input"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <TextView
+            android:id="@+id/tv_chat_empty_guide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/neueeinstellungregular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.02"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/chat_other_user_is_expert" />
+
+        <com.moselo.HomingPigeon.Helper.CircleImageView
+            android:id="@+id/civ_my_avatar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="36dp"
+            android:src="@drawable/bg_circle_d9d9d9"
+            android:translationX="14dp"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="4dp"
+            app:layout_constraintEnd_toStartOf="@id/civ_other_user_avatar"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide" />
+
+        <com.moselo.HomingPigeon.Helper.CircleImageView
+            android:id="@+id/civ_other_user_avatar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="36dp"
+            android:src="@drawable/bg_circle_d9d9d9"
+            android:translationX="-14dp"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/civ_my_avatar"
+            app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide" />
+
+        <TextView
+            android:id="@+id/tv_profile_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="18dp"
+            android:fontFamily="@font/latoregular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.02"
+            android:textColor="@color/black_44"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/civ_my_avatar"
+            tools:text="Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_message_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_input"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_chatlist"
+            android:id="@+id/rv_message_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -29,41 +180,92 @@
 
     </FrameLayout>
 
-    <EditText
-        android:id="@+id/et_chat"
-        android:layout_width="0dp"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_chat_input"
+        android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="#ffffff"
-        android:hint="Type your message"
-        android:imeActionId="@+id/send"
-        android:imeActionLabel="send"
-        android:imeOptions="actionSend"
-        android:paddingEnd="12dp"
-        android:paddingStart="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/iv_send"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_chatlist" />
+        android:background="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/rv_custom_keyboard">
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#cccccc"
-        app:layout_constraintBottom_toTopOf="@id/iv_send"
-        app:layout_constraintEnd_toStartOf="@id/iv_send"
-        app:layout_constraintTop_toTopOf="@id/et_chat" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/grey_ea"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_send"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@color/colorPrimary"
-        android:foreground="?attr/selectableItemBackground"
-        android:padding="12dp"
-        android:src="@drawable/ic_send"
+        <ImageView
+            android:id="@+id/iv_chat_menu"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginStart="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_chatmenu_keyboard"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/et_chat"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_chat"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_f5f5f5_white_270_stroke_e4e4e4_1dp_rounded_18dp"
+            android:hint="@string/send_a_message"
+            android:imeActionId="@+id/send"
+            android:imeActionLabel="@string/send"
+            android:imeOptions="actionSend"
+            android:inputType="text"
+            android:letterSpacing="-0.02"
+            android:paddingEnd="40dp"
+            android:paddingStart="8dp"
+            android:textColor="@color/black_44"
+            android:textColorHint="@color/grey_9b"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_send"
+            app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_attach"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_attach_grey"
+            app:layout_constraintBottom_toBottomOf="@id/et_chat"
+            app:layout_constraintEnd_toEndOf="@id/et_chat"
+            app:layout_constraintTop_toTopOf="@id/et_chat" />
+
+        <ImageView
+            android:id="@+id/iv_send"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="10dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginStart="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_send_inactive"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/et_chat"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_custom_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/et_chat" />
+        tools:visibility="gone" />
 
     <ImageView
         android:id="@+id/iv_to_bottom"
@@ -77,7 +279,7 @@
         android:src="@drawable/ic_keyboard_arrow_down"
         android:tint="#666666"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/iv_send"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_input"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView

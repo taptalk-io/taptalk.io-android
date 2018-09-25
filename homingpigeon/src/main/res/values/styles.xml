@@ -18,6 +18,16 @@
         <item name="android:textSize">17sp</item>
     </style>
 
+    <style name="HomingPigeonRoomName">
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/neueeinstellungbold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/black_44</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
     <style name="HomingPigeonButton">
         <item name="android:background">@drawable/bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp</item>
         <item name="android:fontFamily">@font/latobold</item>

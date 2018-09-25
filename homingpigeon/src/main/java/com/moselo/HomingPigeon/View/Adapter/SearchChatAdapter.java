@@ -132,4 +132,6 @@ public class SearchChatAdapter extends BaseAdapter<SearchChatModel, BaseViewHold
                     .centerCrop().override(Utils.getInstance().getScreenWidth(), Utils.getInstance().getScreeHeight()).into(civContactAvatar);
         }
     }
+
+    //public class Empty
 }
