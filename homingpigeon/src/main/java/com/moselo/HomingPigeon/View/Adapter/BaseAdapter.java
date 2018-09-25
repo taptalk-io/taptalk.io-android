@@ -39,6 +39,10 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder<T>> extends
         else notifyDataSetChanged();
     }
 
+    final public void setItems(List<T> items) {
+        setItems(items, false);
+    }
+
     final public void updateItem(T item, int index) {
         getItems().set(index, item);
     }

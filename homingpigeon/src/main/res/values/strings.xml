@@ -9,6 +9,14 @@
     <string name="show_qr_code">Show QR Code</string>
     <string name="blocked_list">Blocked List</string>
     <string name="group_subject">Group Subject</string>
+    <string name="see_price_list">See price list</string>
+    <string name="see_price_list_icon">👀</string>
+    <string name="read_expert_notes">Read expert’s notes</string>
+    <string name="read_expert_notes_icon">🔍</string>
+    <string name="send_services">Send services</string>
+    <string name="send_services_icon">💌</string>
+    <string name="create_order_card">Create order card</string>
+    <string name="create_order_card_icon">✏️</string>
 
     <!--Chat Room List-->
     <string name="setting_up_your_chatroom">Setting up your chatroom</string>
