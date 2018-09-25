@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_LOG;
@@ -46,11 +48,13 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
     public BaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
-                return new MessageHolder(parent, R.layout.cell_chat_right);
+                return new TextVH(parent, R.layout.cell_chat_right);
             case TYPE_BUBBLE_TEXT_LEFT:
-                return new MessageHolder(parent, R.layout.cell_chat_left);
+                return new TextVH(parent, R.layout.cell_chat_left);
+            case TYPE_BUBBLE_PRODUCT_LIST:
+                return new ProductVH(parent, R.layout.cell_chat_product_list);
             default:
-                return new MessageHolder(parent, R.layout.cell_chat_log);
+                return new TextVH(parent, R.layout.cell_chat_log);
         }
     }
 
@@ -72,6 +76,8 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     if (isMessageFromMySelf(messageModel))
                         return TYPE_BUBBLE_TEXT_RIGHT;
                     else return TYPE_BUBBLE_TEXT_LEFT;
+                case DefaultConstant.MessageType.TYPE_PRODUCT:
+                    return TYPE_BUBBLE_PRODUCT_LIST;
                 default:
                     return TYPE_LOG;
             }
@@ -87,14 +93,14 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
         else return false;
     }
 
-    public class MessageHolder extends BaseViewHolder<MessageModel> {
+    public class TextVH extends BaseViewHolder<MessageModel> {
 
         private ConstraintLayout clBubble;
         private LinearLayout llMessageStatus;
         private TextView tvUsername, tvMessage, tvTimestamp, tvStatus, tvDash;
         private MessageModel item;
 
-        protected MessageHolder(ViewGroup parent, int itemLayoutId) {
+        protected TextVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
@@ -163,6 +169,21 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     }
                 }
             });
+        }
+    }
+
+    public class ProductVH extends BaseViewHolder<MessageModel> {
+
+        RecyclerView rlProductList;
+
+        protected ProductVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+            rlProductList = itemView.findViewById(R.id.rv_product_list);
+        }
+
+        @Override
+        protected void onBind(MessageModel item, int position) {
+
         }
     }
 
