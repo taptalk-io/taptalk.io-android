@@ -8,6 +8,8 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ import com.moselo.HomingPigeon.ViewModel.SearchChatViewModel;
 
 import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.CHAT_ITEM;
 import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.CONTACT_ITEM;
+import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.EMPTY_STATE;
 import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.MESSAGE_ITEM;
 import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.RECENT_ITEM;
 import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.RECENT_TITLE;
@@ -70,7 +73,7 @@ public class SearchChatFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.e(TAG, "onViewCreated: " );
+        Log.e(TAG, "onViewCreated: ");
         initViewModel();
         initView(view);
         setDummyDataforRecent();
@@ -96,6 +99,27 @@ public class SearchChatFragment extends Fragment {
             } else {
                 showSearchBar();
                 setDummyDataforSearchChat();
+            }
+        });
+
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().toLowerCase().equals("empty")) {
+                    setEmptyState();
+                } else {
+                    setDummyDataforSearchChat();
+                }
             }
         });
 
@@ -147,6 +171,19 @@ public class SearchChatFragment extends Fragment {
         vm.addSearchList(recentItem);
         vm.addSearchList(recentItem);
         vm.addSearchList(recentItem);
+        adapter.setItems(vm.getSearchList(), false);
+    }
+
+    private void setEmptyState() {
+        vm.getSearchList().clear();
+
+        SearchChatModel emptyTitle = new SearchChatModel(SECTION_TITLE);
+        emptyTitle.setSectionTitle("SEARCH RESULTS");
+
+        SearchChatModel emptyItem = new SearchChatModel(EMPTY_STATE);
+
+        vm.addSearchList(emptyTitle);
+        vm.addSearchList(emptyItem);
         adapter.setItems(vm.getSearchList(), false);
     }
 

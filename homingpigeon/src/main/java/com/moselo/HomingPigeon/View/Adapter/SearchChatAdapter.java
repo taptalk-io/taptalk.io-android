@@ -35,7 +35,7 @@ public class SearchChatAdapter extends BaseAdapter<SearchChatModel, BaseViewHold
             case MESSAGE_ITEM:
                 return new MessageItemVH(parent, R.layout.cell_search_message_item);
             default:
-                return new RecentTitleVH(parent, R.layout.cell_recent_search_title);
+                return new EmptyItemVH(parent, R.layout.cell_search_recent_empty);
         }
     }
 
@@ -133,5 +133,15 @@ public class SearchChatAdapter extends BaseAdapter<SearchChatModel, BaseViewHold
         }
     }
 
-    //public class Empty
+    public class EmptyItemVH extends BaseViewHolder<SearchChatModel> {
+
+        protected EmptyItemVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+        }
+
+        @Override
+        protected void onBind(SearchChatModel item, int position) {
+
+        }
+    }
 }
