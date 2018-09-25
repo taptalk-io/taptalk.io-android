@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -21,13 +23,14 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_LEFT;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_RIGHT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_LOG;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
 
+    private static final String TAG = MessageAdapter.class.getSimpleName();
     private HomingPigeonChatListener listener;
     private UserModel myUserModel;
 
@@ -42,9 +45,9 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
     @Override
     public BaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_BUBBLE_RIGHT:
+            case TYPE_BUBBLE_TEXT_RIGHT:
                 return new MessageHolder(parent, R.layout.cell_chat_right);
-            case TYPE_BUBBLE_LEFT:
+            case TYPE_BUBBLE_TEXT_LEFT:
                 return new MessageHolder(parent, R.layout.cell_chat_left);
             default:
                 return new MessageHolder(parent, R.layout.cell_chat_log);
@@ -58,12 +61,30 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
     @Override
     public int getItemViewType(int position) {
-        if (null != getItems()) {
-            if (myUserModel.getUserID().equals(getItems().get(position).getUser().getUserID()))
-                return TYPE_BUBBLE_RIGHT;
-            else
-                return TYPE_BUBBLE_LEFT;
-        } else return TYPE_LOG;
+        try {
+            MessageModel messageModel = getItemAt(position);
+            int messageType = 0;
+            if (null != messageModel)
+                messageType = messageModel.getType();
+
+            switch (messageType) {
+                case DefaultConstant.MessageType.TYPE_TEXT :
+                    if (isMessageFromMySelf(messageModel))
+                        return TYPE_BUBBLE_TEXT_RIGHT;
+                    else return TYPE_BUBBLE_TEXT_LEFT;
+                default:
+                    return TYPE_LOG;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getItemViewType: ",e);
+            return TYPE_LOG;
+        }
+    }
+
+    private boolean isMessageFromMySelf(MessageModel messageModel) {
+        if (myUserModel.getUserID().equals(messageModel.getUser().getUserID()))
+            return true;
+        else return false;
     }
 
     public class MessageHolder extends BaseViewHolder<MessageModel> {
@@ -89,7 +110,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
         protected void onBind(MessageModel item, int position) {
 //            item = getItemAt(position);
 
-            if (getItemViewType() == TYPE_BUBBLE_LEFT) {
+            if (getItemViewType() == TYPE_BUBBLE_TEXT_LEFT) {
                 tvUsername.setText(item.getUser().getName());
 //                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
             } else {
