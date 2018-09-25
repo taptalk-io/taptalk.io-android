@@ -9,7 +9,7 @@
     tools:context="com.moselo.HomingPigeon.Testing.LibraryActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_chatlist"
+        android:id="@+id/rv_message_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="vertical"
@@ -25,7 +25,7 @@
         android:hint="Set Username"
         android:imeActionLabel="send"
         android:imeOptions="actionSend"
-        app:layout_constraintTop_toBottomOf="@id/rv_chatlist"
+        app:layout_constraintTop_toBottomOf="@id/rv_message_list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toLeftOf="@id/iv_send"
         app:layout_constraintLeft_toLeftOf="parent"/>

@@ -20,7 +20,7 @@
         app:layout_constraintTop_toBottomOf="@id/action_bar">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_chatlist"
+            android:id="@+id/rv_message_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

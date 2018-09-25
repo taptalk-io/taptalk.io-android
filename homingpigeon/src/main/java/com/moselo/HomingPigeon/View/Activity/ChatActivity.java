@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.UiThread;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,7 +44,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     private String TAG = ChatActivity.class.getSimpleName();
 
     // View
-    private RecyclerView rvChatList, rvCustomKeyboard;
+    private RecyclerView rvMessageList, rvCustomKeyboard;
+    private FrameLayout flMessageList;
     private ConstraintLayout clEmptyChat;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
@@ -159,6 +160,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     protected void initView() {
+        flMessageList = findViewById(R.id.fl_message_list);
         clEmptyChat = findViewById(R.id.cl_empty_chat);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivRoomIcon = findViewById(R.id.iv_room_icon);
@@ -174,7 +176,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         tvChatEmptyGuide = findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = findViewById(R.id.tv_profile_description);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
-        rvChatList = findViewById(R.id.rv_chatlist);
+        rvMessageList = findViewById(R.id.rv_message_list);
         rvCustomKeyboard = findViewById(R.id.rv_custom_keyboard);
         etChat = findViewById(R.id.et_chat);
         tvBadgeUnread = findViewById(R.id.tv_badge_unread);
@@ -191,10 +193,10 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         adapter.setMessages(vm.getMessageModels());
         llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         llm.setStackFromEnd(true);
-        rvChatList.setAdapter(adapter);
-        rvChatList.setLayoutManager(llm);
-        rvChatList.setHasFixedSize(false);
-        OverScrollDecoratorHelper.setUpOverScroll(rvChatList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        rvMessageList.setAdapter(adapter);
+        rvMessageList.setLayoutManager(llm);
+        rvMessageList.setHasFixedSize(false);
+        OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         if (vm.getMessageModels().size() > 0) {
             clEmptyChat.setVisibility(View.GONE);
@@ -208,7 +210,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
         final HomingPigeonDatabaseListener scrollChatListener = this::loadMessageFromDatabase;
 
-        rvChatList.addOnScrollListener(new EndlessScrollListener(llm) {
+        rvMessageList.addOnScrollListener(new EndlessScrollListener(llm) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < adapter.getItemCount()) {
@@ -219,7 +221,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            rvChatList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (llm.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
                     vm.setUnreadCount(0);
@@ -262,29 +264,33 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         }
         vm.setMessageModels(models);
 
-        // Check if chat is empty on first load
-//        if (vm.getLastTimestamp() == 0 && vm.getMessageModels().size() == 0) {
-//            runOnUiThread(() -> {
-//                // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION
-//                clEmptyChat.setVisibility(View.VISIBLE);
-//                tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
-//                tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
-//                civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
-//            });
-//        }
-
         if (vm.getMessageModels().size() > 0) {
             vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
         }
-        if (null != adapter && 0 == adapter.getItems().size()) {
-            runOnUiThread(() -> {
+
+        Log.e(TAG, "loadMessageFromDatabase: "+adapter.getItems().size() );
+        runOnUiThread(() -> {
+            if (null != adapter && 0 == adapter.getItems().size()) {
+                // First load
                 adapter.setMessages(models);
-                rvChatList.scrollToPosition(0);
-            });
-        } else if (null != adapter) {
-            runOnUiThread(() -> adapter.addMessage(models));
-            state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-        }
+                rvMessageList.scrollToPosition(0);
+                if (vm.getMessageModels().size() == 0) {
+                    // Chat is empty
+                    // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
+                    clEmptyChat.setVisibility(View.VISIBLE);
+                    tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
+                    tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
+                    civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+                } else {
+                    // Message exists
+                    flMessageList.setVisibility(View.VISIBLE);
+                }
+            } else if (null != adapter) {
+                runOnUiThread(() -> adapter.addMessage(models));
+                state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+                if (rvMessageList.getVisibility() != View.VISIBLE) rvMessageList.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void attemptSend() {
@@ -292,39 +298,43 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         if (!TextUtils.isEmpty(message.trim())) {
             etChat.setText("");
             ChatManager.getInstance().sendTextMessage(message);
-            rvChatList.scrollToPosition(0);
+            rvMessageList.scrollToPosition(0);
         }
     }
 
-    @UiThread
     private void addNewTextMessage(final MessageModel newMessage) {
-        clEmptyChat.setVisibility(View.GONE);
-        // Replace pending message with new message
-        String newID = newMessage.getLocalID();
-        boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
-                .getInstance().getActiveUser(ChatActivity.this).getUserID());
-        if (vm.getMessagePointer().containsKey(newID)) {
-            vm.updateMessagePointer(newMessage);
-            adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-        } else if (vm.isOnBottom() || ownMessage) {
-            // Scroll recycler to bottom
-            adapter.addMessage(newMessage);
-            rvChatList.scrollToPosition(0);
-        } else if (!ownMessage) {
-            // Show unread badge
-            adapter.addMessage(newMessage);
-            vm.setUnreadCount(vm.getUnreadCount() + 1);
-            tvBadgeUnread.setVisibility(View.VISIBLE);
-            tvBadgeUnread.setText(vm.getUnreadCount() + "");
-        }
-        // Remove pending message
-        if (ownMessage) {
-            vm.removeMessagePointer(newID);
-        }
+        runOnUiThread(() -> {
+            if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                clEmptyChat.setVisibility(View.GONE);
+                flMessageList.setVisibility(View.VISIBLE);
+            }
+            // Replace pending message with new message
+            String newID = newMessage.getLocalID();
+            boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
+                    .getInstance().getActiveUser(ChatActivity.this).getUserID());
+            if (vm.getMessagePointer().containsKey(newID)) {
+                vm.updateMessagePointer(newMessage);
+                adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+            } else if (vm.isOnBottom() || ownMessage) {
+                // Scroll recycler to bottom
+                adapter.addMessage(newMessage);
+                rvMessageList.scrollToPosition(0);
+            } else if (!ownMessage) {
+                // Show unread badge
+                adapter.addMessage(newMessage);
+                vm.setUnreadCount(vm.getUnreadCount() + 1);
+                tvBadgeUnread.setVisibility(View.VISIBLE);
+                tvBadgeUnread.setText(vm.getUnreadCount() + "");
+            }
+            // Remove pending message
+            if (ownMessage) {
+                vm.removeMessagePointer(newID);
+            }
+        });
     }
 
     private void scrollToBottom() {
-        rvChatList.scrollToPosition(0);
+        rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.INVISIBLE);
         tvBadgeUnread.setVisibility(View.INVISIBLE);
         vm.setUnreadCount(0);

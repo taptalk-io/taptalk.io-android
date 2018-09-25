@@ -174,7 +174,7 @@ public class ChatActivityOld extends BaseActivity implements View.OnClickListene
         tvUsername = findViewById(R.id.tv_full_name);
         tvUserStatus = findViewById(R.id.tv_last_message);
         tvLastMessageTime = findViewById(R.id.tv_last_message_time);
-        rvChatList = findViewById(R.id.rv_chatlist);
+        rvChatList = findViewById(R.id.rv_message_list);
         etChat = findViewById(R.id.et_chat);
         tvBadgeUnread = findViewById(R.id.tv_badge_unread);
         ivSend = findViewById(R.id.iv_send);
