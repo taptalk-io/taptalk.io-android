@@ -268,7 +268,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
         }
 
-        Log.e(TAG, "loadMessageFromDatabase: "+adapter.getItems().size() );
         runOnUiThread(() -> {
             if (null != adapter && 0 == adapter.getItems().size()) {
                 // First load
