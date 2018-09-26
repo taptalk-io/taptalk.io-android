@@ -133,7 +133,7 @@
             android:layout_width="9dp"
             android:layout_height="9dp"
             android:layout_marginStart="4dp"
-            android:src="@drawable/ic_sign_in"
+            android:src="@drawable/ic_connected_white"
             android:visibility="gone" />
 
     </LinearLayout>

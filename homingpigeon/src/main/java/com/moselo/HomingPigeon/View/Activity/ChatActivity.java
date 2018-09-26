@@ -2,36 +2,46 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.ConnectionManager;
+import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+import com.moselo.HomingPigeon.Model.CustomKeyboardModel;
+import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.View.Adapter.CustomKeyboardAdapter;
 import com.moselo.HomingPigeon.View.Adapter.MessageAdapter;
 import com.moselo.HomingPigeon.View.BottomSheet.AttachmentBottomSheet;
 import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
-import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
-import com.moselo.HomingPigeon.Manager.ChatManager;
-import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,16 +56,19 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     // View
     private RecyclerView rvMessageList, rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clEmptyChat;
+    private LinearLayout llConnectionStatus;
+    private ConstraintLayout clEmptyChat, clChatInput;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivConnectionStatus, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
-    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
+    private TextView tvRoomName, tvRoomStatus, tvConnectionStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
     private View vStatusBadge;
+    private ProgressBar pbConnecting;
 
     // RecyclerView
-    private MessageAdapter adapter;
-    private LinearLayoutManager llm;
+    private MessageAdapter messageAdapter;
+    private CustomKeyboardAdapter customKeyboardAdapter;
+    private LinearLayoutManager messageLayoutManager;
 
     // RoomDatabase
     private ChatViewModel vm;
@@ -75,12 +88,14 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         initViewModel();
         initView();
         initHelper();
+        initConnectionStatus();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         ChatManager.getInstance().removeChatListener(this);
+        ConnectionManager.getInstance().removeSocketListener(socketListener);
     }
 
     @Override
@@ -96,6 +111,13 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
         ChatManager.getInstance().setActiveRoom("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ChatManager.getInstance().saveUnsentMessage();
+        ChatManager.getInstance().deleteActiveRoom();
     }
 
     @Override
@@ -147,8 +169,25 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     public void onSendFailed(final MessageModel message) {
         vm.updateMessagePointer(message);
         vm.removeMessagePointer(message.getLocalID());
-        runOnUiThread(() -> adapter.notifyItemRangeChanged(0, adapter.getItemCount()));
+        runOnUiThread(() -> messageAdapter.notifyItemRangeChanged(0, messageAdapter.getItemCount()));
     }
+
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent ev) {
+//        // Clear EditText focus when clicking outside chat input
+//        if (ev.getAction() == MotionEvent.ACTION_UP) {
+//            View v = getCurrentFocus();
+//            if (null != v && v instanceof EditText) {
+//                Rect outRect = new Rect();
+//                clChatInput.getGlobalVisibleRect(outRect);
+//                if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+//                    v.clearFocus();
+//                    Utils.getInstance().dismissKeyboard(ChatActivity.this);
+//                }
+//            }
+//        }
+//        return super.dispatchTouchEvent(ev);
+//    }
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
@@ -161,9 +200,12 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     @Override
     protected void initView() {
         flMessageList = findViewById(R.id.fl_message_list);
+        llConnectionStatus = findViewById(R.id.ll_connection_status);
         clEmptyChat = findViewById(R.id.cl_empty_chat);
+        clChatInput = findViewById(R.id.cl_chat_input);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivRoomIcon = findViewById(R.id.iv_room_icon);
+        ivConnectionStatus = findViewById(R.id.iv_connection_status);
         ivButtonChatMenu = findViewById(R.id.iv_chat_menu);
         ivButtonAttach = findViewById(R.id.iv_attach);
         ivButtonSend = findViewById(R.id.iv_send);
@@ -173,6 +215,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         civOtherUserAvatar = findViewById(R.id.civ_other_user_avatar);
         tvRoomName = findViewById(R.id.tv_room_name);
         tvRoomStatus = findViewById(R.id.tv_room_status);
+        tvConnectionStatus = findViewById(R.id.tv_connection_status);
         tvChatEmptyGuide = findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = findViewById(R.id.tv_profile_description);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
@@ -180,6 +223,9 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         rvCustomKeyboard = findViewById(R.id.rv_custom_keyboard);
         etChat = findViewById(R.id.et_chat);
         tvBadgeUnread = findViewById(R.id.tv_badge_unread);
+        pbConnecting = findViewById(R.id.pb_connecting);
+
+        pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
 
         tvRoomName.setText(getIntent().getStringExtra(ROOM_NAME));
 
@@ -189,31 +235,42 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         // TODO: 24 September 2018 UPDATE ROOM STATUS
         tvRoomStatus.setText("User Status");
 
-        adapter = new MessageAdapter(this, this);
-        adapter.setMessages(vm.getMessageModels());
-        llm = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
-        llm.setStackFromEnd(true);
-        rvMessageList.setAdapter(adapter);
-        rvMessageList.setLayoutManager(llm);
+        messageAdapter = new MessageAdapter(this, this);
+        messageAdapter.setMessages(vm.getMessageModels());
+        messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        messageLayoutManager.setStackFromEnd(true);
+        rvMessageList.setAdapter(messageAdapter);
+        rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+
+        // TODO: 25 September 2018 CHANGE MENU ACCORDING TO USER ROLES
+        List<CustomKeyboardModel> customKeyboardMenus = new ArrayList<>();
+        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.SEE_PRICE_LIST));
+        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.READ_EXPERT_NOTES));
+        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.SEND_SERVICES));
+        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.CREATE_ORDER_CARD));
+        customKeyboardAdapter = new CustomKeyboardAdapter(customKeyboardMenus);
+        rvCustomKeyboard.setAdapter(customKeyboardAdapter);
+        rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        rvCustomKeyboard.setVisibility(View.VISIBLE);
 
         if (vm.getMessageModels().size() > 0) {
             clEmptyChat.setVisibility(View.GONE);
         } else {
             // Chat is empty
             // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION
-            tvChatEmptyGuide.setText(Html.fromHtml("<b><font fgcolor='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert\ndon't forget to check out his/her services!"));
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.chat_other_user_is_expert), getIntent().getStringExtra(ROOM_NAME))));
             tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
             civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
         }
 
         final HomingPigeonDatabaseListener scrollChatListener = this::loadMessageFromDatabase;
 
-        rvMessageList.addOnScrollListener(new EndlessScrollListener(llm) {
+        rvMessageList.addOnScrollListener(new EndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (state == STATE.LOADED && 0 < adapter.getItemCount()) {
+                if (state == STATE.LOADED && 0 < messageAdapter.getItemCount()) {
                     vm.getMessageByTimestamp(vm.getRoomID(), scrollChatListener, vm.getLastTimestamp());
                     state = STATE.WORKING;
                 }
@@ -222,7 +279,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                if (llm.findFirstVisibleItemPosition() == 0) {
+                if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
                     vm.setUnreadCount(0);
                     ivToBottom.setVisibility(View.INVISIBLE);
@@ -234,18 +291,11 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             });
         }
 
-        etChat.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == R.id.send || actionId == EditorInfo.IME_NULL) {
-                attemptSend();
-                return true;
-            }
-            return false;
-        });
+        etChat.addTextChangedListener(chatWatcher);
+        etChat.setOnFocusChangeListener(chatFocusChangeListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonChatMenu.setOnClickListener(v -> {
-            // TODO: 24 September 2018 TOGGLE CUSTOM KEYBOARD
-        });
+        ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> attemptSend());
         ivToBottom.setOnClickListener(v -> scrollToBottom());
@@ -269,9 +319,9 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         }
 
         runOnUiThread(() -> {
-            if (null != adapter && 0 == adapter.getItems().size()) {
+            if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
                 // First load
-                adapter.setMessages(models);
+                messageAdapter.setMessages(models);
                 rvMessageList.scrollToPosition(0);
                 if (vm.getMessageModels().size() == 0) {
                     // Chat is empty
@@ -284,8 +334,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                     // Message exists
                     flMessageList.setVisibility(View.VISIBLE);
                 }
-            } else if (null != adapter) {
-                runOnUiThread(() -> adapter.addMessage(models));
+            } else if (null != messageAdapter) {
+                runOnUiThread(() -> messageAdapter.addMessage(models));
                 state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                 if (rvMessageList.getVisibility() != View.VISIBLE) rvMessageList.setVisibility(View.VISIBLE);
             }
@@ -313,14 +363,14 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                     .getInstance().getActiveUser(ChatActivity.this).getUserID());
             if (vm.getMessagePointer().containsKey(newID)) {
                 vm.updateMessagePointer(newMessage);
-                adapter.notifyItemChanged(adapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (vm.isOnBottom() || ownMessage) {
                 // Scroll recycler to bottom
-                adapter.addMessage(newMessage);
+                messageAdapter.addMessage(newMessage);
                 rvMessageList.scrollToPosition(0);
             } else if (!ownMessage) {
                 // Show unread badge
-                adapter.addMessage(newMessage);
+                messageAdapter.addMessage(newMessage);
                 vm.setUnreadCount(vm.getUnreadCount() + 1);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setText(vm.getUnreadCount() + "");
@@ -339,15 +389,134 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         vm.setUnreadCount(0);
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        ChatManager.getInstance().saveUnsentMessage();
-        ChatManager.getInstance().deleteActiveRoom();
+    private void toggleCustomKeyboard() {
+        if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
+            // Show normal keyboard
+            rvCustomKeyboard.setVisibility(View.GONE);
+            ivButtonChatMenu.setImageResource(R.drawable.ic_chatmenu_hamburger);
+            etChat.requestFocus();
+        } else {
+            // Show Custom Keyboard
+            Utils.getInstance().dismissKeyboard(this);
+            etChat.clearFocus();
+            new Handler().postDelayed(() -> {
+                rvCustomKeyboard.setVisibility(View.VISIBLE);
+                ivButtonChatMenu.setImageResource(R.drawable.ic_chatmenu_keyboard);
+            }, 150L);
+        }
     }
 
     private void openAttachMenu() {
         AttachmentBottomSheet attachBottomSheet = new AttachmentBottomSheet();
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
+
+    private void initConnectionStatus() {
+        ConnectionManager.getInstance().addSocketListener(socketListener);
+        if (!NetworkStateManager.getInstance().hasNetworkConnection(this))
+            socketListener.onSocketDisconnected();
+    }
+
+    private void setStatusConnected() {
+        runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connected);
+            tvConnectionStatus.setText(getString(R.string.connected));
+            ivConnectionStatus.setImageResource(R.drawable.ic_connected_white);
+            ivConnectionStatus.setVisibility(View.VISIBLE);
+            pbConnecting.setVisibility(View.GONE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+
+            new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
+        });
+    }
+
+    private void setStatusConnecting() {
+        if (!NetworkStateManager.getInstance().hasNetworkConnection(this)) return;
+
+        runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connecting);
+            tvConnectionStatus.setText(R.string.connecting);
+            ivConnectionStatus.setVisibility(View.GONE);
+            pbConnecting.setVisibility(View.VISIBLE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void setStatusWaitingForNetwork() {
+        if (NetworkStateManager.getInstance().hasNetworkConnection(this)) return;
+
+        runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_offline);
+            tvConnectionStatus.setText(R.string.waiting_for_network);
+            ivConnectionStatus.setVisibility(View.GONE);
+            pbConnecting.setVisibility(View.VISIBLE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
+    // Update connection status UI
+    private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
+        @Override
+        public void onReceiveNewEmit(String eventName, String emitData) {
+
+        }
+
+        @Override
+        public void onSocketConnected() {
+            setStatusConnected();
+        }
+
+        @Override
+        public void onSocketDisconnected() {
+            setStatusWaitingForNetwork();
+        }
+
+        @Override
+        public void onSocketConnecting() {
+            setStatusConnecting();
+        }
+
+        @Override
+        public void onSocketError() {
+            setStatusWaitingForNetwork();
+        }
+    };
+
+    private TextWatcher chatWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (s.length() > 0) {
+                ivButtonChatMenu.setVisibility(View.GONE);
+                if (s.toString().trim().length() > 0) {
+                    ivButtonSend.setImageResource(R.drawable.ic_send_active);
+                } else {
+                    ivButtonSend.setImageResource(R.drawable.ic_send_inactive);
+                }
+            } else {
+                ivButtonChatMenu.setVisibility(View.VISIBLE);
+                ivButtonSend.setImageResource(R.drawable.ic_send_inactive);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    private View.OnFocusChangeListener chatFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+                rvCustomKeyboard.setVisibility(View.GONE);
+                ivButtonChatMenu.setImageResource(R.drawable.ic_chatmenu_hamburger);
+                Utils.getInstance().showKeyboard(ChatActivity.this, etChat);
+            }
+        }
+    };
 }
