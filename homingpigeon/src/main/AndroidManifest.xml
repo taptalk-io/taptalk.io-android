@@ -13,7 +13,8 @@
             android:stopWithTask="false" />
 
         <activity android:name=".View.Activity.BarcodeScannerActivity" />
-        <activity android:name=".View.Activity.ChatActivity" />
+        <activity android:name=".View.Activity.ChatActivity"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity android:name=".View.Activity.LoginActivity" />
         <activity android:name=".View.Activity.RoomListActivity" />
         <activity android:name=".View.Activity.NewChatActivity" />

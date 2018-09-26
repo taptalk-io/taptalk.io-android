@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Helper.ChatRecyclerView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
@@ -54,7 +55,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     private String TAG = ChatActivity.class.getSimpleName();
 
     // View
-    private RecyclerView rvMessageList, rvCustomKeyboard;
+    private ChatRecyclerView rvMessageList;
+    private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
     private LinearLayout llConnectionStatus;
     private ConstraintLayout clEmptyChat, clChatInput;
