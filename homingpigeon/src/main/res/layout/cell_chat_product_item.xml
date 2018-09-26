@@ -80,18 +80,42 @@
                 android:layout_width="match_parent"
                 android:layout_height="41dp">
 
+                <View
+                    android:id="@+id/v_btn_separator"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/grey_ea"
+                    app:layout_constraintStart_toEndOf="@id/tv_btn_details"
+                    app:layout_constraintEnd_toStartOf="@id/tv_btn_order"
+                    android:visibility="visible"/>
+
                 <TextView
                     android:id="@+id/tv_btn_details"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/v_btn_separator"
                     android:gravity="center"
                     android:text="Details"
                     android:fontFamily="@font/latoregular"
                     android:textColor="@color/grey_9b"
                     android:textSize="15sp"
                     android:letterSpacing="-0.2"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+
+                <TextView
+                    android:id="@+id/tv_btn_order"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    app:layout_constraintLeft_toRightOf="@id/v_btn_separator"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:gravity="center"
+                    android:text="Order"
+                    android:fontFamily="@font/latobold"
+                    android:textColor="@color/greenBlue"
+                    android:textSize="15sp"
+                    android:letterSpacing="-0.2"
+                    android:visibility="visible"
                     android:background="?attr/selectableItemBackgroundBorderless"/>
 
             </android.support.constraint.ConstraintLayout>
