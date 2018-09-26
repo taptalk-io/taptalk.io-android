@@ -7,13 +7,20 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.API.Api.ApiManager;
+import com.moselo.HomingPigeon.API.BaseResponse;
+import com.moselo.HomingPigeon.API.DefaultSubscriber;
+import com.moselo.HomingPigeon.API.View.DefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Model.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
+
+import rx.Subscriber;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
@@ -109,4 +116,9 @@ public class DataManager {
     }
 
     //API
+    public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
+            , String fullname, String email, String phone, String username, DefaultDataView<AuthTicketResponse> view) {
+        ApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
+                fullname, email, phone, username, new DefaultSubscriber<>(view));
+    }
 }

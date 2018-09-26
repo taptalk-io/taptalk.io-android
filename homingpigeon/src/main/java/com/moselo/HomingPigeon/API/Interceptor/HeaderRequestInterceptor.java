@@ -1,8 +1,11 @@
 package com.moselo.HomingPigeon.API.Interceptor;
 
+import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.BuildConfig;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
 
 import java.io.IOException;
 
@@ -35,19 +38,20 @@ public class HeaderRequestInterceptor implements Interceptor {
         else
             authorization = "Bearer "+ "";
 
-        //String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(),Settings.Secure.ANDROID_ID);
+        String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(),Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
+        Log.e(TAG, "intercept: "+appKey );
         Request request = original
                 .newBuilder()
                 .header("Content-Type", "application/json")
                 .header("App-Key", appKey)
                 .header("Authorization", authorization)
-                .header("Device-Identifier", android.os.Build.ID)
+                .header("Device-Identifier", deviceID)
                 .header("Device-Model", android.os.Build.MODEL)
-                .header("Device-Platform", "Android")
+                .header("Device-Platform", "android")
                 .header("Device-OS-Version", deviceOsVersion)
                 .header("App-Version", BuildConfig.VERSION_NAME)
-                .header("User-Agent", "Android")
+                .header("User-Agent", "android")
                 .method(original.method(), original.body())
                 .build();
 

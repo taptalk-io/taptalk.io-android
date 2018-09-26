@@ -28,15 +28,6 @@ public class RoomListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_list);
 
-        new Thread(() -> {
-            try {
-                Log.e(TAG, "onCreate: "+Utils.getInstance().getStringFromURL(new URL("https://api.ipify.org/")));
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "onCreate: ",e );
-            }
-        }).start();
-
         initView();
     }
 

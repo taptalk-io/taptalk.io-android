@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.BuildConfig;
+import com.moselo.HomingPigeon.Model.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.RequestModel.AuthTicketRequest;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -55,7 +57,7 @@ public class ApiManager {
         if (br.getError() != null) {
             String code = br.getError().getCode();
             if (BuildConfig.DEBUG)
-                Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code );
+                Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
 
 //            if (code == ERR_FORBIDDEN)
 //                return raiseApiTokenException(br);
@@ -63,7 +65,7 @@ public class ApiManager {
 //                return raiseApiSessionExpiredException(br);
         } else if (br.getError() == null) {
             if (BuildConfig.DEBUG)
-                Log.e(TAG, "validateResponse: √√ NO ERROR √√" );
+                Log.e(TAG, "validateResponse: √√ NO ERROR √√");
         }
         return Observable.just(t);
     }
@@ -75,6 +77,13 @@ public class ApiManager {
 //                ? createApiToken() : t instanceof ApiSessionExpiredException
 //                ? refreshToken() : Observable.error(t);
         return Observable.error(t);
+    }
+
+    public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
+            , String fullname, String email, String phone, String username, Subscriber<BaseResponse<AuthTicketResponse>> subscriber) {
+        AuthTicketRequest request = AuthTicketRequest.toBuilder(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
+                fullname, email, phone, username);
+        execute(homingPigeon.getAuthTicket(request), subscriber);
     }
 
 }

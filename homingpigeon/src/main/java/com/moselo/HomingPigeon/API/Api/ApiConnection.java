@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.API.Api;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.API.Interceptor.HeaderRequestInterceptor;
@@ -64,6 +65,7 @@ public class ApiConnection {
         loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
         return new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .readTimeout(2, TimeUnit.MINUTES)
                 .writeTimeout(2, TimeUnit.MINUTES)

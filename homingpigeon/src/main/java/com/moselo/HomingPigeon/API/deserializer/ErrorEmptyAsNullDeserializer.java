@@ -26,6 +26,7 @@ public class ErrorEmptyAsNullDeserializer extends JsonDeserializer<ErrorModel> {
         ErrorModel error = new ErrorModel();
         error.setCode(node.get("code").asText());
         error.setMessage(node.get("message").asText());
+        error.setStatus(node.get("status").asInt());
         return error;
     }
 }

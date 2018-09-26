@@ -2,22 +2,32 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.API.View.DefaultDataView;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Model.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
+
+import java.io.IOException;
+import java.net.URL;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 
 public class LoginActivity extends BaseActivity {
 
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private TextInputEditText etUsername;
     private TextInputEditText etPassword;
     private TextView tvSignIn;
@@ -76,12 +86,24 @@ public class LoginActivity extends BaseActivity {
             progressBar.setVisibility(View.VISIBLE);
             vOverlay.setVisibility(View.VISIBLE);
 
-            Intent intent = new Intent(this, RoomListActivity.class);
-            intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
-            startActivity(intent);
-            getUserID(getDummyUserID(etUsername.getText().toString())+ "", etUsername.getText().toString());
-            ConnectionManager.getInstance().connect();
-            finish();
+            new Thread(() -> {
+                try {
+                    String ipAddress = Utils.getInstance().getStringFromURL(new URL("https://api.ipify.org/"));
+                    String userAgent = "android";
+                    String userPlatform = "android";
+                    String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
+                    String fullname = etUsername.getText().toString();
+                    String email = "rionaldo@moselo.com";
+                    String phone = "08979809026";
+                    String username = etUsername.getText().toString();
+                    String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+                    DataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
+                            fullname, email, phone, username, authView);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "onCreate: ", e);
+                }
+            }).start();
         }
     }
 
@@ -153,4 +175,35 @@ public class LoginActivity extends BaseActivity {
                 return 0;
         }
     }
+
+    DefaultDataView<AuthTicketResponse> authView = new DefaultDataView<AuthTicketResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(AuthTicketResponse authTicketResponse) {
+            super.onSuccess(authTicketResponse);
+            runOnUiThread(() -> {
+                Intent intent = new Intent(LoginActivity.this, RoomListActivity.class);
+                intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
+                startActivity(intent);
+                getUserID(getDummyUserID(etUsername.getText().toString()) + "", etUsername.getText().toString());
+                ConnectionManager.getInstance().connect();
+                finish();
+            });
+        }
+
+        @Override
+        public void onError(ErrorModel error) {
+            super.onError(error);
+            Log.e(TAG, "onError: " + error);
+        }
+    };
 }
