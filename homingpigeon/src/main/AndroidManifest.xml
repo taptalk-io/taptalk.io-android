@@ -14,7 +14,7 @@
 
         <activity android:name=".View.Activity.BarcodeScannerActivity" />
         <activity android:name=".View.Activity.ChatActivity"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".View.Activity.LoginActivity" />
         <activity android:name=".View.Activity.RoomListActivity" />
         <activity android:name=".View.Activity.NewChatActivity" />

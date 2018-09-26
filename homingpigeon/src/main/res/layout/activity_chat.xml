@@ -92,42 +92,6 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_connection_status"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="@drawable/bg_status_connecting"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
-        app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
-
-        <TextView
-            android:id="@+id/tv_connection_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/latobold"
-            android:text="@string/connecting"
-            android:textColor="@color/white"
-            android:textSize="12dp" />
-
-        <ProgressBar
-            android:id="@+id/pb_connecting"
-            android:layout_width="9dp"
-            android:layout_height="9dp"
-            android:layout_marginStart="4dp" />
-
-        <ImageView
-            android:id="@+id/iv_connection_status"
-            android:layout_width="9dp"
-            android:layout_height="9dp"
-            android:layout_marginStart="4dp"
-            android:src="@drawable/ic_connected_white"
-            android:visibility="gone" />
-
-    </LinearLayout>
-
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
@@ -215,6 +179,42 @@
             android:scrollbars="vertical" />
 
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_connection_status"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/bg_status_connecting"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
+        app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
+
+        <TextView
+            android:id="@+id/tv_connection_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/latobold"
+            android:text="@string/connecting"
+            android:textColor="@color/white"
+            android:textSize="12dp" />
+
+        <ProgressBar
+            android:id="@+id/pb_connecting"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp" />
+
+        <ImageView
+            android:id="@+id/iv_connection_status"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_connected_white"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_chat_input"
