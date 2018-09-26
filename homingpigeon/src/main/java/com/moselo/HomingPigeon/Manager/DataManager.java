@@ -107,4 +107,6 @@ public class DataManager {
     public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
         return DataManager.getInstance().getRecentSearchLive();
     }
+
+    //API
 }

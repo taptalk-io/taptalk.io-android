@@ -1,9 +1,9 @@
-package com.moselo.SampleApps.Api;
+package com.moselo.HomingPigeon.API.Api;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moselo.HomingPigeon.API.Interceptor.HeaderRequestInterceptor;
 import com.moselo.HomingPigeon.BuildConfig;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -38,9 +38,9 @@ public class ApiConnection {
 
     private ApiConnection() {
         this.objectMapper = createObjectMapper();
-        OkHttpClient httpClient = buildHttpClient();
+        OkHttpClient httpHpClient = buildHttpHpClient();
 
-        Retrofit homingPigeonAdapter = buildApiAdapter(httpClient, HomingPigeonApiService.BASE_URL);
+        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClient, HomingPigeonApiService.BASE_URL);
 
         this.homingPigeon = homingPigeonAdapter.create(HomingPigeonApiService.class);
     }
@@ -59,20 +59,18 @@ public class ApiConnection {
         return objectMapper;
     }
 
-    private OkHttpClient buildHttpClient() {
+    private OkHttpClient buildHttpHpClient() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
         return new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .readTimeout(2, TimeUnit.MINUTES)
                 .writeTimeout(2, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
+                .addInterceptor(new HeaderRequestInterceptor())
                 .build();
-        //.addNetworkInterceptor(new Steth)
-
     }
 
     private Retrofit buildApiAdapter(OkHttpClient httpClient, String baseURL) {

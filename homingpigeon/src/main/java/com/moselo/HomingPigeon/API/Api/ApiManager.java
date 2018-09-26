@@ -1,9 +1,9 @@
-package com.moselo.SampleApps.Api;
+package com.moselo.HomingPigeon.API.Api;
 
 import android.util.Log;
 
-import com.moselo.SampleApps.Api.ApiConnection;
-import com.moselo.SampleApps.Api.HomingPigeonApiService;
+import com.moselo.HomingPigeon.API.BaseResponse;
+import com.moselo.HomingPigeon.BuildConfig;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -47,24 +47,24 @@ public class ApiManager {
     }
 
     private <T> Observable validateResponse(T t) {
-//        BaseResponse br = (BaseResponse) t;
-//
+        BaseResponse br = (BaseResponse) t;
+
 //        if (br.getAccessToken() != null && br.getRefreshToken() != null)
 //            updateSession((BaseResponse) t);
-//
-//        if (br.getError() != null) {
-//            int code = br.getError().getCode();
-//            if (BuildConfig.DEBUG)
-//                LogUtils.logError(LOG_TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
-//
+
+        if (br.getError() != null) {
+            String code = br.getError().getCode();
+            if (BuildConfig.DEBUG)
+                Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code );
+
 //            if (code == ERR_FORBIDDEN)
 //                return raiseApiTokenException(br);
 //            else if (code == ERR_TOKEN_EXPIRED /*|| code == ERR_UNAUTHORIZED*/ || code == OK_ZOMBIE)
 //                return raiseApiSessionExpiredException(br);
-//        } else if (br.getError() == null) {
-//            if (BuildConfig.DEBUG)
-//                LogUtils.logError(LOG_TAG, "validateResponse: √√ NO ERROR √√");
-//        }
+        } else if (br.getError() == null) {
+            if (BuildConfig.DEBUG)
+                Log.e(TAG, "validateResponse: √√ NO ERROR √√" );
+        }
         return Observable.just(t);
     }
 
