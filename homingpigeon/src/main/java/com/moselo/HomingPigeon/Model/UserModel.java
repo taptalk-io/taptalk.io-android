@@ -36,7 +36,7 @@ public class UserModel implements Parcelable {
     @Nullable @JsonProperty("gender") private String gender;
     @Nullable @JsonProperty("isPermit") private Boolean isPermit;
     @Nullable @JsonProperty("isFriend") private Boolean isFriend;
-    @Nullable @JsonProperty("userRole") private String userRole;
+    @Nullable @JsonProperty("userRole") private UserRoleModel userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
     @Nullable @JsonProperty("created") private Long created;
     @Nullable @JsonProperty("updated") private Long updated;
@@ -153,12 +153,12 @@ public class UserModel implements Parcelable {
     }
 
     @Nullable @JsonProperty("userRole")
-    public String getUserRole() {
+    public UserRoleModel getUserRole() {
         return userRole;
     }
 
     @JsonProperty("userRole")
-    public void setUserRole(@Nullable String userRole) {
+    public void setUserRole(@Nullable UserRoleModel userRole) {
         this.userRole = userRole;
     }
 
@@ -215,7 +215,7 @@ public class UserModel implements Parcelable {
         dest.writeString(this.gender);
         dest.writeValue(this.isPermit);
         dest.writeValue(this.isFriend);
-        dest.writeString(this.userRole);
+        dest.writeParcelable(this.userRole, flags);
         dest.writeValue(this.lastLogin);
         dest.writeValue(this.created);
         dest.writeValue(this.updated);
@@ -233,7 +233,7 @@ public class UserModel implements Parcelable {
         this.gender = in.readString();
         this.isPermit = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isFriend = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.userRole = in.readString();
+        this.userRole = in.readParcelable(UserRoleModel.class.getClassLoader());
         this.lastLogin = (Long) in.readValue(Long.class.getClassLoader());
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
