@@ -29,6 +29,12 @@ public class RecentSearchRepository {
         }).start();
     }
 
+    public void delete(List<RecentSearchEntity> entities) {
+        new Thread(() -> {
+            recentSearchDao.delete(entities);
+        }).start();
+    }
+
     public void update(RecentSearchEntity entity) {
         new Thread(() -> {
             recentSearchDao.update(entity);

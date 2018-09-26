@@ -3,39 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="37dp"
     android:background="@color/white_f3">
 
     <TextView
-        android:id="@+id/tv_recent_title"
+        android:id="@+id/tv_search_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:fontFamily="@font/latobold"
-        android:letterSpacing="0.09"
-        android:text="@string/recent_searches"
-        android:textColor="@color/mediumPurple"
-        android:textAllCaps="true"
-        android:textSize="12sp"
-        android:padding="10dp"
+        android:layout_marginStart="16dp"
+        android:fontFamily="@font/latoregular"
+        android:letterSpacing="-0.02"
+        android:textColor="@color/grey_9b"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/tv_clear_history"/>
+        app:layout_constraintEnd_toStartOf="@id/iv_close_btn"
+        tools:text="Hello" />
 
-    <TextView
-        android:id="@+id/tv_clear_history"
+    <ImageView
+        android:id="@+id/iv_close_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
-        android:fontFamily="@font/latobold"
-        android:gravity="end"
-        android:letterSpacing="0.09"
-        android:text="@string/clear_history"
-        android:textColor="@color/grey_9b"
-        android:textAllCaps="true"
-        android:textSize="12sp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="10dp"
+        android:src="@drawable/ic_close_darkgrey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +36,11 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:background="@color/grey_ea"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/grey_ea"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
 </android.support.constraint.ConstraintLayout>

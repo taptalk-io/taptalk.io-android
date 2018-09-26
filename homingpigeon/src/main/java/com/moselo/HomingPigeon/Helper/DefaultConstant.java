@@ -1,5 +1,7 @@
 package com.moselo.HomingPigeon.Helper;
 
+import com.moselo.HomingPigeon.R;
+
 public class DefaultConstant {
 
     public static final class RoomDatabase {
@@ -47,8 +49,9 @@ public class DefaultConstant {
 
     public static final class BubbleType {
         public static final int TYPE_LOG = 0;
-        public static final int TYPE_BUBBLE_RIGHT = 1;
-        public static final int TYPE_BUBBLE_LEFT = 2;
+        public static final int TYPE_BUBBLE_TEXT_RIGHT = 1;
+        public static final int TYPE_BUBBLE_TEXT_LEFT = 2;
+        public static final int TYPE_BUBBLE_PRODUCT_LIST = 3;
     }
 
     public static final class Extras {

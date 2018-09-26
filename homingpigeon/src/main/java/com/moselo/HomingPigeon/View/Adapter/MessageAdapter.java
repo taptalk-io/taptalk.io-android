@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -12,6 +15,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
+import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -21,13 +25,15 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_LEFT;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_RIGHT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.BubbleType.TYPE_LOG;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
 
+    private static final String TAG = MessageAdapter.class.getSimpleName();
     private HomingPigeonChatListener listener;
     private UserModel myUserModel;
 
@@ -42,12 +48,14 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
     @Override
     public BaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_BUBBLE_RIGHT:
-                return new MessageHolder(parent, R.layout.cell_chat_right);
-            case TYPE_BUBBLE_LEFT:
-                return new MessageHolder(parent, R.layout.cell_chat_left);
+            case TYPE_BUBBLE_TEXT_RIGHT:
+                return new TextVH(parent, R.layout.cell_chat_right);
+            case TYPE_BUBBLE_TEXT_LEFT:
+                return new TextVH(parent, R.layout.cell_chat_left);
+            case TYPE_BUBBLE_PRODUCT_LIST:
+                return new ProductVH(parent, R.layout.cell_chat_product_list);
             default:
-                return new MessageHolder(parent, R.layout.cell_chat_log);
+                return new TextVH(parent, R.layout.cell_chat_log);
         }
     }
 
@@ -58,22 +66,42 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
     @Override
     public int getItemViewType(int position) {
-        if (null != getItems()) {
-            if (myUserModel.getUserID().equals(getItems().get(position).getUser().getUserID()))
-                return TYPE_BUBBLE_RIGHT;
-            else
-                return TYPE_BUBBLE_LEFT;
-        } else return TYPE_LOG;
+        try {
+            MessageModel messageModel = getItemAt(position);
+            int messageType = 0;
+            if (null != messageModel)
+                messageType = messageModel.getType();
+
+            switch (messageType) {
+                case DefaultConstant.MessageType.TYPE_TEXT :
+                    if (isMessageFromMySelf(messageModel))
+                        return TYPE_BUBBLE_TEXT_RIGHT;
+                    else return TYPE_BUBBLE_TEXT_LEFT;
+                case DefaultConstant.MessageType.TYPE_PRODUCT:
+                    return TYPE_BUBBLE_PRODUCT_LIST;
+                default:
+                    return TYPE_LOG;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getItemViewType: ",e);
+            return TYPE_LOG;
+        }
     }
 
-    public class MessageHolder extends BaseViewHolder<MessageModel> {
+    private boolean isMessageFromMySelf(MessageModel messageModel) {
+        if (myUserModel.getUserID().equals(messageModel.getUser().getUserID()))
+            return true;
+        else return false;
+    }
+
+    public class TextVH extends BaseViewHolder<MessageModel> {
 
         private ConstraintLayout clBubble;
         private LinearLayout llMessageStatus;
         private TextView tvUsername, tvMessage, tvTimestamp, tvStatus, tvDash;
         private MessageModel item;
 
-        protected MessageHolder(ViewGroup parent, int itemLayoutId) {
+        protected TextVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
@@ -89,7 +117,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
         protected void onBind(MessageModel item, int position) {
 //            item = getItemAt(position);
 
-            if (getItemViewType() == TYPE_BUBBLE_LEFT) {
+            if (getItemViewType() == TYPE_BUBBLE_TEXT_LEFT) {
                 tvUsername.setText(item.getUser().getName());
 //                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
             } else {
@@ -142,6 +170,23 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     }
                 }
             });
+        }
+    }
+
+    public class ProductVH extends BaseViewHolder<MessageModel> {
+
+        RecyclerView rvProductList;
+
+        protected ProductVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+            rvProductList = itemView.findViewById(R.id.rv_product_list);
+        }
+
+        @Override
+        protected void onBind(MessageModel item, int position) {
+            rvProductList.setAdapter(new ProductListAdapter(item, myUserModel));
+            rvProductList.setHasFixedSize(false);
+            rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
         }
     }
 
