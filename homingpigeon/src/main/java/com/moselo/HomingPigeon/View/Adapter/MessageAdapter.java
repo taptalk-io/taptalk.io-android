@@ -176,6 +176,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
     public class ProductVH extends BaseViewHolder<MessageModel> {
 
         RecyclerView rvProductList;
+        ProductListAdapter adapter;
 
         protected ProductVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -184,7 +185,10 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
         @Override
         protected void onBind(MessageModel item, int position) {
-            rvProductList.setAdapter(new ProductListAdapter(item, myUserModel));
+            if (null == adapter)
+                adapter = new ProductListAdapter(item, myUserModel);
+
+            rvProductList.setAdapter(adapter);
             rvProductList.setHasFixedSize(false);
             rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
         }
