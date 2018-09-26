@@ -1,11 +1,13 @@
 package com.moselo.HomingPigeon.API.Interceptor;
 
+import android.content.Context;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Manager.DataManager;
 
 import java.io.IOException;
 
@@ -32,13 +34,20 @@ public class HeaderRequestInterceptor implements Interceptor {
         Request original = chain.request();
         String appKey = Base64.encodeToString((APP_KEY_ID+":"+APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
 
-        String authorization;
-        if (null != authTicket)
-            authorization = "Bearer "+ authTicket;
-        else
-            authorization = "Bearer "+ "";
+        Context context = HomingPigeon.appContext;
 
-        String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(),Settings.Secure.ANDROID_ID);
+        //ini di cek untuk pertama kita cek si access token dulu kalau ada brati kita pake access token (udah login),
+        // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
+        // kalau nggak brati bearer aja karena brati belom request auth ticket
+        String authorization;
+        if (DataManager.getInstance().checkAccessTokenAvailable(context))
+            authorization = "Bearer "+ DataManager.getInstance().getAccessToken(context);
+        else if (DataManager.getInstance().checkAuthTicketAvailable(context))
+            authorization = "Bearer "+ DataManager.getInstance().getAuthTicket(context);
+        else
+            authorization = "Bearer ";
+
+        String deviceID = Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
         Log.e(TAG, "intercept: "+appKey );
         Request request = original

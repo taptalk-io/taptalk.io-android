@@ -16,12 +16,15 @@ import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Model.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
 
 import rx.Subscriber;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TOKEN;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
@@ -49,6 +52,41 @@ public class DataManager {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
         ChatManager.getInstance().setActiveUser(user);
+    }
+
+    public void saveAuthTicket(Context context, String authToken) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(K_AUTH_TOKEN, authToken).apply();
+    }
+
+    public void saveAccessToken(Context context, String accessToken) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(K_ACCESS_TOKEN, accessToken).apply();
+    }
+
+    public String getAuthTicket(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(K_AUTH_TOKEN, "0");
+    }
+
+    public String getAccessToken(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(K_ACCESS_TOKEN, "0");
+    }
+
+    public Boolean checkAccessTokenAvailable(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.contains(K_ACCESS_TOKEN);
+    }
+
+    public Boolean checkAuthTicketAvailable(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.contains(K_AUTH_TOKEN);
+    }
+
+    public void deleteAuthToken(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().remove(K_AUTH_TOKEN).apply();
     }
 
     // TODO: 14/09/18 TEMP
@@ -120,5 +158,9 @@ public class DataManager {
             , String fullname, String email, String phone, String username, DefaultDataView<AuthTicketResponse> view) {
         ApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
                 fullname, email, phone, username, new DefaultSubscriber<>(view));
+    }
+
+    public void getAccessTokenFromApi(DefaultDataView<GetAccessTokenResponse> view) {
+        ApiManager.getInstance().getAccessToken(new DefaultSubscriber<>(view));
     }
 }

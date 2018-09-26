@@ -5,6 +5,7 @@ import android.util.Log;
 import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Model.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.AuthTicketRequest;
 
 import rx.Observable;
@@ -84,6 +85,10 @@ public class ApiManager {
         AuthTicketRequest request = AuthTicketRequest.toBuilder(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
                 fullname, email, phone, username);
         execute(homingPigeon.getAuthTicket(request), subscriber);
+    }
+
+    public void getAccessToken(Subscriber<BaseResponse<GetAccessTokenResponse>> subscriber) {
+        execute(homingPigeon.getAccessToken(), subscriber);
     }
 
 }

@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.API.Api;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.Model.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.AuthTicketRequest;
 
 import retrofit2.http.Body;
@@ -14,4 +15,7 @@ public interface HomingPigeonApiService {
 
     @POST("server/request_auth_ticket")
     Observable<BaseResponse<AuthTicketResponse>> getAuthTicket(@Body AuthTicketRequest request);
+
+    @POST("client/request_access_token")
+    Observable<BaseResponse<GetAccessTokenResponse>> getAccessToken();
 }

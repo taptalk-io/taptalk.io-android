@@ -73,7 +73,6 @@ public class SearchChatFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.e(TAG, "onViewCreated: ");
         initViewModel();
         initView(view);
         setDummyDataforRecent();

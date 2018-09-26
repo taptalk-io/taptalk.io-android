@@ -12,15 +12,18 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.API.View.DefaultDataView;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ErrorModel;
+import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
@@ -88,28 +91,26 @@ public class LoginActivity extends BaseActivity {
 
             new Thread(() -> {
                 try {
-                    String ipAddress = Utils.getInstance().getStringFromURL(new URL("https://api.ipify.org/"));
-                    String userAgent = "android";
-                    String userPlatform = "android";
-                    String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
-                    String fullname = etUsername.getText().toString();
-                    String email = "rionaldo@moselo.com";
-                    String phone = "08979809026";
-                    String username = etUsername.getText().toString();
-                    String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    DataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
-                            fullname, email, phone, username, authView);
+                    setDataAndCallAPI();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "onCreate: ", e);
                 }
             }).start();
         }
     }
 
-    private void getUserID(String userID, String username) {
-        UserModel userModel = UserModel.Builder(userID, username);
-        DataManager.getInstance().saveActiveUser(this, userModel);
+    private void setDataAndCallAPI() throws Exception {
+        String ipAddress = Utils.getInstance().getStringFromURL(new URL("https://api.ipify.org/"));
+        String userAgent = "android";
+        String userPlatform = "android";
+        String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
+        String fullname = etUsername.getText().toString();
+        String email = "rionaldo@moselo.com";
+        String phone = "08979809026";
+        String username = etUsername.getText().toString();
+        String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+        DataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
+                fullname, email, phone, username, authView);
     }
 
     // TODO: 14/09/18 nanti ini harus dihilangin (Wajib)
@@ -170,7 +171,6 @@ public class LoginActivity extends BaseActivity {
                 return 14;
             case "test3":
                 return 15;
-
             default:
                 return 0;
         }
@@ -188,13 +188,40 @@ public class LoginActivity extends BaseActivity {
         }
 
         @Override
-        public void onSuccess(AuthTicketResponse authTicketResponse) {
-            super.onSuccess(authTicketResponse);
+        public void onSuccess(AuthTicketResponse response) {
+            super.onSuccess(response);
+            DataManager.getInstance().saveAuthTicket(LoginActivity.this, response.getTicket());
+            DataManager.getInstance().getAccessTokenFromApi(accessTokenView);
+        }
+
+        @Override
+        public void onError(ErrorModel error) {
+            super.onError(error);
+            showDialog("ERROR "+error.getCode(), error.getMessage());
+        }
+    };
+
+    DefaultDataView<GetAccessTokenResponse> accessTokenView = new DefaultDataView<GetAccessTokenResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(GetAccessTokenResponse response) {
+            super.onSuccess(response);
+            DataManager.getInstance().deleteAuthToken(LoginActivity.this);
+            DataManager.getInstance().saveAccessToken(LoginActivity.this, response.getAccessToken());
+            DataManager.getInstance().saveActiveUser(LoginActivity.this, response.getUser());
             runOnUiThread(() -> {
                 Intent intent = new Intent(LoginActivity.this, RoomListActivity.class);
                 intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
                 startActivity(intent);
-                getUserID(getDummyUserID(etUsername.getText().toString()) + "", etUsername.getText().toString());
                 ConnectionManager.getInstance().connect();
                 finish();
             });
@@ -203,7 +230,18 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onError(ErrorModel error) {
             super.onError(error);
-            Log.e(TAG, "onError: " + error);
+            showDialog("ERROR "+error.getCode(), error.getMessage());
         }
     };
+
+    private void showDialog(String title, String message) {
+        new HomingPigeonDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPrimaryButtonTitle("OK")
+                .setPrimaryButtonListener(view -> {
+                    progressBar.setVisibility(View.GONE);
+                    vOverlay.setVisibility(View.GONE);
+                }).show();
+    }
 }

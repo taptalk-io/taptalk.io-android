@@ -72,6 +72,8 @@ public class DefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
     }
 
+    public static final String K_ACCESS_TOKEN = "kAccessToken";
+    public static final String K_AUTH_TOKEN = "kAuthToken";
     public static final String K_EMAIL = "kEmail";
     public static final String K_MY_USERNAME = "kMyUsername";
     public static final String K_THEIR_USERNAME = "kTheirUsername";
