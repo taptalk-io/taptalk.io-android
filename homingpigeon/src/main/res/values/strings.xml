@@ -52,7 +52,7 @@
     <string name="scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
     <string name="search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
     <string name="change_group_image_guide">Tap icon to change group profile image</string>
-    <string name="chat_other_user_is_expert"><b><font fgcolor='#784198'>%s</font></b> is an expert\ndon’t forget to check out his/her services!</string>
+    <string name="chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
 
     <!--Error Message-->
     <string name="error_message_group_name_empty">Please enter a group name.</string>

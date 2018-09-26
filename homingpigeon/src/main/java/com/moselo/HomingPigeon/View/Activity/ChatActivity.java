@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
@@ -27,8 +30,11 @@ import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Manager.NetworkStateManager;
 import com.moselo.HomingPigeon.Model.CustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.R;
@@ -50,12 +56,14 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     // View
     private RecyclerView rvMessageList, rvCustomKeyboard;
     private FrameLayout flMessageList;
+    private LinearLayout llConnectionStatus;
     private ConstraintLayout clEmptyChat, clChatInput;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivConnectionStatus, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
-    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
+    private TextView tvRoomName, tvRoomStatus, tvConnectionStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
     private View vStatusBadge;
+    private ProgressBar pbConnecting;
 
     // RecyclerView
     private MessageAdapter messageAdapter;
@@ -80,12 +88,14 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         initViewModel();
         initView();
         initHelper();
+        initConnectionStatus();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         ChatManager.getInstance().removeChatListener(this);
+        ConnectionManager.getInstance().removeSocketListener(socketListener);
     }
 
     @Override
@@ -190,10 +200,12 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     @Override
     protected void initView() {
         flMessageList = findViewById(R.id.fl_message_list);
+        llConnectionStatus = findViewById(R.id.ll_connection_status);
         clEmptyChat = findViewById(R.id.cl_empty_chat);
         clChatInput = findViewById(R.id.cl_chat_input);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivRoomIcon = findViewById(R.id.iv_room_icon);
+        ivConnectionStatus = findViewById(R.id.iv_connection_status);
         ivButtonChatMenu = findViewById(R.id.iv_chat_menu);
         ivButtonAttach = findViewById(R.id.iv_attach);
         ivButtonSend = findViewById(R.id.iv_send);
@@ -203,6 +215,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         civOtherUserAvatar = findViewById(R.id.civ_other_user_avatar);
         tvRoomName = findViewById(R.id.tv_room_name);
         tvRoomStatus = findViewById(R.id.tv_room_status);
+        tvConnectionStatus = findViewById(R.id.tv_connection_status);
         tvChatEmptyGuide = findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = findViewById(R.id.tv_profile_description);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
@@ -210,6 +223,9 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         rvCustomKeyboard = findViewById(R.id.rv_custom_keyboard);
         etChat = findViewById(R.id.et_chat);
         tvBadgeUnread = findViewById(R.id.tv_badge_unread);
+        pbConnecting = findViewById(R.id.pb_connecting);
+
+        pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
 
         tvRoomName.setText(getIntent().getStringExtra(ROOM_NAME));
 
@@ -244,7 +260,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         } else {
             // Chat is empty
             // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION
-            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert\ndon't forget to check out his/her services!"));
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.chat_other_user_is_expert), getIntent().getStringExtra(ROOM_NAME))));
             tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
             civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
         }
@@ -394,6 +410,77 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         AttachmentBottomSheet attachBottomSheet = new AttachmentBottomSheet();
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
+
+    private void initConnectionStatus() {
+        ConnectionManager.getInstance().addSocketListener(socketListener);
+        if (!NetworkStateManager.getInstance().hasNetworkConnection(this))
+            socketListener.onSocketDisconnected();
+    }
+
+    private void setStatusConnected() {
+        runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connected);
+            tvConnectionStatus.setText(getString(R.string.connected));
+            ivConnectionStatus.setImageResource(R.drawable.ic_connected_white);
+            ivConnectionStatus.setVisibility(View.VISIBLE);
+            pbConnecting.setVisibility(View.GONE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+
+            new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
+        });
+    }
+
+    private void setStatusConnecting() {
+        if (!NetworkStateManager.getInstance().hasNetworkConnection(this)) return;
+
+        runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_connecting);
+            tvConnectionStatus.setText(R.string.connecting);
+            ivConnectionStatus.setVisibility(View.GONE);
+            pbConnecting.setVisibility(View.VISIBLE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void setStatusWaitingForNetwork() {
+        if (NetworkStateManager.getInstance().hasNetworkConnection(this)) return;
+
+        runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.bg_status_offline);
+            tvConnectionStatus.setText(R.string.waiting_for_network);
+            ivConnectionStatus.setVisibility(View.GONE);
+            pbConnecting.setVisibility(View.VISIBLE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
+    // Update connection status UI
+    private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
+        @Override
+        public void onReceiveNewEmit(String eventName, String emitData) {
+
+        }
+
+        @Override
+        public void onSocketConnected() {
+            setStatusConnected();
+        }
+
+        @Override
+        public void onSocketDisconnected() {
+            setStatusWaitingForNetwork();
+        }
+
+        @Override
+        public void onSocketConnecting() {
+            setStatusConnecting();
+        }
+
+        @Override
+        public void onSocketError() {
+            setStatusWaitingForNetwork();
+        }
+    };
 
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override

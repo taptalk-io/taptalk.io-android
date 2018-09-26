@@ -78,7 +78,7 @@ public class RoomListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         activity = getActivity();
-        return inflater.inflate(R.layout.fragment_sample_room_list, container, false);
+        return inflater.inflate(R.layout.fragment_room_list, container, false);
     }
 
     @Override
@@ -146,13 +146,13 @@ public class RoomListFragment extends Fragment {
 
         // TODO: 12 September 2018 HANDLE SETUP CHAT
         if (vm.getRoomList().size() == 0) {
-            fabNewChat.setVisibility(View.GONE);
+            fabNewChat.hide();
             new Handler().postDelayed(() -> flSetupContainer.animate()
                     .alpha(0)
                     .setDuration(300L)
                     .withEndAction(() -> {
                         flSetupContainer.setVisibility(View.GONE);
-                        fabNewChat.setVisibility(View.VISIBLE);
+                        fabNewChat.show();
                     }).start(), 2000L);
         } else {
             flSetupContainer.setVisibility(View.GONE);
@@ -172,9 +172,7 @@ public class RoomListFragment extends Fragment {
             llRoomEmpty.setVisibility(View.GONE);
         }
 
-        clButtonSearch.setOnClickListener(v -> {
-            ((RoomListActivity) getActivity()).showSearchChat();
-        });
+        clButtonSearch.setOnClickListener(v -> ((RoomListActivity) activity).showSearchChat());
 
         fabNewChat.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), NewChatActivity.class);
