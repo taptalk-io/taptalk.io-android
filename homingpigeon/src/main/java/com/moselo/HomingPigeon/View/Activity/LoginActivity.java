@@ -106,7 +106,7 @@ public class LoginActivity extends BaseActivity {
         String userPlatform = "android";
         String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
         String fullname = etUsername.getText().toString();
-        String email = "rionaldo@moselo.com";
+        String email = etUsername.getText().toString() + "@moselo.com";
         String phone = "08979809026";
         String username = etUsername.getText().toString();
         String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
