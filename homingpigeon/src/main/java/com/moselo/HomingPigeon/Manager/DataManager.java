@@ -20,9 +20,12 @@ import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_RECIPIENT_ID;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class DataManager {
@@ -51,32 +54,72 @@ public class DataManager {
         ChatManager.getInstance().setActiveUser(user);
     }
 
-    public void saveStringPreference(Context context, String token, String key) {
+    public void saveAuthTicket(Context context, String authTicket) {
+        saveStringPreference(context, authTicket, K_AUTH_TICKET);
+    }
+
+    public void saveAccessToken(Context context, String accessToken) {
+        saveStringPreference(context, accessToken, K_ACCESS_TOKEN);
+    }
+
+    public void saveAccessTokenExpiry(Context context, Long accessTokenExpiry) {
+        saveLongTimestampPreference(context, accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
+    }
+
+    public void saveRefreshToken(Context context, String refreshToken) {
+        saveStringPreference(context, refreshToken, K_REFRESH_TOKEN);
+    }
+
+    public void saveRefreshTokenExpiry(Context context, Long refreshTokenExpiry) {
+        saveLongTimestampPreference(context, refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
+    }
+
+    private void saveStringPreference(Context context, String token, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(key, token).apply();
     }
 
-    public void saveLongTimestampPreference(Context context, Long timestamp, String key) {
+    private void saveLongTimestampPreference(Context context, Long timestamp, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putLong(key, timestamp).apply();
     }
 
-    public String getStringPreference(Context context, String key) {
+    public String getRefreshToken(Context context) {
+        return getStringPreference(context, K_REFRESH_TOKEN);
+    }
+
+    public String getAuthToken(Context context) {
+        return getStringPreference(context, K_AUTH_TICKET);
+    }
+
+    private String getStringPreference(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(key, "0");
     }
 
-    public Long getLongTimestampPreference(Context context, String key) {
+    private Long getLongTimestampPreference(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getLong(key, 0);
     }
 
-    public Boolean checkPreferenceKeyAvailable(Context context, String key) {
+    public Boolean checkRefreshTokenAvailable(Context context) {
+        return checkPreferenceKeyAvailable(context, K_REFRESH_TOKEN);
+    }
+
+    public Boolean checkAuthTicketAvailable(Context context) {
+        return checkPreferenceKeyAvailable(context, K_AUTH_TICKET);
+    }
+
+    private Boolean checkPreferenceKeyAvailable(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.contains(key);
     }
 
-    public void deletePreference(Context context, String key) {
+    public void deleteAuthTicket(Context context) {
+        deletePreference(context, K_AUTH_TICKET);
+    }
+
+    private void deletePreference(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().remove(key).apply();
     }

@@ -76,7 +76,7 @@ public class HomingPigeon {
     }
 
     public void saveAuthTicketAndGetAccessToken(String authTicket, DefaultDataView<GetAccessTokenResponse> view) {
-        DataManager.getInstance().saveStringPreference(appContext, authTicket, K_AUTH_TICKET);
+        DataManager.getInstance().saveAuthTicket(appContext, authTicket);
         DataManager.getInstance().getAccessTokenFromApi(view);
     }
 
