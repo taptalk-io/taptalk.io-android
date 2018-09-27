@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.bumptech.glide.Glide;
+import com.facebook.stetho.Stetho;
+import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
@@ -41,6 +43,14 @@ public class HomingPigeon {
             ConnectionManager.getInstance().connect();
 
         DataManager.getInstance().updateSendingMessageToFailed();
+
+        if (BuildConfig.DEBUG)
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(appContext)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
+                            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(appContext))
+                            .build()
+            );
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override

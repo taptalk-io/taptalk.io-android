@@ -19,6 +19,10 @@ import com.moselo.HomingPigeon.R;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -178,5 +182,20 @@ public class Utils {
         }
         if (!nonAlphabeticContacts.isEmpty()) separatedContacts.add(nonAlphabeticContacts);
         return separatedContacts;
+    }
+
+    public String getStringFromURL(URL url) throws IOException {
+        StringBuilder fullString = new StringBuilder();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                        url.openStream()));
+
+        String inputLine;
+
+        while ((inputLine = in.readLine()) != null)
+            fullString.append(inputLine);
+
+        in.close();
+        return fullString.toString();
     }
 }

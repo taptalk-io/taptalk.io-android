@@ -10,22 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "userID",
-        "name",
-        "username",
-        "email",
-        "phoneNumber",
-        "birthdate",
-        "gender",
-        "isPermit",
-        "isFriend",
-        "userRole",
-        "lastLogin"
-})
 
 public class UserModel implements Parcelable {
 
+    //userID itu userID dari Bisnis Server kalau xcUserID itu userID dari Chat Server
+    // (mereka berdua bisa sama bisa juga beda)
     @JsonProperty("userID") @JsonAlias("id") private String userID;
     @JsonProperty("xcUserID") private String xcUserID;
     @JsonProperty("fullname") private String name;

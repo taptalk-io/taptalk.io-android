@@ -72,6 +72,11 @@ public class DefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
     }
 
+    public static final String K_REFRESH_TOKEN = "kAccessToken";
+    public static final String K_REFRESH_TOKEN_EXPIRY = "kRefreshTokenExpiry";
+    public static final String K_ACCESS_TOKEN = "kAccessToken";
+    public static final String K_ACCESS_TOKEN_EXPIRY = "kAccessTokenExpiry";
+    public static final String K_AUTH_TICKET = "kAuthTicket";
     public static final String K_EMAIL = "kEmail";
     public static final String K_MY_USERNAME = "kMyUsername";
     public static final String K_THEIR_USERNAME = "kTheirUsername";
@@ -85,4 +90,7 @@ public class DefaultConstant {
 
     public static final int NUM_OF_ITEM = 50;
     public static final int GROUP_MEMBER_LIMIT = 50;
+
+    public static final String APP_KEY_ID = "b43b48745dfa0e44k1";
+    public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";
 }

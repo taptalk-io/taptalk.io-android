@@ -7,14 +7,21 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.API.Api.ApiManager;
+import com.moselo.HomingPigeon.API.DefaultSubscriber;
+import com.moselo.HomingPigeon.API.View.DefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Model.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
@@ -42,6 +49,36 @@ public class DataManager {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
         ChatManager.getInstance().setActiveUser(user);
+    }
+
+    public void saveStringPreference(Context context, String token, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(key, token).apply();
+    }
+
+    public void saveLongTimestampPreference(Context context, Long timestamp, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putLong(key, timestamp).apply();
+    }
+
+    public String getStringPreference(Context context, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(key, "0");
+    }
+
+    public Long getLongTimestampPreference(Context context, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getLong(key, 0);
+    }
+
+    public Boolean checkPreferenceKeyAvailable(Context context, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.contains(key);
+    }
+
+    public void deletePreference(Context context, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().remove(key).apply();
     }
 
     // TODO: 14/09/18 TEMP
@@ -106,5 +143,20 @@ public class DataManager {
 
     public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
         return DataManager.getInstance().getRecentSearchLive();
+    }
+
+    //API
+    public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
+            , String fullname, String email, String phone, String username, DefaultDataView<AuthTicketResponse> view) {
+        ApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
+                fullname, email, phone, username, new DefaultSubscriber<>(view));
+    }
+
+    public void getAccessTokenFromApi(DefaultDataView<GetAccessTokenResponse> view) {
+        ApiManager.getInstance().getAccessToken(new DefaultSubscriber<>(view));
+    }
+
+    public void refreshAccessToken(DefaultDataView<GetAccessTokenResponse> view) {
+        ApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
     }
 }

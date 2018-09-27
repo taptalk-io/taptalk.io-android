@@ -1,12 +1,19 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Fragment.RoomListFragment;
 import com.moselo.HomingPigeon.View.Fragment.SearchChatFragment;
 
+import java.io.IOException;
+import java.net.URL;
+
 public class RoomListActivity extends BaseActivity {
+
+    private static final String TAG = RoomListActivity.class.getSimpleName();
 
     private enum RoomListState {
         STATE_SEARCH_CHAT, STATE_ROOM_LIST
@@ -20,7 +27,6 @@ public class RoomListActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_list);
-
         initView();
     }
 

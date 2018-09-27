@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application android:theme="@style/AppTheme">
         <service
@@ -21,9 +22,11 @@
         <activity android:name=".View.Activity.SearchContactActivity" />
         <activity android:name=".View.Activity.NewContactActivity" />
         <activity android:name=".View.Activity.BlockedListActivity" />
-        <activity android:name=".View.Activity.CreateNewGroupActivity"
+        <activity
+            android:name=".View.Activity.CreateNewGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".View.Activity.GroupSubjectActivity"
+        <activity
+            android:name=".View.Activity.GroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
     </application>
 

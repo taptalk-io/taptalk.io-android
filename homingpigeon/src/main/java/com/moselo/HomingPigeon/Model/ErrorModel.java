@@ -9,6 +9,10 @@ public class ErrorModel {
     @JsonProperty("code") private String code;
     @JsonProperty("message") private String message;
     @JsonProperty("field") private String field;
+    @JsonProperty("status") private int status;
+
+    public ErrorModel() {
+    }
 
     public String getCode() {
         return code;
@@ -32,5 +36,15 @@ public class ErrorModel {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    @JsonProperty("status")
+    public int getStatus() {
+        return status;
+    }
+
+    @JsonProperty("status")
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

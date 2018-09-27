@@ -144,7 +144,7 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
                     UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
                     }, prefs.getString(K_USER, ""));
 
-                    String myUserID = myUser.getUserID();
+                    String myUserID = myUser.getXcUserID();
 
                     if (!(myUserID + "-" + myUserID).equals(item.getRoom().getRoomID())) {
                         ChatManager.getInstance().saveUnsentMessage();
