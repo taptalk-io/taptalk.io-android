@@ -191,8 +191,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onSuccess(AuthTicketResponse response) {
             super.onSuccess(response);
-            DataManager.getInstance().saveStringPreference(LoginActivity.this, response.getTicket(), K_AUTH_TICKET);
-            DataManager.getInstance().getAccessTokenFromApi(accessTokenView);
+            HomingPigeon.init(HomingPigeon.appContext).saveAuthTicketAndGetAccessToken(response.getTicket(), accessTokenView);
         }
 
         @Override
