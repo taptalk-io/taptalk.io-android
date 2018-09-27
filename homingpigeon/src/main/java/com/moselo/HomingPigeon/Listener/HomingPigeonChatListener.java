@@ -21,4 +21,6 @@ public interface HomingPigeonChatListener {
     void onRetrySendMessage(MessageModel message);
 
     void onSendFailed(MessageModel message);
+
+    void onMessageClicked(MessageModel message, boolean isExpanded);
 }

@@ -81,6 +81,7 @@ public class ConnectionManager {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
                 try {
                     HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
+                    Log.e(TAG, "onMessage: " + response);
                     if (null != socketListeners && !socketListeners.isEmpty()) {
                         for (HomingPigeonSocketListener listener : socketListeners)
                             listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);

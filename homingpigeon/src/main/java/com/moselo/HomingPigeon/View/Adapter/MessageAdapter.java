@@ -10,11 +10,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.animation.AccelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
+import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -49,13 +51,13 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
     public BaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
-                return new TextVH(parent, R.layout.cell_chat_right);
+                return new TextVH(parent, R.layout.cell_chat_text_right, viewType);
             case TYPE_BUBBLE_TEXT_LEFT:
-                return new TextVH(parent, R.layout.cell_chat_left);
+                return new TextVH(parent, R.layout.cell_chat_text_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.cell_chat_product_list);
             default:
-                return new TextVH(parent, R.layout.cell_chat_log);
+                return new TextVH(parent, R.layout.cell_chat_log, viewType);
         }
     }
 
@@ -83,91 +85,107 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     return TYPE_LOG;
             }
         } catch (Exception e) {
-            Log.e(TAG, "getItemViewType: ",e);
             return TYPE_LOG;
         }
     }
 
     private boolean isMessageFromMySelf(MessageModel messageModel) {
-        if (myUserModel.getUserID().equals(messageModel.getUser().getUserID()))
-            return true;
-        else return false;
+        return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
     }
 
     public class TextVH extends BaseViewHolder<MessageModel> {
 
         private ConstraintLayout clBubble;
-        private LinearLayout llMessageStatus;
-        private TextView tvUsername, tvMessage, tvTimestamp, tvStatus, tvDash;
-        private MessageModel item;
+        private CircleImageView civAvatar;
+        private ImageView ivMessageStatus, ivSending, ivButtonReply;
+        private TextView tvUsername, tvMessageBody, tvMessageStatus;
 
-        protected TextVH(ViewGroup parent, int itemLayoutId) {
+        protected TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clBubble = itemView.findViewById(R.id.cl_bubble);
-            llMessageStatus = itemView.findViewById(R.id.ll_message_status);
-            tvUsername = itemView.findViewById(R.id.tv_full_name);
-            tvMessage = itemView.findViewById(R.id.tv_message);
-            tvTimestamp = itemView.findViewById(R.id.tv_timestamp);
-            tvStatus = itemView.findViewById(R.id.tv_status);
-            tvDash = itemView.findViewById(R.id.tv_label_dash);
+            ivSending = itemView.findViewById(R.id.iv_sending);
+            ivButtonReply = itemView.findViewById(R.id.iv_button_reply);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
+            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+
+            if (bubbleType == TYPE_BUBBLE_TEXT_RIGHT) {
+                ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+            } else if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
+                civAvatar = itemView.findViewById(R.id.civ_avatar);
+                tvUsername = itemView.findViewById(R.id.tv_user_name);
+            }
         }
 
         @Override
         protected void onBind(MessageModel item, int position) {
-//            item = getItemAt(position);
+            tvMessageBody.setText(item.getMessage());
+            tvMessageStatus.setText(TimeFormatter.formatClock(item.getCreated()));
 
-            if (getItemViewType() == TYPE_BUBBLE_TEXT_LEFT) {
-                tvUsername.setText(item.getUser().getName());
-//                tvUsername.setTextColor(getUsernameColor(item.getUser().getName()));
+            if (isMessageFromMySelf(item)) {
+                // Message has been read
+                if (null != item.isRead() && item.isRead()) {
+                    Log.e(TAG, "is read: " + item.getMessage());
+                    ivMessageStatus.setImageResource(R.drawable.ic_message_read_green);
+
+                    tvMessageStatus.setVisibility(View.GONE);
+                    ivMessageStatus.setVisibility(View.GONE);
+                    ivSending.setVisibility(View.GONE);
+                }
+                // Message is delivered
+                else if (null != item.isDelivered() && item.isDelivered()) {
+                    Log.e(TAG, "delivered: " + item.getMessage());
+                    ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
+
+                    tvMessageStatus.setVisibility(View.GONE);
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                    ivSending.animate()
+                            .translationX(Utils.getInstance().dpToPx(40))
+                            .setDuration(150L)
+                            .setInterpolator(new AccelerateInterpolator(0.1f))
+                            .withEndAction(() -> ivSending.setVisibility(View.GONE))
+                            .start();
+                }
+                // Message failed to send
+                else if (null != item.isFailedSend() && item.isFailedSend()) {
+                    Log.e(TAG, "failed: " + item.getMessage());
+                    tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
+                    ivMessageStatus.setImageResource(R.drawable.ic_retry_circle_purple);
+
+                    tvMessageStatus.setVisibility(View.VISIBLE);
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                    ivSending.setVisibility(View.GONE);
+                }
+                // Message is sending
+                else if (null != item.isSending() && item.isSending()) {
+                    Log.e(TAG, "sending: " + item.getMessage());
+                    tvMessageStatus.setVisibility(View.GONE);
+                    ivMessageStatus.setVisibility(View.GONE);
+                    ivSending.setVisibility(View.VISIBLE);
+                }
             } else {
-                tvUsername.setVisibility(View.GONE);
+                // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
+                //if (item.getRoom().getRoomType() == 0) {}
             }
 
-            tvMessage.setText(item.getMessage());
+//            if (item.isExpanded()) {
+//                tvMessageStatus.setVisibility(View.VISIBLE);
+//            }
 
-            // Message is sending
-            if (null != item.getSending() && item.getSending()) {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
-                tvStatus.setText("Sending...");
-                tvDash.setText("");
-                tvTimestamp.setText("");
-                clBubble.setAlpha(0.5f);
-                clBubble.setElevation(0f);
-                llMessageStatus.setVisibility(View.GONE);
-            }
-            // Message failed to send
-            else if (null != item.getFailedSend() && item.getFailedSend()) {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
-                tvStatus.setText("Failed, tap to retry.");
-                tvDash.setText("");
-                tvTimestamp.setText("");
-                clBubble.setAlpha(0.5f);
-                clBubble.setElevation(0f);
-                llMessageStatus.setVisibility(View.VISIBLE);
-            }
-            // Message is delivered
-            else {
-                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
-                tvStatus.setText("S");
-                tvDash.setText(" - ");
-                tvTimestamp.setText(TimeFormatter.formatClock(item.getCreated()));
-                clBubble.setAlpha(1f);
-                clBubble.setElevation((float) Utils.getInstance().dpToPx(2));
-                llMessageStatus.setVisibility(View.GONE);
-            }
-
-            itemView.setOnClickListener(v -> {
-                if (null != item.getFailedSend() && null != item.getSending() &&
-                        item.getFailedSend() && !item.getSending()) {
+            clBubble.setOnClickListener(v -> {
+                if (null != item.isFailedSend() && item.isFailedSend()) {
                     removeMessage(item);
                     listener.onRetrySendMessage(item);
                 } else {
-                    if (llMessageStatus.getVisibility() == View.GONE) {
-                        llMessageStatus.setVisibility(View.VISIBLE);
+                    if (tvMessageStatus.getVisibility() == View.GONE) {
+                        tvMessageStatus.setVisibility(View.VISIBLE);
+                        listener.onMessageClicked(item,true);
                     } else {
-                        llMessageStatus.setVisibility(View.GONE);
+                        tvMessageStatus.setVisibility(View.GONE);
+                        listener.onMessageClicked(item,false);
                     }
+//                    item.setExpanded(!item.isExpanded());
+//                    notifyItemChanged(position);
                 }
             });
         }

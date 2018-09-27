@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="8dp"
         app:cardUseCompatPadding="true"
-        android:background="@drawable/bg_transparent_stroke_greyea_1dp_rounded_8dp"
+        android:background="@drawable/bg_transparent_stroke_eaeaea_1dp_rounded_8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

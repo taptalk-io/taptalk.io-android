@@ -29,6 +29,7 @@ import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Helper.VerticalDecoration;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
@@ -174,7 +175,15 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         runOnUiThread(() -> messageAdapter.notifyItemRangeChanged(0, messageAdapter.getItemCount()));
     }
 
-//    @Override
+    @Override
+    public void onMessageClicked(MessageModel message, boolean isExpanded) {
+        if (isExpanded && vm.getMessageModels().indexOf(message) == 0) {
+            Log.e(TAG, "onMessageClicked: ");
+            new Handler().postDelayed(() -> rvMessageList.smoothScrollToPosition(0), 150L);
+        }
+    }
+
+    //    @Override
 //    public boolean dispatchTouchEvent(MotionEvent ev) {
 //        // Clear EditText focus when clicking outside chat input
 //        if (ev.getAction() == MotionEvent.ACTION_UP) {
@@ -244,6 +253,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
+        updateMessageDecoration();
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // TODO: 25 September 2018 CHANGE MENU ACCORDING TO USER ROLES
@@ -305,6 +315,13 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     private void initHelper() {
         ChatManager.getInstance().addChatListener(this);
+    }
+
+    private void updateMessageDecoration() {
+        if (rvMessageList.getItemDecorationCount() > 0) {
+            rvMessageList.removeItemDecorationAt(0);
+        }
+        rvMessageList.addItemDecoration(new VerticalDecoration(0, Utils.getInstance().dpToPx(10),1));
     }
 
     private void loadMessageFromDatabase(List<MessageEntity> entities) {
@@ -381,6 +398,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             if (ownMessage) {
                 vm.removeMessagePointer(newID);
             }
+            updateMessageDecoration();
         });
     }
 

@@ -247,13 +247,13 @@ public class ChatManager {
                 model.getCreated(),
                 Utils.getInstance().toJsonString(model.getUser()),
                 model.getRecipientID(),
-                model.getHasRead(),
-                model.getRead(),
-                model.getDelivered(),
-                model.getHidden(),
-                model.getDeleted(),
-                model.getSending(),
-                model.getFailedSend(),
+                model.hasRead(),
+                model.isRead(),
+                model.isDelivered(),
+                model.isHidden(),
+                model.isDeleted(),
+                model.isSending(),
+                model.isFailedSend(),
                 model.getUpdated());
     }
 

@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
@@ -32,7 +31,6 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_THEIR_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
@@ -95,7 +93,7 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
             if (item.getRoom().isSelected()) {
                 // Item is selected
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.ic_select));
-                clContainer.setBackgroundColor(resource.getColor(R.color.transparent_grey));
+                clContainer.setBackgroundColor(resource.getColor(R.color.transparent_black_18));
             } else {
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
@@ -148,7 +146,7 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
 
                     String myUserID = myUser.getUserID();
 
-                    if (!(myUserID+"-"+myUserID).equals(item.getRoom().getRoomID())) {
+                    if (!(myUserID + "-" + myUserID).equals(item.getRoom().getRoomID())) {
                         ChatManager.getInstance().saveUnsentMessage();
                         Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                         intent.putExtra(K_MY_USERNAME, myUsername);
@@ -158,7 +156,7 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
                         itemView.getContext().startActivity(intent);
 
                         DataManager.getInstance().saveRecipientID(itemView.getContext(), item.getRecipientID());
-                    }else {
+                    } else {
                         Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
                     }
                 }
