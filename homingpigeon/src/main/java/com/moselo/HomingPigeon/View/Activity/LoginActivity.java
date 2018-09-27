@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -19,14 +18,16 @@ import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
-import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 
 public class LoginActivity extends BaseActivity {
 
@@ -190,7 +191,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onSuccess(AuthTicketResponse response) {
             super.onSuccess(response);
-            DataManager.getInstance().saveAuthTicket(LoginActivity.this, response.getTicket());
+            DataManager.getInstance().saveStringPreference(LoginActivity.this, response.getTicket(), K_AUTH_TICKET);
             DataManager.getInstance().getAccessTokenFromApi(accessTokenView);
         }
 
@@ -215,8 +216,13 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onSuccess(GetAccessTokenResponse response) {
             super.onSuccess(response);
-            DataManager.getInstance().deleteAuthToken(LoginActivity.this);
-            DataManager.getInstance().saveAccessToken(LoginActivity.this, response.getAccessToken());
+            DataManager.getInstance().deletePreference(LoginActivity.this, K_AUTH_TICKET);
+
+            DataManager.getInstance().saveStringPreference(LoginActivity.this, response.getRefreshToken(), K_REFRESH_TOKEN);
+            DataManager.getInstance().saveLongTimestampPreference(LoginActivity.this, response.getRefreshTokenExpiry(), K_REFRESH_TOKEN_EXPIRY);
+            DataManager.getInstance().saveStringPreference(LoginActivity.this, response.getAccessToken(), K_ACCESS_TOKEN);
+            DataManager.getInstance().saveLongTimestampPreference(LoginActivity.this, response.getAccessTokenExpiry(), K_ACCESS_TOKEN_EXPIRY);
+
             DataManager.getInstance().saveActiveUser(LoginActivity.this, response.getUser());
             runOnUiThread(() -> {
                 Intent intent = new Intent(LoginActivity.this, RoomListActivity.class);

@@ -18,4 +18,7 @@ public interface HomingPigeonApiService {
 
     @POST("client/request_access_token")
     Observable<BaseResponse<GetAccessTokenResponse>> getAccessToken();
+
+    @POST("client/refresh_access_token")
+    Observable<BaseResponse<GetAccessTokenResponse>> refreshAccessToken();
 }

@@ -17,6 +17,8 @@ import okhttp3.Response;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.APP_KEY_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN;
 
 public class HeaderRequestInterceptor implements Interceptor {
     public static final String TAG = HeaderRequestInterceptor.class.getSimpleName();
@@ -40,10 +42,10 @@ public class HeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (DataManager.getInstance().checkAccessTokenAvailable(context))
-            authorization = "Bearer "+ DataManager.getInstance().getAccessToken(context);
-        else if (DataManager.getInstance().checkAuthTicketAvailable(context))
-            authorization = "Bearer "+ DataManager.getInstance().getAuthTicket(context);
+        if (DataManager.getInstance().checkPreferenceKeyAvailable(context, K_REFRESH_TOKEN))
+            authorization = "Bearer "+ DataManager.getInstance().getStringPreference(context, K_REFRESH_TOKEN);
+        else if (DataManager.getInstance().checkPreferenceKeyAvailable(context, K_AUTH_TICKET))
+            authorization = "Bearer "+ DataManager.getInstance().getStringPreference(context, K_AUTH_TICKET);
         else
             authorization = "Bearer ";
 

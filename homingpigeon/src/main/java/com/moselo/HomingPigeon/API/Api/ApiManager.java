@@ -52,7 +52,7 @@ public class ApiManager {
     private <T> Observable validateResponse(T t) {
         BaseResponse br = (BaseResponse) t;
 
-//        if (br.getAccessToken() != null && br.getRefreshToken() != null)
+//        if (br.getRefreshToken() != null && br.getRefreshToken() != null)
 //            updateSession((BaseResponse) t);
 
         if (br.getError() != null) {
@@ -89,6 +89,10 @@ public class ApiManager {
 
     public void getAccessToken(Subscriber<BaseResponse<GetAccessTokenResponse>> subscriber) {
         execute(homingPigeon.getAccessToken(), subscriber);
+    }
+
+    public void refreshAccessToken(Subscriber<BaseResponse<GetAccessTokenResponse>> subscriber) {
+        execute(homingPigeon.refreshAccessToken(), subscriber);
     }
 
 }

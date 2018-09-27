@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.API.Api.ApiManager;
-import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.DefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
@@ -21,10 +20,8 @@ import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
 
-import rx.Subscriber;
-
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TOKEN;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
@@ -54,39 +51,34 @@ public class DataManager {
         ChatManager.getInstance().setActiveUser(user);
     }
 
-    public void saveAuthTicket(Context context, String authToken) {
+    public void saveStringPreference(Context context, String token, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_AUTH_TOKEN, authToken).apply();
+        prefs.edit().putString(key, token).apply();
     }
 
-    public void saveAccessToken(Context context, String accessToken) {
+    public void saveLongTimestampPreference(Context context, Long timestamp, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_ACCESS_TOKEN, accessToken).apply();
+        prefs.edit().putLong(key, timestamp).apply();
     }
 
-    public String getAuthTicket(Context context) {
+    public String getStringPreference(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(K_AUTH_TOKEN, "0");
+        return prefs.getString(key, "0");
     }
 
-    public String getAccessToken(Context context) {
+    public Long getLongTimestampPreference(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(K_ACCESS_TOKEN, "0");
+        return prefs.getLong(key, 0);
     }
 
-    public Boolean checkAccessTokenAvailable(Context context) {
+    public Boolean checkPreferenceKeyAvailable(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.contains(K_ACCESS_TOKEN);
+        return prefs.contains(key);
     }
 
-    public Boolean checkAuthTicketAvailable(Context context) {
+    public void deletePreference(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.contains(K_AUTH_TOKEN);
-    }
-
-    public void deleteAuthToken(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().remove(K_AUTH_TOKEN).apply();
+        prefs.edit().remove(key).apply();
     }
 
     // TODO: 14/09/18 TEMP
@@ -162,5 +154,9 @@ public class DataManager {
 
     public void getAccessTokenFromApi(DefaultDataView<GetAccessTokenResponse> view) {
         ApiManager.getInstance().getAccessToken(new DefaultSubscriber<>(view));
+    }
+
+    public void refreshAccessToken(DefaultDataView<GetAccessTokenResponse> view) {
+        ApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
     }
 }
