@@ -49,7 +49,7 @@ public class ChatManager {
     private List<HomingPigeonChatListener> chatListeners;
     private Map<String, MessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
-    private String activeRoom;
+    private RoomModel activeRoom;
     private UserModel activeUser;
     private boolean isCheckPendingArraySequenceActive = false;
     private boolean isPendingMessageExist = false;
@@ -64,7 +64,6 @@ public class ChatManager {
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
         public void onSocketConnected() {
-            Log.e(TAG, "onSocketConnected: ");
             checkAndSendPendingMessages();
             isFinishChatFlow = false;
         }
@@ -98,7 +97,6 @@ public class ChatManager {
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
                     try {
-                        Log.e(TAG, "onReceiveNewEmit: "+Utils.getInstance().toJsonString(MessageModel.BuilderDecrypt(messageEmit.getData())) );
                         receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
@@ -173,11 +171,11 @@ public class ChatManager {
         chatListeners.clear();
     }
 
-    public String getActiveRoom() {
+    public RoomModel getActiveRoom() {
         return activeRoom;
     }
 
-    public void setActiveRoom(String roomId) {
+    public void setActiveRoom(RoomModel roomId) {
         this.activeRoom = roomId;
     }
 
@@ -222,7 +220,7 @@ public class ChatManager {
                 entity.getMessageID(),
                 entity.getLocalID(),
                 entity.getMessage(),
-                new RoomModel(entity.getRoomID(), entity.getRoomType()),
+                new RoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType()),
                 entity.getType(),
                 entity.getCreated(),
                 Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
@@ -241,6 +239,7 @@ public class ChatManager {
                 model.getMessageID(),
                 model.getLocalID(),
                 model.getRoom().getRoomID(),
+                model.getRoom().getRoomName(),
                 model.getRoom().getRoomType(),
                 model.getType(),
                 model.getMessage(),
@@ -268,7 +267,7 @@ public class ChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = Utils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                MessageModel messageModel = buildTextMessage(substr);
+                MessageModel messageModel = buildTextMessage(substr, activeRoom);
 
                 // Add entity to list
                 messageEntities.add(ChatManager.getInstance().convertToEntity(messageModel));
@@ -279,7 +278,7 @@ public class ChatManager {
             // Insert list to database
 //            DataManager.getInstance().insertToDatabase(messageEntities);
         } else {
-            MessageModel messageModel = buildTextMessage(textMessage);
+            MessageModel messageModel = buildTextMessage(textMessage, activeRoom);
 
             // Insert new message to database
 //            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
@@ -291,11 +290,11 @@ public class ChatManager {
         //checkAndSendPendingMessages();
     }
 
-    private MessageModel buildTextMessage(String message) {
+    private MessageModel buildTextMessage(String message, RoomModel room) {
         // Create new MessageModel based on text
         MessageModel messageModel = MessageModel.Builder(
                 message,
-                new RoomModel(activeRoom, 1),
+                room,
                 DefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
                 activeUser, DataManager.getInstance().getRecipientID(HomingPigeon.appContext));
@@ -317,7 +316,7 @@ public class ChatManager {
      * save text to draft
      */
     public void saveMessageToDraft(String message) {
-        messageDrafts.put(activeRoom, message);
+        messageDrafts.put(activeRoom.getRoomID(), message);
     }
 
     public String getMessageFromDraft() {
@@ -414,13 +413,11 @@ public class ChatManager {
         // TODO: 13/09/18 check file progress upload
 
         if ((isPendingMessageExist || isFileUploadExist) && maxRetryAttempt > pendingRetryAttempt) {
-            Log.e(TAG, "checkPendingBackgroundTask: "+pendingRetryAttempt );
             isCheckPendingArraySequenceActive = true;
             pendingRetryAttempt++;
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Log.e(TAG, "run: " );
                     checkPendingBackgroundTask();
                 }
             }, pendingRetryInterval);
@@ -429,7 +426,6 @@ public class ChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        Log.e("ConnectionManager", "saveIncomingMessageAndDisconnect: " );
         isFinishChatFlow = true;
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
@@ -438,7 +434,7 @@ public class ChatManager {
     }
 
     public void deleteActiveRoom() {
-        activeRoom = "";
+        activeRoom = null;
     }
 
     /**

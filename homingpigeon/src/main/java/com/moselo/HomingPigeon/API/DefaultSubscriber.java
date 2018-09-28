@@ -41,7 +41,6 @@ public class DefaultSubscriber<T extends BaseResponse<D>, V extends DefaultDataV
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
-        Log.e(LOG_TAG, "onError: ", e);
         view.onError(e.getMessage());
         view.onError(e);
     }
@@ -49,7 +48,6 @@ public class DefaultSubscriber<T extends BaseResponse<D>, V extends DefaultDataV
     @Override
     public void onNext(T t) {
         if (t.getError() != null && 200 != t.getError().getStatus()) {
-            Log.e(LOG_TAG, "onNext: "+t.getError().getStatus() );
             view.onError(t.getError());
         } else view.onSuccess(t.getData());
     }

@@ -11,6 +11,14 @@ public class ImageURL implements Parcelable {
 
     public ImageURL() { }
 
+    // TODO: 28/09/18 diilangin nnti setelah fix
+    public static ImageURL BuilderDummy() {
+        ImageURL dummy = new ImageURL();
+        dummy.setFullsize("https://qph.fs.quoracdn.net/main-qimg-f1160ebf02f4637ef39ea8ff5567e466");
+        dummy.setThumbnail("https://qph.fs.quoracdn.net/main-qimg-f1160ebf02f4637ef39ea8ff5567e466");
+        return dummy;
+    }
+
     public String getFullsize() {
         return fullsize;
     }

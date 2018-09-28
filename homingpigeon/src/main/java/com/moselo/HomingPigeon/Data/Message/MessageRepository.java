@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
@@ -77,39 +78,28 @@ public class MessageRepository {
     }
 
     public void getMessageList(final String roomID, final HomingPigeonDatabaseListener listener, final long lastTimestamp){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
-                listener.onSelectFinished(entities);
-            }
+        new Thread(() -> {
+            List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
+            listener.onSelectFinished(entities);
+        }).start();
+    }
+
+    public void getRoomList(final HomingPigeonDatabaseListener listener) {
+        new Thread(() -> {
+            List<MessageEntity> entities = messageDao.getAllRoomList();
+            listener.onSelectFinished(entities);
         }).start();
     }
 
     public void delete(final String localID) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                messageDao.delete(localID);
-            }
-        }).start();
+        new Thread(() -> messageDao.delete(localID)).start();
     }
 
     public void updatePendingStatus() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                messageDao.updatePendingStatus();
-            }
-        }).start();
+        new Thread(() -> messageDao.updatePendingStatus()).start();
     }
 
     public void updatePendingStatus(final String localID) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                messageDao.updatePendingStatus(localID);
-            }
-        }).start();
+        new Thread(() -> messageDao.updatePendingStatus(localID)).start();
     }
 }

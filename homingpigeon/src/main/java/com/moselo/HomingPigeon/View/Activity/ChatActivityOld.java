@@ -80,7 +80,7 @@ public class ChatActivityOld extends BaseActivity implements View.OnClickListene
     @Override
     protected void onResume() {
         super.onResume();
-        ChatManager.getInstance().setActiveRoom(vm.getRoomID());
+        ChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(ChatManager.getInstance().getMessageFromDraft());
     }
 
@@ -89,7 +89,7 @@ public class ChatActivityOld extends BaseActivity implements View.OnClickListene
         super.onPause();
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
-        ChatManager.getInstance().setActiveRoom("");
+        ChatManager.getInstance().setActiveRoom(null);
     }
 
     @Override
@@ -144,7 +144,6 @@ public class ChatActivityOld extends BaseActivity implements View.OnClickListene
     public void onSendTextMessage(MessageModel message) {
         addNewTextMessage(message);
         vm.addMessagePointer(message);
-        Log.e(TAG, "onSendTextMessage: "+ Utils.getInstance().toJsonString(message));
     }
 
     @Override
@@ -162,10 +161,10 @@ public class ChatActivityOld extends BaseActivity implements View.OnClickListene
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
-        vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
+        vm.setRoom(getIntent().getParcelableExtra(DefaultConstant.K_ROOM));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
         //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
-        vm.getMessageEntities(vm.getRoomID(), this::loadMessageFromDatabase);
+        vm.getMessageEntities(vm.getRoom().getRoomID(), this::loadMessageFromDatabase);
     }
 
     @Override
@@ -200,7 +199,7 @@ public class ChatActivityOld extends BaseActivity implements View.OnClickListene
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < adapter.getItemCount()) {
-                    vm.getMessageByTimestamp(vm.getRoomID(), scrollChatListener, vm.getLastTimestamp());
+                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), scrollChatListener, vm.getLastTimestamp());
                     state = STATE.WORKING;
                 }
             }

@@ -83,7 +83,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     return TYPE_LOG;
             }
         } catch (Exception e) {
-            Log.e(TAG, "getItemViewType: ",e);
             return TYPE_LOG;
         }
     }

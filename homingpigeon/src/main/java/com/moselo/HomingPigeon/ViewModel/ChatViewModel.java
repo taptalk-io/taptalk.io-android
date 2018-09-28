@@ -9,6 +9,7 @@ import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class ChatViewModel extends AndroidViewModel {
     private Map<String, MessageModel> messagePointer;
     private List<MessageModel> messageModels;
     private UserModel myUserModel;
-    private String roomID;
+    private RoomModel room;
     private String otherUserID = "0";
     private long lastTimestamp = 0;
     private int numUsers;
@@ -92,13 +93,13 @@ public class ChatViewModel extends AndroidViewModel {
         this.myUserModel = myUserModel;
     }
 
-    public String getRoomID() {
-        return roomID;
+    public RoomModel getRoom() {
+        return room;
     }
 
-    public void setRoomID(String roomID) {
-        this.roomID = roomID;
-        ChatManager.getInstance().setActiveRoom(roomID);
+    public void setRoom(RoomModel room) {
+        this.room = room;
+        ChatManager.getInstance().setActiveRoom(room);
     }
 
     public long getLastTimestamp() {
@@ -151,7 +152,7 @@ public class ChatViewModel extends AndroidViewModel {
     // TODO: 14/09/18 ini harus di ganti untuk flow Chat Group (ini cuma bisa chat 1v1)
     public String getOtherUserID() {
         try {
-            String[] tempUserID = roomID.split("-");
+            String[] tempUserID = room.getRoomID().split("-");
             return otherUserID = tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
         }catch (Exception e){
             return "0";

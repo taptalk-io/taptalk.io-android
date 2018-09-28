@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Listener.ContactListListener;
+import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
@@ -67,12 +68,14 @@ public class ContactInitialAdapter extends RecyclerView.Adapter<ContactInitialAd
         private TextView tvInitial;
         private List<UserModel> item;
         private ContactListAdapter adapter;
+        private String myID;
 
         ContactListHolder(View itemView) {
             super(itemView);
 
             tvInitial = itemView.findViewById(R.id.tv_initial);
             rvContactInitial = itemView.findViewById(R.id.rv_contact_list_initial);
+            myID = DataManager.getInstance().getActiveUser(itemView.getContext()).getUserID();
         }
 
         void onBind(int position) {
@@ -82,7 +85,7 @@ public class ContactInitialAdapter extends RecyclerView.Adapter<ContactInitialAd
             if (!Character.isAlphabetic(initial)) initial = '#';
             tvInitial.setText(String.valueOf(initial));
 
-            adapter = new ContactListAdapter(viewType, getItemAt(position), listener);
+            adapter = new ContactListAdapter(viewType, getItemAt(position), listener, myID);
             rvContactInitial.setAdapter(adapter);
             rvContactInitial.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.VERTICAL, false));
             rvContactInitial.setHasFixedSize(false);
