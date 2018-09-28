@@ -72,7 +72,7 @@ public class DefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
     }
 
-    public static final String K_REFRESH_TOKEN = "kAccessToken";
+    public static final String K_REFRESH_TOKEN = "kRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kAccessToken";
     public static final String K_ACCESS_TOKEN_EXPIRY = "kAccessTokenExpiry";

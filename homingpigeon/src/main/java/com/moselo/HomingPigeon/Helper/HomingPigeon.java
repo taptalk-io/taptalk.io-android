@@ -7,16 +7,19 @@ import android.content.Intent;
 
 import com.bumptech.glide.Glide;
 import com.facebook.stetho.Stetho;
+import com.moselo.HomingPigeon.API.View.DefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.View.Activity.LoginActivity;
 import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
@@ -72,10 +75,15 @@ public class HomingPigeon {
         });
     }
 
+    public void saveAuthTicketAndGetAccessToken(String authTicket, DefaultDataView<GetAccessTokenResponse> view) {
+        DataManager.getInstance().saveAuthTicket(appContext, authTicket);
+        DataManager.getInstance().getAccessTokenFromApi(view);
+    }
+
     public static void checkActiveUserToShowPage(Activity activity) {
         if (null != activity) {
             Intent intent;
-            if (DataManager.getInstance().checkActiveUser(activity)) {
+            if (DataManager.getInstance().checkAccessTokenAvailable(activity)) {
                 intent = new Intent(activity, RoomListActivity.class);
             } else {
                 intent = new Intent(activity, LoginActivity.class);

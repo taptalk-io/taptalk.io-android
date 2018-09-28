@@ -106,7 +106,7 @@ public class LoginActivity extends BaseActivity {
         String userPlatform = "android";
         String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
         String fullname = etUsername.getText().toString();
-        String email = "rionaldo@moselo.com";
+        String email = etUsername.getText().toString() + "@moselo.com";
         String phone = "08979809026";
         String username = etUsername.getText().toString();
         String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -191,8 +191,9 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onSuccess(AuthTicketResponse response) {
             super.onSuccess(response);
-            DataManager.getInstance().saveStringPreference(LoginActivity.this, response.getTicket(), K_AUTH_TICKET);
-            DataManager.getInstance().getAccessTokenFromApi(accessTokenView);
+            HomingPigeon.init(HomingPigeon.appContext)
+                    .saveAuthTicketAndGetAccessToken(response.getTicket()
+                            , accessTokenView);
         }
 
         @Override
@@ -216,12 +217,12 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onSuccess(GetAccessTokenResponse response) {
             super.onSuccess(response);
-            DataManager.getInstance().deletePreference(LoginActivity.this, K_AUTH_TICKET);
+            DataManager.getInstance().deleteAuthTicket(LoginActivity.this);
 
-            DataManager.getInstance().saveStringPreference(LoginActivity.this, response.getRefreshToken(), K_REFRESH_TOKEN);
-            DataManager.getInstance().saveLongTimestampPreference(LoginActivity.this, response.getRefreshTokenExpiry(), K_REFRESH_TOKEN_EXPIRY);
-            DataManager.getInstance().saveStringPreference(LoginActivity.this, response.getAccessToken(), K_ACCESS_TOKEN);
-            DataManager.getInstance().saveLongTimestampPreference(LoginActivity.this, response.getAccessTokenExpiry(), K_ACCESS_TOKEN_EXPIRY);
+            DataManager.getInstance().saveRefreshToken(LoginActivity.this, response.getRefreshToken());
+            DataManager.getInstance().saveRefreshTokenExpiry(LoginActivity.this, response.getRefreshTokenExpiry());
+            DataManager.getInstance().saveAccessToken(LoginActivity.this, response.getAccessToken());
+            DataManager.getInstance().saveAccessTokenExpiry(LoginActivity.this, response.getAccessTokenExpiry());
 
             DataManager.getInstance().saveActiveUser(LoginActivity.this, response.getUser());
             runOnUiThread(() -> {
