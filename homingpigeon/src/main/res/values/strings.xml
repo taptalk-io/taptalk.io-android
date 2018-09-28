@@ -87,4 +87,5 @@
     <string name="send_a_message">Send a message…</string>
     <string name="send">Send</string>
     <string name="message_send_failed">Failed to send, tap to retry</string>
+    <string name="reply">Reply</string>
 </resources>

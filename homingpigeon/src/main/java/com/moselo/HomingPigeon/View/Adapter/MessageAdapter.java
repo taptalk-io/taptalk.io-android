@@ -2,16 +2,18 @@ package com.moselo.HomingPigeon.View.Adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,7 +59,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.cell_chat_product_list);
             default:
-                return new TextVH(parent, R.layout.cell_chat_log, viewType);
+                return new LogVH(parent, R.layout.cell_chat_log);
         }
     }
 
@@ -95,17 +97,20 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
     public class TextVH extends BaseViewHolder<MessageModel> {
 
-        private ConstraintLayout clBubble;
+        private FrameLayout flBubble;
+        private LinearLayout llButtonReply;
         private CircleImageView civAvatar;
-        private ImageView ivMessageStatus, ivSending, ivButtonReply;
+        private ImageView ivMessageStatus, ivSending;
         private TextView tvUsername, tvMessageBody, tvMessageStatus;
+
+        private Drawable bubbleOverlayLeft, bubbleOverlayRight;
 
         protected TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
-            clBubble = itemView.findViewById(R.id.cl_bubble);
+            flBubble = itemView.findViewById(R.id.fl_bubble);
             ivSending = itemView.findViewById(R.id.iv_sending);
-            ivButtonReply = itemView.findViewById(R.id.iv_button_reply);
+            llButtonReply = itemView.findViewById(R.id.ll_button_reply);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
 
@@ -120,7 +125,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
         @Override
         protected void onBind(MessageModel item, int position) {
             tvMessageBody.setText(item.getMessage());
-            tvMessageStatus.setText(TimeFormatter.formatClock(item.getCreated()));
+            tvMessageStatus.setText(TimeFormatter.durationString(item.getCreated()));
 
             if (isMessageFromMySelf(item)) {
                 // Message has been read
@@ -179,18 +184,34 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 //                tvMessageStatus.setVisibility(View.VISIBLE);
 //            }
 
-            clBubble.setOnClickListener(v -> {
+            flBubble.setOnClickListener(v -> {
                 if (null != item.isFailedSend() && item.isFailedSend()) {
                     removeMessage(item);
                     listener.onRetrySendMessage(item);
                 } else {
                     if (tvMessageStatus.getVisibility() == View.GONE) {
+                        // Bubble is selected/expanded
                         tvMessageStatus.setVisibility(View.VISIBLE);
-                        ivButtonReply.setVisibility(View.VISIBLE);
+                        llButtonReply.setVisibility(View.VISIBLE);
+                        if (isMessageFromMySelf(item)) {
+                            ivMessageStatus.setVisibility(View.GONE);
+                            if (null == bubbleOverlayRight) {
+                                bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.bg_transparent_black_8dp_1dp_8dp_8dp);
+                            }
+                            flBubble.setForeground(bubbleOverlayRight);
+                        } else {
+                            if (null == bubbleOverlayRight) {
+                                bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.bg_transparent_black_1dp_8dp_8dp_8dp);
+                            }
+                            flBubble.setForeground(bubbleOverlayLeft);
+                        }
                         listener.onMessageClicked(item,true);
                     } else {
+                        // Bubble is deselected/shrunk
+                        flBubble.setForeground(null);
                         tvMessageStatus.setVisibility(View.GONE);
-                        ivButtonReply.setVisibility(View.GONE);
+                        llButtonReply.setVisibility(View.GONE);
+                        if (isMessageFromMySelf(item)) ivMessageStatus.setVisibility(View.VISIBLE);
                         listener.onMessageClicked(item,false);
                     }
 //                    item.setExpanded(!item.isExpanded());
@@ -198,7 +219,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 }
             });
 
-            ivButtonReply.setOnClickListener(v -> {
+            llButtonReply.setOnClickListener(v -> {
 
             });
         }
@@ -222,6 +243,22 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             rvProductList.setAdapter(adapter);
             rvProductList.setHasFixedSize(false);
             rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+        }
+    }
+
+    public class LogVH extends BaseViewHolder<MessageModel> {
+
+        private TextView tvLogMessage;
+
+        protected LogVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+
+            tvLogMessage = itemView.findViewById(R.id.tv_message);
+        }
+
+        @Override
+        protected void onBind(MessageModel item, int position) {
+            tvLogMessage.setText(item.getMessage());
         }
     }
 

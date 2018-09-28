@@ -45,8 +45,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="@string/search_chat_placeholder"
-            android:paddingEnd="16dp"
             android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -71,8 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/white_f3"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 
 </android.support.constraint.ConstraintLayout>

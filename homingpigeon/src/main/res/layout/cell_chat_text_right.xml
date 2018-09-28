@@ -12,41 +12,47 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:src="@drawable/ic_message_sent_grey"
-        app:layout_constraintBottom_toBottomOf="@id/cl_bubble"
-        app:layout_constraintEnd_toStartOf="@id/cl_bubble"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl_bubble"
+    <FrameLayout
+        android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
-        android:background="@drawable/bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp"
         android:elevation="1dp"
-        android:orientation="vertical"
-        android:paddingStart="8dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        app:layout_goneMarginBottom="8dp"
         app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toStartOf="@id/iv_sending"
         app:layout_constraintStart_toEndOf="@id/iv_message_status"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_message_status"
+        app:layout_goneMarginBottom="8dp"
         app:layout_goneMarginEnd="16dp">
 
-        <TextView
-            android:id="@+id/tv_message_body"
-            style="@style/HomingPigeonMessageBody"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            tools:text="Hey there, love your work!" />
+            android:animateLayoutChanges="true"
+            android:background="@drawable/bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp"
+            android:orientation="vertical"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp">
 
-    </android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/tv_message_body"
+                style="@style/HomingPigeonMessageBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                tools:text="Hey there, love your work!" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_message_status"
@@ -58,9 +64,9 @@
         android:textColor="@color/grey_9b"
         android:textSize="12sp"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@id/cl_bubble"
-        app:layout_constraintTop_toBottomOf="@id/cl_bubble"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble"
         tools:text="Delivered at 17:05 17/05/2018" />
 
     <ImageView
@@ -70,22 +76,35 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_message_sending_grey"
-        app:layout_constraintBottom_toBottomOf="@id/cl_bubble"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@id/cl_bubble" />
+        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
 
-    <ImageView
-        android:id="@+id/iv_button_reply"
+    <LinearLayout
+        android:id="@+id/ll_button_reply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_reply_grey_with_text"
+        android:orientation="vertical"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/cl_bubble"
-        app:layout_constraintEnd_toStartOf="@id/cl_bubble"
-        app:layout_constraintTop_toTopOf="@id/cl_bubble" />
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toStartOf="@id/fl_bubble">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_reply_grey" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/latoregular"
+            android:text="@string/reply"
+            android:textColor="@color/grey_9b" />
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

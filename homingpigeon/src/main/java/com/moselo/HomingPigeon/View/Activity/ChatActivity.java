@@ -28,6 +28,7 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Helper.VerticalDecoration;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -46,6 +47,7 @@ import com.moselo.HomingPigeon.View.BottomSheet.AttachmentBottomSheet;
 import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.ROOM_NAME;
@@ -121,6 +123,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         super.onBackPressed();
         ChatManager.getInstance().saveUnsentMessage();
         ChatManager.getInstance().deleteActiveRoom();
+        if (isFinishing()) Utils.getInstance().dismissKeyboard(this);
     }
 
     @Override
