@@ -58,6 +58,7 @@ public class HomingPigeon {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
+                ChatManager.getInstance().setFinishChatFlow(false);
                 appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
                 NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
                 ChatManager.getInstance().triggerSaveNewMessage();

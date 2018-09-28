@@ -432,11 +432,12 @@ public class ChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        isFinishChatFlow = true;
+        Log.e(TAG, "saveIncomingMessageAndDisconnect: " );
+        ConnectionManager.getInstance().close();
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
             scheduler.shutdown();
-        ConnectionManager.getInstance().close();
+        isFinishChatFlow = true;
     }
 
     public void deleteActiveRoom() {
@@ -511,12 +512,7 @@ public class ChatManager {
             scheduler = Executors.newSingleThreadScheduledExecutor();
         }
 
-        scheduler.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                saveNewMessageToDatabase();
-            }
-        }, 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> saveNewMessageToDatabase(), 0, 1, TimeUnit.SECONDS);
     }
 
     public void saveUnsentMessage() {

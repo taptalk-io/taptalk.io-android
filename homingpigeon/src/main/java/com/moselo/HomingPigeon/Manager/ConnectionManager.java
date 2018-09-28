@@ -126,7 +126,9 @@ public class ConnectionManager {
     }
 
     private void initNetworkListener() {
+
         HomingPigeonNetworkListener networkListener = () -> {
+            Log.e(TAG, "initNetworkListener: "+connectionStatus );
             if (ConnectionStatus.CONNECTING == connectionStatus ||
                     ConnectionStatus.DISCONNECTED == connectionStatus) {
                 reconnect();
@@ -197,6 +199,7 @@ public class ConnectionManager {
                         webSocketClient.reconnect();
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
+                        Log.e(TAG, "run: ",e );
                     }
                 }
             }

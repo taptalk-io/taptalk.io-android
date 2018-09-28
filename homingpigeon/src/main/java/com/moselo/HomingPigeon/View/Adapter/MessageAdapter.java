@@ -189,12 +189,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             } else {
                 // Message from others
                 // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
-                //if (item.getRoom().getRoomType() == 0) {}
             }
-
-//            if (item.isExpanded()) {
-//                tvMessageStatus.setVisibility(View.VISIBLE);
-//            }
 
             flBubble.setOnClickListener(v -> {
                 if (null != item.isFailedSend() && item.isFailedSend()) {
