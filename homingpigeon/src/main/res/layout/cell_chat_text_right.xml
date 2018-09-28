@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="false">
 
     <ImageView
         android:id="@+id/iv_message_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
         android:src="@drawable/ic_message_sent_grey"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
@@ -76,44 +77,43 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_message_sending_grey"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
 
-    <LinearLayout
-        android:id="@+id/ll_button_reply"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
-        app:layout_constraintTop_toTopOf="@id/barrier_top">
+    <!--<LinearLayout-->
+    <!--android:id="@+id/ll_button_reply"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginEnd="2dp"-->
+    <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:gravity="center_horizontal"-->
+    <!--android:orientation="vertical"-->
+    <!--android:visibility="gone"-->
+    <!--app:layout_constraintBottom_toBottomOf="@id/fl_bubble"-->
+    <!--app:layout_constraintEnd_toStartOf="@id/fl_bubble">-->
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@drawable/ic_reply_grey" />
+    <!--<ImageView-->
+    <!--android:layout_width="32dp"-->
+    <!--android:layout_height="32dp" />-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/latoregular"
-            android:text="@string/reply"
-            android:textColor="@color/grey_9b" />
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:fontFamily="@font/latoregular"-->
+    <!--android:text="@string/reply"-->
+    <!--android:textColor="@color/grey_9b" />-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <android.support.constraint.Barrier
         android:id="@+id/barrier_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="fl_bubble, ll_button_reply" />
+        app:constraint_referenced_ids="fl_bubble, iv_message_status" />
 
 </android.support.constraint.ConstraintLayout>
