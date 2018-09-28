@@ -177,10 +177,10 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     public void onMessageClicked(MessageModel message, boolean isExpanded) {
-        if (isExpanded && vm.getMessageModels().indexOf(message) == 0) {
-            Log.e(TAG, "onMessageClicked: ");
-            new Handler().postDelayed(() -> rvMessageList.smoothScrollToPosition(0), 150L);
-        }
+//        if (isExpanded && vm.getMessageModels().indexOf(message) == 0) {
+//            Log.e(TAG, "onMessageClicked: ");
+//            new Handler().postDelayed(() -> rvMessageList.smoothScrollToPosition(0), 150L);
+//        }
     }
 
     //    @Override
@@ -253,7 +253,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
-        updateMessageDecoration();
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // TODO: 25 September 2018 CHANGE MENU ACCORDING TO USER ROLES
@@ -321,7 +320,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         if (rvMessageList.getItemDecorationCount() > 0) {
             rvMessageList.removeItemDecorationAt(0);
         }
-        rvMessageList.addItemDecoration(new VerticalDecoration(0, Utils.getInstance().dpToPx(10),1));
+        rvMessageList.addItemDecoration(new VerticalDecoration(Utils.getInstance().dpToPx(10),0, messageAdapter.getItemCount() - 1));
     }
 
     private void loadMessageFromDatabase(List<MessageEntity> entities) {
@@ -357,6 +356,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                 runOnUiThread(() -> messageAdapter.addMessage(models));
                 state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                 if (rvMessageList.getVisibility() != View.VISIBLE) rvMessageList.setVisibility(View.VISIBLE);
+                if (state == STATE.DONE) updateMessageDecoration();
             }
         });
     }
@@ -398,7 +398,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             if (ownMessage) {
                 vm.removeMessagePointer(newID);
             }
-            updateMessageDecoration();
         });
     }
 

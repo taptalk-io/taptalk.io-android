@@ -7,12 +7,12 @@ import android.view.View;
 
 public class VerticalDecoration extends RecyclerView.ItemDecoration {
 
-    private int top, bottom, count;
+    private int top, bottom, index;
 
-    public VerticalDecoration(int top, int bottom, int count) {
+    public VerticalDecoration(int top, int bottom, int index) {
         this.top = top;
         this.bottom = bottom;
-        this.count = count;
+        this.index = index;
     }
 
     @Override
@@ -22,11 +22,14 @@ public class VerticalDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-        if (parent.getChildLayoutPosition(view) == 0) outRect.top = top;
-        else outRect.top = 0;
         outRect.left = 0;
         outRect.right = 0;
-        if (parent.getChildLayoutPosition(view) == count - 1) outRect.bottom = bottom;
-        else outRect.bottom = 0;
+        if (parent.getChildLayoutPosition(view) == index){
+            outRect.top = top;
+            outRect.bottom = bottom;
+        } else {
+            outRect.top = 0;
+            outRect.bottom = 0;
+        }
     }
 }

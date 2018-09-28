@@ -54,7 +54,7 @@ public class MessageModel {
 
     public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user, String recipientID) {
         String localID = Utils.getInstance().generateRandomString(32);
-        return new MessageModel("", localID, message, room, type, created, user, recipientID, false, true, false);
+        return new MessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false);
     }
 
     public static MessageModel BuilderEncrypt(MessageModel messageModel) throws GeneralSecurityException {

@@ -38,8 +38,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginBottom="5dp"
-        app:layout_goneMarginEnd="16dp"
+        app:layout_goneMarginBottom="8dp"
         app:layout_goneMarginStart="16dp">
 
         <TextView
@@ -71,7 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="8dp"
         android:fontFamily="@font/latoregular"
         android:textColor="@color/grey_9b"
         android:textSize="12sp"

@@ -139,11 +139,16 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
+                    Log.e(TAG, "animate start: " + ivSending.getTranslationX());
+                    ivSending.setTranslationX(0);
                     ivSending.animate()
                             .translationX(Utils.getInstance().dpToPx(40))
                             .setDuration(150L)
-                            .setInterpolator(new AccelerateInterpolator(0.1f))
-                            .withEndAction(() -> ivSending.setVisibility(View.GONE))
+                            .setInterpolator(new AccelerateInterpolator(0.5f))
+                            .withEndAction(() -> {
+                                ivSending.setVisibility(View.GONE);
+                                Log.e(TAG, "animate end: " + ivSending.getTranslationX());
+                            })
                             .start();
                 }
                 // Message failed to send
@@ -162,8 +167,10 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.GONE);
                     ivSending.setVisibility(View.VISIBLE);
+                    ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
                 }
             } else {
+                // Message from others
                 // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
                 //if (item.getRoom().getRoomType() == 0) {}
             }
@@ -179,14 +186,20 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 } else {
                     if (tvMessageStatus.getVisibility() == View.GONE) {
                         tvMessageStatus.setVisibility(View.VISIBLE);
+                        ivButtonReply.setVisibility(View.VISIBLE);
                         listener.onMessageClicked(item,true);
                     } else {
                         tvMessageStatus.setVisibility(View.GONE);
+                        ivButtonReply.setVisibility(View.GONE);
                         listener.onMessageClicked(item,false);
                     }
 //                    item.setExpanded(!item.isExpanded());
 //                    notifyItemChanged(position);
                 }
+            });
+
+            ivButtonReply.setOnClickListener(v -> {
+
             });
         }
     }
