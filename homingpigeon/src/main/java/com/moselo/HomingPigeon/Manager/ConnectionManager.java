@@ -64,6 +64,7 @@ public class ConnectionManager {
         webSocketClient = new WebSocketClient(webSocketUri) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
+                Log.e(TAG, "onOpen: ");
                 connectionStatus = ConnectionStatus.CONNECTED;
                 reconnectAttempt = 0;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
@@ -81,6 +82,7 @@ public class ConnectionManager {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
                 try {
                     HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
+                    Log.e(TAG, "onMessage: " + response);
                     if (null != socketListeners && !socketListeners.isEmpty()) {
                         for (HomingPigeonSocketListener listener : socketListeners)
                             listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);
@@ -92,6 +94,7 @@ public class ConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
+                Log.e(TAG, "onClose: ");
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
@@ -101,6 +104,7 @@ public class ConnectionManager {
 
             @Override
             public void onError(Exception ex) {
+                Log.e(TAG, "onError: ");
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
@@ -111,6 +115,7 @@ public class ConnectionManager {
             @Override
             public void reconnect() {
                 super.reconnect();
+                Log.e(TAG, "reconnect: ");
                 connectionStatus = ConnectionStatus.CONNECTING;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)

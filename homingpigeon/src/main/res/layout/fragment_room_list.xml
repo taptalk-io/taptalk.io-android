@@ -29,8 +29,8 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="72dp"
             android:layout_marginStart="72dp"
+            android:layout_marginEnd="72dp"
             android:fontFamily="@font/latoregular"
             android:text="@string/search"
             android:textColor="@color/grey_9b"
@@ -63,8 +63,8 @@
             android:id="@+id/tv_selection_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:fontFamily="@font/latoregular"
             android:maxLines="1"
@@ -159,14 +159,16 @@
 
         <ImageView
             android:layout_width="220dp"
-            android:layout_height="220dp"
-            android:src="@drawable/ic_offline_white" />
+            android:layout_height="138dp"
+            android:padding="12dp"
+            android:src="@drawable/img_chat_empty" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="24dp"
-            android:layout_marginEnd="64dp"
             android:layout_marginStart="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
             android:fontFamily="@font/neueeinstellungbold"
             android:gravity="center"
             android:text="@string/no_chats"
@@ -176,10 +178,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="78dp"
-            android:layout_marginEnd="64dp"
             android:layout_marginStart="64dp"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginBottom="78dp"
             android:fontFamily="@font/neueeinstellungregular"
             android:gravity="center_horizontal"
             android:lineSpacingExtra="6sp"
@@ -193,8 +195,8 @@
         android:id="@+id/fab_new_chat"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/bg_circle_aquamarine_tealish_radial_stroke_greenblue_1dp"
         android:src="@drawable/ic_new_chat_white"
         app:layout_constraintBottom_toBottomOf="parent"

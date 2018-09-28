@@ -1,7 +1,9 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -9,7 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.BaseViewHolder;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -27,7 +31,7 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<UserModel>> {
 
@@ -122,11 +126,15 @@ public class ContactListAdapter extends BaseAdapter<UserModel, BaseViewHolder<Us
             itemView.setOnClickListener(v -> {
                 switch (viewType) {
                     case CHAT:
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
+                        UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                        }, prefs.getString(K_USER, ""));
+
                         // TODO: 17 September 2018 OPEN CHAT ROOM
                         if (!myID.equals(item.getUserID())) {
                             ChatManager.getInstance().saveUnsentMessage();
                             Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
-                            intent.putExtra(K_MY_USERNAME, item.getUsername());
+                            intent.putExtra(K_MY_USERNAME, myUser.getName());
                             intent.putExtra(ROOM_NAME, item.getName());
                             intent.putExtra(K_COLOR, randomColor);
                             intent.putExtra(K_ROOM, RoomModel.Builder(ChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),

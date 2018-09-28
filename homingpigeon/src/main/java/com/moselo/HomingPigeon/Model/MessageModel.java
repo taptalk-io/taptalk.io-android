@@ -10,7 +10,6 @@ import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 
 import java.security.GeneralSecurityException;
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageModel {
@@ -31,6 +30,7 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
+//    private boolean isExpanded = false;
 
     public MessageModel(@Nullable String messageID, @NonNull String localID, String message, RoomModel room,
                         Integer type, Long created, UserModel user, String recipientID, @Nullable Boolean isDeleted,
@@ -54,7 +54,7 @@ public class MessageModel {
 
     public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user, String recipientID) {
         String localID = Utils.getInstance().generateRandomString(32);
-        return new MessageModel("", localID, message, room, type, created, user, recipientID, false, true, false);
+        return new MessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false);
     }
 
     public static MessageModel BuilderEncrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -67,9 +67,9 @@ public class MessageModel {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.getDeleted(),
-                messageModel.getSending(),
-                messageModel.getFailedSend());
+                messageModel.isDeleted(),
+                messageModel.isSending(),
+                messageModel.isFailedSend());
     }
 
     public static MessageModel BuilderDecrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -82,9 +82,9 @@ public class MessageModel {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.getDeleted(),
-                messageModel.getSending(),
-                messageModel.getFailedSend());
+                messageModel.isDeleted(),
+                messageModel.isSending(),
+                messageModel.isFailedSend());
     }
 
     @Nullable
@@ -154,7 +154,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean getHasRead() {
+    public Boolean hasRead() {
         return hasRead;
     }
 
@@ -163,16 +163,16 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean getRead() {
+    public Boolean isRead() {
         return isRead;
     }
 
-    public void setRead(@Nullable Boolean read) {
+    public void setIsRead(@Nullable Boolean read) {
         isRead = read;
     }
 
     @Nullable
-    public Boolean getDelivered() {
+    public Boolean isDelivered() {
         return isDelivered;
     }
 
@@ -181,7 +181,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean getHidden() {
+    public Boolean isHidden() {
         return isHidden;
     }
 
@@ -190,7 +190,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean getDeleted() {
+    public Boolean isDeleted() {
         return isDeleted;
     }
 
@@ -199,7 +199,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean getSending() {
+    public Boolean isSending() {
         return isSending;
     }
 
@@ -208,7 +208,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean getFailedSend() {
+    public Boolean isFailedSend() {
         return isFailedSend;
     }
 
@@ -225,6 +225,14 @@ public class MessageModel {
         this.updated = updated;
     }
 
+//    public boolean isExpanded() {
+//        return isExpanded;
+//    }
+//
+//    public void setExpanded(boolean expanded) {
+//        isExpanded = expanded;
+//    }
+
     public void updateValue(MessageModel model){
         this.messageID = model.getMessageID();
         this.localID = model.getLocalID();
@@ -233,9 +241,9 @@ public class MessageModel {
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
-        this.isDeleted = model.getDeleted();
-        this.isSending = model.getSending();
-        this.isFailedSend = model.getFailedSend();
+        this.isDeleted = model.isDeleted();
+        this.isSending = model.isSending();
+        this.isFailedSend = model.isFailedSend();
         // TODO: 3 September 2018 ADD deliveredTo & seenBy
     }
 }

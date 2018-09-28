@@ -22,7 +22,7 @@
             android:layout_width="220dp"
             android:layout_height="220dp"
             android:layout_marginTop="28dp"
-            android:src="@drawable/ic_new_group_green"
+            android:src="@drawable/img_setup_chat"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

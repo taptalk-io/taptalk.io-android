@@ -64,6 +64,7 @@ public class ChatManager {
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
         public void onSocketConnected() {
+            Log.e(TAG, "onSocketConnected: " );
             checkAndSendPendingMessages();
             isFinishChatFlow = false;
         }
@@ -97,6 +98,7 @@ public class ChatManager {
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
                     try {
+                        Log.e(TAG, "onReceiveNewEmit: "+Utils.getInstance().toJsonString(messageEmit) );
                         receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
@@ -246,13 +248,13 @@ public class ChatManager {
                 model.getCreated(),
                 Utils.getInstance().toJsonString(model.getUser()),
                 model.getRecipientID(),
-                model.getHasRead(),
-                model.getRead(),
-                model.getDelivered(),
-                model.getHidden(),
-                model.getDeleted(),
-                model.getSending(),
-                model.getFailedSend(),
+                model.hasRead(),
+                model.isRead(),
+                model.isDelivered(),
+                model.isHidden(),
+                model.isDeleted(),
+                model.isSending(),
+                model.isFailedSend(),
                 model.getUpdated());
     }
 
@@ -327,6 +329,7 @@ public class ChatManager {
      * send pending messages from queue
      */
     public void checkAndSendPendingMessages() {
+        Log.e(TAG, "checkAndSendPendingMessages: " + pendingMessages.size());
         if (!pendingMessages.isEmpty()) {
             MessageModel message = pendingMessages.entrySet().iterator().next().getValue();
             runSendMessageSequence(message);
@@ -354,11 +357,13 @@ public class ChatManager {
     }
 
     private void runSendMessageSequence(MessageModel messageModel) {
+        Log.e(TAG, "runSendMessageSequence: "+ ConnectionManager.getInstance().getConnectionStatus());
         if (ConnectionManager.getInstance().getConnectionStatus() == ConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
             // Send message if socket is connected
             try {
+                Log.e(TAG, "runSendMessageSequence: connected " + messageModel.getMessage());
                 sendEmit(kSocketNewMessage, MessageModel.BuilderEncrypt(messageModel));
             } catch (GeneralSecurityException e) {
                 e.printStackTrace();
@@ -366,6 +371,7 @@ public class ChatManager {
         } else {
             // Add message to queue if socket is not connected
             pendingMessages.put(messageModel.getLocalID(), messageModel);
+            Log.e(TAG, "runSendMessageSequence: not connected");
         }
     }
 
@@ -443,9 +449,6 @@ public class ChatManager {
      * @param newMessage
      */
     private void receiveMessageFromSocket(MessageModel newMessage, String eventName) {
-        // TODO: 4 September 2018 TEMP
-        newMessage.setSending(false);
-
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
@@ -454,7 +457,7 @@ public class ChatManager {
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
         // Receive message in active room
-        if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoom().getRoomID().equals(activeRoom)) {
+        if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
             for (HomingPigeonChatListener chatListener : chatListeners) {
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInActiveRoom(newMessage);
@@ -465,7 +468,7 @@ public class ChatManager {
             }
         }
         // Receive message outside active room
-        else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoom().getRoomID().equals(activeRoom)) {
+        else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
             for (HomingPigeonChatListener chatListener : chatListeners) {
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInOtherRoom(newMessage);
@@ -513,7 +516,7 @@ public class ChatManager {
             public void run() {
                 saveNewMessageToDatabase();
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void saveUnsentMessage() {

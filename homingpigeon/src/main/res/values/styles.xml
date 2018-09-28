@@ -87,4 +87,23 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="HomingPigeonMessageBody">
+        <item name="android:fontFamily">@font/latoregular</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="HomingPigeonMessageUserName">
+        <item name="android:fontFamily">@font/latobold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="HomingPigeonMessageLog">
+        <item name="android:fontFamily">@font/latobold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/grey_9b</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
 </resources>
