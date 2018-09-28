@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toStartOf="@id/iv_sending"
         app:layout_constraintStart_toEndOf="@id/iv_message_status"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/barrier_top"
         app:layout_goneMarginBottom="8dp"
         app:layout_goneMarginEnd="16dp">
 
@@ -92,7 +92,8 @@
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintEnd_toStartOf="@id/fl_bubble">
+        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toTopOf="@id/barrier_top">
 
         <ImageView
             android:layout_width="32dp"
@@ -107,5 +108,12 @@
             android:textColor="@color/grey_9b" />
 
     </LinearLayout>
+
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="fl_bubble, ll_button_reply" />
 
 </android.support.constraint.ConstraintLayout>
