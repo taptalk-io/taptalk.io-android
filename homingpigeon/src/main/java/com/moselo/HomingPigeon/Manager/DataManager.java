@@ -106,6 +106,10 @@ public class DataManager {
         return checkPreferenceKeyAvailable(context, K_REFRESH_TOKEN);
     }
 
+    public Boolean checkAccessTokenAvailable(Context context) {
+        return checkPreferenceKeyAvailable(context, K_ACCESS_TOKEN);
+    }
+
     public Boolean checkAuthTicketAvailable(Context context) {
         return checkPreferenceKeyAvailable(context, K_AUTH_TICKET);
     }

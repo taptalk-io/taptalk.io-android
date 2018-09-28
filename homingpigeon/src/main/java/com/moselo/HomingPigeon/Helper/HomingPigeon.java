@@ -83,7 +83,7 @@ public class HomingPigeon {
     public static void checkActiveUserToShowPage(Activity activity) {
         if (null != activity) {
             Intent intent;
-            if (DataManager.getInstance().checkActiveUser(activity)) {
+            if (DataManager.getInstance().checkAccessTokenAvailable(activity)) {
                 intent = new Intent(activity, RoomListActivity.class);
             } else {
                 intent = new Intent(activity, LoginActivity.class);
