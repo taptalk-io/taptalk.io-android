@@ -35,6 +35,9 @@ public interface MessageDao {
             "and RoomID like :roomID order by Created desc")
     List<MessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);
 
+    @Query("select * from (select RoomID, max(created) as max_created from message_table group by RoomID) secondQuery join message_table firstQuery on firstQuery.RoomID = secondQuery.RoomID and firstQuery.created = secondQuery.max_created order by firstQuery.created desc")
+    List<MessageEntity> getAllRoomList();
+
     @Query("update message_table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();
 

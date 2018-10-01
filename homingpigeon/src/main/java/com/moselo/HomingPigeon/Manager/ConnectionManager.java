@@ -64,6 +64,7 @@ public class ConnectionManager {
         webSocketClient = new WebSocketClient(webSocketUri) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
+                Log.e(TAG, "onOpen: ");
                 connectionStatus = ConnectionStatus.CONNECTED;
                 reconnectAttempt = 0;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
@@ -93,9 +94,8 @@ public class ConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
+                Log.e(TAG, "onClose: ");
                 connectionStatus = ConnectionStatus.DISCONNECTED;
-                Log.e(TAG, "onClose: " + reason);
-                Log.e(TAG, "onClose: " + (null != socketListeners && !socketListeners.isEmpty() && !ChatManager.getInstance().isFinishChatFlow()));
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketDisconnected();
@@ -104,8 +104,8 @@ public class ConnectionManager {
 
             @Override
             public void onError(Exception ex) {
+                Log.e(TAG, "onError: ");
                 connectionStatus = ConnectionStatus.DISCONNECTED;
-                Log.e(TAG, "onError: " + ex.getMessage());
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketError();
@@ -115,8 +115,8 @@ public class ConnectionManager {
             @Override
             public void reconnect() {
                 super.reconnect();
+                Log.e(TAG, "reconnect: ");
                 connectionStatus = ConnectionStatus.CONNECTING;
-                Log.e(TAG, "reconnect: " + connectionStatus);
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketListener listener : socketListeners)
                         listener.onSocketConnecting();
@@ -126,7 +126,9 @@ public class ConnectionManager {
     }
 
     private void initNetworkListener() {
+
         HomingPigeonNetworkListener networkListener = () -> {
+            Log.e(TAG, "initNetworkListener: "+connectionStatus );
             if (ConnectionStatus.CONNECTING == connectionStatus ||
                     ConnectionStatus.DISCONNECTED == connectionStatus) {
                 reconnect();
@@ -197,6 +199,7 @@ public class ConnectionManager {
                         webSocketClient.reconnect();
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
+                        Log.e(TAG, "run: ",e );
                     }
                 }
             }

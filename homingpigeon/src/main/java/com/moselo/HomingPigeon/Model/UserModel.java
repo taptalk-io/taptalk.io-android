@@ -29,9 +29,35 @@ public class UserModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     private boolean isSelected;
 
+    public UserModel(String userID, String xcUserID, String name, ImageURL avatarURL, @Nullable String username
+            , @Nullable String email, @Nullable String phoneNumber, @Nullable UserRoleModel userRole
+            , @Nullable Long lastLogin, @Nullable Boolean requireChangePassword, @Nullable Long created
+            , @Nullable Long updated) {
+        this.userID = userID;
+        this.xcUserID = xcUserID;
+        this.name = name;
+        this.avatarURL = avatarURL;
+        this.username = username;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.userRole = userRole;
+        this.lastLogin = lastLogin;
+        this.requireChangePassword = requireChangePassword;
+        this.created = created;
+        this.updated = updated;
+    }
+
     public UserModel(String userID, String name) {
         this.userID = userID;
         this.name = name;
+    }
+
+    public static UserModel Builder(String userID, String xcUserID, String name, ImageURL avatarURL, @Nullable String username
+            , @Nullable String email, @Nullable String phoneNumber, @Nullable UserRoleModel userRole
+            , @Nullable Long lastLogin, @Nullable Boolean requireChangePassword, @Nullable Long created
+            , @Nullable Long updated) {
+        return new UserModel(userID, xcUserID, name, avatarURL, username, email, phoneNumber, userRole
+        , lastLogin, requireChangePassword, created, updated);
     }
 
     public static UserModel Builder(String userID, String name){

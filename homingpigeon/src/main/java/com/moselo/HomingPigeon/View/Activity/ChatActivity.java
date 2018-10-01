@@ -106,7 +106,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     @Override
     protected void onResume() {
         super.onResume();
-        ChatManager.getInstance().setActiveRoom(vm.getRoomID());
+        ChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(ChatManager.getInstance().getMessageFromDraft());
     }
 
@@ -115,7 +115,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         super.onPause();
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
-        ChatManager.getInstance().setActiveRoom("");
+        ChatManager.getInstance().setActiveRoom(null);
     }
 
     @Override
@@ -128,6 +128,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     public void onReceiveMessageInActiveRoom(final MessageModel message) {
+        Log.e(TAG, "onReceiveMessageInActiveRoom: "+Utils.getInstance().toJsonString(message) );
         addNewTextMessage(message);
     }
 
@@ -162,7 +163,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     public void onSendTextMessage(MessageModel message) {
         addNewTextMessage(message);
         vm.addMessagePointer(message);
-        Log.e(TAG, "onSendTextMessage: " + Utils.getInstance().toJsonString(message));
     }
 
     @Override
@@ -180,35 +180,15 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     public void onMessageClicked(MessageModel message, boolean isExpanded) {
-//        if (isExpanded && vm.getMessageModels().indexOf(message) == 0) {
-//            Log.e(TAG, "onMessageClicked: ");
-//            new Handler().postDelayed(() -> rvMessageList.smoothScrollToPosition(0), 150L);
-//        }
-    }
 
-    //    @Override
-//    public boolean dispatchTouchEvent(MotionEvent ev) {
-//        // Clear EditText focus when clicking outside chat input
-//        if (ev.getAction() == MotionEvent.ACTION_UP) {
-//            View v = getCurrentFocus();
-//            if (null != v && v instanceof EditText) {
-//                Rect outRect = new Rect();
-//                clChatInput.getGlobalVisibleRect(outRect);
-//                if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
-//                    v.clearFocus();
-//                    Utils.getInstance().dismissKeyboard(ChatActivity.this);
-//                }
-//            }
-//        }
-//        return super.dispatchTouchEvent(ev);
-//    }
+    }
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(ChatViewModel.class);
-        vm.setRoomID(getIntent().getStringExtra(DefaultConstant.K_ROOM_ID));
+        vm.setRoom(getIntent().getParcelableExtra(DefaultConstant.K_ROOM));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
         //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
-        vm.getMessageEntities(vm.getRoomID(), this::loadMessageFromDatabase);
+        vm.getMessageEntities(vm.getRoom().getRoomID(), this::loadMessageFromDatabase);
     }
 
     @Override
@@ -285,7 +265,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < messageAdapter.getItemCount()) {
-                    vm.getMessageByTimestamp(vm.getRoomID(), scrollChatListener, vm.getLastTimestamp());
+                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), scrollChatListener, vm.getLastTimestamp());
                     state = STATE.WORKING;
                 }
             }
@@ -380,6 +360,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                 flMessageList.setVisibility(View.VISIBLE);
             }
             // Replace pending message with new message
+            Log.e(TAG, "addNewTextMessage: "+Utils.getInstance().toJsonString(newMessage) );
             String newID = newMessage.getLocalID();
             boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
                     .getInstance().getActiveUser(ChatActivity.this).getUserID());

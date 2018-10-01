@@ -33,7 +33,6 @@ public class HomingPigeonDialog extends Dialog {
         try {
             getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         } catch (Exception e) {
-            Log.e(TAG, "onCreate: ", e);
         }
 
         setContentView(R.layout.dialog_homing_pigeon);

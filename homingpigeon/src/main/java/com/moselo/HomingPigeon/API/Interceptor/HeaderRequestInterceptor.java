@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.API.Interceptor;
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Base64;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
@@ -49,7 +48,6 @@ public class HeaderRequestInterceptor implements Interceptor {
 
         String deviceID = Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
-        Log.e(TAG, "intercept: "+appKey );
         Request request = original
                 .newBuilder()
                 .header("Content-Type", "application/json")

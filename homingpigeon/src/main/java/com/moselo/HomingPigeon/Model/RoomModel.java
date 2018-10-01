@@ -1,5 +1,7 @@
 package com.moselo.HomingPigeon.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -10,7 +12,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class RoomModel {
+public class RoomModel implements Parcelable {
 
     @JsonProperty("roomID") @JsonAlias("id") private String roomID;
     @JsonProperty("name") private String roomName;
@@ -23,16 +25,17 @@ public class RoomModel {
     private boolean isMuted;
     private boolean isSelected;
 
-    public RoomModel(String roomID, int roomType) {
+    public RoomModel(String roomID, String roomName, int roomType) {
         this.roomID = roomID;
+        this.roomName = roomName;
         this.roomType = roomType;
     }
 
     public RoomModel() {
     }
 
-    public static RoomModel Builder(String roomID, int roomType){
-        return new RoomModel(roomID, roomType);
+    public static RoomModel Builder(String roomID, String roomName, int roomType){
+        return new RoomModel(roomID, roomName, roomType);
     }
 
     public String getRoomID() {
@@ -116,4 +119,49 @@ public class RoomModel {
     public void setSelected(boolean selected) {
         isSelected = selected;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.roomID);
+        dest.writeString(this.roomName);
+        dest.writeString(this.roomColor);
+        dest.writeParcelable(this.roomImage, flags);
+        dest.writeInt(this.roomType);
+        dest.writeInt(this.unreadCount);
+        dest.writeTypedList(this.groupParticipants);
+        dest.writeValue(this.numOfParticipants);
+        dest.writeByte(this.isMuted ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
+    }
+
+    protected RoomModel(Parcel in) {
+        this.roomID = in.readString();
+        this.roomName = in.readString();
+        this.roomColor = in.readString();
+        this.roomImage = in.readParcelable(ImageURL.class.getClassLoader());
+        this.roomType = in.readInt();
+        this.unreadCount = in.readInt();
+        this.groupParticipants = in.createTypedArrayList(UserModel.CREATOR);
+        this.numOfParticipants = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.isMuted = in.readByte() != 0;
+        this.isSelected = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<RoomModel> CREATOR = new Parcelable.Creator<RoomModel>() {
+        @Override
+        public RoomModel createFromParcel(Parcel source) {
+            return new RoomModel(source);
+        }
+
+        @Override
+        public RoomModel[] newArray(int size) {
+            return new RoomModel[size];
+        }
+    };
 }

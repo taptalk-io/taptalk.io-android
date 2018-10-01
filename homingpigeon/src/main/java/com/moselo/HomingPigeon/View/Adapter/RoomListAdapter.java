@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.moselo.HomingPigeon.Listener.RoomListListener;
 import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.ChatActivity;
@@ -30,6 +32,7 @@ import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
+import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
@@ -102,7 +105,7 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
             }
 
             // Set name, last message, and timestamp text
-            tvFullName.setText(userModel.getName());
+            tvFullName.setText(item.getRoom().getRoomName());
             tvLastMessage.setText(item.getMessage());
             tvLastMessageTime.setText(TimeFormatter.durationString(item.getCreated()));
 
@@ -144,15 +147,17 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
                     UserModel myUser = Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
                     }, prefs.getString(K_USER, ""));
 
-                    String myUserID = myUser.getXcUserID();
+                    String myUserID = myUser.getUserID();
+                    String roomID = item.getRecipientID().equals(myUserID) ? ChatManager.getInstance().arrangeRoomId(myUserID, userModel.getUserID()) : ChatManager.getInstance().arrangeRoomId(myUserID, item.getRecipientID());
 
                     if (!(myUserID + "-" + myUserID).equals(item.getRoom().getRoomID())) {
                         ChatManager.getInstance().saveUnsentMessage();
                         Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                         intent.putExtra(K_MY_USERNAME, myUsername);
-                        intent.putExtra(ROOM_NAME, userModel.getName());
+                        intent.putExtra(ROOM_NAME, item.getRoom().getRoomName());
                         intent.putExtra(K_COLOR, randomColor);
-                        intent.putExtra(K_ROOM_ID, item.getRoom().getRoomID());
+                        intent.putExtra(K_ROOM, RoomModel.Builder(roomID,
+                                item.getRoom().getRoomName(), item.getRoom().getRoomType()));
                         itemView.getContext().startActivity(intent);
 
                         DataManager.getInstance().saveRecipientID(itemView.getContext(), item.getRecipientID());

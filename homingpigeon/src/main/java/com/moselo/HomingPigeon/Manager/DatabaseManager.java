@@ -115,6 +115,12 @@ public class DatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void getRoomList(HomingPigeonDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.getRoomList(listener);
+        else throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
         if (null != searchRepository)
             return searchRepository.getAllRecentSearch();

@@ -84,6 +84,7 @@ public class DefaultConstant {
     public static final String K_USER = "kUser";
     public static final String K_RECIPIENT_ID = "kRecipientID";
     public static final String K_ROOM_ID = "kRoomID";
+    public static final String K_ROOM = "kRoom";
     public static final String K_COLOR = "kColor";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";

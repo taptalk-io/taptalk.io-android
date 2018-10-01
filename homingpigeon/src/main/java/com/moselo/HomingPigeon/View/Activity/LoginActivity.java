@@ -83,7 +83,7 @@ public class LoginActivity extends BaseActivity {
             etUsername.setError("Please fill your username.");
         } else if (etPassword.getText().toString().equals("")) {
             etPassword.setError("Please fill your password.");
-        } else if (!checkValidUsername(etUsername.getText().toString())) {
+        } else if (!checkValidUsername(etUsername.getText().toString().toLowerCase())) {
             etUsername.setError("Please enter valid username.");
         } else {
             Utils.getInstance().dismissKeyboard(this);

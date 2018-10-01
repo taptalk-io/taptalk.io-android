@@ -105,7 +105,6 @@ public class BarcodeScannerFragment extends Fragment {
     }
 
     public void startCameraSource() {
-        Log.e(TAG, "startCameraSource: "+ (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ));
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
         }else {
@@ -113,7 +112,6 @@ public class BarcodeScannerFragment extends Fragment {
                 cameraSource.start(svScanner.getHolder());
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "startCameraSource: ",e );
             }
         }
     }

@@ -188,6 +188,10 @@ public class DataManager {
         DatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
     }
 
+    public void getRoomList(HomingPigeonDatabaseListener listener) {
+        DatabaseManager.getInstance().getRoomList(listener);
+    }
+
     public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
         return DataManager.getInstance().getRecentSearchLive();
     }

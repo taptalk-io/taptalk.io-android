@@ -47,13 +47,14 @@ public class MessageEntity {
 
     @Ignore
     public MessageEntity(@Nullable String messageID, @NonNull String localID,
-                         String room, Integer roomType, Integer type, String message, long created, String user, String recipientID,
+                         String roomID, String roomName, Integer roomType, Integer type, String message, long created, String user, String recipientID,
                          @Nullable Boolean hasRead, @Nullable Boolean isRead,
                          @Nullable Boolean isDelivered, @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                          @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated) {
         this.messageID = messageID;
         this.localID = localID;
-        this.roomID = room;
+        this.roomID = roomID;
+        this.roomName = roomName;
         this.roomType = roomType;
         this.type = type;
         this.message = message;
