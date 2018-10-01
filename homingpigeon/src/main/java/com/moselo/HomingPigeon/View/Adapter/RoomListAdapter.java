@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +33,6 @@ import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ROOM_ID;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
 
 public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<MessageModel>> {
@@ -121,23 +119,23 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
             }
 
             //Change Status Message Icon
-            if (null != item.isRead() && item.isRead()) {
+            if (null != item.getIsRead() && item.getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.ic_read_green);
             }
             // Message is delivered
-            else if (null != item.isDelivered() && item.isDelivered()) {
+            else if (null != item.getDelivered() && item.getDelivered()) {
                 ivMessageStatus.setImageResource(R.drawable.ic_delivered_grey);
             }
             // Message failed to send
-            else if (null != item.isFailedSend() && item.isFailedSend()) {
+            else if (null != item.getFailedSend() && item.getFailedSend()) {
                 ivMessageStatus.setImageResource(R.drawable.ic_failed_grey);
             }
             // Message sent
-            else if (null != item.isSending() && !item.isSending()) {
+            else if (null != item.getSending() && !item.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.ic_sent_grey);
             }
             // Message is sending
-            else if (null != item.isSending() && item.isSending()) {
+            else if (null != item.getSending() && item.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.ic_sending_grey);
             }
             else {

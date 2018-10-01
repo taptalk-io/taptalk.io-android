@@ -102,6 +102,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                     tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
                     tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
                     civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+                    // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
+                    showCustomKeyboard();
                 } else {
                     // Message exists
                     flMessageList.setVisibility(View.VISIBLE);
@@ -154,13 +156,13 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
         ChatManager.getInstance().setActiveRoom(null);
+        Utils.getInstance().dismissKeyboard(this);
     }
 
     @Override
     public void onBackPressed() {
         ChatManager.getInstance().putUnsentMessageToList();
         ChatManager.getInstance().deleteActiveRoom();
-        if (isFinishing()) Utils.getInstance().dismissKeyboard(this);
         super.onBackPressed();
     }
 
@@ -257,6 +259,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         tvBadgeUnread = findViewById(R.id.tv_badge_unread);
         pbConnecting = findViewById(R.id.pb_connecting);
 
+        getWindow().setBackgroundDrawable(null);
+
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
 
         tvRoomName.setText(getIntent().getStringExtra(ROOM_NAME));
@@ -285,17 +289,16 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         customKeyboardAdapter = new CustomKeyboardAdapter(customKeyboardMenus);
         rvCustomKeyboard.setAdapter(customKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        rvCustomKeyboard.setVisibility(View.VISIBLE);
 
-        if (vm.getMessageModels().size() > 0) {
-            clEmptyChat.setVisibility(View.GONE);
-        } else {
-            // Chat is empty
-            // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION
-            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.chat_other_user_is_expert), getIntent().getStringExtra(ROOM_NAME))));
-            tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
-            civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
-        }
+//        if (vm.getMessageModels().size() > 0) {
+//            clEmptyChat.setVisibility(View.GONE);
+//        } else {
+//            // Chat is empty
+//            Log.e(TAG, "initView: CHAT EMPTY");
+//            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.chat_other_user_is_expert), getIntent().getStringExtra(ROOM_NAME))));
+//            tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
+//            civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+//        }
 
         final HomingPigeonDatabaseListener scrollChatListener = this;
 
@@ -348,6 +351,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         String message = etChat.getText().toString();
         if (!TextUtils.isEmpty(message.trim())) {
             etChat.setText("");
+            messageAdapter.shrinkExpandedBubble();
             ChatManager.getInstance().sendTextMessage(message);
             rvMessageList.scrollToPosition(0);
         }
@@ -382,6 +386,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             if (ownMessage) {
                 vm.removeMessagePointer(newID);
             }
+            updateMessageDecoration();
         });
     }
 
@@ -394,22 +399,29 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     private void toggleCustomKeyboard() {
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
-            // Show normal keyboard
-            rvCustomKeyboard.setVisibility(View.GONE);
-            ivButtonChatMenu.setImageResource(R.drawable.ic_chatmenu_hamburger);
-            etChat.requestFocus();
+            showNormalKeyboard();
         } else {
-            // Show Custom Keyboard
-            Utils.getInstance().dismissKeyboard(this);
-            etChat.clearFocus();
-            new Handler().postDelayed(() -> {
-                rvCustomKeyboard.setVisibility(View.VISIBLE);
-                ivButtonChatMenu.setImageResource(R.drawable.ic_chatmenu_keyboard);
-            }, 150L);
+            showCustomKeyboard();
         }
     }
 
+    private void showNormalKeyboard() {
+        rvCustomKeyboard.setVisibility(View.GONE);
+        ivButtonChatMenu.setImageResource(R.drawable.ic_chatmenu_hamburger);
+        etChat.requestFocus();
+    }
+
+    private void showCustomKeyboard() {
+        Utils.getInstance().dismissKeyboard(this);
+        etChat.clearFocus();
+        new Handler().postDelayed(() -> {
+            rvCustomKeyboard.setVisibility(View.VISIBLE);
+            ivButtonChatMenu.setImageResource(R.drawable.ic_chatmenu_keyboard);
+        }, 150L);
+    }
+
     private void openAttachMenu() {
+        Utils.getInstance().dismissKeyboard(this);
         AttachmentBottomSheet attachBottomSheet = new AttachmentBottomSheet();
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }

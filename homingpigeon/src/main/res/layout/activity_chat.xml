@@ -236,7 +236,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/ic_chatmenu_keyboard"
+            android:src="@drawable/ic_chatmenu_hamburger"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_chat"
             app:layout_constraintStart_toStartOf="parent" />
@@ -260,6 +260,7 @@
             android:textColor="@color/black_44"
             android:textColorHint="@color/grey_9b"
             android:textSize="15sp"
+            android:fontFamily="@font/latoregular"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_send"
             app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
@@ -297,13 +298,13 @@
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/grey_ea"
+            android:background="@color/grey_e4"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/grey_ea"
+            android:background="@color/grey_e4"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
