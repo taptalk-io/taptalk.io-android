@@ -128,7 +128,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     public void onReceiveMessageInActiveRoom(final MessageModel message) {
-        Log.e(TAG, "onReceiveMessageInActiveRoom: "+Utils.getInstance().toJsonString(message) );
+        Log.e(TAG, "onReceiveMessageInActiveRoom: " + Utils.getInstance().toJsonString(message));
         addNewTextMessage(message);
     }
 
@@ -305,7 +305,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         if (rvMessageList.getItemDecorationCount() > 0) {
             rvMessageList.removeItemDecorationAt(0);
         }
-        rvMessageList.addItemDecoration(new VerticalDecoration(Utils.getInstance().dpToPx(10),0, messageAdapter.getItemCount() - 1));
+        rvMessageList.addItemDecoration(new VerticalDecoration(Utils.getInstance().dpToPx(10), 0, messageAdapter.getItemCount() - 1));
     }
 
     private void loadMessageFromDatabase(List<MessageEntity> entities) {
@@ -340,7 +340,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             } else if (null != messageAdapter) {
                 runOnUiThread(() -> messageAdapter.addMessage(models));
                 state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-                if (rvMessageList.getVisibility() != View.VISIBLE) rvMessageList.setVisibility(View.VISIBLE);
+                if (rvMessageList.getVisibility() != View.VISIBLE)
+                    rvMessageList.setVisibility(View.VISIBLE);
                 if (state == STATE.DONE) updateMessageDecoration();
             }
         });
@@ -350,6 +351,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         String message = etChat.getText().toString();
         if (!TextUtils.isEmpty(message.trim())) {
             etChat.setText("");
+            messageAdapter.shrinkExpandedBubble();
             ChatManager.getInstance().sendTextMessage(message);
             rvMessageList.scrollToPosition(0);
         }
@@ -362,7 +364,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                 flMessageList.setVisibility(View.VISIBLE);
             }
             // Replace pending message with new message
-            Log.e(TAG, "addNewTextMessage: "+Utils.getInstance().toJsonString(newMessage) );
+            Log.e(TAG, "addNewTextMessage: " + Utils.getInstance().toJsonString(newMessage));
             String newID = newMessage.getLocalID();
             boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
                     .getInstance().getActiveUser(ChatActivity.this).getUserID());

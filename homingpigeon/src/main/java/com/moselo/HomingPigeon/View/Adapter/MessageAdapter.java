@@ -178,16 +178,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                         }
                     });
                     ivSending.startAnimation(sendAnimation);
-//                    ivSending.animate()
-//                            .translationX(Utils.getInstance().dpToPx(40))
-//                            .setDuration(150L)
-//                            .after
-//                            .setInterpolator(new AccelerateInterpolator(0.5f))
-//                            .withEndAction(() -> {
-//                                ivSending.setVisibility(View.GONE);
-////                                ivSending.clearAnimation();
-//                            })
-//                            .start();
                 }
                 // Message is sending
                 else if (null != item.isSending() && item.isSending()) {
@@ -217,11 +207,8 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                         // Shrink bubble
                         item.setExpanded(false);
                     } else {
-                        // Expand clicked bubble and shrink others
-                        for (MessageModel message : getItems()) {
-                            message.setExpanded(false);
-                        }
-                        notifyDataSetChanged();
+                        // Expand clicked bubble
+                        shrinkExpandedBubble();
                         item.setExpanded(true);
                     }
                     expandOrShrinkBubble(item);
@@ -264,9 +251,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     } else if (null != item.isSending() && !item.isSending()) {
                         ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
                     }
-//                    else if (null != item.isSending() && item.isSending()) {
-//                        ivMessageStatus.setImageResource(R.drawable.ic_message_sending_grey);
-//                    }
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 } else {
                     ivMessageStatus.setVisibility(View.GONE);
@@ -337,5 +321,15 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
     public void removeMessage(MessageModel message) {
         removeItem(message);
+    }
+
+    public void shrinkExpandedBubble() {
+        for (MessageModel message : getItems()) {
+            if (message.isExpanded()) {
+                message.setExpanded(false);
+                notifyItemChanged(getItems().indexOf(message));
+                return;
+            }
+        }
     }
 }
