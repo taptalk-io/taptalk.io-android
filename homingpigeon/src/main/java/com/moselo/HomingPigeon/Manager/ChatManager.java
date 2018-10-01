@@ -47,6 +47,7 @@ public class ChatManager {
     private final String TAG = ChatManager.class.getSimpleName();
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
+    List<MessageEntity> saveMessages; //message to be save
     private Map<String, MessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
     private RoomModel activeRoom;
@@ -64,7 +65,7 @@ public class ChatManager {
     private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
         @Override
         public void onSocketConnected() {
-            Log.e(TAG, "onSocketConnected: " );
+            Log.e(TAG, "onSocketConnected: ");
             checkAndSendPendingMessages();
             isFinishChatFlow = false;
         }
@@ -98,7 +99,7 @@ public class ChatManager {
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
                     try {
-                        Log.e(TAG, "onReceiveNewEmit: "+Utils.getInstance().toJsonString(messageEmit) );
+                        Log.e(TAG, "onReceiveNewEmit: " + Utils.getInstance().toJsonString(messageEmit));
                         receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
@@ -151,6 +152,7 @@ public class ChatManager {
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
                         .getString(K_USER, null)));
         chatListeners = new ArrayList<>();
+        saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
         incomingMessages = new LinkedHashMap<>();
@@ -277,13 +279,8 @@ public class ChatManager {
                 // Send truncated message
                 sendMessage(messageModel);
             }
-            // Insert list to database
-//            DataManager.getInstance().insertToDatabase(messageEntities);
         } else {
             MessageModel messageModel = buildTextMessage(textMessage, activeRoom);
-
-            // Insert new message to database
-//            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
 
             // Send message
             sendMessage(messageModel);
@@ -294,22 +291,14 @@ public class ChatManager {
 
     private MessageModel buildTextMessage(String message, RoomModel room) {
         // Create new MessageModel based on text
+        String[] splitedRoomID = room.getRoomID().split("-");
+        String otherUserID = !splitedRoomID[0].equals(activeUser.getUserID()) ? splitedRoomID[0] : splitedRoomID[1];
         MessageModel messageModel = MessageModel.Builder(
                 message,
                 room,
                 DefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
-                activeUser, DataManager.getInstance().getRecipientID(HomingPigeon.appContext));
-
-        // Add encrypted message to queue
-        //try {
-        //    JSONObject messageObject = new JSONObject();
-        //    messageObject.put(MESSAGE, MessageModel.BuilderEncrypt(messageModel));
-        //    messageObject.put(DefaultConstant.MessageQueue.NUM_OF_ATTEMPT, 0);
-        //    pendingMessages.put(messageModel.getLocalID(), messageObject);
-        //} catch (GeneralSecurityException | JSONException e) {
-        //    e.printStackTrace();
-        //}
+                activeUser, otherUserID);
 
         return messageModel;
     }
@@ -357,7 +346,7 @@ public class ChatManager {
     }
 
     private void runSendMessageSequence(MessageModel messageModel) {
-        Log.e(TAG, "runSendMessageSequence: "+ ConnectionManager.getInstance().getConnectionStatus());
+        Log.e(TAG, "runSendMessageSequence: " + ConnectionManager.getInstance().getConnectionStatus());
         if (ConnectionManager.getInstance().getConnectionStatus() == ConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
@@ -388,7 +377,7 @@ public class ChatManager {
      * update pending status when app enters background and close socket
      */
     public void updateMessageWhenEnterBackground() {
-        //saveWaitingMessageToDatabase();
+        //saveWaitingMessageToList();
         setPendingRetryAttempt(0);
         isCheckPendingArraySequenceActive = false;
         if (null != scheduler && !scheduler.isShutdown())
@@ -397,12 +386,10 @@ public class ChatManager {
         checkPendingBackgroundTask();
     }
 
-    public void insertToDatabase(Map<String, MessageModel> hashMap) {
-        List<MessageEntity> messages = new ArrayList<>();
+    private void insertToList(Map<String, MessageModel> hashMap) {
         for (Map.Entry<String, MessageModel> message : hashMap.entrySet()) {
-            messages.add(convertToEntity(message.getValue()));
+            saveMessages.add(convertToEntity(message.getValue()));
         }
-        DataManager.getInstance().insertToDatabase(messages);
     }
 
     private void checkPendingBackgroundTask() {
@@ -432,7 +419,7 @@ public class ChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        Log.e(TAG, "saveIncomingMessageAndDisconnect: " );
+        Log.e(TAG, "saveIncomingMessageAndDisconnect: ");
         ConnectionManager.getInstance().close();
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
@@ -481,26 +468,25 @@ public class ChatManager {
         }
     }
 
-    public void saveNewMessageToDatabase() {
+    public void saveNewMessageToList() {
         if (0 == incomingMessages.size())
             return;
 
-        insertToDatabase(incomingMessages);
+        insertToList(incomingMessages);
         incomingMessages.clear();
     }
 
-    public void savePendingMessageToDatabase() {
+    public void savePendingMessageToList() {
         if (0 < pendingMessages.size()) {
-            insertToDatabase(pendingMessages);
-            //pendingMessages.clear();
+            insertToList(pendingMessages);
         }
     }
 
-    public void saveWaitingMessageToDatabase() {
+    public void saveWaitingMessageToList() {
         if (0 == waitingResponses.size())
             return;
 
-        insertToDatabase(waitingResponses);
+        insertToList(waitingResponses);
         waitingResponses.clear();
     }
 
@@ -512,15 +498,38 @@ public class ChatManager {
             scheduler = Executors.newSingleThreadScheduledExecutor();
         }
 
-        scheduler.scheduleAtFixedRate(() -> saveNewMessageToDatabase(), 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> {
+            saveNewMessageToList();
+            saveMessageToDatabase();
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
     public void saveUnsentMessage() {
-        new Thread(() -> saveNewMessageToDatabase()).start();
+        saveNewMessageToList();
+        savePendingMessageToList();
+        saveWaitingMessageToList();
+        saveMessageToDatabase();
+    }
 
-        new Thread(() -> savePendingMessageToDatabase()).start();
+    public void putUnsentMessageToList() {
+        saveNewMessageToList();
+        savePendingMessageToList();
+        saveWaitingMessageToList();
+    }
 
-        new Thread(() -> saveWaitingMessageToDatabase()).start();
+    private void saveMessageToDatabase() {
+        Log.e(TAG, "saveMessageToDatabase: " + saveMessages.size());
+        if (0 == saveMessages.size()) return;
+
+        DataManager.getInstance().insertToDatabase(saveMessages);
+    }
+
+    public List<MessageEntity> getSaveMessages() {
+        return saveMessages;
+    }
+
+    public void clearSaveMessages() {
+        saveMessages.clear();
     }
 
     public void setPendingRetryAttempt(int counter) {

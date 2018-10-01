@@ -263,6 +263,7 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
     @Override
     public void onResume() {
         super.onResume();
+        Log.e(TAG, "onResume: "+ChatManager.getInstance().getSaveMessages().size() );
         DataManager.getInstance().getRoomList(this);
     }
 

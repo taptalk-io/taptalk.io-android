@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Manager.ChatManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,10 @@ public class MessageRepository {
         protected Void doInBackground(List<MessageEntity>... lists) {
             if (lists.length > 0){
                 mAsyncTaskDao.insert(lists[0]);
+
+                if (0 < ChatManager.getInstance().getSaveMessages().size()) {
+                    ChatManager.getInstance().clearSaveMessages();
+                }
             }
             return null;
         }
@@ -86,6 +91,13 @@ public class MessageRepository {
 
     public void getRoomList(final HomingPigeonDatabaseListener listener) {
         new Thread(() -> {
+            List<MessageEntity> saveMessages = ChatManager.getInstance().getSaveMessages();
+            if (0 < saveMessages.size()){
+                Log.e("><><<>", "getRoomList: save" );
+                messageDao.insert(saveMessages);
+                ChatManager.getInstance().clearSaveMessages();
+            }
+
             List<MessageEntity> entities = messageDao.getAllRoomList();
             listener.onSelectFinished(entities);
         }).start();

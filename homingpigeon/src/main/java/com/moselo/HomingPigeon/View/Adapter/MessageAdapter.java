@@ -154,7 +154,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 }
                 // Message sent
                 else if (null != item.isSending() && !item.isSending()) {
-                    Log.e(TAG, "sent: " + item.getMessage());
                     ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
 
                     tvMessageStatus.setVisibility(View.GONE);
@@ -192,7 +191,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 }
                 // Message is sending
                 else if (null != item.isSending() && item.isSending()) {
-                    Log.e(TAG, "sending: " + item.getMessage());
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
 
                     tvMessageStatus.setVisibility(View.GONE);
