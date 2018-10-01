@@ -260,6 +260,7 @@
             android:textColor="@color/black_44"
             android:textColorHint="@color/grey_9b"
             android:textSize="15sp"
+            android:fontFamily="@font/latoregular"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_send"
             app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
