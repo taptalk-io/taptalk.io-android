@@ -296,12 +296,14 @@ public class ChatManager {
 
     private MessageModel buildTextMessage(String message, RoomModel room) {
         // Create new MessageModel based on text
+        String[] splitedRoomID = room.getRoomID().split("-");
+        String otherUserID = !splitedRoomID[0].equals(activeUser.getUserID()) ? splitedRoomID[0] : splitedRoomID[1];
         MessageModel messageModel = MessageModel.Builder(
                 message,
                 room,
                 DefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
-                activeUser, DataManager.getInstance().getRecipientID(HomingPigeon.appContext));
+                activeUser, otherUserID);
 
         // Add encrypted message to queue
         //try {
@@ -500,7 +502,6 @@ public class ChatManager {
     public void savePendingMessageToList() {
         if (0 < pendingMessages.size()) {
             insertToList(pendingMessages);
-            //pendingMessages.clear();
         }
     }
 

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkStateManager extends ConnectivityManager.NetworkCallback {
+    private static final String TAG = NetworkStateManager.class.getSimpleName();
     private static NetworkStateManager instance;
     private List<HomingPigeonNetworkListener> listeners;
     private NetworkRequest networkRequest;
@@ -82,5 +83,12 @@ public class NetworkStateManager extends ConnectivityManager.NetworkCallback {
                 listener.onNetworkAvailable();
             }
         }
+    }
+
+    @Override
+    public void onLost(Network network) {
+        super.onLost(network);
+        Log.e(TAG, "onLost: " );
+        ConnectionManager.getInstance().close();
     }
 }
