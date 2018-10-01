@@ -422,6 +422,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     }
 
     private void openAttachMenu() {
+        Utils.getInstance().dismissKeyboard(this);
         AttachmentBottomSheet attachBottomSheet = new AttachmentBottomSheet();
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
