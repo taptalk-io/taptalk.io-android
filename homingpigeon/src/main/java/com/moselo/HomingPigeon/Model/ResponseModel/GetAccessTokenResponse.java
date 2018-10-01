@@ -1,6 +1,7 @@
-package com.moselo.HomingPigeon.Model;
+package com.moselo.HomingPigeon.Model.ResponseModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.moselo.HomingPigeon.Model.UserModel;
 
 public class GetAccessTokenResponse {
     @JsonProperty("accessToken") private String accessToken;

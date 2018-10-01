@@ -15,19 +15,14 @@ import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Model.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ErrorModel;
-import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
 
 import java.net.URL;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_MY_USERNAME;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 
 public class LoginActivity extends BaseActivity {
 

@@ -257,7 +257,8 @@ public class ChatManager {
                 model.isDeleted(),
                 model.isSending(),
                 model.isFailedSend(),
-                model.getUpdated());
+                model.getUpdated(),
+                null);
     }
 
     /**
@@ -501,7 +502,7 @@ public class ChatManager {
         scheduler.scheduleAtFixedRate(() -> {
             saveNewMessageToList();
             saveMessageToDatabase();
-        }, 0, 60, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void saveUnsentMessage() {
@@ -521,7 +522,7 @@ public class ChatManager {
         Log.e(TAG, "saveMessageToDatabase: " + saveMessages.size());
         if (0 == saveMessages.size()) return;
 
-        DataManager.getInstance().insertToDatabase(saveMessages);
+        DataManager.getInstance().insertToDatabase(saveMessages, true);
     }
 
     public List<MessageEntity> getSaveMessages() {

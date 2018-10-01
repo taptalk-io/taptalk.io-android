@@ -45,9 +45,16 @@ public class DatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(List<MessageEntity> messageEntities) {
+    public void insert(List<MessageEntity> messageEntities,  boolean isClearSaveMessages) {
         if (null != messageRepository)
-            messageRepository.insert(messageEntities);
+            messageRepository.insert(messageEntities, isClearSaveMessages);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void insert(List<MessageEntity> messageEntities,  boolean isClearSaveMessages, HomingPigeonDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.insert(messageEntities, isClearSaveMessages, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -115,9 +122,9 @@ public class DatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(HomingPigeonDatabaseListener listener) {
+    public void getRoomList(List<MessageEntity> saveMessages, HomingPigeonDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getRoomList(listener);
+            messageRepository.getRoomList(saveMessages, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 

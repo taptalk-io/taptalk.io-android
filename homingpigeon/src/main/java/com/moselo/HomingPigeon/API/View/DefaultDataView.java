@@ -23,7 +23,7 @@ public abstract class DefaultDataView<T> implements IView<T> {
     }
 
     @Override
-    public void onSuccess(T t) {
+    public void onSuccess(T response) {
 
     }
 

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.android.gms.common.api.Api;
 import com.moselo.HomingPigeon.API.Api.ApiManager;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.DefaultDataView;
@@ -14,8 +15,9 @@ import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
-import com.moselo.HomingPigeon.Model.AuthTicketResponse;
-import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
 import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
@@ -152,8 +154,12 @@ public class DataManager {
         DatabaseManager.getInstance().insert(recentSearchEntity);
     }
 
-    public void insertToDatabase(List<MessageEntity> messageEntities) {
-        DatabaseManager.getInstance().insert(messageEntities);
+    public void insertToDatabase(List<MessageEntity> messageEntities, boolean isClearSaveMessages) {
+        DatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
+    }
+
+    public void insertToDatabase(List<MessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener) {
+        DatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
     }
 
     public void deleteFromDatabase(String messageLocalID) {
@@ -188,8 +194,8 @@ public class DataManager {
         DatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
     }
 
-    public void getRoomList(HomingPigeonDatabaseListener listener) {
-        DatabaseManager.getInstance().getRoomList(listener);
+    public void getRoomList(List<MessageEntity> saveMessages, HomingPigeonDatabaseListener listener) {
+        DatabaseManager.getInstance().getRoomList(saveMessages, listener);
     }
 
     public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
@@ -209,5 +215,9 @@ public class DataManager {
 
     public void refreshAccessToken(DefaultDataView<GetAccessTokenResponse> view) {
         ApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
+    }
+
+    public void getRoomListFromAPI(String userID, DefaultDataView<GetRoomListResponse> view) {
+        ApiManager.getInstance().getRoomList(userID, new DefaultSubscriber<>(view));
     }
 }

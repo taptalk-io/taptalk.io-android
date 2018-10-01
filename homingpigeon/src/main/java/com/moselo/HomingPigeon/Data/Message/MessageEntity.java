@@ -8,6 +8,8 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.moselo.HomingPigeon.Helper.Utils;
+
 @Entity(tableName = "Message_Table", indices = @Index(value = "RoomID"))
 public class MessageEntity {
 
@@ -31,6 +33,7 @@ public class MessageEntity {
     @Nullable @ColumnInfo(name = "isSending") private Boolean isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Boolean isFailedSend;
     @Nullable @ColumnInfo(name = "updated") private Long updated;
+    @Nullable @ColumnInfo(name = "unreadCount") private Long unreadCount;
 
     @Ignore
     public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
@@ -50,9 +53,11 @@ public class MessageEntity {
                          String roomID, String roomName, Integer roomType, Integer type, String message, long created, String user, String recipientID,
                          @Nullable Boolean hasRead, @Nullable Boolean isRead,
                          @Nullable Boolean isDelivered, @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
-                         @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated) {
+                         @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated, @Nullable Long unreadCount) {
         this.messageID = messageID;
-        this.localID = localID;
+        if (localID.equals(""))
+            this.localID =  Utils.getInstance().generateRandomString(32);
+        else this.localID = localID;
         this.roomID = roomID;
         this.roomName = roomName;
         this.roomType = roomType;
@@ -69,6 +74,7 @@ public class MessageEntity {
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
         this.updated = updated;
+        this.unreadCount = unreadCount;
     }
 
     public MessageEntity() {
@@ -247,5 +253,14 @@ public class MessageEntity {
 
     public void setUpdated(@Nullable Long updated) {
         this.updated = updated;
+    }
+
+    @Nullable
+    public Long getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(@Nullable Long unreadCount) {
+        this.unreadCount = unreadCount;
     }
 }

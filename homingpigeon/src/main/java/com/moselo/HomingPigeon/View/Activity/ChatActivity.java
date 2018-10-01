@@ -28,7 +28,6 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.EndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Helper.TimeFormatter;
 import com.moselo.HomingPigeon.Helper.Utils;
 import com.moselo.HomingPigeon.Helper.VerticalDecoration;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
@@ -47,13 +46,12 @@ import com.moselo.HomingPigeon.View.BottomSheet.AttachmentBottomSheet;
 import com.moselo.HomingPigeon.ViewModel.ChatViewModel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_COLOR;
 
-public class ChatActivity extends BaseActivity implements HomingPigeonChatListener {
+public class ChatActivity extends BaseActivity implements HomingPigeonChatListener, HomingPigeonDatabaseListener {
 
     private String TAG = ChatActivity.class.getSimpleName();
 
@@ -77,6 +75,46 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     // RoomDatabase
     private ChatViewModel vm;
+
+    @Override
+    public void onSelectFinished(List<MessageEntity> entities) {
+        final List<MessageModel> models = new ArrayList<>();
+        for (MessageEntity entity : entities) {
+            MessageModel model = ChatManager.getInstance().convertToModel(entity);
+            models.add(model);
+            vm.addMessagePointer(model);
+        }
+        vm.setMessageModels(models);
+
+        if (vm.getMessageModels().size() > 0) {
+            vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
+        }
+
+        runOnUiThread(() -> {
+            if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
+                // First load
+                messageAdapter.setMessages(models);
+                rvMessageList.scrollToPosition(0);
+                if (vm.getMessageModels().size() == 0) {
+                    // Chat is empty
+                    // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
+                    clEmptyChat.setVisibility(View.VISIBLE);
+                    tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
+                    tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
+                    civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+                } else {
+                    // Message exists
+                    flMessageList.setVisibility(View.VISIBLE);
+                }
+            } else if (null != messageAdapter) {
+                runOnUiThread(() -> messageAdapter.addMessage(models));
+                state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+                if (rvMessageList.getVisibility() != View.VISIBLE)
+                    rvMessageList.setVisibility(View.VISIBLE);
+                if (state == STATE.DONE) updateMessageDecoration();
+            }
+        });
+    }
 
     //enum Scrolling
     private enum STATE {
@@ -128,7 +166,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     public void onReceiveMessageInActiveRoom(final MessageModel message) {
-        Log.e(TAG, "onReceiveMessageInActiveRoom: "+Utils.getInstance().toJsonString(message) );
+        Log.e(TAG, "onReceiveMessageInActiveRoom: " + Utils.getInstance().toJsonString(message));
         addNewTextMessage(message);
     }
 
@@ -188,7 +226,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         vm.setRoom(getIntent().getParcelableExtra(DefaultConstant.K_ROOM));
         vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
         //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
-        vm.getMessageEntities(vm.getRoom().getRoomID(), this::loadMessageFromDatabase);
+        vm.getMessageEntities(vm.getRoom().getRoomID(), this);
     }
 
     @Override
@@ -259,7 +297,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
         }
 
-        final HomingPigeonDatabaseListener scrollChatListener = this::loadMessageFromDatabase;
+        final HomingPigeonDatabaseListener scrollChatListener = this;
 
         rvMessageList.addOnScrollListener(new EndlessScrollListener(messageLayoutManager) {
             @Override
@@ -303,45 +341,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         if (rvMessageList.getItemDecorationCount() > 0) {
             rvMessageList.removeItemDecorationAt(0);
         }
-        rvMessageList.addItemDecoration(new VerticalDecoration(Utils.getInstance().dpToPx(10),0, messageAdapter.getItemCount() - 1));
-    }
-
-    private void loadMessageFromDatabase(List<MessageEntity> entities) {
-        final List<MessageModel> models = new ArrayList<>();
-        for (MessageEntity entity : entities) {
-            MessageModel model = ChatManager.getInstance().convertToModel(entity);
-            models.add(model);
-            vm.addMessagePointer(model);
-        }
-        vm.setMessageModels(models);
-
-        if (vm.getMessageModels().size() > 0) {
-            vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
-        }
-
-        runOnUiThread(() -> {
-            if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
-                // First load
-                messageAdapter.setMessages(models);
-                rvMessageList.scrollToPosition(0);
-                if (vm.getMessageModels().size() == 0) {
-                    // Chat is empty
-                    // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
-                    clEmptyChat.setVisibility(View.VISIBLE);
-                    tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
-                    tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
-                    civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
-                } else {
-                    // Message exists
-                    flMessageList.setVisibility(View.VISIBLE);
-                }
-            } else if (null != messageAdapter) {
-                runOnUiThread(() -> messageAdapter.addMessage(models));
-                state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-                if (rvMessageList.getVisibility() != View.VISIBLE) rvMessageList.setVisibility(View.VISIBLE);
-                if (state == STATE.DONE) updateMessageDecoration();
-            }
-        });
+        rvMessageList.addItemDecoration(new VerticalDecoration(Utils.getInstance().dpToPx(10), 0, messageAdapter.getItemCount() - 1));
     }
 
     private void attemptSend() {
@@ -360,7 +360,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                 flMessageList.setVisibility(View.VISIBLE);
             }
             // Replace pending message with new message
-            Log.e(TAG, "addNewTextMessage: "+Utils.getInstance().toJsonString(newMessage) );
+            Log.e(TAG, "addNewTextMessage: " + Utils.getInstance().toJsonString(newMessage));
             String newID = newMessage.getLocalID();
             boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
                     .getInstance().getActiveUser(ChatActivity.this).getUserID());

@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.API.View.DefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -36,7 +37,9 @@ import com.moselo.HomingPigeon.Manager.ChatManager;
 import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -45,6 +48,7 @@ import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.RoomListAdapter;
 import com.moselo.HomingPigeon.ViewModel.RoomListViewModel;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +73,8 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
     private RoomListAdapter adapter;
     private RoomListListener roomListListener;
     private RoomListViewModel vm;
+
+    private boolean isApiNeedToBeCalled = true;
 
     public RoomListFragment() {
     }
@@ -122,10 +128,6 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
     }
 
     private void initView(View view) {
-        // Dummy Rooms
-        DataManager.getInstance().getRoomList(this);
-        // End Dummy
-
         activity.getWindow().setBackgroundDrawable(null);
 
         clButtonSearch = view.findViewById(R.id.cl_button_search);
@@ -147,20 +149,6 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
 
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         pbSettingUp.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.amethyst), PorterDuff.Mode.SRC_IN);
-
-        // TODO: 12 September 2018 HANDLE SETUP CHAT
-        if (vm.getRoomList().size() == 0) {
-            fabNewChat.hide();
-            new Handler().postDelayed(() -> flSetupContainer.animate()
-                    .alpha(0)
-                    .setDuration(300L)
-                    .withEndAction(() -> {
-                        flSetupContainer.setVisibility(View.GONE);
-                        fabNewChat.show();
-                    }).start(), 2000L);
-        } else {
-            flSetupContainer.setVisibility(View.GONE);
-        }
 
         if (vm.isSelecting()) showSelectionActionBar();
 
@@ -263,8 +251,13 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: "+ChatManager.getInstance().getSaveMessages().size() );
-        DataManager.getInstance().getRoomList(this);
+        getRoomListFlow();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isApiNeedToBeCalled = true;
     }
 
     // Update connection status UI
@@ -306,14 +299,58 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
         vm.setRoomList(messageModels);
 
         getActivity().runOnUiThread(() -> {
-            if (null != adapter) {
+            if (null != adapter && 0 == vm.getRoomList().size()) {
+                llRoomEmpty.setVisibility(View.VISIBLE);
+            } else if (null != adapter) {
+                Log.e(TAG, "onSelectFinished: ");
                 adapter.setItems(vm.getRoomList(), false);
-                if (0 == vm.getRoomList().size()) {
-                    llRoomEmpty.setVisibility(View.VISIBLE);
-                } else {
-                    llRoomEmpty.setVisibility(View.GONE);
-                }
+                llRoomEmpty.setVisibility(View.GONE);
             }
+
+            if (isApiNeedToBeCalled)
+                DataManager.getInstance().getRoomListFromAPI(DataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
+            else flSetupContainer.setVisibility(View.GONE);
         });
     }
+
+    private void getRoomListFlow() {
+        DataManager.getInstance().getRoomList(ChatManager.getInstance().getSaveMessages(), RoomListFragment.this);
+    }
+
+    DefaultDataView<GetRoomListResponse> roomListView = new DefaultDataView<GetRoomListResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+            fabNewChat.show();
+        }
+
+        @Override
+        public void onSuccess(GetRoomListResponse response) {
+            super.onSuccess(response);
+            List<MessageEntity> tempMessage = new ArrayList<>();
+            for (MessageModel message : response.getMessages()) {
+                Log.e(TAG, message.getMessage() + " : " + message.getRoom().getRoomID());
+                try {
+                    MessageModel temp = MessageModel.BuilderDecrypt(message);
+                    tempMessage.add(ChatManager.getInstance().convertToEntity(temp));
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "onSuccess: ", e);
+                }
+            }
+            Log.e(TAG, "onSuccess: " + tempMessage.size());
+            isApiNeedToBeCalled = false;
+            DataManager.getInstance().insertToDatabase(tempMessage, false, RoomListFragment.this);
+        }
+
+        @Override
+        public void onError(ErrorModel error) {
+            super.onError(error);
+        }
+    };
 }

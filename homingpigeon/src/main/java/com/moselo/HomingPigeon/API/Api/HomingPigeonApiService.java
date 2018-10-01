@@ -1,9 +1,11 @@
 package com.moselo.HomingPigeon.API.Api;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
-import com.moselo.HomingPigeon.Model.AuthTicketResponse;
-import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.RequestModel.CommonRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.AuthTicketRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
 
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -21,4 +23,7 @@ public interface HomingPigeonApiService {
 
     @POST("client/refresh_access_token")
     Observable<BaseResponse<GetAccessTokenResponse>> refreshAccessToken();
+
+    @POST("chat/room/list")
+    Observable<BaseResponse<GetRoomListResponse>> getRoomList(@Body CommonRequest request);
 }

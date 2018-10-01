@@ -4,9 +4,11 @@ import android.util.Log;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.BuildConfig;
-import com.moselo.HomingPigeon.Model.AuthTicketResponse;
-import com.moselo.HomingPigeon.Model.GetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.RequestModel.CommonRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.AuthTicketRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -93,6 +95,11 @@ public class ApiManager {
 
     public void refreshAccessToken(Subscriber<BaseResponse<GetAccessTokenResponse>> subscriber) {
         execute(homingPigeon.refreshAccessToken(), subscriber);
+    }
+
+    public void getRoomList(String userID, Subscriber<BaseResponse<GetRoomListResponse>> subscriber) {
+        CommonRequest request = CommonRequest.builderWithUserID(userID);
+        execute(homingPigeon.getRoomList(request), subscriber);
     }
 
 }
