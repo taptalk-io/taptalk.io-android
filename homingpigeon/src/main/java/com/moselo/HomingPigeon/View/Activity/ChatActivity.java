@@ -116,13 +116,13 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
         ChatManager.getInstance().setActiveRoom(null);
+        Utils.getInstance().dismissKeyboard(this);
     }
 
     @Override
     public void onBackPressed() {
         ChatManager.getInstance().putUnsentMessageToList();
         ChatManager.getInstance().deleteActiveRoom();
-        if (isFinishing()) Utils.getInstance().dismissKeyboard(this);
         super.onBackPressed();
     }
 

@@ -106,4 +106,9 @@ public class TimeFormatter {
         SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
+
+    public static String formatTimeAndDate(long timestamp) {
+        SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault());
+        return timeSdf.format(timestamp);
+    }
 }

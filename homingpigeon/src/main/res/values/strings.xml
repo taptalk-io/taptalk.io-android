@@ -89,4 +89,6 @@
     <string name="send_a_message">Send a message…</string>
     <string name="you">You</string>
     <string name="over_99">99+</string>
+    <string name="sent_at">Sent at</string>
+    <string name="delivered_at">Delivered at</string>
 </resources>

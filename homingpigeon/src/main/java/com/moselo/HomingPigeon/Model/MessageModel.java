@@ -67,9 +67,9 @@ public class MessageModel {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.isDeleted(),
-                messageModel.isSending(),
-                messageModel.isFailedSend());
+                messageModel.getDeleted(),
+                messageModel.getSending(),
+                messageModel.getFailedSend());
     }
 
     public static MessageModel BuilderDecrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -82,9 +82,9 @@ public class MessageModel {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.isDeleted(),
-                messageModel.isSending(),
-                messageModel.isFailedSend());
+                messageModel.getDeleted(),
+                messageModel.getSending(),
+                messageModel.getFailedSend());
     }
 
     @Nullable
@@ -154,7 +154,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean hasRead() {
+    public Boolean getHasRead() {
         return hasRead;
     }
 
@@ -163,7 +163,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean isRead() {
+    public Boolean getIsRead() {
         return isRead;
     }
 
@@ -172,7 +172,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean isDelivered() {
+    public Boolean getDelivered() {
         return isDelivered;
     }
 
@@ -181,7 +181,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean isHidden() {
+    public Boolean getHidden() {
         return isHidden;
     }
 
@@ -190,7 +190,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean isDeleted() {
+    public Boolean getDeleted() {
         return isDeleted;
     }
 
@@ -199,7 +199,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean isSending() {
+    public Boolean getSending() {
         return isSending;
     }
 
@@ -208,7 +208,7 @@ public class MessageModel {
     }
 
     @Nullable
-    public Boolean isFailedSend() {
+    public Boolean getFailedSend() {
         return isFailedSend;
     }
 
@@ -241,9 +241,9 @@ public class MessageModel {
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
-        this.isDeleted = model.isDeleted();
-        this.isSending = model.isSending();
-        this.isFailedSend = model.isFailedSend();
+        this.isDeleted = model.getDeleted();
+        this.isSending = model.getSending();
+        this.isFailedSend = model.getFailedSend();
         // TODO: 3 September 2018 ADD deliveredTo & seenBy
     }
 }

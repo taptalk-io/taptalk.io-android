@@ -10,9 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -127,23 +124,27 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
             if (isMessageFromMySelf(item)) {
                 // Message has been read
-                if (null != item.isRead() && item.isRead()) {
+                if (null != item.getIsRead() && item.getIsRead()) {
                     Log.e(TAG, "is read: " + item.getMessage());
+                    tvMessageStatus.setText(String.format("%s%s", itemView.getContext().getString(R.string.delivered_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.ic_message_read_green);
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.GONE);
+                    ivSending.setVisibility(View.GONE);
                 }
                 // Message is delivered
-                else if (null != item.isDelivered() && item.isDelivered()) {
+                else if (null != item.getDelivered() && item.getDelivered()) {
                     Log.e(TAG, "delivered: " + item.getMessage());
+                    tvMessageStatus.setText(String.format("%s%s", itemView.getContext().getString(R.string.delivered_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.ic_delivered_grey);
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
+                    ivSending.setVisibility(View.GONE);
                 }
                 // Message failed to send
-                else if (null != item.isFailedSend() && item.isFailedSend()) {
+                else if (null != item.getFailedSend() && item.getFailedSend()) {
                     Log.e(TAG, "failed: " + item.getMessage());
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
                     ivMessageStatus.setImageResource(R.drawable.ic_retry_circle_purple);
@@ -153,34 +154,36 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                     ivSending.setVisibility(View.GONE);
                 }
                 // Message sent
-                else if (null != item.isSending() && !item.isSending()) {
+                else if (null != item.getSending() && !item.getSending()) {
+                    tvMessageStatus.setText(String.format("%s%s", itemView.getContext().getString(R.string.sent_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    Animation sendAnimation = new TranslateAnimation(0, Utils.getInstance().dpToPx(32), 0, 0);
-                    sendAnimation.setDuration(150L);
-                    sendAnimation.setFillAfter(false);
-                    sendAnimation.setInterpolator(new AccelerateInterpolator(0.5f));
-                    sendAnimation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            ivSending.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-
-                        }
-                    });
-                    ivSending.startAnimation(sendAnimation);
+                    ivSending.setVisibility(View.GONE);
+//                    Animation sendAnimation = new TranslateAnimation(0, Utils.getInstance().dpToPx(32), 0, 0);
+//                    sendAnimation.setDuration(150L);
+//                    sendAnimation.setFillAfter(false);
+//                    sendAnimation.setInterpolator(new AccelerateInterpolator(0.5f));
+//                    sendAnimation.setAnimationListener(new Animation.AnimationListener() {
+//                        @Override
+//                        public void onAnimationStart(Animation animation) {
+//                        }
+//
+//                        @Override
+//                        public void onAnimationEnd(Animation animation) {
+//                            ivSending.setVisibility(View.GONE);
+//                        }
+//
+//                        @Override
+//                        public void onAnimationRepeat(Animation animation) {
+//
+//                        }
+//                    });
+//                    ivSending.startAnimation(sendAnimation);
                 }
                 // Message is sending
-                else if (null != item.isSending() && item.isSending()) {
+                else if (null != item.getSending() && item.getSending()) {
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
 
                     tvMessageStatus.setVisibility(View.GONE);
@@ -198,23 +201,38 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
             expandOrShrinkBubble(item);
 
-            flBubble.setOnClickListener(v -> {
-                if (null != item.isFailedSend() && item.isFailedSend()) {
-                    removeMessage(item);
-                    listener.onRetrySendMessage(item);
+            flBubble.setOnClickListener(v -> onBubbleClicked(item));
+            ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
+        }
+
+        private void onBubbleClicked(MessageModel item) {
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                resendMessage(item);
+            } else if (null != item.getSending() && !item.getSending()){
+                if (item.isExpanded()) {
+                    // Shrink bubble
+                    item.setExpanded(false);
                 } else {
-                    if (item.isExpanded()) {
-                        // Shrink bubble
-                        item.setExpanded(false);
-                    } else {
-                        // Expand clicked bubble
-                        shrinkExpandedBubble();
-                        item.setExpanded(true);
-                    }
-                    expandOrShrinkBubble(item);
-                    listener.onMessageClicked(item, item.isExpanded());
+                    // Expand clicked bubble
+                    shrinkExpandedBubble();
+                    item.setExpanded(true);
                 }
-            });
+                expandOrShrinkBubble(item);
+                listener.onMessageClicked(item, item.isExpanded());
+            }
+        }
+
+        private void onStatusImageClicked(MessageModel item) {
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                resendMessage(item);
+            } else if (item.isExpanded()) {
+                // TODO: 1 October 2018 REPLY
+            }
+        }
+
+        private void resendMessage(MessageModel item) {
+            removeMessage(item);
+            listener.onRetrySendMessage(item);
         }
 
         private void expandOrShrinkBubble(MessageModel item) {
@@ -241,14 +259,15 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 tvMessageStatus.setVisibility(View.GONE);
 //                        llButtonReply.setVisibility(View.GONE);
 
-                if (isMessageFromMySelf(item) && null != item.isSending() && !item.isSending()) {
-                    if (null != item.isRead() && item.isRead()) {
+                if (isMessageFromMySelf(item) && null != item.getSending() && !item.getSending()) {
+                    if (null != item.getIsRead() && item.getIsRead()) {
                         ivMessageStatus.setImageResource(R.drawable.ic_message_read_green);
-                    } else if (null != item.isDelivered() && item.isDelivered()) {
+                    } else if (null != item.getDelivered() && item.getDelivered()) {
                         ivMessageStatus.setImageResource(R.drawable.ic_delivered_grey);
-                    } else if (null != item.isFailedSend() && item.isFailedSend()) {
+                    } else if (null != item.getFailedSend() && item.getFailedSend()) {
+                        tvMessageStatus.setVisibility(View.VISIBLE);
                         ivMessageStatus.setImageResource(R.drawable.ic_retry_circle_purple);
-                    } else if (null != item.isSending() && !item.isSending()) {
+                    } else if (null != item.getSending() && !item.getSending()) {
                         ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
                     }
                     ivMessageStatus.setVisibility(View.VISIBLE);
