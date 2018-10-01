@@ -120,10 +120,10 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        ChatManager.getInstance().saveUnsentMessage();
+        ChatManager.getInstance().putUnsentMessageToList();
         ChatManager.getInstance().deleteActiveRoom();
         if (isFinishing()) Utils.getInstance().dismissKeyboard(this);
+        super.onBackPressed();
     }
 
     @Override

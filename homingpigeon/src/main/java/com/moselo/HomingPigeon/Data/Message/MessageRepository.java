@@ -91,6 +91,13 @@ public class MessageRepository {
 
     public void getRoomList(final HomingPigeonDatabaseListener listener) {
         new Thread(() -> {
+            List<MessageEntity> saveMessages = ChatManager.getInstance().getSaveMessages();
+            if (0 < saveMessages.size()){
+                Log.e("><><<>", "getRoomList: save" );
+                messageDao.insert(saveMessages);
+                ChatManager.getInstance().clearSaveMessages();
+            }
+
             List<MessageEntity> entities = messageDao.getAllRoomList();
             listener.onSelectFinished(entities);
         }).start();
