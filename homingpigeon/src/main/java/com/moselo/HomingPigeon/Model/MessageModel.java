@@ -30,7 +30,7 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
-//    private boolean isExpanded = false;
+    private boolean isExpanded = false;
 
     public MessageModel(@Nullable String messageID, @NonNull String localID, String message, RoomModel room,
                         Integer type, Long created, UserModel user, String recipientID, @Nullable Boolean isDeleted,
@@ -225,13 +225,13 @@ public class MessageModel {
         this.updated = updated;
     }
 
-//    public boolean isExpanded() {
-//        return isExpanded;
-//    }
-//
-//    public void setExpanded(boolean expanded) {
-//        isExpanded = expanded;
-//    }
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        isExpanded = expanded;
+    }
 
     public void updateValue(MessageModel model){
         this.messageID = model.getMessageID();

@@ -219,6 +219,8 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         tvBadgeUnread = findViewById(R.id.tv_badge_unread);
         pbConnecting = findViewById(R.id.pb_connecting);
 
+        getWindow().setBackgroundDrawable(null);
+
         pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
 
         tvRoomName.setText(getIntent().getStringExtra(ROOM_NAME));
@@ -382,6 +384,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
             if (ownMessage) {
                 vm.removeMessagePointer(newID);
             }
+            updateMessageDecoration();
         });
     }
 

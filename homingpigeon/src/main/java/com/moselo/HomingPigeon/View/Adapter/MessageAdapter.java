@@ -11,9 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -98,7 +99,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
     public class TextVH extends BaseViewHolder<MessageModel> {
 
         private FrameLayout flBubble;
-//        private LinearLayout llButtonReply;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus, ivSending;
         private TextView tvUsername, tvMessageBody, tvMessageStatus;
@@ -111,7 +111,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivSending = itemView.findViewById(R.id.iv_sending);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
-//            llButtonReply = itemView.findViewById(R.id.ll_button_reply);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
 
@@ -134,7 +133,6 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.GONE);
-                    ivSending.setVisibility(View.GONE);
                 }
                 // Message is delivered
                 else if (null != item.isDelivered() && item.isDelivered()) {
@@ -161,22 +159,41 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    ivSending.setTranslationX(0);
-                    ivSending.animate()
-                            .translationX(Utils.getInstance().dpToPx(40))
-                            .setDuration(150L)
-                            .setInterpolator(new AccelerateInterpolator(0.5f))
-                            .withEndAction(() -> {
-                                ivSending.setVisibility(View.GONE);
-                                ivSending.clearAnimation();
-                            })
-                            .start();
+                    Animation sendAnimation = new TranslateAnimation(0, Utils.getInstance().dpToPx(32), 0, 0);
+                    sendAnimation.setDuration(150L);
+                    sendAnimation.setFillAfter(false);
+                    sendAnimation.setInterpolator(new AccelerateInterpolator(0.5f));
+                    sendAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            ivSending.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    ivSending.startAnimation(sendAnimation);
+//                    ivSending.animate()
+//                            .translationX(Utils.getInstance().dpToPx(40))
+//                            .setDuration(150L)
+//                            .after
+//                            .setInterpolator(new AccelerateInterpolator(0.5f))
+//                            .withEndAction(() -> {
+//                                ivSending.setVisibility(View.GONE);
+////                                ivSending.clearAnimation();
+//                            })
+//                            .start();
                 }
                 // Message is sending
                 else if (null != item.isSending() && item.isSending()) {
                     Log.e(TAG, "sending: " + item.getMessage());
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
-                    ivMessageStatus.setImageResource(R.drawable.ic_message_sending_grey);
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.GONE);
@@ -191,61 +208,73 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
             }
 
+            expandOrShrinkBubble(item);
+
             flBubble.setOnClickListener(v -> {
                 if (null != item.isFailedSend() && item.isFailedSend()) {
                     removeMessage(item);
                     listener.onRetrySendMessage(item);
                 } else {
-                    if (tvMessageStatus.getVisibility() == View.GONE) {
-                        // Bubble is selected/expanded
-                        ivMessageStatus.setImageResource(R.drawable.ic_reply_circle_white);
-                        tvMessageStatus.setVisibility(View.VISIBLE);
-//                        llButtonReply.setVisibility(View.VISIBLE);
-                        ivMessageStatus.setVisibility(View.VISIBLE);
-                        if (isMessageFromMySelf(item)) {
-                            if (null == bubbleOverlayRight) {
-                                bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.bg_transparent_black_8dp_1dp_8dp_8dp);
-                            }
-                            flBubble.setForeground(bubbleOverlayRight);
-                        } else {
-                            if (null == bubbleOverlayRight) {
-                                bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.bg_transparent_black_1dp_8dp_8dp_8dp);
-                            }
-                            flBubble.setForeground(bubbleOverlayLeft);
-                        }
-                        listener.onMessageClicked(item,true);
+                    if (item.isExpanded()) {
+                        // Shrink bubble
+                        item.setExpanded(false);
                     } else {
-                        // Bubble is deselected/shrunk
-                        flBubble.setForeground(null);
-                        tvMessageStatus.setVisibility(View.GONE);
-//                        llButtonReply.setVisibility(View.GONE);
-
-                        if (isMessageFromMySelf(item)) {
-                            ivMessageStatus.setVisibility(View.VISIBLE);
-                            if (null != item.isRead() && item.isRead()) {
-                                ivMessageStatus.setImageResource(R.drawable.ic_message_read_green);
-                            } else if (null != item.isDelivered() && item.isDelivered()) {
-                                ivMessageStatus.setImageResource(R.drawable.ic_delivered_grey);
-                            } else if (null != item.isFailedSend() && item.isFailedSend()) {
-                                ivMessageStatus.setImageResource(R.drawable.ic_retry_circle_purple);
-                            } else if (null != item.isSending() && !item.isSending()) {
-                                ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
-                            } else if (null != item.isSending() && item.isSending()) {
-                                ivMessageStatus.setImageResource(R.drawable.ic_message_sending_grey);
-                            }
-                        } else {
-                            ivMessageStatus.setVisibility(View.GONE);
+                        // Expand clicked bubble and shrink others
+                        for (MessageModel message : getItems()) {
+                            message.setExpanded(false);
                         }
-                        listener.onMessageClicked(item,false);
+                        notifyDataSetChanged();
+                        item.setExpanded(true);
                     }
-//                    item.setExpanded(!item.isExpanded());
-//                    notifyItemChanged(position);
+                    expandOrShrinkBubble(item);
+                    listener.onMessageClicked(item, item.isExpanded());
                 }
             });
+        }
 
-//            llButtonReply.setOnClickListener(v -> {
-//
-//            });
+        private void expandOrShrinkBubble(MessageModel item) {
+            if (item.isExpanded()) {
+                // Bubble is selected/expanded
+                ivMessageStatus.setImageResource(R.drawable.ic_reply_circle_white);
+                tvMessageStatus.setVisibility(View.VISIBLE);
+                ivMessageStatus.setVisibility(View.VISIBLE);
+                if (isMessageFromMySelf(item)) {
+                    if (null == bubbleOverlayRight) {
+                        bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.bg_transparent_black_8dp_1dp_8dp_8dp);
+                    }
+                    flBubble.setForeground(bubbleOverlayRight);
+                } else {
+                    if (null == bubbleOverlayRight) {
+                        bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.bg_transparent_black_1dp_8dp_8dp_8dp);
+                    }
+                    flBubble.setForeground(bubbleOverlayLeft);
+                }
+//                listener.onMessageClicked(item,true);
+            } else {
+                // Bubble is deselected/shrunk
+                flBubble.setForeground(null);
+                tvMessageStatus.setVisibility(View.GONE);
+//                        llButtonReply.setVisibility(View.GONE);
+
+                if (isMessageFromMySelf(item) && null != item.isSending() && !item.isSending()) {
+                    if (null != item.isRead() && item.isRead()) {
+                        ivMessageStatus.setImageResource(R.drawable.ic_message_read_green);
+                    } else if (null != item.isDelivered() && item.isDelivered()) {
+                        ivMessageStatus.setImageResource(R.drawable.ic_delivered_grey);
+                    } else if (null != item.isFailedSend() && item.isFailedSend()) {
+                        ivMessageStatus.setImageResource(R.drawable.ic_retry_circle_purple);
+                    } else if (null != item.isSending() && !item.isSending()) {
+                        ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
+                    }
+//                    else if (null != item.isSending() && item.isSending()) {
+//                        ivMessageStatus.setImageResource(R.drawable.ic_message_sending_grey);
+//                    }
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                } else {
+                    ivMessageStatus.setVisibility(View.GONE);
+                }
+//                listener.onMessageClicked(item,false);
+            }
         }
     }
 

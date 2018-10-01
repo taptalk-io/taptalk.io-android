@@ -298,13 +298,13 @@
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/grey_ea"
+            android:background="@color/grey_e4"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/grey_ea"
+            android:background="@color/grey_e4"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
