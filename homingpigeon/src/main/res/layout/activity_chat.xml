@@ -236,7 +236,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/ic_chatmenu_keyboard"
+            android:src="@drawable/ic_chatmenu_hamburger"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_chat"
             app:layout_constraintStart_toStartOf="parent" />
