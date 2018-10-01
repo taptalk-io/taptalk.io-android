@@ -47,6 +47,7 @@ public class ChatManager {
     private final String TAG = ChatManager.class.getSimpleName();
     private static ChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
+    List<MessageEntity> saveMessages; //message to be save
     private Map<String, MessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
     private RoomModel activeRoom;
@@ -151,6 +152,7 @@ public class ChatManager {
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
                         .getString(K_USER, null)));
         chatListeners = new ArrayList<>();
+        saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
         incomingMessages = new LinkedHashMap<>();
@@ -278,12 +280,12 @@ public class ChatManager {
                 sendMessage(messageModel);
             }
             // Insert list to database
-//            DataManager.getInstance().insertToDatabase(messageEntities);
+//            DataManager.getInstance().insertToList(messageEntities);
         } else {
             MessageModel messageModel = buildTextMessage(textMessage, activeRoom);
 
             // Insert new message to database
-//            DataManager.getInstance().insertToDatabase(ChatManager.getInstance().convertToEntity(messageModel));
+//            DataManager.getInstance().insertToList(ChatManager.getInstance().convertToEntity(messageModel));
 
             // Send message
             sendMessage(messageModel);
@@ -388,13 +390,19 @@ public class ChatManager {
      * update pending status when app enters background and close socket
      */
     public void updateMessageWhenEnterBackground() {
-        //saveWaitingMessageToDatabase();
+        //saveWaitingMessageToList();
         setPendingRetryAttempt(0);
         isCheckPendingArraySequenceActive = false;
         if (null != scheduler && !scheduler.isShutdown())
             scheduler.shutdown();
         saveUnsentMessage();
         checkPendingBackgroundTask();
+    }
+
+    private void insertToList(Map<String, MessageModel> hashMap) {
+        for (Map.Entry<String, MessageModel> message : hashMap.entrySet()) {
+            saveMessages.add(convertToEntity(message.getValue()));
+        }
     }
 
     public void insertToDatabase(Map<String, MessageModel> hashMap) {
@@ -481,26 +489,26 @@ public class ChatManager {
         }
     }
 
-    public void saveNewMessageToDatabase() {
+    public void saveNewMessageToList() {
         if (0 == incomingMessages.size())
             return;
 
-        insertToDatabase(incomingMessages);
+        insertToList(incomingMessages);
         incomingMessages.clear();
     }
 
-    public void savePendingMessageToDatabase() {
+    public void savePendingMessageToList() {
         if (0 < pendingMessages.size()) {
-            insertToDatabase(pendingMessages);
+            insertToList(pendingMessages);
             //pendingMessages.clear();
         }
     }
 
-    public void saveWaitingMessageToDatabase() {
+    public void saveWaitingMessageToList() {
         if (0 == waitingResponses.size())
             return;
 
-        insertToDatabase(waitingResponses);
+        insertToList(waitingResponses);
         waitingResponses.clear();
     }
 
@@ -512,15 +520,32 @@ public class ChatManager {
             scheduler = Executors.newSingleThreadScheduledExecutor();
         }
 
-        scheduler.scheduleAtFixedRate(() -> saveNewMessageToDatabase(), 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(() -> {
+            insertToList(incomingMessages);
+            saveMessageToDatabase();
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void saveUnsentMessage() {
-        new Thread(() -> saveNewMessageToDatabase()).start();
+        saveNewMessageToList();
+        savePendingMessageToList();
+        saveWaitingMessageToList();
+        saveMessageToDatabase();
+    }
 
-        new Thread(() -> savePendingMessageToDatabase()).start();
+    private void saveMessageToDatabase() {
+        Log.e(TAG, "saveMessageToDatabase: "+saveMessages.size() );
+        if (0 == saveMessages.size()) return;
 
-        new Thread(() -> saveWaitingMessageToDatabase()).start();
+        DataManager.getInstance().insertToDatabase(saveMessages);
+    }
+
+    public List<MessageEntity> getSaveMessages() {
+        return saveMessages;
+    }
+
+    public void clearSaveMessages() {
+        saveMessages.clear();
     }
 
     public void setPendingRetryAttempt(int counter) {

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +64,7 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
 
     public class RoomListVH extends BaseViewHolder<MessageModel> {
 
+        private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
         private ImageView ivAvatar, ivAvatarIcon, ivMute, ivMessageStatus;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
@@ -118,7 +120,29 @@ public class RoomListAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Me
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.bg_amethyst_mediumpurple_270_rounded_10dp));
             }
 
-            // TODO: 6 September 2018 CHANGE MESSAGE STATUS IMAGE
+            //Change Status Message Icon
+            if (null != item.isRead() && item.isRead()) {
+                ivMessageStatus.setImageResource(R.drawable.ic_read_green);
+            }
+            // Message is delivered
+            else if (null != item.isDelivered() && item.isDelivered()) {
+                ivMessageStatus.setImageResource(R.drawable.ic_delivered_grey);
+            }
+            // Message failed to send
+            else if (null != item.isFailedSend() && item.isFailedSend()) {
+                ivMessageStatus.setImageResource(R.drawable.ic_failed_grey);
+            }
+            // Message sent
+            else if (null != item.isSending() && !item.isSending()) {
+                ivMessageStatus.setImageResource(R.drawable.ic_sent_grey);
+            }
+            // Message is sending
+            else if (null != item.isSending() && item.isSending()) {
+                ivMessageStatus.setImageResource(R.drawable.ic_sending_grey);
+            }
+            else {
+                Log.e(TAG, "no status: " + item.getMessage());
+            }
 
             // Show unread count
             int unreadCount = item.getRoom().getUnreadCount();
