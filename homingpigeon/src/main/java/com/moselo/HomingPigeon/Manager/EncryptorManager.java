@@ -1,5 +1,7 @@
 package com.moselo.HomingPigeon.Manager;
 
+import android.util.Log;
+
 import com.moselo.HomingPigeon.Helper.AESCrypt;
 import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.Utils;
@@ -19,32 +21,39 @@ public class EncryptorManager {
     }
 
     public String encrypt(String textToEncrypt, String id) throws GeneralSecurityException {
-        String il, im, ir, en, es;
+        String localKey, encrypted, encryptedWithSalt;
+        char salt;
+        int encryptedLength, saltIndex;
+        int randomNumber = Utils.getInstance().generateRandomNumber(9);
+
         try {
-            il = Utils.getInstance().mySubString(id, 0, 8);
-            im = Utils.getInstance().mySubString(id, 8, 16);
-            ir = Utils.getInstance().mySubString(id, 24, 8);
-            en = AESCrypt.encrypt(String.format("%s%s", DefaultConstant.ENCRYPTION_KEY, im), textToEncrypt);
-            es = String.format("%s%s%s", il, ir, en);
+            salt = id.charAt(textToEncrypt.length() % 32);
+            localKey = new StringBuilder(Utils.getInstance().mySubString(id, 8, 16)).reverse().toString();
+            encrypted = AESCrypt.encrypt(String.format("%s%s", DefaultConstant.ENCRYPTION_KEY, localKey), textToEncrypt);
+            encryptedLength = encrypted.length();
+            saltIndex = ((encryptedLength + randomNumber) * randomNumber) % encryptedLength;
+            encryptedWithSalt = new StringBuilder(encrypted).insert(saltIndex, salt).insert(0, randomNumber).toString();
         } catch(Exception ex) {
             ex.printStackTrace();
             return "";
         }
-        return es;
+        return encryptedWithSalt;
     }
 
     public String decrypt(String textToDecrypt, String id) throws GeneralSecurityException {
-        String il, im, ir, de, ds;
+        String localKey, encrypted, decrypted;
+        int randomNumber, encryptedLength, saltIndex;
         try {
-            il = Utils.getInstance().mySubString(id, 0, 8);
-            im = Utils.getInstance().mySubString(id, 8, 16);
-            ir = Utils.getInstance().mySubString(id, 24, 8);
-            ds = textToDecrypt.replace(String.format("%s%s", il, ir), "");
-            de = AESCrypt.decrypt(String.format("%s%s", DefaultConstant.ENCRYPTION_KEY, im), ds);
+            localKey = new StringBuilder(Utils.getInstance().mySubString(id, 8, 16)).reverse().toString();
+            randomNumber = (int) textToDecrypt.charAt(0);
+            encryptedLength = textToDecrypt.length() - 2;
+            saltIndex = ((encryptedLength + randomNumber) * randomNumber) % encryptedLength;
+            encrypted = new StringBuilder(textToDecrypt).deleteCharAt(0).deleteCharAt(saltIndex).toString();
+            decrypted = AESCrypt.decrypt(String.format("%s%s", DefaultConstant.ENCRYPTION_KEY, localKey), encrypted);
         } catch(Exception ex) {
             ex.printStackTrace();
             return "";
         }
-        return de;
+        return decrypted;
     }
 }
