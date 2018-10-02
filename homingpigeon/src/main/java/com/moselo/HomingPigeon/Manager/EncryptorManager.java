@@ -31,7 +31,7 @@ public class EncryptorManager {
             encryptedLength = encrypted.length();
             saltIndex = ((encryptedLength + randomNumber) * randomNumber) % encryptedLength;
             encryptedWithSalt = new StringBuilder(encrypted).insert(saltIndex, salt).insert(0, randomNumber).toString();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return "";
         }
@@ -43,12 +43,12 @@ public class EncryptorManager {
         int randomNumber, encryptedLength, saltIndex;
         try {
             localKey = new StringBuilder(HpUtils.getInstance().mySubString(id, 8, 16)).reverse().toString();
-            randomNumber = (int) textToDecrypt.charAt(0);
+            randomNumber = Integer.parseInt(String.valueOf(textToDecrypt.charAt(0)));
             encryptedLength = textToDecrypt.length() - 2;
             saltIndex = ((encryptedLength + randomNumber) * randomNumber) % encryptedLength;
             encrypted = new StringBuilder(textToDecrypt).deleteCharAt(0).deleteCharAt(saltIndex).toString();
             decrypted = AESCrypt.decrypt(String.format("%s%s", HpDefaultConstant.ENCRYPTION_KEY, localKey), encrypted);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return "";
         }
