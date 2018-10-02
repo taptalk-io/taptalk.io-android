@@ -48,19 +48,28 @@ public class MessageEntity {
         this.recipientID = recipientID;
     }
 
+    /**
+     *  UPDATE THIS CONSTRUCTOR WHEN ADDING COLUMNS
+     */
     @Ignore
-    public MessageEntity(@Nullable String messageID, @NonNull String localID,
-                         String roomID, String roomName, Integer roomType, Integer type, String message, long created, String user, String recipientID,
+    public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
+                         @Nullable String roomName, @Nullable String roomColor,
+                         @Nullable Integer roomType, @Nullable String roomImage, Integer type,
+                         String message, Long created, String user, String recipientID,
                          @Nullable Boolean hasRead, @Nullable Boolean isRead,
-                         @Nullable Boolean isDelivered, @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
-                         @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated, @Nullable Long unreadCount) {
+                         @Nullable Boolean isDelivered, @Nullable Boolean isHidden,
+                         @Nullable Boolean isDeleted, @Nullable Boolean isSending,
+                         @Nullable Boolean isFailedSend, @Nullable Long updated,
+                         @Nullable Long unreadCount) {
         this.messageID = messageID;
         if (localID.equals(""))
             this.localID =  Utils.getInstance().generateRandomString(32);
         else this.localID = localID;
         this.roomID = roomID;
         this.roomName = roomName;
+        this.roomColor = roomColor;
         this.roomType = roomType;
+        this.roomImage = roomImage;
         this.type = type;
         this.message = message;
         this.created = created;

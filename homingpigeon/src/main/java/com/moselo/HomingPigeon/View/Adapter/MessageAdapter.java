@@ -126,7 +126,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 // Message has been read
                 if (null != item.getIsRead() && item.getIsRead()) {
                     Log.e(TAG, "is read: " + item.getMessage());
-                    tvMessageStatus.setText(String.format("%s%s", itemView.getContext().getString(R.string.delivered_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.ic_message_read_green);
 
                     tvMessageStatus.setVisibility(View.GONE);
@@ -136,7 +136,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 // Message is delivered
                 else if (null != item.getDelivered() && item.getDelivered()) {
                     Log.e(TAG, "delivered: " + item.getMessage());
-                    tvMessageStatus.setText(String.format("%s%s", itemView.getContext().getString(R.string.delivered_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.ic_delivered_grey);
 
                     tvMessageStatus.setVisibility(View.GONE);
@@ -155,7 +155,7 @@ public class MessageAdapter extends BaseAdapter<MessageModel, BaseViewHolder<Mes
                 }
                 // Message sent
                 else if (null != item.getSending() && !item.getSending()) {
-                    tvMessageStatus.setText(String.format("%s%s", itemView.getContext().getString(R.string.sent_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), TimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.ic_message_sent_grey);
 
                     tvMessageStatus.setVisibility(View.GONE);

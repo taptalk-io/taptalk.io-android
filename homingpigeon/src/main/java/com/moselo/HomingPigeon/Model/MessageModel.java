@@ -30,11 +30,12 @@ public class MessageModel {
     @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
-    private boolean isExpanded = false;
+    private Long unreadCount;
+    private Boolean isExpanded = false;
 
     public MessageModel(@Nullable String messageID, @NonNull String localID, String message, RoomModel room,
                         Integer type, Long created, UserModel user, String recipientID, @Nullable Boolean isDeleted,
-                        @Nullable Boolean isSending, @Nullable Boolean isFailedSend) {
+                        @Nullable Boolean isSending, @Nullable Boolean isFailedSend, Long unreadCount) {
         this.messageID = messageID;
         this.localID = localID;
         this.message = message;
@@ -46,6 +47,7 @@ public class MessageModel {
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
+        this.unreadCount = unreadCount;
         // TODO: 3 September 2018 ADD deliveredTo & seenBy
     }
 
@@ -54,7 +56,7 @@ public class MessageModel {
 
     public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user, String recipientID) {
         String localID = Utils.getInstance().generateRandomString(32);
-        return new MessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false);
+        return new MessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false, (long) 0);
     }
 
     public static MessageModel BuilderEncrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -69,7 +71,8 @@ public class MessageModel {
                 messageModel.getRecipientID(),
                 messageModel.getDeleted(),
                 messageModel.getSending(),
-                messageModel.getFailedSend());
+                messageModel.getFailedSend(),
+                messageModel.getUnreadCount());
     }
 
     public static MessageModel BuilderDecrypt(MessageModel messageModel) throws GeneralSecurityException {
@@ -84,7 +87,8 @@ public class MessageModel {
                 messageModel.getRecipientID(),
                 messageModel.getDeleted(),
                 messageModel.getSending(),
-                messageModel.getFailedSend());
+                messageModel.getFailedSend(),
+                messageModel.getUnreadCount());
     }
 
     @Nullable
@@ -223,6 +227,14 @@ public class MessageModel {
 
     public void setUpdated(@Nullable Long updated) {
         this.updated = updated;
+    }
+
+    public Long getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(Long unreadCount) {
+        this.unreadCount = unreadCount;
     }
 
     public boolean isExpanded() {

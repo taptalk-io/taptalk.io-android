@@ -232,7 +232,8 @@ public class ChatManager {
                 entity.getRecipientID(),
                 entity.getDeleted(),
                 entity.getIsSending(),
-                entity.getIsFailedSend());
+                entity.getIsFailedSend(),
+                entity.getUnreadCount());
     }
 
     /**
@@ -244,7 +245,9 @@ public class ChatManager {
                 model.getLocalID(),
                 model.getRoom().getRoomID(),
                 model.getRoom().getRoomName(),
+                model.getRoom().getRoomColor(),
                 model.getRoom().getRoomType(),
+                model.getRoom().getRoomImage().getFullsize(),
                 model.getType(),
                 model.getMessage(),
                 model.getCreated(),
