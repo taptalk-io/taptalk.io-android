@@ -27,10 +27,16 @@ public interface MessageDao {
     @Query("select * from message_table order by Created desc")
     LiveData<List<MessageEntity>> getAllMessage();
 
-    @Query("select * from message_table where RoomID like :roomID order by Created desc limit " + numOfItem)
+    @Query("select MessageID, localID, RoomID, RoomName, RoomColor, RoomType," +
+            " RoomImage, messageType, message, created, user, recipientID, " +
+            "hasRead, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
+            " from message_table where RoomID like :roomID order by Created desc limit " + numOfItem)
     List<MessageEntity> getAllMessageList(String roomID);
 
-    @Query("select * from message_table where " +
+    @Query("select MessageID, localID, RoomID, RoomName, RoomColor, RoomType, "+
+            "RoomImage, messageType, message, created, user, recipientID, " +
+            "hasRead, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend " +
+            "from message_table where " +
             "Created in (select distinct Created from message_table where Created < :lastTimestamp and RoomID like :roomID order by Created desc limit "+ numOfItem+" ) " +
             "and RoomID like :roomID order by Created desc")
     List<MessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);

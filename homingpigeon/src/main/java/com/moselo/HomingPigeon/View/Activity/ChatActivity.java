@@ -146,6 +146,7 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     @Override
     protected void onResume() {
         super.onResume();
+        Log.e(TAG, "onResume: "+ Utils.getInstance().toJsonString(vm.getRoom()) );
         ChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(ChatManager.getInstance().getMessageFromDraft());
     }
@@ -153,16 +154,16 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     @Override
     protected void onPause() {
         super.onPause();
+        Log.e(TAG, "onPause: "+Utils.getInstance().toJsonString(ChatManager.getInstance().getActiveRoom()) );
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
-        ChatManager.getInstance().setActiveRoom(null);
+        ChatManager.getInstance().deleteActiveRoom();
         Utils.getInstance().dismissKeyboard(this);
     }
 
     @Override
     public void onBackPressed() {
         ChatManager.getInstance().putUnsentMessageToList();
-        ChatManager.getInstance().deleteActiveRoom();
         super.onBackPressed();
     }
 

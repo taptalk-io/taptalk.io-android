@@ -181,6 +181,7 @@ public class ChatManager {
 
     public void setActiveRoom(RoomModel roomId) {
         this.activeRoom = roomId;
+        Log.e(TAG, "setActiveRoom: "+Utils.getInstance().toJsonString(roomId)+" : "+Utils.getInstance().toJsonString(activeRoom) );
     }
 
     public UserModel getActiveUser() {
@@ -311,6 +312,7 @@ public class ChatManager {
      * save text to draft
      */
     public void saveMessageToDraft(String message) {
+        Log.e(TAG, "saveMessageToDraft: "+Utils.getInstance().toJsonString(activeRoom) );
         messageDrafts.put(activeRoom.getRoomID(), message);
     }
 
