@@ -94,6 +94,13 @@ public class MessageRepository {
         }).start();
     }
 
+    public void getRoomList(final HomingPigeonDatabaseListener listener) {
+        new Thread(() -> {
+            List<MessageEntity> entities = messageDao.getAllRoomList();
+            listener.onSelectFinished(entities);
+        }).start();
+    }
+
     public void delete(final String localID) {
         new Thread(() -> messageDao.delete(localID)).start();
     }

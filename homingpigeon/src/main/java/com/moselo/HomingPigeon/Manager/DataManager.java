@@ -197,6 +197,10 @@ public class DataManager {
         DatabaseManager.getInstance().getRoomList(saveMessages, listener);
     }
 
+    public void getRoomList(HomingPigeonDatabaseListener listener) {
+        DatabaseManager.getInstance().getRoomList(listener);
+    }
+
     public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
         return DataManager.getInstance().getRecentSearchLive();
     }

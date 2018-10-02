@@ -291,20 +291,21 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
             messageModels.add(model);
         }
 
-        vm.addRoomList(messageModels);
+        vm.setRoomList(messageModels);
 
         getActivity().runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
             } else if (null != adapter) {
-                Log.e(TAG, "onSelectFinished: ");
                 adapter.setItems(vm.getRoomList(), false);
                 llRoomEmpty.setVisibility(View.GONE);
             }
 
+            Log.e(TAG, "onSelectFinished: "+isApiNeedToBeCalled );
             if (isApiNeedToBeCalled)
                 DataManager.getInstance().getRoomListFromAPI(DataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
             else flSetupContainer.setVisibility(View.GONE);
+            Log.e(TAG, "onSelectFinished: "+vm.getRoomList().size());
         });
     }
 
@@ -339,8 +340,13 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
                 }
             }
             Log.e(TAG, "onSuccess: " + tempMessage.size());
-            isApiNeedToBeCalled = false;
-            DataManager.getInstance().insertToDatabase(tempMessage, false, HpRoomListFragment.this);
+            DataManager.getInstance().insertToDatabase(tempMessage, false, new HomingPigeonDatabaseListener() {
+                @Override
+                public void onSelectFinished(List<MessageEntity> entities) {
+                    isApiNeedToBeCalled = false;
+                    DataManager.getInstance().getRoomList(HpRoomListFragment.this);
+                }
+            });
         }
 
         @Override
