@@ -52,21 +52,15 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void addMessagePointer(MessageModel pendingMessage) {
-        if (null == messagePointer) messagePointer = new LinkedHashMap<>();
-
-        messagePointer.put(pendingMessage.getLocalID(), pendingMessage);
+        getMessagePointer().put(pendingMessage.getLocalID(), pendingMessage);
     }
 
     public void removeMessagePointer(String localID) {
-        if (null == messagePointer) messagePointer = new LinkedHashMap<>();
-
-        messagePointer.remove(localID);
+        getMessagePointer().remove(localID);
     }
 
     public void updateMessagePointer(MessageModel newMessage) {
-        if (null == messagePointer) messagePointer = new LinkedHashMap<>();
-
-        messagePointer.get(newMessage.getLocalID()).updateValue(newMessage);
+        getMessagePointer().get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
     public void getMessageEntities(String roomID, HomingPigeonDatabaseListener listener) {

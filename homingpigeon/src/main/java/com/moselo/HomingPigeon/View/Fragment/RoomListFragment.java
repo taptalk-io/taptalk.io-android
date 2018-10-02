@@ -251,6 +251,7 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
     @Override
     public void onResume() {
         super.onResume();
+        vm.clearRoomList();
         getRoomListFlow();
     }
 
@@ -296,7 +297,7 @@ public class RoomListFragment extends Fragment implements HomingPigeonDatabaseLi
             messageModels.add(model);
         }
 
-        vm.setRoomList(messageModels);
+        vm.addRoomList(messageModels);
 
         getActivity().runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {

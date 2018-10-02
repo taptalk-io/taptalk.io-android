@@ -290,16 +290,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
         rvCustomKeyboard.setAdapter(customKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-//        if (vm.getMessageModels().size() > 0) {
-//            clEmptyChat.setVisibility(View.GONE);
-//        } else {
-//            // Chat is empty
-//            Log.e(TAG, "initView: CHAT EMPTY");
-//            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.chat_other_user_is_expert), getIntent().getStringExtra(ROOM_NAME))));
-//            tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
-//            civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
-//        }
-
         final HomingPigeonDatabaseListener scrollChatListener = this;
 
         rvMessageList.addOnScrollListener(new EndlessScrollListener(messageLayoutManager) {
