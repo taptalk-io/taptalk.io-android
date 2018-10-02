@@ -15,11 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
+import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
-import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
@@ -241,6 +241,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_reply_circle_white);
                 tvMessageStatus.setVisibility(View.VISIBLE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
+                animateShow(tvMessageStatus);
                 if (isMessageFromMySelf(item)) {
                     if (null == bubbleOverlayRight) {
                         bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.hp_bg_transparent_black_8dp_1dp_8dp_8dp);
@@ -256,8 +257,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             } else {
                 // Bubble is deselected/shrunk
                 flBubble.setForeground(null);
-                tvMessageStatus.setVisibility(View.GONE);
-//                        llButtonReply.setVisibility(View.GONE);
+                animateHide(tvMessageStatus);
 
                 if (isMessageFromMySelf(item) && null != item.getSending() && !item.getSending()) {
                     if (null != item.getIsRead() && item.getIsRead()) {
@@ -276,6 +276,25 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                 }
 //                listener.onMessageClicked(item,false);
             }
+        }
+
+        private void animateShow(View view) {
+            view.setTranslationY(HpUtils.getInstance().dpToPx(-24));
+            view.setAlpha(0);
+            view.animate()
+                    .translationY(0)
+                    .alpha(1f)
+                    .setDuration(150L)
+                    .start();
+        }
+
+        private void animateHide(View view) {
+            view.animate()
+                    .translationY(HpUtils.getInstance().dpToPx(-24))
+                    .alpha(0)
+                    .setDuration(150L)
+                    .start();
+            view.setVisibility(View.GONE);
         }
     }
 
