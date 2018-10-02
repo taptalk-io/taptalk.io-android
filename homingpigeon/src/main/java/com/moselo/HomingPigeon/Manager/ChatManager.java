@@ -181,7 +181,6 @@ public class ChatManager {
 
     public void setActiveRoom(RoomModel roomId) {
         this.activeRoom = roomId;
-        Log.e(TAG, "setActiveRoom: "+Utils.getInstance().toJsonString(roomId)+" : "+Utils.getInstance().toJsonString(activeRoom) );
     }
 
     public UserModel getActiveUser() {

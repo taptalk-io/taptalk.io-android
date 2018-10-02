@@ -146,7 +146,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: "+ Utils.getInstance().toJsonString(vm.getRoom()) );
         ChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(ChatManager.getInstance().getMessageFromDraft());
     }
@@ -154,7 +153,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(TAG, "onPause: "+Utils.getInstance().toJsonString(ChatManager.getInstance().getActiveRoom()) );
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
         ChatManager.getInstance().deleteActiveRoom();
@@ -169,7 +167,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
 
     @Override
     public void onReceiveMessageInActiveRoom(final MessageModel message) {
-        Log.e(TAG, "onReceiveMessageInActiveRoom: " + Utils.getInstance().toJsonString(message));
         addNewTextMessage(message);
     }
 
@@ -355,7 +352,6 @@ public class ChatActivity extends BaseActivity implements HomingPigeonChatListen
                 flMessageList.setVisibility(View.VISIBLE);
             }
             // Replace pending message with new message
-            Log.e(TAG, "addNewTextMessage: " + Utils.getInstance().toJsonString(newMessage));
             String newID = newMessage.getLocalID();
             boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
                     .getInstance().getActiveUser(ChatActivity.this).getUserID());
