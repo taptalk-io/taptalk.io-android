@@ -1,9 +1,7 @@
 package com.moselo.HomingPigeon.API;
 
-import android.util.Log;
-
-import com.moselo.HomingPigeon.API.View.DefaultDataView;
-import com.moselo.HomingPigeon.API.View.IView;
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.API.View.HpView;
 
 import rx.Subscriber;
 
@@ -11,8 +9,8 @@ import rx.Subscriber;
  * MoseloUser by Fadhlan on 3/3/17.
  */
 
-public class DefaultSubscriber<T extends BaseResponse<D>, V extends DefaultDataView<D> &
-        IView<D>, D>
+public class DefaultSubscriber<T extends BaseResponse<D>, V extends HpDefaultDataView<D> &
+        HpView<D>, D>
         extends Subscriber<T> {
     private static final String LOG_TAG = DefaultSubscriber.class.getSimpleName();
 

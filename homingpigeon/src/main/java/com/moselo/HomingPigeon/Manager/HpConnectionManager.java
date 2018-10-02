@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.moselo.HomingPigeon.Manager.ConnectionManager.ConnectionStatus.NOT_CONNECTED;
+import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
-public class ConnectionManager {
+public class HpConnectionManager {
 
-    private String TAG = ConnectionManager.class.getSimpleName();
-    private static ConnectionManager instance;
+    private String TAG = HpConnectionManager.class.getSimpleName();
+    private static HpConnectionManager instance;
     private WebSocketClient webSocketClient;
     private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon?access_token=homingpigeon&user_id=";
     //        private String webSocketEndpoint = "ws://echo.websocket.org";
@@ -40,11 +40,11 @@ public class ConnectionManager {
         CONNECTING, CONNECTED, DISCONNECTED, NOT_CONNECTED
     }
 
-    public static ConnectionManager getInstance() {
-        return instance == null ? (instance = new ConnectionManager()) : instance;
+    public static HpConnectionManager getInstance() {
+        return instance == null ? (instance = new HpConnectionManager()) : instance;
     }
 
-    public ConnectionManager() {
+    public HpConnectionManager() {
         try {
 //            webSocketUri = new URI(webSocketEndpoint);
 //            initWebSocketClient(webSocketUri);
@@ -132,7 +132,7 @@ public class ConnectionManager {
                 connect();
             }
         };
-        NetworkStateManager.getInstance().addNetworkListener(networkListener);
+        HpNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
 
     public void addSocketListener(HomingPigeonSocketListener listener) {
@@ -159,9 +159,9 @@ public class ConnectionManager {
 
     public void connect() {
         if ((ConnectionStatus.DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
-                NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)) {
+                HpNetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)) {
             try {
-                webSocketUri = new URI(webSocketEndpoint+DataManager.getInstance().getActiveUser(HomingPigeon.appContext).getUserID());
+                webSocketUri = new URI(webSocketEndpoint+HpDataManager.getInstance().getActiveUser(HomingPigeon.appContext).getUserID());
                 initWebSocketClient(webSocketUri);
                 connectionStatus = ConnectionStatus.CONNECTING;
                 webSocketClient.connect();
@@ -189,7 +189,7 @@ public class ConnectionManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (ConnectionStatus.DISCONNECTED == connectionStatus && !ChatManager.getInstance().isFinishChatFlow()) {
+                if (ConnectionStatus.DISCONNECTED == connectionStatus && !HpChatManager.getInstance().isFinishChatFlow()) {
                     connectionStatus = ConnectionStatus.CONNECTING;
                     try {
                         webSocketClient.reconnect();

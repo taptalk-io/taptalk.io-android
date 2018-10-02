@@ -6,7 +6,7 @@ import com.moselo.HomingPigeon.Model.ErrorModel;
  * Created by Fadhlan on 4/19/17.
  */
 
-public interface IView<T> {
+public interface HpView<T> {
     void startLoading();
 
     void endLoading();

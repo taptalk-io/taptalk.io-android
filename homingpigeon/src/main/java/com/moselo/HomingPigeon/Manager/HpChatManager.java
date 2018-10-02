@@ -6,7 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HpUtils;
@@ -42,12 +42,12 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.k
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOnline;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
-public class ChatManager {
+public class HpChatManager {
 
-    private final String TAG = ChatManager.class.getSimpleName();
-    private static ChatManager instance;
+    private final String TAG = HpChatManager.class.getSimpleName();
+    private static HpChatManager instance;
     private List<HomingPigeonChatListener> chatListeners;
-    List<MessageEntity> saveMessages; //message to be save
+    List<HpMessageEntity> saveMessages; //message to be save
     private Map<String, MessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
     private RoomModel activeRoom;
@@ -72,9 +72,9 @@ public class ChatManager {
 
         @Override
         public void onSocketDisconnected() {
-            if (HomingPigeon.isForeground && NetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)
-                    && ConnectionManager.ConnectionStatus.DISCONNECTED == ConnectionManager.getInstance().getConnectionStatus())
-                ConnectionManager.getInstance().reconnect();
+            if (HomingPigeon.isForeground && HpNetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)
+                    && HpConnectionManager.ConnectionStatus.DISCONNECTED == HpConnectionManager.getInstance().getConnectionStatus())
+                HpConnectionManager.getInstance().reconnect();
         }
 
         @Override
@@ -84,7 +84,7 @@ public class ChatManager {
 
         @Override
         public void onSocketError() {
-            ConnectionManager.getInstance().reconnect();
+            HpConnectionManager.getInstance().reconnect();
         }
 
         @Override
@@ -141,12 +141,12 @@ public class ChatManager {
         }
     };
 
-    public static ChatManager getInstance() {
-        return instance == null ? (instance = new ChatManager()) : instance;
+    public static HpChatManager getInstance() {
+        return instance == null ? (instance = new HpChatManager()) : instance;
     }
 
-    public ChatManager() {
-        ConnectionManager.getInstance().addSocketListener(socketListener);
+    public HpChatManager() {
+        HpConnectionManager.getInstance().addSocketListener(socketListener);
         setActiveUser(HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
                                                    },
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
@@ -217,9 +217,9 @@ public class ChatManager {
     }
 
     /**
-     * convert MessageEntity to MessageModel
+     * convert HpMessageEntity to MessageModel
      */
-    public MessageModel convertToModel(MessageEntity entity) {
+    public MessageModel convertToModel(HpMessageEntity entity) {
         return new MessageModel(
                 entity.getMessageID(),
                 entity.getLocalID(),
@@ -237,10 +237,10 @@ public class ChatManager {
     }
 
     /**
-     * convert MessageModel to MessageEntity
+     * convert MessageModel to HpMessageEntity
      */
-    public MessageEntity convertToEntity(MessageModel model) {
-        return new MessageEntity(
+    public HpMessageEntity convertToEntity(MessageModel model) {
+        return new HpMessageEntity(
                 model.getMessageID(),
                 model.getLocalID(),
                 model.getRoom().getRoomID(),
@@ -271,14 +271,14 @@ public class ChatManager {
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
-            List<MessageEntity> messageEntities = new ArrayList<>();
+            List<HpMessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 MessageModel messageModel = buildTextMessage(substr, activeRoom);
 
                 // Add entity to list
-                messageEntities.add(ChatManager.getInstance().convertToEntity(messageModel));
+                messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
 
                 // Send truncated message
                 sendMessage(messageModel);
@@ -351,8 +351,8 @@ public class ChatManager {
     }
 
     private void runSendMessageSequence(MessageModel messageModel) {
-        Log.e(TAG, "runSendMessageSequence: " + ConnectionManager.getInstance().getConnectionStatus());
-        if (ConnectionManager.getInstance().getConnectionStatus() == ConnectionManager.ConnectionStatus.CONNECTED) {
+        Log.e(TAG, "runSendMessageSequence: " + HpConnectionManager.getInstance().getConnectionStatus());
+        if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
             // Send message if socket is connected
@@ -375,7 +375,7 @@ public class ChatManager {
     private void sendEmit(String eventName, MessageModel messageModel) {
         EmitModel<MessageModel> emitModel;
         emitModel = new EmitModel<>(eventName, messageModel);
-        ConnectionManager.getInstance().send(HpUtils.getInstance().toJsonString(emitModel));
+        HpConnectionManager.getInstance().send(HpUtils.getInstance().toJsonString(emitModel));
     }
 
     /**
@@ -425,7 +425,7 @@ public class ChatManager {
 
     public void saveIncomingMessageAndDisconnect() {
         Log.e(TAG, "saveIncomingMessageAndDisconnect: ");
-        ConnectionManager.getInstance().close();
+        HpConnectionManager.getInstance().close();
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
             scheduler.shutdown();
@@ -526,10 +526,10 @@ public class ChatManager {
         Log.e(TAG, "saveMessageToDatabase: " + saveMessages.size());
         if (0 == saveMessages.size()) return;
 
-        DataManager.getInstance().insertToDatabase(saveMessages, true);
+        HpDataManager.getInstance().insertToDatabase(saveMessages, true);
     }
 
-    public List<MessageEntity> getSaveMessages() {
+    public List<HpMessageEntity> getSaveMessages() {
         return saveMessages;
     }
 

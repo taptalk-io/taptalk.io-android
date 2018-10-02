@@ -3,7 +3,7 @@ package com.moselo.HomingPigeon.API.Api;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moselo.HomingPigeon.API.Interceptor.HeaderRequestInterceptor;
+import com.moselo.HomingPigeon.API.Interceptor.HpHeaderRequestInterceptor;
 import com.moselo.HomingPigeon.BuildConfig;
 
 import java.util.concurrent.Executor;
@@ -16,9 +16,9 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class ApiConnection {
+public class HpApiConnection {
 
-    private static final String TAG = ApiConnection.class.getSimpleName();
+    private static final String TAG = HpApiConnection.class.getSimpleName();
     private static final int KB = 1024;
     private static final int MB = 1024 * KB;
     private static final int MAX_HEAP_SIZE = (int) Runtime.getRuntime().maxMemory();
@@ -31,13 +31,13 @@ public class ApiConnection {
 
     public ObjectMapper objectMapper;
 
-    private static ApiConnection instance;
+    private static HpApiConnection instance;
 
-    public static ApiConnection getInstance() {
-        return instance == null ? instance = new ApiConnection() : instance;
+    public static HpApiConnection getInstance() {
+        return instance == null ? instance = new HpApiConnection() : instance;
     }
 
-    private ApiConnection() {
+    private HpApiConnection() {
         this.objectMapper = createObjectMapper();
         OkHttpClient httpHpClient = buildHttpHpClient();
 
@@ -71,7 +71,7 @@ public class ApiConnection {
                 .writeTimeout(2, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new HeaderRequestInterceptor())
+                .addInterceptor(new HpHeaderRequestInterceptor())
                 .build();
     }
 

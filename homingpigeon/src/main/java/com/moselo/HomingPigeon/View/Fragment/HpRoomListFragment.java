@@ -23,17 +23,17 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.API.View.DefaultDataView;
-import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
-import com.moselo.HomingPigeon.Manager.ChatManager;
-import com.moselo.HomingPigeon.Manager.ConnectionManager;
-import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
@@ -99,7 +99,7 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ConnectionManager.getInstance().removeSocketListener(socketListener);
+        HpConnectionManager.getInstance().removeSocketListener(socketListener);
     }
 
     private void initViewModel() {
@@ -185,8 +185,8 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
     }
 
     private void initConnectionStatus() {
-        ConnectionManager.getInstance().addSocketListener(socketListener);
-        if (!NetworkStateManager.getInstance().hasNetworkConnection(getContext()))
+        HpConnectionManager.getInstance().addSocketListener(socketListener);
+        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
             socketListener.onSocketDisconnected();
     }
 
@@ -219,7 +219,7 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
     }
 
     private void setStatusConnecting() {
-        if (!NetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connecting);
@@ -231,7 +231,7 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
     }
 
     private void setStatusWaitingForNetwork() {
-        if (NetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+        if (HpNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_offline);
@@ -284,10 +284,10 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
     };
 
     @Override
-    public void onSelectFinished(List<MessageEntity> entities) {
+    public void onSelectFinished(List<HpMessageEntity> entities) {
         List<MessageModel> messageModels = new ArrayList<>();
-        for (MessageEntity entity : entities) {
-            MessageModel model = ChatManager.getInstance().convertToModel(entity);
+        for (HpMessageEntity entity : entities) {
+            MessageModel model = HpChatManager.getInstance().convertToModel(entity);
             messageModels.add(model);
         }
 
@@ -303,17 +303,17 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
 
             Log.e(TAG, "onSelectFinished: "+isApiNeedToBeCalled );
             if (isApiNeedToBeCalled)
-                DataManager.getInstance().getRoomListFromAPI(DataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
+                HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
             else flSetupContainer.setVisibility(View.GONE);
             Log.e(TAG, "onSelectFinished: "+vm.getRoomList().size());
         });
     }
 
     private void getRoomListFlow() {
-        DataManager.getInstance().getRoomList(ChatManager.getInstance().getSaveMessages(), HpRoomListFragment.this);
+        HpDataManager.getInstance().getRoomList(HpChatManager.getInstance().getSaveMessages(), HpRoomListFragment.this);
     }
 
-    DefaultDataView<GetRoomListResponse> roomListView = new DefaultDataView<GetRoomListResponse>() {
+    HpDefaultDataView<GetRoomListResponse> roomListView = new HpDefaultDataView<GetRoomListResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -328,23 +328,23 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
         @Override
         public void onSuccess(GetRoomListResponse response) {
             super.onSuccess(response);
-            List<MessageEntity> tempMessage = new ArrayList<>();
+            List<HpMessageEntity> tempMessage = new ArrayList<>();
             for (MessageModel message : response.getMessages()) {
                 Log.e(TAG, message.getMessage() + " : " + message.getRoom().getRoomID());
                 try {
                     MessageModel temp = MessageModel.BuilderDecrypt(message);
-                    tempMessage.add(ChatManager.getInstance().convertToEntity(temp));
+                    tempMessage.add(HpChatManager.getInstance().convertToEntity(temp));
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                     Log.e(TAG, "onSuccess: ", e);
                 }
             }
             Log.e(TAG, "onSuccess: " + tempMessage.size());
-            DataManager.getInstance().insertToDatabase(tempMessage, false, new HomingPigeonDatabaseListener() {
+            HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HomingPigeonDatabaseListener() {
                 @Override
-                public void onSelectFinished(List<MessageEntity> entities) {
+                public void onSelectFinished(List<HpMessageEntity> entities) {
                     isApiNeedToBeCalled = false;
-                    DataManager.getInstance().getRoomList(HpRoomListFragment.this);
+                    HpDataManager.getInstance().getRoomList(HpRoomListFragment.this);
                 }
             });
         }

@@ -6,12 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.facebook.stetho.Stetho;
-import com.moselo.HomingPigeon.API.View.DefaultDataView;
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
-import com.moselo.HomingPigeon.Manager.ChatManager;
-import com.moselo.HomingPigeon.Manager.ConnectionManager;
-import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -27,7 +27,7 @@ public class HomingPigeon {
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread thread, Throwable throwable) {
-            ChatManager.getInstance().saveIncomingMessageAndDisconnect();
+            HpChatManager.getInstance().saveIncomingMessageAndDisconnect();
             defaultUEH.uncaughtException(thread, throwable);
         }
     };
@@ -37,13 +37,13 @@ public class HomingPigeon {
     }
 
     public HomingPigeon(final Context appContext) {
-        DataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
-        DataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
+        HpDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
+        HpDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
-        if (DataManager.getInstance().checkActiveUser(appContext))
-            ConnectionManager.getInstance().connect();
+        if (HpDataManager.getInstance().checkActiveUser(appContext))
+            HpConnectionManager.getInstance().connect();
 
-        DataManager.getInstance().updateSendingMessageToFailed();
+        HpDataManager.getInstance().updateSendingMessageToFailed();
 
         if (BuildConfig.DEBUG)
             Stetho.initialize(
@@ -56,10 +56,10 @@ public class HomingPigeon {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-                ChatManager.getInstance().setFinishChatFlow(false);
+                HpChatManager.getInstance().setFinishChatFlow(false);
                 appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonEndAppService.class));
-                NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
-                ChatManager.getInstance().triggerSaveNewMessage();
+                HpNetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
+                HpChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
                 isForeground = true;
@@ -67,22 +67,22 @@ public class HomingPigeon {
 
             @Override
             public void onAppGotoBackground() {
-                NetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
-                ChatManager.getInstance().updateMessageWhenEnterBackground();
+                HpNetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
+                HpChatManager.getInstance().updateMessageWhenEnterBackground();
                 isForeground = false;
             }
         });
     }
 
-    public void saveAuthTicketAndGetAccessToken(String authTicket, DefaultDataView<GetAccessTokenResponse> view) {
-        DataManager.getInstance().saveAuthTicket(appContext, authTicket);
-        DataManager.getInstance().getAccessTokenFromApi(view);
+    public void saveAuthTicketAndGetAccessToken(String authTicket, HpDefaultDataView<GetAccessTokenResponse> view) {
+        HpDataManager.getInstance().saveAuthTicket(appContext, authTicket);
+        HpDataManager.getInstance().getAccessTokenFromApi(view);
     }
 
     public static void checkActiveUserToShowPage(Activity activity) {
         if (null != activity) {
             Intent intent;
-            if (DataManager.getInstance().checkAccessTokenAvailable(activity)) {
+            if (HpDataManager.getInstance().checkAccessTokenAvailable(activity)) {
                 intent = new Intent(activity, HpRoomListActivity.class);
             } else {
                 intent = new Intent(activity, HpLoginActivity.class);

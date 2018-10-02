@@ -20,8 +20,8 @@ import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
-import com.moselo.HomingPigeon.Manager.ChatManager;
-import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
@@ -170,10 +170,10 @@ public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHol
                     }, prefs.getString(K_USER, ""));
 
                     String myUserID = myUser.getUserID();
-                    String roomID = item.getRecipientID().equals(myUserID) ? ChatManager.getInstance().arrangeRoomId(myUserID, userModel.getUserID()) : ChatManager.getInstance().arrangeRoomId(myUserID, item.getRecipientID());
+                    String roomID = item.getRecipientID().equals(myUserID) ? HpChatManager.getInstance().arrangeRoomId(myUserID, userModel.getUserID()) : HpChatManager.getInstance().arrangeRoomId(myUserID, item.getRecipientID());
 
                     if (!(myUserID + "-" + myUserID).equals(item.getRoom().getRoomID())) {
-                        ChatManager.getInstance().saveUnsentMessage();
+                        HpChatManager.getInstance().saveUnsentMessage();
                         Intent intent = new Intent(itemView.getContext(), HpChatActivity.class);
                         intent.putExtra(K_MY_USERNAME, myUsername);
                         intent.putExtra(ROOM_NAME, item.getRoom().getRoomName());
@@ -182,7 +182,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHol
                                 item.getRoom().getRoomName(), item.getRoom().getRoomType()));
                         itemView.getContext().startActivity(intent);
 
-                        DataManager.getInstance().saveRecipientID(itemView.getContext(), item.getRecipientID());
+                        HpDataManager.getInstance().saveRecipientID(itemView.getContext(), item.getRecipientID());
                     } else {
                         Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
                     }

@@ -16,17 +16,17 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class ApiManager {
-    private static final String TAG = ApiManager.class.getSimpleName();
+public class HpApiManager {
+    private static final String TAG = HpApiManager.class.getSimpleName();
     private HomingPigeonApiService homingPigeon;
-    private static ApiManager instance;
+    private static HpApiManager instance;
 
-    public static ApiManager getInstance() {
-        return instance == null ? instance = new ApiManager() : instance;
+    public static HpApiManager getInstance() {
+        return instance == null ? instance = new HpApiManager() : instance;
     }
 
-    private ApiManager() {
-        ApiConnection connection = ApiConnection.getInstance();
+    private HpApiManager() {
+        HpApiConnection connection = HpApiConnection.getInstance();
         this.homingPigeon = connection.getHomingPigeon();
     }
 

@@ -7,24 +7,23 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.moselo.HomingPigeon.Listener.HomingPigeonNetworkListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NetworkStateManager extends ConnectivityManager.NetworkCallback {
-    private static final String TAG = NetworkStateManager.class.getSimpleName();
-    private static NetworkStateManager instance;
+public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
+    private static final String TAG = HpNetworkStateManager.class.getSimpleName();
+    private static HpNetworkStateManager instance;
     private List<HomingPigeonNetworkListener> listeners;
     private NetworkRequest networkRequest;
 
-    public static NetworkStateManager getInstance() {
-        return instance == null ? (instance = new NetworkStateManager()) : instance;
+    public static HpNetworkStateManager getInstance() {
+        return instance == null ? (instance = new HpNetworkStateManager()) : instance;
     }
 
-    public NetworkStateManager() {
+    public HpNetworkStateManager() {
         listeners = new ArrayList<>();
         networkRequest = new NetworkRequest.Builder()
                 .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
@@ -89,6 +88,6 @@ public class NetworkStateManager extends ConnectivityManager.NetworkCallback {
     public void onLost(Network network) {
         super.onLost(network);
         Log.e(TAG, "onLost: " );
-        ConnectionManager.getInstance().close();
+        HpConnectionManager.getInstance().close();
     }
 }

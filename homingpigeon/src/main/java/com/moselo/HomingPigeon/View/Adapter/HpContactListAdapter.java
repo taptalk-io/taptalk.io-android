@@ -16,8 +16,8 @@ import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.ContactListListener;
-import com.moselo.HomingPigeon.Manager.ChatManager;
-import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -130,16 +130,16 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
 
                         // TODO: 17 September 2018 OPEN CHAT ROOM
                         if (!myID.equals(item.getUserID())) {
-                            ChatManager.getInstance().saveUnsentMessage();
+                            HpChatManager.getInstance().saveUnsentMessage();
                             Intent intent = new Intent(itemView.getContext(), HpChatActivity.class);
                             intent.putExtra(K_MY_USERNAME, myUser.getName());
                             intent.putExtra(ROOM_NAME, item.getName());
                             intent.putExtra(K_COLOR, randomColor);
-                            intent.putExtra(K_ROOM, RoomModel.Builder(ChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
+                            intent.putExtra(K_ROOM, RoomModel.Builder(HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
                                     item.getName(), 1));
                             itemView.getContext().startActivity(intent);
 
-                            DataManager.getInstance().saveRecipientID(itemView.getContext(), item.getUserID());
+                            HpDataManager.getInstance().saveRecipientID(itemView.getContext(), item.getUserID());
                         }
                         break;
                     case SELECT:

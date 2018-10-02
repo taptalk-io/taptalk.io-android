@@ -6,15 +6,15 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 
 import java.security.GeneralSecurityException;
 
-public class EncryptorManager {
+public class HpEncryptorManager {
 
-    private static EncryptorManager instance;
+    private static HpEncryptorManager instance;
 
-    public static EncryptorManager getInstance() {
-        return instance == null ? (instance = new EncryptorManager()) : instance;
+    public static HpEncryptorManager getInstance() {
+        return instance == null ? (instance = new HpEncryptorManager()) : instance;
     }
 
-    public EncryptorManager() {
+    public HpEncryptorManager() {
 
     }
 

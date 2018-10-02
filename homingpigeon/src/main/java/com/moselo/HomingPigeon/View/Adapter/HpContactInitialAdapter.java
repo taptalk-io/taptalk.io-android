@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Listener.ContactListListener;
-import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 
@@ -75,7 +75,7 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
 
             tvInitial = itemView.findViewById(R.id.tv_initial);
             rvContactInitial = itemView.findViewById(R.id.rv_contact_list_initial);
-            myID = DataManager.getInstance().getActiveUser(itemView.getContext()).getUserID();
+            myID = HpDataManager.getInstance().getActiveUser(itemView.getContext()).getUserID();
         }
 
         void onBind(int position) {

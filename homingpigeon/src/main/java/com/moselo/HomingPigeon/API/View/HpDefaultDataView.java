@@ -6,7 +6,7 @@ import com.moselo.HomingPigeon.Model.ErrorModel;
  * Created by Fadhlan on 6/15/17.
  */
 
-public abstract class DefaultDataView<T> implements IView<T> {
+public abstract class HpDefaultDataView<T> implements HpView<T> {
     @Override
     public void startLoading() {
 

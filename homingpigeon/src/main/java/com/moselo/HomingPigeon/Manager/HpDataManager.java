@@ -7,11 +7,11 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.API.Api.ApiManager;
+import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;
-import com.moselo.HomingPigeon.API.View.DefaultDataView;
-import com.moselo.HomingPigeon.Data.Message.MessageEntity;
-import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
@@ -29,11 +29,11 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
-public class DataManager {
-    private static DataManager instance;
+public class HpDataManager {
+    private static HpDataManager instance;
 
-    public static DataManager getInstance() {
-        return instance == null ? (instance = new DataManager()) : instance;
+    public static HpDataManager getInstance() {
+        return instance == null ? (instance = new HpDataManager()) : instance;
     }
 
     public UserModel getActiveUser(Context context) {
@@ -52,7 +52,7 @@ public class DataManager {
     public void saveActiveUser(Context context, UserModel user) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(K_USER, HpUtils.getInstance().toJsonString(user)).apply();
-        ChatManager.getInstance().setActiveUser(user);
+        HpChatManager.getInstance().setActiveUser(user);
     }
 
     public void saveAuthTicket(Context context, String authTicket) {
@@ -142,85 +142,85 @@ public class DataManager {
     }
 
     public void initDatabaseManager(String databaseType, Application application) {
-        DatabaseManager.getInstance().setRepository(databaseType, application);
+        HpDatabaseManager.getInstance().setRepository(databaseType, application);
     }
 
-    public void insertToDatabase(MessageEntity messageEntity) {
-        DatabaseManager.getInstance().insert(messageEntity);
+    public void insertToDatabase(HpMessageEntity messageEntity) {
+        HpDatabaseManager.getInstance().insert(messageEntity);
     }
 
-    public void insertToDatabase(RecentSearchEntity recentSearchEntity) {
-        DatabaseManager.getInstance().insert(recentSearchEntity);
+    public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
+        HpDatabaseManager.getInstance().insert(recentSearchEntity);
     }
 
-    public void insertToDatabase(List<MessageEntity> messageEntities, boolean isClearSaveMessages) {
-        DatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
+    public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages) {
+        HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
     }
 
-    public void insertToDatabase(List<MessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener) {
-        DatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
+    public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener) {
+        HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
     }
 
     public void deleteFromDatabase(String messageLocalID) {
-        DatabaseManager.getInstance().delete(messageLocalID);
+        HpDatabaseManager.getInstance().delete(messageLocalID);
     }
 
-    public void deleteFromDatabase(RecentSearchEntity recentSearchEntity) {
-        DatabaseManager.getInstance().delete(recentSearchEntity);
+    public void deleteFromDatabase(HpRecentSearchEntity recentSearchEntity) {
+        HpDatabaseManager.getInstance().delete(recentSearchEntity);
     }
 
-    public void deleteFromDatabase(List<RecentSearchEntity> recentSearchEntities) {
-        DatabaseManager.getInstance().delete(recentSearchEntities);
+    public void deleteFromDatabase(List<HpRecentSearchEntity> recentSearchEntities) {
+        HpDatabaseManager.getInstance().delete(recentSearchEntities);
     }
 
     public void updateSendingMessageToFailed() {
-        DatabaseManager.getInstance().updatePendingStatus();
+        HpDatabaseManager.getInstance().updatePendingStatus();
     }
 
     public void updateSendingMessageToFailed(String localID) {
-        DatabaseManager.getInstance().updatePendingStatus(localID);
+        HpDatabaseManager.getInstance().updatePendingStatus(localID);
     }
 
-    public LiveData<List<MessageEntity>> getMessagesLiveData() {
-        return DatabaseManager.getInstance().getMessagesLiveData();
+    public LiveData<List<HpMessageEntity>> getMessagesLiveData() {
+        return HpDatabaseManager.getInstance().getMessagesLiveData();
     }
 
     public void getMessagesFromDatabase(String roomID, HomingPigeonDatabaseListener listener) {
-        DatabaseManager.getInstance().getMessages(roomID, listener);
+        HpDatabaseManager.getInstance().getMessages(roomID, listener);
     }
 
     public void getMessagesFromDatabase(String roomID, HomingPigeonDatabaseListener listener, long lastTimestamp) {
-        DatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
+        HpDatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
     }
 
-    public void getRoomList(List<MessageEntity> saveMessages, HomingPigeonDatabaseListener listener) {
-        DatabaseManager.getInstance().getRoomList(saveMessages, listener);
+    public void getRoomList(List<HpMessageEntity> saveMessages, HomingPigeonDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getRoomList(saveMessages, listener);
     }
 
     public void getRoomList(HomingPigeonDatabaseListener listener) {
-        DatabaseManager.getInstance().getRoomList(listener);
+        HpDatabaseManager.getInstance().getRoomList(listener);
     }
 
-    public LiveData<List<RecentSearchEntity>> getRecentSearchLive() {
-        return DataManager.getInstance().getRecentSearchLive();
+    public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
+        return HpDataManager.getInstance().getRecentSearchLive();
     }
 
     //API
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
-            , String fullname, String email, String phone, String username, DefaultDataView<AuthTicketResponse> view) {
-        ApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
+            , String fullname, String email, String phone, String username, HpDefaultDataView<AuthTicketResponse> view) {
+        HpApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
                 fullname, email, phone, username, new DefaultSubscriber<>(view));
     }
 
-    public void getAccessTokenFromApi(DefaultDataView<GetAccessTokenResponse> view) {
-        ApiManager.getInstance().getAccessToken(new DefaultSubscriber<>(view));
+    public void getAccessTokenFromApi(HpDefaultDataView<GetAccessTokenResponse> view) {
+        HpApiManager.getInstance().getAccessToken(new DefaultSubscriber<>(view));
     }
 
-    public void refreshAccessToken(DefaultDataView<GetAccessTokenResponse> view) {
-        ApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
+    public void refreshAccessToken(HpDefaultDataView<GetAccessTokenResponse> view) {
+        HpApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
     }
 
-    public void getRoomListFromAPI(String userID, DefaultDataView<GetRoomListResponse> view) {
-        ApiManager.getInstance().getRoomList(userID, new DefaultSubscriber<>(view));
+    public void getRoomListFromAPI(String userID, HpDefaultDataView<GetRoomListResponse> view) {
+        HpApiManager.getInstance().getRoomList(userID, new DefaultSubscriber<>(view));
     }
 }
