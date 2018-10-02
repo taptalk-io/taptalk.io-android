@@ -11,20 +11,20 @@ import android.arch.persistence.room.Update;
 import java.util.List;
 
 @Dao
-public interface RecentSearchDao {
+public interface HpRecentSearchDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(RecentSearchEntity... entities);
+    void insert(HpRecentSearchEntity... entities);
 
     @Delete
-    void delete(RecentSearchEntity entity);
+    void delete(HpRecentSearchEntity entity);
 
     @Delete
-    void delete(List<RecentSearchEntity> entities);
+    void delete(List<HpRecentSearchEntity> entities);
 
     @Update
-    void update(RecentSearchEntity entity);
+    void update(HpRecentSearchEntity entity);
 
-    @Query("select * from recent_search order by Created desc")
-    LiveData<List<RecentSearchEntity>> getAllRecentSearchLive();
+    @Query("select * from Recent_Search order by Created desc")
+    LiveData<List<HpRecentSearchEntity>> getAllRecentSearchLive();
 }

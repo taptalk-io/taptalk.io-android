@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpChatRecyclerView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
@@ -32,10 +32,10 @@ import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
-import com.moselo.HomingPigeon.Manager.ChatManager;
-import com.moselo.HomingPigeon.Manager.ConnectionManager;
-import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Manager.NetworkStateManager;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.CustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.R;
@@ -76,10 +76,10 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     private HpChatViewModel vm;
 
     @Override
-    public void onSelectFinished(List<MessageEntity> entities) {
+    public void onSelectFinished(List<HpMessageEntity> entities) {
         final List<MessageModel> models = new ArrayList<>();
-        for (MessageEntity entity : entities) {
-            MessageModel model = ChatManager.getInstance().convertToModel(entity);
+        for (HpMessageEntity entity : entities) {
+            MessageModel model = HpChatManager.getInstance().convertToModel(entity);
             models.add(model);
             vm.addMessagePointer(model);
         }
@@ -138,29 +138,29 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ChatManager.getInstance().removeChatListener(this);
-        ConnectionManager.getInstance().removeSocketListener(socketListener);
+        HpChatManager.getInstance().removeChatListener(this);
+        HpConnectionManager.getInstance().removeSocketListener(socketListener);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ChatManager.getInstance().setActiveRoom(vm.getRoom());
-        etChat.setText(ChatManager.getInstance().getMessageFromDraft());
+        HpChatManager.getInstance().setActiveRoom(vm.getRoom());
+        etChat.setText(HpChatManager.getInstance().getMessageFromDraft());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         String draft = etChat.getText().toString();
-        if (!draft.isEmpty()) ChatManager.getInstance().saveMessageToDraft(draft);
-        ChatManager.getInstance().deleteActiveRoom();
+        if (!draft.isEmpty()) HpChatManager.getInstance().saveMessageToDraft(draft);
+        HpChatManager.getInstance().deleteActiveRoom();
         HpUtils.getInstance().dismissKeyboard(this);
     }
 
     @Override
     public void onBackPressed() {
-        ChatManager.getInstance().putUnsentMessageToList();
+        HpChatManager.getInstance().putUnsentMessageToList();
         super.onBackPressed();
     }
 
@@ -205,7 +205,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     @Override
     public void onRetrySendMessage(MessageModel message) {
         vm.delete(message.getLocalID());
-        ChatManager.getInstance().sendTextMessage(message.getMessage());
+        HpChatManager.getInstance().sendTextMessage(message.getMessage());
     }
 
     @Override
@@ -223,8 +223,8 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(HpDefaultConstant.K_ROOM));
-        vm.setMyUserModel(DataManager.getInstance().getActiveUser(this));
-        //vm.setPendingMessages(ChatManager.getInstance().getMessageQueueInActiveRoom());
+        vm.setMyUserModel(HpDataManager.getInstance().getActiveUser(this));
+        //vm.setPendingMessages(HpChatManager.getInstance().getMessageQueueInActiveRoom());
         vm.getMessageEntities(vm.getRoom().getRoomID(), this);
     }
 
@@ -324,7 +324,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     }
 
     private void initHelper() {
-        ChatManager.getInstance().addChatListener(this);
+        HpChatManager.getInstance().addChatListener(this);
     }
 
     private void updateMessageDecoration() {
@@ -339,7 +339,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
         if (!TextUtils.isEmpty(message.trim())) {
             etChat.setText("");
             hpMessageAdapter.shrinkExpandedBubble();
-            ChatManager.getInstance().sendTextMessage(message);
+            HpChatManager.getInstance().sendTextMessage(message);
             rvMessageList.scrollToPosition(0);
         }
     }
@@ -352,7 +352,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
             }
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
-            boolean ownMessage = newMessage.getUser().getUserID().equals(DataManager
+            boolean ownMessage = newMessage.getUser().getUserID().equals(HpDataManager
                     .getInstance().getActiveUser(HpChatActivity.this).getUserID());
             if (vm.getMessagePointer().containsKey(newID)) {
                 vm.updateMessagePointer(newMessage);
@@ -413,8 +413,8 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     }
 
     private void initConnectionStatus() {
-        ConnectionManager.getInstance().addSocketListener(socketListener);
-        if (!NetworkStateManager.getInstance().hasNetworkConnection(this))
+        HpConnectionManager.getInstance().addSocketListener(socketListener);
+        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(this))
             socketListener.onSocketDisconnected();
     }
 
@@ -432,7 +432,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     }
 
     private void setStatusConnecting() {
-        if (!NetworkStateManager.getInstance().hasNetworkConnection(this)) return;
+        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(this)) return;
 
         runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connecting);
@@ -444,7 +444,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     }
 
     private void setStatusWaitingForNetwork() {
-        if (NetworkStateManager.getInstance().hasNetworkConnection(this)) return;
+        if (HpNetworkStateManager.getInstance().hasNetworkConnection(this)) return;
 
         runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_offline);

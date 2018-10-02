@@ -6,7 +6,7 @@ import android.util.Base64;
 
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 
 import java.io.IOException;
 
@@ -17,14 +17,14 @@ import okhttp3.Response;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
 
-public class HeaderRequestInterceptor implements Interceptor {
-    public static final String TAG = HeaderRequestInterceptor.class.getSimpleName();
+public class HpHeaderRequestInterceptor implements Interceptor {
+    public static final String TAG = HpHeaderRequestInterceptor.class.getSimpleName();
     private String authTicket = null;
-    public HeaderRequestInterceptor() {
+    public HpHeaderRequestInterceptor() {
         authTicket = null;
     }
 
-    public HeaderRequestInterceptor(String authTicket) {
+    public HpHeaderRequestInterceptor(String authTicket) {
         this.authTicket = authTicket;
     }
 
@@ -39,10 +39,10 @@ public class HeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (DataManager.getInstance().checkRefreshTokenAvailable(context))
-            authorization = "Bearer "+ DataManager.getInstance().getRefreshToken(context);
-        else if (DataManager.getInstance().checkAuthTicketAvailable(context))
-            authorization = "Bearer "+ DataManager.getInstance().getAuthToken(context);
+        if (HpDataManager.getInstance().checkRefreshTokenAvailable(context))
+            authorization = "Bearer "+ HpDataManager.getInstance().getRefreshToken(context);
+        else if (HpDataManager.getInstance().checkAuthTicketAvailable(context))
+            authorization = "Bearer "+ HpDataManager.getInstance().getAuthToken(context);
         else
             authorization = "Bearer ";
 

@@ -7,17 +7,17 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 @Entity(tableName = "Recent_Search")
-public class RecentSearchEntity {
+public class HpRecentSearchEntity {
     @PrimaryKey @NonNull @ColumnInfo(name = "SearchText") private String searchText;
     @ColumnInfo(name = "Created") private long created;
 
     @Ignore
-    public RecentSearchEntity(@NonNull String searchText, long created) {
+    public HpRecentSearchEntity(@NonNull String searchText, long created) {
         this.searchText = searchText;
         this.created = created;
     }
 
-    public RecentSearchEntity() {
+    public HpRecentSearchEntity() {
     }
 
     @NonNull

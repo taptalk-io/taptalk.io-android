@@ -3,68 +3,67 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
-import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageRepository {
+public class HpMessageRepository {
 
-    private MessageDao messageDao;
-    private LiveData<List<MessageEntity>> allMessages;
-    private List<MessageEntity> allMessageList = new ArrayList<>();
+    private HpMessageDao messageDao;
+    private LiveData<List<HpMessageEntity>> allMessages;
+    private List<HpMessageEntity> allMessageList = new ArrayList<>();
 
-    public MessageRepository(Application application) {
+    public HpMessageRepository(Application application) {
         HomingPigeonDatabase db = HomingPigeonDatabase.getDatabase(application);
         messageDao = db.messageDao();
         allMessages = messageDao.getAllMessage();
     }
 
-    public void insert(MessageEntity message) {
+    public void insert(HpMessageEntity message) {
         new InsertAsyncTask(messageDao).execute(message);
     }
 
-    private static class InsertAsyncTask extends AsyncTask<MessageEntity, Void, Void> {
-        private MessageDao asyncTaskDao;
+    private static class InsertAsyncTask extends AsyncTask<HpMessageEntity, Void, Void> {
+        private HpMessageDao asyncTaskDao;
 
-        InsertAsyncTask (MessageDao chatDao) {
+        InsertAsyncTask (HpMessageDao chatDao) {
             asyncTaskDao = chatDao;
         }
 
         @Override
-        protected Void doInBackground(MessageEntity... messages) {
+        protected Void doInBackground(HpMessageEntity... messages) {
             asyncTaskDao.insert(messages[0]);
             return null;
         }
     }
 
-    public void insert(List<MessageEntity> messageEntities, boolean isClearSaveMessages){
+    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages){
         new Thread(() -> {
             messageDao.insert(messageEntities);
 
-            if (0 < ChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
-                ChatManager.getInstance().clearSaveMessages();
+            if (0 < HpChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
+                HpChatManager.getInstance().clearSaveMessages();
 
         }).start();
     }
 
-    public void insert(List<MessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener){
+    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener){
         new Thread(() -> {
             messageDao.insert(messageEntities);
 
-            if (0 < ChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
-                ChatManager.getInstance().clearSaveMessages();
+            if (0 < HpChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
+                HpChatManager.getInstance().clearSaveMessages();
 
             listener.onSelectFinished(messageEntities);
 
         }).start();
     }
 
-    public LiveData<List<MessageEntity>> getAllMessages() {
+    public LiveData<List<HpMessageEntity>> getAllMessages() {
         return allMessages;
     }
 
@@ -77,26 +76,26 @@ public class MessageRepository {
 
     public void getMessageList(final String roomID, final HomingPigeonDatabaseListener listener, final long lastTimestamp){
         new Thread(() -> {
-            List<MessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
+            List<HpMessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
             listener.onSelectFinished(entities);
         }).start();
     }
 
-    public void getRoomList(List<MessageEntity> saveMessages, final HomingPigeonDatabaseListener listener) {
+    public void getRoomList(List<HpMessageEntity> saveMessages, final HomingPigeonDatabaseListener listener) {
         new Thread(() -> {
             if (0 < saveMessages.size()){
                 messageDao.insert(saveMessages);
-                ChatManager.getInstance().clearSaveMessages();
+                HpChatManager.getInstance().clearSaveMessages();
             }
 
-            List<MessageEntity> entities = messageDao.getAllRoomList();
+            List<HpMessageEntity> entities = messageDao.getAllRoomList();
             listener.onSelectFinished(entities);
         }).start();
     }
 
     public void getRoomList(final HomingPigeonDatabaseListener listener) {
         new Thread(() -> {
-            List<MessageEntity> entities = messageDao.getAllRoomList();
+            List<HpMessageEntity> entities = messageDao.getAllRoomList();
             listener.onSelectFinished(entities);
         }).start();
     }

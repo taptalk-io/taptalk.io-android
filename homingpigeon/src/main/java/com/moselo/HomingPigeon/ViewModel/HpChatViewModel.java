@@ -4,10 +4,10 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
-import com.moselo.HomingPigeon.Data.Message.MessageEntity;
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
-import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.Manager.ChatManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class HpChatViewModel extends AndroidViewModel {
 
-    private LiveData<List<MessageEntity>> allMessages;
+    private LiveData<List<HpMessageEntity>> allMessages;
     private Map<String, MessageModel> messagePointer;
     private List<MessageModel> messageModels;
     private UserModel myUserModel;
@@ -32,15 +32,15 @@ public class HpChatViewModel extends AndroidViewModel {
 
     public HpChatViewModel(Application application) {
         super(application);
-        allMessages = DataManager.getInstance().getMessagesLiveData();
+        allMessages = HpDataManager.getInstance().getMessagesLiveData();
     }
 
-    public LiveData<List<MessageEntity>> getAllMessages() {
+    public LiveData<List<HpMessageEntity>> getAllMessages() {
         return allMessages;
     }
 
     public void delete(String messageLocalID) {
-        DataManager.getInstance().deleteFromDatabase(messageLocalID);
+        HpDataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
     public Map<String, MessageModel> getMessagePointer() {
@@ -64,11 +64,11 @@ public class HpChatViewModel extends AndroidViewModel {
     }
 
     public void getMessageEntities(String roomID, HomingPigeonDatabaseListener listener) {
-        DataManager.getInstance().getMessagesFromDatabase(roomID, listener);
+        HpDataManager.getInstance().getMessagesFromDatabase(roomID, listener);
     }
 
     public void getMessageByTimestamp(String roomID, HomingPigeonDatabaseListener listener, long lastTimestamp) {
-        DataManager.getInstance().getMessagesFromDatabase(roomID, listener, lastTimestamp);
+        HpDataManager.getInstance().getMessagesFromDatabase(roomID, listener, lastTimestamp);
     }
 
     public List<MessageModel> getMessageModels() {
@@ -93,7 +93,7 @@ public class HpChatViewModel extends AndroidViewModel {
 
     public void setRoom(RoomModel room) {
         this.room = room;
-        ChatManager.getInstance().setActiveRoom(room);
+        HpChatManager.getInstance().setActiveRoom(room);
     }
 
     public long getLastTimestamp() {

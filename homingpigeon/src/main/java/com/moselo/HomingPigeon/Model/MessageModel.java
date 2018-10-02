@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Manager.EncryptorManager;
+import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
 
 import java.security.GeneralSecurityException;
 
@@ -63,7 +63,7 @@ public class MessageModel {
         return new MessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
-                EncryptorManager.getInstance().encrypt(messageModel.getMessage(), messageModel.getLocalID()),
+                HpEncryptorManager.getInstance().encrypt(messageModel.getMessage(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),
@@ -79,7 +79,7 @@ public class MessageModel {
         return new MessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
-                EncryptorManager.getInstance().decrypt(messageModel.getMessage(), messageModel.getLocalID()),
+                HpEncryptorManager.getInstance().decrypt(messageModel.getMessage(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),

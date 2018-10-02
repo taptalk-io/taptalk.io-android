@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
 import com.moselo.HomingPigeon.Model.SearchChatModel;
 
 import java.util.ArrayList;

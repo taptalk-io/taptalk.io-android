@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Model.SearchChatModel;
@@ -161,7 +161,7 @@ public class HpSearchChatFragment extends Fragment {
         vm.addSearchList(recentTitleItem);
 
         SearchChatModel recentItem = new SearchChatModel(RECENT_ITEM);
-        RecentSearchEntity entity = new RecentSearchEntity("Mo Salah", System.currentTimeMillis());
+        HpRecentSearchEntity entity = new HpRecentSearchEntity("Mo Salah", System.currentTimeMillis());
         recentItem.setRecentSearch(entity);
         vm.addSearchList(recentItem);
         vm.addSearchList(recentItem);

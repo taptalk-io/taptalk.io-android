@@ -9,12 +9,12 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.API.View.DefaultDataView;
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Manager.ConnectionManager;
-import com.moselo.HomingPigeon.Manager.DataManager;
+import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
@@ -105,7 +105,7 @@ public class HpLoginActivity extends HpBaseActivity {
         String phone = "08979809026";
         String username = etUsername.getText().toString();
         String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        DataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
+        HpDataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
                 fullname, email, phone, username, authView);
     }
 
@@ -172,7 +172,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
     }
 
-    DefaultDataView<AuthTicketResponse> authView = new DefaultDataView<AuthTicketResponse>() {
+    HpDefaultDataView<AuthTicketResponse> authView = new HpDefaultDataView<AuthTicketResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -198,7 +198,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
     };
 
-    DefaultDataView<GetAccessTokenResponse> accessTokenView = new DefaultDataView<GetAccessTokenResponse>() {
+    HpDefaultDataView<GetAccessTokenResponse> accessTokenView = new HpDefaultDataView<GetAccessTokenResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -212,19 +212,19 @@ public class HpLoginActivity extends HpBaseActivity {
         @Override
         public void onSuccess(GetAccessTokenResponse response) {
             super.onSuccess(response);
-            DataManager.getInstance().deleteAuthTicket(HpLoginActivity.this);
+            HpDataManager.getInstance().deleteAuthTicket(HpLoginActivity.this);
 
-            DataManager.getInstance().saveRefreshToken(HpLoginActivity.this, response.getRefreshToken());
-            DataManager.getInstance().saveRefreshTokenExpiry(HpLoginActivity.this, response.getRefreshTokenExpiry());
-            DataManager.getInstance().saveAccessToken(HpLoginActivity.this, response.getAccessToken());
-            DataManager.getInstance().saveAccessTokenExpiry(HpLoginActivity.this, response.getAccessTokenExpiry());
+            HpDataManager.getInstance().saveRefreshToken(HpLoginActivity.this, response.getRefreshToken());
+            HpDataManager.getInstance().saveRefreshTokenExpiry(HpLoginActivity.this, response.getRefreshTokenExpiry());
+            HpDataManager.getInstance().saveAccessToken(HpLoginActivity.this, response.getAccessToken());
+            HpDataManager.getInstance().saveAccessTokenExpiry(HpLoginActivity.this, response.getAccessTokenExpiry());
 
-            DataManager.getInstance().saveActiveUser(HpLoginActivity.this, response.getUser());
+            HpDataManager.getInstance().saveActiveUser(HpLoginActivity.this, response.getUser());
             runOnUiThread(() -> {
                 Intent intent = new Intent(HpLoginActivity.this, HpRoomListActivity.class);
                 intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
                 startActivity(intent);
-                ConnectionManager.getInstance().connect();
+                HpConnectionManager.getInstance().connect();
                 finish();
             });
         }

@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 
 @Entity(tableName = "Message_Table", indices = @Index(value = "RoomID"))
-public class MessageEntity {
+public class HpMessageEntity {
 
     @Nullable @ColumnInfo(name = "MessageID") private String messageID;
     @PrimaryKey() @NonNull @ColumnInfo(name = "localID") private String localID;
@@ -36,8 +36,8 @@ public class MessageEntity {
     @Nullable @ColumnInfo(name = "unreadCount") private Long unreadCount;
 
     @Ignore
-    public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
-                         Integer type, String message, long created, String user, String recipientID) {
+    public HpMessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
+                           Integer type, String message, long created, String user, String recipientID) {
         this.messageID = messageID;
         this.localID = localID;
         this.roomID = roomID;
@@ -52,15 +52,15 @@ public class MessageEntity {
      *  UPDATE THIS CONSTRUCTOR WHEN ADDING COLUMNS
      */
     @Ignore
-    public MessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
-                         @Nullable String roomName, @Nullable String roomColor,
-                         @Nullable Integer roomType, @Nullable String roomImage, Integer type,
-                         String message, Long created, String user, String recipientID,
-                         @Nullable Boolean hasRead, @Nullable Boolean isRead,
-                         @Nullable Boolean isDelivered, @Nullable Boolean isHidden,
-                         @Nullable Boolean isDeleted, @Nullable Boolean isSending,
-                         @Nullable Boolean isFailedSend, @Nullable Long updated,
-                         @Nullable Long unreadCount) {
+    public HpMessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
+                           @Nullable String roomName, @Nullable String roomColor,
+                           @Nullable Integer roomType, @Nullable String roomImage, Integer type,
+                           String message, Long created, String user, String recipientID,
+                           @Nullable Boolean hasRead, @Nullable Boolean isRead,
+                           @Nullable Boolean isDelivered, @Nullable Boolean isHidden,
+                           @Nullable Boolean isDeleted, @Nullable Boolean isSending,
+                           @Nullable Boolean isFailedSend, @Nullable Long updated,
+                           @Nullable Long unreadCount) {
         this.messageID = messageID;
         if (localID.equals(""))
             this.localID =  HpUtils.getInstance().generateRandomString(32);
@@ -86,7 +86,7 @@ public class MessageEntity {
         this.unreadCount = unreadCount;
     }
 
-    public MessageEntity() {
+    public HpMessageEntity() {
 
     }
 
