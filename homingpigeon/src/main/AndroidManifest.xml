@@ -10,23 +10,23 @@
 
     <application android:theme="@style/AppTheme">
         <service
-            android:name=".Helper.HomingPigeonService"
+            android:name=".Helper.HomingPigeonEndAppService"
             android:stopWithTask="false" />
 
-        <activity android:name=".View.Activity.BarcodeScannerActivity" />
-        <activity android:name=".View.Activity.ChatActivity"
+        <activity android:name=".View.Activity.HpBarcodeScannerActivity" />
+        <activity android:name=".View.Activity.HpChatActivity"
             android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".View.Activity.LoginActivity" />
-        <activity android:name=".View.Activity.RoomListActivity" />
-        <activity android:name=".View.Activity.NewChatActivity" />
-        <activity android:name=".View.Activity.SearchContactActivity" />
-        <activity android:name=".View.Activity.NewContactActivity" />
-        <activity android:name=".View.Activity.BlockedListActivity" />
+        <activity android:name=".View.Activity.HpLoginActivity" />
+        <activity android:name=".View.Activity.HpRoomListActivity" />
+        <activity android:name=".View.Activity.HpNewChatActivity" />
+        <activity android:name=".View.Activity.HpSearchContactActivity" />
+        <activity android:name=".View.Activity.HpNewContactActivity" />
+        <activity android:name=".View.Activity.HpBlockedListActivity" />
         <activity
-            android:name=".View.Activity.CreateNewGroupActivity"
+            android:name=".View.Activity.HpCreateNewGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".View.Activity.GroupSubjectActivity"
+            android:name=".View.Activity.HpGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
     </application>
 

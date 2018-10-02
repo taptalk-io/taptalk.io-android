@@ -42,12 +42,12 @@ public class AttachmentModel {
 
     public static List<AttachmentModel> createAttachMenu() {
         int[] imageResIds = {
-                R.drawable.ic_documents_green_blue,
-                R.drawable.ic_camera_green_blue,
-                R.drawable.ic_gallery_green_blue,
-                R.drawable.ic_audio_green_blue,
-                R.drawable.ic_location_green_blue,
-                R.drawable.ic_contact_green_blue
+                R.drawable.hp_ic_documents_green_blue,
+                R.drawable.hp_ic_camera_green_blue,
+                R.drawable.hp_ic_gallery_green_blue,
+                R.drawable.hp_ic_audio_green_blue,
+                R.drawable.hp_ic_location_green_blue,
+                R.drawable.hp_ic_contact_green_blue
         };
 
         int[] titleResIds = {

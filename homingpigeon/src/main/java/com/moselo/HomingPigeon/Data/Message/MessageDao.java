@@ -8,7 +8,7 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.NUM_OF_ITEM;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
 
 @Dao
 public interface MessageDao {

@@ -1,14 +1,10 @@
 package com.moselo.SampleApps;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Manager.DataManager;
-import com.moselo.HomingPigeon.View.Activity.LoginActivity;
-import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

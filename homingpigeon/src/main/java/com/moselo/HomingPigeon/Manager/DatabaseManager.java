@@ -11,8 +11,8 @@ import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class DatabaseManager {
     private static DatabaseManager instance;

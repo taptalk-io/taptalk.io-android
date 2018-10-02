@@ -4,18 +4,14 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
-import android.text.Editable;
 
-import com.commonsware.cwac.saferoom.SafeHelperFactory;
 import com.moselo.HomingPigeon.Data.Message.MessageDao;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchDao;
 import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.DB_ENCRYPT_PASS;
-
-@Database(entities = {MessageEntity.class, RecentSearchEntity.class}, version = DefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
+@Database(entities = {MessageEntity.class, RecentSearchEntity.class}, version = HpDefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
 public abstract class HomingPigeonDatabase extends RoomDatabase{
 
     private static HomingPigeonDatabase database;

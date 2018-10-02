@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.EncryptorManager;
 
 import java.security.GeneralSecurityException;
@@ -55,7 +55,7 @@ public class MessageModel {
     }
 
     public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user, String recipientID) {
-        String localID = Utils.getInstance().generateRandomString(32);
+        String localID = HpUtils.getInstance().generateRandomString(32);
         return new MessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false, (long) 0);
     }
 

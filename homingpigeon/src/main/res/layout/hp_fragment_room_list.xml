@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_button_search"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="2dp"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/iv_search_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/hp_ic_search_grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            android:layout_marginEnd="72dp"
+            android:fontFamily="@font/hp_font_latoregular"
+            android:text="@string/search"
+            android:textColor="@color/grey_9b"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_selection"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/greenBlue"
+        android:transitionName="searchBar">
+
+        <ImageView
+            android:id="@+id/iv_button_cancel_selection"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/hp_ic_back_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_selection_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/hp_font_latoregular"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_mute"
+            app:layout_constraintStart_toEndOf="@id/iv_button_cancel_selection"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+        <ImageView
+            android:id="@+id/iv_button_mute"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/hp_ic_mute_white"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_delete" />
+
+        <ImageView
+            android:id="@+id/iv_button_delete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/hp_ic_delete_white"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_more" />
+
+        <ImageView
+            android:id="@+id/iv_button_more"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/hp_ic_more_options_white"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_connection_status"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/hp_bg_status_connecting"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
+        app:layout_constraintTop_toBottomOf="@+id/cl_button_search">
+
+        <TextView
+            android:id="@+id/tv_connection_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/hp_font_latobold"
+            android:text="@string/connecting"
+            android:textColor="@color/white"
+            android:textSize="12dp" />
+
+        <ProgressBar
+            android:id="@+id/pb_connecting"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp" />
+
+        <ImageView
+            android:id="@+id/iv_connection_status"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/hp_ic_connected_white"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_contact_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_connection_status" />
+
+    <LinearLayout
+        android:id="@+id/ll_room_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white_f3"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ll_connection_status">
+
+        <ImageView
+            android:layout_width="220dp"
+            android:layout_height="138dp"
+            android:padding="12dp"
+            android:src="@drawable/hp_img_chat_empty" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:fontFamily="@font/hp_font_neueeinstellungbold"
+            android:gravity="center"
+            android:text="@string/no_chats"
+            android:textColor="@color/black_44"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginBottom="78dp"
+            android:fontFamily="@font/hp_font_neueeinstellungregular"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="6sp"
+            android:text="@string/new_chat_guide"
+            android:textColor="@color/black_44"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_new_chat"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/hp_bg_circle_aquamarine_tealish_radial_stroke_greenblue_1dp"
+        android:src="@drawable/hp_ic_new_chat_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <include
+        layout="@layout/hp_layout_setup_chat"
+        tools:visibility="gone" />
+
+</android.support.constraint.ConstraintLayout>

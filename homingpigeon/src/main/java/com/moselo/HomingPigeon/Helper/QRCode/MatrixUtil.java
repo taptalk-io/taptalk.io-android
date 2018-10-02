@@ -114,7 +114,7 @@ final class MatrixUtil {
     // do nothing
   }
   
-  // Set all cells to -1.  -1 means that the cell_chat_product_item is empty (not set yet).
+  // Set all cells to -1.  -1 means that the hp_cell_chat_product_item is empty (not set yet).
   //
   // JAVAPORT: We shouldn't need to do this at all. The code should be rewritten to begin encoding
   // with the ByteMatrix initialized all to zero.
@@ -218,7 +218,7 @@ final class MatrixUtil {
       throws WriterException {
     int bitIndex = 0;
     int direction = -1;
-    // Start from the right bottom cell_chat_product_item.
+    // Start from the right bottom hp_cell_chat_product_item.
     int x = matrix.getWidth() - 1;
     int y = matrix.getHeight() - 1;
     while (x > 0) {
@@ -229,7 +229,7 @@ final class MatrixUtil {
       while (y >= 0 && y < matrix.getHeight()) {
         for (int i = 0; i < 2; ++i) {
           int xx = x - i;
-          // Skip the cell_chat_product_item if it's not empty.
+          // Skip the hp_cell_chat_product_item if it's not empty.
           if (!isEmpty(matrix.get(xx, y))) {
             continue;
           }
@@ -458,7 +458,7 @@ final class MatrixUtil {
       if (y >= 0) {
         for (int x : coordinates) {
           if (x >= 0 && isEmpty(matrix.get(x, y))) {
-            // If the cell_chat_product_item is unset, we embed the position adjustment pattern here.
+            // If the hp_cell_chat_product_item is unset, we embed the position adjustment pattern here.
             // -2 is necessary since the x/y coordinates point to the center of the pattern, not the
             // left top corner.
             embedPositionAdjustmentPattern(x - 2, y - 2, matrix);

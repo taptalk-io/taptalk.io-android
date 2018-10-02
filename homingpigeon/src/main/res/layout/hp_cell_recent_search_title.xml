@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white_f3">
+
+    <TextView
+        android:id="@+id/tv_recent_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:fontFamily="@font/hp_font_latobold"
+        android:letterSpacing="0.09"
+        android:text="@string/recent_searches"
+        android:textColor="@color/mediumPurple"
+        android:textAllCaps="true"
+        android:textSize="12sp"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_clear_history"/>
+
+    <TextView
+        android:id="@+id/tv_clear_history"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:fontFamily="@font/hp_font_latobold"
+        android:gravity="end"
+        android:letterSpacing="0.09"
+        android:text="@string/clear_history"
+        android:textColor="@color/grey_9b"
+        android:textAllCaps="true"
+        android:textSize="12sp"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/grey_ea"/>
+
+</android.support.constraint.ConstraintLayout>

@@ -7,13 +7,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.android.gms.common.api.Api;
 import com.moselo.HomingPigeon.API.Api.ApiManager;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.DefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.RecentSearchEntity;
-import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
@@ -22,13 +21,13 @@ import com.moselo.HomingPigeon.Model.UserModel;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_ACCESS_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_AUTH_TICKET;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_RECIPIENT_ID;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_REFRESH_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
 public class DataManager {
     private static DataManager instance;
@@ -39,20 +38,20 @@ public class DataManager {
 
     public UserModel getActiveUser(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        return HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
         }, prefs.getString(K_USER, null));
     }
 
     public boolean checkActiveUser(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (null == Utils.getInstance().fromJSON(new TypeReference<UserModel>() {}, prefs.getString(K_USER, null)))
+        if (null == HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {}, prefs.getString(K_USER, null)))
             return false;
         else return true;
     }
 
     public void saveActiveUser(Context context, UserModel user) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
+        prefs.edit().putString(K_USER, HpUtils.getInstance().toJsonString(user)).apply();
         ChatManager.getInstance().setActiveUser(user);
     }
 

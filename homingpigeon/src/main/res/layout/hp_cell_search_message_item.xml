@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:id="@+id/ll_name_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="11dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="18dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ll_time_status"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/hp_font_neueeinstellungbold"
+            android:letterSpacing="-0.01"
+            android:textColor="#2c2c2c"
+            android:textSize="14sp"
+            android:text="Nadia Hanifah" />
+
+        <TextView
+            android:id="@+id/tv_last_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/hp_font_latoregular"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="4sp"
+            android:maxLines="1"
+            android:minLines="1"
+            android:textColor="@color/grey_9b"
+            android:textSize="13sp"
+            android:text="Who did you get the flowers from ?" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_time_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ll_name_message">
+
+        <TextView
+            android:id="@+id/tv_chat_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/hp_font_latoregular"
+            android:gravity="end"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="5sp"
+            android:textColor="@color/grey_9b"
+            android:textSize="12sp"
+            android:text="17:10" />
+
+        <ImageView
+            android:id="@+id/iv_chat_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/hp_ic_read_green" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/v_separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/grey_ea"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+</android.support.constraint.ConstraintLayout>

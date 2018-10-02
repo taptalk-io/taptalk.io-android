@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="#f0f0f0"
+    tools:context=".View.Activity.HpChatActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="2dp"
+        android:foreground="?attr/selectableItemBackground">
+
+        <ImageView
+            android:id="@+id/iv_button_back"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/hp_ic_back_white"
+            android:tint="@color/greenBlue"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_room_name"
+            style="@style/HomingPigeonRoomName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_room_status"
+            app:layout_constraintEnd_toStartOf="@id/civ_room_image"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Room Name" />
+
+        <View
+            android:id="@+id/v_room_status_badge"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
+            android:background="@drawable/hp_bg_circle_vibrantgreen"
+            app:layout_constraintBottom_toBottomOf="@id/tv_room_status"
+            app:layout_constraintEnd_toStartOf="@id/tv_room_status"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_room_status" />
+
+        <TextView
+            android:id="@+id/tv_room_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:fontFamily="@font/hp_font_latoregular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="3sp"
+            android:textColor="@color/grey_9b"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/v_room_status_badge"
+            app:layout_constraintTop_toBottomOf="@id/tv_room_name"
+            tools:text="Active Now" />
+
+        <com.moselo.HomingPigeon.Helper.CircleImageView
+            android:id="@+id/civ_room_image"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_margin="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/hp_bg_circle_d9d9d9"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_room_name"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_room_icon"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:src="@drawable/hp_ic_verified"
+            app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
+            app:layout_constraintEnd_toEndOf="@id/civ_room_image" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_empty_chat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_input"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <TextView
+            android:id="@+id/tv_chat_empty_guide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/hp_font_neueeinstellungregular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.02"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/chat_other_user_is_expert" />
+
+        <com.moselo.HomingPigeon.Helper.CircleImageView
+            android:id="@+id/civ_my_avatar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="36dp"
+            android:src="@drawable/hp_bg_circle_d9d9d9"
+            android:translationX="14dp"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="4dp"
+            app:layout_constraintEnd_toStartOf="@id/civ_other_user_avatar"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide" />
+
+        <com.moselo.HomingPigeon.Helper.CircleImageView
+            android:id="@+id/civ_other_user_avatar"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="36dp"
+            android:src="@drawable/hp_bg_circle_d9d9d9"
+            android:translationX="-14dp"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/civ_my_avatar"
+            app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide" />
+
+        <TextView
+            android:id="@+id/tv_profile_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/hp_font_latoregular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.02"
+            android:textColor="@color/black_44"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/civ_my_avatar"
+            tools:text="Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_message_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_input"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <com.moselo.HomingPigeon.Helper.HpChatRecyclerView
+            android:id="@+id/rv_message_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:overScrollMode="never"
+            android:scrollbars="vertical" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_connection_status"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/hp_bg_status_connecting"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
+        app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
+
+        <TextView
+            android:id="@+id/tv_connection_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/hp_font_latobold"
+            android:text="@string/connecting"
+            android:textColor="@color/white"
+            android:textSize="12dp" />
+
+        <ProgressBar
+            android:id="@+id/pb_connecting"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp" />
+
+        <ImageView
+            android:id="@+id/iv_connection_status"
+            android:layout_width="9dp"
+            android:layout_height="9dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/hp_ic_connected_white"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_chat_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:background="@color/white"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:layout_constraintBottom_toTopOf="@id/rv_custom_keyboard">
+
+        <ImageView
+            android:id="@+id/iv_chat_menu"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/hp_ic_chatmenu_hamburger"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/et_chat"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/et_chat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/hp_bg_f5f5f5_white_270_stroke_e4e4e4_1dp_rounded_18dp"
+            android:hint="@string/send_a_message"
+            android:inputType="textMultiLine"
+            android:letterSpacing="-0.02"
+            android:maxHeight="75dp"
+            android:minHeight="36dp"
+            android:paddingStart="8dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="40dp"
+            android:paddingBottom="6dp"
+            android:textColor="@color/black_44"
+            android:textColorHint="@color/grey_9b"
+            android:textSize="15sp"
+            android:fontFamily="@font/hp_font_latoregular"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_send"
+            app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            app:layout_goneMarginStart="16dp" />
+
+        <ImageView
+            android:id="@+id/iv_attach"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/hp_ic_attach_grey"
+            app:layout_constraintBottom_toBottomOf="@id/et_chat"
+            app:layout_constraintEnd_toEndOf="@id/et_chat" />
+
+        <ImageView
+            android:id="@+id/iv_send"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/hp_ic_send_inactive"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/et_chat" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/grey_e4"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/grey_e4"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_custom_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="216dp"
+        android:background="@color/white"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_to_bottom"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/hp_bg_circle_f3f3f3"
+        android:elevation="4dp"
+        android:padding="12dp"
+        android:src="@drawable/hp_ic_keyboard_arrow_down"
+        android:tint="#666666"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_input"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_badge_unread"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/hp_bg_amethyst_mediumpurple_270_rounded_10dp"
+        android:elevation="6dp"
+        android:fontFamily="@font/hp_font_latobold"
+        android:paddingStart="7dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="7dp"
+        android:paddingBottom="4dp"
+        android:textAlignment="center"
+        android:textColor="#ffffff"
+        android:textSize="11dp"
+        android:translationX="4dp"
+        android:translationY="-4dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
+        app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
+        tools:text="1" />
+
+</android.support.constraint.ConstraintLayout>

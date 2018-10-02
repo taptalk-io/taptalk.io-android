@@ -8,7 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 
 @Entity(tableName = "Message_Table", indices = @Index(value = "RoomID"))
 public class MessageEntity {
@@ -63,7 +63,7 @@ public class MessageEntity {
                          @Nullable Long unreadCount) {
         this.messageID = messageID;
         if (localID.equals(""))
-            this.localID =  Utils.getInstance().generateRandomString(32);
+            this.localID =  HpUtils.getInstance().generateRandomString(32);
         else this.localID = localID;
         this.roomID = roomID;
         this.roomName = roomName;

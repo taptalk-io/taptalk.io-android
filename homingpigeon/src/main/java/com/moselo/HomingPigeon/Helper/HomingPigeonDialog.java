@@ -6,9 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
@@ -35,7 +33,7 @@ public class HomingPigeonDialog extends Dialog {
         } catch (Exception e) {
         }
 
-        setContentView(R.layout.dialog_homing_pigeon);
+        setContentView(R.layout.hp_dialog);
         title = findViewById(R.id.tv_dialog_title);
         message = findViewById(R.id.tv_dialog_message);
         primary = findViewById(R.id.tv_primary_btn);

@@ -14,8 +14,8 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.APP_KEY_ID;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
 
 public class HeaderRequestInterceptor implements Interceptor {
     public static final String TAG = HeaderRequestInterceptor.class.getSimpleName();

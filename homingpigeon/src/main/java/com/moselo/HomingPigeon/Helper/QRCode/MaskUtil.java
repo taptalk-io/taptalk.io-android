@@ -208,7 +208,7 @@ final class MaskUtil {
           if (numSameBitCells >= 5) {
             penalty += N1 + (numSameBitCells - 5);
           }
-          numSameBitCells = 1;  // Include the cell_chat_product_item itself.
+          numSameBitCells = 1;  // Include the hp_cell_chat_product_item itself.
           prevBit = bit;
         }
       }

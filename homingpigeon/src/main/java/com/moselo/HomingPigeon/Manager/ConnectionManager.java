@@ -1,11 +1,8 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Listener.HomingPigeonNetworkListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
@@ -15,7 +12,6 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

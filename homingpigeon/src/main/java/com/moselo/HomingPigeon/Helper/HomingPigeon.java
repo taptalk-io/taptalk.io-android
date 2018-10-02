@@ -13,11 +13,11 @@ import com.moselo.HomingPigeon.Manager.ConnectionManager;
 import com.moselo.HomingPigeon.Manager.DataManager;
 import com.moselo.HomingPigeon.Manager.NetworkStateManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
-import com.moselo.HomingPigeon.View.Activity.LoginActivity;
-import com.moselo.HomingPigeon.View.Activity.RoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
+import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.MESSAGE_DB;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
@@ -57,7 +57,7 @@ public class HomingPigeon {
             @Override
             public void onAppGotoForeground() {
                 ChatManager.getInstance().setFinishChatFlow(false);
-                appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonService.class));
+                appContext.startService(new Intent(HomingPigeon.appContext, HomingPigeonEndAppService.class));
                 NetworkStateManager.getInstance().registerCallback(HomingPigeon.appContext);
                 ChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
@@ -83,9 +83,9 @@ public class HomingPigeon {
         if (null != activity) {
             Intent intent;
             if (DataManager.getInstance().checkAccessTokenAvailable(activity)) {
-                intent = new Intent(activity, RoomListActivity.class);
+                intent = new Intent(activity, HpRoomListActivity.class);
             } else {
-                intent = new Intent(activity, LoginActivity.class);
+                intent = new Intent(activity, HpLoginActivity.class);
             }
             activity.startActivity(intent);
             activity.finish();

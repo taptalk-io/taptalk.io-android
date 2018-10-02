@@ -7,9 +7,9 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.MessageEntity;
-import com.moselo.HomingPigeon.Helper.DefaultConstant;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.Utils;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Model.EmitModel;
@@ -29,18 +29,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kEventOpenRoom;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketAuthentication;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketCloseRoom;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketDeleteMessage;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketNewMessage;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketOpenMessage;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketStartTyping;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketStopTyping;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUpdateMessage;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOffline;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.ConnectionEvent.kSocketUserOnline;
-import static com.moselo.HomingPigeon.Helper.DefaultConstant.K_USER;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kEventOpenRoom;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketCloseRoom;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketNewMessage;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketStartTyping;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOffline;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOnline;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
 public class ChatManager {
 
@@ -95,18 +95,18 @@ public class ChatManager {
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
-                    EmitModel<MessageModel> messageEmit = Utils.getInstance()
+                    EmitModel<MessageModel> messageEmit = HpUtils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
                     try {
-                        Log.e(TAG, "onReceiveNewEmit: " + Utils.getInstance().toJsonString(messageEmit));
+                        Log.e(TAG, "onReceiveNewEmit: " + HpUtils.getInstance().toJsonString(messageEmit));
                         receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketUpdateMessage:
-                    EmitModel<MessageModel> messageUpdateEmit = Utils.getInstance()
+                    EmitModel<MessageModel> messageUpdateEmit = HpUtils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
                     try {
@@ -116,7 +116,7 @@ public class ChatManager {
                     }
                     break;
                 case kSocketDeleteMessage:
-                    EmitModel<MessageModel> messageDeleteEmit = Utils.getInstance()
+                    EmitModel<MessageModel> messageDeleteEmit = HpUtils.getInstance()
                             .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
                             }, emitData);
                     try {
@@ -147,7 +147,7 @@ public class ChatManager {
 
     public ChatManager() {
         ConnectionManager.getInstance().addSocketListener(socketListener);
-        setActiveUser(Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        setActiveUser(HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
                                                    },
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
                         .getString(K_USER, null)));
@@ -194,7 +194,7 @@ public class ChatManager {
     public void saveActiveUser(Context context, UserModel user) {
         this.activeUser = user;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_USER, Utils.getInstance().toJsonString(user)).apply();
+        prefs.edit().putString(K_USER, HpUtils.getInstance().toJsonString(user)).apply();
     }
 
     public Map<String, MessageModel> getMessageQueueInActiveRoom() {
@@ -227,7 +227,7 @@ public class ChatManager {
                 new RoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType()),
                 entity.getType(),
                 entity.getCreated(),
-                Utils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
                 }, entity.getUser()),
                 entity.getRecipientID(),
                 entity.getDeleted(),
@@ -251,7 +251,7 @@ public class ChatManager {
                 model.getType(),
                 model.getMessage(),
                 model.getCreated(),
-                Utils.getInstance().toJsonString(model.getUser()),
+                HpUtils.getInstance().toJsonString(model.getUser()),
                 model.getRecipientID(),
                 model.getHasRead(),
                 model.getIsRead(),
@@ -274,7 +274,7 @@ public class ChatManager {
             List<MessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
-                String substr = Utils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 MessageModel messageModel = buildTextMessage(substr, activeRoom);
 
                 // Add entity to list
@@ -300,7 +300,7 @@ public class ChatManager {
         MessageModel messageModel = MessageModel.Builder(
                 message,
                 room,
-                DefaultConstant.MessageType.TYPE_TEXT,
+                HpDefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
                 activeUser, otherUserID);
 
@@ -311,7 +311,7 @@ public class ChatManager {
      * save text to draft
      */
     public void saveMessageToDraft(String message) {
-        Log.e(TAG, "saveMessageToDraft: "+Utils.getInstance().toJsonString(activeRoom) );
+        Log.e(TAG, "saveMessageToDraft: "+HpUtils.getInstance().toJsonString(activeRoom) );
         messageDrafts.put(activeRoom.getRoomID(), message);
     }
 
@@ -375,7 +375,7 @@ public class ChatManager {
     private void sendEmit(String eventName, MessageModel messageModel) {
         EmitModel<MessageModel> emitModel;
         emitModel = new EmitModel<>(eventName, messageModel);
-        ConnectionManager.getInstance().send(Utils.getInstance().toJsonString(emitModel));
+        ConnectionManager.getInstance().send(HpUtils.getInstance().toJsonString(emitModel));
     }
 
     /**
