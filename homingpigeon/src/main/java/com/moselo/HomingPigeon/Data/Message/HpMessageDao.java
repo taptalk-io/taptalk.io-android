@@ -46,6 +46,7 @@ public interface HpMessageDao {
     List<HpMessageEntity> getAllRoomList();
 
     @Query("select count(hasRead) from message_table where hasRead = 0 and RoomID like :roomID")
+    //@Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID")
     Integer getUnreadCount(String roomID);
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")

@@ -102,8 +102,11 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void getUnreadCountPerRoom(String roomID) {
-
+    public void getUnreadCountPerRoom(String roomID, HpDatabaseListener listener) {
+        new Thread(() -> {
+            int unreadCount = messageDao.getUnreadCount(roomID);
+            listener.onSelectUnread(roomID, unreadCount);
+        }).start();
     }
 
     public void delete(final String localID) {

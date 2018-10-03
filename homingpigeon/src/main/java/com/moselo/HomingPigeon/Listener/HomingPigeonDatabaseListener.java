@@ -7,4 +7,5 @@ import java.util.List;
 public interface HomingPigeonDatabaseListener {
     void onSelectFinished(List<HpMessageEntity> entities);
     void onInsertFinished();
+    void onSelectUnread(String roomID, int unreadCount);
 }

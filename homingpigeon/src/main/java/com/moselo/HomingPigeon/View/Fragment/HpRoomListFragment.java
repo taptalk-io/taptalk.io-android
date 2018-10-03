@@ -46,6 +46,7 @@ import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -337,6 +338,7 @@ public class HpRoomListFragment extends Fragment {
             for (HpMessageEntity entity : entities) {
                 MessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 messageModels.add(model);
+                vm.addRoomPointer(model);
             }
 
             vm.setRoomList(messageModels);
@@ -349,10 +351,20 @@ public class HpRoomListFragment extends Fragment {
                     llRoomEmpty.setVisibility(View.GONE);
                 }
 
+                for (Map.Entry<String, MessageModel> unread : vm.getRoomPointer().entrySet()) {
+                    HpDataManager.getInstance().getUnreadCountPerRoom(unread.getKey(), dbListener);
+                }
+
                 if (isApiNeedToBeCalled)
                     HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
                 else flSetupContainer.setVisibility(View.GONE);
             });
+        }
+
+        @Override
+        public void onSelectUnread(String roomID, int unreadCount) {
+            Log.e(TAG, "onSelectUnread: "+roomID +" : "+ unreadCount );
+            vm.getRoomPointer().get(roomID).getRoom().setUnreadCount(unreadCount);
         }
     };
 }
