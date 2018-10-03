@@ -3,9 +3,11 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 
 import java.util.ArrayList;
@@ -51,14 +53,14 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener){
+    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener){
         new Thread(() -> {
             messageDao.insert(messageEntities);
 
             if (0 < HpChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 HpChatManager.getInstance().clearSaveMessages();
 
-            listener.onSelectFinished(messageEntities);
+            listener.onInsertFinished();
 
         }).start();
     }
@@ -67,21 +69,21 @@ public class HpMessageRepository {
         return allMessages;
     }
 
-    public void getMessageList(final String roomID, final HomingPigeonDatabaseListener listener) {
+    public void getMessageList(final String roomID, final HpDatabaseListener listener) {
         new Thread(() -> {
             allMessageList = messageDao.getAllMessageList(roomID);
             listener.onSelectFinished(allMessageList);
         }).start();
     }
 
-    public void getMessageList(final String roomID, final HomingPigeonDatabaseListener listener, final long lastTimestamp){
+    public void getMessageList(final String roomID, final HpDatabaseListener listener, final long lastTimestamp){
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
             listener.onSelectFinished(entities);
         }).start();
     }
 
-    public void getRoomList(List<HpMessageEntity> saveMessages, final HomingPigeonDatabaseListener listener) {
+    public void getRoomList(List<HpMessageEntity> saveMessages, final HpDatabaseListener listener) {
         new Thread(() -> {
             if (0 < saveMessages.size()){
                 messageDao.insert(saveMessages);
@@ -93,10 +95,17 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void getRoomList(final HomingPigeonDatabaseListener listener) {
+    public void getRoomList(final HpDatabaseListener listener) {
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllRoomList();
             listener.onSelectFinished(entities);
+        }).start();
+    }
+
+    public void getUnreadCountPerRoom(String roomID, HpDatabaseListener listener) {
+        new Thread(() -> {
+            int unreadCount = messageDao.getUnreadCount(roomID);
+            listener.onSelectUnread(roomID, unreadCount);
         }).start();
     }
 

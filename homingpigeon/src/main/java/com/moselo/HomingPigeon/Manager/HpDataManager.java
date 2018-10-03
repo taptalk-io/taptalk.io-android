@@ -14,6 +14,7 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
@@ -157,7 +158,7 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
     }
 
-    public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener) {
+    public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
     }
 
@@ -185,20 +186,24 @@ public class HpDataManager {
         return HpDatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabase(String roomID, HomingPigeonDatabaseListener listener) {
+    public void getMessagesFromDatabase(String roomID, HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().getMessages(roomID, listener);
     }
 
-    public void getMessagesFromDatabase(String roomID, HomingPigeonDatabaseListener listener, long lastTimestamp) {
+    public void getMessagesFromDatabase(String roomID, HpDatabaseListener listener, long lastTimestamp) {
         HpDatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
     }
 
-    public void getRoomList(List<HpMessageEntity> saveMessages, HomingPigeonDatabaseListener listener) {
+    public void getRoomList(List<HpMessageEntity> saveMessages, HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().getRoomList(saveMessages, listener);
     }
 
-    public void getRoomList(HomingPigeonDatabaseListener listener) {
+    public void getRoomList(HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().getRoomList(listener);
+    }
+
+    public void getUnreadCountPerRoom(String roomID, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getUnreadCountPerRoom(roomID, listener);
     }
 
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {

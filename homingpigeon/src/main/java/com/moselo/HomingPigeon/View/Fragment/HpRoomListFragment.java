@@ -29,6 +29,7 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Listener.RoomListListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
@@ -45,12 +46,13 @@ import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_MY_USERNAME;
 
-public class HpRoomListFragment extends Fragment implements HomingPigeonDatabaseListener {
+public class HpRoomListFragment extends Fragment {
 
     private String TAG = HpRoomListFragment.class.getSimpleName();
     private Activity activity;
@@ -283,34 +285,8 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
         }
     };
 
-    @Override
-    public void onSelectFinished(List<HpMessageEntity> entities) {
-        List<MessageModel> messageModels = new ArrayList<>();
-        for (HpMessageEntity entity : entities) {
-            MessageModel model = HpChatManager.getInstance().convertToModel(entity);
-            messageModels.add(model);
-        }
-
-        vm.setRoomList(messageModels);
-
-        getActivity().runOnUiThread(() -> {
-            if (null != adapter && 0 == vm.getRoomList().size()) {
-                llRoomEmpty.setVisibility(View.VISIBLE);
-            } else if (null != adapter) {
-                adapter.setItems(vm.getRoomList(), false);
-                llRoomEmpty.setVisibility(View.GONE);
-            }
-
-            Log.e(TAG, "onSelectFinished: "+isApiNeedToBeCalled );
-            if (isApiNeedToBeCalled)
-                HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
-            else flSetupContainer.setVisibility(View.GONE);
-            Log.e(TAG, "onSelectFinished: "+vm.getRoomList().size());
-        });
-    }
-
     private void getRoomListFlow() {
-        HpDataManager.getInstance().getRoomList(HpChatManager.getInstance().getSaveMessages(), HpRoomListFragment.this);
+        HpDataManager.getInstance().getRoomList(HpChatManager.getInstance().getSaveMessages(), dbListener);
     }
 
     HpDefaultDataView<GetRoomListResponse> roomListView = new HpDefaultDataView<GetRoomListResponse>() {
@@ -339,12 +315,12 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
                     Log.e(TAG, "onSuccess: ", e);
                 }
             }
-            Log.e(TAG, "onSuccess: " + tempMessage.size());
-            HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HomingPigeonDatabaseListener() {
+
+            HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
                 @Override
-                public void onSelectFinished(List<HpMessageEntity> entities) {
+                public void onInsertFinished() {
                     isApiNeedToBeCalled = false;
-                    HpDataManager.getInstance().getRoomList(HpRoomListFragment.this);
+                    HpDataManager.getInstance().getRoomList(dbListener);
                 }
             });
         }
@@ -352,6 +328,43 @@ public class HpRoomListFragment extends Fragment implements HomingPigeonDatabase
         @Override
         public void onError(ErrorModel error) {
             super.onError(error);
+        }
+    };
+
+    HpDatabaseListener dbListener = new HpDatabaseListener() {
+        @Override
+        public void onSelectFinished(List<HpMessageEntity> entities) {
+            List<MessageModel> messageModels = new ArrayList<>();
+            for (HpMessageEntity entity : entities) {
+                MessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                messageModels.add(model);
+                vm.addRoomPointer(model);
+            }
+
+            vm.setRoomList(messageModels);
+
+            getActivity().runOnUiThread(() -> {
+                if (null != adapter && 0 == vm.getRoomList().size()) {
+                    llRoomEmpty.setVisibility(View.VISIBLE);
+                } else if (null != adapter) {
+                    adapter.setItems(vm.getRoomList(), false);
+                    llRoomEmpty.setVisibility(View.GONE);
+                }
+
+                for (Map.Entry<String, MessageModel> unread : vm.getRoomPointer().entrySet()) {
+                    HpDataManager.getInstance().getUnreadCountPerRoom(unread.getKey(), dbListener);
+                }
+
+                if (isApiNeedToBeCalled)
+                    HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
+                else flSetupContainer.setVisibility(View.GONE);
+            });
+        }
+
+        @Override
+        public void onSelectUnread(String roomID, int unreadCount) {
+            Log.e(TAG, "onSelectUnread: "+roomID +" : "+ unreadCount );
+            vm.getRoomPointer().get(roomID).getRoom().setUnreadCount(unreadCount);
         }
     };
 }

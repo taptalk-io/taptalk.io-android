@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
@@ -63,11 +64,11 @@ public class HpChatViewModel extends AndroidViewModel {
         getMessagePointer().get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
-    public void getMessageEntities(String roomID, HomingPigeonDatabaseListener listener) {
+    public void getMessageEntities(String roomID, HpDatabaseListener listener) {
         HpDataManager.getInstance().getMessagesFromDatabase(roomID, listener);
     }
 
-    public void getMessageByTimestamp(String roomID, HomingPigeonDatabaseListener listener, long lastTimestamp) {
+    public void getMessageByTimestamp(String roomID, HpDatabaseListener listener, long lastTimestamp) {
         HpDataManager.getInstance().getMessagesFromDatabase(roomID, listener, lastTimestamp);
     }
 

@@ -33,16 +33,21 @@ public interface HpMessageDao {
             " from Message_Table where RoomID like :roomID order by Created desc limit " + numOfItem)
     List<HpMessageEntity> getAllMessageList(String roomID);
 
-    @Query("select MessageID, localID, RoomID, RoomName, RoomColor, RoomType, "+
+    @Query("select MessageID, localID, RoomID, RoomName, RoomColor, RoomType, " +
             "RoomImage, messageType, message, created, user, recipientID, " +
             "hasRead, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend " +
             "from Message_Table where " +
-            "Created in (select distinct Created from Message_Table where Created < :lastTimestamp and RoomID like :roomID order by Created desc limit "+ numOfItem+" ) " +
+            "Created in (select distinct Created from Message_Table where Created < :lastTimestamp and RoomID like :roomID order by Created desc limit " + numOfItem + " ) " +
             "and RoomID like :roomID order by Created desc")
     List<HpMessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);
 
-    @Query("select * from (select RoomID, max(created) as max_created from Message_Table group by RoomID) secondQuery join Message_Table firstQuery on firstQuery.RoomID = secondQuery.RoomID and firstQuery.created = secondQuery.max_created order by firstQuery.created desc")
+    @Query("select localID, user, RoomName, secondQuery.RoomID, RoomType, message, created, hasRead, isDelivered, isFailedSend, " +
+            "isSending, recipientID, messageType from (select RoomID, max(created) as max_created from Message_Table group by RoomID) secondQuery join Message_Table firstQuery on firstQuery.RoomID = secondQuery.RoomID and firstQuery.created = secondQuery.max_created order by firstQuery.created desc")
     List<HpMessageEntity> getAllRoomList();
+
+    @Query("select count(hasRead) from message_table where hasRead = 0 and RoomID like :roomID")
+    //@Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID")
+    Integer getUnreadCount(String roomID);
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();

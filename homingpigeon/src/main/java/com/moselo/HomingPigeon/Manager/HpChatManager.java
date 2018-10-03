@@ -232,8 +232,7 @@ public class HpChatManager {
                 entity.getRecipientID(),
                 entity.getDeleted(),
                 entity.getIsSending(),
-                entity.getIsFailedSend(),
-                entity.getUnreadCount());
+                entity.getIsFailedSend());
     }
 
     /**
@@ -260,8 +259,7 @@ public class HpChatManager {
                 model.getDeleted(),
                 model.getSending(),
                 model.getFailedSend(),
-                model.getUpdated(),
-                null);
+                model.getUpdated());
     }
 
     /**
