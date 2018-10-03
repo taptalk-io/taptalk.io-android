@@ -521,7 +521,6 @@ public class HpChatManager {
     }
 
     private void saveMessageToDatabase() {
-        Log.e(TAG, "saveMessageToDatabase: " + saveMessages.size());
         if (0 == saveMessages.size()) return;
 
         HpDataManager.getInstance().insertToDatabase(saveMessages, true);

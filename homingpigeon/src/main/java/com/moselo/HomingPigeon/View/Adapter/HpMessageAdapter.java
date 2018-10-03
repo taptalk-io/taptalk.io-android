@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.View.Adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -102,6 +104,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         private TextView tvUsername, tvMessageBody, tvMessageStatus;
 
         private Drawable bubbleOverlayLeft, bubbleOverlayRight;
+        float initialTranslationX = HpUtils.getInstance().dpToPx(-16);
 
         protected TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -130,9 +133,11 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
 
+                    flBubble.setTranslationX(0);
+                    ivMessageStatus.setTranslationX(0);
+                    ivMessageStatus.setVisibility(View.VISIBLE);
                     tvMessageStatus.setVisibility(View.GONE);
-                    ivMessageStatus.setVisibility(View.GONE);
-                    ivSending.setVisibility(View.GONE);
+                    ivSending.setAlpha(0f);
                 }
                 // Message is delivered
                 else if (null != item.getDelivered() && item.getDelivered()) {
@@ -140,9 +145,11 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
 
-                    tvMessageStatus.setVisibility(View.GONE);
+                    flBubble.setTranslationX(0);
+                    ivMessageStatus.setTranslationX(0);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    ivSending.setVisibility(View.GONE);
+                    tvMessageStatus.setVisibility(View.GONE);
+                    ivSending.setAlpha(0f);
                 }
                 // Message failed to send
                 else if (null != item.getFailedSend() && item.getFailedSend()) {
@@ -150,9 +157,11 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
 
-                    tvMessageStatus.setVisibility(View.VISIBLE);
+                    flBubble.setTranslationX(0);
+                    ivMessageStatus.setTranslationX(0);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    ivSending.setVisibility(View.GONE);
+                    tvMessageStatus.setVisibility(View.VISIBLE);
+                    ivSending.setAlpha(0f);
                 }
                 // Message sent
                 else if (null != item.getSending() && !item.getSending()) {
@@ -161,35 +170,17 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    ivSending.setVisibility(View.GONE);
-//                    Animation sendAnimation = new TranslateAnimation(0, HpUtils.getInstance().dpToPx(32), 0, 0);
-//                    sendAnimation.setDuration(150L);
-//                    sendAnimation.setFillAfter(false);
-//                    sendAnimation.setInterpolator(new AccelerateInterpolator(0.5f));
-//                    sendAnimation.setAnimationListener(new Animation.AnimationListener() {
-//                        @Override
-//                        public void onAnimationStart(Animation animation) {
-//                        }
-//
-//                        @Override
-//                        public void onAnimationEnd(Animation animation) {
-//                            ivSending.setVisibility(View.GONE);
-//                        }
-//
-//                        @Override
-//                        public void onAnimationRepeat(Animation animation) {
-//
-//                        }
-//                    });
-//                    ivSending.startAnimation(sendAnimation);
+                    animateSend();
                 }
                 // Message is sending
                 else if (null != item.getSending() && item.getSending()) {
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
 
+                    flBubble.setTranslationX(initialTranslationX);
+                    ivMessageStatus.setTranslationX(initialTranslationX);
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.GONE);
-                    ivSending.setVisibility(View.VISIBLE);
+                    ivSending.setAlpha(1.0f);
                 }
                 else {
                     // TODO: 28 September 2018 TESTING
@@ -255,7 +246,6 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     }
                     flBubble.setForeground(bubbleOverlayLeft);
                 }
-//                listener.onMessageClicked(item,true);
             } else {
                 // Bubble is deselected/shrunk
                 flBubble.setForeground(null);
@@ -276,8 +266,33 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                 } else {
                     ivMessageStatus.setVisibility(View.GONE);
                 }
-//                listener.onMessageClicked(item,false);
             }
+        }
+
+        private void animateSend() {
+            if (ivSending.getAlpha() == 0f) return;
+
+            ivMessageStatus.setTranslationX(initialTranslationX);
+            flBubble.setTranslationX(initialTranslationX);
+            ivSending.setTranslationX(0);
+            ivSending.setTranslationY(0);
+            new Handler().postDelayed(() -> {
+                ivMessageStatus.animate()
+                        .translationX(0)
+                        .setDuration(160L)
+                        .start();
+                flBubble.animate()
+                        .translationX(0)
+                        .setDuration(160L)
+                        .start();
+                ivSending.animate()
+                        .translationX(HpUtils.getInstance().dpToPx(36))
+                        .translationY(HpUtils.getInstance().dpToPx(-23))
+                        .setDuration(360L)
+                        .setInterpolator(new AccelerateInterpolator(0.5f))
+                        .withEndAction(() -> ivSending.setAlpha(0f))
+                        .start();
+            }, 200L);
         }
 
         private void animateShow(View view) {
