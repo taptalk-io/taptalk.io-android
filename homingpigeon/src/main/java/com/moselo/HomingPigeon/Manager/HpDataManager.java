@@ -202,8 +202,8 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().getRoomList(listener);
     }
 
-    public void getUnreadCountPerRoom(String roomID, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getUnreadCountPerRoom(roomID, listener);
+    public void getUnreadCountPerRoom(String myID, String roomID, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getUnreadCountPerRoom(myID, roomID, listener);
     }
 
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {

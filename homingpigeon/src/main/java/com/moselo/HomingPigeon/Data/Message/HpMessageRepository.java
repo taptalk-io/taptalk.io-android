@@ -9,6 +9,7 @@ import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,9 +103,9 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void getUnreadCountPerRoom(String roomID, HpDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String myID, String roomID, HpDatabaseListener listener) {
         new Thread(() -> {
-            int unreadCount = messageDao.getUnreadCount(roomID);
+            int unreadCount = messageDao.getUnreadCount(myID, roomID);
             listener.onSelectUnread(roomID, unreadCount);
         }).start();
     }

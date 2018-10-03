@@ -161,26 +161,6 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
                     ivSending.setVisibility(View.GONE);
-//                    Animation sendAnimation = new TranslateAnimation(0, HpUtils.getInstance().dpToPx(32), 0, 0);
-//                    sendAnimation.setDuration(150L);
-//                    sendAnimation.setFillAfter(false);
-//                    sendAnimation.setInterpolator(new AccelerateInterpolator(0.5f));
-//                    sendAnimation.setAnimationListener(new Animation.AnimationListener() {
-//                        @Override
-//                        public void onAnimationStart(Animation animation) {
-//                        }
-//
-//                        @Override
-//                        public void onAnimationEnd(Animation animation) {
-//                            ivSending.setVisibility(View.GONE);
-//                        }
-//
-//                        @Override
-//                        public void onAnimationRepeat(Animation animation) {
-//
-//                        }
-//                    });
-//                    ivSending.startAnimation(sendAnimation);
                 }
                 // Message is sending
                 else if (null != item.getSending() && item.getSending()) {

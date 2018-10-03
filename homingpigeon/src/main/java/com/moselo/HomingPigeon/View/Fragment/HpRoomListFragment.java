@@ -328,6 +328,13 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void onError(ErrorModel error) {
             super.onError(error);
+            flSetupContainer.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
+            flSetupContainer.setVisibility(View.GONE);
         }
     };
 
@@ -352,7 +359,7 @@ public class HpRoomListFragment extends Fragment {
                 }
 
                 for (Map.Entry<String, MessageModel> unread : vm.getRoomPointer().entrySet()) {
-                    HpDataManager.getInstance().getUnreadCountPerRoom(unread.getKey(), dbListener);
+                    HpDataManager.getInstance().getUnreadCountPerRoom(vm.getMyUserID(), unread.getKey(), dbListener);
                 }
 
                 if (isApiNeedToBeCalled)

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
 
 import java.util.ArrayList;
@@ -16,9 +17,11 @@ public class HpRoomListViewModel extends AndroidViewModel {
     private Map<String, MessageModel> roomPointer;
     private Map<String, MessageModel> selectedRooms;
     private boolean isSelecting;
+    private String myUserID;
 
     public HpRoomListViewModel(@NonNull Application application) {
         super(application);
+        myUserID = HpDataManager.getInstance().getActiveUser(application).getUserID();
     }
 
     public List<MessageModel> getRoomList() {
@@ -67,5 +70,13 @@ public class HpRoomListViewModel extends AndroidViewModel {
 
     public void setSelecting(boolean selecting) {
         isSelecting = selecting;
+    }
+
+    public String getMyUserID() {
+        return myUserID;
+    }
+
+    public void setMyUserID(String myUserID) {
+        this.myUserID = myUserID;
     }
 }

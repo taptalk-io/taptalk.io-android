@@ -135,9 +135,9 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getUnreadCountPerRoom(String roomID, HpDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String myID, String roomID, HpDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getUnreadCountPerRoom(roomID, listener);
+            messageRepository.getUnreadCountPerRoom(myID, roomID, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 

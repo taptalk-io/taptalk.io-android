@@ -45,9 +45,9 @@ public interface HpMessageDao {
             "isSending, recipientID, messageType from (select RoomID, max(created) as max_created from Message_Table group by RoomID) secondQuery join Message_Table firstQuery on firstQuery.RoomID = secondQuery.RoomID and firstQuery.created = secondQuery.max_created order by firstQuery.created desc")
     List<HpMessageEntity> getAllRoomList();
 
-    @Query("select count(hasRead) from message_table where hasRead = 0 and RoomID like :roomID")
-    //@Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID")
-    Integer getUnreadCount(String roomID);
+    //@Query("select count(hasRead) from message_table where hasRead = 0 and RoomID like :roomID and recipientID not like :userID")
+    @Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID and recipientID not like :userID")
+    Integer getUnreadCount(String userID, String roomID);
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();
