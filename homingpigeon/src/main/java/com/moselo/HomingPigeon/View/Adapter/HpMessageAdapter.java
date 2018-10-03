@@ -249,16 +249,16 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             } else {
                 // Bubble is deselected/shrunk
                 flBubble.setForeground(null);
-                animateHide(tvMessageStatus);
-
-                if (isMessageFromMySelf(item) && null != item.getSending() && !item.getSending()) {
+                if (null != item.getFailedSend() && item.getFailedSend()) {
+                    tvMessageStatus.setVisibility(View.VISIBLE);
+                    ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                } else if (isMessageFromMySelf(item) && null != item.getSending() && !item.getSending()) {
+                    animateHide(tvMessageStatus);
                     if (null != item.getIsRead() && item.getIsRead()) {
                         ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
                     } else if (null != item.getDelivered() && item.getDelivered()) {
                         ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
-                    } else if (null != item.getFailedSend() && item.getFailedSend()) {
-                        tvMessageStatus.setVisibility(View.VISIBLE);
-                        ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
                     } else if (null != item.getSending() && !item.getSending()) {
                         ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
                     }
@@ -310,6 +310,10 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     .translationY(HpUtils.getInstance().dpToPx(-24))
                     .alpha(0)
                     .setDuration(150L)
+                    .withEndAction(() -> {
+                        view.setAlpha(1);
+                        view.setTranslationY(0);
+                    })
                     .start();
             view.setVisibility(View.GONE);
         }

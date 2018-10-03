@@ -246,7 +246,8 @@ public class HpChatManager {
                 model.getRoom().getRoomName(),
                 model.getRoom().getRoomColor(),
                 model.getRoom().getRoomType(),
-                model.getRoom().getRoomImage().getFullsize(),
+                //model.getRoom().getRoomImage().getFullsize(),
+                "", // TODO: 3 October 2018 UPDATE WHEN ROOM IMAGE IS AVAILABLE
                 model.getType(),
                 model.getMessage(),
                 model.getCreated(),
