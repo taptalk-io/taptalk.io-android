@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -22,15 +23,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Helper.HpChatRecyclerView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
+import com.moselo.HomingPigeon.Helper.HpChatRecyclerView;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpEndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
+import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -235,6 +235,8 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
+        if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         // TODO: 25 September 2018 CHANGE MENU ACCORDING TO USER ROLES
         List<CustomKeyboardModel> customKeyboardMenus = new ArrayList<>();

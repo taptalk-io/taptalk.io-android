@@ -246,7 +246,8 @@ public class HpChatManager {
                 model.getRoom().getRoomName(),
                 model.getRoom().getRoomColor(),
                 model.getRoom().getRoomType(),
-                model.getRoom().getRoomImage().getFullsize(),
+                //model.getRoom().getRoomImage().getFullsize(),
+                "", // TODO: 3 October 2018 UPDATE WHEN ROOM IMAGE IS AVAILABLE
                 model.getType(),
                 model.getMessage(),
                 model.getCreated(),
@@ -521,7 +522,6 @@ public class HpChatManager {
     }
 
     private void saveMessageToDatabase() {
-        Log.e(TAG, "saveMessageToDatabase: " + saveMessages.size());
         if (0 == saveMessages.size()) return;
 
         HpDataManager.getInstance().insertToDatabase(saveMessages, true);

@@ -24,14 +24,14 @@
         android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:elevation="1dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
-        app:layout_constraintEnd_toStartOf="@id/iv_sending"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_message_status"
         app:layout_constraintTop_toTopOf="@id/barrier_top"
-        app:layout_goneMarginBottom="8dp"
-        app:layout_goneMarginEnd="16dp">
+        app:layout_goneMarginBottom="8dp">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
@@ -77,38 +77,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="5dp"
+        android:alpha="0"
         android:src="@drawable/hp_ic_message_sending_grey"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
-
-    <!--<LinearLayout-->
-    <!--android:id="@+id/ll_button_reply"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginEnd="2dp"-->
-    <!--android:background="?attr/selectableItemBackgroundBorderless"-->
-    <!--android:gravity="center_horizontal"-->
-    <!--android:orientation="vertical"-->
-    <!--android:visibility="gone"-->
-    <!--app:layout_constraintBottom_toBottomOf="@id/fl_bubble"-->
-    <!--app:layout_constraintEnd_toStartOf="@id/fl_bubble">-->
-
-    <!--<ImageView-->
-    <!--android:layout_width="32dp"-->
-    <!--android:layout_height="32dp" />-->
-
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:fontFamily="@font/hp_font_latoregular"-->
-    <!--android:text="@string/reply"-->
-    <!--android:textColor="@color/grey_9b" />-->
-
-    <!--</LinearLayout>-->
 
     <android.support.constraint.Barrier
         android:id="@+id/barrier_top"
