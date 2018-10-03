@@ -60,7 +60,7 @@ public class HpMessageRepository {
             if (0 < HpChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 HpChatManager.getInstance().clearSaveMessages();
 
-            listener.onSelectFinished(messageEntities);
+            listener.onInsertFinished();
 
         }).start();
     }

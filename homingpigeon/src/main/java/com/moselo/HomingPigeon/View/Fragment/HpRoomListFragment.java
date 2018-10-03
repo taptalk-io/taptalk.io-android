@@ -317,7 +317,7 @@ public class HpRoomListFragment extends Fragment {
 
             HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
                 @Override
-                public void onSelectFinished(List<HpMessageEntity> entities) {
+                public void onInsertFinished() {
                     isApiNeedToBeCalled = false;
                     HpDataManager.getInstance().getRoomList(dbListener);
                 }
