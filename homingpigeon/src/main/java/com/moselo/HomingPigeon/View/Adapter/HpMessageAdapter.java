@@ -37,6 +37,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
 
     private static final String TAG = HpMessageAdapter.class.getSimpleName();
     private HomingPigeonChatListener listener;
+    private MessageModel expandedBubble;
     private UserModel myUserModel;
 
     public HpMessageAdapter(Context context, HomingPigeonChatListener listener) {
@@ -238,6 +239,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         private void expandOrShrinkBubble(MessageModel item) {
             if (item.isExpanded()) {
                 // Bubble is selected/expanded
+                expandedBubble = item;
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_reply_circle_white);
                 tvMessageStatus.setVisibility(View.VISIBLE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
@@ -362,12 +364,8 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
     }
 
     public void shrinkExpandedBubble() {
-        for (MessageModel message : getItems()) {
-            if (message.isExpanded()) {
-                message.setExpanded(false);
-                notifyItemChanged(getItems().indexOf(message));
-                return;
-            }
-        }
+        if (null == expandedBubble) return;
+        expandedBubble.setExpanded(false);
+        notifyItemChanged(getItems().indexOf(expandedBubble));
     }
 }
