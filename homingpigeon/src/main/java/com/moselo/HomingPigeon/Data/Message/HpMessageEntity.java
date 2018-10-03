@@ -33,7 +33,6 @@ public class HpMessageEntity {
     @Nullable @ColumnInfo(name = "isSending") private Boolean isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Boolean isFailedSend;
     @Nullable @ColumnInfo(name = "updated") private Long updated;
-    @Nullable @ColumnInfo(name = "unreadCount") private Long unreadCount;
 
     @Ignore
     public HpMessageEntity(@Nullable String messageID, @NonNull String localID, String roomID,
@@ -59,8 +58,7 @@ public class HpMessageEntity {
                            @Nullable Boolean hasRead, @Nullable Boolean isRead,
                            @Nullable Boolean isDelivered, @Nullable Boolean isHidden,
                            @Nullable Boolean isDeleted, @Nullable Boolean isSending,
-                           @Nullable Boolean isFailedSend, @Nullable Long updated,
-                           @Nullable Long unreadCount) {
+                           @Nullable Boolean isFailedSend, @Nullable Long updated) {
         this.messageID = messageID;
         if (localID.equals(""))
             this.localID =  HpUtils.getInstance().generateRandomString(32);
@@ -83,7 +81,6 @@ public class HpMessageEntity {
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
         this.updated = updated;
-        this.unreadCount = unreadCount;
     }
 
     public HpMessageEntity() {
@@ -262,14 +259,5 @@ public class HpMessageEntity {
 
     public void setUpdated(@Nullable Long updated) {
         this.updated = updated;
-    }
-
-    @Nullable
-    public Long getUnreadCount() {
-        return unreadCount;
-    }
-
-    public void setUnreadCount(@Nullable Long unreadCount) {
-        this.unreadCount = unreadCount;
     }
 }

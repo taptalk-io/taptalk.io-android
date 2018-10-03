@@ -32,6 +32,7 @@ import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -50,7 +51,7 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
 
-public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatListener, HomingPigeonDatabaseListener {
+public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatListener {
 
     private String TAG = HpChatActivity.class.getSimpleName();
 
@@ -74,48 +75,6 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
 
     // RoomDatabase
     private HpChatViewModel vm;
-
-    @Override
-    public void onSelectFinished(List<HpMessageEntity> entities) {
-        final List<MessageModel> models = new ArrayList<>();
-        for (HpMessageEntity entity : entities) {
-            MessageModel model = HpChatManager.getInstance().convertToModel(entity);
-            models.add(model);
-            vm.addMessagePointer(model);
-        }
-        vm.setMessageModels(models);
-
-        if (vm.getMessageModels().size() > 0) {
-            vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
-        }
-
-        runOnUiThread(() -> {
-            if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
-                // First load
-                hpMessageAdapter.setMessages(models);
-                rvMessageList.scrollToPosition(0);
-                if (vm.getMessageModels().size() == 0) {
-                    // Chat is empty
-                    // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
-                    clEmptyChat.setVisibility(View.VISIBLE);
-                    tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
-                    tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
-                    civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
-                    // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
-                    showCustomKeyboard();
-                } else {
-                    // Message exists
-                    flMessageList.setVisibility(View.VISIBLE);
-                }
-            } else if (null != hpMessageAdapter) {
-                runOnUiThread(() -> hpMessageAdapter.addMessage(models));
-                state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-                if (rvMessageList.getVisibility() != View.VISIBLE)
-                    rvMessageList.setVisibility(View.VISIBLE);
-                if (state == STATE.DONE) updateMessageDecoration();
-            }
-        });
-    }
 
     //enum Scrolling
     private enum STATE {
@@ -225,7 +184,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
         vm.setRoom(getIntent().getParcelableExtra(HpDefaultConstant.K_ROOM));
         vm.setMyUserModel(HpDataManager.getInstance().getActiveUser(this));
         //vm.setPendingMessages(HpChatManager.getInstance().getMessageQueueInActiveRoom());
-        vm.getMessageEntities(vm.getRoom().getRoomID(), this);
+        vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
     }
 
     @Override
@@ -287,7 +246,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        final HomingPigeonDatabaseListener scrollChatListener = this;
+        final HpDatabaseListener scrollChatListener = dbListener;
 
         rvMessageList.addOnScrollListener(new HpEndlessScrollListener(messageLayoutManager) {
             @Override
@@ -518,6 +477,50 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
                 ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
                 HpUtils.getInstance().showKeyboard(HpChatActivity.this, etChat);
             }
+        }
+    };
+
+    HpDatabaseListener dbListener = new HpDatabaseListener() {
+        @Override
+        public void onSelectFinished(List<HpMessageEntity> entities) {
+            final List<MessageModel> models = new ArrayList<>();
+            for (HpMessageEntity entity : entities) {
+                MessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                models.add(model);
+                vm.addMessagePointer(model);
+            }
+            vm.setMessageModels(models);
+
+            if (vm.getMessageModels().size() > 0) {
+                vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
+            }
+
+            runOnUiThread(() -> {
+                if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
+                    // First load
+                    hpMessageAdapter.setMessages(models);
+                    rvMessageList.scrollToPosition(0);
+                    if (vm.getMessageModels().size() == 0) {
+                        // Chat is empty
+                        // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
+                        clEmptyChat.setVisibility(View.VISIBLE);
+                        tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
+                        tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
+                        civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+                        // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
+                        showCustomKeyboard();
+                    } else {
+                        // Message exists
+                        flMessageList.setVisibility(View.VISIBLE);
+                    }
+                } else if (null != hpMessageAdapter) {
+                    runOnUiThread(() -> hpMessageAdapter.addMessage(models));
+                    state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+                    if (rvMessageList.getVisibility() != View.VISIBLE)
+                        rvMessageList.setVisibility(View.VISIBLE);
+                    if (state == STATE.DONE) updateMessageDecoration();
+                }
+            });
         }
     };
 }

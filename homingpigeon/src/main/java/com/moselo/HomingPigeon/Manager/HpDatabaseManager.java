@@ -8,6 +8,7 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageRepository;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchRepository;
 import com.moselo.HomingPigeon.Listener.HomingPigeonDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HomingPigeonDatabaseListener listener) {
+    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.insert(messageEntities, isClearSaveMessages, listener);
         else
@@ -108,27 +109,27 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessages(String roomID, HomingPigeonDatabaseListener listener) {
+    public void getMessages(String roomID, HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getMessageList(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessages(String roomID, HomingPigeonDatabaseListener listener, long lastTimestamp) {
+    public void getMessages(String roomID, HpDatabaseListener listener, long lastTimestamp) {
         if (null != messageRepository)
             messageRepository.getMessageList(roomID, listener, lastTimestamp);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(List<HpMessageEntity> saveMessages, HomingPigeonDatabaseListener listener) {
+    public void getRoomList(List<HpMessageEntity> saveMessages, HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(saveMessages, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(HomingPigeonDatabaseListener listener) {
+    public void getRoomList(HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
