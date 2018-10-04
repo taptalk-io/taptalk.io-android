@@ -15,13 +15,13 @@ public interface HomingPigeonApiService {
     // TODO: 13/09/18 Change base URL
     String BASE_URL = "https://hp-staging.moselo.com:8080/api/v1/";
 
-    @POST("server/request_auth_ticket")
+    @POST("server/auth_ticket/request")
     Observable<BaseResponse<AuthTicketResponse>> getAuthTicket(@Body AuthTicketRequest request);
 
-    @POST("client/request_access_token")
+    @POST("auth/access_token/request")
     Observable<BaseResponse<GetAccessTokenResponse>> getAccessToken();
 
-    @POST("client/refresh_access_token")
+    @POST("auth/access_token/refresh")
     Observable<BaseResponse<GetAccessTokenResponse>> refreshAccessToken();
 
     @POST("chat/room/list")

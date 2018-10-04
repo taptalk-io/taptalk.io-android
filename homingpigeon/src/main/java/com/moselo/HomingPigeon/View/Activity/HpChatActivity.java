@@ -184,7 +184,6 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         vm.setRoom(getIntent().getParcelableExtra(HpDefaultConstant.K_ROOM));
         vm.setMyUserModel(HpDataManager.getInstance().getActiveUser(this));
         //vm.setPendingMessages(HpChatManager.getInstance().getMessageQueueInActiveRoom());
-        vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
     }
 
     @Override
@@ -248,13 +247,12 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        final HpDatabaseListener scrollChatListener = dbListener;
-
+        vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
         rvMessageList.addOnScrollListener(new HpEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < hpMessageAdapter.getItemCount()) {
-                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), scrollChatListener, vm.getLastTimestamp());
+                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListener, vm.getLastTimestamp());
                     state = STATE.WORKING;
                 }
             }
@@ -491,10 +489,10 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
                 models.add(model);
                 vm.addMessagePointer(model);
             }
-            vm.setMessageModels(models);
+            vm.addMessageModels(models);
 
-            if (vm.getMessageModels().size() > 0) {
-                vm.setLastTimestamp(models.get(vm.getMessageModels().size() - 1).getCreated());
+            if (0 < models.size()) {
+                vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
             runOnUiThread(() -> {
@@ -502,7 +500,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
                     // First load
                     hpMessageAdapter.setMessages(models);
                     rvMessageList.scrollToPosition(0);
-                    if (vm.getMessageModels().size() == 0) {
+                    if (models.size() == 0) {
                         // Chat is empty
                         // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
                         clEmptyChat.setVisibility(View.VISIBLE);
@@ -514,9 +512,10 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
                     } else {
                         flMessageList.setVisibility(View.VISIBLE);
                     }
-                } else if (null != hpMessageAdapter) {
+                } else if (null != hpMessageAdapter && 0 < models.size()) {
                     flMessageList.setVisibility(View.VISIBLE);
-                    hpMessageAdapter.addMessage(models);
+                    //hpMessageAdapter.addMessage(models);
+                    hpMessageAdapter.notifyDataSetChanged();
                     state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
