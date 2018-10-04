@@ -2,13 +2,10 @@ package com.moselo.HomingPigeon.Data.Message;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
-import com.moselo.HomingPigeon.Helper.HpUtils;
 
 @Entity(tableName = "Message_Table", indices = @Index(value = "roomID"))
 public class HpMessageEntity {
@@ -17,9 +14,9 @@ public class HpMessageEntity {
     @PrimaryKey() @NonNull @ColumnInfo(name = "localID") private String localID;
     @ColumnInfo(name = "body") private String body;
     @ColumnInfo(name = "recipientID") private String recipientID;
-    @ColumnInfo(name = "messageType") private Integer messageType;
-    @ColumnInfo(name = "messageCreated") private Long messageCreated;
-    @Nullable @ColumnInfo(name = "messageUpdated") private Long messageUpdated;
+    @ColumnInfo(name = "type") private Integer type;
+    @ColumnInfo(name = "created") private Long created;
+    @Nullable @ColumnInfo(name = "updated") private Long updated;
     @Nullable @ColumnInfo(name = "hasRead") private Boolean hasRead;
     @Nullable @ColumnInfo(name = "isRead") private Boolean isRead;
     @Nullable @ColumnInfo(name = "isDelivered") private Boolean isDelivered;
@@ -46,8 +43,8 @@ public class HpMessageEntity {
     @Nullable @ColumnInfo(name = "userUpdated") private Long userUpdated;
 
     public HpMessageEntity(@Nullable String messageID, @NonNull String localID, String body,
-                           String recipientID, Integer messageType, Long messageCreated,
-                           @Nullable Long messageUpdated, @Nullable Boolean hasRead,
+                           String recipientID, Integer type, Long created,
+                           @Nullable Long updated, @Nullable Boolean hasRead,
                            @Nullable Boolean isRead, @Nullable Boolean isDelivered,
                            @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                            @Nullable Boolean isSending, @Nullable Boolean isFailedSend, String roomID,
@@ -61,9 +58,9 @@ public class HpMessageEntity {
         this.localID = localID;
         this.body = body;
         this.recipientID = recipientID;
-        this.messageType = messageType;
-        this.messageCreated = messageCreated;
-        this.messageUpdated = messageUpdated;
+        this.type = type;
+        this.created = created;
+        this.updated = updated;
         this.hasRead = hasRead;
         this.isRead = isRead;
         this.isDelivered = isDelivered;
@@ -124,29 +121,29 @@ public class HpMessageEntity {
         this.recipientID = recipientID;
     }
 
-    public Integer getMessageType() {
-        return messageType;
+    public Integer getType() {
+        return type;
     }
 
-    public void setMessageType(Integer messageType) {
-        this.messageType = messageType;
+    public void setType(Integer type) {
+        this.type = type;
     }
 
-    public Long getMessageCreated() {
-        return messageCreated;
+    public Long getCreated() {
+        return created;
     }
 
-    public void setMessageCreated(Long messageCreated) {
-        this.messageCreated = messageCreated;
+    public void setCreated(Long created) {
+        this.created = created;
     }
 
     @Nullable
-    public Long getMessageUpdated() {
-        return messageUpdated;
+    public Long getUpdated() {
+        return updated;
     }
 
-    public void setMessageUpdated(@Nullable Long messageUpdated) {
-        this.messageUpdated = messageUpdated;
+    public void setUpdated(@Nullable Long updated) {
+        this.updated = updated;
     }
 
     @Nullable

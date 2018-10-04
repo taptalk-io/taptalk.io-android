@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
-import com.moselo.HomingPigeon.Listener.RoomListListener;
+import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
@@ -38,15 +38,15 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHolder<MessageModel>> {
 
     private HpRoomListViewModel vm;
-    private RoomListListener roomListListener;
+    private RoomListInterface roomListInterface;
     private ColorStateList avatarTint;
     private String myUsername;
 
-    public HpRoomListAdapter(HpRoomListViewModel vm, String myUsername, RoomListListener roomListListener) {
+    public HpRoomListAdapter(HpRoomListViewModel vm, String myUsername, RoomListInterface roomListInterface) {
         setItems(vm.getRoomList(), false);
         this.vm = vm;
         this.myUsername = myUsername;
-        this.roomListListener = roomListListener;
+        this.roomListInterface = roomListInterface;
     }
 
     @NonNull
@@ -161,7 +161,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHol
                 if (vm.isSelecting()) {
                     // Select room when other room is already selected
                     item.getRoom().setSelected(!item.getRoom().isSelected());
-                    roomListListener.onRoomSelected(item, item.getRoom().isSelected());
+                    roomListInterface.onRoomSelected(item, item.getRoom().isSelected());
                     notifyItemChanged(position);
                 } else {
                     // Open chat room on click
@@ -193,7 +193,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHol
             itemView.setOnLongClickListener(v -> {
                 v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 item.getRoom().setSelected(!item.getRoom().isSelected());
-                roomListListener.onRoomSelected(item, item.getRoom().isSelected());
+                roomListInterface.onRoomSelected(item, item.getRoom().isSelected());
                 notifyItemChanged(position);
                 return true;
             });

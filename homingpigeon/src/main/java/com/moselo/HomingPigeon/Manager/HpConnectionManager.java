@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Listener.HomingPigeonNetworkListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
+import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -31,7 +31,7 @@ public class HpConnectionManager {
     //        private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
-    private List<HomingPigeonSocketListener> socketListeners;
+    private List<HomingPigeonSocketInterface> socketListeners;
 
     private int reconnectAttempt;
     private final long RECONNECT_DELAY = 500;
@@ -64,7 +64,7 @@ public class HpConnectionManager {
                 connectionStatus = ConnectionStatus.CONNECTED;
                 reconnectAttempt = 0;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (HomingPigeonSocketListener listener : socketListeners)
+                    for (HomingPigeonSocketInterface listener : socketListeners)
                         listener.onSocketConnected();
                 }
             }
@@ -80,7 +80,7 @@ public class HpConnectionManager {
                     HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
                     Log.e(TAG, "onMessage: " + response);
                     if (null != socketListeners && !socketListeners.isEmpty()) {
-                        for (HomingPigeonSocketListener listener : socketListeners)
+                        for (HomingPigeonSocketInterface listener : socketListeners)
                             listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);
                     }
                 } catch (IOException e) {
@@ -93,7 +93,7 @@ public class HpConnectionManager {
                 Log.e(TAG, "onClose: ");
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (HomingPigeonSocketListener listener : socketListeners)
+                    for (HomingPigeonSocketInterface listener : socketListeners)
                         listener.onSocketDisconnected();
                 }
             }
@@ -103,7 +103,7 @@ public class HpConnectionManager {
                 Log.e(TAG, "onError: ");
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (HomingPigeonSocketListener listener : socketListeners)
+                    for (HomingPigeonSocketInterface listener : socketListeners)
                         listener.onSocketError();
                 }
             }
@@ -114,7 +114,7 @@ public class HpConnectionManager {
                 Log.e(TAG, "reconnect: ");
                 connectionStatus = ConnectionStatus.CONNECTING;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (HomingPigeonSocketListener listener : socketListeners)
+                    for (HomingPigeonSocketInterface listener : socketListeners)
                         listener.onSocketConnecting();
                 }
             }
@@ -123,7 +123,7 @@ public class HpConnectionManager {
 
     private void initNetworkListener() {
 
-        HomingPigeonNetworkListener networkListener = () -> {
+        HomingPigeonNetworkInterface networkListener = () -> {
             Log.e(TAG, "initNetworkListener: "+connectionStatus );
             if (ConnectionStatus.CONNECTING == connectionStatus ||
                     ConnectionStatus.DISCONNECTED == connectionStatus) {
@@ -135,11 +135,11 @@ public class HpConnectionManager {
         HpNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
 
-    public void addSocketListener(HomingPigeonSocketListener listener) {
+    public void addSocketListener(HomingPigeonSocketInterface listener) {
         socketListeners.add(listener);
     }
 
-    public void removeSocketListener(HomingPigeonSocketListener listener) {
+    public void removeSocketListener(HomingPigeonSocketInterface listener) {
         socketListeners.remove(listener);
     }
 

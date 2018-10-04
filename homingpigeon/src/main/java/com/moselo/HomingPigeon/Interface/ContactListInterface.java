@@ -1,8 +1,8 @@
-package com.moselo.HomingPigeon.Listener;
+package com.moselo.HomingPigeon.Interface;
 
 import com.moselo.HomingPigeon.Model.UserModel;
 
-public interface ContactListListener {
+public interface ContactListInterface {
 
     boolean onContactSelected(UserModel contact, boolean isSelected);
 

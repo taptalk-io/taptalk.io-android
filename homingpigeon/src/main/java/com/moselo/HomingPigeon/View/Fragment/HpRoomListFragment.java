@@ -27,9 +27,9 @@ import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Listener.RoomListListener;
+import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -65,7 +65,7 @@ public class HpRoomListFragment extends Fragment {
 
     private RecyclerView rvContactList;
     private HpRoomListAdapter adapter;
-    private RoomListListener roomListListener;
+    private RoomListInterface roomListInterface;
     private HpRoomListViewModel vm;
 
     private boolean isApiNeedToBeCalled = true;
@@ -107,7 +107,7 @@ public class HpRoomListFragment extends Fragment {
     }
 
     private void initListener() {
-        roomListListener = (messageModel, isSelected) -> {
+        roomListInterface = (messageModel, isSelected) -> {
             if (null != messageModel && isSelected) {
                 vm.getSelectedRooms().put(messageModel.getLocalID(), messageModel);
             } else if (null != messageModel) {
@@ -146,7 +146,7 @@ public class HpRoomListFragment extends Fragment {
 
         if (vm.isSelecting()) showSelectionActionBar();
 
-        adapter = new HpRoomListAdapter(vm, activity.getIntent().getStringExtra(K_MY_USERNAME), roomListListener);
+        adapter = new HpRoomListAdapter(vm, activity.getIntent().getStringExtra(K_MY_USERNAME), roomListInterface);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(true);
@@ -256,7 +256,7 @@ public class HpRoomListFragment extends Fragment {
     }
 
     // Update connection status UI
-    private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
+    private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
 

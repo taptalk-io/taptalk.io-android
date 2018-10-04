@@ -1,6 +1,6 @@
-package com.moselo.HomingPigeon.Listener;
+package com.moselo.HomingPigeon.Interface;
 
-public interface HomingPigeonEncryptorListener {
+public interface HomingPigeonEncryptorInterface {
 
     void onEncryptResult(String encryptedMessage);
 
