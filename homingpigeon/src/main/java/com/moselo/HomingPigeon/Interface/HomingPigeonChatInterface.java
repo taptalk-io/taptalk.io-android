@@ -1,8 +1,8 @@
-package com.moselo.HomingPigeon.Listener;
+package com.moselo.HomingPigeon.Interface;
 
 import com.moselo.HomingPigeon.Model.MessageModel;
 
-public interface HomingPigeonChatListener {
+public interface HomingPigeonChatInterface {
 
     void onReceiveMessageInActiveRoom(MessageModel message);
 

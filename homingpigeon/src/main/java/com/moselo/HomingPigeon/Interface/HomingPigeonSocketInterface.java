@@ -1,6 +1,6 @@
-package com.moselo.HomingPigeon.Listener;
+package com.moselo.HomingPigeon.Interface;
 
-public interface HomingPigeonSocketListener {
+public interface HomingPigeonSocketInterface {
 
     void onReceiveNewEmit(String eventName, String emitData);
 

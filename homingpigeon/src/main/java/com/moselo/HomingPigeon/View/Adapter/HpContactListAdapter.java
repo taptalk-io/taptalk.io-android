@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Listener.ContactListListener;
+import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.RoomModel;
@@ -33,7 +33,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
 public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHolder<UserModel>> {
 
-    private ContactListListener listener;
+    private ContactListInterface listener;
     private ColorStateList avatarTint;
     private String myID;
     private int viewType;
@@ -49,7 +49,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
         this.viewType = viewType;
     }
 
-    public HpContactListAdapter(int viewType, List<UserModel> contactList, @Nullable ContactListListener listener, String myID) {
+    public HpContactListAdapter(int viewType, List<UserModel> contactList, @Nullable ContactListInterface listener, String myID) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;

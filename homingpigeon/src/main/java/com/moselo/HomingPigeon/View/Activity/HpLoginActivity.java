@@ -100,7 +100,7 @@ public class HpLoginActivity extends HpBaseActivity {
         String userAgent = "android";
         String userPlatform = "android";
         String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
-        String fullname = etUsername.getText().toString();
+        String fullname = getDummyUserFullName(xcUserID);
         String email = etUsername.getText().toString() + "@moselo.com";
         String phone = "08979809026";
         String username = etUsername.getText().toString();
@@ -169,6 +169,44 @@ public class HpLoginActivity extends HpBaseActivity {
                 return 15;
             default:
                 return 0;
+        }
+    }
+
+    // TODO: 04/10/18 DUMMY
+    private String getDummyUserFullName(String userID) {
+        switch (userID) {
+            case "1":
+                return "Ritchie Nathaniel";
+            case "2":
+                return "Dominic Vedericho";
+            case "3":
+                return "Rionaldo Linggautama";
+            case "4":
+                return "Kevin Reynaldo";
+            case "5":
+                return "Welly Kencana";
+            case "6":
+                return "Jony Lim";
+            case "7":
+                return "Michael Tansy";
+            case "8":
+                return "Richard Fang";
+            case "9":
+                return "Erwin Andreas";
+            case "10":
+                return "Jefry Lorentono";
+            case "11":
+                return "Cundy Sunardy";
+            case "12":
+                return "Rizka Fatmawati";
+            case "13":
+                return "Test 1";
+            case "14":
+                return "Test 2";
+            case "15":
+                return "Test 3";
+            default:
+                return "User Ga Tau Dari Mana ini";
         }
     }
 

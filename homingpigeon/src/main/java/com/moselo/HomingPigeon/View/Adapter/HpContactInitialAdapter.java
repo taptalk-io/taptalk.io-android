@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Listener.ContactListListener;
+import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -18,7 +18,7 @@ import java.util.List;
 public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactInitialAdapter.ContactListHolder> {
 
     private List<List<UserModel>> contactList;
-    private ContactListListener listener;
+    private ContactListInterface listener;
     private int viewType;
 
     public HpContactInitialAdapter(int viewType, List<List<UserModel>> contactList) {
@@ -26,7 +26,7 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
         this.contactList = contactList;
     }
 
-    public HpContactInitialAdapter(int viewType, List<List<UserModel>> contactList, ContactListListener listener) {
+    public HpContactInitialAdapter(int viewType, List<List<UserModel>> contactList, ContactListInterface listener) {
         this.viewType = viewType;
         this.contactList = contactList;
         this.listener = listener;

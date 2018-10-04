@@ -14,7 +14,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -31,8 +30,8 @@ import com.moselo.HomingPigeon.Helper.HpEndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Interface.HomingPigeonChatInterface;
+import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
@@ -52,7 +51,7 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
 
-public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatListener {
+public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatInterface {
 
     private String TAG = HpChatActivity.class.getSimpleName();
 
@@ -418,7 +417,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     }
 
     // Update connection status UI
-    private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
+    private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
 

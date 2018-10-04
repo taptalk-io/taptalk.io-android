@@ -22,7 +22,7 @@ import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Listener.ContactListListener;
+import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
@@ -51,7 +51,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
 
     HpContactInitialAdapter contactListAdapter;
     HpContactListAdapter selectedMembersAdapter;
-    ContactListListener listener;
+    ContactListInterface listener;
     HpContactListViewModel vm;
 
     @Override
@@ -96,7 +96,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     }
 
     private void initListener() {
-        listener = new ContactListListener() {
+        listener = new ContactListInterface() {
             @Override
             public boolean onContactSelected(UserModel contact, boolean isSelected) {
                 HpUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);

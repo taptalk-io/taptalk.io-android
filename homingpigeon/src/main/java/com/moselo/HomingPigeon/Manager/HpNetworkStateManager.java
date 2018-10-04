@@ -8,7 +8,7 @@ import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.util.Log;
 
-import com.moselo.HomingPigeon.Listener.HomingPigeonNetworkListener;
+import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
     private static final String TAG = HpNetworkStateManager.class.getSimpleName();
     private static HpNetworkStateManager instance;
-    private List<HomingPigeonNetworkListener> listeners;
+    private List<HomingPigeonNetworkInterface> listeners;
     private NetworkRequest networkRequest;
 
     public static HpNetworkStateManager getInstance() {
@@ -57,11 +57,11 @@ public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE) : null;
     }
 
-    public void addNetworkListener(HomingPigeonNetworkListener listener) {
+    public void addNetworkListener(HomingPigeonNetworkInterface listener) {
         listeners.add(listener);
     }
 
-    public void removeNetworkListener(HomingPigeonNetworkListener listener) {
+    public void removeNetworkListener(HomingPigeonNetworkInterface listener) {
         listeners.remove(listener);
     }
 
@@ -78,7 +78,7 @@ public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
         super.onAvailable(network);
         Log.e("><<><", "onAvailable: " );
         if (!listeners.isEmpty()) {
-            for (HomingPigeonNetworkListener listener : listeners) {
+            for (HomingPigeonNetworkInterface listener : listeners) {
                 listener.onNetworkAvailable();
             }
         }

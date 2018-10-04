@@ -10,8 +10,8 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
-import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
+import com.moselo.HomingPigeon.Interface.HomingPigeonChatInterface;
+import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Model.EmitModel;
 import com.moselo.HomingPigeon.Model.ImageURL;
 import com.moselo.HomingPigeon.Model.MessageModel;
@@ -48,7 +48,7 @@ public class HpChatManager {
 
     private final String TAG = HpChatManager.class.getSimpleName();
     private static HpChatManager instance;
-    private List<HomingPigeonChatListener> chatListeners;
+    private List<HomingPigeonChatInterface> chatListeners;
     List<HpMessageEntity> saveMessages; //message to be save
     private Map<String, MessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
@@ -64,7 +64,7 @@ public class HpChatManager {
     private int pendingRetryInterval = 60 * 1000;
     private ScheduledExecutorService scheduler;
 
-    private HomingPigeonSocketListener socketListener = new HomingPigeonSocketListener() {
+    private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
         @Override
         public void onSocketConnected() {
             Log.e(TAG, "onSocketConnected: ");
@@ -161,11 +161,11 @@ public class HpChatManager {
         messageDrafts = new HashMap<>();
     }
 
-    public void addChatListener(HomingPigeonChatListener chatListener) {
+    public void addChatListener(HomingPigeonChatInterface chatListener) {
         chatListeners.add(chatListener);
     }
 
-    public void removeChatListener(HomingPigeonChatListener chatListener) {
+    public void removeChatListener(HomingPigeonChatInterface chatListener) {
         chatListeners.remove(chatListener);
     }
 
@@ -227,8 +227,8 @@ public class HpChatManager {
                 entity.getLocalID(),
                 entity.getBody(),
                 new RoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType()),
-                entity.getMessageType(),
-                entity.getMessageCreated(),
+                entity.getType(),
+                entity.getCreated(),
                 new UserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
                         HpUtils.getInstance().fromJSON(new TypeReference<ImageURL>() {}, entity.getUserImage()),
                         entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
@@ -340,7 +340,7 @@ public class HpChatManager {
     private void sendMessage(MessageModel messageModel) {
         // Call listener
         if (null != chatListeners && !chatListeners.isEmpty()) {
-            for (HomingPigeonChatListener chatListener : chatListeners)
+            for (HomingPigeonChatInterface chatListener : chatListeners)
                 chatListener.onSendTextMessage(messageModel);
         }
 
@@ -448,7 +448,7 @@ public class HpChatManager {
 
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
-            for (HomingPigeonChatListener chatListener : chatListeners) {
+            for (HomingPigeonChatInterface chatListener : chatListeners) {
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInActiveRoom(newMessage);
                 else if (kSocketUpdateMessage.equals(eventName))
@@ -459,7 +459,7 @@ public class HpChatManager {
         }
         // Receive message outside active room
         else if (null != chatListeners && !chatListeners.isEmpty() && !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
-            for (HomingPigeonChatListener chatListener : chatListeners) {
+            for (HomingPigeonChatInterface chatListener : chatListeners) {
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInOtherRoom(newMessage);
                 else if (kSocketUpdateMessage.equals(eventName))
