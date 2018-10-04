@@ -512,6 +512,8 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
                         civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
                         // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
                         showCustomKeyboard();
+                    } else {
+                        flMessageList.setVisibility(View.VISIBLE);
                     }
                 } else if (null != hpMessageAdapter) {
                     flMessageList.setVisibility(View.VISIBLE);
