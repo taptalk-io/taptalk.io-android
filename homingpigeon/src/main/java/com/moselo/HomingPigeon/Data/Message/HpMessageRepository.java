@@ -12,7 +12,9 @@ import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HpMessageRepository {
 
@@ -84,7 +86,7 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void getRoomList(List<HpMessageEntity> saveMessages, final HpDatabaseListener listener) {
+    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, final HpDatabaseListener listener) {
         new Thread(() -> {
             if (0 < saveMessages.size()){
                 messageDao.insert(saveMessages);
@@ -92,21 +94,22 @@ public class HpMessageRepository {
             }
 
             List<HpMessageEntity> entities = messageDao.getAllRoomList();
-            listener.onSelectFinished(entities);
+            Map<String, Integer> unreadMap = new LinkedHashMap<>();
+            for (HpMessageEntity entity : entities)
+                unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+
+            listener.onSelectedRoomList(entities, unreadMap);
         }).start();
     }
 
-    public void getRoomList(final HpDatabaseListener listener) {
+    public void getRoomList(String myID, final HpDatabaseListener listener) {
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllRoomList();
-            listener.onSelectFinished(entities);
-        }).start();
-    }
+            Map<String, Integer> unreadMap = new LinkedHashMap<>();
+            for (HpMessageEntity entity : entities)
+                unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
 
-    public void getUnreadCountPerRoom(String myID, String roomID, HpDatabaseListener listener) {
-        new Thread(() -> {
-            int unreadCount = messageDao.getUnreadCount(myID, roomID);
-            listener.onSelectUnread(roomID, unreadCount);
+            listener.onSelectedRoomList(entities, unreadMap);
         }).start();
     }
 

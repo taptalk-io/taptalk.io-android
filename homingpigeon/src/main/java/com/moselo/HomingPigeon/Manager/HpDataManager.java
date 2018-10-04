@@ -194,16 +194,12 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
     }
 
-    public void getRoomList(List<HpMessageEntity> saveMessages, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getRoomList(saveMessages, listener);
+    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getRoomList(myID, saveMessages, listener);
     }
 
-    public void getRoomList(HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getRoomList(listener);
-    }
-
-    public void getUnreadCountPerRoom(String myID, String roomID, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getUnreadCountPerRoom(myID, roomID, listener);
+    public void getRoomList(String myID, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getRoomList(myID, listener);
     }
 
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {

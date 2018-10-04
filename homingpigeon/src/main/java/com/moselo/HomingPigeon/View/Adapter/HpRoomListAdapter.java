@@ -144,7 +144,6 @@ public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHol
 
             // Show unread count
             int unreadCount = item.getRoom().getUnreadCount();
-            Log.e(TAG, "onBind: "+item.getRoom().getRoomID()+" : "+item.getRoom().getUnreadCount() );
             if (0 < unreadCount && unreadCount < 100) {
                 tvBadgeUnread.setText(item.getRoom().getUnreadCount() + "");
                 ivMessageStatus.setVisibility(View.GONE);
