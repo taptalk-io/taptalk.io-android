@@ -14,6 +14,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -511,12 +512,10 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
                         civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
                         // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
                         showCustomKeyboard();
-                    } else {
-                        // Message exists
-                        flMessageList.setVisibility(View.VISIBLE);
                     }
                 } else if (null != hpMessageAdapter) {
-                    runOnUiThread(() -> hpMessageAdapter.addMessage(models));
+                    flMessageList.setVisibility(View.VISIBLE);
+                    hpMessageAdapter.addMessage(models);
                     state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);

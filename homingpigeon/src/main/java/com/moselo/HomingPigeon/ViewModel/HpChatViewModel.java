@@ -80,6 +80,10 @@ public class HpChatViewModel extends AndroidViewModel {
         this.messageModels = messageModels;
     }
 
+    public void addMessageModels(List<MessageModel> messageModels) {
+        getMessageModels().addAll(messageModels);
+    }
+
     public UserModel getMyUserModel() {
         return myUserModel;
     }
