@@ -106,7 +106,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHol
 
             // Set name, last message, and timestamp text
             tvFullName.setText(item.getRoom().getRoomName());
-            tvLastMessage.setText(item.getMessage());
+            tvLastMessage.setText(item.getBody());
             tvLastMessageTime.setText(HpTimeFormatter.durationString(item.getCreated()));
 
             // Check if room is muted
@@ -139,11 +139,12 @@ public class HpRoomListAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHol
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_sending_grey);
             }
             else {
-                Log.e(TAG, "no status: " + item.getMessage());
+                Log.e(TAG, "no status: " + item.getBody());
             }
 
             // Show unread count
             int unreadCount = item.getRoom().getUnreadCount();
+            Log.e(TAG, "onBind: "+item.getRoom().getRoomID()+" : "+item.getRoom().getUnreadCount() );
             if (0 < unreadCount && unreadCount < 100) {
                 tvBadgeUnread.setText(item.getRoom().getUnreadCount() + "");
                 ivMessageStatus.setVisibility(View.GONE);

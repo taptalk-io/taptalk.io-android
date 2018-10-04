@@ -29,7 +29,7 @@ public class HpProductListAdapter extends HpBaseAdapter<ProductModel, HpBaseView
         setItems(HpUtils.getInstance().fromJSON(
                 new TypeReference<List<ProductModel>>() {
                 },
-                messageModel.getMessage()), false);
+                messageModel.getBody()), false);
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
     }

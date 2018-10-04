@@ -18,7 +18,7 @@ public class MessageModel {
     @NonNull @JsonProperty("localID") private String localID;
     @JsonProperty("room") private RoomModel room;
     @JsonProperty("type") private int type;
-    @JsonProperty("body") private String message;
+    @JsonProperty("body") private String body;
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private UserModel user;
     @JsonProperty("recipientID") private String recipientID;
@@ -32,12 +32,12 @@ public class MessageModel {
     @Nullable @JsonProperty("updated") private Long updated;
     private Boolean isExpanded = false;
 
-    public MessageModel(@Nullable String messageID, @NonNull String localID, String message, RoomModel room,
+    public MessageModel(@Nullable String messageID, @NonNull String localID, String body, RoomModel room,
                         Integer type, Long created, UserModel user, String recipientID, @Nullable Boolean isDeleted,
                         @Nullable Boolean isSending, @Nullable Boolean isFailedSend) {
         this.messageID = messageID;
         this.localID = localID;
-        this.message = message;
+        this.body = body;
         this.room = room;
         this.type = type;
         this.created = created;
@@ -61,7 +61,7 @@ public class MessageModel {
         return new MessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
-                HpEncryptorManager.getInstance().encrypt(messageModel.getMessage(), messageModel.getLocalID()),
+                HpEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),
@@ -76,7 +76,7 @@ public class MessageModel {
         return new MessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
-                HpEncryptorManager.getInstance().decrypt(messageModel.getMessage(), messageModel.getLocalID()),
+                HpEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),
@@ -121,12 +121,12 @@ public class MessageModel {
         this.type = type;
     }
 
-    public String getMessage() {
-        return message;
+    public String getBody() {
+        return body;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public Long getCreated() {
@@ -236,7 +236,7 @@ public class MessageModel {
     public void updateValue(MessageModel model){
         this.messageID = model.getMessageID();
         this.localID = model.getLocalID();
-        this.message = model.getMessage();
+        this.body = model.getBody();
         this.room = model.getRoom();
         this.type = model.getType();
         this.created = model.getCreated();

@@ -164,7 +164,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatLi
     @Override
     public void onRetrySendMessage(MessageModel message) {
         vm.delete(message.getLocalID());
-        HpChatManager.getInstance().sendTextMessage(message.getMessage());
+        HpChatManager.getInstance().sendTextMessage(message.getBody());
     }
 
     @Override

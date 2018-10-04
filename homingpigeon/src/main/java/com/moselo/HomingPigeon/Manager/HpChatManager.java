@@ -13,9 +13,11 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HomingPigeonChatListener;
 import com.moselo.HomingPigeon.Listener.HomingPigeonSocketListener;
 import com.moselo.HomingPigeon.Model.EmitModel;
+import com.moselo.HomingPigeon.Model.ImageURL;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomModel;
 import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.UserRoleModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -223,16 +225,20 @@ public class HpChatManager {
         return new MessageModel(
                 entity.getMessageID(),
                 entity.getLocalID(),
-                entity.getMessage(),
+                entity.getBody(),
                 new RoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType()),
-                entity.getType(),
-                entity.getCreated(),
-                HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
-                }, entity.getUser()),
+                entity.getMessageType(),
+                entity.getMessageCreated(),
+                new UserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
+                        HpUtils.getInstance().fromJSON(new TypeReference<ImageURL>() {}, entity.getUserImage()),
+                        entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
+                        HpUtils.getInstance().fromJSON(new TypeReference<UserRoleModel>() {}, entity.getUserRole()),
+                        entity.getLastLogin(), entity.getRequireChangePassword(), entity.getUserCreated(),
+                        entity.getUserUpdated()),
                 entity.getRecipientID(),
                 entity.getDeleted(),
-                entity.getIsSending(),
-                entity.getIsFailedSend());
+                entity.getSending(),
+                entity.getFailedSend());
     }
 
     /**
@@ -240,27 +246,19 @@ public class HpChatManager {
      */
     public HpMessageEntity convertToEntity(MessageModel model) {
         return new HpMessageEntity(
-                model.getMessageID(),
-                model.getLocalID(),
-                model.getRoom().getRoomID(),
-                model.getRoom().getRoomName(),
-                model.getRoom().getRoomColor(),
-                model.getRoom().getRoomType(),
-                //model.getRoom().getRoomImage().getFullsize(),
-                "", // TODO: 3 October 2018 UPDATE WHEN ROOM IMAGE IS AVAILABLE
-                model.getType(),
-                model.getMessage(),
-                model.getCreated(),
-                HpUtils.getInstance().toJsonString(model.getUser()),
-                model.getRecipientID(),
-                model.getHasRead(),
-                model.getIsRead(),
-                model.getDelivered(),
-                model.getHidden(),
-                model.getDeleted(),
-                model.getSending(),
-                model.getFailedSend(),
-                model.getUpdated());
+                model.getMessageID(), model.getLocalID(), model.getBody(), model.getRecipientID(),
+                model.getType(), model.getCreated(), model.getUpdated(), model.getHasRead(), model.getIsRead(),
+                model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
+                model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),
+                model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
+                HpUtils.getInstance().toJsonString(model.getRoom().getRoomImage()),
+                model.getUser().getUserID(), model.getUser().getXcUserID(), model.getUser().getName(),
+                model.getUser().getUsername(), HpUtils.getInstance().toJsonString(model.getUser().getAvatarURL()),
+                model.getUser().getEmail(), model.getUser().getPhoneNumber(),
+                HpUtils.getInstance().toJsonString(model.getUser().getUserRole()),
+                model.getUser().getLastLogin(), model.getUser().getRequireChangePassword(),
+                model.getUser().getCreated(), model.getUser().getUpdated()
+        );
     }
 
     /**
@@ -356,7 +354,7 @@ public class HpChatManager {
 
             // Send message if socket is connected
             try {
-                Log.e(TAG, "runSendMessageSequence: connected " + messageModel.getMessage());
+                Log.e(TAG, "runSendMessageSequence: connected " + messageModel.getBody());
                 sendEmit(kSocketNewMessage, MessageModel.BuilderEncrypt(messageModel));
             } catch (GeneralSecurityException e) {
                 e.printStackTrace();

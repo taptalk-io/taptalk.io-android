@@ -123,13 +123,13 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
 
         @Override
         protected void onBind(MessageModel item, int position) {
-            tvMessageBody.setText(item.getMessage());
+            tvMessageBody.setText(item.getBody());
             tvMessageStatus.setText(HpTimeFormatter.durationString(item.getCreated()));
 
             if (isMessageFromMySelf(item)) {
                 // Message has been read
                 if (null != item.getIsRead() && item.getIsRead()) {
-                    Log.e(TAG, "is read: " + item.getMessage());
+                    Log.e(TAG, "is read: " + item.getBody());
                     tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
 
@@ -141,7 +141,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                 }
                 // Message is delivered
                 else if (null != item.getDelivered() && item.getDelivered()) {
-                    Log.e(TAG, "delivered: " + item.getMessage());
+                    Log.e(TAG, "delivered: " + item.getBody());
                     tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
 
@@ -153,7 +153,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                 }
                 // Message failed to send
                 else if (null != item.getFailedSend() && item.getFailedSend()) {
-                    Log.e(TAG, "failed: " + item.getMessage());
+                    Log.e(TAG, "failed: " + item.getBody());
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
 
@@ -184,7 +184,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                 }
                 else {
                     // TODO: 28 September 2018 TESTING
-                    Log.e(TAG, "no status: " + item.getMessage());
+                    Log.e(TAG, "no status: " + item.getBody());
                 }
             } else {
                 // Message from others
@@ -352,7 +352,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
 
         @Override
         protected void onBind(MessageModel item, int position) {
-            tvLogMessage.setText(item.getMessage());
+            tvLogMessage.setText(item.getBody());
         }
     }
 
