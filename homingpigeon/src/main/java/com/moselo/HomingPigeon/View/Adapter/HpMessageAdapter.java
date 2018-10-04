@@ -264,6 +264,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     }
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 } else {
+                    animateHide(tvMessageStatus);
                     ivMessageStatus.setVisibility(View.GONE);
                 }
             }
@@ -313,9 +314,9 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     .withEndAction(() -> {
                         view.setAlpha(1);
                         view.setTranslationY(0);
+                        view.setVisibility(View.GONE);
                     })
                     .start();
-            view.setVisibility(View.GONE);
         }
     }
 
