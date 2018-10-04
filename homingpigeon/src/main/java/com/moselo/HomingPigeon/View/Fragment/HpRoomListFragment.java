@@ -245,7 +245,6 @@ public class HpRoomListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        vm.clearRoomList();
         getRoomListFlow();
     }
 
@@ -284,7 +283,10 @@ public class HpRoomListFragment extends Fragment {
     };
 
     private void getRoomListFlow() {
-        HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), dbListener);
+        if (vm.getRoomList().size() > 0)
+            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), true, dbListener);
+        else
+            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), false, dbListener);
     }
 
     HpDefaultDataView<GetRoomListResponse> roomListView = new HpDefaultDataView<GetRoomListResponse>() {
@@ -318,7 +320,7 @@ public class HpRoomListFragment extends Fragment {
                 @Override
                 public void onInsertFinished() {
                     isApiNeedToBeCalled = false;
-                    HpDataManager.getInstance().getRoomList(vm.getMyUserID(), dbListener);
+                    HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
                 }
             });
         }
@@ -337,6 +339,40 @@ public class HpRoomListFragment extends Fragment {
     };
 
     HpDatabaseListener dbListener = new HpDatabaseListener() {
+        @Override
+        public void onSelectFinished(List<HpMessageEntity> entities) {
+            List<MessageModel> messageModels = new ArrayList<>();
+            for (HpMessageEntity entity : entities) {
+                MessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                messageModels.add(model);
+                vm.addRoomPointer(model);
+                HpDataManager.getInstance().getUnreadCountPerRoom(vm.getMyUserID(), entity.getRoomID(), dbListener);
+            }
+
+            vm.setRoomList(messageModels);
+
+            getActivity().runOnUiThread(() -> {
+                if (null != adapter && 0 == vm.getRoomList().size()) {
+                    llRoomEmpty.setVisibility(View.VISIBLE);
+                } else if (null != adapter) {
+                    adapter.setItems(vm.getRoomList(), false);
+                    llRoomEmpty.setVisibility(View.GONE);
+                }
+
+                if (isApiNeedToBeCalled)
+                    HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
+                else flSetupContainer.setVisibility(View.GONE);
+            });
+        }
+
+        @Override
+        public void onCountedUnreadCount(String roomID, int unreadCount) {
+            getActivity().runOnUiThread(() -> {
+                vm.getRoomPointer().get(roomID).getRoom().setUnreadCount(unreadCount);
+                adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
+            });
+        }
+
         @Override
         public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
             List<MessageModel> messageModels = new ArrayList<>();

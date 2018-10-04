@@ -122,16 +122,22 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, HpDatabaseListener listener) {
+    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getRoomList(myID, saveMessages, listener);
+            messageRepository.getRoomList(myID, saveMessages, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(String myID, HpDatabaseListener listener) {
+    public void getRoomList(String myID, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getRoomList(myID, listener);
+            messageRepository.getRoomList(myID, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getUnreadCountPerRoom(String myID, String roomID, final HpDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.getUnreadCountPerRoom(myID, roomID, listener);
+        else throw new IllegalStateException("Message Repository was not initialized");
     }
 
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {

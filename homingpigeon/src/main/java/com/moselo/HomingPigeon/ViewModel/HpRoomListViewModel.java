@@ -17,6 +17,7 @@ public class HpRoomListViewModel extends AndroidViewModel {
     private Map<String, MessageModel> roomPointer;
     private Map<String, MessageModel> selectedRooms;
     private boolean isSelecting;
+    private boolean isFirstTime;
     private String myUserID;
 
     public HpRoomListViewModel(@NonNull Application application) {
@@ -78,5 +79,13 @@ public class HpRoomListViewModel extends AndroidViewModel {
 
     public void setMyUserID(String myUserID) {
         this.myUserID = myUserID;
+    }
+
+    public boolean isFirstTime() {
+        return isFirstTime;
+    }
+
+    public void setFirstTime(boolean firstTime) {
+        isFirstTime = firstTime;
     }
 }

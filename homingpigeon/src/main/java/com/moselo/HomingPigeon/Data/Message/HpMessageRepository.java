@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
@@ -32,7 +33,7 @@ public class HpMessageRepository {
     private static class InsertAsyncTask extends AsyncTask<HpMessageEntity, Void, Void> {
         private HpMessageDao asyncTaskDao;
 
-        InsertAsyncTask (HpMessageDao chatDao) {
+        InsertAsyncTask(HpMessageDao chatDao) {
             asyncTaskDao = chatDao;
         }
 
@@ -43,7 +44,7 @@ public class HpMessageRepository {
         }
     }
 
-    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages){
+    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages) {
         new Thread(() -> {
             messageDao.insert(messageEntities);
 
@@ -53,7 +54,7 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener){
+    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
         new Thread(() -> {
             messageDao.insert(messageEntities);
 
@@ -76,37 +77,49 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void getMessageList(final String roomID, final HpDatabaseListener listener, final long lastTimestamp){
+    public void getMessageList(final String roomID, final HpDatabaseListener listener, final long lastTimestamp) {
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
             listener.onSelectFinished(entities);
         }).start();
     }
 
-    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, final HpDatabaseListener listener) {
+    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, final HpDatabaseListener listener) {
         new Thread(() -> {
-            if (0 < saveMessages.size()){
+            if (0 < saveMessages.size()) {
                 messageDao.insert(saveMessages);
                 HpChatManager.getInstance().clearSaveMessages();
             }
-
             List<HpMessageEntity> entities = messageDao.getAllRoomList();
-            Map<String, Integer> unreadMap = new LinkedHashMap<>();
-            for (HpMessageEntity entity : entities)
-                unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
 
-            listener.onSelectedRoomList(entities, unreadMap);
+            if (isCheckUnreadFirst && entities.size() > 0) {
+                Map<String, Integer> unreadMap = new LinkedHashMap<>();
+                for (HpMessageEntity entity : entities)
+                    unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+                listener.onSelectedRoomList(entities, unreadMap);
+            } else listener.onSelectFinished(entities);
         }).start();
     }
 
-    public void getRoomList(String myID, final HpDatabaseListener listener) {
+    public void getRoomList(String myID, boolean isCheckUnreadFirst, final HpDatabaseListener listener) {
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllRoomList();
-            Map<String, Integer> unreadMap = new LinkedHashMap<>();
-            for (HpMessageEntity entity : entities)
-                unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
 
-            listener.onSelectedRoomList(entities, unreadMap);
+            if (isCheckUnreadFirst && entities.size() > 0) {
+                Map<String, Integer> unreadMap = new LinkedHashMap<>();
+                for (HpMessageEntity entity : entities)
+                    unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+                listener.onSelectedRoomList(entities, unreadMap);
+            } else{
+                listener.onSelectFinished(entities);
+            }
+        }).start();
+    }
+
+    public void getUnreadCountPerRoom(String myID, String roomID, final HpDatabaseListener listener) {
+        new Thread(() -> {
+            int unreadCount = messageDao.getUnreadCount(myID, roomID);
+            listener.onCountedUnreadCount(roomID, unreadCount);
         }).start();
     }
 
