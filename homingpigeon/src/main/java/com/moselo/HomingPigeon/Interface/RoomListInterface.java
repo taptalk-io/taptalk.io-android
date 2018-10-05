@@ -1,8 +1,8 @@
 package com.moselo.HomingPigeon.Interface;
 
-import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomListModel;
 
 public interface RoomListInterface {
 
-    void onRoomSelected(MessageModel messageModel, boolean isSelected);
+    void onRoomSelected(RoomListModel roomListModel, boolean isSelected);
 }

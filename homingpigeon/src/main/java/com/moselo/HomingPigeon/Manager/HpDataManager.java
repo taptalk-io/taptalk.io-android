@@ -89,6 +89,10 @@ public class HpDataManager {
         return getStringPreference(context, K_REFRESH_TOKEN);
     }
 
+    public String getAccessToken(Context context) {
+        return getStringPreference(context, K_ACCESS_TOKEN);
+    }
+
     public String getAuthToken(Context context) {
         return getStringPreference(context, K_AUTH_TICKET);
     }

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.RoomListModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,9 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 public class HpRoomListViewModel extends AndroidViewModel {
-    private List<MessageModel> roomList;
-    private Map<String, MessageModel> roomPointer;
-    private Map<String, MessageModel> selectedRooms;
+    private List<RoomListModel> roomList;
+    private Map<String, RoomListModel> roomPointer;
+    private Map<String, RoomListModel> selectedRooms;
     private boolean isSelecting;
     private boolean isFirstTime;
     private String myUserID;
@@ -25,15 +26,15 @@ public class HpRoomListViewModel extends AndroidViewModel {
         myUserID = HpDataManager.getInstance().getActiveUser(application).getUserID();
     }
 
-    public List<MessageModel> getRoomList() {
+    public List<RoomListModel> getRoomList() {
         return roomList == null ? roomList = new ArrayList<>() : roomList;
     }
 
-    public void setRoomList(List<MessageModel> roomList) {
+    public void setRoomList(List<RoomListModel> roomList) {
         this.roomList = roomList;
     }
 
-    public void addRoomList(List<MessageModel> roomList) {
+    public void addRoomList(List<RoomListModel> roomList) {
         getRoomList().addAll(roomList);
     }
 
@@ -41,23 +42,23 @@ public class HpRoomListViewModel extends AndroidViewModel {
         getRoomList().clear();
     }
 
-    public Map<String, MessageModel> getRoomPointer() {
+    public Map<String, RoomListModel> getRoomPointer() {
         return roomPointer == null ? roomPointer = new LinkedHashMap<>() : roomPointer;
     }
 
-    public void setRoomPointer(Map<String, MessageModel> roomPointer) {
+    public void setRoomPointer(Map<String, RoomListModel> roomPointer) {
         this.roomPointer = roomPointer;
     }
 
-    public void addRoomPointer(MessageModel messageModel){
-        getRoomPointer().put(messageModel.getRoom().getRoomID(), messageModel);
+    public void addRoomPointer(RoomListModel roomModel){
+        getRoomPointer().put(roomModel.getLastMessage().getRoom().getRoomID(), roomModel);
     }
 
-    public Map<String, MessageModel> getSelectedRooms() {
+    public Map<String, RoomListModel> getSelectedRooms() {
         return selectedRooms == null ? selectedRooms = new LinkedHashMap<>() : selectedRooms;
     }
 
-    public void setSelectedRooms(Map<String, MessageModel> selectedRooms) {
+    public void setSelectedRooms(Map<String, RoomListModel> selectedRooms) {
         this.selectedRooms = selectedRooms;
     }
 

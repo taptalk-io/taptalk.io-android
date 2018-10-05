@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.BuildConfig;
+import com.moselo.HomingPigeon.Exception.ApiSessionExpiredException;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Model.RequestModel.CommonRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
@@ -66,9 +68,9 @@ public class HpApiManager {
 //                return raiseApiTokenException(br);
 //            else if (code == ERR_TOKEN_EXPIRED /*|| code == ERR_UNAUTHORIZED*/ || code == OK_ZOMBIE)
 //                return raiseApiSessionExpiredException(br);
-        } else if (br.getError() == null) {
-            if (BuildConfig.DEBUG)
-                Log.e(TAG, "validateResponse: √√ NO ERROR √√");
+            if (code.equals(HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS) && BuildConfig.DEBUG)
+                    Log.e(TAG, "validateResponse: √√ NO ERROR √√");
+            //else if ()
         }
         return Observable.just(t);
     }
@@ -80,6 +82,10 @@ public class HpApiManager {
 //                ? createApiToken() : t instanceof ApiSessionExpiredException
 //                ? refreshToken() : Observable.error(t);
         return Observable.error(t);
+    }
+
+    private Observable<Throwable> raiseApiSessionExpiredException(BaseResponse br) {
+        return Observable.error(new ApiSessionExpiredException(br.getError().getMessage()));
     }
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID

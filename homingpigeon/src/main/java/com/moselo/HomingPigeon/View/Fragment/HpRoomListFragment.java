@@ -37,6 +37,7 @@ import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
+import com.moselo.HomingPigeon.Model.RoomListModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpNewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -107,11 +108,11 @@ public class HpRoomListFragment extends Fragment {
     }
 
     private void initListener() {
-        roomListInterface = (messageModel, isSelected) -> {
-            if (null != messageModel && isSelected) {
-                vm.getSelectedRooms().put(messageModel.getLocalID(), messageModel);
-            } else if (null != messageModel) {
-                vm.getSelectedRooms().remove(messageModel.getLocalID());
+        roomListInterface = (roomListModel, isSelected) -> {
+            if (null != roomListModel && isSelected) {
+                vm.getSelectedRooms().put(roomListModel.getLastMessage().getLocalID(), roomListModel);
+            } else if (null != roomListModel) {
+                vm.getSelectedRooms().remove(roomListModel.getLastMessage().getLocalID());
             }
             if (vm.getSelectedCount() > 0) {
                 showSelectionActionBar();
@@ -160,8 +161,8 @@ public class HpRoomListFragment extends Fragment {
         });
 
         ivButtonCancelSelection.setOnClickListener(v -> {
-            for (Map.Entry<String, MessageModel> entry : vm.getSelectedRooms().entrySet()) {
-                entry.getValue().getRoom().setSelected(false);
+            for (Map.Entry<String, RoomListModel> entry : vm.getSelectedRooms().entrySet()) {
+                entry.getValue().getLastMessage().getRoom().setSelected(false);
             }
             vm.getSelectedRooms().clear();
             adapter.notifyDataSetChanged();
@@ -341,11 +342,12 @@ public class HpRoomListFragment extends Fragment {
     HpDatabaseListener dbListener = new HpDatabaseListener() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
-            List<MessageModel> messageModels = new ArrayList<>();
+            List<RoomListModel> messageModels = new ArrayList<>();
             for (HpMessageEntity entity : entities) {
                 MessageModel model = HpChatManager.getInstance().convertToModel(entity);
-                messageModels.add(model);
-                vm.addRoomPointer(model);
+                RoomListModel roomModel = RoomListModel.buildWithLastMessage(model);
+                messageModels.add(roomModel);
+                vm.addRoomPointer(roomModel);
                 HpDataManager.getInstance().getUnreadCountPerRoom(vm.getMyUserID(), entity.getRoomID(), dbListener);
             }
 
@@ -368,19 +370,20 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
             getActivity().runOnUiThread(() -> {
-                vm.getRoomPointer().get(roomID).getRoom().setUnreadCount(unreadCount);
+                vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
                 adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
             });
         }
 
         @Override
         public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
-            List<MessageModel> messageModels = new ArrayList<>();
+            List<RoomListModel> messageModels = new ArrayList<>();
             for (HpMessageEntity entity : entities) {
                 MessageModel model = HpChatManager.getInstance().convertToModel(entity);
-                messageModels.add(model);
-                vm.addRoomPointer(model);
-                vm.getRoomPointer().get(entity.getRoomID()).getRoom().setUnreadCount(unreadMap.get(entity.getRoomID()));
+                RoomListModel roomModel = RoomListModel.buildWithLastMessage(model);
+                messageModels.add(roomModel);
+                vm.addRoomPointer(roomModel);
+                vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
             }
 
             vm.setRoomList(messageModels);

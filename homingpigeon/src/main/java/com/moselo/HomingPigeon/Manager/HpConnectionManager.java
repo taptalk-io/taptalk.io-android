@@ -1,8 +1,12 @@
 package com.moselo.HomingPigeon.Manager;
 
+import android.annotation.SuppressLint;
+import android.provider.Settings;
+import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
@@ -17,9 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class HpConnectionManager {
@@ -56,8 +63,8 @@ public class HpConnectionManager {
         }
     }
 
-    private void initWebSocketClient(URI webSocketUri) {
-        webSocketClient = new WebSocketClient(webSocketUri) {
+    private void initWebSocketClient(URI webSocketUri, Map<String, String> header) {
+        webSocketClient = new WebSocketClient(webSocketUri, header) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
                 Log.e(TAG, "onOpen: ");
@@ -90,7 +97,8 @@ public class HpConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                Log.e(TAG, "onClose: ");
+                Log.e(TAG, "onClose2: "+code);
+                Log.e(TAG, "onClose: "+reason);
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketInterface listener : socketListeners)
@@ -100,7 +108,7 @@ public class HpConnectionManager {
 
             @Override
             public void onError(Exception ex) {
-                Log.e(TAG, "onError: ");
+                Log.e(TAG, "onError: "+ex.getMessage());
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketInterface listener : socketListeners)
@@ -162,7 +170,7 @@ public class HpConnectionManager {
                 HpNetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)) {
             try {
                 webSocketUri = new URI(webSocketEndpoint);
-                initWebSocketClient(webSocketUri);
+                initWebSocketClient(webSocketUri, createHeaderForConnectWebSocket());
                 connectionStatus = ConnectionStatus.CONNECTING;
                 webSocketClient.connect();
             } catch (Exception e) {
@@ -204,5 +212,26 @@ public class HpConnectionManager {
 
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;
+    }
+
+    public Map<String, String> createHeaderForConnectWebSocket() {
+        Map<String, String> websocketHeader = new HashMap<>();
+
+        String appKey = Base64.encodeToString((APP_KEY_ID+":"+APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
+        String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(),Settings.Secure.ANDROID_ID);
+        String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
+
+        if (HpDataManager.getInstance().checkAccessTokenAvailable(HomingPigeon.appContext)) {
+            websocketHeader.put("Authorization", "Bearer " + HpDataManager.getInstance().getAccessToken(HomingPigeon.appContext));
+            websocketHeader.put("App-Key", appKey);
+            websocketHeader.put("Device-Identifier", deviceID);
+            websocketHeader.put("Device-Model", android.os.Build.MODEL);
+            websocketHeader.put("Device-Platform", "android");
+            websocketHeader.put("Device-OS-Version", deviceOsVersion);
+            websocketHeader.put("App-Version", BuildConfig.VERSION_NAME);
+            websocketHeader.put("User-Agent", "android");
+        }
+
+        return websocketHeader;
     }
 }
