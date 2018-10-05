@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:animateLayoutChanges="true">
+    android:layout_height="wrap_content">
 
     <com.moselo.HomingPigeon.Helper.CircleImageView
         android:id="@+id/civ_avatar"
@@ -87,7 +86,7 @@
         tools:text="Delivered at 17:05 17/05/2018" />
 
     <ImageView
-        android:id="@+id/iv_message_status"
+        android:id="@+id/iv_reply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"

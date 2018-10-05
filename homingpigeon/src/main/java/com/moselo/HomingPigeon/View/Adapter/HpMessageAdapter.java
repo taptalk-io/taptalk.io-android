@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -100,7 +101,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
 
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
-        private ImageView ivMessageStatus, ivSending;
+        private ImageView ivMessageStatus, ivReply, ivSending;
         private TextView tvUsername, tvMessageBody, tvMessageStatus;
 
         private Drawable bubbleOverlayLeft, bubbleOverlayRight;
@@ -111,13 +112,15 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
 
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivSending = itemView.findViewById(R.id.iv_sending);
-            ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+            ivReply = itemView.findViewById(R.id.iv_reply);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvUsername = itemView.findViewById(R.id.tv_user_name);
+            } else {
+                ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
             }
         }
 
@@ -170,7 +173,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    animateSend();
+                    animateSend(isMessageFromMySelf(item));
                 }
                 // Message is sending
                 else if (null != item.getSending() && item.getSending()) {
@@ -186,6 +189,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
                     // TODO: 28 September 2018 TESTING
                     Log.e(TAG, "no status: " + item.getBody());
                 }
+                ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
             } else {
                 // Message from others
                 // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
@@ -194,7 +198,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             expandOrShrinkBubble(item);
 
             flBubble.setOnClickListener(v -> onBubbleClicked(item));
-            ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
+            ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
         private void onBubbleClicked(MessageModel item) {
@@ -217,9 +221,12 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         private void onStatusImageClicked(MessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 resendMessage(item);
-            } else if (item.isExpanded()) {
-                // TODO: 1 October 2018 REPLY
             }
+        }
+
+        private void onReplyButtonClicked(MessageModel item) {
+            // TODO: 1 October 2018 REPLY
+            shrinkExpandedBubble();
         }
 
         private void resendMessage(MessageModel item) {
@@ -231,16 +238,16 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             if (item.isExpanded()) {
                 // Bubble is selected/expanded
                 expandedBubble = item;
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_reply_circle_white);
-                tvMessageStatus.setVisibility(View.VISIBLE);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                animateShow(tvMessageStatus);
+                animateFadeInToBottom(tvMessageStatus);
                 if (isMessageFromMySelf(item)) {
+                    animateFadeOutToBottom(ivMessageStatus);
+                    animateShowToLeft(ivReply);
                     if (null == bubbleOverlayRight) {
                         bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.hp_bg_transparent_black_8dp_1dp_8dp_8dp);
                     }
                     flBubble.setForeground(bubbleOverlayRight);
                 } else {
+                    animateShowToRight(ivReply);
                     if (null == bubbleOverlayRight) {
                         bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.hp_bg_transparent_black_1dp_8dp_8dp_8dp);
                     }
@@ -249,35 +256,40 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             } else {
                 // Bubble is deselected/shrunk
                 flBubble.setForeground(null);
-                if (null != item.getFailedSend() && item.getFailedSend()) {
-                    tvMessageStatus.setVisibility(View.VISIBLE);
-                    ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
-                    ivMessageStatus.setVisibility(View.VISIBLE);
-                } else if (isMessageFromMySelf(item) && null != item.getSending() && !item.getSending()) {
-                    animateHide(tvMessageStatus);
-                    if (null != item.getIsRead() && item.getIsRead()) {
-                        ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
-                    } else if (null != item.getDelivered() && item.getDelivered()) {
-                        ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+                if (isMessageFromMySelf(item)) {
+                    if (null != item.getFailedSend() && item.getFailedSend()) {
+                        ivReply.setVisibility(View.GONE);
+                        ivMessageStatus.setVisibility(View.VISIBLE);
+                        ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
+                        tvMessageStatus.setVisibility(View.VISIBLE);
                     } else if (null != item.getSending() && !item.getSending()) {
-                        ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
+                        if (null != item.getIsRead() && item.getIsRead()) {
+                            ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
+                        } else if (null != item.getDelivered() && item.getDelivered()) {
+                            ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+                        } else if (null != item.getSending() && !item.getSending()) {
+                            ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
+                        }
+                        animateHideToRight(ivReply);
+                        animateFadeInToTop(ivMessageStatus);
+                        animateFadeOutToTop(tvMessageStatus);
                     }
-                    ivMessageStatus.setVisibility(View.VISIBLE);
                 } else {
-                    ivMessageStatus.setVisibility(View.GONE);
+                    animateHideToLeft(ivReply);
+                    animateFadeOutToTop(tvMessageStatus);
                 }
             }
         }
 
-        private void animateSend() {
+        private void animateSend(boolean ownMessage) {
             if (ivSending.getAlpha() == 0f) return;
 
-            ivMessageStatus.setTranslationX(initialTranslationX);
+            if (ownMessage) ivMessageStatus.setTranslationX(initialTranslationX);
             flBubble.setTranslationX(initialTranslationX);
             ivSending.setTranslationX(0);
             ivSending.setTranslationY(0);
             new Handler().postDelayed(() -> {
-                ivMessageStatus.animate()
+                if (ownMessage) ivMessageStatus.animate()
                         .translationX(0)
                         .setDuration(160L)
                         .start();
@@ -295,27 +307,108 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             }, 200L);
         }
 
-        private void animateShow(View view) {
+        private void animateFadeInToTop(View view) {
+            view.setVisibility(View.VISIBLE);
+            view.setTranslationY(HpUtils.getInstance().dpToPx(24));
+            view.setAlpha(0);
+            view.animate()
+                    .translationY(0)
+                    .alpha(1f)
+                    .setDuration(150L)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .start();
+        }
+
+        private void animateFadeInToBottom(View view) {
+            view.setVisibility(View.VISIBLE);
             view.setTranslationY(HpUtils.getInstance().dpToPx(-24));
             view.setAlpha(0);
             view.animate()
                     .translationY(0)
                     .alpha(1f)
                     .setDuration(150L)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
                     .start();
         }
 
-        private void animateHide(View view) {
+        private void animateFadeOutToTop(View view) {
             view.animate()
                     .translationY(HpUtils.getInstance().dpToPx(-24))
                     .alpha(0)
                     .setDuration(150L)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
                     .withEndAction(() -> {
+                        view.setVisibility(View.GONE);
                         view.setAlpha(1);
                         view.setTranslationY(0);
                     })
                     .start();
-            view.setVisibility(View.GONE);
+        }
+
+        private void animateFadeOutToBottom(View view) {
+            view.animate()
+                    .translationY(HpUtils.getInstance().dpToPx(24))
+                    .alpha(0)
+                    .setDuration(150L)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .withEndAction(() -> {
+                        view.setVisibility(View.GONE);
+                        view.setAlpha(1);
+                        view.setTranslationY(0);
+                    })
+                    .start();
+        }
+
+        private void animateShowToLeft(View view) {
+            view.setVisibility(View.VISIBLE);
+            view.setTranslationX(HpUtils.getInstance().dpToPx(32));
+            view.setAlpha(0f);
+            view.animate()
+                    .translationX(0)
+                    .alpha(1f)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(150L)
+                    .start();
+        }
+
+        private void animateShowToRight(View view) {
+            view.setVisibility(View.VISIBLE);
+            view.setTranslationX(HpUtils.getInstance().dpToPx(-32));
+            view.setAlpha(0f);
+            view.animate()
+                    .translationX(0)
+                    .alpha(1f)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(150L)
+                    .start();
+        }
+
+        private void animateHideToLeft(View view) {
+            view.animate()
+                    .translationX(HpUtils.getInstance().dpToPx(-32))
+                    .alpha(0f)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(150L)
+                    .withEndAction(() -> {
+                        view.setVisibility(View.GONE);
+                        view.setAlpha(1);
+                        view.setTranslationX(0);
+                    })
+                    .start();
+        }
+
+        private void animateHideToRight(View view) {
+            view.animate()
+                    .translationX(HpUtils.getInstance().dpToPx(32))
+                    .alpha(0f)
+                    .setInterpolator(new AccelerateDecelerateInterpolator())
+                    .setDuration(150L)
+                    .withEndAction(() -> {
+                        view.setVisibility(View.GONE);
+                        view.setAlpha(1);
+                        view.setTranslationX(0);
+                    })
+                    .start();
         }
     }
 
