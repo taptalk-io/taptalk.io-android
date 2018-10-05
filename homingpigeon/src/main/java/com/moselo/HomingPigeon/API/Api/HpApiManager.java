@@ -3,9 +3,14 @@ package com.moselo.HomingPigeon.API.Api;
 import android.util.Log;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
+import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
+import com.moselo.HomingPigeon.API.Service.HomingPigeonApiSocketService;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Exception.ApiSessionExpiredException;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
+import com.moselo.HomingPigeon.Exception.AuthException;
+import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.RequestModel.CommonRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
@@ -18,10 +23,16 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static com.moselo.HomingPigeon.Helper.HomingPigeon.appContext;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
+
 public class HpApiManager {
     private static final String TAG = HpApiManager.class.getSimpleName();
     private HomingPigeonApiService homingPigeon;
+    private HomingPigeonApiSocketService hpSocket;
     private static HpApiManager instance;
+    private boolean isUnauthorized = false;
 
     public static HpApiManager getInstance() {
         return instance == null ? instance = new HpApiManager() : instance;
@@ -30,6 +41,15 @@ public class HpApiManager {
     private HpApiManager() {
         HpApiConnection connection = HpApiConnection.getInstance();
         this.homingPigeon = connection.getHomingPigeon();
+        this.hpSocket = connection.getHpSocket();
+    }
+
+    public boolean isUnauthorized() {
+        return isUnauthorized;
+    }
+
+    public void setUnauthorized(boolean unauthorized) {
+        isUnauthorized = unauthorized;
     }
 
     private Observable.Transformer ioToMainThreadSchedulerTransformer
@@ -60,17 +80,17 @@ public class HpApiManager {
 //            updateSession((BaseResponse) t);
 
         if (br.getError() != null) {
-            String code = br.getError().getCode();
+            int code = br.getError().getStatus();
+            Log.e(TAG, "validateResponse: "+code+" "+BuildConfig.DEBUG );
             if (BuildConfig.DEBUG)
                 Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
 
 //            if (code == ERR_FORBIDDEN)
 //                return raiseApiTokenException(br);
-//            else if (code == ERR_TOKEN_EXPIRED /*|| code == ERR_UNAUTHORIZED*/ || code == OK_ZOMBIE)
-//                return raiseApiSessionExpiredException(br);
-            if (code.equals(HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS) && BuildConfig.DEBUG)
-                    Log.e(TAG, "validateResponse: √√ NO ERROR √√");
-            //else if ()
+            if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
+                Log.e(TAG, "validateResponse: √√ NO ERROR √√");
+            else if (code == UNAUTHORIZED)
+                return raiseApiSessionExpiredException(br);
         }
         return Observable.just(t);
     }
@@ -81,11 +101,22 @@ public class HpApiManager {
 //        return (t instanceof ApiTokenException)
 //                ? createApiToken() : t instanceof ApiSessionExpiredException
 //                ? refreshToken() : Observable.error(t);
-        return Observable.error(t);
+        return (t instanceof ApiSessionExpiredException) ? refreshToken() : Observable.error(t);
     }
 
     private Observable<Throwable> raiseApiSessionExpiredException(BaseResponse br) {
         return Observable.error(new ApiSessionExpiredException(br.getError().getMessage()));
+    }
+
+    private void updateSession(BaseResponse<GetAccessTokenResponse> r) {
+        Log.e(TAG, "updateSession: "+HpUtils.getInstance().toJsonString(r.getData()));
+        isUnauthorized = false;
+        HpDataManager.getInstance().saveRefreshToken(appContext, r.getData().getRefreshToken());
+        HpDataManager.getInstance().saveRefreshTokenExpiry(appContext, r.getData().getRefreshTokenExpiry());
+        HpDataManager.getInstance().saveAccessToken(appContext, r.getData().getAccessToken());
+        HpDataManager.getInstance().saveAccessTokenExpiry(appContext, r.getData().getAccessTokenExpiry());
+
+        HpDataManager.getInstance().saveActiveUser(appContext, r.getData().getUser());
     }
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
@@ -99,13 +130,34 @@ public class HpApiManager {
         execute(homingPigeon.getAccessToken(), subscriber);
     }
 
+    public Observable<BaseResponse<GetAccessTokenResponse>> refreshToken() {
+        isUnauthorized = true;
+        return homingPigeon.refreshAccessToken()
+                .compose(this.applyIOMainThreadSchedulers())
+                .doOnNext(response -> {
+                    Log.e(TAG, "refreshToken: " );
+                    HpApiManager.getInstance().setUnauthorized(false);
+                    if (RESPONSE_SUCCESS == response.getError().getStatus())
+                        updateSession(response);
+                    else Observable.error(new AuthException(response.getError().getMessage()));
+                }).doOnError(throwable -> {
+
+                });
+    }
+
     public void refreshAccessToken(Subscriber<BaseResponse<GetAccessTokenResponse>> subscriber) {
         execute(homingPigeon.refreshAccessToken(), subscriber);
+    }
+
+    public void validateAccessToken(Subscriber<BaseResponse<ErrorModel>> subscriber) {
+        execute(hpSocket.validateAccessToken(), subscriber);
     }
 
     public void getRoomList(String userID, Subscriber<BaseResponse<GetRoomListResponse>> subscriber) {
         CommonRequest request = CommonRequest.builderWithUserID(userID);
         execute(homingPigeon.getRoomList(request), subscriber);
     }
+
+
 
 }

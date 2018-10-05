@@ -14,6 +14,7 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Model.ErrorModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
@@ -128,6 +129,10 @@ public class HpDataManager {
         deletePreference(context, K_AUTH_TICKET);
     }
 
+    public void deleteAccessToken(Context context) {
+        deletePreference(context, K_ACCESS_TOKEN);
+    }
+
     private void deletePreference(Context context, String key) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().remove(key).apply();
@@ -226,6 +231,10 @@ public class HpDataManager {
 
     public void refreshAccessToken(HpDefaultDataView<GetAccessTokenResponse> view) {
         HpApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
+    }
+
+    public void validateAccessToken(HpDefaultDataView<ErrorModel> view) {
+        HpApiManager.getInstance().validateAccessToken(new DefaultSubscriber<>(view));
     }
 
     public void getRoomListFromAPI(String userID, HpDefaultDataView<GetRoomListResponse> view) {

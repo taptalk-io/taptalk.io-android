@@ -3,7 +3,9 @@ package com.moselo.HomingPigeon.API.Interceptor;
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 
+import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -39,11 +41,16 @@ public class HpHeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (HpDataManager.getInstance().checkRefreshTokenAvailable(context))
-            authorization = "Bearer "+ HpDataManager.getInstance().getRefreshToken(context);
-        else if (HpDataManager.getInstance().checkAuthTicketAvailable(context))
-            authorization = "Bearer "+ HpDataManager.getInstance().getAuthToken(context);
-        else
+        if (HpDataManager.getInstance().checkAccessTokenAvailable(context) && !HpApiManager.getInstance().isUnauthorized()) {
+            Log.e(TAG, "Masuk 1");
+            authorization = "Bearer " + HpDataManager.getInstance().getAccessToken(context);
+        } else if (HpApiManager.getInstance().isUnauthorized()) {
+            Log.e(TAG, "Masuk 2" );
+            authorization = "Bearer " + HpDataManager.getInstance().getRefreshToken(context);
+        } else if (HpDataManager.getInstance().checkAuthTicketAvailable(context)) {
+            Log.e(TAG, "Masuk 3" );
+            authorization = "Bearer " + HpDataManager.getInstance().getAuthToken(context);
+        } else
             authorization = "Bearer ";
 
         String deviceID = Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID);

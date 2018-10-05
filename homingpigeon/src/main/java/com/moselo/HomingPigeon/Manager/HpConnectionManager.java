@@ -1,21 +1,24 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.annotation.SuppressLint;
 import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moselo.HomingPigeon.API.Api.HpApiManager;
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
+import com.moselo.HomingPigeon.Model.ErrorModel;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -25,6 +28,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.moselo.HomingPigeon.Helper.HomingPigeon.appContext;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
@@ -136,7 +140,7 @@ public class HpConnectionManager {
             if (ConnectionStatus.CONNECTING == connectionStatus ||
                     ConnectionStatus.DISCONNECTED == connectionStatus) {
                 reconnect();
-            } else if (NOT_CONNECTED == connectionStatus) {
+            } else if (NOT_CONNECTED == connectionStatus && HpDataManager.getInstance().checkAccessTokenAvailable(appContext)) {
                 connect();
             }
         };
@@ -167,15 +171,9 @@ public class HpConnectionManager {
 
     public void connect() {
         if ((ConnectionStatus.DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
-                HpNetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)) {
-            try {
-                webSocketUri = new URI(webSocketEndpoint);
-                initWebSocketClient(webSocketUri, createHeaderForConnectWebSocket());
-                connectionStatus = ConnectionStatus.CONNECTING;
-                webSocketClient.connect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                HpNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+            Log.e(TAG, "connect: " );
+            callApiToValidateAccessToken();
         }
     }
 
@@ -199,12 +197,7 @@ public class HpConnectionManager {
             public void run() {
                 if (ConnectionStatus.DISCONNECTED == connectionStatus && !HpChatManager.getInstance().isFinishChatFlow()) {
                     connectionStatus = ConnectionStatus.CONNECTING;
-                    try {
-                        webSocketClient.reconnect();
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "run: ",e );
-                    }
+                    callApiToValidateAccessToken();
                 }
             }
         }, delay);
@@ -214,15 +207,15 @@ public class HpConnectionManager {
         return connectionStatus;
     }
 
-    public Map<String, String> createHeaderForConnectWebSocket() {
+    private Map<String, String> createHeaderForConnectWebSocket() {
         Map<String, String> websocketHeader = new HashMap<>();
 
         String appKey = Base64.encodeToString((APP_KEY_ID+":"+APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
-        String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(),Settings.Secure.ANDROID_ID);
+        String deviceID = Settings.Secure.getString(appContext.getContentResolver(),Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
 
-        if (HpDataManager.getInstance().checkAccessTokenAvailable(HomingPigeon.appContext)) {
-            websocketHeader.put("Authorization", "Bearer " + HpDataManager.getInstance().getAccessToken(HomingPigeon.appContext));
+        if (HpDataManager.getInstance().checkAccessTokenAvailable(appContext)) {
+            websocketHeader.put("Authorization", "Bearer " + HpDataManager.getInstance().getAccessToken(appContext));
             websocketHeader.put("App-Key", appKey);
             websocketHeader.put("Device-Identifier", deviceID);
             websocketHeader.put("Device-Model", android.os.Build.MODEL);
@@ -233,5 +226,36 @@ public class HpConnectionManager {
         }
 
         return websocketHeader;
+    }
+
+    private void callApiToValidateAccessToken() {
+        Log.e(TAG, "callApiToValidateAccessToken: " );
+        HpDataManager.getInstance().validateAccessToken(new HpDefaultDataView<ErrorModel>() {
+            @Override
+            public void onSuccess(ErrorModel response) {
+                Log.e(TAG, "onSuccess: " );
+                try {
+                    if (NOT_CONNECTED == connectionStatus) {
+                        Log.e(TAG, "onSuccess: Reconnect" );
+                        webSocketUri = new URI(webSocketEndpoint);
+                        initWebSocketClient(webSocketUri, createHeaderForConnectWebSocket());
+                        connectionStatus = ConnectionStatus.CONNECTING;
+                        webSocketClient.connect();
+                    } else {
+                        Log.e(TAG, "onSuccess: Reconnect" );
+                        connectionStatus = ConnectionStatus.CONNECTING;
+                        webSocketClient.reconnect();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(ErrorModel error) {
+                super.onError(error);
+                Log.e(TAG, "onError: "+error.getCode() );
+            }
+        });
     }
 }

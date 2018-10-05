@@ -73,16 +73,16 @@ public class HpDefaultConstant {
     }
 
     public static final class HttpResponseStatusCode {
-        public static final String RESPONSE_SUCCESS = "200";
-        public static final String RESPONSE_EMPTY = "204";
-        public static final String BAD_REQUEST = "400";
-        public static final String UNAUTHORIZED = "401";
-        public static final String FORBIDDEN = "403";
-        public static final String NOT_FOUND = "404";
-        public static final String TO_MANY_REQUEST = "429";
-        public static final String APP_KEY_INVALID = "491";
-        public static final String APP_NOT_AVAILABLE = "492";
-        public static final String INTERNAL_SERVER_ERROR = "500";
+        public static final int RESPONSE_SUCCESS = 200;
+        public static final int RESPONSE_EMPTY = 204;
+        public static final int BAD_REQUEST = 400;
+        public static final int UNAUTHORIZED = 401;
+        public static final int FORBIDDEN = 403;
+        public static final int NOT_FOUND = 404;
+        public static final int TO_MANY_REQUEST = 429;
+        public static final int APP_KEY_INVALID = 491;
+        public static final int APP_NOT_AVAILABLE = 492;
+        public static final int INTERNAL_SERVER_ERROR = 500;
     }
 
     public static final String K_REFRESH_TOKEN = "kRefreshToken";

@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.API.Api;
+package com.moselo.HomingPigeon.API.Service;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.CommonRequest;
@@ -8,6 +8,7 @@ import com.moselo.HomingPigeon.Model.RequestModel.AuthTicketRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
 
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import rx.Observable;
 

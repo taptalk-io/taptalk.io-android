@@ -40,7 +40,7 @@ public class HomingPigeon {
         HpDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HpDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
-        if (HpDataManager.getInstance().checkActiveUser(appContext))
+        if (HpDataManager.getInstance().checkAccessTokenAvailable(appContext))
             HpConnectionManager.getInstance().connect();
 
         HpDataManager.getInstance().updateSendingMessageToFailed();

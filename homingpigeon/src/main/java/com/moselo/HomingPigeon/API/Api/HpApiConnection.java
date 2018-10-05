@@ -4,7 +4,10 @@ import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.API.Interceptor.HpHeaderRequestInterceptor;
+import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
+import com.moselo.HomingPigeon.API.Service.HomingPigeonApiSocketService;
 import com.moselo.HomingPigeon.BuildConfig;
+import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -28,6 +31,7 @@ public class HpApiConnection {
     private static final int MAX_CACHE_AGE = 60 * 10;
 
     private HomingPigeonApiService homingPigeon;
+    private HomingPigeonApiSocketService hpSocket;
 
     public ObjectMapper objectMapper;
 
@@ -42,12 +46,18 @@ public class HpApiConnection {
         OkHttpClient httpHpClient = buildHttpHpClient();
 
         Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClient, HomingPigeonApiService.BASE_URL);
+        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClient, HomingPigeonApiSocketService.BASE_URL);
 
         this.homingPigeon = homingPigeonAdapter.create(HomingPigeonApiService.class);
+        this.hpSocket = hpSocketAdapter.create(HomingPigeonApiSocketService.class);
     }
 
     public HomingPigeonApiService getHomingPigeon() {
         return homingPigeon;
+    }
+
+    public HomingPigeonApiSocketService getHpSocket() {
+        return hpSocket;
     }
 
     private ObjectMapper createObjectMapper() {
