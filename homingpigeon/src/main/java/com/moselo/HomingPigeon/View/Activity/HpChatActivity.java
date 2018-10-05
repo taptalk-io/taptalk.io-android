@@ -489,7 +489,6 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
                 models.add(model);
                 vm.addMessagePointer(model);
             }
-            vm.addMessageModels(models);
 
             if (0 < models.size()) {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
@@ -499,7 +498,6 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
                 if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
                     // First load
                     hpMessageAdapter.setMessages(models);
-                    rvMessageList.scrollToPosition(0);
                     if (models.size() == 0) {
                         // Chat is empty
                         // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
@@ -510,11 +508,15 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
                         // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
                         showCustomKeyboard();
                     } else {
+                        // Message exists
+                        vm.addMessageModels(models);
                         flMessageList.setVisibility(View.VISIBLE);
                     }
-                } else if (null != hpMessageAdapter && 0 < models.size()) {
+                    rvMessageList.scrollToPosition(0);
+                    updateMessageDecoration();
+                } else if (null != hpMessageAdapter) {
+                    vm.addMessageModels(models);
                     flMessageList.setVisibility(View.VISIBLE);
-                    //hpMessageAdapter.addMessage(models);
                     hpMessageAdapter.notifyDataSetChanged();
                     state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                     if (rvMessageList.getVisibility() != View.VISIBLE)
