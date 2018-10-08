@@ -69,8 +69,6 @@ public class HpRoomListFragment extends Fragment {
     private RoomListInterface roomListInterface;
     private HpRoomListViewModel vm;
 
-    private boolean isApiNeedToBeCalled = true;
-
     public HpRoomListFragment() {
     }
 
@@ -246,13 +244,12 @@ public class HpRoomListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getRoomListFlow();
+        viewAppearSequence();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        isApiNeedToBeCalled = true;
     }
 
     // Update connection status UI
@@ -283,11 +280,27 @@ public class HpRoomListFragment extends Fragment {
         }
     };
 
-    private void getRoomListFlow() {
+    private void viewAppearSequence() {
+        if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
+        } else {
+            runFullRefreshSequence();
+        }
+    }
+
+    private void runFullRefreshSequence() {
         if (vm.getRoomList().size() > 0)
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), true, dbListener);
         else
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), false, dbListener);
+    }
+
+    private void fetchDataFromAPI() {
+        if (vm.isDoneFirstSetup()) {
+            // TODO: 08/10/18 nanti masukin api untuk call pending message
+        } else {
+            HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
+        }
     }
 
     HpDefaultDataView<GetRoomListResponse> roomListView = new HpDefaultDataView<GetRoomListResponse>() {
@@ -307,7 +320,6 @@ public class HpRoomListFragment extends Fragment {
             super.onSuccess(response);
             List<HpMessageEntity> tempMessage = new ArrayList<>();
             for (MessageModel message : response.getMessages()) {
-                Log.e(TAG, message.getBody() + " : " + message.getRoom().getRoomID());
                 try {
                     MessageModel temp = MessageModel.BuilderDecrypt(message);
                     tempMessage.add(HpChatManager.getInstance().convertToEntity(temp));
@@ -320,7 +332,7 @@ public class HpRoomListFragment extends Fragment {
             HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
                 @Override
                 public void onInsertFinished() {
-                    isApiNeedToBeCalled = false;
+                    //HpRoomListViewModel.setShouldNotLoadFromAPI(true);
                     HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
                 }
             });
@@ -361,9 +373,10 @@ public class HpRoomListFragment extends Fragment {
                     llRoomEmpty.setVisibility(View.GONE);
                 }
 
-                if (isApiNeedToBeCalled)
-                    HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
-                else flSetupContainer.setVisibility(View.GONE);
+                if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+                    HpRoomListViewModel.setShouldNotLoadFromAPI(true);
+                    fetchDataFromAPI();
+                } else flSetupContainer.setVisibility(View.GONE);
             });
         }
 
@@ -396,9 +409,10 @@ public class HpRoomListFragment extends Fragment {
                     llRoomEmpty.setVisibility(View.GONE);
                 }
 
-                if (isApiNeedToBeCalled)
-                    HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
-                else flSetupContainer.setVisibility(View.GONE);
+                if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+                    HpRoomListViewModel.setShouldNotLoadFromAPI(true);
+                    fetchDataFromAPI();
+                } else flSetupContainer.setVisibility(View.GONE);
             });
         }
     };

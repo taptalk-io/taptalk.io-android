@@ -5,7 +5,6 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.RoomListModel;
 
 import java.util.ArrayList;
@@ -18,7 +17,8 @@ public class HpRoomListViewModel extends AndroidViewModel {
     private Map<String, RoomListModel> roomPointer;
     private Map<String, RoomListModel> selectedRooms;
     private boolean isSelecting;
-    private boolean isFirstTime;
+    private static boolean isShouldNotLoadFromAPI = false;
+    private boolean isDoneFirstSetup = false;
     private String myUserID;
 
     public HpRoomListViewModel(@NonNull Application application) {
@@ -82,11 +82,19 @@ public class HpRoomListViewModel extends AndroidViewModel {
         this.myUserID = myUserID;
     }
 
-    public boolean isFirstTime() {
-        return isFirstTime;
+    public static boolean isShouldNotLoadFromAPI() {
+        return isShouldNotLoadFromAPI;
     }
 
-    public void setFirstTime(boolean firstTime) {
-        isFirstTime = firstTime;
+    public static void setShouldNotLoadFromAPI(boolean shouldNotLoadFromAPI) {
+        isShouldNotLoadFromAPI = shouldNotLoadFromAPI;
+    }
+
+    public boolean isDoneFirstSetup() {
+        return isDoneFirstSetup;
+    }
+
+    public void setDoneFirstSetup(boolean doneFirstSetup) {
+        isDoneFirstSetup = doneFirstSetup;
     }
 }

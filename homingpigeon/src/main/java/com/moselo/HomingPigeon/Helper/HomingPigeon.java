@@ -15,6 +15,7 @@ import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
+import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
@@ -69,6 +70,7 @@ public class HomingPigeon {
             public void onAppGotoBackground() {
                 HpNetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
                 HpChatManager.getInstance().updateMessageWhenEnterBackground();
+                HpRoomListViewModel.setShouldNotLoadFromAPI(false);
                 isForeground = false;
             }
         });
