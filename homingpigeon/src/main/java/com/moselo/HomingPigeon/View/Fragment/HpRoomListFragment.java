@@ -58,10 +58,10 @@ public class HpRoomListFragment extends Fragment {
 
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
-    private LinearLayout llConnectionStatus, llRoomEmpty;
-    private TextView tvSelectionCount, tvConnectionStatus;
-    private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivConnectionStatus;
-    private ProgressBar pbConnecting, pbSettingUp;
+    private LinearLayout llRoomEmpty;
+    private TextView tvSelectionCount;
+    private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
+    private ProgressBar pbSettingUp;
     private FloatingActionButton fabNewChat;
 
     private RecyclerView rvContactList;
@@ -72,13 +72,6 @@ public class HpRoomListFragment extends Fragment {
     private boolean isApiNeedToBeCalled = true;
 
     public HpRoomListFragment() {
-    }
-
-    public static HpRoomListFragment newInstance() {
-        Bundle args = new Bundle();
-        HpRoomListFragment fragment = new HpRoomListFragment();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Nullable
@@ -94,13 +87,6 @@ public class HpRoomListFragment extends Fragment {
         initViewModel();
         initListener();
         initView(view);
-        initConnectionStatus();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        HpConnectionManager.getInstance().removeSocketListener(socketListener);
     }
 
     private void initViewModel() {
@@ -128,21 +114,16 @@ public class HpRoomListFragment extends Fragment {
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
-        llConnectionStatus = view.findViewById(R.id.ll_connection_status);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         tvSelectionCount = view.findViewById(R.id.tv_selection_count);
-        tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
         ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
         ivButtonMute = view.findViewById(R.id.iv_button_mute);
         ivButtonDelete = view.findViewById(R.id.iv_button_delete);
         ivButtonMore = view.findViewById(R.id.iv_button_more);
-        ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
-        pbConnecting = view.findViewById(R.id.pb_connecting);
         pbSettingUp = view.findViewById(R.id.pb_setting_up);
         fabNewChat = view.findViewById(R.id.fab_new_chat);
         rvContactList = view.findViewById(R.id.rv_contact_list);
 
-        pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         pbSettingUp.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.amethyst), PorterDuff.Mode.SRC_IN);
 
         if (vm.isSelecting()) showSelectionActionBar();
@@ -185,12 +166,6 @@ public class HpRoomListFragment extends Fragment {
         });
     }
 
-    private void initConnectionStatus() {
-        HpConnectionManager.getInstance().addSocketListener(socketListener);
-        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
-            socketListener.onSocketDisconnected();
-    }
-
     private void showSelectionActionBar() {
         vm.setSelecting(true);
         tvSelectionCount.setText(vm.getSelectedCount() + "");
@@ -206,43 +181,6 @@ public class HpRoomListFragment extends Fragment {
         clSelection.setVisibility(View.INVISIBLE);
     }
 
-    private void setStatusConnected() {
-        activity.runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connected);
-            tvConnectionStatus.setText(getString(R.string.connected));
-            ivConnectionStatus.setImageResource(R.drawable.hp_ic_connected_white);
-            ivConnectionStatus.setVisibility(View.VISIBLE);
-            pbConnecting.setVisibility(View.GONE);
-            llConnectionStatus.setVisibility(View.VISIBLE);
-
-            new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
-        });
-    }
-
-    private void setStatusConnecting() {
-        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
-
-        activity.runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connecting);
-            tvConnectionStatus.setText(R.string.connecting);
-            ivConnectionStatus.setVisibility(View.GONE);
-            pbConnecting.setVisibility(View.VISIBLE);
-            llConnectionStatus.setVisibility(View.VISIBLE);
-        });
-    }
-
-    private void setStatusWaitingForNetwork() {
-        if (HpNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
-
-        activity.runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_offline);
-            tvConnectionStatus.setText(R.string.waiting_for_network);
-            ivConnectionStatus.setVisibility(View.GONE);
-            pbConnecting.setVisibility(View.VISIBLE);
-            llConnectionStatus.setVisibility(View.VISIBLE);
-        });
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -254,34 +192,6 @@ public class HpRoomListFragment extends Fragment {
         super.onPause();
         isApiNeedToBeCalled = true;
     }
-
-    // Update connection status UI
-    private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
-        @Override
-        public void onReceiveNewEmit(String eventName, String emitData) {
-
-        }
-
-        @Override
-        public void onSocketConnected() {
-            setStatusConnected();
-        }
-
-        @Override
-        public void onSocketDisconnected() {
-            setStatusWaitingForNetwork();
-        }
-
-        @Override
-        public void onSocketConnecting() {
-            setStatusConnecting();
-        }
-
-        @Override
-        public void onSocketError() {
-            setStatusWaitingForNetwork();
-        }
-    };
 
     private void getRoomListFlow() {
         if (vm.getRoomList().size() > 0)
@@ -353,7 +263,7 @@ public class HpRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
 
-            getActivity().runOnUiThread(() -> {
+            activity.runOnUiThread(() -> {
                 if (null != adapter && 0 == vm.getRoomList().size()) {
                     llRoomEmpty.setVisibility(View.VISIBLE);
                 } else if (null != adapter) {
@@ -369,7 +279,7 @@ public class HpRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            getActivity().runOnUiThread(() -> {
+            activity.runOnUiThread(() -> {
                 vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
                 adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
             });
@@ -388,7 +298,7 @@ public class HpRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
 
-            getActivity().runOnUiThread(() -> {
+            activity.runOnUiThread(() -> {
                 if (null != adapter && 0 == vm.getRoomList().size()) {
                     llRoomEmpty.setVisibility(View.VISIBLE);
                 } else if (null != adapter) {
