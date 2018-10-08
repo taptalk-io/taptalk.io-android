@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -239,12 +240,14 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void onError(ErrorModel error) {
             super.onError(error);
+            if (BuildConfig.DEBUG) Log.e(TAG, "onError: " + error.getMessage());
             flSetupContainer.setVisibility(View.GONE);
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
+            if (BuildConfig.DEBUG) Log.e(TAG, "onError: " + errorMessage);
             flSetupContainer.setVisibility(View.GONE);
         }
     };
@@ -271,6 +274,7 @@ public class HpRoomListFragment extends Fragment {
                     llRoomEmpty.setVisibility(View.GONE);
                 }
 
+                Log.e(TAG, "onSelectFinished: " + isApiNeedToBeCalled);
                 if (isApiNeedToBeCalled)
                     HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
                 else flSetupContainer.setVisibility(View.GONE);
@@ -306,6 +310,7 @@ public class HpRoomListFragment extends Fragment {
                     llRoomEmpty.setVisibility(View.GONE);
                 }
 
+                Log.e(TAG, "onSelectedRoomList: " + isApiNeedToBeCalled);
                 if (isApiNeedToBeCalled)
                     HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
                 else flSetupContainer.setVisibility(View.GONE);
