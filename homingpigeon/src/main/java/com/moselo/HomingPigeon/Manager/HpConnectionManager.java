@@ -31,6 +31,8 @@ import java.util.TimerTask;
 import static com.moselo.HomingPigeon.Helper.HomingPigeon.appContext;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.CONNECTING;
+import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.DISCONNECTED;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class HpConnectionManager {
@@ -137,12 +139,7 @@ public class HpConnectionManager {
 
         HomingPigeonNetworkInterface networkListener = () -> {
             Log.e(TAG, "initNetworkListener: "+connectionStatus );
-            if (ConnectionStatus.CONNECTING == connectionStatus ||
-                    ConnectionStatus.DISCONNECTED == connectionStatus) {
-                reconnect();
-            } else if (NOT_CONNECTED == connectionStatus && HpDataManager.getInstance().checkAccessTokenAvailable(appContext)) {
-                connect();
-            }
+            callApiToValidateAccessToken();
         };
         HpNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
@@ -241,7 +238,7 @@ public class HpConnectionManager {
                         initWebSocketClient(webSocketUri, createHeaderForConnectWebSocket());
                         connectionStatus = ConnectionStatus.CONNECTING;
                         webSocketClient.connect();
-                    } else {
+                    } else if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus){
                         Log.e(TAG, "onSuccess: Reconnect" );
                         connectionStatus = ConnectionStatus.CONNECTING;
                         webSocketClient.reconnect();

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
@@ -87,10 +88,12 @@ public class HpRoomListAdapter extends HpBaseAdapter<RoomListModel, HpBaseViewHo
             final UserModel userModel = item.getLastMessage().getUser();
             final int randomColor = HpUtils.getInstance().getRandomColor(userModel.getName());
 
-            // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
-            avatarTint = ColorStateList.valueOf(randomColor);
-//            tvAvatar.setText(userModel.getName().substring(0, 1).toUpperCase());
-            ivAvatar.setBackgroundTintList(avatarTint);
+            if (null != item.getLastMessage().getRoom().getRoomImage()) {
+                GlideApp.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).centerCrop().into(ivAvatar);
+            } else {
+                avatarTint = ColorStateList.valueOf(randomColor);
+                ivAvatar.setBackgroundTintList(avatarTint);
+            }
 
             // Change avatar icon and background
             Resources resource = itemView.getContext().getResources();

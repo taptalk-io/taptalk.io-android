@@ -92,13 +92,17 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
         protected void onBind(UserModel item, int position) {
             final int randomColor = HpUtils.getInstance().getRandomColor(item.getName());
 
-            // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
-            avatarTint = ColorStateList.valueOf(randomColor);
-            ivAvatar.setBackgroundTintList(avatarTint);
+            if (null != item.getAvatarURL()) {
+                GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);
+            } else {
+                avatarTint = ColorStateList.valueOf(randomColor);
+                ivAvatar.setBackgroundTintList(avatarTint);
+            }
 
             // Change avatar icon and background
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
-            GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);
+            if (null != item.getAvatarURL())
+                GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);
 
             // Set name
             tvFullName.setText(item.getName());
@@ -128,7 +132,6 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
                         UserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
                         }, prefs.getString(K_USER, ""));
 
-                        // TODO: 17 September 2018 OPEN CHAT ROOM
                         if (!myID.equals(item.getUserID())) {
                             HpChatManager.getInstance().saveUnsentMessage();
                             Intent intent = new Intent(itemView.getContext(), HpChatActivity.class);
@@ -171,9 +174,12 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
         protected void onBind(UserModel item, int position) {
             final int randomColor = HpUtils.getInstance().getRandomColor(item.getName());
 
-            // TODO: 6 September 2018 LOAD AVATAR IMAGE TO VIEW
-            avatarTint = ColorStateList.valueOf(randomColor);
-            ivAvatar.setBackgroundTintList(avatarTint);
+            if (null != item.getAvatarURL()) {
+                GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);
+            } else {
+                avatarTint = ColorStateList.valueOf(randomColor);
+                ivAvatar.setBackgroundTintList(avatarTint);
+            }
 
             // Set name
             String fullName = item.getName();
