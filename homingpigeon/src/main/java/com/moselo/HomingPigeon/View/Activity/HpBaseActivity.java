@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.moselo.HomingPigeon.Helper.HpUtils;
+
 public abstract class HpBaseActivity extends AppCompatActivity {
 
     @Override
@@ -12,8 +14,9 @@ public abstract class HpBaseActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
+        HpUtils.getInstance().dismissKeyboard(this);
     }
 
     protected abstract void initView();

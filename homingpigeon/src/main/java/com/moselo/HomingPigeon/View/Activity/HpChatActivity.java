@@ -108,7 +108,6 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) HpChatManager.getInstance().saveMessageToDraft(draft);
         HpChatManager.getInstance().deleteActiveRoom();
-        HpUtils.getInstance().dismissKeyboard(this);
     }
 
     @Override
