@@ -45,7 +45,7 @@ public class DefaultSubscriber<T extends BaseResponse<D>, V extends HpDefaultDat
 
     @Override
     public void onNext(T t) {
-        if (t.getError() != null && 200 != t.getError().getStatus()) {
+        if (t.getError() != null && 200 != t.getStatus()) {
             view.onError(t.getError());
         } else view.onSuccess(t.getData());
     }
