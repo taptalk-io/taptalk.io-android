@@ -18,8 +18,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
@@ -59,14 +57,12 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
     private HpChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private LinearLayout llConnectionStatus;
-    private ConstraintLayout clEmptyChat, clChatInput;
+    private ConstraintLayout clEmptyChat, clChatComposer;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivConnectionStatus, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
-    private TextView tvRoomName, tvRoomStatus, tvConnectionStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
+    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
     private View vStatusBadge;
-    private ProgressBar pbConnecting;
 
     // RecyclerView
     private HpMessageAdapter hpMessageAdapter;
@@ -91,14 +87,12 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         initViewModel();
         initView();
         initHelper();
-        initConnectionStatus();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         HpChatManager.getInstance().removeChatListener(this);
-        HpConnectionManager.getInstance().removeSocketListener(socketListener);
     }
 
     @Override
@@ -189,12 +183,10 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
     @Override
     protected void initView() {
         flMessageList = findViewById(R.id.fl_message_list);
-        llConnectionStatus = findViewById(R.id.ll_connection_status);
         clEmptyChat = findViewById(R.id.cl_empty_chat);
-        clChatInput = findViewById(R.id.cl_chat_input);
+        clChatComposer = findViewById(R.id.cl_chat_composer);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivRoomIcon = findViewById(R.id.iv_room_icon);
-        ivConnectionStatus = findViewById(R.id.iv_connection_status);
         ivButtonChatMenu = findViewById(R.id.iv_chat_menu);
         ivButtonAttach = findViewById(R.id.iv_attach);
         ivButtonSend = findViewById(R.id.iv_send);
@@ -204,7 +196,6 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         civOtherUserAvatar = findViewById(R.id.civ_other_user_avatar);
         tvRoomName = findViewById(R.id.tv_room_name);
         tvRoomStatus = findViewById(R.id.tv_room_status);
-        tvConnectionStatus = findViewById(R.id.tv_connection_status);
         tvChatEmptyGuide = findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = findViewById(R.id.tv_profile_description);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
@@ -212,11 +203,8 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         rvCustomKeyboard = findViewById(R.id.rv_custom_keyboard);
         etChat = findViewById(R.id.et_chat);
         tvBadgeUnread = findViewById(R.id.tv_badge_unread);
-        pbConnecting = findViewById(R.id.pb_connecting);
 
         getWindow().setBackgroundDrawable(null);
-
-        pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
 
         tvRoomName.setText(getIntent().getStringExtra(ROOM_NAME));
 
@@ -370,77 +358,6 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         HpAttachmentBottomSheet attachBottomSheet = new HpAttachmentBottomSheet();
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
-
-    private void initConnectionStatus() {
-        HpConnectionManager.getInstance().addSocketListener(socketListener);
-        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(this))
-            socketListener.onSocketDisconnected();
-    }
-
-    private void setStatusConnected() {
-        runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connected);
-            tvConnectionStatus.setText(getString(R.string.connected));
-            ivConnectionStatus.setImageResource(R.drawable.hp_ic_connected_white);
-            ivConnectionStatus.setVisibility(View.VISIBLE);
-            pbConnecting.setVisibility(View.GONE);
-            llConnectionStatus.setVisibility(View.VISIBLE);
-
-            new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
-        });
-    }
-
-    private void setStatusConnecting() {
-        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(this)) return;
-
-        runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connecting);
-            tvConnectionStatus.setText(R.string.connecting);
-            ivConnectionStatus.setVisibility(View.GONE);
-            pbConnecting.setVisibility(View.VISIBLE);
-            llConnectionStatus.setVisibility(View.VISIBLE);
-        });
-    }
-
-    private void setStatusWaitingForNetwork() {
-        if (HpNetworkStateManager.getInstance().hasNetworkConnection(this)) return;
-
-        runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_offline);
-            tvConnectionStatus.setText(R.string.waiting_for_network);
-            ivConnectionStatus.setVisibility(View.GONE);
-            pbConnecting.setVisibility(View.VISIBLE);
-            llConnectionStatus.setVisibility(View.VISIBLE);
-        });
-    }
-
-    // Update connection status UI
-    private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
-        @Override
-        public void onReceiveNewEmit(String eventName, String emitData) {
-
-        }
-
-        @Override
-        public void onSocketConnected() {
-            setStatusConnected();
-        }
-
-        @Override
-        public void onSocketDisconnected() {
-            setStatusWaitingForNetwork();
-        }
-
-        @Override
-        public void onSocketConnecting() {
-            setStatusConnecting();
-        }
-
-        @Override
-        public void onSocketError() {
-            setStatusWaitingForNetwork();
-        }
-    };
 
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
