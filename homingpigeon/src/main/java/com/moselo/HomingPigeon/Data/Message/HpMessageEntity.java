@@ -38,6 +38,7 @@ public class HpMessageEntity {
     @Nullable @ColumnInfo(name = "userPhone") private String userPhone;
     @Nullable @ColumnInfo(name = "userRole") private String userRole;
     @Nullable @ColumnInfo(name = "lastLogin") private Long lastLogin;
+    @Nullable @ColumnInfo(name = "lastActivity") private Long lastActivity;
     @Nullable @ColumnInfo(name = "requireChangePassword") private Boolean requireChangePassword;
     @Nullable @ColumnInfo(name = "userCreated") private Long userCreated;
     @Nullable @ColumnInfo(name = "userUpdated") private Long userUpdated;
@@ -52,8 +53,8 @@ public class HpMessageEntity {
                            @Nullable String roomImage, String userID, String xcUserID, String userFullName,
                            @Nullable String username, String userImage, @Nullable String userEmail,
                            @Nullable String userPhone, @Nullable String userRole, @Nullable Long lastLogin,
-                           @Nullable Boolean requireChangePassword, @Nullable Long userCreated,
-                           @Nullable Long userUpdated) {
+                           @Nullable Long lastActivity, @Nullable Boolean requireChangePassword,
+                           @Nullable Long userCreated, @Nullable Long userUpdated) {
         this.messageID = messageID;
         this.localID = localID;
         this.body = body;
@@ -82,6 +83,7 @@ public class HpMessageEntity {
         this.userPhone = userPhone;
         this.userRole = userRole;
         this.lastLogin = lastLogin;
+        this.lastActivity = lastActivity;
         this.requireChangePassword = requireChangePassword;
         this.userCreated = userCreated;
         this.userUpdated = userUpdated;
@@ -328,6 +330,15 @@ public class HpMessageEntity {
 
     public void setLastLogin(@Nullable Long lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    @Nullable
+    public Long getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(@Nullable Long lastActivity) {
+        this.lastActivity = lastActivity;
     }
 
     @Nullable

@@ -9,8 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class UserModel implements Parcelable {
 
     //userID itu userID dari Bisnis Server kalau xcUserID itu userID dari Chat Server
@@ -24,6 +22,7 @@ public class UserModel implements Parcelable {
     @Nullable @JsonProperty("phone") private String phoneNumber;
     @Nullable @JsonProperty("userRole") private UserRoleModel userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
+    @Nullable @JsonProperty("lastActivity") private Long lastActivity;
     @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;
     @Nullable @JsonProperty("created") private Long created;
     @Nullable @JsonProperty("updated") private Long updated;
@@ -31,7 +30,7 @@ public class UserModel implements Parcelable {
 
     public UserModel(String userID, String xcUserID, String name, ImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable UserRoleModel userRole
-            , @Nullable Long lastLogin, @Nullable Boolean requireChangePassword, @Nullable Long created
+            , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
             , @Nullable Long updated) {
         this.userID = userID;
         this.xcUserID = xcUserID;
@@ -42,6 +41,7 @@ public class UserModel implements Parcelable {
         this.phoneNumber = phoneNumber;
         this.userRole = userRole;
         this.lastLogin = lastLogin;
+        this.lastActivity = lastActivity;
         this.requireChangePassword = requireChangePassword;
         this.created = created;
         this.updated = updated;
@@ -54,10 +54,10 @@ public class UserModel implements Parcelable {
 
     public static UserModel Builder(String userID, String xcUserID, String name, ImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable UserRoleModel userRole
-            , @Nullable Long lastLogin, @Nullable Boolean requireChangePassword, @Nullable Long created
+            , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
             , @Nullable Long updated) {
         return new UserModel(userID, xcUserID, name, avatarURL, username, email, phoneNumber, userRole
-        , lastLogin, requireChangePassword, created, updated);
+        , lastLogin, lastActivity, requireChangePassword, created, updated);
     }
 
     public static UserModel Builder(String userID, String name){
@@ -154,6 +154,15 @@ public class UserModel implements Parcelable {
     }
 
     @Nullable
+    public Long getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(@Nullable Long lastActivity) {
+        this.lastActivity = lastActivity;
+    }
+
+    @Nullable
     public Boolean getRequireChangePassword() {
         return requireChangePassword;
     }
@@ -205,6 +214,7 @@ public class UserModel implements Parcelable {
         dest.writeString(this.phoneNumber);
         dest.writeParcelable(this.userRole, flags);
         dest.writeValue(this.lastLogin);
+        dest.writeValue(this.lastActivity);
         dest.writeValue(this.requireChangePassword);
         dest.writeValue(this.created);
         dest.writeValue(this.updated);
@@ -221,6 +231,7 @@ public class UserModel implements Parcelable {
         this.phoneNumber = in.readString();
         this.userRole = in.readParcelable(UserRoleModel.class.getClassLoader());
         this.lastLogin = (Long) in.readValue(Long.class.getClassLoader());
+        this.lastActivity = (Long) in.readValue(Long.class.getClassLoader());
         this.requireChangePassword = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
