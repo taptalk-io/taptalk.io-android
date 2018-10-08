@@ -114,7 +114,7 @@ public class HpConnectionManager {
 
             @Override
             public void onError(Exception ex) {
-                Log.e(TAG, "onError: "+ex.getMessage());
+                Log.e(TAG, "onError: ", ex);
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketInterface listener : socketListeners)

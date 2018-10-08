@@ -23,7 +23,7 @@ import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Interface.HomingPigeonChatInterface;
+import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.Model.UserModel;
 import com.moselo.HomingPigeon.R;
@@ -39,11 +39,11 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHolder<MessageModel>> {
 
     private static final String TAG = HpMessageAdapter.class.getSimpleName();
-    private HomingPigeonChatInterface listener;
+    private HpChatListener listener;
     private MessageModel expandedBubble;
     private UserModel myUserModel;
 
-    public HpMessageAdapter(Context context, HomingPigeonChatInterface listener) {
+    public HpMessageAdapter(Context context, HpChatListener listener) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         myUserModel = HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
         }, prefs.getString(K_USER, "{}"));

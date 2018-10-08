@@ -29,6 +29,7 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
+import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -69,6 +70,23 @@ public class HpRoomListFragment extends Fragment {
     private HpRoomListAdapter adapter;
     private RoomListInterface roomListInterface;
     private HpRoomListViewModel vm;
+
+    HpChatListener chatListener = new HpChatListener() {
+        @Override
+        public void onReceiveMessageInOtherRoom(MessageModel message) {
+            processMessageFromSocket(message);
+        }
+
+        @Override
+        public void onUpdateMessageInOtherRoom(MessageModel message) {
+            processMessageFromSocket(message);
+        }
+
+        @Override
+        public void onDeleteMessageInOtherRoom(MessageModel message) {
+            processMessageFromSocket(message);
+        }
+    };
 
     public HpRoomListFragment() {
     }
@@ -184,11 +202,13 @@ public class HpRoomListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         viewAppearSequence();
+        HpChatManager.getInstance().addChatListener(chatListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        HpChatManager.getInstance().removeChatListener(chatListener);
     }
 
     private void viewAppearSequence() {
@@ -229,6 +249,8 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void onSuccess(GetRoomListResponse response) {
             super.onSuccess(response);
+            vm.setDoneFirstSetup(true);
+
             List<HpMessageEntity> tempMessage = new ArrayList<>();
             for (MessageModel message : response.getMessages()) {
                 try {
@@ -243,8 +265,7 @@ public class HpRoomListFragment extends Fragment {
             HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
                 @Override
                 public void onInsertFinished() {
-                    //HpRoomListViewModel.setShouldNotLoadFromAPI(true);
-                    HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
+                    viewAppearSequence();
                 }
             });
         }
@@ -329,4 +350,52 @@ public class HpRoomListFragment extends Fragment {
             });
         }
     };
+
+    public void processMessageFromSocket (MessageModel message) {
+        String  messageRoomID = message.getRoom().getRoomID();
+
+        RoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
+
+        if (null != roomList) {
+            //room nya ada di listnya
+            Log.e(TAG, "processMessageFromSocket: "+messageRoomID+" : "+HpUtils.getInstance().toJsonString(roomList) );
+
+            MessageModel roomLastMessage = roomList.getLastMessage();
+
+            if (roomLastMessage.getLocalID().equals(message.getLocalID())) {
+                //last messagenya sama cuma update datanya aja
+                roomLastMessage.setUpdated(message.getUpdated());
+                roomLastMessage.setDeleted(message.getDeleted());
+                roomLastMessage.setSending(message.getSending());
+                roomLastMessage.setFailedSend(message.getFailedSend());
+                roomLastMessage.setHasRead(message.getHasRead());
+                roomLastMessage.setIsRead(message.getIsRead());
+                roomLastMessage.setDelivered(message.getDelivered());
+                roomLastMessage.setHidden(message.getHidden());
+
+                Integer roomPos = vm.getRoomList().indexOf(roomList);
+                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
+            } else {
+                //last message nya beda sama yang ada di tampilan
+                roomList.setLastMessage(message);
+
+                if (!roomList.getLastMessage().getUser().getUserID()
+                        .equals(HpDataManager.getInstance().getActiveUser(getContext()).getUserID())) {
+                    //kalau beda yang ngirim unread countnya tambah 1
+                    roomList.setUnreadCount(roomList.getUnreadCount() + 1);
+                }
+
+                //Integer roomPos = vm.getRoomList().indexOf(roomList);
+                vm.getRoomList().remove(roomList);
+                vm.getRoomList().add(0, roomList);
+                getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+            }
+        } else {
+            //kalau room yang masuk baru
+            RoomListModel newRoomList = new RoomListModel(message, 1);
+            vm.addRoomPointer(newRoomList);
+            vm.getRoomList().add(0, newRoomList);
+            getActivity().runOnUiThread(() -> adapter.notifyItemInserted(0));
+        }
+    }
 }

@@ -28,13 +28,10 @@ import com.moselo.HomingPigeon.Helper.HpEndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Interface.HomingPigeonChatInterface;
-import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
+import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
-import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.CustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.MessageModel;
 import com.moselo.HomingPigeon.R;
@@ -49,7 +46,7 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
 
-public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatInterface {
+public class HpChatActivity extends HpBaseActivity {
 
     private String TAG = HpChatActivity.class.getSimpleName();
 
@@ -92,7 +89,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        HpChatManager.getInstance().removeChatListener(this);
+        HpChatManager.getInstance().removeChatListener(chatListener);
     }
 
     @Override
@@ -116,61 +113,63 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         super.onBackPressed();
     }
 
-    @Override
-    public void onReceiveMessageInActiveRoom(final MessageModel message) {
-        addNewTextMessage(message);
-    }
+    HpChatListener chatListener = new HpChatListener() {
+        @Override
+        public void onReceiveMessageInActiveRoom(MessageModel message) {
+            addNewTextMessage(message);
+        }
 
-    @Override
-    public void onUpdateMessageInActiveRoom(MessageModel message) {
-        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-        addNewTextMessage(message);
-    }
+        @Override
+        public void onUpdateMessageInActiveRoom(MessageModel message) {
+            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+            addNewTextMessage(message);
+        }
 
-    @Override
-    public void onDeleteMessageInActiveRoom(MessageModel message) {
-        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-        addNewTextMessage(message);
-    }
+        @Override
+        public void onDeleteMessageInActiveRoom(MessageModel message) {
+            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+            addNewTextMessage(message);
+        }
 
-    @Override
-    public void onReceiveMessageInOtherRoom(MessageModel message) {
-        // TODO: 28 August 2018 REPLACE
-    }
+        @Override
+        public void onReceiveMessageInOtherRoom(MessageModel message) {
+            super.onReceiveMessageInOtherRoom(message);
+        }
 
-    @Override
-    public void onUpdateMessageInOtherRoom(MessageModel message) {
-        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-    }
+        @Override
+        public void onUpdateMessageInOtherRoom(MessageModel message) {
+            super.onUpdateMessageInOtherRoom(message);
+        }
 
-    @Override
-    public void onDeleteMessageInOtherRoom(MessageModel message) {
-        // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-    }
+        @Override
+        public void onDeleteMessageInOtherRoom(MessageModel message) {
+            super.onDeleteMessageInOtherRoom(message);
+        }
 
-    @Override
-    public void onSendTextMessage(MessageModel message) {
-        addNewTextMessage(message);
-        vm.addMessagePointer(message);
-    }
+        @Override
+        public void onSendTextMessage(MessageModel message) {
+            addNewTextMessage(message);
+            vm.addMessagePointer(message);
+        }
 
-    @Override
-    public void onRetrySendMessage(MessageModel message) {
-        vm.delete(message.getLocalID());
-        HpChatManager.getInstance().sendTextMessage(message.getBody());
-    }
+        @Override
+        public void onRetrySendMessage(MessageModel message) {
+            vm.delete(message.getLocalID());
+            HpChatManager.getInstance().sendTextMessage(message.getBody());
+        }
 
-    @Override
-    public void onSendFailed(final MessageModel message) {
-        vm.updateMessagePointer(message);
-        vm.removeMessagePointer(message.getLocalID());
-        runOnUiThread(() -> hpMessageAdapter.notifyItemRangeChanged(0, hpMessageAdapter.getItemCount()));
-    }
+        @Override
+        public void onSendFailed(MessageModel message) {
+            vm.updateMessagePointer(message);
+            vm.removeMessagePointer(message.getLocalID());
+            runOnUiThread(() -> hpMessageAdapter.notifyItemRangeChanged(0, hpMessageAdapter.getItemCount()));
+        }
 
-    @Override
-    public void onMessageClicked(MessageModel message, boolean isExpanded) {
-
-    }
+        @Override
+        public void onMessageClicked(MessageModel message, boolean isExpanded) {
+            super.onMessageClicked(message, isExpanded);
+        }
+    };
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
@@ -213,7 +212,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
         // TODO: 24 September 2018 UPDATE ROOM STATUS
         tvRoomStatus.setText("User Status");
 
-        hpMessageAdapter = new HpMessageAdapter(this, this);
+        hpMessageAdapter = new HpMessageAdapter(this, chatListener);
         hpMessageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);
@@ -270,7 +269,7 @@ public class HpChatActivity extends HpBaseActivity implements HomingPigeonChatIn
     }
 
     private void initHelper() {
-        HpChatManager.getInstance().addChatListener(this);
+        HpChatManager.getInstance().addChatListener(chatListener);
     }
 
     private void updateMessageDecoration() {
