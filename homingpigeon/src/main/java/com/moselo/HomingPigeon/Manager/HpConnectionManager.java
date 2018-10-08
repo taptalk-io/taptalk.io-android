@@ -103,8 +103,8 @@ public class HpConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                Log.e(TAG, "onClose2: "+code);
-                Log.e(TAG, "onClose: "+reason);
+                Log.e(TAG, "onClose2: " + code);
+                Log.e(TAG, "onClose: " + reason);
                 connectionStatus = ConnectionStatus.DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (HomingPigeonSocketInterface listener : socketListeners)
@@ -138,7 +138,7 @@ public class HpConnectionManager {
     private void initNetworkListener() {
 
         HomingPigeonNetworkInterface networkListener = () -> {
-            Log.e(TAG, "initNetworkListener: "+connectionStatus );
+            Log.e(TAG, "initNetworkListener: " + connectionStatus);
             callApiToValidateAccessToken();
         };
         HpNetworkStateManager.getInstance().addNetworkListener(networkListener);
@@ -169,7 +169,7 @@ public class HpConnectionManager {
     public void connect() {
         if ((ConnectionStatus.DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
                 HpNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
-            Log.e(TAG, "connect: " );
+            Log.e(TAG, "connect: ");
             callApiToValidateAccessToken();
         }
     }
@@ -207,8 +207,8 @@ public class HpConnectionManager {
     private Map<String, String> createHeaderForConnectWebSocket() {
         Map<String, String> websocketHeader = new HashMap<>();
 
-        String appKey = Base64.encodeToString((APP_KEY_ID+":"+APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
-        String deviceID = Settings.Secure.getString(appContext.getContentResolver(),Settings.Secure.ANDROID_ID);
+        String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
+        String deviceID = Settings.Secure.getString(appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
 
         if (HpDataManager.getInstance().checkAccessTokenAvailable(appContext)) {
@@ -226,33 +226,34 @@ public class HpConnectionManager {
     }
 
     private void callApiToValidateAccessToken() {
-        Log.e(TAG, "callApiToValidateAccessToken: " );
-        HpDataManager.getInstance().validateAccessToken(new HpDefaultDataView<ErrorModel>() {
-            @Override
-            public void onSuccess(ErrorModel response) {
-                Log.e(TAG, "onSuccess: " );
-                try {
-                    if (NOT_CONNECTED == connectionStatus) {
-                        Log.e(TAG, "onSuccess: Reconnect" );
-                        webSocketUri = new URI(webSocketEndpoint);
-                        initWebSocketClient(webSocketUri, createHeaderForConnectWebSocket());
-                        connectionStatus = ConnectionStatus.CONNECTING;
-                        webSocketClient.connect();
-                    } else if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus){
-                        Log.e(TAG, "onSuccess: Reconnect" );
-                        connectionStatus = ConnectionStatus.CONNECTING;
-                        webSocketClient.reconnect();
+        Log.e(TAG, "callApiToValidateAccessToken: ");
+        if (HpDataManager.getInstance().checkAccessTokenAvailable(HomingPigeon.appContext))
+            HpDataManager.getInstance().validateAccessToken(new HpDefaultDataView<ErrorModel>() {
+                @Override
+                public void onSuccess(ErrorModel response) {
+                    Log.e(TAG, "onSuccess: ");
+                    try {
+                        if (NOT_CONNECTED == connectionStatus) {
+                            Log.e(TAG, "onSuccess: Reconnect");
+                            webSocketUri = new URI(webSocketEndpoint);
+                            initWebSocketClient(webSocketUri, createHeaderForConnectWebSocket());
+                            connectionStatus = ConnectionStatus.CONNECTING;
+                            webSocketClient.connect();
+                        } else if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
+                            Log.e(TAG, "onSuccess: Reconnect");
+                            connectionStatus = ConnectionStatus.CONNECTING;
+                            webSocketClient.reconnect();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
 
-            @Override
-            public void onError(ErrorModel error) {
-                super.onError(error);
-                Log.e(TAG, "onError: "+error.getCode() );
-            }
-        });
+                @Override
+                public void onError(ErrorModel error) {
+                    super.onError(error);
+                    Log.e(TAG, "onError: " + error.getCode());
+                }
+            });
     }
 }
