@@ -15,6 +15,8 @@ public class BaseResponse<T> {
 
     @JsonProperty("data") private T data;
 
+    @JsonProperty("status") private int status;
+
     public ErrorModel getError() {
         return error;
     }
@@ -29,5 +31,13 @@ public class BaseResponse<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

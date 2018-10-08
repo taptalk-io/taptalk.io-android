@@ -79,19 +79,18 @@ public class HpApiManager {
 //        if (br.getRefreshToken() != null && br.getRefreshToken() != null)
 //            updateSession((BaseResponse) t);
 
-        if (br.getError() != null) {
-            int code = br.getError().getStatus();
-            Log.e(TAG, "validateResponse: "+code+" "+BuildConfig.DEBUG );
-            if (BuildConfig.DEBUG)
-                Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
+        //if (br.getError() != null) {
+        int code = br.getStatus();
+        if (BuildConfig.DEBUG)
+            Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
 
 //            if (code == ERR_FORBIDDEN)
 //                return raiseApiTokenException(br);
-            if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
-                Log.e(TAG, "validateResponse: √√ NO ERROR √√");
-            else if (code == UNAUTHORIZED)
-                return raiseApiSessionExpiredException(br);
-        }
+        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
+            Log.e(TAG, "validateResponse: √√ NO ERROR √√");
+        else if (code == UNAUTHORIZED)
+            return raiseApiSessionExpiredException(br);
+        //}
         return Observable.just(t);
     }
 
@@ -109,7 +108,7 @@ public class HpApiManager {
     }
 
     private void updateSession(BaseResponse<GetAccessTokenResponse> r) {
-        Log.e(TAG, "updateSession: "+HpUtils.getInstance().toJsonString(r.getData()));
+        Log.e(TAG, "updateSession: " + HpUtils.getInstance().toJsonString(r.getData()));
         isUnauthorized = false;
         HpDataManager.getInstance().saveRefreshToken(appContext, r.getData().getRefreshToken());
         HpDataManager.getInstance().saveRefreshTokenExpiry(appContext, r.getData().getRefreshTokenExpiry());
@@ -135,9 +134,9 @@ public class HpApiManager {
         return homingPigeon.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
-                    Log.e(TAG, "refreshToken: " );
+                    Log.e(TAG, "refreshToken: ");
                     HpApiManager.getInstance().setUnauthorized(false);
-                    if (RESPONSE_SUCCESS == response.getError().getStatus())
+                    if (RESPONSE_SUCCESS == response.getStatus())
                         updateSession(response);
                     else Observable.error(new AuthException(response.getError().getMessage()));
                 }).doOnError(throwable -> {
@@ -157,7 +156,4 @@ public class HpApiManager {
         CommonRequest request = CommonRequest.builderWithUserID(userID);
         execute(homingPigeon.getRoomList(request), subscriber);
     }
-
-
-
 }
