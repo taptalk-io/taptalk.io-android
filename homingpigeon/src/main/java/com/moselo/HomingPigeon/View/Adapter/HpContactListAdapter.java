@@ -98,7 +98,8 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
 
             // Change avatar icon and background
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
-            GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);
+            if (null != item.getAvatarURL())
+                GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);
 
             // Set name
             tvFullName.setText(item.getName());
