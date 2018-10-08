@@ -11,7 +11,6 @@ import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
 
 import java.security.GeneralSecurityException;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessageModel {
 
     @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;

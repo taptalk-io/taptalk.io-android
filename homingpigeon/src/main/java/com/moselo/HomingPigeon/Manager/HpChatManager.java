@@ -233,7 +233,7 @@ public class HpChatManager {
                         HpUtils.getInstance().fromJSON(new TypeReference<ImageURL>() {}, entity.getUserImage()),
                         entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
                         HpUtils.getInstance().fromJSON(new TypeReference<UserRoleModel>() {}, entity.getUserRole()),
-                        entity.getLastLogin(), entity.getRequireChangePassword(), entity.getUserCreated(),
+                        entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated()),
                 entity.getRecipientID(),
                 entity.getDeleted(),
@@ -256,7 +256,8 @@ public class HpChatManager {
                 model.getUser().getUsername(), HpUtils.getInstance().toJsonString(model.getUser().getAvatarURL()),
                 model.getUser().getEmail(), model.getUser().getPhoneNumber(),
                 HpUtils.getInstance().toJsonString(model.getUser().getUserRole()),
-                model.getUser().getLastLogin(), model.getUser().getRequireChangePassword(),
+                model.getUser().getLastLogin(), model.getUser().getLastActivity(),
+                model.getUser().getRequireChangePassword(),
                 model.getUser().getCreated(), model.getUser().getUpdated()
         );
     }
