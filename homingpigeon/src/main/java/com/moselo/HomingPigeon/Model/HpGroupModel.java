@@ -2,17 +2,17 @@ package com.moselo.HomingPigeon.Model;
 
 import java.util.List;
 
-public class GroupModel {
+public class HpGroupModel {
 
-    private List<UserModel> groupMembers;
+    private List<HpUserModel> groupMembers;
     private String groupName;
     private String groupImage;
 
-    public List<UserModel> getGroupMembers() {
+    public List<HpUserModel> getGroupMembers() {
         return groupMembers;
     }
 
-    public void setGroupMembers(List<UserModel> groupMembers) {
+    public void setGroupMembers(List<HpUserModel> groupMembers) {
         this.groupMembers = groupMembers;
     }
 

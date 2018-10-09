@@ -1,16 +1,16 @@
 package com.moselo.HomingPigeon.Model.ResponseModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 
-public class GetAccessTokenResponse {
+public class HpGetAccessTokenResponse {
     @JsonProperty("accessToken") private String accessToken;
     @JsonProperty("accessTokenExpiry") private long accessTokenExpiry;
     @JsonProperty("refreshToken") private String refreshToken;
     @JsonProperty("refreshTokenExpiry") private long refreshTokenExpiry;
-    @JsonProperty("user") private UserModel user;
+    @JsonProperty("user") private HpUserModel user;
 
-    public GetAccessTokenResponse() {
+    public HpGetAccessTokenResponse() {
     }
 
     public String getAccessToken() {
@@ -45,11 +45,11 @@ public class GetAccessTokenResponse {
         this.refreshTokenExpiry = refreshTokenExpiry;
     }
 
-    public UserModel getUser() {
+    public HpUserModel getUser() {
         return user;
     }
 
-    public void setUser(UserModel user) {
+    public void setUser(HpUserModel user) {
         this.user = user;
     }
 }

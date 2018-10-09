@@ -12,7 +12,7 @@ import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
-import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
@@ -76,7 +76,7 @@ public class HomingPigeon {
         });
     }
 
-    public void saveAuthTicketAndGetAccessToken(String authTicket, HpDefaultDataView<GetAccessTokenResponse> view) {
+    public void saveAuthTicketAndGetAccessToken(String authTicket, HpDefaultDataView<HpGetAccessTokenResponse> view) {
         HpDataManager.getInstance().saveAuthTicket(appContext, authTicket);
         HpDataManager.getInstance().getAccessTokenFromApi(view);
     }

@@ -8,19 +8,19 @@ import android.widget.Toast;
 
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
-import com.moselo.HomingPigeon.Model.AttachmentModel;
+import com.moselo.HomingPigeon.Model.HpAttachmentModel;
 import com.moselo.HomingPigeon.R;
 
-import static com.moselo.HomingPigeon.Model.AttachmentModel.createAttachMenu;
+import static com.moselo.HomingPigeon.Model.HpAttachmentModel.createAttachMenu;
 
-public class HpAttachmentAdapter extends HpBaseAdapter<AttachmentModel, HpBaseViewHolder<AttachmentModel>> {
+public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, HpBaseViewHolder<HpAttachmentModel>> {
 
     public HpAttachmentAdapter() {
         setItems(createAttachMenu(), false);
     }
 
     @Override
-    public HpBaseViewHolder<AttachmentModel> onCreateViewHolder(ViewGroup parent, int viewType) {
+    public HpBaseViewHolder<HpAttachmentModel> onCreateViewHolder(ViewGroup parent, int viewType) {
         return new AttachmentVH(parent, R.layout.hp_cell_attachment_menu);
     }
 
@@ -34,7 +34,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<AttachmentModel, HpBaseVi
         return super.getItemCount();
     }
 
-    public class AttachmentVH extends HpBaseViewHolder<AttachmentModel> implements View.OnClickListener {
+    public class AttachmentVH extends HpBaseViewHolder<HpAttachmentModel> implements View.OnClickListener {
         private ImageView ivAttachIcon;
         private TextView tvAttachTitle;
         private View vAttachMenuSeparator;
@@ -48,7 +48,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<AttachmentModel, HpBaseVi
         }
 
         @Override
-        protected void onBind(AttachmentModel item, int position) {
+        protected void onBind(HpAttachmentModel item, int position) {
             ivAttachIcon.setImageDrawable(itemView.getResources().getDrawable(item.getIcon()));
             tvAttachTitle.setText(itemView.getResources().getText(item.getTitleIds()));
 

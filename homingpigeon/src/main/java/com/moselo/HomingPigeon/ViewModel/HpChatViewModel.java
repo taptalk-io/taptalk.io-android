@@ -8,9 +8,9 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
-import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.RoomModel;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,10 +20,10 @@ import java.util.Map;
 public class HpChatViewModel extends AndroidViewModel {
 
     private LiveData<List<HpMessageEntity>> allMessages;
-    private Map<String, MessageModel> messagePointer;
-    private List<MessageModel> messageModels;
-    private UserModel myUserModel;
-    private RoomModel room;
+    private Map<String, HpMessageModel> messagePointer;
+    private List<HpMessageModel> messageModels;
+    private HpUserModel myUserModel;
+    private HpRoomModel room;
     private String otherUserID = "0";
     private long lastTimestamp = 0;
     private int numUsers;
@@ -43,15 +43,15 @@ public class HpChatViewModel extends AndroidViewModel {
         HpDataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
-    public Map<String, MessageModel> getMessagePointer() {
+    public Map<String, HpMessageModel> getMessagePointer() {
         return messagePointer == null ? messagePointer = new LinkedHashMap<>() : messagePointer;
     }
 
-    public void setMessagePointer(Map<String, MessageModel> messagePointer) {
+    public void setMessagePointer(Map<String, HpMessageModel> messagePointer) {
         this.messagePointer = messagePointer;
     }
 
-    public void addMessagePointer(MessageModel pendingMessage) {
+    public void addMessagePointer(HpMessageModel pendingMessage) {
         getMessagePointer().put(pendingMessage.getLocalID(), pendingMessage);
     }
 
@@ -59,7 +59,7 @@ public class HpChatViewModel extends AndroidViewModel {
         getMessagePointer().remove(localID);
     }
 
-    public void updateMessagePointer(MessageModel newMessage) {
+    public void updateMessagePointer(HpMessageModel newMessage) {
         getMessagePointer().get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
@@ -71,31 +71,31 @@ public class HpChatViewModel extends AndroidViewModel {
         HpDataManager.getInstance().getMessagesFromDatabase(roomID, listener, lastTimestamp);
     }
 
-    public List<MessageModel> getMessageModels() {
+    public List<HpMessageModel> getMessageModels() {
         return messageModels == null ? messageModels = new ArrayList<>() : messageModels;
     }
 
-    public void setMessageModels(List<MessageModel> messageModels) {
+    public void setMessageModels(List<HpMessageModel> messageModels) {
         this.messageModels = messageModels;
     }
 
-    public void addMessageModels(List<MessageModel> messageModels) {
+    public void addMessageModels(List<HpMessageModel> messageModels) {
         getMessageModels().addAll(messageModels);
     }
 
-    public UserModel getMyUserModel() {
+    public HpUserModel getMyUserModel() {
         return myUserModel;
     }
 
-    public void setMyUserModel(UserModel myUserModel) {
+    public void setMyUserModel(HpUserModel myUserModel) {
         this.myUserModel = myUserModel;
     }
 
-    public RoomModel getRoom() {
+    public HpRoomModel getRoom() {
         return room;
     }
 
-    public void setRoom(RoomModel room) {
+    public void setRoom(HpRoomModel room) {
         this.room = room;
         HpChatManager.getInstance().setActiveRoom(room);
     }

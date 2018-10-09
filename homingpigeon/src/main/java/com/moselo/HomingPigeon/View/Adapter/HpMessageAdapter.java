@@ -24,8 +24,8 @@ import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
-import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
@@ -36,23 +36,23 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_B
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOG;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
-public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHolder<MessageModel>> {
+public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHolder<HpMessageModel>> {
 
     private static final String TAG = HpMessageAdapter.class.getSimpleName();
     private HpChatListener listener;
-    private MessageModel expandedBubble;
-    private UserModel myUserModel;
+    private HpMessageModel expandedBubble;
+    private HpUserModel myUserModel;
 
     public HpMessageAdapter(Context context, HpChatListener listener) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        myUserModel = HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        myUserModel = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
         }, prefs.getString(K_USER, "{}"));
         this.listener = listener;
     }
 
     @NonNull
     @Override
-    public HpBaseViewHolder<MessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HpBaseViewHolder<HpMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
                 return new TextVH(parent, R.layout.hp_cell_chat_text_right, viewType);
@@ -73,7 +73,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
     @Override
     public int getItemViewType(int position) {
         try {
-            MessageModel messageModel = getItemAt(position);
+            HpMessageModel messageModel = getItemAt(position);
             int messageType = 0;
             if (null != messageModel)
                 messageType = messageModel.getType();
@@ -93,11 +93,11 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         }
     }
 
-    private boolean isMessageFromMySelf(MessageModel messageModel) {
+    private boolean isMessageFromMySelf(HpMessageModel messageModel) {
         return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
     }
 
-    public class TextVH extends HpBaseViewHolder<MessageModel> {
+    public class TextVH extends HpBaseViewHolder<HpMessageModel> {
 
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
@@ -125,7 +125,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         }
 
         @Override
-        protected void onBind(MessageModel item, int position) {
+        protected void onBind(HpMessageModel item, int position) {
             tvMessageBody.setText(item.getBody());
             tvMessageStatus.setText(HpTimeFormatter.durationString(item.getCreated()));
 
@@ -196,7 +196,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
-        private void onBubbleClicked(MessageModel item) {
+        private void onBubbleClicked(HpMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 resendMessage(item);
             } else if (null != item.getSending() && !item.getSending()){
@@ -213,23 +213,23 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
             }
         }
 
-        private void onStatusImageClicked(MessageModel item) {
+        private void onStatusImageClicked(HpMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 resendMessage(item);
             }
         }
 
-        private void onReplyButtonClicked(MessageModel item) {
+        private void onReplyButtonClicked(HpMessageModel item) {
             // TODO: 1 October 2018 REPLY
             shrinkExpandedBubble();
         }
 
-        private void resendMessage(MessageModel item) {
+        private void resendMessage(HpMessageModel item) {
             removeMessage(item);
             listener.onRetrySendMessage(item);
         }
 
-        private void expandOrShrinkBubble(MessageModel item, boolean animate) {
+        private void expandOrShrinkBubble(HpMessageModel item, boolean animate) {
             if (item.isExpanded()) {
                 // Bubble is selected/expanded
                 expandedBubble = item;
@@ -428,7 +428,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         }
     }
 
-    public class ProductVH extends HpBaseViewHolder<MessageModel> {
+    public class ProductVH extends HpBaseViewHolder<HpMessageModel> {
 
         RecyclerView rvProductList;
         HpProductListAdapter adapter;
@@ -439,7 +439,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         }
 
         @Override
-        protected void onBind(MessageModel item, int position) {
+        protected void onBind(HpMessageModel item, int position) {
             if (null == adapter)
                 adapter = new HpProductListAdapter(item, myUserModel);
 
@@ -449,7 +449,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         }
     }
 
-    public class LogVH extends HpBaseViewHolder<MessageModel> {
+    public class LogVH extends HpBaseViewHolder<HpMessageModel> {
 
         private TextView tvLogMessage;
 
@@ -460,24 +460,24 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         }
 
         @Override
-        protected void onBind(MessageModel item, int position) {
+        protected void onBind(HpMessageModel item, int position) {
             tvLogMessage.setText(item.getBody());
         }
     }
 
-    public void setMessages(List<MessageModel> messages) {
+    public void setMessages(List<HpMessageModel> messages) {
         setItems(messages, true);
     }
 
-    public void addMessage(MessageModel message) {
+    public void addMessage(HpMessageModel message) {
         addItem(0, message);
     }
 
-    public void addMessage(List<MessageModel> messages) {
+    public void addMessage(List<HpMessageModel> messages) {
         addItem(messages, true);
     }
 
-    public void setMessageAt(int position, MessageModel message) {
+    public void setMessageAt(int position, HpMessageModel message) {
         setItemAt(position, message);
         notifyItemChanged(position);
     }
@@ -487,7 +487,7 @@ public class HpMessageAdapter extends HpBaseAdapter<MessageModel, HpBaseViewHold
         removeItemAt(position);
     }
 
-    public void removeMessage(MessageModel message) {
+    public void removeMessage(HpMessageModel message) {
         removeItem(message);
     }
 

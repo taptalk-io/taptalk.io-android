@@ -4,7 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ import java.util.List;
 public class HpContactListViewModel extends AndroidViewModel {
 
     // Contact List needs to be sorted ascending by name
-    private List<UserModel> contactList;
-    private List<UserModel> filteredContacts;
-    private List<UserModel> selectedContacts;
-    private List<List<UserModel>> separatedContacts;
+    private List<HpUserModel> contactList;
+    private List<HpUserModel> filteredContacts;
+    private List<HpUserModel> selectedContacts;
+    private List<List<HpUserModel>> separatedContacts;
     private String groupImage;
     private String groupName;
     private boolean isSelecting;
@@ -24,35 +24,35 @@ public class HpContactListViewModel extends AndroidViewModel {
         super(application);
     }
 
-    public List<UserModel> getContactList() {
+    public List<HpUserModel> getContactList() {
         return contactList == null ? contactList = new ArrayList<>() : contactList;
     }
 
-    public void setContactList(List<UserModel> contactList) {
+    public void setContactList(List<HpUserModel> contactList) {
         this.contactList = contactList;
     }
 
-    public List<UserModel> getFilteredContacts() {
+    public List<HpUserModel> getFilteredContacts() {
         return filteredContacts == null ? filteredContacts = new ArrayList<>() : filteredContacts;
     }
 
-    public void setFilteredContacts(List<UserModel> filteredContacts) {
+    public void setFilteredContacts(List<HpUserModel> filteredContacts) {
         this.filteredContacts = filteredContacts;
     }
 
-    public List<UserModel> getSelectedContacts() {
+    public List<HpUserModel> getSelectedContacts() {
         return selectedContacts == null ? selectedContacts = new ArrayList<>() : selectedContacts;
     }
 
-    public void setSelectedContacts(List<UserModel> selectedContacts) {
+    public void setSelectedContacts(List<HpUserModel> selectedContacts) {
         this.selectedContacts = selectedContacts;
     }
 
-    public List<List<UserModel>> getSeparatedContacts() {
+    public List<List<HpUserModel>> getSeparatedContacts() {
         return separatedContacts == null ? separatedContacts = new ArrayList<>() : separatedContacts;
     }
 
-    public void setSeparatedContacts(List<List<UserModel>> separatedContacts) {
+    public void setSeparatedContacts(List<List<HpUserModel>> separatedContacts) {
         this.separatedContacts = separatedContacts;
     }
 

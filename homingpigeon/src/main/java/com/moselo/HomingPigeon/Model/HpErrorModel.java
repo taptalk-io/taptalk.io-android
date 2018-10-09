@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class ErrorModel {
+public class HpErrorModel {
     @JsonProperty("code") private String code;
     @JsonProperty("message") private String message;
     @JsonProperty("field") private String field;
 
-    public ErrorModel() {
+    public HpErrorModel() {
     }
 
     public String getCode() {

@@ -12,12 +12,12 @@ import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
-import com.moselo.HomingPigeon.Model.EmitModel;
-import com.moselo.HomingPigeon.Model.ImageURL;
-import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.RoomModel;
-import com.moselo.HomingPigeon.Model.UserModel;
-import com.moselo.HomingPigeon.Model.UserRoleModel;
+import com.moselo.HomingPigeon.Model.HpEmitModel;
+import com.moselo.HomingPigeon.Model.HpImageURL;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.HpUserRoleModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -50,10 +50,10 @@ public class HpChatManager {
     private static HpChatManager instance;
     private List<HpChatListener> chatListeners;
     List<HpMessageEntity> saveMessages; //message to be save
-    private Map<String, MessageModel> pendingMessages, waitingResponses, incomingMessages;
+    private Map<String, HpMessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
-    private RoomModel activeRoom;
-    private UserModel activeUser;
+    private HpRoomModel activeRoom;
+    private HpUserModel activeUser;
     private boolean isCheckPendingArraySequenceActive = false;
     private boolean isPendingMessageExist = false;
     private boolean isFileUploadExist = false;
@@ -97,32 +97,32 @@ public class HpChatManager {
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
-                    EmitModel<MessageModel> messageEmit = HpUtils.getInstance()
-                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
+                    HpEmitModel<HpMessageModel> messageEmit = HpUtils.getInstance()
+                            .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
                         Log.e(TAG, "onReceiveNewEmit: " + HpUtils.getInstance().toJsonString(messageEmit));
-                        receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
+                        receiveMessageFromSocket(HpMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketUpdateMessage:
-                    EmitModel<MessageModel> messageUpdateEmit = HpUtils.getInstance()
-                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
+                    HpEmitModel<HpMessageModel> messageUpdateEmit = HpUtils.getInstance()
+                            .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
-                        receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageUpdateEmit.getData()), eventName);
+                        receiveMessageFromSocket(HpMessageModel.BuilderDecrypt(messageUpdateEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketDeleteMessage:
-                    EmitModel<MessageModel> messageDeleteEmit = HpUtils.getInstance()
-                            .fromJSON(new TypeReference<EmitModel<MessageModel>>() {
+                    HpEmitModel<HpMessageModel> messageDeleteEmit = HpUtils.getInstance()
+                            .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
-                        receiveMessageFromSocket(MessageModel.BuilderDecrypt(messageDeleteEmit.getData()), eventName);
+                        receiveMessageFromSocket(HpMessageModel.BuilderDecrypt(messageDeleteEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -149,7 +149,7 @@ public class HpChatManager {
 
     public HpChatManager() {
         HpConnectionManager.getInstance().addSocketListener(socketListener);
-        setActiveUser(HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        setActiveUser(HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
                                                    },
                 PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
                         .getString(K_USER, null)));
@@ -177,31 +177,31 @@ public class HpChatManager {
         chatListeners.clear();
     }
 
-    public RoomModel getActiveRoom() {
+    public HpRoomModel getActiveRoom() {
         return activeRoom;
     }
 
-    public void setActiveRoom(RoomModel roomId) {
+    public void setActiveRoom(HpRoomModel roomId) {
         this.activeRoom = roomId;
     }
 
-    public UserModel getActiveUser() {
+    public HpUserModel getActiveUser() {
         return activeUser;
     }
 
-    public void setActiveUser(UserModel user) {
+    public void setActiveUser(HpUserModel user) {
         this.activeUser = user;
     }
 
-    public void saveActiveUser(Context context, UserModel user) {
+    public void saveActiveUser(Context context, HpUserModel user) {
         this.activeUser = user;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(K_USER, HpUtils.getInstance().toJsonString(user)).apply();
     }
 
-    public Map<String, MessageModel> getMessageQueueInActiveRoom() {
-        Map<String, MessageModel> roomQueue = new LinkedHashMap<>();
-        for (Map.Entry<String, MessageModel> entry : pendingMessages.entrySet()) {
+    public Map<String, HpMessageModel> getMessageQueueInActiveRoom() {
+        Map<String, HpMessageModel> roomQueue = new LinkedHashMap<>();
+        for (Map.Entry<String, HpMessageModel> entry : pendingMessages.entrySet()) {
             if (entry.getValue().getRoom().getRoomID().equals(activeRoom)) {
                 roomQueue.put(entry.getKey(), entry.getValue());
             }
@@ -219,20 +219,20 @@ public class HpChatManager {
     }
 
     /**
-     * convert HpMessageEntity to MessageModel
+     * convert HpMessageEntity to HpMessageModel
      */
-    public MessageModel convertToModel(HpMessageEntity entity) {
-        return new MessageModel(
+    public HpMessageModel convertToModel(HpMessageEntity entity) {
+        return new HpMessageModel(
                 entity.getMessageID(),
                 entity.getLocalID(),
                 entity.getBody(),
-                new RoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType()),
+                new HpRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType()),
                 entity.getType(),
                 entity.getCreated(),
-                new UserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
-                        HpUtils.getInstance().fromJSON(new TypeReference<ImageURL>() {}, entity.getUserImage()),
+                new HpUserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
+                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getUserImage()),
                         entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
-                        HpUtils.getInstance().fromJSON(new TypeReference<UserRoleModel>() {}, entity.getUserRole()),
+                        HpUtils.getInstance().fromJSON(new TypeReference<HpUserRoleModel>() {}, entity.getUserRole()),
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated()),
                 entity.getRecipientID(),
@@ -242,9 +242,9 @@ public class HpChatManager {
     }
 
     /**
-     * convert MessageModel to HpMessageEntity
+     * convert HpMessageModel to HpMessageEntity
      */
-    public HpMessageEntity convertToEntity(MessageModel model) {
+    public HpMessageEntity convertToEntity(HpMessageModel model) {
         return new HpMessageEntity(
                 model.getMessageID(), model.getLocalID(), model.getBody(), model.getRecipientID(),
                 model.getType(), model.getCreated(), model.getUpdated(), model.getHasRead(), model.getIsRead(),
@@ -273,7 +273,7 @@ public class HpChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                MessageModel messageModel = buildTextMessage(substr, activeRoom);
+                HpMessageModel messageModel = buildTextMessage(substr, activeRoom);
 
                 // Add entity to list
                 messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
@@ -282,7 +282,7 @@ public class HpChatManager {
                 sendMessage(messageModel);
             }
         } else {
-            MessageModel messageModel = buildTextMessage(textMessage, activeRoom);
+            HpMessageModel messageModel = buildTextMessage(textMessage, activeRoom);
 
             // Send message
             sendMessage(messageModel);
@@ -291,11 +291,11 @@ public class HpChatManager {
         //checkAndSendPendingMessages();
     }
 
-    private MessageModel buildTextMessage(String message, RoomModel room) {
-        // Create new MessageModel based on text
+    private HpMessageModel buildTextMessage(String message, HpRoomModel room) {
+        // Create new HpMessageModel based on text
         String[] splitedRoomID = room.getRoomID().split("-");
         String otherUserID = !splitedRoomID[0].equals(activeUser.getUserID()) ? splitedRoomID[0] : splitedRoomID[1];
-        MessageModel messageModel = MessageModel.Builder(
+        HpMessageModel messageModel = HpMessageModel.Builder(
                 message,
                 room,
                 HpDefaultConstant.MessageType.TYPE_TEXT,
@@ -323,7 +323,7 @@ public class HpChatManager {
     public void checkAndSendPendingMessages() {
         Log.e(TAG, "checkAndSendPendingMessages: " + pendingMessages.size());
         if (!pendingMessages.isEmpty()) {
-            MessageModel message = pendingMessages.entrySet().iterator().next().getValue();
+            HpMessageModel message = pendingMessages.entrySet().iterator().next().getValue();
             runSendMessageSequence(message);
             pendingMessages.remove(message.getLocalID());
             new Timer().schedule(new TimerTask() {
@@ -338,7 +338,7 @@ public class HpChatManager {
     /**
      * sending Message to server
      */
-    private void sendMessage(MessageModel messageModel) {
+    private void sendMessage(HpMessageModel messageModel) {
         // Call listener
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (HpChatListener chatListener : chatListeners)
@@ -348,7 +348,7 @@ public class HpChatManager {
         runSendMessageSequence(messageModel);
     }
 
-    private void runSendMessageSequence(MessageModel messageModel) {
+    private void runSendMessageSequence(HpMessageModel messageModel) {
         Log.e(TAG, "runSendMessageSequence: " + HpConnectionManager.getInstance().getConnectionStatus());
         if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
@@ -356,7 +356,7 @@ public class HpChatManager {
             // Send message if socket is connected
             try {
                 Log.e(TAG, "runSendMessageSequence: connected " + messageModel.getBody());
-                sendEmit(kSocketNewMessage, MessageModel.BuilderEncrypt(messageModel));
+                sendEmit(kSocketNewMessage, HpMessageModel.BuilderEncrypt(messageModel));
             } catch (GeneralSecurityException e) {
                 e.printStackTrace();
             }
@@ -370,10 +370,10 @@ public class HpChatManager {
     /**
      * Sending Emit to Server
      */
-    private void sendEmit(String eventName, MessageModel messageModel) {
-        EmitModel<MessageModel> emitModel;
-        emitModel = new EmitModel<>(eventName, messageModel);
-        HpConnectionManager.getInstance().send(HpUtils.getInstance().toJsonString(emitModel));
+    private void sendEmit(String eventName, HpMessageModel messageModel) {
+        HpEmitModel<HpMessageModel> hpEmitModel;
+        hpEmitModel = new HpEmitModel<>(eventName, messageModel);
+        HpConnectionManager.getInstance().send(HpUtils.getInstance().toJsonString(hpEmitModel));
     }
 
     /**
@@ -389,8 +389,8 @@ public class HpChatManager {
         checkPendingBackgroundTask();
     }
 
-    private void insertToList(Map<String, MessageModel> hashMap) {
-        for (Map.Entry<String, MessageModel> message : hashMap.entrySet()) {
+    private void insertToList(Map<String, HpMessageModel> hashMap) {
+        for (Map.Entry<String, HpMessageModel> message : hashMap.entrySet()) {
             saveMessages.add(convertToEntity(message.getValue()));
         }
     }
@@ -439,7 +439,7 @@ public class HpChatManager {
      *
      * @param newMessage
      */
-    private void receiveMessageFromSocket(MessageModel newMessage, String eventName) {
+    private void receiveMessageFromSocket(HpMessageModel newMessage, String eventName) {
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());

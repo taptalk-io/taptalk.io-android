@@ -23,7 +23,7 @@ import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
@@ -88,7 +88,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
 
     private void initViewModel() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        UserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        HpUserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
         }, prefs.getString(K_USER, ""));
 
         vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
@@ -98,7 +98,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     private void initListener() {
         listener = new ContactListInterface() {
             @Override
-            public boolean onContactSelected(UserModel contact, boolean isSelected) {
+            public boolean onContactSelected(HpUserModel contact, boolean isSelected) {
                 HpUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (isSelected) {
@@ -133,7 +133,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
             }
 
             @Override
-            public void onContactRemoved(UserModel contact) {
+            public void onContactRemoved(HpUserModel contact) {
                 HpUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
@@ -156,15 +156,15 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     protected void initView() {
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {
-            UserModel u0 = new UserModel("u0", "Ababa");
-            UserModel u1 = new UserModel("u1", "Bambang 1");
-            UserModel u2 = new UserModel("u2", "Bambang 2");
-            UserModel u3 = new UserModel("u3", "Bambang 3");
-            UserModel u4 = new UserModel("u4", "Caca");
-            UserModel u5 = new UserModel("u5", "Coco");
-            UserModel u6 = new UserModel("u6", "123asd");
-            UserModel u7 = new UserModel("u7", "!!!11111!!!");
-            UserModel u8 = new UserModel("u8", "!!wkwkwk!!");
+            HpUserModel u0 = new HpUserModel("u0", "Ababa");
+            HpUserModel u1 = new HpUserModel("u1", "Bambang 1");
+            HpUserModel u2 = new HpUserModel("u2", "Bambang 2");
+            HpUserModel u3 = new HpUserModel("u3", "Bambang 3");
+            HpUserModel u4 = new HpUserModel("u4", "Caca");
+            HpUserModel u5 = new HpUserModel("u5", "Coco");
+            HpUserModel u6 = new HpUserModel("u6", "123asd");
+            HpUserModel u7 = new HpUserModel("u7", "!!!11111!!!");
+            HpUserModel u8 = new HpUserModel("u8", "!!wkwkwk!!");
             vm.getContactList().add(u0);
             vm.getContactList().add(u1);
             vm.getContactList().add(u2);
@@ -264,8 +264,8 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         if (searchKeyword.trim().isEmpty()) {
             vm.getFilteredContacts().addAll(vm.getContactList());
         } else {
-            List<UserModel> filteredContacts = new ArrayList<>();
-            for (UserModel user : vm.getContactList()) {
+            List<HpUserModel> filteredContacts = new ArrayList<>();
+            for (HpUserModel user : vm.getContactList()) {
                 if (user.getName().toLowerCase().contains(searchKeyword)) {
                     filteredContacts.add(user);
                 }

@@ -1,26 +1,26 @@
 package com.moselo.HomingPigeon.Interface;
 
-import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 
 public interface HomingPigeonChatInterface {
 
-    void onReceiveMessageInActiveRoom(MessageModel message);
+    void onReceiveMessageInActiveRoom(HpMessageModel message);
 
-    void onUpdateMessageInActiveRoom(MessageModel message);
+    void onUpdateMessageInActiveRoom(HpMessageModel message);
 
-    void onDeleteMessageInActiveRoom(MessageModel message);
+    void onDeleteMessageInActiveRoom(HpMessageModel message);
 
-    void onReceiveMessageInOtherRoom(MessageModel message);
+    void onReceiveMessageInOtherRoom(HpMessageModel message);
 
-    void onUpdateMessageInOtherRoom(MessageModel message);
+    void onUpdateMessageInOtherRoom(HpMessageModel message);
 
-    void onDeleteMessageInOtherRoom(MessageModel message);
+    void onDeleteMessageInOtherRoom(HpMessageModel message);
 
-    void onSendTextMessage(MessageModel message);
+    void onSendTextMessage(HpMessageModel message);
 
-    void onRetrySendMessage(MessageModel message);
+    void onRetrySendMessage(HpMessageModel message);
 
-    void onSendFailed(MessageModel message);
+    void onSendFailed(HpMessageModel message);
 
-    void onMessageClicked(MessageModel message, boolean isExpanded);
+    void onMessageClicked(HpMessageModel message, boolean isExpanded);
 }

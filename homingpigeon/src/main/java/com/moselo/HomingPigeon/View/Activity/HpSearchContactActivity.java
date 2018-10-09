@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
@@ -42,12 +42,12 @@ public class HpSearchContactActivity extends HpBaseActivity {
 
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {
-            UserModel u0 = new UserModel("u0", "Ababa");
-            UserModel u1 = new UserModel("u1", "Bambang 1");
-            UserModel u2 = new UserModel("u2", "Bambang 2");
-            UserModel u3 = new UserModel("u3", "Bambang 3");
-            UserModel u4 = new UserModel("u4", "Caca");
-            UserModel u5 = new UserModel("u5", "Coco");
+            HpUserModel u0 = new HpUserModel("u0", "Ababa");
+            HpUserModel u1 = new HpUserModel("u1", "Bambang 1");
+            HpUserModel u2 = new HpUserModel("u2", "Bambang 2");
+            HpUserModel u3 = new HpUserModel("u3", "Bambang 3");
+            HpUserModel u4 = new HpUserModel("u4", "Caca");
+            HpUserModel u5 = new HpUserModel("u5", "Coco");
             vm.getContactList().add(u0);
             vm.getContactList().add(u1);
             vm.getContactList().add(u2);
@@ -106,7 +106,7 @@ public class HpSearchContactActivity extends HpBaseActivity {
             if (searchKeyword.isEmpty()) {
                 vm.getFilteredContacts().clear();
             } else {
-                for (UserModel user : vm.getContactList()) {
+                for (HpUserModel user : vm.getContactList()) {
                     if (user.getName().toLowerCase().contains(searchKeyword)) {
                         vm.getFilteredContacts().add(user);
                     }

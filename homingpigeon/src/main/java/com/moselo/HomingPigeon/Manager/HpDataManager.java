@@ -14,11 +14,11 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Model.ErrorModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
 
@@ -37,20 +37,20 @@ public class HpDataManager {
         return instance == null ? (instance = new HpDataManager()) : instance;
     }
 
-    public UserModel getActiveUser(Context context) {
+    public HpUserModel getActiveUser(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
+        return HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
         }, prefs.getString(K_USER, null));
     }
 
     public boolean checkActiveUser(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (null == HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {}, prefs.getString(K_USER, null)))
+        if (null == HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {}, prefs.getString(K_USER, null)))
             return false;
         else return true;
     }
 
-    public void saveActiveUser(Context context, UserModel user) {
+    public void saveActiveUser(Context context, HpUserModel user) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(K_USER, HpUtils.getInstance().toJsonString(user)).apply();
         HpChatManager.getInstance().setActiveUser(user);
@@ -220,24 +220,24 @@ public class HpDataManager {
 
     //API
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
-            , String fullname, String email, String phone, String username, HpDefaultDataView<AuthTicketResponse> view) {
+            , String fullname, String email, String phone, String username, HpDefaultDataView<HpAuthTicketResponse> view) {
         HpApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
                 fullname, email, phone, username, new DefaultSubscriber<>(view));
     }
 
-    public void getAccessTokenFromApi(HpDefaultDataView<GetAccessTokenResponse> view) {
+    public void getAccessTokenFromApi(HpDefaultDataView<HpGetAccessTokenResponse> view) {
         HpApiManager.getInstance().getAccessToken(new DefaultSubscriber<>(view));
     }
 
-    public void refreshAccessToken(HpDefaultDataView<GetAccessTokenResponse> view) {
+    public void refreshAccessToken(HpDefaultDataView<HpGetAccessTokenResponse> view) {
         HpApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
     }
 
-    public void validateAccessToken(HpDefaultDataView<ErrorModel> view) {
+    public void validateAccessToken(HpDefaultDataView<HpErrorModel> view) {
         HpApiManager.getInstance().validateAccessToken(new DefaultSubscriber<>(view));
     }
 
-    public void getRoomListFromAPI(String userID, HpDefaultDataView<GetRoomListResponse> view) {
+    public void getRoomListFromAPI(String userID, HpDefaultDataView<HpGetRoomListResponse> view) {
         HpApiManager.getInstance().getRoomList(userID, new DefaultSubscriber<>(view));
     }
 }

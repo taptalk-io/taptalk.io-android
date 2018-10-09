@@ -10,7 +10,7 @@ import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
-import com.moselo.HomingPigeon.Model.ErrorModel;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import static com.moselo.HomingPigeon.Helper.HomingPigeon.appContext;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.CONNECTING;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.DISCONNECTED;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
@@ -104,7 +105,7 @@ public class HpConnectionManager {
                 Log.e(TAG, "onClose2: " + code);
                 Log.e(TAG, "onClose: " + reason);
                 connectionStatus = DISCONNECTED;
-                if (null != socketListeners && !socketListeners.isEmpty() && code != 666) {
+                if (null != socketListeners && !socketListeners.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
                     for (HomingPigeonSocketInterface listener : socketListeners)
                         listener.onSocketDisconnected();
                 }
@@ -224,7 +225,7 @@ public class HpConnectionManager {
                             for (HomingPigeonSocketInterface listener : socketListeners)
                                 listener.onSocketConnecting();
                         }
-                        close(666);
+                        close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
@@ -261,6 +262,6 @@ public class HpConnectionManager {
         //return websocketHeader;
     }
 
-    private HpDefaultDataView<ErrorModel> validateAccessView = new HpDefaultDataView<ErrorModel>() {
+    private HpDefaultDataView<HpErrorModel> validateAccessView = new HpDefaultDataView<HpErrorModel>() {
     };
 }

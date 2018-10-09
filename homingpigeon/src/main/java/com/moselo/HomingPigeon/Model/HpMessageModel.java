@@ -4,22 +4,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
 
 import java.security.GeneralSecurityException;
 
-public class MessageModel {
+public class HpMessageModel {
 
     @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
     @NonNull @JsonProperty("localID") private String localID;
-    @JsonProperty("room") private RoomModel room;
+    @JsonProperty("room") private HpRoomModel room;
     @JsonProperty("type") private int type;
     @JsonProperty("body") private String body;
     @JsonProperty("created") private Long created;
-    @JsonProperty("user") private UserModel user;
+    @JsonProperty("user") private HpUserModel user;
     @JsonProperty("recipientID") private String recipientID;
     @Nullable @JsonProperty("hasRead") private Boolean hasRead;
     @Nullable @JsonProperty("isRead") private Boolean isRead;
@@ -31,9 +30,9 @@ public class MessageModel {
     @Nullable @JsonProperty("updated") private Long updated;
     private Boolean isExpanded = false;
 
-    public MessageModel(@Nullable String messageID, @NonNull String localID, String body, RoomModel room,
-                        Integer type, Long created, UserModel user, String recipientID, @Nullable Boolean isDeleted,
-                        @Nullable Boolean isSending, @Nullable Boolean isFailedSend) {
+    public HpMessageModel(@Nullable String messageID, @NonNull String localID, String body, HpRoomModel room,
+                          Integer type, Long created, HpUserModel user, String recipientID, @Nullable Boolean isDeleted,
+                          @Nullable Boolean isSending, @Nullable Boolean isFailedSend) {
         this.messageID = messageID;
         this.localID = localID;
         this.body = body;
@@ -48,16 +47,16 @@ public class MessageModel {
         // TODO: 3 September 2018 ADD deliveredTo & seenBy
     }
 
-    public MessageModel() {
+    public HpMessageModel() {
     }
 
-    public static MessageModel Builder(String message, RoomModel room, Integer type, Long created, UserModel user, String recipientID) {
+    public static HpMessageModel Builder(String message, HpRoomModel room, Integer type, Long created, HpUserModel user, String recipientID) {
         String localID = HpUtils.getInstance().generateRandomString(32);
-        return new MessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false);
+        return new HpMessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false);
     }
 
-    public static MessageModel BuilderEncrypt(MessageModel messageModel) throws GeneralSecurityException {
-        return new MessageModel(
+    public static HpMessageModel BuilderEncrypt(HpMessageModel messageModel) throws GeneralSecurityException {
+        return new HpMessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
                 HpEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
@@ -71,8 +70,8 @@ public class MessageModel {
                 messageModel.getFailedSend());
     }
 
-    public static MessageModel BuilderDecrypt(MessageModel messageModel) throws GeneralSecurityException {
-        return new MessageModel(
+    public static HpMessageModel BuilderDecrypt(HpMessageModel messageModel) throws GeneralSecurityException {
+        return new HpMessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
                 HpEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
@@ -104,11 +103,11 @@ public class MessageModel {
         this.localID = localID;
     }
 
-    public RoomModel getRoom() {
+    public HpRoomModel getRoom() {
         return room;
     }
 
-    public void setRoom(RoomModel room) {
+    public void setRoom(HpRoomModel room) {
         this.room = room;
     }
 
@@ -136,11 +135,11 @@ public class MessageModel {
         this.created = created;
     }
 
-    public UserModel getUser() {
+    public HpUserModel getUser() {
         return user;
     }
 
-    public void setUser(UserModel user) {
+    public void setUser(HpUserModel user) {
         this.user = user;
     }
 
@@ -232,7 +231,7 @@ public class MessageModel {
         isExpanded = expanded;
     }
 
-    public void updateValue(MessageModel model){
+    public void updateValue(HpMessageModel model){
         this.messageID = model.getMessageID();
         this.localID = model.getLocalID();
         this.body = model.getBody();

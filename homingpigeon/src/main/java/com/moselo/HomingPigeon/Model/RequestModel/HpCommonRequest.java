@@ -4,14 +4,14 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CommonRequest {
+public class HpCommonRequest {
     @Nullable @JsonProperty("userID") private Integer userID;
 
-    public CommonRequest() {
+    public HpCommonRequest() {
     }
 
-    public static CommonRequest builderWithUserID (String userID) {
-        CommonRequest request = new CommonRequest();
+    public static HpCommonRequest builderWithUserID (String userID) {
+        HpCommonRequest request = new HpCommonRequest();
         request.setUserID(Integer.parseInt(userID));
         return request;
     }

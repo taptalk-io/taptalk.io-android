@@ -15,9 +15,9 @@ import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.ResponseModel.AuthTicketResponse;
-import com.moselo.HomingPigeon.Model.ErrorModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.GetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
 
 import java.net.URL;
@@ -210,7 +210,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
     }
 
-    HpDefaultDataView<AuthTicketResponse> authView = new HpDefaultDataView<AuthTicketResponse>() {
+    HpDefaultDataView<HpAuthTicketResponse> authView = new HpDefaultDataView<HpAuthTicketResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -222,7 +222,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onSuccess(AuthTicketResponse response) {
+        public void onSuccess(HpAuthTicketResponse response) {
             super.onSuccess(response);
             HomingPigeon.init(HomingPigeon.appContext)
                     .saveAuthTicketAndGetAccessToken(response.getTicket()
@@ -230,13 +230,13 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onError(ErrorModel error) {
+        public void onError(HpErrorModel error) {
             super.onError(error);
             showDialog("ERROR "+error.getCode(), error.getMessage());
         }
     };
 
-    HpDefaultDataView<GetAccessTokenResponse> accessTokenView = new HpDefaultDataView<GetAccessTokenResponse>() {
+    HpDefaultDataView<HpGetAccessTokenResponse> accessTokenView = new HpDefaultDataView<HpGetAccessTokenResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -248,7 +248,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onSuccess(GetAccessTokenResponse response) {
+        public void onSuccess(HpGetAccessTokenResponse response) {
             super.onSuccess(response);
             HpDataManager.getInstance().deleteAuthTicket(HpLoginActivity.this);
 
@@ -268,7 +268,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onError(ErrorModel error) {
+        public void onError(HpErrorModel error) {
             super.onError(error);
             showDialog("ERROR "+error.getCode(), error.getMessage());
         }

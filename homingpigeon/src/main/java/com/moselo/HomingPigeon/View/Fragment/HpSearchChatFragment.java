@@ -20,19 +20,19 @@ import android.widget.TextView;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Model.SearchChatModel;
+import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.HpSearchChatAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
 
-import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.CHAT_ITEM;
-import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.CONTACT_ITEM;
-import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.EMPTY_STATE;
-import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.MESSAGE_ITEM;
-import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.RECENT_ITEM;
-import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.RECENT_TITLE;
-import static com.moselo.HomingPigeon.Model.SearchChatModel.MyReturnType.SECTION_TITLE;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.CHAT_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.CONTACT_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.EMPTY_STATE;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.MESSAGE_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.RECENT_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.RECENT_TITLE;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.SECTION_TITLE;
 
 public class HpSearchChatFragment extends Fragment {
 
@@ -157,10 +157,10 @@ public class HpSearchChatFragment extends Fragment {
     private void setDummyDataforRecent() {
         vm.getSearchList().clear();
 
-        SearchChatModel recentTitleItem = new SearchChatModel(RECENT_TITLE);
+        HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
         vm.addSearchList(recentTitleItem);
 
-        SearchChatModel recentItem = new SearchChatModel(RECENT_ITEM);
+        HpSearchChatModel recentItem = new HpSearchChatModel(RECENT_ITEM);
         HpRecentSearchEntity entity = new HpRecentSearchEntity("Mo Salah", System.currentTimeMillis());
         recentItem.setRecentSearch(entity);
         vm.addSearchList(recentItem);
@@ -173,10 +173,10 @@ public class HpSearchChatFragment extends Fragment {
     private void setEmptyState() {
         vm.getSearchList().clear();
 
-        SearchChatModel emptyTitle = new SearchChatModel(SECTION_TITLE);
+        HpSearchChatModel emptyTitle = new HpSearchChatModel(SECTION_TITLE);
         emptyTitle.setSectionTitle("SEARCH RESULTS");
 
-        SearchChatModel emptyItem = new SearchChatModel(EMPTY_STATE);
+        HpSearchChatModel emptyItem = new HpSearchChatModel(EMPTY_STATE);
 
         vm.addSearchList(emptyTitle);
         vm.addSearchList(emptyItem);
@@ -186,18 +186,18 @@ public class HpSearchChatFragment extends Fragment {
     private void setDummyDataforSearchChat() {
         vm.getSearchList().clear();
 
-        SearchChatModel sectionTitleChats = new SearchChatModel(SECTION_TITLE);
+        HpSearchChatModel sectionTitleChats = new HpSearchChatModel(SECTION_TITLE);
         sectionTitleChats.setSectionTitle("CHATS");
-        SearchChatModel sectionTitleMessages = new SearchChatModel(SECTION_TITLE);
+        HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
         sectionTitleMessages.setSectionTitle("MESSAGES");
-        SearchChatModel sectionTitleContacts = new SearchChatModel(SECTION_TITLE);
+        HpSearchChatModel sectionTitleContacts = new HpSearchChatModel(SECTION_TITLE);
         sectionTitleContacts.setSectionTitle("OTHER CONTACTS");
 
-        SearchChatModel chatItem = new SearchChatModel(CHAT_ITEM);
-        SearchChatModel messageItem = new SearchChatModel(MESSAGE_ITEM);
-        SearchChatModel messageItemLast = new SearchChatModel(MESSAGE_ITEM);
+        HpSearchChatModel chatItem = new HpSearchChatModel(CHAT_ITEM);
+        HpSearchChatModel messageItem = new HpSearchChatModel(MESSAGE_ITEM);
+        HpSearchChatModel messageItemLast = new HpSearchChatModel(MESSAGE_ITEM);
         messageItemLast.setLastInSection(true);
-        SearchChatModel contactItem = new SearchChatModel(CONTACT_ITEM);
+        HpSearchChatModel contactItem = new HpSearchChatModel(CONTACT_ITEM);
 
         vm.addSearchList(sectionTitleChats);
         vm.addSearchList(chatItem);

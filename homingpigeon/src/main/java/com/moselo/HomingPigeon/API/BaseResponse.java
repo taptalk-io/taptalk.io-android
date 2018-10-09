@@ -4,24 +4,24 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.moselo.HomingPigeon.API.deserializer.ErrorEmptyAsNullDeserializer;
-import com.moselo.HomingPigeon.Model.ErrorModel;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
 public class BaseResponse<T> {
     @JsonDeserialize(using = ErrorEmptyAsNullDeserializer.class)
     @JsonProperty("error")
-    private ErrorModel error;
+    private HpErrorModel error;
 
     @JsonProperty("data") private T data;
 
     @JsonProperty("status") private int status;
 
-    public ErrorModel getError() {
+    public HpErrorModel getError() {
         return error;
     }
 
-    public void setError(ErrorModel error) {
+    public void setError(HpErrorModel error) {
         this.error = error;
     }
 

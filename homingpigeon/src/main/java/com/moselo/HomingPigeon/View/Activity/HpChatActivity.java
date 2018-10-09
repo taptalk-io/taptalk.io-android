@@ -2,7 +2,6 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,8 +31,8 @@ import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.CustomKeyboardModel;
-import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpCustomKeyboardAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpMessageAdapter;
@@ -115,58 +114,58 @@ public class HpChatActivity extends HpBaseActivity {
 
     HpChatListener chatListener = new HpChatListener() {
         @Override
-        public void onReceiveMessageInActiveRoom(MessageModel message) {
+        public void onReceiveMessageInActiveRoom(HpMessageModel message) {
             addNewTextMessage(message);
         }
 
         @Override
-        public void onUpdateMessageInActiveRoom(MessageModel message) {
+        public void onUpdateMessageInActiveRoom(HpMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
             addNewTextMessage(message);
         }
 
         @Override
-        public void onDeleteMessageInActiveRoom(MessageModel message) {
+        public void onDeleteMessageInActiveRoom(HpMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
             addNewTextMessage(message);
         }
 
         @Override
-        public void onReceiveMessageInOtherRoom(MessageModel message) {
+        public void onReceiveMessageInOtherRoom(HpMessageModel message) {
             super.onReceiveMessageInOtherRoom(message);
         }
 
         @Override
-        public void onUpdateMessageInOtherRoom(MessageModel message) {
+        public void onUpdateMessageInOtherRoom(HpMessageModel message) {
             super.onUpdateMessageInOtherRoom(message);
         }
 
         @Override
-        public void onDeleteMessageInOtherRoom(MessageModel message) {
+        public void onDeleteMessageInOtherRoom(HpMessageModel message) {
             super.onDeleteMessageInOtherRoom(message);
         }
 
         @Override
-        public void onSendTextMessage(MessageModel message) {
+        public void onSendTextMessage(HpMessageModel message) {
             addNewTextMessage(message);
             vm.addMessagePointer(message);
         }
 
         @Override
-        public void onRetrySendMessage(MessageModel message) {
+        public void onRetrySendMessage(HpMessageModel message) {
             vm.delete(message.getLocalID());
             HpChatManager.getInstance().sendTextMessage(message.getBody());
         }
 
         @Override
-        public void onSendFailed(MessageModel message) {
+        public void onSendFailed(HpMessageModel message) {
             vm.updateMessagePointer(message);
             vm.removeMessagePointer(message.getLocalID());
             runOnUiThread(() -> hpMessageAdapter.notifyItemRangeChanged(0, hpMessageAdapter.getItemCount()));
         }
 
         @Override
-        public void onMessageClicked(MessageModel message, boolean isExpanded) {
+        public void onMessageClicked(HpMessageModel message, boolean isExpanded) {
             super.onMessageClicked(message, isExpanded);
         }
     };
@@ -224,11 +223,11 @@ public class HpChatActivity extends HpBaseActivity {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         // TODO: 25 September 2018 CHANGE MENU ACCORDING TO USER ROLES
-        List<CustomKeyboardModel> customKeyboardMenus = new ArrayList<>();
-        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.SEE_PRICE_LIST));
-        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.READ_EXPERT_NOTES));
-        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.SEND_SERVICES));
-        customKeyboardMenus.add(new CustomKeyboardModel(CustomKeyboardModel.Type.CREATE_ORDER_CARD));
+        List<HpCustomKeyboardModel> customKeyboardMenus = new ArrayList<>();
+        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.SEE_PRICE_LIST));
+        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.READ_EXPERT_NOTES));
+        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.SEND_SERVICES));
+        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.CREATE_ORDER_CARD));
         hpCustomKeyboardAdapter = new HpCustomKeyboardAdapter(customKeyboardMenus);
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -289,7 +288,7 @@ public class HpChatActivity extends HpBaseActivity {
         }
     }
 
-    private void addNewTextMessage(final MessageModel newMessage) {
+    private void addNewTextMessage(final HpMessageModel newMessage) {
         runOnUiThread(() -> {
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
                 clEmptyChat.setVisibility(View.GONE);
@@ -398,9 +397,9 @@ public class HpChatActivity extends HpBaseActivity {
     HpDatabaseListener dbListener = new HpDatabaseListener() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
-            final List<MessageModel> models = new ArrayList<>();
+            final List<HpMessageModel> models = new ArrayList<>();
             for (HpMessageEntity entity : entities) {
-                MessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
             }

@@ -8,20 +8,20 @@ import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Model.SearchChatModel;
+import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseViewHolder<SearchChatModel>> {
+public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBaseViewHolder<HpSearchChatModel>> {
 
-    public HpSearchChatAdapter(List<SearchChatModel> items) {
+    public HpSearchChatAdapter(List<HpSearchChatModel> items) {
         setItems(items, true);
     }
 
     @Override
-    public HpBaseViewHolder<SearchChatModel> onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (SearchChatModel.MyReturnType.values()[viewType]){
+    public HpBaseViewHolder<HpSearchChatModel> onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (HpSearchChatModel.MyReturnType.values()[viewType]){
             case RECENT_TITLE:
                 return new RecentTitleVH(parent, R.layout.hp_cell_recent_search_title);
             case RECENT_ITEM:
@@ -49,7 +49,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseVi
         return super.getItemCount();
     }
 
-    public class RecentTitleVH extends HpBaseViewHolder<SearchChatModel> {
+    public class RecentTitleVH extends HpBaseViewHolder<HpSearchChatModel> {
         private TextView tvClearHistory;
         private TextView tvRecentTitle;
 
@@ -60,8 +60,8 @@ public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseVi
         }
 
         @Override
-        protected void onBind(SearchChatModel item, int position) {
-            if (SearchChatModel.MyReturnType.SECTION_TITLE == item.getMyReturnType()) {
+        protected void onBind(HpSearchChatModel item, int position) {
+            if (HpSearchChatModel.MyReturnType.SECTION_TITLE == item.getMyReturnType()) {
                 tvClearHistory.setVisibility(View.GONE);
                 tvRecentTitle.setText(item.getSectionTitle());
             }
@@ -69,7 +69,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseVi
         }
     }
 
-    public class RecentItemVH extends HpBaseViewHolder<SearchChatModel> {
+    public class RecentItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private TextView tvSearchText;
 
@@ -79,12 +79,12 @@ public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseVi
         }
 
         @Override
-        protected void onBind(SearchChatModel item, int position) {
+        protected void onBind(HpSearchChatModel item, int position) {
             tvSearchText.setText(item.getRecentSearch().getSearchText());
         }
     }
 
-    public class ChatItemVH extends HpBaseViewHolder<SearchChatModel> {
+    public class ChatItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private CircleImageView civAvatar;
 
@@ -94,13 +94,13 @@ public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseVi
         }
 
         @Override
-        protected void onBind(SearchChatModel item, int position) {
+        protected void onBind(HpSearchChatModel item, int position) {
             GlideApp.with(itemView.getContext()).load("https://images.performgroup.com/di/library/GOAL/bd/53/mohamed-salah-liverpool-2018-19_e6x5i309jkl11i2uzq838u0ve.jpg?t=-423079251")
                     .centerCrop().override(HpUtils.getInstance().getScreenWidth(), HpUtils.getInstance().getScreeHeight()).into(civAvatar);
         }
     }
 
-    public class MessageItemVH extends HpBaseViewHolder<SearchChatModel> {
+    public class MessageItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private View vSeparator;
 
@@ -110,14 +110,14 @@ public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseVi
         }
 
         @Override
-        protected void onBind(SearchChatModel item, int position) {
+        protected void onBind(HpSearchChatModel item, int position) {
             if (item.isLastInSection())
                 vSeparator.setVisibility(View.GONE);
             else vSeparator.setVisibility(View.VISIBLE);
         }
     }
 
-    public class ContactItemVH extends HpBaseViewHolder<SearchChatModel> {
+    public class ContactItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private CircleImageView civContactAvatar;
 
@@ -127,20 +127,20 @@ public class HpSearchChatAdapter extends HpBaseAdapter<SearchChatModel, HpBaseVi
         }
 
         @Override
-        protected void onBind(SearchChatModel item, int position) {
+        protected void onBind(HpSearchChatModel item, int position) {
             GlideApp.with(itemView.getContext()).load("https://images.performgroup.com/di/library/GOAL/bd/53/mohamed-salah-liverpool-2018-19_e6x5i309jkl11i2uzq838u0ve.jpg?t=-423079251")
                     .centerCrop().override(HpUtils.getInstance().getScreenWidth(), HpUtils.getInstance().getScreeHeight()).into(civContactAvatar);
         }
     }
 
-    public class EmptyItemVH extends HpBaseViewHolder<SearchChatModel> {
+    public class EmptyItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         protected EmptyItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
         }
 
         @Override
-        protected void onBind(SearchChatModel item, int position) {
+        protected void onBind(HpSearchChatModel item, int position) {
 
         }
     }

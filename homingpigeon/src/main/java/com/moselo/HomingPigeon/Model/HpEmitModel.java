@@ -10,19 +10,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "eventName",
         "data"
 })
-public class EmitModel<T> {
+public class HpEmitModel<T> {
 
     @JsonProperty("eventName")
     private String eventName;
     @JsonProperty("data")
     private T data;
 
-    public EmitModel(String eventName, T data) {
+    public HpEmitModel(String eventName, T data) {
         this.eventName = eventName;
         this.data = data;
     }
 
-    public EmitModel() {
+    public HpEmitModel() {
     }
 
     @JsonProperty("eventName")

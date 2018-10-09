@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.API.View;
 
-import com.moselo.HomingPigeon.Model.ErrorModel;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
 
 /**
  * Created by Fadhlan on 4/19/17.
@@ -17,7 +17,7 @@ public interface HpView<T> {
 
     void onSucessMessage(String message);
 
-    void onError(ErrorModel error);
+    void onError(HpErrorModel error);
 
     void onError(String errorMessage);
 

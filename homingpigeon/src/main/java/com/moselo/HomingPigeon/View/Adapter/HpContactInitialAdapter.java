@@ -10,23 +10,23 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
 public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactInitialAdapter.ContactListHolder> {
 
-    private List<List<UserModel>> contactList;
+    private List<List<HpUserModel>> contactList;
     private ContactListInterface listener;
     private int viewType;
 
-    public HpContactInitialAdapter(int viewType, List<List<UserModel>> contactList) {
+    public HpContactInitialAdapter(int viewType, List<List<HpUserModel>> contactList) {
         this.viewType = viewType;
         this.contactList = contactList;
     }
 
-    public HpContactInitialAdapter(int viewType, List<List<UserModel>> contactList, ContactListInterface listener) {
+    public HpContactInitialAdapter(int viewType, List<List<HpUserModel>> contactList, ContactListInterface listener) {
         this.viewType = viewType;
         this.contactList = contactList;
         this.listener = listener;
@@ -49,15 +49,15 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
         return 0;
     }
 
-    public List<List<UserModel>> getItems() {
+    public List<List<HpUserModel>> getItems() {
         return contactList;
     }
 
-    public List<UserModel> getItemAt(int position) {
+    public List<HpUserModel> getItemAt(int position) {
         return contactList.get(position);
     }
 
-    public void setItems(List<List<UserModel>> contactList) {
+    public void setItems(List<List<HpUserModel>> contactList) {
         this.contactList = contactList;
         notifyDataSetChanged();
     }
@@ -66,7 +66,7 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
 
         private RecyclerView rvContactInitial;
         private TextView tvInitial;
-        private List<UserModel> item;
+        private List<HpUserModel> item;
         private HpContactListAdapter adapter;
         private String myID;
 

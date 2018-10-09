@@ -18,8 +18,8 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.RoomModel;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 
@@ -31,7 +31,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
-public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHolder<UserModel>> {
+public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewHolder<HpUserModel>> {
 
     private ContactListInterface listener;
     private ColorStateList avatarTint;
@@ -44,12 +44,12 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
     public static final int SELECT = 2;
     public static final int SELECTED_MEMBER = 3;
 
-    public HpContactListAdapter(int viewType, List<UserModel> contactList) {
+    public HpContactListAdapter(int viewType, List<HpUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
     }
 
-    public HpContactListAdapter(int viewType, List<UserModel> contactList, @Nullable ContactListInterface listener, String myID) {
+    public HpContactListAdapter(int viewType, List<HpUserModel> contactList, @Nullable ContactListInterface listener, String myID) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
@@ -58,7 +58,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
 
     @NonNull
     @Override
-    public HpBaseViewHolder<UserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HpBaseViewHolder<HpUserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case SELECTED_MEMBER:
                 return new SelectedGroupMemberHolder(parent, R.layout.hp_cell_group_member);
@@ -72,7 +72,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
         return viewType;
     }
 
-    class ContactListHolder extends HpBaseViewHolder<UserModel> {
+    class ContactListHolder extends HpBaseViewHolder<HpUserModel> {
 
         private ImageView ivAvatar, ivAvatarIcon, ivSelection;
         private TextView tvFullName;
@@ -89,7 +89,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
         }
 
         @Override
-        protected void onBind(UserModel item, int position) {
+        protected void onBind(HpUserModel item, int position) {
             final int randomColor = HpUtils.getInstance().getRandomColor(item.getName());
 
             if (null != item.getAvatarURL()) {
@@ -129,7 +129,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
                 switch (viewType) {
                     case CHAT:
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
-                        UserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                        HpUserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
                         }, prefs.getString(K_USER, ""));
 
                         if (!myID.equals(item.getUserID())) {
@@ -138,7 +138,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
                             intent.putExtra(K_MY_USERNAME, myUser.getName());
                             intent.putExtra(ROOM_NAME, item.getName());
                             intent.putExtra(K_COLOR, randomColor);
-                            intent.putExtra(K_ROOM, RoomModel.Builder(HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
+                            intent.putExtra(K_ROOM, HpRoomModel.Builder(HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
                                     item.getName(), 1));
                             itemView.getContext().startActivity(intent);
 
@@ -157,7 +157,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
         }
     }
 
-    class SelectedGroupMemberHolder extends HpBaseViewHolder<UserModel> {
+    class SelectedGroupMemberHolder extends HpBaseViewHolder<HpUserModel> {
 
         private ImageView ivAvatar, ivAvatarIcon;
         private TextView tvFullName;
@@ -171,7 +171,7 @@ public class HpContactListAdapter extends HpBaseAdapter<UserModel, HpBaseViewHol
         }
 
         @Override
-        protected void onBind(UserModel item, int position) {
+        protected void onBind(HpUserModel item, int position) {
             final int randomColor = HpUtils.getInstance().getRandomColor(item.getName());
 
             if (null != item.getAvatarURL()) {

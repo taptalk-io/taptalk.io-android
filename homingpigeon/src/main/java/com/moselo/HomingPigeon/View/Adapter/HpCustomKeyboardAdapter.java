@@ -5,24 +5,24 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Model.CustomKeyboardModel;
+import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpCustomKeyboardAdapter extends HpBaseAdapter<CustomKeyboardModel, HpBaseViewHolder<CustomKeyboardModel>> {
+public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel, HpBaseViewHolder<HpCustomKeyboardModel>> {
 
-    public HpCustomKeyboardAdapter(List<CustomKeyboardModel> keyboardMenuList) {
+    public HpCustomKeyboardAdapter(List<HpCustomKeyboardModel> keyboardMenuList) {
         setItems(keyboardMenuList);
     }
 
     @NonNull
     @Override
-    public HpBaseViewHolder<CustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HpBaseViewHolder<HpCustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new KeyboardMenuHolder(parent, R.layout.hp_cell_custom_keyboard_menu);
     }
 
-    class KeyboardMenuHolder extends HpBaseViewHolder<CustomKeyboardModel> {
+    class KeyboardMenuHolder extends HpBaseViewHolder<HpCustomKeyboardModel> {
 
         TextView tvMenuIcon, tvMenuLabel;
 
@@ -33,7 +33,7 @@ public class HpCustomKeyboardAdapter extends HpBaseAdapter<CustomKeyboardModel, 
         }
 
         @Override
-        protected void onBind(CustomKeyboardModel item, int position) {
+        protected void onBind(HpCustomKeyboardModel item, int position) {
             tvMenuIcon.setText(item.getIcon());
             tvMenuLabel.setText(item.getLabel());
 
@@ -41,7 +41,7 @@ public class HpCustomKeyboardAdapter extends HpBaseAdapter<CustomKeyboardModel, 
         }
     }
 
-    private void onMenuClicked(CustomKeyboardModel.Type type) {
+    private void onMenuClicked(HpCustomKeyboardModel.Type type) {
         switch (type) {
             case SEE_PRICE_LIST:
                 break;

@@ -7,27 +7,27 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.ProductModel;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpProductModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpProductListAdapter extends HpBaseAdapter<ProductModel, HpBaseViewHolder<ProductModel>> {
+public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseViewHolder<HpProductModel>> {
 
-    private List<ProductModel> items = new ArrayList<>();
-    private MessageModel messageModel;
-    private UserModel myUserModel;
+    private List<HpProductModel> items = new ArrayList<>();
+    private HpMessageModel messageModel;
+    private HpUserModel myUserModel;
 
     private enum CellProductItemType {
         EXPERT, USER
     }
 
-    public HpProductListAdapter(MessageModel messageModel, UserModel myUserModel) {
+    public HpProductListAdapter(HpMessageModel messageModel, HpUserModel myUserModel) {
         setItems(HpUtils.getInstance().fromJSON(
-                new TypeReference<List<ProductModel>>() {
+                new TypeReference<List<HpProductModel>>() {
                 },
                 messageModel.getBody()), false);
         this.messageModel = messageModel;
@@ -35,7 +35,7 @@ public class HpProductListAdapter extends HpBaseAdapter<ProductModel, HpBaseView
     }
 
     @Override
-    public HpBaseViewHolder<ProductModel> onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public HpBaseViewHolder<HpProductModel> onCreateViewHolder(ViewGroup viewGroup, int i) {
         return new ProductVH(viewGroup, R.layout.hp_cell_chat_product_item, CellProductItemType.values()[i]);
     }
 
@@ -46,7 +46,7 @@ public class HpProductListAdapter extends HpBaseAdapter<ProductModel, HpBaseView
         else return CellProductItemType.USER.ordinal();
     }
 
-    public class ProductVH extends HpBaseViewHolder<ProductModel> {
+    public class ProductVH extends HpBaseViewHolder<HpProductModel> {
 
         View vBtnSeparator;
         TextView tvBtnDetails;
@@ -68,7 +68,7 @@ public class HpProductListAdapter extends HpBaseAdapter<ProductModel, HpBaseView
         }
 
         @Override
-        protected void onBind(ProductModel item, int position) {
+        protected void onBind(HpProductModel item, int position) {
 
         }
     }

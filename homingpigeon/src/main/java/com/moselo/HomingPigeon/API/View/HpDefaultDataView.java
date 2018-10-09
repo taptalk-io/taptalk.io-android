@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.API.View;
 
-import com.moselo.HomingPigeon.Model.ErrorModel;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
 
 /**
  * Created by Fadhlan on 6/15/17.
@@ -33,7 +33,7 @@ public abstract class HpDefaultDataView<T> implements HpView<T> {
     }
 
     @Override
-    public void onError(ErrorModel error) {
+    public void onError(HpErrorModel error) {
 
     }
 

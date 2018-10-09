@@ -5,22 +5,20 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-public class UserModel implements Parcelable {
+public class HpUserModel implements Parcelable {
 
     //userID itu userID dari Bisnis Server kalau xcUserID itu userID dari Chat Server
     // (mereka berdua bisa sama bisa juga beda)
     @JsonProperty("userID") @JsonAlias("id") private String userID;
     @JsonProperty("xcUserID") private String xcUserID;
     @JsonProperty("fullname") private String name;
-    @JsonProperty("imageURL") private ImageURL avatarURL;
+    @JsonProperty("imageURL") private HpImageURL avatarURL;
     @Nullable @JsonProperty("username") private String username;
     @Nullable @JsonProperty("email") private String email;
     @Nullable @JsonProperty("phone") private String phoneNumber;
-    @Nullable @JsonProperty("userRole") private UserRoleModel userRole;
+    @Nullable @JsonProperty("userRole") private HpUserRoleModel userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
     @Nullable @JsonProperty("lastActivity") private Long lastActivity;
     @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;
@@ -28,8 +26,8 @@ public class UserModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     private boolean isSelected;
 
-    public UserModel(String userID, String xcUserID, String name, ImageURL avatarURL, @Nullable String username
-            , @Nullable String email, @Nullable String phoneNumber, @Nullable UserRoleModel userRole
+    public HpUserModel(String userID, String xcUserID, String name, HpImageURL avatarURL, @Nullable String username
+            , @Nullable String email, @Nullable String phoneNumber, @Nullable HpUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
             , @Nullable Long updated) {
         this.userID = userID;
@@ -47,24 +45,24 @@ public class UserModel implements Parcelable {
         this.updated = updated;
     }
 
-    public UserModel(String userID, String name) {
+    public HpUserModel(String userID, String name) {
         this.userID = userID;
         this.name = name;
     }
 
-    public static UserModel Builder(String userID, String xcUserID, String name, ImageURL avatarURL, @Nullable String username
-            , @Nullable String email, @Nullable String phoneNumber, @Nullable UserRoleModel userRole
+    public static HpUserModel Builder(String userID, String xcUserID, String name, HpImageURL avatarURL, @Nullable String username
+            , @Nullable String email, @Nullable String phoneNumber, @Nullable HpUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
             , @Nullable Long updated) {
-        return new UserModel(userID, xcUserID, name, avatarURL, username, email, phoneNumber, userRole
+        return new HpUserModel(userID, xcUserID, name, avatarURL, username, email, phoneNumber, userRole
         , lastLogin, lastActivity, requireChangePassword, created, updated);
     }
 
-    public static UserModel Builder(String userID, String name){
-        return new UserModel(userID, name);
+    public static HpUserModel Builder(String userID, String name){
+        return new HpUserModel(userID, name);
     }
 
-    public UserModel() {
+    public HpUserModel() {
     }
 
     @JsonProperty("userID") @JsonAlias("id")
@@ -95,11 +93,11 @@ public class UserModel implements Parcelable {
         this.name = name;
     }
 
-    public ImageURL getAvatarURL() {
+    public HpImageURL getAvatarURL() {
         return avatarURL;
     }
 
-    public void setAvatarURL(ImageURL avatarURL) {
+    public void setAvatarURL(HpImageURL avatarURL) {
         this.avatarURL = avatarURL;
     }
 
@@ -134,12 +132,12 @@ public class UserModel implements Parcelable {
     }
 
     @Nullable @JsonProperty("userRole")
-    public UserRoleModel getUserRole() {
+    public HpUserRoleModel getUserRole() {
         return userRole;
     }
 
     @JsonProperty("userRole")
-    public void setUserRole(@Nullable UserRoleModel userRole) {
+    public void setUserRole(@Nullable HpUserRoleModel userRole) {
         this.userRole = userRole;
     }
 
@@ -221,15 +219,15 @@ public class UserModel implements Parcelable {
         dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
     }
 
-    protected UserModel(Parcel in) {
+    protected HpUserModel(Parcel in) {
         this.userID = in.readString();
         this.xcUserID = in.readString();
         this.name = in.readString();
-        this.avatarURL = in.readParcelable(ImageURL.class.getClassLoader());
+        this.avatarURL = in.readParcelable(HpImageURL.class.getClassLoader());
         this.username = in.readString();
         this.email = in.readString();
         this.phoneNumber = in.readString();
-        this.userRole = in.readParcelable(UserRoleModel.class.getClassLoader());
+        this.userRole = in.readParcelable(HpUserRoleModel.class.getClassLoader());
         this.lastLogin = (Long) in.readValue(Long.class.getClassLoader());
         this.lastActivity = (Long) in.readValue(Long.class.getClassLoader());
         this.requireChangePassword = (Boolean) in.readValue(Boolean.class.getClassLoader());
@@ -238,15 +236,15 @@ public class UserModel implements Parcelable {
         this.isSelected = in.readByte() != 0;
     }
 
-    public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
+    public static final Creator<HpUserModel> CREATOR = new Creator<HpUserModel>() {
         @Override
-        public UserModel createFromParcel(Parcel source) {
-            return new UserModel(source);
+        public HpUserModel createFromParcel(Parcel source) {
+            return new HpUserModel(source);
         }
 
         @Override
-        public UserModel[] newArray(int size) {
-            return new UserModel[size];
+        public HpUserModel[] newArray(int size) {
+            return new HpUserModel[size];
         }
     };
 }

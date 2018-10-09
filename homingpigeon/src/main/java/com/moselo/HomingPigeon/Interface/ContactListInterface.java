@@ -1,10 +1,10 @@
 package com.moselo.HomingPigeon.Interface;
 
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 
 public interface ContactListInterface {
 
-    boolean onContactSelected(UserModel contact, boolean isSelected);
+    boolean onContactSelected(HpUserModel contact, boolean isSelected);
 
-    void onContactRemoved(UserModel contact);
+    void onContactRemoved(HpUserModel contact);
 }

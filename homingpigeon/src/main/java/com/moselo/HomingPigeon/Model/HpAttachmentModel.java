@@ -5,12 +5,12 @@ import com.moselo.HomingPigeon.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttachmentModel {
+public class HpAttachmentModel {
     private int icon;
     private int titleIds;
     private int id;
 
-    public AttachmentModel(int icon, int titleIds, int id) {
+    public HpAttachmentModel(int icon, int titleIds, int id) {
         this.icon = icon;
         this.titleIds = titleIds;
         this.id = id;
@@ -40,7 +40,7 @@ public class AttachmentModel {
         this.titleIds = titleIds;
     }
 
-    public static List<AttachmentModel> createAttachMenu() {
+    public static List<HpAttachmentModel> createAttachMenu() {
         int[] imageResIds = {
                 R.drawable.hp_ic_documents_green_blue,
                 R.drawable.hp_ic_camera_green_blue,
@@ -68,9 +68,9 @@ public class AttachmentModel {
                 R.id.bt_contact
         };
 
-        List<AttachmentModel> attachMenus = new ArrayList<>();
+        List<HpAttachmentModel> attachMenus = new ArrayList<>();
         for (int index = 0; index < 6; index++) {
-            attachMenus.add(new AttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+            attachMenus.add(new HpAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
         }
 
         return attachMenus;

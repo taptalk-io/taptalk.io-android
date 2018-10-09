@@ -2,14 +2,14 @@ package com.moselo.HomingPigeon.Model.ResponseModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AuthTicketResponse {
+public class HpAuthTicketResponse {
     @JsonProperty("ticket") private String ticket;
 
-    public AuthTicketResponse(String ticket) {
+    public HpAuthTicketResponse(String ticket) {
         this.ticket = ticket;
     }
 
-    public AuthTicketResponse() {
+    public HpAuthTicketResponse() {
     }
 
     public String getTicket() {

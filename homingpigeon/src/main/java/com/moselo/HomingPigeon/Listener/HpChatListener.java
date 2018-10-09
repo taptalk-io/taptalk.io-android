@@ -1,17 +1,17 @@
 package com.moselo.HomingPigeon.Listener;
 
 import com.moselo.HomingPigeon.Interface.HomingPigeonChatInterface;
-import com.moselo.HomingPigeon.Model.MessageModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 
 public abstract class HpChatListener implements HomingPigeonChatInterface {
-    @Override public void onReceiveMessageInActiveRoom(MessageModel message) {}
-    @Override public void onUpdateMessageInActiveRoom(MessageModel message) {}
-    @Override public void onDeleteMessageInActiveRoom(MessageModel message) {}
-    @Override public void onReceiveMessageInOtherRoom(MessageModel message) {}
-    @Override public void onUpdateMessageInOtherRoom(MessageModel message) {}
-    @Override public void onDeleteMessageInOtherRoom(MessageModel message) {}
-    @Override public void onSendTextMessage(MessageModel message) {}
-    @Override public void onRetrySendMessage(MessageModel message) {}
-    @Override public void onSendFailed(MessageModel message) {}
-    @Override public void onMessageClicked(MessageModel message, boolean isExpanded) {}
+    @Override public void onReceiveMessageInActiveRoom(HpMessageModel message) {}
+    @Override public void onUpdateMessageInActiveRoom(HpMessageModel message) {}
+    @Override public void onDeleteMessageInActiveRoom(HpMessageModel message) {}
+    @Override public void onReceiveMessageInOtherRoom(HpMessageModel message) {}
+    @Override public void onUpdateMessageInOtherRoom(HpMessageModel message) {}
+    @Override public void onDeleteMessageInOtherRoom(HpMessageModel message) {}
+    @Override public void onSendTextMessage(HpMessageModel message) {}
+    @Override public void onRetrySendMessage(HpMessageModel message) {}
+    @Override public void onSendFailed(HpMessageModel message) {}
+    @Override public void onMessageClicked(HpMessageModel message, boolean isExpanded) {}
 }

@@ -23,10 +23,10 @@ import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.RoomListModel;
-import com.moselo.HomingPigeon.Model.RoomModel;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpRoomListModel;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
@@ -37,7 +37,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_MY_USERNAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
-public class HpRoomListAdapter extends HpBaseAdapter<RoomListModel, HpBaseViewHolder<RoomListModel>> {
+public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseViewHolder<HpRoomListModel>> {
 
     private HpRoomListViewModel vm;
     private RoomListInterface roomListInterface;
@@ -53,7 +53,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<RoomListModel, HpBaseViewHo
 
     @NonNull
     @Override
-    public HpBaseViewHolder<RoomListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HpBaseViewHolder<HpRoomListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RoomListVH(parent, R.layout.hp_cell_user_room);
     }
 
@@ -62,13 +62,13 @@ public class HpRoomListAdapter extends HpBaseAdapter<RoomListModel, HpBaseViewHo
         return super.getItemCount();
     }
 
-    public class RoomListVH extends HpBaseViewHolder<RoomListModel> {
+    public class RoomListVH extends HpBaseViewHolder<HpRoomListModel> {
 
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
         private ImageView ivAvatar, ivAvatarIcon, ivMute, ivMessageStatus;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
-        private MessageModel item;
+        private HpMessageModel item;
 
         protected RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -84,8 +84,8 @@ public class HpRoomListAdapter extends HpBaseAdapter<RoomListModel, HpBaseViewHo
         }
 
         @Override
-        protected void onBind(RoomListModel item, int position) {
-            final UserModel userModel = item.getLastMessage().getUser();
+        protected void onBind(HpRoomListModel item, int position) {
+            final HpUserModel userModel = item.getLastMessage().getUser();
             final int randomColor = HpUtils.getInstance().getRandomColor(userModel.getName());
 
             if (null != item.getLastMessage().getRoom().getRoomImage()) {
@@ -170,7 +170,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<RoomListModel, HpBaseViewHo
                 } else {
                     // Open chat room on click
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
-                    UserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<UserModel>() {
+                    HpUserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
                     }, prefs.getString(K_USER, ""));
 
                     String myUserID = myUser.getUserID();
@@ -182,7 +182,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<RoomListModel, HpBaseViewHo
                         intent.putExtra(K_MY_USERNAME, myUsername);
                         intent.putExtra(ROOM_NAME, item.getLastMessage().getRoom().getRoomName());
                         intent.putExtra(K_COLOR, randomColor);
-                        intent.putExtra(K_ROOM, RoomModel.Builder(roomID,
+                        intent.putExtra(K_ROOM, HpRoomModel.Builder(roomID,
                                 item.getLastMessage().getRoom().getRoomName(), item.getLastMessage().getRoom().getRoomType()));
                         itemView.getContext().startActivity(intent);
 

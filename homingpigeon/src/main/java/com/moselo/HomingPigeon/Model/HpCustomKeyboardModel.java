@@ -3,7 +3,7 @@ package com.moselo.HomingPigeon.Model;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.R;
 
-public class CustomKeyboardModel {
+public class HpCustomKeyboardModel {
 
     public enum Type {
         SEE_PRICE_LIST,
@@ -15,7 +15,7 @@ public class CustomKeyboardModel {
     private Type type;
     private String icon, label;
 
-    public CustomKeyboardModel(Type type) {
+    public HpCustomKeyboardModel(Type type) {
         this.type = type;
 
         switch (type) {

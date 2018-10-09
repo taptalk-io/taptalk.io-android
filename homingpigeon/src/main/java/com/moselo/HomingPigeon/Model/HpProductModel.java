@@ -7,17 +7,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class ProductModel {
+public class HpProductModel {
 
     @JsonProperty("productName") private String name;
-    @JsonProperty("thumbnailURL") private ImageURL thumbnail;
-    @JsonProperty("subcategory") private PairIdNameModel subcategory;
+    @JsonProperty("thumbnailURL") private HpImageURL thumbnail;
+    @JsonProperty("subcategory") private HpPairIdNameModel subcategory;
     @JsonProperty("productID") private String prodID;
     @JsonProperty("price") private Long price;
     @JsonProperty("type") private String type;
 
     @Ignore
-    public ProductModel(String name, ImageURL thumbnail, PairIdNameModel subcategory, String prodID, Long price, String type) {
+    public HpProductModel(String name, HpImageURL thumbnail, HpPairIdNameModel subcategory, String prodID, Long price, String type) {
         this.name = name;
         this.thumbnail = thumbnail;
         this.subcategory = subcategory;
@@ -26,7 +26,7 @@ public class ProductModel {
         this.type = type;
     }
 
-    public ProductModel() {}
+    public HpProductModel() {}
 
     public String getName() {
         return name;
@@ -36,19 +36,19 @@ public class ProductModel {
         this.name = name;
     }
 
-    public ImageURL getThumbnail() {
+    public HpImageURL getThumbnail() {
         return thumbnail;
     }
 
-    public void setThumbnail(ImageURL thumbnail) {
+    public void setThumbnail(HpImageURL thumbnail) {
         this.thumbnail = thumbnail;
     }
 
-    public PairIdNameModel getSubcategory() {
+    public HpPairIdNameModel getSubcategory() {
         return subcategory;
     }
 
-    public void setSubcategory(PairIdNameModel subcategory) {
+    public void setSubcategory(HpPairIdNameModel subcategory) {
         this.subcategory = subcategory;
     }
 

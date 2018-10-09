@@ -12,18 +12,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "userID",
         "at",
 })
-public class SeenByModel {
-    @Nullable @JsonProperty("user") private UserModel user;
+public class HpSeenByModel {
+    @Nullable @JsonProperty("user") private HpUserModel user;
     @Nullable @JsonProperty("userID") private String userID;
     @Nullable @JsonProperty("at") private Long at;
 
     @Nullable @JsonProperty("user")
-    public UserModel getUser() {
+    public HpUserModel getUser() {
         return user;
     }
 
     @JsonProperty("user")
-    public void setUser(@Nullable UserModel user) {
+    public void setUser(@Nullable HpUserModel user) {
         this.user = user;
     }
 

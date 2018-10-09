@@ -2,7 +2,7 @@ package com.moselo.HomingPigeon.Model.RequestModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AuthTicketRequest {
+public class HpAuthTicketRequest {
     @JsonProperty("userIPAddress") private String userIPAddress;
     @JsonProperty("userAgent") private String userAgent;
     @JsonProperty("userPlatform") private String userPlatform;
@@ -13,7 +13,7 @@ public class AuthTicketRequest {
     @JsonProperty("phone") private String phone;
     @JsonProperty("username") private String username;
 
-    public AuthTicketRequest(String userIPAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID, String fullName, String email, String phone, String username) {
+    public HpAuthTicketRequest(String userIPAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID, String fullName, String email, String phone, String username) {
         this.userIPAddress = userIPAddress;
         this.userAgent = userAgent;
         this.userPlatform = userPlatform;
@@ -25,11 +25,11 @@ public class AuthTicketRequest {
         this.username = username;
     }
 
-    public AuthTicketRequest() {
+    public HpAuthTicketRequest() {
     }
 
-    public static AuthTicketRequest toBuilder(String userIPAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID, String fullName, String email, String phone, String username) {
-        return new AuthTicketRequest(userIPAddress, userAgent, userPlatform, userDeviceID, xcUserID, fullName, email
+    public static HpAuthTicketRequest toBuilder(String userIPAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID, String fullName, String email, String phone, String username) {
+        return new HpAuthTicketRequest(userIPAddress, userAgent, userPlatform, userDeviceID, xcUserID, fullName, email
         , phone, username);
     }
 

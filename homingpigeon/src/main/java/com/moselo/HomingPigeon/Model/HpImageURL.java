@@ -5,15 +5,15 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ImageURL implements Parcelable {
+public class HpImageURL implements Parcelable {
     @JsonProperty("fullsize") private String fullsize;
     @JsonProperty("thumbnail") private String thumbnail;
 
-    public ImageURL() { }
+    public HpImageURL() { }
 
     // TODO: 28/09/18 diilangin nnti setelah fix
-    public static ImageURL BuilderDummy() {
-        ImageURL dummy = new ImageURL();
+    public static HpImageURL BuilderDummy() {
+        HpImageURL dummy = new HpImageURL();
         dummy.setFullsize("https://qph.fs.quoracdn.net/main-qimg-f1160ebf02f4637ef39ea8ff5567e466");
         dummy.setThumbnail("https://qph.fs.quoracdn.net/main-qimg-f1160ebf02f4637ef39ea8ff5567e466");
         return dummy;
@@ -46,20 +46,20 @@ public class ImageURL implements Parcelable {
         dest.writeString(this.thumbnail);
     }
 
-    protected ImageURL(Parcel in) {
+    protected HpImageURL(Parcel in) {
         this.fullsize = in.readString();
         this.thumbnail = in.readString();
     }
 
-    public static final Parcelable.Creator<ImageURL> CREATOR = new Parcelable.Creator<ImageURL>() {
+    public static final Parcelable.Creator<HpImageURL> CREATOR = new Parcelable.Creator<HpImageURL>() {
         @Override
-        public ImageURL createFromParcel(Parcel source) {
-            return new ImageURL(source);
+        public HpImageURL createFromParcel(Parcel source) {
+            return new HpImageURL(source);
         }
 
         @Override
-        public ImageURL[] newArray(int size) {
-            return new ImageURL[size];
+        public HpImageURL[] newArray(int size) {
+            return new HpImageURL[size];
         }
     };
 }

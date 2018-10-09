@@ -14,7 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moselo.HomingPigeon.Model.UserModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 
 import org.json.JSONObject;
@@ -162,16 +162,16 @@ public class HpUtils {
     /**
      * separate contact list by initial
      */
-    public List<List<UserModel>> separateContactsByInitial(List<UserModel> contacts) {
-        List<List<UserModel>> separatedContacts = new ArrayList<>();
-        List<UserModel> nonAlphabeticContacts = new ArrayList<>();
+    public List<List<HpUserModel>> separateContactsByInitial(List<HpUserModel> contacts) {
+        List<List<HpUserModel>> separatedContacts = new ArrayList<>();
+        List<HpUserModel> nonAlphabeticContacts = new ArrayList<>();
         int previousInitialIndexStart = 0;
         int size = contacts.size();
         for (int i = 1; i <= size; i++) {
             if (i == size ||
                     contacts.get(i).getName().charAt(0) !=
                             contacts.get(i - 1).getName().charAt(0)) {
-                List<UserModel> contactSubList = contacts.subList(previousInitialIndexStart, i);
+                List<HpUserModel> contactSubList = contacts.subList(previousInitialIndexStart, i);
                 if (Character.isAlphabetic(contactSubList.get(0).getName().charAt(0))) {
                     separatedContacts.add(contactSubList);
                 } else {

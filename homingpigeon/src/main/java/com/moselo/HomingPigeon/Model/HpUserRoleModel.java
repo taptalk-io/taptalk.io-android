@@ -1,6 +1,5 @@
 package com.moselo.HomingPigeon.Model;
 
-import android.arch.persistence.room.Ignore;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,27 +8,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class UserRoleModel implements Parcelable {
+public class HpUserRoleModel implements Parcelable {
     @JsonProperty("userRoleID") private String id;
     @JsonProperty("name") private String name;
     @JsonProperty("iconURL") private String iconURL;
 
-    public UserRoleModel(String id, String name, String iconURL) {
+    public HpUserRoleModel(String id, String name, String iconURL) {
         this.id = id;
         this.name = name;
         this.iconURL = iconURL;
     }
 
-    public UserRoleModel(String id, String name) {
+    public HpUserRoleModel(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public UserRoleModel() {
+    public HpUserRoleModel() {
     }
 
-    public static UserRoleModel Builder(String userRoleID, String userRoleName){
-        return new UserRoleModel(userRoleID, userRoleName);
+    public static HpUserRoleModel Builder(String userRoleID, String userRoleName){
+        return new HpUserRoleModel(userRoleID, userRoleName);
     }
 
     public String getId() {
@@ -69,21 +68,21 @@ public class UserRoleModel implements Parcelable {
         dest.writeString(this.iconURL);
     }
 
-    protected UserRoleModel(Parcel in) {
+    protected HpUserRoleModel(Parcel in) {
         this.id = in.readString();
         this.name = in.readString();
         this.iconURL = in.readString();
     }
 
-    public static final Parcelable.Creator<UserRoleModel> CREATOR = new Parcelable.Creator<UserRoleModel>() {
+    public static final Parcelable.Creator<HpUserRoleModel> CREATOR = new Parcelable.Creator<HpUserRoleModel>() {
         @Override
-        public UserRoleModel createFromParcel(Parcel source) {
-            return new UserRoleModel(source);
+        public HpUserRoleModel createFromParcel(Parcel source) {
+            return new HpUserRoleModel(source);
         }
 
         @Override
-        public UserRoleModel[] newArray(int size) {
-            return new UserRoleModel[size];
+        public HpUserRoleModel[] newArray(int size) {
+            return new HpUserRoleModel[size];
         }
     };
 }

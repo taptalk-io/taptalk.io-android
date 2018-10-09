@@ -1,28 +1,28 @@
 package com.moselo.HomingPigeon.Model;
 
-public class RoomListModel {
-    private MessageModel lastMessage;
+public class HpRoomListModel {
+    private HpMessageModel lastMessage;
     private int unreadCount;
 
-    public RoomListModel(MessageModel lastMessage, int unreadCount) {
+    public HpRoomListModel(HpMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
         this.unreadCount = unreadCount;
     }
 
-    public static RoomListModel buildWithLastMessage(MessageModel lastMessage) {
-        RoomListModel roomModel = new RoomListModel();
+    public static HpRoomListModel buildWithLastMessage(HpMessageModel lastMessage) {
+        HpRoomListModel roomModel = new HpRoomListModel();
         roomModel.setLastMessage(lastMessage);
         return roomModel;
     }
 
-    public RoomListModel() {
+    public HpRoomListModel() {
     }
 
-    public MessageModel getLastMessage() {
+    public HpMessageModel getLastMessage() {
         return lastMessage;
     }
 
-    public void setLastMessage(MessageModel lastMessage) {
+    public void setLastMessage(HpMessageModel lastMessage) {
         this.lastMessage = lastMessage;
     }
 

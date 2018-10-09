@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -28,18 +27,15 @@ import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
-import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
-import com.moselo.HomingPigeon.Model.ErrorModel;
-import com.moselo.HomingPigeon.Model.MessageModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.GetRoomListResponse;
-import com.moselo.HomingPigeon.Model.RoomListModel;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.HpRoomListModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpNewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -73,17 +69,17 @@ public class HpRoomListFragment extends Fragment {
 
     HpChatListener chatListener = new HpChatListener() {
         @Override
-        public void onReceiveMessageInOtherRoom(MessageModel message) {
+        public void onReceiveMessageInOtherRoom(HpMessageModel message) {
             processMessageFromSocket(message);
         }
 
         @Override
-        public void onUpdateMessageInOtherRoom(MessageModel message) {
+        public void onUpdateMessageInOtherRoom(HpMessageModel message) {
             processMessageFromSocket(message);
         }
 
         @Override
-        public void onDeleteMessageInOtherRoom(MessageModel message) {
+        public void onDeleteMessageInOtherRoom(HpMessageModel message) {
             processMessageFromSocket(message);
         }
     };
@@ -159,7 +155,7 @@ public class HpRoomListFragment extends Fragment {
         });
 
         ivButtonCancelSelection.setOnClickListener(v -> {
-            for (Map.Entry<String, RoomListModel> entry : vm.getSelectedRooms().entrySet()) {
+            for (Map.Entry<String, HpRoomListModel> entry : vm.getSelectedRooms().entrySet()) {
                 entry.getValue().getLastMessage().getRoom().setSelected(false);
             }
             vm.getSelectedRooms().clear();
@@ -234,7 +230,7 @@ public class HpRoomListFragment extends Fragment {
         }
     }
 
-    HpDefaultDataView<GetRoomListResponse> roomListView = new HpDefaultDataView<GetRoomListResponse>() {
+    HpDefaultDataView<HpGetRoomListResponse> roomListView = new HpDefaultDataView<HpGetRoomListResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -247,14 +243,14 @@ public class HpRoomListFragment extends Fragment {
         }
 
         @Override
-        public void onSuccess(GetRoomListResponse response) {
+        public void onSuccess(HpGetRoomListResponse response) {
             super.onSuccess(response);
             vm.setDoneFirstSetup(true);
 
             List<HpMessageEntity> tempMessage = new ArrayList<>();
-            for (MessageModel message : response.getMessages()) {
+            for (HpMessageModel message : response.getMessages()) {
                 try {
-                    MessageModel temp = MessageModel.BuilderDecrypt(message);
+                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     tempMessage.add(HpChatManager.getInstance().convertToEntity(temp));
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
@@ -271,7 +267,7 @@ public class HpRoomListFragment extends Fragment {
         }
 
         @Override
-        public void onError(ErrorModel error) {
+        public void onError(HpErrorModel error) {
             super.onError(error);
             if (BuildConfig.DEBUG) Log.e(TAG, "onError: " + error.getMessage());
             flSetupContainer.setVisibility(View.GONE);
@@ -288,10 +284,10 @@ public class HpRoomListFragment extends Fragment {
     HpDatabaseListener dbListener = new HpDatabaseListener() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
-            List<RoomListModel> messageModels = new ArrayList<>();
+            List<HpRoomListModel> messageModels = new ArrayList<>();
             for (HpMessageEntity entity : entities) {
-                MessageModel model = HpChatManager.getInstance().convertToModel(entity);
-                RoomListModel roomModel = RoomListModel.buildWithLastMessage(model);
+                HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 HpDataManager.getInstance().getUnreadCountPerRoom(vm.getMyUserID(), entity.getRoomID(), dbListener);
@@ -324,10 +320,10 @@ public class HpRoomListFragment extends Fragment {
 
         @Override
         public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
-            List<RoomListModel> messageModels = new ArrayList<>();
+            List<HpRoomListModel> messageModels = new ArrayList<>();
             for (HpMessageEntity entity : entities) {
-                MessageModel model = HpChatManager.getInstance().convertToModel(entity);
-                RoomListModel roomModel = RoomListModel.buildWithLastMessage(model);
+                HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
@@ -351,16 +347,16 @@ public class HpRoomListFragment extends Fragment {
         }
     };
 
-    public void processMessageFromSocket (MessageModel message) {
+    public void processMessageFromSocket (HpMessageModel message) {
         String  messageRoomID = message.getRoom().getRoomID();
 
-        RoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
+        HpRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
 
         if (null != roomList) {
             //room nya ada di listnya
             Log.e(TAG, "processMessageFromSocket: "+messageRoomID+" : "+HpUtils.getInstance().toJsonString(roomList) );
 
-            MessageModel roomLastMessage = roomList.getLastMessage();
+            HpMessageModel roomLastMessage = roomList.getLastMessage();
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID())) {
                 //last messagenya sama cuma update datanya aja
@@ -392,7 +388,7 @@ public class HpRoomListFragment extends Fragment {
             }
         } else {
             //kalau room yang masuk baru
-            RoomListModel newRoomList = new RoomListModel(message, 1);
+            HpRoomListModel newRoomList = new HpRoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
             getActivity().runOnUiThread(() -> adapter.notifyItemInserted(0));

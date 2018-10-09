@@ -16,9 +16,9 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Model.ImageURL;
-import com.moselo.HomingPigeon.Model.UserModel;
-import com.moselo.HomingPigeon.Model.UserRoleModel;
+import com.moselo.HomingPigeon.Model.HpImageURL;
+import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.HpUserRoleModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
@@ -130,79 +130,79 @@ public class HpNewChatActivity extends HpBaseActivity {
 
     // TODO: 28/09/18 Harus dihapus setelah fix
     private void setDummyData() {
-        UserModel userRitchie = UserModel.Builder("1", "1", "Ritchie Nathaniel"
-                , ImageURL.BuilderDummy(), "ritchie", "ritchie@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115801488")
+        HpUserModel userRitchie = HpUserModel.Builder("1", "1", "Ritchie Nathaniel"
+                , HpImageURL.BuilderDummy(), "ritchie", "ritchie@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115801488")
                 , Long.parseLong("0"));
 
-        UserModel userDominic = UserModel.Builder("2", "2", "Dominic Vedericho"
-                , ImageURL.BuilderDummy(), "dominic", "dominic@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115918918")
+        HpUserModel userDominic = HpUserModel.Builder("2", "2", "Dominic Vedericho"
+                , HpImageURL.BuilderDummy(), "dominic", "dominic@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115918918")
                 , Long.parseLong("0"));
 
-        UserModel userRionaldo = UserModel.Builder("3", "3", "Rionaldo Linggautama"
-                , ImageURL.BuilderDummy(), "rionaldo", "rionaldo@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116046534")
+        HpUserModel userRionaldo = HpUserModel.Builder("3", "3", "Rionaldo Linggautama"
+                , HpImageURL.BuilderDummy(), "rionaldo", "rionaldo@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116046534")
                 , Long.parseLong("0"));
 
-        UserModel userKevin = UserModel.Builder("4", "4", "Kevin Reynaldo"
-                , ImageURL.BuilderDummy(), "kevin", "kevin@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116099655")
+        HpUserModel userKevin = HpUserModel.Builder("4", "4", "Kevin Reynaldo"
+                , HpImageURL.BuilderDummy(), "kevin", "kevin@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116099655")
                 , Long.parseLong("0"));
 
-        UserModel userWelly = UserModel.Builder("5", "5", "Welly Kencana"
-                , ImageURL.BuilderDummy(), "welly", "welly@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116147477")
+        HpUserModel userWelly = HpUserModel.Builder("5", "5", "Welly Kencana"
+                , HpImageURL.BuilderDummy(), "welly", "welly@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116147477")
                 , Long.parseLong("0"));
 
-        UserModel userJony = UserModel.Builder("6", "6", "Jony Lim"
-                , ImageURL.BuilderDummy(), "jony", "jony@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116249323")
+        HpUserModel userJony = HpUserModel.Builder("6", "6", "Jony Lim"
+                , HpImageURL.BuilderDummy(), "jony", "jony@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116249323")
                 , Long.parseLong("0"));
 
-        UserModel userMichael = UserModel.Builder("7", "7", "Michael Tansy"
-                , ImageURL.BuilderDummy(), "michael", "michael@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116355199")
+        HpUserModel userMichael = HpUserModel.Builder("7", "7", "Michael Tansy"
+                , HpImageURL.BuilderDummy(), "michael", "michael@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116355199")
                 , Long.parseLong("0"));
 
-        UserModel userRichard = UserModel.Builder("8", "8", "Richard Fang"
-                , ImageURL.BuilderDummy(), "richard", "richard@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116398588")
+        HpUserModel userRichard = HpUserModel.Builder("8", "8", "Richard Fang"
+                , HpImageURL.BuilderDummy(), "richard", "richard@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116398588")
                 , Long.parseLong("0"));
 
-        UserModel userErwin = UserModel.Builder("9", "9", "Erwin Andreas"
-                , ImageURL.BuilderDummy(), "erwin", "erwin@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116452636")
+        HpUserModel userErwin = HpUserModel.Builder("9", "9", "Erwin Andreas"
+                , HpImageURL.BuilderDummy(), "erwin", "erwin@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116452636")
                 , Long.parseLong("0"));
 
-        UserModel userJefry = UserModel.Builder("10", "10", "Jefry Lorentono"
-                , ImageURL.BuilderDummy(), "jefry", "jefry@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116490366")
+        HpUserModel userJefry = HpUserModel.Builder("10", "10", "Jefry Lorentono"
+                , HpImageURL.BuilderDummy(), "jefry", "jefry@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116490366")
                 , Long.parseLong("0"));
 
-        UserModel userCundy = UserModel.Builder("11", "11", "Cundy Sunardy"
-                , ImageURL.BuilderDummy(), "cundy", "cundy@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116531507")
+        HpUserModel userCundy = HpUserModel.Builder("11", "11", "Cundy Sunardy"
+                , HpImageURL.BuilderDummy(), "cundy", "cundy@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116531507")
                 , Long.parseLong("0"));
 
-        UserModel userRizka = UserModel.Builder("12", "12", "Rizka Fatmawati"
-                , ImageURL.BuilderDummy(), "rizka", "rizka@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116567527")
+        HpUserModel userRizka = HpUserModel.Builder("12", "12", "Rizka Fatmawati"
+                , HpImageURL.BuilderDummy(), "rizka", "rizka@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116567527")
                 , Long.parseLong("0"));
 
-        UserModel userTest1 = UserModel.Builder("13", "13", "Test 1"
-                , ImageURL.BuilderDummy(), "test1", "test1@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116607839")
+        HpUserModel userTest1 = HpUserModel.Builder("13", "13", "Test 1"
+                , HpImageURL.BuilderDummy(), "test1", "test1@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116607839")
                 , Long.parseLong("0"));
 
-        UserModel userTest2 = UserModel.Builder("14", "14", "Test 2"
-                , ImageURL.BuilderDummy(), "test2", "test2@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116655845")
+        HpUserModel userTest2 = HpUserModel.Builder("14", "14", "Test 2"
+                , HpImageURL.BuilderDummy(), "test2", "test2@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116655845")
                 , Long.parseLong("0"));
 
-        UserModel userTest3 = UserModel.Builder("15", "15", "Test 3"
-                , ImageURL.BuilderDummy(), "test3", "test3@moselo.com", "08979809026"
-                , new UserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
+        HpUserModel userTest3 = HpUserModel.Builder("15", "15", "Test 3"
+                , HpImageURL.BuilderDummy(), "test3", "test3@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
                 , Long.parseLong("0"));
 
         vm.getContactList().add(userRitchie);

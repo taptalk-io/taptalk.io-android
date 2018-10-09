@@ -12,30 +12,30 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class RoomModel implements Parcelable {
+public class HpRoomModel implements Parcelable {
 
     @JsonProperty("roomID") @JsonAlias("id") private String roomID;
     @JsonProperty("name") private String roomName;
     @JsonProperty("color") private String roomColor;
-    @JsonProperty("imageURL") private ImageURL roomImage;
+    @JsonProperty("imageURL") private HpImageURL roomImage;
     @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
-    @Nullable @JsonProperty("groupParticipants") private List<UserModel> groupParticipants;
+    @Nullable @JsonProperty("groupParticipants") private List<HpUserModel> groupParticipants;
     @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
     private boolean isMuted;
     private boolean isSelected;
 
-    public RoomModel(String roomID, String roomName, int roomType) {
+    public HpRoomModel(String roomID, String roomName, int roomType) {
         this.roomID = roomID;
         this.roomName = roomName;
         this.roomType = roomType;
     }
 
-    public RoomModel() {
+    public HpRoomModel() {
     }
 
-    public static RoomModel Builder(String roomID, String roomName, int roomType){
-        return new RoomModel(roomID, roomName, roomType);
+    public static HpRoomModel Builder(String roomID, String roomName, int roomType){
+        return new HpRoomModel(roomID, roomName, roomType);
     }
 
     public String getRoomID() {
@@ -70,11 +70,11 @@ public class RoomModel implements Parcelable {
         this.roomType = roomType;
     }
 
-    public ImageURL getRoomImage() {
+    public HpImageURL getRoomImage() {
         return roomImage;
     }
 
-    public void setRoomImage(ImageURL roomImage) {
+    public void setRoomImage(HpImageURL roomImage) {
         this.roomImage = roomImage;
     }
 
@@ -87,11 +87,11 @@ public class RoomModel implements Parcelable {
     }
 
     @Nullable
-    public List<UserModel> getGroupParticipants() {
+    public List<HpUserModel> getGroupParticipants() {
         return groupParticipants;
     }
 
-    public void setGroupParticipants(@Nullable List<UserModel> groupParticipants) {
+    public void setGroupParticipants(@Nullable List<HpUserModel> groupParticipants) {
         this.groupParticipants = groupParticipants;
     }
 
@@ -140,28 +140,28 @@ public class RoomModel implements Parcelable {
         dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
     }
 
-    protected RoomModel(Parcel in) {
+    protected HpRoomModel(Parcel in) {
         this.roomID = in.readString();
         this.roomName = in.readString();
         this.roomColor = in.readString();
-        this.roomImage = in.readParcelable(ImageURL.class.getClassLoader());
+        this.roomImage = in.readParcelable(HpImageURL.class.getClassLoader());
         this.roomType = in.readInt();
         this.unreadCount = in.readInt();
-        this.groupParticipants = in.createTypedArrayList(UserModel.CREATOR);
+        this.groupParticipants = in.createTypedArrayList(HpUserModel.CREATOR);
         this.numOfParticipants = (Integer) in.readValue(Integer.class.getClassLoader());
         this.isMuted = in.readByte() != 0;
         this.isSelected = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<RoomModel> CREATOR = new Parcelable.Creator<RoomModel>() {
+    public static final Parcelable.Creator<HpRoomModel> CREATOR = new Parcelable.Creator<HpRoomModel>() {
         @Override
-        public RoomModel createFromParcel(Parcel source) {
-            return new RoomModel(source);
+        public HpRoomModel createFromParcel(Parcel source) {
+            return new HpRoomModel(source);
         }
 
         @Override
-        public RoomModel[] newArray(int size) {
-            return new RoomModel[size];
+        public HpRoomModel[] newArray(int size) {
+            return new HpRoomModel[size];
         }
     };
 }

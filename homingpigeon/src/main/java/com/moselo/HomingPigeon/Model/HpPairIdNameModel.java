@@ -7,17 +7,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class PairIdNameModel {
+public class HpPairIdNameModel {
     @JsonProperty("id") private String id;
     @JsonProperty("name") private String name;
 
     @Ignore
-    public PairIdNameModel(String id, String name) {
+    public HpPairIdNameModel(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public PairIdNameModel() {}
+    public HpPairIdNameModel() {}
 
     public String getId() {
         return id;

@@ -3,7 +3,7 @@ package com.moselo.HomingPigeon.Model;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 
-public class SearchChatModel {
+public class HpSearchChatModel {
     public enum MyReturnType {
         RECENT_TITLE, RECENT_ITEM,
         SECTION_TITLE, CHAT_ITEM,
@@ -14,12 +14,12 @@ public class SearchChatModel {
     private MyReturnType myReturnType;
     private HpRecentSearchEntity recentSearch;
     private String sectionTitle;
-    private RoomModel room;
+    private HpRoomModel room;
     private HpMessageEntity message;
-    private UserModel contact;
+    private HpUserModel contact;
     private boolean isLastInSection = false;
 
-    public SearchChatModel(MyReturnType myReturnType) {
+    public HpSearchChatModel(MyReturnType myReturnType) {
         this.myReturnType = myReturnType;
     }
 
@@ -47,11 +47,11 @@ public class SearchChatModel {
         this.sectionTitle = sectionTitle;
     }
 
-    public RoomModel getRoom() {
+    public HpRoomModel getRoom() {
         return room;
     }
 
-    public void setRoom(RoomModel room) {
+    public void setRoom(HpRoomModel room) {
         this.room = room;
     }
 
@@ -63,11 +63,11 @@ public class SearchChatModel {
         this.message = message;
     }
 
-    public UserModel getContact() {
+    public HpUserModel getContact() {
         return contact;
     }
 
-    public void setContact(UserModel contact) {
+    public void setContact(HpUserModel contact) {
         this.contact = contact;
     }
 
