@@ -68,9 +68,9 @@ public class HomingPigeon {
 
             @Override
             public void onAppGotoBackground() {
+                HpRoomListViewModel.setShouldNotLoadFromAPI(false);
                 HpNetworkStateManager.getInstance().unregisterCallback(HomingPigeon.appContext);
                 HpChatManager.getInstance().updateMessageWhenEnterBackground();
-                HpRoomListViewModel.setShouldNotLoadFromAPI(false);
                 isForeground = false;
             }
         });

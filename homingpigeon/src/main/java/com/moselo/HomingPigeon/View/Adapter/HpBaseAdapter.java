@@ -43,6 +43,10 @@ public abstract class HpBaseAdapter<T, VH extends HpBaseViewHolder<T>> extends
         setItems(items, false);
     }
 
+    final public void setItemsWithoutNotify(List<T> items) {
+        this.items = items;
+    }
+
     final public void updateItem(T item, int index) {
         getItems().set(index, item);
     }

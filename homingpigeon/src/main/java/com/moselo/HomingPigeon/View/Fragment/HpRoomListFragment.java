@@ -202,8 +202,9 @@ public class HpRoomListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        viewAppearSequence();
+        Log.e(TAG, "onResume: "+HpRoomListViewModel.isShouldNotLoadFromAPI());
         HpChatManager.getInstance().addChatListener(chatListener);
+        viewAppearSequence();
     }
 
     @Override
@@ -216,6 +217,7 @@ public class HpRoomListFragment extends Fragment {
         if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
         } else {
+            Log.e(TAG, "viewAppearSequence: " );
             runFullRefreshSequence();
         }
     }
@@ -230,6 +232,7 @@ public class HpRoomListFragment extends Fragment {
     private void fetchDataFromAPI() {
         if (vm.isDoneFirstSetup()) {
             // TODO: 08/10/18 nanti masukin api untuk call pending message
+            HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
         } else {
             HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser(getContext()).getUserID(), roomListView);
         }
@@ -304,8 +307,10 @@ public class HpRoomListFragment extends Fragment {
                 if (null != adapter && 0 == vm.getRoomList().size()) {
                     llRoomEmpty.setVisibility(View.VISIBLE);
                 } else if (null != adapter) {
-                    adapter.setItems(vm.getRoomList(), false);
+                    //adapter.setItems(vm.getRoomList(), false);
+                    adapter.addRoomList(vm.getRoomList());
                     llRoomEmpty.setVisibility(View.GONE);
+                    rvContactList.scrollToPosition(0);
                 }
                 Log.e(TAG, "onSelectFinished: " + HpRoomListViewModel.isShouldNotLoadFromAPI());
                 if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
@@ -340,8 +345,10 @@ public class HpRoomListFragment extends Fragment {
                 if (null != adapter && 0 == vm.getRoomList().size()) {
                     llRoomEmpty.setVisibility(View.VISIBLE);
                 } else if (null != adapter) {
-                    adapter.setItems(vm.getRoomList(), false);
+                    //adapter.setItems(vm.getRoomList(), false);
+                    adapter.addRoomList(vm.getRoomList());
                     llRoomEmpty.setVisibility(View.GONE);
+                    rvContactList.scrollToPosition(0);
                 }
                 Log.e(TAG, "onSelectedRoomList: "+HpRoomListViewModel.isShouldNotLoadFromAPI() );
                 if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {

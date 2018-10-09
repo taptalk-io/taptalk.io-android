@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.util.DiffUtil;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.DiffCallback.RoomListDiffCallback;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpUtils;
@@ -30,6 +32,8 @@ import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
+
+import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
@@ -49,6 +53,14 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
         this.vm = vm;
         this.myUsername = myUsername;
         this.roomListInterface = roomListInterface;
+    }
+
+    public void addRoomList(List<HpRoomListModel> roomList) {
+        RoomListDiffCallback diffCallback = new RoomListDiffCallback(getItems(), roomList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+
+        setItemsWithoutNotify(roomList);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull
