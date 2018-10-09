@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -152,6 +153,8 @@ public class HpRoomListFragment extends Fragment {
         rvContactList.setLayoutManager(llm);
         rvContactList.setHasFixedSize(true);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
+        if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         clButtonSearch.setOnClickListener(v -> ((HpRoomListActivity) activity).showSearchChat());
 
