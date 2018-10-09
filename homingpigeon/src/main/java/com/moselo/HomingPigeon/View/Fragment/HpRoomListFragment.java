@@ -67,6 +67,7 @@ public class HpRoomListFragment extends Fragment {
     private FloatingActionButton fabNewChat;
 
     private RecyclerView rvContactList;
+    private LinearLayoutManager llm;
     private HpRoomListAdapter adapter;
     private RoomListInterface roomListInterface;
     private HpRoomListViewModel vm;
@@ -146,8 +147,9 @@ public class HpRoomListFragment extends Fragment {
         if (vm.isSelecting()) showSelectionActionBar();
 
         adapter = new HpRoomListAdapter(vm, activity.getIntent().getStringExtra(K_MY_USERNAME), roomListInterface);
+        llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvContactList.setAdapter(adapter);
-        rvContactList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        rvContactList.setLayoutManager(llm);
         rvContactList.setHasFixedSize(true);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
@@ -374,7 +376,7 @@ public class HpRoomListFragment extends Fragment {
                 roomLastMessage.setHidden(message.getHidden());
 
                 Integer roomPos = vm.getRoomList().indexOf(roomList);
-                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
+                activity.runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
             } else {
                 //last message nya beda sama yang ada di tampilan
                 roomList.setLastMessage(message);
@@ -385,17 +387,22 @@ public class HpRoomListFragment extends Fragment {
                     roomList.setUnreadCount(roomList.getUnreadCount() + 1);
                 }
 
-                //Integer roomPos = vm.getRoomList().indexOf(roomList);
+                int oldPos = vm.getRoomList().indexOf(roomList);
                 vm.getRoomList().remove(roomList);
                 vm.getRoomList().add(0, roomList);
-                getActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+                activity.runOnUiThread(() -> {
+                    boolean scrollToTop = llm.findFirstCompletelyVisibleItemPosition() == 0;
+                    adapter.notifyItemChanged(oldPos);
+                    adapter.notifyItemMoved(oldPos, 0);
+                    if (scrollToTop) rvContactList.scrollToPosition(0);
+                });
             }
         } else {
             //kalau room yang masuk baru
             RoomListModel newRoomList = new RoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
-            getActivity().runOnUiThread(() -> adapter.notifyItemInserted(0));
+            activity.runOnUiThread(() -> adapter.notifyItemInserted(0));
         }
     }
 }
