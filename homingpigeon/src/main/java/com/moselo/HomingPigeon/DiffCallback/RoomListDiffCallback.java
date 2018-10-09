@@ -27,13 +27,13 @@ public class RoomListDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldRoomList.get(oldItemPosition).getLastMessage().getLocalID()
-                .equals(newRoomList.get(newItemPosition).getLastMessage().getLocalID());
+        return oldRoomList.get(oldItemPosition).getLastMessage().getRoom().getRoomID()
+                .equals(newRoomList.get(newItemPosition).getLastMessage().getRoom().getRoomID());
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldRoomList.get(oldItemPosition).getLastMessage().getRoom().getRoomID()
-                .equals(newRoomList.get(newItemPosition).getLastMessage().getRoom().getRoomID());
+        return oldRoomList.get(oldItemPosition).getLastMessage().getLocalID()
+                .equals(newRoomList.get(newItemPosition).getLastMessage().getLocalID());
     }
 }
