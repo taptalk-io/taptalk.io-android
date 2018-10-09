@@ -252,9 +252,9 @@ public class HpLoginActivity extends HpBaseActivity {
             super.onSuccess(response);
             HpDataManager.getInstance().deleteAuthTicket(HpLoginActivity.this);
 
+            HpDataManager.getInstance().saveAccessToken(HpLoginActivity.this, response.getAccessToken());
             HpDataManager.getInstance().saveRefreshToken(HpLoginActivity.this, response.getRefreshToken());
             HpDataManager.getInstance().saveRefreshTokenExpiry(HpLoginActivity.this, response.getRefreshTokenExpiry());
-            HpDataManager.getInstance().saveAccessToken(HpLoginActivity.this, response.getAccessToken());
             HpDataManager.getInstance().saveAccessTokenExpiry(HpLoginActivity.this, response.getAccessTokenExpiry());
 
             HpDataManager.getInstance().saveActiveUser(HpLoginActivity.this, response.getUser());

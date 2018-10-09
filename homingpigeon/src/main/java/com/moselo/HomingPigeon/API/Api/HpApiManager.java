@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.moselo.HomingPigeon.API.BaseResponse;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
-import com.moselo.HomingPigeon.API.Service.HomingPigeonApiSocketService;
+import com.moselo.HomingPigeon.API.Service.HomingPigeonSocketService;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Exception.ApiSessionExpiredException;
 import com.moselo.HomingPigeon.Exception.AuthException;
@@ -30,7 +30,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatu
 public class HpApiManager {
     private static final String TAG = HpApiManager.class.getSimpleName();
     private HomingPigeonApiService homingPigeon;
-    private HomingPigeonApiSocketService hpSocket;
+    private HomingPigeonSocketService hpSocket;
     private static HpApiManager instance;
     private boolean isUnauthorized = false;
 
@@ -41,7 +41,7 @@ public class HpApiManager {
     private HpApiManager() {
         HpApiConnection connection = HpApiConnection.getInstance();
         this.homingPigeon = connection.getHomingPigeon();
-        this.hpSocket = connection.getHpSocket();
+        this.hpSocket = connection.getHpValidate();
     }
 
     public boolean isUnauthorized() {
@@ -109,7 +109,6 @@ public class HpApiManager {
 
     private void updateSession(BaseResponse<GetAccessTokenResponse> r) {
         Log.e(TAG, "updateSession: " + HpUtils.getInstance().toJsonString(r.getData()));
-        isUnauthorized = false;
         HpDataManager.getInstance().saveRefreshToken(appContext, r.getData().getRefreshToken());
         HpDataManager.getInstance().saveRefreshTokenExpiry(appContext, r.getData().getRefreshTokenExpiry());
         HpDataManager.getInstance().saveAccessToken(appContext, r.getData().getAccessToken());
@@ -135,7 +134,7 @@ public class HpApiManager {
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     Log.e(TAG, "refreshToken: ");
-                    HpApiManager.getInstance().setUnauthorized(false);
+                    isUnauthorized = false;
                     if (RESPONSE_SUCCESS == response.getStatus())
                         updateSession(response);
                     else Observable.error(new AuthException(response.getError().getMessage()));

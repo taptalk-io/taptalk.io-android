@@ -85,6 +85,11 @@ public class HpDefaultConstant {
         public static final int INTERNAL_SERVER_ERROR = 500;
     }
 
+    public static final class TokenHeaderConst {
+        public static final int NOT_USE_REFRESH_TOKEN = 1;
+        public static final int USE_REFRESH_TOKEN = 2;
+    }
+
     public static final String K_REFRESH_TOKEN = "kRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kAccessToken";
