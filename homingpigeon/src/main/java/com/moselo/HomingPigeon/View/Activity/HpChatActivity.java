@@ -27,6 +27,7 @@ import com.moselo.HomingPigeon.Helper.HpEndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Helper.SwipeBackLayout.SwipeBackLayout;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -45,11 +46,12 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
 
-public class HpChatActivity extends HpBaseActivity {
+public class HpChatActivity extends HpBaseChatActivity {
 
     private String TAG = HpChatActivity.class.getSimpleName();
 
     // View
+    private SwipeBackLayout sblChat;
     private HpChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
@@ -179,27 +181,28 @@ public class HpChatActivity extends HpBaseActivity {
 
     @Override
     protected void initView() {
-        flMessageList = findViewById(R.id.fl_message_list);
-        clEmptyChat = findViewById(R.id.cl_empty_chat);
-        clChatComposer = findViewById(R.id.cl_chat_composer);
-        ivButtonBack = findViewById(R.id.iv_button_back);
-        ivRoomIcon = findViewById(R.id.iv_room_icon);
-        ivButtonChatMenu = findViewById(R.id.iv_chat_menu);
-        ivButtonAttach = findViewById(R.id.iv_attach);
-        ivButtonSend = findViewById(R.id.iv_send);
-        ivToBottom = findViewById(R.id.iv_to_bottom);
-        civRoomImage = findViewById(R.id.civ_room_image);
-        civMyAvatar = findViewById(R.id.civ_my_avatar);
-        civOtherUserAvatar = findViewById(R.id.civ_other_user_avatar);
-        tvRoomName = findViewById(R.id.tv_room_name);
-        tvRoomStatus = findViewById(R.id.tv_room_status);
-        tvChatEmptyGuide = findViewById(R.id.tv_chat_empty_guide);
-        tvProfileDescription = findViewById(R.id.tv_profile_description);
+        sblChat = getSwipeBackLayout();
+        flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
+        clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
+        clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
+        ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
+        ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
+        ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
+        ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
+        ivButtonSend = (ImageView) findViewById(R.id.iv_send);
+        ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
+        civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
+        civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
+        civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
+        tvRoomName = (TextView) findViewById(R.id.tv_room_name);
+        tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
+        tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
+        tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
-        rvMessageList = findViewById(R.id.rv_message_list);
-        rvCustomKeyboard = findViewById(R.id.rv_custom_keyboard);
-        etChat = findViewById(R.id.et_chat);
-        tvBadgeUnread = findViewById(R.id.tv_badge_unread);
+        rvMessageList = (HpChatRecyclerView) findViewById(R.id.rv_message_list);
+        rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
+        etChat = (EditText) findViewById(R.id.et_chat);
+        tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
 
         getWindow().setBackgroundDrawable(null);
 
@@ -259,6 +262,8 @@ public class HpChatActivity extends HpBaseActivity {
 
         etChat.addTextChangedListener(chatWatcher);
         etChat.setOnFocusChangeListener(chatFocusChangeListener);
+
+        sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
