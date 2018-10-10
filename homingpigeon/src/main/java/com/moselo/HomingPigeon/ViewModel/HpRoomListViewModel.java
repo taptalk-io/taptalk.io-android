@@ -19,6 +19,7 @@ public class HpRoomListViewModel extends AndroidViewModel {
     private boolean isSelecting;
     private static boolean isShouldNotLoadFromAPI = false;
     private boolean isDoneFirstSetup = false;
+    private boolean isApiCalled = false;
     private String myUserID;
 
     public HpRoomListViewModel(@NonNull Application application) {
@@ -96,5 +97,13 @@ public class HpRoomListViewModel extends AndroidViewModel {
 
     public void setDoneFirstSetup(boolean doneFirstSetup) {
         isDoneFirstSetup = doneFirstSetup;
+    }
+
+    public boolean isApiCalled() {
+        return isApiCalled;
+    }
+
+    public void setApiCalled(boolean apiCalled) {
+        isApiCalled = apiCalled;
     }
 }

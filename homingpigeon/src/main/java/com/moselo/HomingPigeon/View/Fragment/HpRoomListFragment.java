@@ -202,7 +202,6 @@ public class HpRoomListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: "+HpRoomListViewModel.isShouldNotLoadFromAPI());
         HpChatManager.getInstance().addChatListener(chatListener);
         viewAppearSequence();
     }
@@ -217,7 +216,6 @@ public class HpRoomListFragment extends Fragment {
         if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
         } else {
-            Log.e(TAG, "viewAppearSequence: " );
             runFullRefreshSequence();
         }
     }
@@ -254,6 +252,7 @@ public class HpRoomListFragment extends Fragment {
         public void onSuccess(HpGetRoomListResponse response) {
             super.onSuccess(response);
             vm.setDoneFirstSetup(true);
+            vm.setApiCalled(true);
 
             List<HpMessageEntity> tempMessage = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
@@ -306,17 +305,21 @@ public class HpRoomListFragment extends Fragment {
             activity.runOnUiThread(() -> {
                 if (null != adapter && 0 == vm.getRoomList().size()) {
                     llRoomEmpty.setVisibility(View.VISIBLE);
-                } else if (null != adapter) {
-                    //adapter.setItems(vm.getRoomList(), false);
+                } else if (null != adapter && !HpRoomListViewModel.isShouldNotLoadFromAPI()) {
                     adapter.addRoomList(vm.getRoomList());
-                    llRoomEmpty.setVisibility(View.GONE);
                     rvContactList.scrollToPosition(0);
+                    llRoomEmpty.setVisibility(View.GONE);
+                } else if (null != adapter && HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+                    adapter.setItems(vm.getRoomList(), false);
+                    llRoomEmpty.setVisibility(View.GONE);
                 }
-                Log.e(TAG, "onSelectFinished: " + HpRoomListViewModel.isShouldNotLoadFromAPI());
                 if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
                     HpRoomListViewModel.setShouldNotLoadFromAPI(true);
                     fetchDataFromAPI();
-                } else flSetupContainer.setVisibility(View.GONE);
+                } else {
+                    vm.setApiCalled(false);
+                    flSetupContainer.setVisibility(View.GONE);
+                }
             });
         }
 
@@ -344,17 +347,21 @@ public class HpRoomListFragment extends Fragment {
             activity.runOnUiThread(() -> {
                 if (null != adapter && 0 == vm.getRoomList().size()) {
                     llRoomEmpty.setVisibility(View.VISIBLE);
-                } else if (null != adapter) {
-                    //adapter.setItems(vm.getRoomList(), false);
+                } else if (null != adapter && vm.isApiCalled()) {
                     adapter.addRoomList(vm.getRoomList());
-                    llRoomEmpty.setVisibility(View.GONE);
                     rvContactList.scrollToPosition(0);
+                    llRoomEmpty.setVisibility(View.GONE);
+                } else if (null != adapter && !vm.isApiCalled()) {
+                    adapter.setItems(vm.getRoomList(), false);
+                    llRoomEmpty.setVisibility(View.GONE);
                 }
-                Log.e(TAG, "onSelectedRoomList: "+HpRoomListViewModel.isShouldNotLoadFromAPI() );
                 if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
                     HpRoomListViewModel.setShouldNotLoadFromAPI(true);
                     fetchDataFromAPI();
-                } else flSetupContainer.setVisibility(View.GONE);
+                } else {
+                    vm.setApiCalled(false);
+                    flSetupContainer.setVisibility(View.GONE);
+                }
             });
         }
     };
