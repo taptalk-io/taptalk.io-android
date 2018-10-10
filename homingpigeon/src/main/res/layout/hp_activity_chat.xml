@@ -281,7 +281,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/hp_ic_attach_grey"
