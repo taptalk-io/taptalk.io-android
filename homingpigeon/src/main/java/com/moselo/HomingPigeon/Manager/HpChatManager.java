@@ -238,7 +238,8 @@ public class HpChatManager {
                 entity.getRecipientID(),
                 entity.getDeleted(),
                 entity.getSending(),
-                entity.getFailedSend());
+                entity.getFailedSend(),
+                entity.getUpdated());
     }
 
     /**

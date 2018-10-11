@@ -25,6 +25,7 @@ import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
@@ -78,14 +79,8 @@ public class HpDataManager {
         saveLongTimestampPreference(context, refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
     }
 
-    private void saveStringPreference(Context context, String token, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(key, token).apply();
-    }
-
-    private void saveLongTimestampPreference(Context context, Long timestamp, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putLong(key, timestamp).apply();
+    public void saveLastUpdatedMessageTimestamp(Context context, Long lastUpdated) {
+        saveLongTimestampPreference(context, lastUpdated, K_LAST_UPDATED);
     }
 
     public String getRefreshToken(Context context) {
@@ -98,6 +93,20 @@ public class HpDataManager {
 
     public String getAuthToken(Context context) {
         return getStringPreference(context, K_AUTH_TICKET);
+    }
+
+    public Long getLastUpdatedMessageTimestamp(Context context) {
+        return getLongTimestampPreference(context, K_LAST_UPDATED);
+    }
+
+    private void saveStringPreference(Context context, String token, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putString(key, token).apply();
+    }
+
+    private void saveLongTimestampPreference(Context context, Long timestamp, String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putLong(key, timestamp).apply();
     }
 
     private String getStringPreference(Context context, String key) {

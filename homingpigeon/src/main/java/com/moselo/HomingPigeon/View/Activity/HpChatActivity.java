@@ -13,14 +13,18 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
+import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpChatRecyclerView;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpEndlessScrollListener;
@@ -30,16 +34,21 @@ import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.SwipeBackLayout.SwipeBackLayout;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HpSocketListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpCustomKeyboardAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpMessageAdapter;
 import com.moselo.HomingPigeon.View.BottomSheet.HpAttachmentBottomSheet;
 import com.moselo.HomingPigeon.ViewModel.HpChatViewModel;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +79,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     // RoomDatabase
     private HpChatViewModel vm;
 
+    private HpSocketListener socketListener;
+
     //enum Scrolling
     private enum STATE {
         WORKING, LOADED, DONE
@@ -85,6 +96,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         initViewModel();
         initView();
         initHelper();
+        initListener();
     }
 
     @Override
@@ -276,6 +288,23 @@ public class HpChatActivity extends HpBaseChatActivity {
         HpChatManager.getInstance().addChatListener(chatListener);
     }
 
+    private void initListener() {
+        socketListener = new HpSocketListener() {
+            @Override
+            public void onSocketConnected() {
+                if (!vm.isInitialAPICallFinished()) {
+                    // Call Message List API
+                    if (vm.getMessageModels().size() > 0) {
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), vm.getMessageModels().get(0).getUpdated(), messageView);
+                    } else {
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageView);
+                    }
+                }
+            }
+        };
+        HpConnectionManager.getInstance().addSocketListener(socketListener);
+    }
+
     private void updateMessageDecoration() {
         if (rvMessageList.getItemDecorationCount() > 0) {
             rvMessageList.removeItemDecorationAt(0);
@@ -399,7 +428,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    HpDatabaseListener dbListener = new HpDatabaseListener() {
+    private HpDatabaseListener dbListener = new HpDatabaseListener() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
             final List<HpMessageModel> models = new ArrayList<>();
@@ -433,6 +462,12 @@ public class HpChatActivity extends HpBaseChatActivity {
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
+                    // Call Message List API
+                    if (vm.getMessageModels().size() > 0) {
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(0).getUpdated(), messageView);
+                    } else {
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageView);
+                    }
                 } else if (null != hpMessageAdapter) {
                     vm.addMessageModels(models);
                     flMessageList.setVisibility(View.VISIBLE);
@@ -443,6 +478,58 @@ public class HpChatActivity extends HpBaseChatActivity {
                     if (state == STATE.DONE) updateMessageDecoration();
                 }
             });
+        }
+    };
+
+    private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+        @Override
+        public void onSuccess(HpGetMessageListbyRoomResponse response) {
+            Log.e(TAG, "onSuccess: " + HpUtils.getInstance().toJsonString(response));
+            vm.setInitialAPICallFinished(true);
+
+            List<HpMessageEntity> responseMessages = new ArrayList<>();
+            for (HpMessageModel message : response.getMessages()) {
+                try {
+                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                    responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+                @Override
+                public void onInsertFinished() {
+                    Log.e(TAG, "onInsertFinished: ");
+                    vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+                    if (null != responseMessages.get(0) && HpDataManager.getInstance().getLastUpdatedMessageTimestamp(HpChatActivity.this) < responseMessages.get(0).getUpdated()) {
+                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(HpChatActivity.this, responseMessages.get(0).getUpdated());
+                        Log.e(TAG, "onInsertFinished - last updated: " + HpDataManager.getInstance().getLastUpdatedMessageTimestamp(HpChatActivity.this));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onError(HpErrorModel error) {
+            if (BuildConfig.DEBUG) {
+                new HomingPigeonDialog.Builder(HpChatActivity.this)
+                        .setTitle("Error")
+                        .setMessage(error.getMessage())
+                        .show();
+            }
+            Log.e(TAG, "onError: " + error.getMessage());
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            if (BuildConfig.DEBUG) {
+                new HomingPigeonDialog.Builder(HpChatActivity.this)
+                        .setTitle("Error")
+                        .setMessage(errorMessage)
+                        .show();
+            }
+            Log.e(TAG, "onError: " + errorMessage);
         }
     };
 }

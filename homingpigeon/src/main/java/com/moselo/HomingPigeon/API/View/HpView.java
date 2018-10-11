@@ -15,7 +15,7 @@ public interface HpView<T> {
 
     void onSuccess(T t);
 
-    void onSucessMessage(String message);
+    void onSuccessMessage(String message);
 
     void onError(HpErrorModel error);
 

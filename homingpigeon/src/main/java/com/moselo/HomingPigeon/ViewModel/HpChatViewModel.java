@@ -28,7 +28,7 @@ public class HpChatViewModel extends AndroidViewModel {
     private long lastTimestamp = 0;
     private int numUsers;
     private int unreadCount = 0;
-    private boolean isOnBottom, isTyping;
+    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
 
     public HpChatViewModel(Application application) {
         super(application);
@@ -124,12 +124,20 @@ public class HpChatViewModel extends AndroidViewModel {
         this.unreadCount = unreadCount;
     }
 
-    public boolean isTyping() {
-        return isTyping;
+//    public boolean isTyping() {
+//        return isTyping;
+//    }
+//
+//    public void setTyping(boolean typing) {
+//        isTyping = typing;
+//    }
+
+    public boolean isInitialAPICallFinished() {
+        return isInitialAPICallFinished;
     }
 
-    public void setTyping(boolean typing) {
-        isTyping = typing;
+    public void setInitialAPICallFinished(boolean initialAPICallFinished) {
+        isInitialAPICallFinished = initialAPICallFinished;
     }
 
     public boolean isOnBottom() {

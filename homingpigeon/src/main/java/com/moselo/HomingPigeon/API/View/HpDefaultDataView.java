@@ -28,7 +28,7 @@ public abstract class HpDefaultDataView<T> implements HpView<T> {
     }
 
     @Override
-    public void onSucessMessage(String message) {
+    public void onSuccessMessage(String message) {
 
     }
 

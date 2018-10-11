@@ -32,7 +32,7 @@ public class HpMessageModel {
 
     public HpMessageModel(@Nullable String messageID, @NonNull String localID, String body, HpRoomModel room,
                           Integer type, Long created, HpUserModel user, String recipientID, @Nullable Boolean isDeleted,
-                          @Nullable Boolean isSending, @Nullable Boolean isFailedSend) {
+                          @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated) {
         this.messageID = messageID;
         this.localID = localID;
         this.body = body;
@@ -44,7 +44,8 @@ public class HpMessageModel {
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
-        // TODO: 3 September 2018 ADD deliveredTo & seenBy
+        this.updated = updated;
+        // Update when adding fields to model
     }
 
     public HpMessageModel() {
@@ -52,7 +53,7 @@ public class HpMessageModel {
 
     public static HpMessageModel Builder(String message, HpRoomModel room, Integer type, Long created, HpUserModel user, String recipientID) {
         String localID = HpUtils.getInstance().generateRandomString(32);
-        return new HpMessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false);
+        return new HpMessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false, created);
     }
 
     public static HpMessageModel BuilderEncrypt(HpMessageModel messageModel) throws GeneralSecurityException {
@@ -67,7 +68,8 @@ public class HpMessageModel {
                 messageModel.getRecipientID(),
                 messageModel.getDeleted(),
                 messageModel.getSending(),
-                messageModel.getFailedSend());
+                messageModel.getFailedSend(),
+                messageModel.getUpdated());
     }
 
     public static HpMessageModel BuilderDecrypt(HpMessageModel messageModel) throws GeneralSecurityException {
@@ -82,7 +84,8 @@ public class HpMessageModel {
                 messageModel.getRecipientID(),
                 messageModel.getDeleted(),
                 messageModel.getSending(),
-                messageModel.getFailedSend());
+                messageModel.getFailedSend(),
+                messageModel.getUpdated());
     }
 
     @Nullable
@@ -242,6 +245,7 @@ public class HpMessageModel {
         this.isDeleted = model.getDeleted();
         this.isSending = model.getSending();
         this.isFailedSend = model.getFailedSend();
-        // TODO: 3 September 2018 ADD deliveredTo & seenBy
+        this.updated = model.getUpdated();
+        // Update when adding fields to model
     }
 }
