@@ -59,6 +59,12 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private String TAG = HpChatActivity.class.getSimpleName();
 
+    //interface for swipe back
+    public interface SwipeBackInterface {
+        void onSwipeBack();
+    }
+    private SwipeBackInterface swipeInterface = () -> HpUtils.getInstance().dismissKeyboard(HpChatActivity.this);
+
     // View
     private SwipeBackLayout sblChat;
     private HpChatRecyclerView rvMessageList;
@@ -281,6 +287,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         etChat.setOnFocusChangeListener(chatFocusChangeListener);
 
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+        sblChat.setSwipeInterface(swipeInterface);
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());

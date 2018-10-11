@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +124,12 @@ public class SwipeBackLayout extends ConstraintLayout {
      * Edge being dragged
      */
     private int mTrackingEdge;
+
+
+    /**
+     * Add Interface to closeKeyboard when swipe back
+     */
+    private HpChatActivity.SwipeBackInterface swipeInterface;
 
     public SwipeBackLayout(Context context) {
         this(context, null);
@@ -338,6 +345,13 @@ public class SwipeBackLayout extends ConstraintLayout {
     }
 
     /**
+     * SetSwipe Interface
+     */
+    public void setSwipeInterface(HpChatActivity.SwipeBackInterface swipeInterface) {
+        this.swipeInterface = swipeInterface;
+    }
+
+    /**
      * Scroll out contentView and finish the activity
      */
     public void scrollToFinishActivity() {
@@ -379,6 +393,10 @@ public class SwipeBackLayout extends ConstraintLayout {
         if (!mEnable) {
             return false;
         }
+
+        if (null != swipeInterface)
+            swipeInterface.onSwipeBack();
+
         mDragHelper.processTouchEvent(event);
         return true;
     }
