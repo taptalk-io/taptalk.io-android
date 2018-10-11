@@ -33,6 +33,7 @@ public class HpApiManager {
     private HomingPigeonSocketService hpSocket;
     private static HpApiManager instance;
     private boolean isUnauthorized = false;
+    private boolean isRefreshTokenBeenCalled = false;
 
     public static HpApiManager getInstance() {
         return instance == null ? instance = new HpApiManager() : instance;
@@ -68,8 +69,8 @@ public class HpApiManager {
     @SuppressWarnings("unchecked")
     private <T> void execute(Observable<? extends T> o, Subscriber<T> s) {
         o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers())
-                .flatMap((Func1<T, Observable<T>>) t -> validateResponse(t))
-                .retryWhen(o1 -> o1.flatMap((Func1<Throwable, Observable<?>>) t -> validateException(t)))
+                .flatMap((Func1<T, Observable<T>>) this::validateResponse)
+                .retryWhen(o1 -> o1.flatMap((Func1<Throwable, Observable<?>>) this::validateException))
                 .subscribe(s);
     }
 
@@ -90,7 +91,6 @@ public class HpApiManager {
             Log.e(TAG, "validateResponse: √√ NO ERROR √√");
         else if (code == UNAUTHORIZED)
             return raiseApiSessionExpiredException(br);
-        //}
         return Observable.just(t);
     }
 
@@ -100,7 +100,11 @@ public class HpApiManager {
 //        return (t instanceof ApiTokenException)
 //                ? createApiToken() : t instanceof ApiSessionExpiredException
 //                ? refreshToken() : Observable.error(t);
-        return (t instanceof ApiSessionExpiredException) ? refreshToken() : Observable.error(t);
+//        return (t instanceof ApiSessionExpiredException) ? refreshToken() : Observable.error(t);
+        if (t instanceof ApiSessionExpiredException && !isRefreshTokenBeenCalled) {
+            isRefreshTokenBeenCalled = true;
+            return refreshToken();
+        } else return Observable.error(t);
     }
 
     private Observable<Throwable> raiseApiSessionExpiredException(BaseResponse br) {
@@ -108,7 +112,6 @@ public class HpApiManager {
     }
 
     private void updateSession(BaseResponse<HpGetAccessTokenResponse> r) {
-        Log.e(TAG, "updateSession: " + HpUtils.getInstance().toJsonString(r.getData()));
         HpDataManager.getInstance().saveRefreshToken(appContext, r.getData().getRefreshToken());
         HpDataManager.getInstance().saveRefreshTokenExpiry(appContext, r.getData().getRefreshTokenExpiry());
         HpDataManager.getInstance().saveAccessToken(appContext, r.getData().getAccessToken());
@@ -135,6 +138,7 @@ public class HpApiManager {
                 .doOnNext(response -> {
                     Log.e(TAG, "refreshToken: ");
                     isUnauthorized = false;
+                    isRefreshTokenBeenCalled = false;
                     if (RESPONSE_SUCCESS == response.getStatus())
                         updateSession(response);
                     else Observable.error(new AuthException(response.getError().getMessage()));
