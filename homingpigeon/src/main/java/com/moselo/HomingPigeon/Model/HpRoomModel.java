@@ -10,8 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class HpRoomModel implements Parcelable {
 
     @JsonProperty("roomID") @JsonAlias("id") private String roomID;
@@ -29,6 +27,8 @@ public class HpRoomModel implements Parcelable {
         this.roomID = roomID;
         this.roomName = roomName;
         this.roomType = roomType;
+        // TODO: 11/10/18 INI NNTI DI ILANGIN 
+        this.roomImage = HpImageURL.BuilderDummy();
     }
 
     public HpRoomModel() {

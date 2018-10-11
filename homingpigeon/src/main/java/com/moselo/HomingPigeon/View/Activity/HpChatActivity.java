@@ -24,6 +24,7 @@ import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
+import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpChatRecyclerView;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
@@ -193,6 +194,11 @@ public class HpChatActivity extends HpBaseChatActivity {
         public void onMessageClicked(HpMessageModel message, boolean isExpanded) {
             super.onMessageClicked(message, isExpanded);
         }
+
+        @Override
+        public void onOutsideClicked() {
+            HpUtils.getInstance().dismissKeyboard(HpChatActivity.this);
+        }
     };
 
     private void initViewModel() {
@@ -228,6 +234,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
 
         getWindow().setBackgroundDrawable(null);
+
+        GlideApp.with(HpChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).centerCrop().into(civRoomImage);
 
         tvRoomName.setText(getIntent().getStringExtra(ROOM_NAME));
 

@@ -11,7 +11,7 @@
     android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
 
-    <ImageView
+    <com.moselo.HomingPigeon.Helper.CircleImageView
         android:id="@+id/iv_avatar"
         android:layout_width="52dp"
         android:layout_height="52dp"

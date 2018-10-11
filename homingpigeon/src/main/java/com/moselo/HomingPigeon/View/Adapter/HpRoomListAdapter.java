@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.DiffCallback.RoomListDiffCallback;
+import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpUtils;
@@ -78,7 +79,8 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
 
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
-        private ImageView ivAvatar, ivAvatarIcon, ivMute, ivMessageStatus;
+        private ImageView ivAvatarIcon, ivMute, ivMessageStatus;
+        private CircleImageView ivAvatar;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
         private HpMessageModel item;
 

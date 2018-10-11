@@ -23,4 +23,6 @@ public interface HomingPigeonChatInterface {
     void onSendFailed(HpMessageModel message);
 
     void onMessageClicked(HpMessageModel message, boolean isExpanded);
+
+    void onOutsideClicked();
 }

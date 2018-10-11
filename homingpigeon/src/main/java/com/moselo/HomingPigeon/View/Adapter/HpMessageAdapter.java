@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -99,6 +100,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     public class TextVH extends HpBaseViewHolder<HpMessageModel> {
 
+        private ConstraintLayout clContainer;
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus, ivReply, ivSending;
@@ -110,6 +112,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         protected TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
+            clContainer = itemView.findViewById(R.id.cl_container);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivSending = itemView.findViewById(R.id.iv_sending);
             ivReply = itemView.findViewById(R.id.iv_reply);
@@ -192,6 +195,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
             expandOrShrinkBubble(item, false);
 
+            clContainer.setOnClickListener(v -> listener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }

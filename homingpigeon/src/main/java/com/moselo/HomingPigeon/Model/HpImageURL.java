@@ -14,8 +14,8 @@ public class HpImageURL implements Parcelable {
     // TODO: 28/09/18 diilangin nnti setelah fix
     public static HpImageURL BuilderDummy() {
         HpImageURL dummy = new HpImageURL();
-        dummy.setFullsize("https://qph.fs.quoracdn.net/main-qimg-f1160ebf02f4637ef39ea8ff5567e466");
-        dummy.setThumbnail("https://qph.fs.quoracdn.net/main-qimg-f1160ebf02f4637ef39ea8ff5567e466");
+        dummy.setFullsize("https://myanimelist.cdn-dena.com/images/anime/3/50389l.jpg");
+        dummy.setThumbnail("https://myanimelist.cdn-dena.com/images/anime/3/50389l.jpg");
         return dummy;
     }
 

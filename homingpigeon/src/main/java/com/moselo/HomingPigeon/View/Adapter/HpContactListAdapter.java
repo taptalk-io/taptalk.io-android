@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpUtils;
@@ -74,7 +75,8 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
 
     class ContactListHolder extends HpBaseViewHolder<HpUserModel> {
 
-        private ImageView ivAvatar, ivAvatarIcon, ivSelection;
+        private CircleImageView ivAvatar;
+        private ImageView ivAvatarIcon, ivSelection;
         private TextView tvFullName;
         private View vSeparator;
 
@@ -159,7 +161,8 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
 
     class SelectedGroupMemberHolder extends HpBaseViewHolder<HpUserModel> {
 
-        private ImageView ivAvatar, ivAvatarIcon;
+        private CircleImageView ivAvatar;
+        private ImageView ivAvatarIcon;
         private TextView tvFullName;
 
         SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
