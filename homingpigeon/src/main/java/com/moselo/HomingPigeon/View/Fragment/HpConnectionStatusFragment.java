@@ -32,17 +32,7 @@ public class HpConnectionStatusFragment extends Fragment implements HomingPigeon
     private ImageView ivConnectionStatus;
     private ProgressBar pbConnecting;
 
-    private RoomListInterface roomListInterface;
-    private HpRoomListViewModel vm;
-
     public HpConnectionStatusFragment() {
-    }
-
-    public static HpConnectionStatusFragment newInstance() {
-        Bundle args = new Bundle();
-        HpConnectionStatusFragment fragment = new HpConnectionStatusFragment();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Nullable

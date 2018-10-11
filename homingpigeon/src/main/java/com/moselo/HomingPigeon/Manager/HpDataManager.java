@@ -17,6 +17,7 @@ import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
@@ -45,7 +46,8 @@ public class HpDataManager {
 
     public boolean checkActiveUser(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (null == HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {}, prefs.getString(K_USER, null)))
+        if (null == HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
+        }, prefs.getString(K_USER, null)))
             return false;
         else return true;
     }
@@ -218,7 +220,10 @@ public class HpDataManager {
         return HpDataManager.getInstance().getRecentSearchLive();
     }
 
-    //API
+    /**
+     * API CALLS
+     */
+
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
             , String fullname, String email, String phone, String username, HpDefaultDataView<HpAuthTicketResponse> view) {
         HpApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
@@ -239,5 +244,13 @@ public class HpDataManager {
 
     public void getRoomListFromAPI(String userID, HpDefaultDataView<HpGetRoomListResponse> view) {
         HpApiManager.getInstance().getRoomList(userID, new DefaultSubscriber<>(view));
+    }
+
+    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, HpDefaultDataView<HpGetMessageListbyRoomResponse> view) {
+        HpApiManager.getInstance().getMessageListByRoomAfter(roomID, minCreated, lastUpdated, new DefaultSubscriber<>(view));
+    }
+
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, HpDefaultDataView<HpGetMessageListbyRoomResponse> view) {
+        HpApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, new DefaultSubscriber<>(view));
     }
 }

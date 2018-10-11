@@ -12,9 +12,12 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomBeforeRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 
 import rx.Observable;
@@ -154,5 +157,15 @@ public class HpApiManager {
     public void getRoomList(String userID, Subscriber<BaseResponse<HpGetRoomListResponse>> subscriber) {
         HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
         execute(homingPigeon.getRoomList(request), subscriber);
+    }
+
+    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<BaseResponse<HpGetMessageListbyRoomResponse>> subscriber) {
+        HpGetMessageListbyRoomAfterRequest request = new HpGetMessageListbyRoomAfterRequest(roomID, minCreated, lastUpdated);
+        execute(homingPigeon.getMessageListByRoomAfter(request), subscriber);
+    }
+
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<BaseResponse<HpGetMessageListbyRoomResponse>> subscriber) {
+        HpGetMessageListbyRoomBeforeRequest request = new HpGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
+        execute(homingPigeon.getMessageListByRoomBefore(request), subscriber);
     }
 }
