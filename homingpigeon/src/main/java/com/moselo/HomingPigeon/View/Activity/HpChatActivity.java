@@ -122,8 +122,13 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     @Override
     public void onBackPressed() {
-        HpChatManager.getInstance().putUnsentMessageToList();
-        super.onBackPressed();
+        if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
+            rvCustomKeyboard.setVisibility(View.GONE);
+            ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
+        } else {
+            HpChatManager.getInstance().putUnsentMessageToList();
+            super.onBackPressed();
+        }
     }
 
     HpChatListener chatListener = new HpChatListener() {
@@ -276,7 +281,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         etChat.setOnFocusChangeListener(chatFocusChangeListener);
 
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
-
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
