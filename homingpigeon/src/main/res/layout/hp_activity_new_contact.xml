@@ -98,6 +98,7 @@
                 android:id="@+id/iv_expert_cover"
                 android:layout_width="0dp"
                 android:layout_height="93dp"
+                android:scaleType="centerCrop"
                 android:src="@color/mediumPurple"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
