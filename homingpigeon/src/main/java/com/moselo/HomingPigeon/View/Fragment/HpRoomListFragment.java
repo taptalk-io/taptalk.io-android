@@ -93,6 +93,7 @@ public class HpRoomListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         activity = getActivity();
+        HpChatManager.getInstance().addChatListener(chatListener);
         return inflater.inflate(R.layout.hp_fragment_room_list, container, false);
     }
 
@@ -202,13 +203,18 @@ public class HpRoomListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        HpChatManager.getInstance().addChatListener(chatListener);
         viewAppearSequence();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         HpChatManager.getInstance().removeChatListener(chatListener);
     }
 
