@@ -7,9 +7,7 @@ import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonSocketService;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Exception.ApiSessionExpiredException;
-import com.moselo.HomingPigeon.Exception.ApiSessionRunningException;
 import com.moselo.HomingPigeon.Exception.AuthException;
-import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
@@ -93,8 +91,6 @@ public class HpApiManager {
 //                return raiseApiTokenException(br);
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
             Log.e(TAG, "validateResponse: √√ NO ERROR √√");
-        else if (code == UNAUTHORIZED && isRefreshTokenBeenCalled)
-            return raiseApiSessionRunningException(br);
         else if (code == UNAUTHORIZED)
             return raiseApiSessionExpiredException(br);
         return Observable.just(t);
@@ -115,10 +111,6 @@ public class HpApiManager {
 
     private Observable<Throwable> raiseApiSessionExpiredException(BaseResponse br) {
         return Observable.error(new ApiSessionExpiredException(br.getError().getMessage()));
-    }
-
-    private Observable<Throwable> raiseApiSessionRunningException(BaseResponse br) {
-        return Observable.error(new ApiSessionRunningException(br.getError().getMessage()));
     }
 
     private void updateSession(BaseResponse<HpGetAccessTokenResponse> r) {
