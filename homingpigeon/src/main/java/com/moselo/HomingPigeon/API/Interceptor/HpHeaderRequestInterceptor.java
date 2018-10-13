@@ -42,13 +42,10 @@ public class HpHeaderRequestInterceptor implements Interceptor {
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
         if (HpDataManager.getInstance().checkAccessTokenAvailable(context) && NOT_USE_REFRESH_TOKEN == headerAuth) {
-            Log.e(TAG, "Masuk 1");
             authorization = "Bearer " + HpDataManager.getInstance().getAccessToken(context);
         } else if (HpDataManager.getInstance().checkRefreshTokenAvailable(context) && USE_REFRESH_TOKEN == headerAuth) {
-            Log.e(TAG, "Masuk 2" );
             authorization = "Bearer " + HpDataManager.getInstance().getRefreshToken(context);
         } else if (HpDataManager.getInstance().checkAuthTicketAvailable(context)) {
-            Log.e(TAG, "Masuk 3" );
             authorization = "Bearer " + HpDataManager.getInstance().getAuthToken(context);
         } else
             authorization = "Bearer ";

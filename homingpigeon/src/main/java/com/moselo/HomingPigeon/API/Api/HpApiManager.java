@@ -152,7 +152,6 @@ public class HpApiManager {
         return hpRefresh.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
-                    Log.e(TAG, "refreshToken: ");
                     if (RESPONSE_SUCCESS == response.getStatus())
                         updateSession(response);
                     else Observable.error(new AuthException(response.getError().getMessage()));
