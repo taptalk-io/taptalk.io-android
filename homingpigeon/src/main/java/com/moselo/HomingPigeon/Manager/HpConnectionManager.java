@@ -5,6 +5,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
@@ -137,6 +138,7 @@ public class HpConnectionManager {
     private void initNetworkListener() {
         HomingPigeonNetworkInterface networkListener = () -> {
             if (HpDataManager.getInstance().checkAccessTokenAvailable(appContext)) {
+                Log.e(TAG, "initNetworkListener: " );
                 HpDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus ||
                         DISCONNECTED == connectionStatus) {

@@ -23,9 +23,6 @@ public interface HomingPigeonApiService {
     @POST("auth/access_token/request")
     Observable<BaseResponse<HpGetAccessTokenResponse>> getAccessToken();
 
-    @POST("auth/access_token/refresh")
-    Observable<BaseResponse<HpGetAccessTokenResponse>> refreshAccessToken();
-
     @POST("chat/message/room_list_and_unread")
     Observable<BaseResponse<HpGetRoomListResponse>> getRoomList(@Body HpCommonRequest request);
 

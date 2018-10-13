@@ -85,6 +85,11 @@ public class HpDefaultConstant {
         public static final int INTERNAL_SERVER_ERROR = 500;
     }
 
+    public static final class HttpErrorCode {
+        public static final String TOKEN_EXPIRED = "40104";
+        public static final String TOKEN_INVALID = "40103";
+    }
+
     public static final class TokenHeaderConst {
         public static final int NOT_USE_REFRESH_TOKEN = 1;
         public static final int USE_REFRESH_TOKEN = 2;

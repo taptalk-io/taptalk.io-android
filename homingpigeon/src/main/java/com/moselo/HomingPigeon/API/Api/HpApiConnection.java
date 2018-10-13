@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.API.Interceptor.HpHeaderRequestInterceptor;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
+import com.moselo.HomingPigeon.API.Service.HomingPigeonRefreshTokenService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonSocketService;
 import com.moselo.HomingPigeon.BuildConfig;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -17,6 +20,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
 
 public class HpApiConnection {
 
@@ -31,6 +37,7 @@ public class HpApiConnection {
 
     private HomingPigeonApiService homingPigeon;
     private HomingPigeonSocketService hpSocket;
+    private HomingPigeonRefreshTokenService hpRefresh;
 
     public ObjectMapper objectMapper;
 
@@ -42,13 +49,16 @@ public class HpApiConnection {
 
     private HpApiConnection() {
         this.objectMapper = createObjectMapper();
-        OkHttpClient httpHpClient = buildHttpHpClient();
+        OkHttpClient httpHpClientAccessToken = buildHttpHpClient(NOT_USE_REFRESH_TOKEN);
+        OkHttpClient httpHpClientRefreshToken = buildHttpHpClient(USE_REFRESH_TOKEN);
 
-        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClient, HomingPigeonApiService.BASE_URL);
-        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClient, HomingPigeonSocketService.BASE_URL);
+        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, HomingPigeonApiService.BASE_URL);
+        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, HomingPigeonSocketService.BASE_URL);
+        Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, HomingPigeonRefreshTokenService.BASE_URL);
 
         this.homingPigeon = homingPigeonAdapter.create(HomingPigeonApiService.class);
         this.hpSocket = hpSocketAdapter.create(HomingPigeonSocketService.class);
+        this.hpRefresh = hpRefreshAdapter.create(HomingPigeonRefreshTokenService.class);
     }
 
     public HomingPigeonApiService getHomingPigeon() {
@@ -57,6 +67,10 @@ public class HpApiConnection {
 
     public HomingPigeonSocketService getHpValidate() {
         return hpSocket;
+    }
+
+    public HomingPigeonRefreshTokenService getHpRefresh() {
+        return hpRefresh;
     }
 
     private ObjectMapper createObjectMapper() {
@@ -69,7 +83,7 @@ public class HpApiConnection {
         return objectMapper;
     }
 
-    private OkHttpClient buildHttpHpClient() {
+    private OkHttpClient buildHttpHpClient(int headerAuth) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
@@ -80,7 +94,7 @@ public class HpApiConnection {
                 .writeTimeout(2, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new HpHeaderRequestInterceptor())
+                .addInterceptor(new HpHeaderRequestInterceptor(headerAuth))
                 .build();
     }
 

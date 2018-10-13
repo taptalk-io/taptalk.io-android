@@ -8,6 +8,7 @@ import android.util.Log;
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 
 import java.io.IOException;
@@ -18,16 +19,15 @@ import okhttp3.Response;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
 
 public class HpHeaderRequestInterceptor implements Interceptor {
     public static final String TAG = HpHeaderRequestInterceptor.class.getSimpleName();
-    private String authTicket = null;
-    public HpHeaderRequestInterceptor() {
-        authTicket = null;
-    }
+    private int headerAuth;
 
-    public HpHeaderRequestInterceptor(String authTicket) {
-        this.authTicket = authTicket;
+    public HpHeaderRequestInterceptor(int headerAuth) {
+        this.headerAuth = headerAuth;
     }
 
     @Override
@@ -41,10 +41,10 @@ public class HpHeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (HpDataManager.getInstance().checkAccessTokenAvailable(context) && !HpApiManager.getInstance().isUnauthorized()) {
+        if (HpDataManager.getInstance().checkAccessTokenAvailable(context) && NOT_USE_REFRESH_TOKEN == headerAuth) {
             Log.e(TAG, "Masuk 1");
             authorization = "Bearer " + HpDataManager.getInstance().getAccessToken(context);
-        } else if (HpApiManager.getInstance().isUnauthorized()) {
+        } else if (HpDataManager.getInstance().checkRefreshTokenAvailable(context) && USE_REFRESH_TOKEN == headerAuth) {
             Log.e(TAG, "Masuk 2" );
             authorization = "Bearer " + HpDataManager.getInstance().getRefreshToken(context);
         } else if (HpDataManager.getInstance().checkAuthTicketAvailable(context)) {
