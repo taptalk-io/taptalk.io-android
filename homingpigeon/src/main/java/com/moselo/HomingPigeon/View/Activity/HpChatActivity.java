@@ -55,6 +55,7 @@ import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
 
 public class HpChatActivity extends HpBaseChatActivity {
 
@@ -522,7 +523,11 @@ public class HpChatActivity extends HpBaseChatActivity {
                     flMessageList.setVisibility(View.VISIBLE);
                     vm.addMessageModels(models);
                     hpMessageAdapter.addMessage(models);
-                    state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+                    //state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+                    state = STATE.LOADED;
+                    if (NUM_OF_ITEM > entities.size())
+                        callApiBefore(messageBeforeViewPaging);
+
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
@@ -558,7 +563,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             });
 
             if (0 < vm.getMessageModels().size())
-                callApiBefore();
+                callApiBefore(messageBeforeView);
         }
 
         @Override
@@ -572,7 +577,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             Log.e(TAG, "onError: " + error.getMessage());
 
             if (0 < vm.getMessageModels().size())
-                callApiBefore();
+                callApiBefore(messageBeforeView);
         }
 
         @Override
@@ -586,7 +591,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             Log.e(TAG, "onError: " + errorMessage);
 
             if (0 < vm.getMessageModels().size())
-                callApiBefore();
+                callApiBefore(messageBeforeView);
         }
     };
 
@@ -626,9 +631,47 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    public void callApiBefore() {
+    private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeViewPaging = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+        @Override
+        public void onSuccess(HpGetMessageListbyRoomResponse response) {
+            List<HpMessageEntity> responseMessages = new ArrayList<>();
+            for (HpMessageModel message : response.getMessages()) {
+                try {
+                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                    responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            state = NUM_OF_ITEM > responseMessages.size() ? STATE.DONE : STATE.LOADED;
+
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+                @Override
+                public void onInsertFinished() {
+                    vm.getMessageEntities(vm.getRoom().getRoomID(), dbListenerPaging);
+                    if (0 < responseMessages.size() && null != responseMessages.get(0) &&
+                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
+                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onError(HpErrorModel error) {
+            super.onError(error);
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            super.onError(throwable);
+        }
+    };
+
+    public void callApiBefore(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
         HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
                 , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
-                , messageBeforeView);
+                , beforeView);
     }
 }
