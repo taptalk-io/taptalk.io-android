@@ -1,10 +1,8 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
@@ -36,7 +33,6 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_B
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOG;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
 public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHolder<HpMessageModel>> {
 
@@ -79,7 +75,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 messageType = messageModel.getType();
 
             switch (messageType) {
-                case HpDefaultConstant.MessageType.TYPE_TEXT :
+                case HpDefaultConstant.MessageType.TYPE_TEXT:
                     if (isMessageFromMySelf(messageModel))
                         return TYPE_BUBBLE_TEXT_RIGHT;
                     else return TYPE_BUBBLE_TEXT_LEFT;
@@ -202,7 +198,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         private void onBubbleClicked(HpMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 resendMessage(item);
-            } else if (null != item.getSending() && !item.getSending()){
+            } else if (null != item.getSending() && !item.getSending()) {
                 if (item.isExpanded()) {
                     // Shrink bubble
                     item.setExpanded(false);
@@ -469,7 +465,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     }
 
     public void setMessages(List<HpMessageModel> messages) {
-        setItems(messages, true);
+        setItems(messages, false);
     }
 
     public void addMessage(HpMessageModel message) {

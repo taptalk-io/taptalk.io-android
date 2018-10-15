@@ -77,6 +77,10 @@ public class HpDataManager {
         saveLongTimestampPreference(lastUpdated, K_LAST_UPDATED);
     }
 
+    public Long getLastUpdatedMessageTimestamp() {
+        return getLongTimestampPreference(K_LAST_UPDATED);
+    }
+
     public String getRefreshToken() {
         return getStringPreference(K_REFRESH_TOKEN);
     }
@@ -87,10 +91,6 @@ public class HpDataManager {
 
     public String getAuthToken() {
         return getStringPreference(K_AUTH_TICKET);
-    }
-
-    public Long getLastUpdatedMessageTimestamp() {
-        return getLongTimestampPreference(K_LAST_UPDATED);
     }
 
     private void saveStringPreference(String string, String key) {

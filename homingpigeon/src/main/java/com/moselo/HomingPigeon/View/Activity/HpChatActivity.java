@@ -64,6 +64,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     public interface SwipeBackInterface {
         void onSwipeBack();
     }
+
     private SwipeBackInterface swipeInterface = () -> HpUtils.getInstance().dismissKeyboard(HpChatActivity.this);
 
     // View
@@ -266,12 +267,14 @@ public class HpChatActivity extends HpBaseChatActivity {
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
+        //this is for call database
         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+
         rvMessageList.addOnScrollListener(new HpEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < hpMessageAdapter.getItemCount()) {
-                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListener, vm.getLastTimestamp());
+                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
                     state = STATE.WORKING;
                 }
             }
@@ -314,9 +317,9 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
                     if (vm.getMessageModels().size() > 0) {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), vm.getMessageModels().get(0).getUpdated(), messageView);
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), vm.getMessageModels().get(0).getUpdated(), messageAfterView);
                     } else {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageView);
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageAfterView);
                     }
                 }
             }
@@ -464,6 +467,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
                     // First load
+                    Log.e(TAG, "onSelectFinished: 1");
                     hpMessageAdapter.setMessages(models);
                     if (models.size() == 0) {
                         // Chat is empty
@@ -476,21 +480,20 @@ public class HpChatActivity extends HpBaseChatActivity {
                         showCustomKeyboard();
                     } else {
                         // Message exists
-                        vm.addMessageModels(models);
+                        vm.setMessageModels(models);
                         flMessageList.setVisibility(View.VISIBLE);
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
                     // Call Message List API
-                    if (vm.getMessageModels().size() > 0) {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(0).getUpdated(), messageView);
-                    } else {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageView);
+                    if (models.size() > 0) {
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(0).getUpdated(), messageAfterView);
                     }
                 } else if (null != hpMessageAdapter) {
-                    vm.addMessageModels(models);
                     flMessageList.setVisibility(View.VISIBLE);
-                    hpMessageAdapter.notifyDataSetChanged();
+                    //vm.addMessageModels(models);
+                    hpMessageAdapter.setMessages(models);
+                    //hpMessageAdapter.notifyDataSetChanged();
                     state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
@@ -500,10 +503,39 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+    private HpDatabaseListener dbListenerPaging = new HpDatabaseListener() {
+        @Override
+        public void onSelectFinished(List<HpMessageEntity> entities) {
+
+            final List<HpMessageModel> models = new ArrayList<>();
+            for (HpMessageEntity entity : entities) {
+                HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                models.add(model);
+                vm.addMessagePointer(model);
+            }
+
+            if (0 < models.size()) {
+                vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
+            }
+
+            runOnUiThread(() -> {
+                if (null != hpMessageAdapter) {
+                    flMessageList.setVisibility(View.VISIBLE);
+                    //vm.addMessageModels(models);
+                    hpMessageAdapter.addMessage(models);
+                    //hpMessageAdapter.notifyDataSetChanged();
+                    state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+                    if (rvMessageList.getVisibility() != View.VISIBLE)
+                        rvMessageList.setVisibility(View.VISIBLE);
+                    if (state == STATE.DONE) updateMessageDecoration();
+                }
+            });
+        }
+    };
+
+    private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageAfterView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
-            Log.e(TAG, "onSuccess: " + HpUtils.getInstance().toJsonString(response));
             vm.setInitialAPICallFinished(true);
 
             List<HpMessageEntity> responseMessages = new ArrayList<>();
@@ -519,14 +551,16 @@ public class HpChatActivity extends HpBaseChatActivity {
             HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
                 @Override
                 public void onInsertFinished() {
-                    Log.e(TAG, "onInsertFinished: ");
                     vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
-                    if (null != responseMessages.get(0) &&
+                    if (0 < responseMessages.size() && null != responseMessages.get(0) &&
                             HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
                         HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
                     }
                 }
             });
+
+            if (0 < vm.getMessageModels().size())
+                callApiBefore();
         }
 
         @Override
@@ -538,6 +572,9 @@ public class HpChatActivity extends HpBaseChatActivity {
                         .show();
             }
             Log.e(TAG, "onError: " + error.getMessage());
+
+            if (0 < vm.getMessageModels().size())
+                callApiBefore();
         }
 
         @Override
@@ -549,6 +586,51 @@ public class HpChatActivity extends HpBaseChatActivity {
                         .show();
             }
             Log.e(TAG, "onError: " + errorMessage);
+
+            if (0 < vm.getMessageModels().size())
+                callApiBefore();
         }
     };
+
+    private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+        @Override
+        public void onSuccess(HpGetMessageListbyRoomResponse response) {
+            List<HpMessageEntity> responseMessages = new ArrayList<>();
+            for (HpMessageModel message : response.getMessages()) {
+                try {
+                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                    responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                } catch (GeneralSecurityException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+                @Override
+                public void onInsertFinished() {
+                    vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+                    if (0 < responseMessages.size() && null != responseMessages.get(0) &&
+                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
+                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onError(HpErrorModel error) {
+            super.onError(error);
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            super.onError(throwable);
+        }
+    };
+
+    public void callApiBefore() {
+        HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+                , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
+                , messageBeforeView);
+    }
 }
