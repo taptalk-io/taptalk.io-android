@@ -183,14 +183,14 @@ public class HpChatManager {
     }
 
     public HpUserModel getActiveUser() {
-        return activeUser;
+        return activeUser == null ? HpDataManager.getInstance().getActiveUser() : activeUser;
     }
 
     public void setActiveUser(HpUserModel user) {
         this.activeUser = user;
     }
 
-    public void saveActiveUser(Context context, HpUserModel user) {
+    public void saveActiveUser(HpUserModel user) {
         this.activeUser = user;
         HpDataManager.getInstance().saveActiveUser(user);
     }
@@ -291,13 +291,13 @@ public class HpChatManager {
     private HpMessageModel buildTextMessage(String message, HpRoomModel room) {
         // Create new HpMessageModel based on text
         String[] splitedRoomID = room.getRoomID().split("-");
-        String otherUserID = !splitedRoomID[0].equals(activeUser.getUserID()) ? splitedRoomID[0] : splitedRoomID[1];
+        String otherUserID = !splitedRoomID[0].equals(getActiveUser().getUserID()) ? splitedRoomID[0] : splitedRoomID[1];
         HpMessageModel messageModel = HpMessageModel.Builder(
                 message,
                 room,
                 HpDefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
-                activeUser, otherUserID);
+                getActiveUser(), otherUserID);
 
         return messageModel;
     }
@@ -306,8 +306,8 @@ public class HpChatManager {
      * save text to draft
      */
     public void saveMessageToDraft(String message) {
-        Log.e(TAG, "saveMessageToDraft: "+HpUtils.getInstance().toJsonString(activeRoom) );
-        messageDrafts.put(activeRoom.getRoomID(), message);
+        Log.e(TAG, "saveMessageToDraft: "+HpUtils.getInstance().toJsonString(getActiveRoom()) );
+        messageDrafts.put(getActiveRoom().getRoomID(), message);
     }
 
     public String getMessageFromDraft() {
