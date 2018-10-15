@@ -130,9 +130,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
             itemView.setOnClickListener(v -> {
                 switch (viewType) {
                     case CHAT:
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
-                        HpUserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
-                        }, prefs.getString(K_USER, ""));
+                        HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
 
                         if (!myID.equals(item.getUserID())) {
                             HpChatManager.getInstance().saveUnsentMessage();
@@ -144,7 +142,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
                                     item.getName(), 1));
                             itemView.getContext().startActivity(intent);
 
-                            HpDataManager.getInstance().saveRecipientID(itemView.getContext(), item.getUserID());
+                            HpDataManager.getInstance().saveRecipientID(item.getUserID());
                         }
                         break;
                     case SELECT:

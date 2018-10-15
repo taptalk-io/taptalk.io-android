@@ -41,12 +41,12 @@ public class HpHeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (HpDataManager.getInstance().checkAccessTokenAvailable(context) && NOT_USE_REFRESH_TOKEN == headerAuth) {
-            authorization = "Bearer " + HpDataManager.getInstance().getAccessToken(context);
-        } else if (HpDataManager.getInstance().checkRefreshTokenAvailable(context) && USE_REFRESH_TOKEN == headerAuth) {
-            authorization = "Bearer " + HpDataManager.getInstance().getRefreshToken(context);
-        } else if (HpDataManager.getInstance().checkAuthTicketAvailable(context)) {
-            authorization = "Bearer " + HpDataManager.getInstance().getAuthToken(context);
+        if (HpDataManager.getInstance().checkAccessTokenAvailable() && NOT_USE_REFRESH_TOKEN == headerAuth) {
+            authorization = "Bearer " + HpDataManager.getInstance().getAccessToken();
+        } else if (HpDataManager.getInstance().checkRefreshTokenAvailable() && USE_REFRESH_TOKEN == headerAuth) {
+            authorization = "Bearer " + HpDataManager.getInstance().getRefreshToken();
+        } else if (HpDataManager.getInstance().checkAuthTicketAvailable()) {
+            authorization = "Bearer " + HpDataManager.getInstance().getAuthToken();
         } else
             authorization = "Bearer ";
 

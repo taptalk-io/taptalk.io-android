@@ -129,12 +129,12 @@ public class HpApiManager {
     }
 
     private void updateSession(BaseResponse<HpGetAccessTokenResponse> r) {
-        HpDataManager.getInstance().saveAccessToken(appContext, r.getData().getAccessToken());
-        HpDataManager.getInstance().saveAccessTokenExpiry(appContext, r.getData().getAccessTokenExpiry());
-        HpDataManager.getInstance().saveRefreshToken(appContext, r.getData().getRefreshToken());
-        HpDataManager.getInstance().saveRefreshTokenExpiry(appContext, r.getData().getRefreshTokenExpiry());
+        HpDataManager.getInstance().saveAccessToken(r.getData().getAccessToken());
+        HpDataManager.getInstance().saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
+        HpDataManager.getInstance().saveRefreshToken(r.getData().getRefreshToken());
+        HpDataManager.getInstance().saveRefreshTokenExpiry(r.getData().getRefreshTokenExpiry());
 
-        HpDataManager.getInstance().saveActiveUser(appContext, r.getData().getUser());
+        HpDataManager.getInstance().saveActiveUser(r.getData().getUser());
     }
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID

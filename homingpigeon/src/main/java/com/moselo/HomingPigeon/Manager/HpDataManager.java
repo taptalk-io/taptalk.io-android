@@ -20,6 +20,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.orhanobut.hawk.Hawk;
 
 import java.util.List;
 
@@ -39,126 +40,112 @@ public class HpDataManager {
         return instance == null ? (instance = new HpDataManager()) : instance;
     }
 
-    public HpUserModel getActiveUser(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
-        }, prefs.getString(K_USER, null));
+    public HpUserModel getActiveUser() {
+        return Hawk.get(K_USER,null);
     }
 
-    public boolean checkActiveUser(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (null == HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
-        }, prefs.getString(K_USER, null)))
+    public boolean checkActiveUser() {
+        if (null == getActiveUser())
             return false;
         else return true;
     }
 
-    public void saveActiveUser(Context context, HpUserModel user) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_USER, HpUtils.getInstance().toJsonString(user)).apply();
-        HpChatManager.getInstance().setActiveUser(user);
+    public void saveActiveUser(HpUserModel user) {
+        Hawk.put(K_USER, user);
     }
 
-    public void saveAuthTicket(Context context, String authTicket) {
-        saveStringPreference(context, authTicket, K_AUTH_TICKET);
+    public void saveAuthTicket(String authTicket) {
+        saveStringPreference(authTicket, K_AUTH_TICKET);
     }
 
-    public void saveAccessToken(Context context, String accessToken) {
-        saveStringPreference(context, accessToken, K_ACCESS_TOKEN);
+    public void saveAccessToken(String accessToken) {
+        saveStringPreference(accessToken, K_ACCESS_TOKEN);
     }
 
-    public void saveAccessTokenExpiry(Context context, Long accessTokenExpiry) {
-        saveLongTimestampPreference(context, accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
+    public void saveAccessTokenExpiry(Long accessTokenExpiry) {
+        saveLongTimestampPreference(accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
     }
 
-    public void saveRefreshToken(Context context, String refreshToken) {
-        saveStringPreference(context, refreshToken, K_REFRESH_TOKEN);
+    public void saveRefreshToken(String refreshToken) {
+        saveStringPreference(refreshToken, K_REFRESH_TOKEN);
     }
 
-    public void saveRefreshTokenExpiry(Context context, Long refreshTokenExpiry) {
-        saveLongTimestampPreference(context, refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
+    public void saveRefreshTokenExpiry(Long refreshTokenExpiry) {
+        saveLongTimestampPreference(refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
     }
 
-    public void saveLastUpdatedMessageTimestamp(Context context, Long lastUpdated) {
-        saveLongTimestampPreference(context, lastUpdated, K_LAST_UPDATED);
+    public void saveLastUpdatedMessageTimestamp(Long lastUpdated) {
+        saveLongTimestampPreference(lastUpdated, K_LAST_UPDATED);
     }
 
-    public String getRefreshToken(Context context) {
-        return getStringPreference(context, K_REFRESH_TOKEN);
+    public String getRefreshToken() {
+        return getStringPreference(K_REFRESH_TOKEN);
     }
 
-    public String getAccessToken(Context context) {
-        return getStringPreference(context, K_ACCESS_TOKEN);
+    public String getAccessToken() {
+        return getStringPreference(K_ACCESS_TOKEN);
     }
 
-    public String getAuthToken(Context context) {
-        return getStringPreference(context, K_AUTH_TICKET);
+    public String getAuthToken() {
+        return getStringPreference(K_AUTH_TICKET);
     }
 
-    public Long getLastUpdatedMessageTimestamp(Context context) {
-        return getLongTimestampPreference(context, K_LAST_UPDATED);
+    public Long getLastUpdatedMessageTimestamp() {
+        return getLongTimestampPreference(K_LAST_UPDATED);
     }
 
-    private void saveStringPreference(Context context, String token, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(key, token).apply();
+    private void saveStringPreference(String string, String key) {
+        Hawk.put(key, string);
     }
 
-    private void saveLongTimestampPreference(Context context, Long timestamp, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putLong(key, timestamp).apply();
+    private void saveLongTimestampPreference(Long timestamp, String key) {
+        Hawk.put(key, timestamp);
     }
 
-    private String getStringPreference(Context context, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(key, "0");
+    private String getStringPreference(String key) {
+        return Hawk.get(key, "0");
     }
 
-    private Long getLongTimestampPreference(Context context, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getLong(key, 0);
+    private Long getLongTimestampPreference(String key) {
+        return Hawk.get(key, Long.parseLong("0"));
     }
 
-    public Boolean checkRefreshTokenAvailable(Context context) {
-        return checkPreferenceKeyAvailable(context, K_REFRESH_TOKEN);
+    public Boolean checkRefreshTokenAvailable() {
+        return checkPreferenceKeyAvailable(K_REFRESH_TOKEN);
     }
 
-    public Boolean checkAccessTokenAvailable(Context context) {
-        return checkPreferenceKeyAvailable(context, K_ACCESS_TOKEN);
+    public Boolean checkAccessTokenAvailable() {
+        return checkPreferenceKeyAvailable(K_ACCESS_TOKEN);
     }
 
-    public Boolean checkAuthTicketAvailable(Context context) {
-        return checkPreferenceKeyAvailable(context, K_AUTH_TICKET);
+    public Boolean checkAuthTicketAvailable() {
+        return checkPreferenceKeyAvailable(K_AUTH_TICKET);
     }
 
-    private Boolean checkPreferenceKeyAvailable(Context context, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.contains(key);
+    private Boolean checkPreferenceKeyAvailable(String key) {
+        return Hawk.contains(key);
     }
 
-    public void deleteAuthTicket(Context context) {
-        deletePreference(context, K_AUTH_TICKET);
+    public void deleteAuthTicket() {
+        deletePreference(K_AUTH_TICKET);
     }
 
-    public void deleteAccessToken(Context context) {
-        deletePreference(context, K_ACCESS_TOKEN);
+    public void deleteAccessToken() {
+        deletePreference(K_ACCESS_TOKEN);
     }
 
-    private void deletePreference(Context context, String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().remove(key).apply();
+    private void deletePreference(String key) {
+        Hawk.delete(key);
     }
 
     // TODO: 14/09/18 TEMP
-    public String getRecipientID(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(K_RECIPIENT_ID, "0");
+    public String getRecipientID() {
+        return Hawk.get(K_RECIPIENT_ID, "0");
     }
 
     // TODO: 14/09/18 TEMP
-    public void saveRecipientID(Context context, String recipientID) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_RECIPIENT_ID, recipientID).apply();
+    public void saveRecipientID(String recipientID) {
+        Hawk.put(K_RECIPIENT_ID, recipientID);
     }
 
     public void initDatabaseManager(String databaseType, Application application) {

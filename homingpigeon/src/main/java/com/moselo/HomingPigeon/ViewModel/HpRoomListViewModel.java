@@ -24,7 +24,7 @@ public class HpRoomListViewModel extends AndroidViewModel {
 
     public HpRoomListViewModel(@NonNull Application application) {
         super(application);
-        myUserID = HpDataManager.getInstance().getActiveUser(application).getUserID();
+        myUserID = HpDataManager.getInstance().getActiveUser().getUserID();
     }
 
     public List<HpRoomListModel> getRoomList() {

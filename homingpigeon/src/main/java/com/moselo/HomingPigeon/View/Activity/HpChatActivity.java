@@ -204,7 +204,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(HpDefaultConstant.K_ROOM));
-        vm.setMyUserModel(HpDataManager.getInstance().getActiveUser(this));
+        vm.setMyUserModel(HpDataManager.getInstance().getActiveUser());
         //vm.setPendingMessages(HpChatManager.getInstance().getMessageQueueInActiveRoom());
     }
 
@@ -350,7 +350,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
             boolean ownMessage = newMessage.getUser().getUserID().equals(HpDataManager
-                    .getInstance().getActiveUser(HpChatActivity.this).getUserID());
+                    .getInstance().getActiveUser().getUserID());
             if (vm.getMessagePointer().containsKey(newID)) {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
@@ -521,9 +521,9 @@ public class HpChatActivity extends HpBaseChatActivity {
                 public void onInsertFinished() {
                     Log.e(TAG, "onInsertFinished: ");
                     vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
-                    if (null != responseMessages.get(0) && HpDataManager.getInstance().getLastUpdatedMessageTimestamp(HpChatActivity.this) < responseMessages.get(0).getUpdated()) {
-                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(HpChatActivity.this, responseMessages.get(0).getUpdated());
-                        Log.e(TAG, "onInsertFinished - last updated: " + HpDataManager.getInstance().getLastUpdatedMessageTimestamp(HpChatActivity.this));
+                    if (null != responseMessages.get(0) &&
+                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
+                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
                     }
                 }
             });

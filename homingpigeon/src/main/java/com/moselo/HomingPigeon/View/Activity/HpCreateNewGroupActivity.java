@@ -23,6 +23,7 @@ import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
@@ -87,10 +88,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     }
 
     private void initViewModel() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        HpUserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
-        }, prefs.getString(K_USER, ""));
-
+        HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
         vm.getSelectedContacts().add(myUser);
     }

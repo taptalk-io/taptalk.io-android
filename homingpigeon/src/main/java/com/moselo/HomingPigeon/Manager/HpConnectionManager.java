@@ -137,7 +137,7 @@ public class HpConnectionManager {
 
     private void initNetworkListener() {
         HomingPigeonNetworkInterface networkListener = () -> {
-            if (HpDataManager.getInstance().checkAccessTokenAvailable(appContext)) {
+            if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
                 Log.e(TAG, "initNetworkListener: " );
                 HpDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus ||
@@ -250,8 +250,8 @@ public class HpConnectionManager {
         String deviceID = Settings.Secure.getString(appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
 
-        if (HpDataManager.getInstance().checkAccessTokenAvailable(appContext)) {
-            websocketHeader.put("Authorization", "Bearer " + HpDataManager.getInstance().getAccessToken(appContext));
+        if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
+            websocketHeader.put("Authorization", "Bearer " + HpDataManager.getInstance().getAccessToken());
             websocketHeader.put("App-Key", appKey);
             websocketHeader.put("Device-Identifier", deviceID);
             websocketHeader.put("Device-Model", android.os.Build.MODEL);

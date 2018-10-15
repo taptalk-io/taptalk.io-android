@@ -250,14 +250,14 @@ public class HpLoginActivity extends HpBaseActivity {
         @Override
         public void onSuccess(HpGetAccessTokenResponse response) {
             super.onSuccess(response);
-            HpDataManager.getInstance().deleteAuthTicket(HpLoginActivity.this);
+            HpDataManager.getInstance().deleteAuthTicket();
 
-            HpDataManager.getInstance().saveAccessToken(HpLoginActivity.this, response.getAccessToken());
-            HpDataManager.getInstance().saveRefreshToken(HpLoginActivity.this, response.getRefreshToken());
-            HpDataManager.getInstance().saveRefreshTokenExpiry(HpLoginActivity.this, response.getRefreshTokenExpiry());
-            HpDataManager.getInstance().saveAccessTokenExpiry(HpLoginActivity.this, response.getAccessTokenExpiry());
+            HpDataManager.getInstance().saveAccessToken(response.getAccessToken());
+            HpDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
+            HpDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
+            HpDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
 
-            HpDataManager.getInstance().saveActiveUser(HpLoginActivity.this, response.getUser());
+            HpDataManager.getInstance().saveActiveUser(response.getUser());
             runOnUiThread(() -> {
                 Intent intent = new Intent(HpLoginActivity.this, HpRoomListActivity.class);
                 intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());

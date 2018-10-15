@@ -149,10 +149,7 @@ public class HpChatManager {
 
     public HpChatManager() {
         HpConnectionManager.getInstance().addSocketListener(socketListener);
-        setActiveUser(HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
-                                                   },
-                PreferenceManager.getDefaultSharedPreferences(HomingPigeon.appContext)
-                        .getString(K_USER, null)));
+        setActiveUser(HpDataManager.getInstance().getActiveUser());
         chatListeners = new ArrayList<>();
         saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
@@ -195,8 +192,7 @@ public class HpChatManager {
 
     public void saveActiveUser(Context context, HpUserModel user) {
         this.activeUser = user;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefs.edit().putString(K_USER, HpUtils.getInstance().toJsonString(user)).apply();
+        HpDataManager.getInstance().saveActiveUser(user);
     }
 
     public Map<String, HpMessageModel> getMessageQueueInActiveRoom() {

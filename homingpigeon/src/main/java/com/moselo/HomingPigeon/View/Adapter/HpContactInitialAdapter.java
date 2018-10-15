@@ -75,7 +75,7 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
 
             tvInitial = itemView.findViewById(R.id.tv_initial);
             rvContactInitial = itemView.findViewById(R.id.rv_contact_list_initial);
-            myID = HpDataManager.getInstance().getActiveUser(itemView.getContext()).getUserID();
+            myID = HpDataManager.getInstance().getActiveUser().getUserID();
         }
 
         void onBind(int position) {

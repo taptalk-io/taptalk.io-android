@@ -183,9 +183,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
                     notifyItemChanged(position);
                 } else {
                     // Open chat room on click
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
-                    HpUserModel myUser = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
-                    }, prefs.getString(K_USER, ""));
+                    HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
 
                     String myUserID = myUser.getUserID();
                     String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ? HpChatManager.getInstance().arrangeRoomId(myUserID, userModel.getUserID()) : HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
@@ -200,7 +198,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
                                 item.getLastMessage().getRoom().getRoomName(), item.getLastMessage().getRoom().getRoomType()));
                         itemView.getContext().startActivity(intent);
 
-                        HpDataManager.getInstance().saveRecipientID(itemView.getContext(), item.getLastMessage().getRecipientID());
+                        HpDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
                     } else {
                         Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
                     }

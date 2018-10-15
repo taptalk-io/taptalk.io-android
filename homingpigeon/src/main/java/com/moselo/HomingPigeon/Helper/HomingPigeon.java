@@ -16,6 +16,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
+import com.orhanobut.hawk.Hawk;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
@@ -38,14 +39,17 @@ public class HomingPigeon {
     }
 
     public HomingPigeon(final Context appContext) {
+        //init Hawk for Preference
+        Hawk.init(appContext).build();
         HpDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HpDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
         HomingPigeon.appContext = appContext;
-        if (HpDataManager.getInstance().checkAccessTokenAvailable(appContext))
+        if (HpDataManager.getInstance().checkAccessTokenAvailable())
             HpConnectionManager.getInstance().connect();
 
         HpDataManager.getInstance().updateSendingMessageToFailed();
 
+        //init stetho tapi hanya untuk DEBUG State
         if (BuildConfig.DEBUG)
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
@@ -77,14 +81,14 @@ public class HomingPigeon {
     }
 
     public void saveAuthTicketAndGetAccessToken(String authTicket, HpDefaultDataView<HpGetAccessTokenResponse> view) {
-        HpDataManager.getInstance().saveAuthTicket(appContext, authTicket);
+        HpDataManager.getInstance().saveAuthTicket(authTicket);
         HpDataManager.getInstance().getAccessTokenFromApi(view);
     }
 
     public static void checkActiveUserToShowPage(Activity activity) {
         if (null != activity) {
             Intent intent;
-            if (HpDataManager.getInstance().checkAccessTokenAvailable(activity)) {
+            if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
                 intent = new Intent(activity, HpRoomListActivity.class);
             } else {
                 intent = new Intent(activity, HpLoginActivity.class);

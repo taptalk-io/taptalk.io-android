@@ -25,6 +25,7 @@ import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
@@ -45,9 +46,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     private HpUserModel myUserModel;
 
     public HpMessageAdapter(Context context, HpChatListener listener) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        myUserModel = HpUtils.getInstance().fromJSON(new TypeReference<HpUserModel>() {
-        }, prefs.getString(K_USER, "{}"));
+        myUserModel = HpDataManager.getInstance().getActiveUser();
         this.listener = listener;
     }
 
