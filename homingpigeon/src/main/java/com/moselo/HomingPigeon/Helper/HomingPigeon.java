@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.stetho.Stetho;
+import com.moselo.HomingPigeon.API.Service.HomingPigeonRefreshTokenService;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
+import com.moselo.HomingPigeon.Interface.HomingPigeonTokenInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -25,6 +28,7 @@ public class HomingPigeon {
     public static HomingPigeon homingPigeon;
     public static boolean isForeground = true;
     private Thread.UncaughtExceptionHandler defaultUEH;
+    private HomingPigeonTokenInterface hpTokenInterface;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -34,11 +38,11 @@ public class HomingPigeon {
         }
     };
 
-    public static HomingPigeon init(Context context) {
-        return homingPigeon == null ? (homingPigeon = new HomingPigeon(context)) : homingPigeon;
+    public static HomingPigeon init(Context context, HomingPigeonTokenInterface hpTokenInterface) {
+        return homingPigeon == null ? (homingPigeon = new HomingPigeon(context, hpTokenInterface)) : homingPigeon;
     }
 
-    public HomingPigeon(final Context appContext) {
+    public HomingPigeon(final Context appContext, HomingPigeonTokenInterface hpTokenInterface) {
         //init Hawk for Preference
         Hawk.init(appContext).build();
         HpDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
@@ -57,6 +61,8 @@ public class HomingPigeon {
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(appContext))
                             .build()
             );
+
+        this.hpTokenInterface = hpTokenInterface;
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -80,7 +86,7 @@ public class HomingPigeon {
         });
     }
 
-    public void saveAuthTicketAndGetAccessToken(String authTicket, HpDefaultDataView<HpGetAccessTokenResponse> view) {
+    public static void saveAuthTicketAndGetAccessToken(String authTicket, HpDefaultDataView<HpGetAccessTokenResponse> view) {
         HpDataManager.getInstance().saveAuthTicket(authTicket);
         HpDataManager.getInstance().getAccessTokenFromApi(view);
     }
@@ -98,6 +104,15 @@ public class HomingPigeon {
         } else {
             throw new NullPointerException("The Activity that passed was null");
         }
+    }
+
+    // TODO: 15/10/18 saat integrasi harus di ilangin
+    public static void refreshTokenExpired() {
+        HpChatManager.getInstance().disconnectAfterRefreshTokenExpired();
+        HpDataManager.getInstance().deleteAllPreference();
+        HpDataManager.getInstance().deleteAllFromDatabase();
+        Intent intent = new Intent(appContext, HpLoginActivity.class);
+        appContext.startActivity(intent);
     }
 
     public static Context appContext;

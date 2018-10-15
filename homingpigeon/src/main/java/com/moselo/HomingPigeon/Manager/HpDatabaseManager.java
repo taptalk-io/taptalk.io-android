@@ -73,6 +73,13 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void deleteAll() {
+        if (null != messageRepository)
+            messageRepository.deleteAll();
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public void delete(HpRecentSearchEntity recentSearchEntity) {
         if (null != recentSearchEntity)
             searchRepository.delete(recentSearchEntity);

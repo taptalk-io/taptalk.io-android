@@ -2,34 +2,29 @@ package com.moselo.HomingPigeon.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
-import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
-import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
@@ -40,8 +35,12 @@ public class HpDataManager {
         return instance == null ? (instance = new HpDataManager()) : instance;
     }
 
+    public void deleteAllPreference() {
+        Hawk.deleteAll();
+    }
+
     public HpUserModel getActiveUser() {
-        return Hawk.get(K_USER,null);
+        return Hawk.get(K_USER, null);
     }
 
     public boolean checkActiveUser() {
@@ -170,6 +169,10 @@ public class HpDataManager {
 
     public void deleteFromDatabase(String messageLocalID) {
         HpDatabaseManager.getInstance().delete(messageLocalID);
+    }
+
+    public void deleteAllFromDatabase() {
+        HpDatabaseManager.getInstance().deleteAll();
     }
 
     public void deleteFromDatabase(HpRecentSearchEntity recentSearchEntity) {

@@ -127,6 +127,10 @@ public class HpMessageRepository {
         new Thread(() -> messageDao.delete(localID)).start();
     }
 
+    public void deleteAll() {
+        new Thread(() -> messageDao.deleteAll()).start();
+    }
+
     public void updatePendingStatus() {
         new Thread(() -> messageDao.updatePendingStatus()).start();
     }

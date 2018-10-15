@@ -427,6 +427,13 @@ public class HpChatManager {
         isFinishChatFlow = true;
     }
 
+    public void disconnectAfterRefreshTokenExpired() {
+        HpConnectionManager.getInstance().close();
+        if (null != scheduler && !scheduler.isShutdown())
+            scheduler.shutdown();
+        isFinishChatFlow = true;
+    }
+
     public void deleteActiveRoom() {
         activeRoom = null;
     }

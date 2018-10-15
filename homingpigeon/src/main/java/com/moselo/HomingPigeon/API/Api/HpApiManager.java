@@ -88,16 +88,10 @@ public class HpApiManager {
     private <T> Observable validateResponse(T t) {
         BaseResponse br = (BaseResponse) t;
 
-//        if (br.getRefreshToken() != null && br.getRefreshToken() != null)
-//            updateSession((BaseResponse) t);
-
-        //if (br.getError() != null) {
         int code = br.getStatus();
         if (BuildConfig.DEBUG)
             Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
 
-//            if (code == ERR_FORBIDDEN)
-//                return raiseApiTokenException(br);
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
             Log.e(TAG, "validateResponse: √√ NO ERROR √√");
         else if (code == UNAUTHORIZED && isShouldRefreshToken) {
@@ -112,9 +106,6 @@ public class HpApiManager {
     private Observable validateException(Throwable t) {
         Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
         t.printStackTrace();
-//        return (t instanceof ApiTokenException)
-//                ? createApiToken() : t instanceof ApiSessionExpiredException
-//                ? refreshToken() : Observable.error(t);
         return (t instanceof ApiSessionExpiredException && isShouldRefreshToken) ? refreshToken() :
                 (t instanceof ApiRefreshTokenRunningException) ?
                        Observable.just(Boolean.TRUE) : Observable.error(t);
@@ -154,7 +145,9 @@ public class HpApiManager {
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus())
                         updateSession(response);
-                    else Observable.error(new AuthException(response.getError().getMessage()));
+                    if (UNAUTHORIZED == response.getStatus()){
+
+                    } else Observable.error(new AuthException(response.getError().getMessage()));
                 }).doOnError(throwable -> {
 
                 });

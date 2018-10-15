@@ -24,6 +24,9 @@ public interface HpMessageDao {
     @Query("delete from Message_Table where localID = :localId")
     void delete(String localId);
 
+    @Query("delete from message_table")
+    void deleteAll();
+
     @Query("select * from Message_Table order by created desc")
     LiveData<List<HpMessageEntity>> getAllMessage();
 

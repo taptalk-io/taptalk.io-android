@@ -224,8 +224,7 @@ public class HpLoginActivity extends HpBaseActivity {
         @Override
         public void onSuccess(HpAuthTicketResponse response) {
             super.onSuccess(response);
-            HomingPigeon.init(HomingPigeon.appContext)
-                    .saveAuthTicketAndGetAccessToken(response.getTicket()
+            HomingPigeon.saveAuthTicketAndGetAccessToken(response.getTicket()
                             , accessTokenView);
         }
 
