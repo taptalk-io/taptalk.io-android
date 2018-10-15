@@ -491,9 +491,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                     }
                 } else if (null != hpMessageAdapter) {
                     flMessageList.setVisibility(View.VISIBLE);
-                    //vm.addMessageModels(models);
+                    vm.setMessageModels(models);
                     hpMessageAdapter.setMessages(models);
-                    //hpMessageAdapter.notifyDataSetChanged();
                     state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
@@ -521,9 +520,8 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 if (null != hpMessageAdapter) {
                     flMessageList.setVisibility(View.VISIBLE);
-                    //vm.addMessageModels(models);
+                    vm.addMessageModels(models);
                     hpMessageAdapter.addMessage(models);
-                    //hpMessageAdapter.notifyDataSetChanged();
                     state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
