@@ -3,12 +3,9 @@ package com.moselo.HomingPigeon.API.Interceptor;
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Base64;
-import android.util.Log;
 
-import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 
 import java.io.IOException;
@@ -46,7 +43,7 @@ public class HpHeaderRequestInterceptor implements Interceptor {
         } else if (HpDataManager.getInstance().checkRefreshTokenAvailable() && USE_REFRESH_TOKEN == headerAuth) {
             authorization = "Bearer " + HpDataManager.getInstance().getRefreshToken();
         } else if (HpDataManager.getInstance().checkAuthTicketAvailable()) {
-            authorization = "Bearer " + HpDataManager.getInstance().getAuthToken();
+            authorization = "Bearer " + HpDataManager.getInstance().getAuthTicket();
         } else
             authorization = "Bearer ";
 

@@ -17,11 +17,13 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomRespons
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 import com.orhanobut.hawk.Hawk;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
@@ -35,63 +37,11 @@ public class HpDataManager {
         return instance == null ? (instance = new HpDataManager()) : instance;
     }
 
-    public void deleteAllPreference() {
-        Hawk.deleteAll();
-    }
-
-    public HpUserModel getActiveUser() {
-        return Hawk.get(K_USER, null);
-    }
-
-    public boolean checkActiveUser() {
-        if (null == getActiveUser())
-            return false;
-        else return true;
-    }
-
-    public void saveActiveUser(HpUserModel user) {
-        Hawk.put(K_USER, user);
-    }
-
-    public void saveAuthTicket(String authTicket) {
-        saveStringPreference(authTicket, K_AUTH_TICKET);
-    }
-
-    public void saveAccessToken(String accessToken) {
-        saveStringPreference(accessToken, K_ACCESS_TOKEN);
-    }
-
-    public void saveAccessTokenExpiry(Long accessTokenExpiry) {
-        saveLongTimestampPreference(accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
-    }
-
-    public void saveRefreshToken(String refreshToken) {
-        saveStringPreference(refreshToken, K_REFRESH_TOKEN);
-    }
-
-    public void saveRefreshTokenExpiry(Long refreshTokenExpiry) {
-        saveLongTimestampPreference(refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
-    }
-
-    public void saveLastUpdatedMessageTimestamp(Long lastUpdated) {
-        saveLongTimestampPreference(lastUpdated, K_LAST_UPDATED);
-    }
-
-    public Long getLastUpdatedMessageTimestamp() {
-        return getLongTimestampPreference(K_LAST_UPDATED);
-    }
-
-    public String getRefreshToken() {
-        return getStringPreference(K_REFRESH_TOKEN);
-    }
-
-    public String getAccessToken() {
-        return getStringPreference(K_ACCESS_TOKEN);
-    }
-
-    public String getAuthToken() {
-        return getStringPreference(K_AUTH_TICKET);
-    }
+    /**
+     * =========================================================================================== *
+     *  GENERIC METHODS FOR PREFERENCE
+     * =========================================================================================== *
+     */
 
     private void saveStringPreference(String string, String key) {
         Hawk.put(key, string);
@@ -109,32 +59,128 @@ public class HpDataManager {
         return Hawk.get(key, Long.parseLong("0"));
     }
 
-    public Boolean checkRefreshTokenAvailable() {
-        return checkPreferenceKeyAvailable(K_REFRESH_TOKEN);
+    private Boolean checkPreferenceKeyAvailable(String key) {
+        return Hawk.contains(key);
     }
 
-    public Boolean checkAccessTokenAvailable() {
-        return checkPreferenceKeyAvailable(K_ACCESS_TOKEN);
+    private void deletePreference(String key) {
+        Hawk.delete(key);
     }
+
+    /**
+     * =========================================================================================== *
+     *  PUBLIC METHODS FOR PREFERENCE (CALLS GENERIC METHODS ABOVE)
+     *  PUBLIC METHODS MAY NOT HAVE KEY AS PARAMETER
+     * =========================================================================================== *
+     */
+
+    public void deleteAllPreference() {
+        Hawk.deleteAll();
+    }
+
+    /**
+     *  ACTIVE USER
+     */
+    public boolean checkActiveUser() {
+        if (null == getActiveUser())
+            return false;
+        else return true;
+    }
+
+    public HpUserModel getActiveUser() {
+        return Hawk.get(K_USER, null);
+    }
+
+    public void saveActiveUser(HpUserModel user) {
+        Hawk.put(K_USER, user);
+    }
+
+    /**
+     *  AUTH TICKET
+     */
 
     public Boolean checkAuthTicketAvailable() {
         return checkPreferenceKeyAvailable(K_AUTH_TICKET);
     }
 
-    private Boolean checkPreferenceKeyAvailable(String key) {
-        return Hawk.contains(key);
+    public String getAuthTicket() {
+        return getStringPreference(K_AUTH_TICKET);
+    }
+
+    public void saveAuthTicket(String authTicket) {
+        saveStringPreference(authTicket, K_AUTH_TICKET);
     }
 
     public void deleteAuthTicket() {
         deletePreference(K_AUTH_TICKET);
     }
 
+    /**
+     *  ACCESS TOKEN
+     */
+
+    public Boolean checkAccessTokenAvailable() {
+        return checkPreferenceKeyAvailable(K_ACCESS_TOKEN);
+    }
+
+    public String getAccessToken() {
+        return getStringPreference(K_ACCESS_TOKEN);
+    }
+
+    public void saveAccessToken(String accessToken) {
+        saveStringPreference(accessToken, K_ACCESS_TOKEN);
+    }
+
+    public void saveAccessTokenExpiry(Long accessTokenExpiry) {
+        saveLongTimestampPreference(accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
+    }
+
     public void deleteAccessToken() {
         deletePreference(K_ACCESS_TOKEN);
     }
 
-    private void deletePreference(String key) {
-        Hawk.delete(key);
+    /**
+     *  REFRESH TOKEN
+     */
+
+    public Boolean checkRefreshTokenAvailable() {
+        return checkPreferenceKeyAvailable(K_REFRESH_TOKEN);
+    }
+
+    public String getRefreshToken() {
+        return getStringPreference(K_REFRESH_TOKEN);
+    }
+
+    public void saveRefreshToken(String refreshToken) {
+        saveStringPreference(refreshToken, K_REFRESH_TOKEN);
+    }
+
+    public void saveRefreshTokenExpiry(Long refreshTokenExpiry) {
+        saveLongTimestampPreference(refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
+    }
+
+    /**
+     *  LAST UPDATED MESSAGE
+     */
+
+    public Long getLastUpdatedMessageTimestamp() {
+        return getLongTimestampPreference(K_LAST_UPDATED);
+    }
+
+    public void saveLastUpdatedMessageTimestamp(Long lastUpdated) {
+        saveLongTimestampPreference(lastUpdated, K_LAST_UPDATED);
+    }
+
+    /**
+     *  ROOM LIST FIRST SETUP
+     */
+
+    public Boolean isRoomListSetupFinished() {
+        return checkPreferenceKeyAvailable(K_IS_ROOM_LIST_SETUP_FINISHED);
+    }
+
+    public void setRoomListSetupFinished() {
+        saveLongTimestampPreference(Calendar.getInstance().getTimeInMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
     }
 
     // TODO: 14/09/18 TEMP
@@ -146,6 +192,12 @@ public class HpDataManager {
     public void saveRecipientID(String recipientID) {
         Hawk.put(K_RECIPIENT_ID, recipientID);
     }
+
+    /**
+     * =========================================================================================== *
+     *  DATABASE METHODS
+     * =========================================================================================== *
+     */
 
     public void initDatabaseManager(String databaseType, Application application) {
         HpDatabaseManager.getInstance().setRepository(databaseType, application);
@@ -220,7 +272,9 @@ public class HpDataManager {
     }
 
     /**
+     * =========================================================================================== *
      * API CALLS
+     * =========================================================================================== *
      */
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
