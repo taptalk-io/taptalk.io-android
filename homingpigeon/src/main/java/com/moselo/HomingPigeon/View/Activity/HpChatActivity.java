@@ -320,11 +320,8 @@ public class HpChatActivity extends HpBaseChatActivity {
             public void onSocketConnected() {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
-                    if (vm.getMessageModels().size() > 0) {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), vm.getMessageModels().get(0).getUpdated(), messageAfterView);
-                    } else {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageAfterView);
-                    }
+                    Log.e(TAG, "onSocketConnected: " + vm.getMessageModels().size());
+                    callApiAfter();
                 }
             }
         };
@@ -490,15 +487,15 @@ public class HpChatActivity extends HpBaseChatActivity {
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
+
+                    /* Call Message List API
+                    Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
+                    Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
+                    kalau last updated dari getUpdated */
+                    Log.e(TAG, "dbListener: " + vm.getMessageModels().size());
+                    callApiAfter();
                 });
 
-                /* Call Message List API
-                Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
-                Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
-                kalau last updated dari getUpdated */
-                if (models.size() > 0) {
-                    HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(models.size() - 1).getCreated(), messageAfterView);
-                }
             } else if (null != hpMessageAdapter) {
                 runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
@@ -572,8 +569,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 public void onInsertFinished() {
                     vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
                     if (0 < responseMessages.size() && null != responseMessages.get(0) &&
-                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
-                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
+                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < responseMessages.get(0).getUpdated()) {
+                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), responseMessages.get(0).getUpdated());
                     }
                 }
             });
@@ -612,6 +609,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
+    //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
@@ -629,10 +627,12 @@ public class HpChatActivity extends HpBaseChatActivity {
                 @Override
                 public void onInsertFinished() {
                     vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
-                    if (0 < responseMessages.size() && null != responseMessages.get(0) &&
-                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
-                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
-                    }
+                    new Thread(() -> {
+                        if (0 < responseMessages.size() && null != responseMessages.get(0) &&
+                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < responseMessages.get(0).getUpdated()) {
+                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), responseMessages.get(0).getUpdated());
+                        }
+                    }).start();
                 }
             });
         }
@@ -648,6 +648,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
+
+    //message before yang di panggil pas pagination db balikin data di bawah limit
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeViewPaging = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
@@ -668,10 +670,12 @@ public class HpChatActivity extends HpBaseChatActivity {
                 @Override
                 public void onInsertFinished() {
                     vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
-                    if (0 < responseMessages.size() && null != responseMessages.get(0) &&
-                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
-                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
-                    }
+                    new Thread(() -> {
+                        if (0 < responseMessages.size() && null != responseMessages.get(0) &&
+                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < responseMessages.get(0).getUpdated()) {
+                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), responseMessages.get(0).getUpdated());
+                        }
+                    }).start();
                 }
             });
         }
@@ -689,7 +693,24 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     public void callApiBefore(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
         HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
-                , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getUpdated()
+                , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
                 , beforeView);
+    }
+
+    private void callApiAfter() {
+        new Thread(() -> {
+            if (vm.getMessageModels().size() > 0 && !HpDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
+                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
+                        vm.getMessageModels().get(0).getUpdated(), messageAfterView);
+            } else if (vm.getMessageModels().size() > 0) {
+                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
+                        HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()),
+                        messageAfterView);
+            } else {
+                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageAfterView);
+            }
+        }).start();
     }
 }

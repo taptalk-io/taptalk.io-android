@@ -296,7 +296,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         }
 
         private void animateSend() {
-            Log.e(TAG, "animateSend: " + ivSending.getAlpha());
             if (ivSending.getAlpha() == 0f) return;
 
             ivMessageStatus.setTranslationX(initialTranslationX);
