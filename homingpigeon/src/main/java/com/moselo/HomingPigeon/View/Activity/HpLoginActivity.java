@@ -127,6 +127,7 @@ public class HpLoginActivity extends HpBaseActivity {
             case "test1":
             case "test2":
             case "test3":
+            case "santo":
                 return true;
 
             default:
@@ -167,6 +168,8 @@ public class HpLoginActivity extends HpBaseActivity {
                 return 14;
             case "test3":
                 return 15;
+            case "santo":
+                return 16;
             default:
                 return 0;
         }
@@ -205,6 +208,8 @@ public class HpLoginActivity extends HpBaseActivity {
                 return "Test 2";
             case "15":
                 return "Test 3";
+            case "16":
+                return "Santo";
             default:
                 return "User Ga Tau Dari Mana ini";
         }

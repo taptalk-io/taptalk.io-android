@@ -459,6 +459,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
+                Log.e(TAG, "onSelectFinished: original " + model.getBody());
             }
 
             if (0 < models.size()) {
@@ -492,8 +493,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                     }
                 } else if (null != hpMessageAdapter) {
                     flMessageList.setVisibility(View.VISIBLE);
-                    vm.setMessageModels(models);
                     hpMessageAdapter.setMessages(models);
+                    vm.setMessageModels(hpMessageAdapter.getItems());
                     state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
@@ -512,6 +513,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
+                Log.e(TAG, "onSelectFinished: Paging " + model.getBody());
             }
 
             if (0 < models.size()) {
@@ -521,14 +523,14 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 if (null != hpMessageAdapter) {
                     //state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-                    if (NUM_OF_ITEM > entities.size() && STATE.DONE != state)
+                    if (NUM_OF_ITEM > entities.size())
                         callApiBefore(messageBeforeViewPaging);
                     else if (STATE.WORKING == state) {
                         state = STATE.LOADED;
-                        flMessageList.setVisibility(View.VISIBLE);
-                        vm.addMessageModels(models);
-                        hpMessageAdapter.addMessage(models);
                     }
+                    flMessageList.setVisibility(View.VISIBLE);
+                    hpMessageAdapter.addMessage(models);
+                    vm.setMessageModels(hpMessageAdapter.getItems());
 
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);

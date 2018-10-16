@@ -205,10 +205,17 @@ public class HpNewChatActivity extends HpBaseActivity {
                 , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
                 , Long.parseLong("0"));
 
+        HpUserModel userSanto = HpUserModel.Builder("17", "16", "Santo"
+                , HpImageURL.BuilderDummy(), "santo", "santo@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
+                , Long.parseLong("0"));
+
         vm.getContactList().add(userRitchie);
         vm.getContactList().add(userRionaldo);
         vm.getContactList().add(userRichard);
         vm.getContactList().add(userRizka);
+
+        vm.getContactList().add(userSanto);
 
         vm.getContactList().add(userDominic);
 
