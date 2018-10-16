@@ -110,6 +110,7 @@ public class HpDefaultConstant {
     public static final String K_ROOM = "kRoom";
     public static final String K_COLOR = "kColor";
     public static final String K_LAST_UPDATED = "kLastUpdated";
+    public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kIsRoomListSetupFinished";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
