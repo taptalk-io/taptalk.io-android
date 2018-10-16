@@ -271,16 +271,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         //this is for call database
         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
 
-        rvMessageList.addOnScrollListener(new HpEndlessScrollListener(messageLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (state == STATE.LOADED && 0 < hpMessageAdapter.getItemCount()) {
-                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
-                    state = STATE.WORKING;
-                }
-            }
-        });
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
@@ -459,7 +449,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
-                Log.e(TAG, "onSelectFinished: original " + model.getBody());
             }
 
             if (0 < models.size()) {
@@ -469,7 +458,6 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
                     // First load
-                    Log.e(TAG, "onSelectFinished: 1");
                     hpMessageAdapter.setMessages(models);
                     if (models.size() == 0) {
                         // Chat is empty
@@ -489,13 +477,26 @@ public class HpChatActivity extends HpBaseChatActivity {
                     updateMessageDecoration();
                     // Call Message List API
                     if (models.size() > 0) {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(0).getUpdated(), messageAfterView);
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getUpdated(), models.get(0).getUpdated(), messageAfterView);
                     }
                 } else if (null != hpMessageAdapter) {
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
-                    state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
+//                    state = NUM_OF_ITEM > entities.size() ? STATE.DONE : STATE.LOADED;
+                    if (NUM_OF_ITEM > entities.size()) state = STATE.DONE;
+                    else {
+                        rvMessageList.addOnScrollListener(new HpEndlessScrollListener(messageLayoutManager) {
+                            @Override
+                            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                                if (state == STATE.LOADED && 0 < hpMessageAdapter.getItemCount()) {
+                                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
+                                    state = STATE.WORKING;
+                                }
+                            }
+                        });
+                        state = STATE.LOADED;
+                    }
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
@@ -513,7 +514,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
-                Log.e(TAG, "onSelectFinished: Paging " + model.getBody());
             }
 
             if (0 < models.size()) {
@@ -523,9 +523,9 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 if (null != hpMessageAdapter) {
                     //state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-                    if (NUM_OF_ITEM > entities.size())
+                    if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
                         callApiBefore(messageBeforeViewPaging);
-                    else if (STATE.WORKING == state) {
+                    } else if (STATE.WORKING == state) {
                         state = STATE.LOADED;
                     }
                     flMessageList.setVisibility(View.VISIBLE);
@@ -566,8 +566,9 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
             });
 
-            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size())
+            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
                 callApiBefore(messageBeforeView);
+            }
         }
 
         @Override
@@ -676,7 +677,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     public void callApiBefore(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
         HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
-                , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
+                , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getUpdated()
                 , beforeView);
     }
 }
