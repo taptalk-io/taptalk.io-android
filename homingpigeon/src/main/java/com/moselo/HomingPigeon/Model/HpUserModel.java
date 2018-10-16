@@ -1,24 +1,30 @@
 package com.moselo.HomingPigeon.Model;
 
+import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Entity(tableName = "MyContact")
 public class HpUserModel implements Parcelable {
 
     //userID itu userID dari Bisnis Server kalau xcUserID itu userID dari Chat Server
     // (mereka berdua bisa sama bisa juga beda)
-    @JsonProperty("userID") @JsonAlias("id") private String userID;
+    @PrimaryKey @NonNull @JsonProperty("userID") @JsonAlias("id") private String userID;
     @JsonProperty("xcUserID") private String xcUserID;
     @JsonProperty("fullname") private String name;
-    @JsonProperty("imageURL") private HpImageURL avatarURL;
+    @Embedded @JsonProperty("imageURL") private HpImageURL avatarURL;
     @Nullable @JsonProperty("username") private String username;
     @Nullable @JsonProperty("email") private String email;
     @Nullable @JsonProperty("phone") private String phoneNumber;
-    @Nullable @JsonProperty("userRole") private HpUserRoleModel userRole;
+    @Embedded @Nullable @JsonProperty("userRole") private HpUserRoleModel userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
     @Nullable @JsonProperty("lastActivity") private Long lastActivity;
     @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;

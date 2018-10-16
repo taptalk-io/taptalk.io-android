@@ -9,19 +9,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
 public class HpUserRoleModel implements Parcelable {
-    @JsonProperty("userRoleID") private String id;
-    @JsonProperty("name") private String name;
-    @JsonProperty("iconURL") private String iconURL;
+    @JsonProperty("userRoleID") private String userRoleID;
+    @JsonProperty("name") private String roleName;
+    @JsonProperty("iconURL") private String roleIconURL;
 
-    public HpUserRoleModel(String id, String name, String iconURL) {
-        this.id = id;
-        this.name = name;
-        this.iconURL = iconURL;
+    public HpUserRoleModel(String userRoleID, String roleName, String roleIconURL) {
+        this.userRoleID = userRoleID;
+        this.roleName = roleName;
+        this.roleIconURL = roleIconURL;
     }
 
-    public HpUserRoleModel(String id, String name) {
-        this.id = id;
-        this.name = name;
+    public HpUserRoleModel(String userRoleID, String roleName) {
+        this.userRoleID = userRoleID;
+        this.roleName = roleName;
     }
 
     public HpUserRoleModel() {
@@ -31,28 +31,28 @@ public class HpUserRoleModel implements Parcelable {
         return new HpUserRoleModel(userRoleID, userRoleName);
     }
 
-    public String getId() {
-        return id;
+    public String getUserRoleID() {
+        return userRoleID;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserRoleID(String userRoleID) {
+        this.userRoleID = userRoleID;
     }
 
-    public String getName() {
-        return name;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
-    public String getIconURL() {
-        return iconURL;
+    public String getRoleIconURL() {
+        return roleIconURL;
     }
 
-    public void setIconURL(String iconURL) {
-        this.iconURL = iconURL;
+    public void setRoleIconURL(String roleIconURL) {
+        this.roleIconURL = roleIconURL;
     }
 
 
@@ -63,15 +63,15 @@ public class HpUserRoleModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id);
-        dest.writeString(this.name);
-        dest.writeString(this.iconURL);
+        dest.writeString(this.userRoleID);
+        dest.writeString(this.roleName);
+        dest.writeString(this.roleIconURL);
     }
 
     protected HpUserRoleModel(Parcel in) {
-        this.id = in.readString();
-        this.name = in.readString();
-        this.iconURL = in.readString();
+        this.userRoleID = in.readString();
+        this.roleName = in.readString();
+        this.roleIconURL = in.readString();
     }
 
     public static final Parcelable.Creator<HpUserRoleModel> CREATOR = new Parcelable.Creator<HpUserRoleModel>() {

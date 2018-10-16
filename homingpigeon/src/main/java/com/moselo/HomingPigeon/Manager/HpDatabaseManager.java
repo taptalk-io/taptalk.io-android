@@ -3,15 +3,19 @@ package com.moselo.HomingPigeon.Manager;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
+import com.moselo.HomingPigeon.Data.Contact.HpMyContactRepository;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.Message.HpMessageRepository;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchRepository;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class HpDatabaseManager {
@@ -22,6 +26,9 @@ public class HpDatabaseManager {
 
     //for Recent Search Table
     private HpRecentSearchRepository searchRepository;
+
+    //for MyContact Table
+    private HpMyContactRepository myContactRepository;
 
     public static HpDatabaseManager getInstance() {
         return (null == instance) ? (instance = new HpDatabaseManager()) : instance;
@@ -35,8 +42,16 @@ public class HpDatabaseManager {
             case SEARCH_DB:
                 searchRepository = new HpRecentSearchRepository(application);
                 break;
+            case MY_CONTACT_DB:
+                myContactRepository = new HpMyContactRepository(application);
         }
     }
+
+    /**
+     * ==============================================================
+     * Message Table
+     * ==============================================================
+     */
 
     public void insert(HpMessageEntity messageEntity) {
         if (null != messageRepository)
@@ -59,13 +74,6 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(HpRecentSearchEntity recentSearchEntity) {
-        if (null != recentSearchEntity)
-            searchRepository.insert(recentSearchEntity);
-        else
-            throw new IllegalStateException("Recent Search Repository was not initialized");
-    }
-
     public void delete(String localID) {
         if (null != messageRepository)
             messageRepository.delete(localID);
@@ -76,27 +84,6 @@ public class HpDatabaseManager {
     public void deleteAll() {
         if (null != messageRepository)
             messageRepository.deleteAll();
-        else
-            throw new IllegalStateException("Message Repository was not initialized.");
-    }
-
-    public void delete(HpRecentSearchEntity recentSearchEntity) {
-        if (null != recentSearchEntity)
-            searchRepository.delete(recentSearchEntity);
-        else
-            throw new IllegalStateException("Recent Search Repository was not initialized");
-    }
-
-    public void delete(List<HpRecentSearchEntity> recentSearchEntities) {
-        if (null != searchRepository)
-            searchRepository.delete(recentSearchEntities);
-        else
-            throw new IllegalStateException("Recent Search Repository was not initialized");
-    }
-
-    public void updatePendingStatus() {
-        if (null != messageRepository)
-            messageRepository.updatePendingStatus();
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -147,11 +134,86 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
+    public void updatePendingStatus() {
+        if (null != messageRepository)
+            messageRepository.updatePendingStatus();
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    /**
+     * ==============================================================
+     * Recent Search Table
+     * ==============================================================
+     */
+
+    public void insert(HpRecentSearchEntity recentSearchEntity) {
+        if (null != recentSearchEntity)
+            searchRepository.insert(recentSearchEntity);
+        else
+            throw new IllegalStateException("Recent Search Repository was not initialized");
+    }
+
+    public void delete(HpRecentSearchEntity recentSearchEntity) {
+        if (null != recentSearchEntity)
+            searchRepository.delete(recentSearchEntity);
+        else
+            throw new IllegalStateException("Recent Search Repository was not initialized");
+    }
+
+    public void delete(List<HpRecentSearchEntity> recentSearchEntities) {
+        if (null != searchRepository)
+            searchRepository.delete(recentSearchEntities);
+        else
+            throw new IllegalStateException("Recent Search Repository was not initialized");
+    }
+
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
         if (null != searchRepository)
             return searchRepository.getAllRecentSearch();
         else throw new IllegalStateException("Recent Search Repository was not initialized");
+    }
 
+    /**
+     * ==============================================================
+     * My Contact Table
+     * ==============================================================
+     */
+
+    public void getMyContactList() {
+        if (null != myContactRepository)
+            myContactRepository.getAllMyContactList();
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void insertMyContact(HpUserModel... userModels) {
+        if (null != myContactRepository)
+            myContactRepository.insert(userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void insertMyContact(List<HpUserModel> userModels) {
+        if (null != myContactRepository)
+            myContactRepository.insert(userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void deleteMyContact(HpUserModel... userModels) {
+        if (null != myContactRepository)
+            myContactRepository.delete(userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void deleteMyContact(List<HpUserModel> userModels) {
+        if (null != myContactRepository)
+            myContactRepository.delete(userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void updateMyContact(HpUserModel userModels) {
+        if (null != myContactRepository)
+            myContactRepository.update(userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
 }

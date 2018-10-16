@@ -4,10 +4,10 @@ import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
@@ -53,9 +53,7 @@ public class HpNewChatActivity extends HpBaseActivity {
     @Override
     protected void initView() {
         //Dummy Contacts
-        if (vm.getContactList().size() == 0) {
-            setDummyData();
-        }
+        setDummyData();
         //End Dummy
 
         getWindow().setBackgroundDrawable(null);
@@ -210,28 +208,21 @@ public class HpNewChatActivity extends HpBaseActivity {
                 , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
                 , Long.parseLong("0"));
 
+        vm.getContactList().add(userCundy);
+        vm.getContactList().add(userDominic);
+        vm.getContactList().add(userErwin);
+        vm.getContactList().add(userJony);
+        vm.getContactList().add(userJefry);
+        vm.getContactList().add(userKevin);
+        vm.getContactList().add(userMichael);
         vm.getContactList().add(userRitchie);
         vm.getContactList().add(userRionaldo);
         vm.getContactList().add(userRichard);
         vm.getContactList().add(userRizka);
-
         vm.getContactList().add(userSanto);
-
-        vm.getContactList().add(userDominic);
-
-        vm.getContactList().add(userKevin);
-
-        vm.getContactList().add(userWelly);
-
-        vm.getContactList().add(userJony);
-        vm.getContactList().add(userJefry);
-
-        vm.getContactList().add(userMichael);
-        
-        vm.getContactList().add(userCundy);
-
         vm.getContactList().add(userTest1);
         vm.getContactList().add(userTest2);
         vm.getContactList().add(userTest3);
+        vm.getContactList().add(userWelly);
     }
 }

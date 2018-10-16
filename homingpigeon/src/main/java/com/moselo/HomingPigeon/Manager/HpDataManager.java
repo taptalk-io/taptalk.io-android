@@ -221,16 +221,14 @@ public class HpDataManager {
      * =========================================================================================== *
      */
 
+    //initialized Database Managernya yang di panggil di class Homing Pigeon
     public void initDatabaseManager(String databaseType, Application application) {
         HpDatabaseManager.getInstance().setRepository(databaseType, application);
     }
 
+    //Message
     public void insertToDatabase(HpMessageEntity messageEntity) {
         HpDatabaseManager.getInstance().insert(messageEntity);
-    }
-
-    public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
-        HpDatabaseManager.getInstance().insert(recentSearchEntity);
     }
 
     public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages) {
@@ -243,18 +241,6 @@ public class HpDataManager {
 
     public void deleteFromDatabase(String messageLocalID) {
         HpDatabaseManager.getInstance().delete(messageLocalID);
-    }
-
-    public void deleteAllFromDatabase() {
-        HpDatabaseManager.getInstance().deleteAll();
-    }
-
-    public void deleteFromDatabase(HpRecentSearchEntity recentSearchEntity) {
-        HpDatabaseManager.getInstance().delete(recentSearchEntity);
-    }
-
-    public void deleteFromDatabase(List<HpRecentSearchEntity> recentSearchEntities) {
-        HpDatabaseManager.getInstance().delete(recentSearchEntities);
     }
 
     public void updateSendingMessageToFailed() {
@@ -289,8 +275,51 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().getUnreadCountPerRoom(myID, roomID, listener);
     }
 
+    //Recent Search
+    public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
+        HpDatabaseManager.getInstance().insert(recentSearchEntity);
+    }
+
+    public void deleteFromDatabase(HpRecentSearchEntity recentSearchEntity) {
+        HpDatabaseManager.getInstance().delete(recentSearchEntity);
+    }
+
+    public void deleteFromDatabase(List<HpRecentSearchEntity> recentSearchEntities) {
+        HpDatabaseManager.getInstance().delete(recentSearchEntities);
+    }
+
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
-        return HpDataManager.getInstance().getRecentSearchLive();
+        return HpDatabaseManager.getInstance().getRecentSearchLive();
+    }
+
+    //My Contact
+    public void getMyContactList() {
+        HpDatabaseManager.getInstance().getMyContactList();
+    }
+
+    public void insertMyContactToDatabase(HpUserModel... userModels) {
+        HpDatabaseManager.getInstance().insertMyContact(userModels);
+    }
+
+    public void insertMyContactToDatabase(List<HpUserModel> userModels) {
+        HpDatabaseManager.getInstance().insertMyContact(userModels);
+    }
+
+    public void deleteMyContactFromDatabase(HpUserModel... userModels) {
+        HpDatabaseManager.getInstance().deleteMyContact(userModels);
+    }
+
+    public void deleteMyContactFromDatabase(List<HpUserModel> userModels) {
+        HpDatabaseManager.getInstance().deleteMyContact(userModels);
+    }
+
+    public void updateMyContact(HpUserModel userModels) {
+        HpDatabaseManager.getInstance().updateMyContact(userModels);
+    }
+
+    //General
+    public void deleteAllFromDatabase() {
+        HpDatabaseManager.getInstance().deleteAll();
     }
 
     /**

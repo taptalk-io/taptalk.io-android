@@ -483,7 +483,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private HpDatabaseListener dbListener = new HpDatabaseListener() {
+    private HpDatabaseListener<HpMessageEntity> dbListener = new HpDatabaseListener<HpMessageEntity>() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
             final List<HpMessageModel> models = new ArrayList<>();
@@ -544,10 +544,9 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private HpDatabaseListener dbListenerPaging = new HpDatabaseListener() {
+    private HpDatabaseListener<HpMessageEntity> dbListenerPaging = new HpDatabaseListener<HpMessageEntity>() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
-
             final List<HpMessageModel> models = new ArrayList<>();
             for (HpMessageEntity entity : entities) {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
@@ -675,10 +674,11 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageBeforeModels
             mergeSort(messageBeforeModels, DESCENDING);
+            List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
 
             runOnUiThread(() -> {
                 flMessageList.setVisibility(View.VISIBLE);
-                hpMessageAdapter.addMessage(messageBeforeModels);
+                hpMessageAdapter.addMessage(messageBeforeModelsSorted);
                 vm.setMessageModels(hpMessageAdapter.getItems());
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
@@ -730,9 +730,10 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageBeforeModels
             mergeSort(messageBeforeModels, DESCENDING);
+            List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
             runOnUiThread(() -> {
                 flMessageList.setVisibility(View.VISIBLE);
-                hpMessageAdapter.addMessage(messageBeforeModels);
+                hpMessageAdapter.addMessage(messageBeforeModelsSorted);
                 vm.setMessageModels(hpMessageAdapter.getItems());
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)

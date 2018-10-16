@@ -372,7 +372,7 @@ public class HpRoomListFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener dbListener = new HpDatabaseListener() {
+    private HpDatabaseListener<HpMessageEntity> dbListener = new HpDatabaseListener<HpMessageEntity>() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
             List<HpRoomListModel> messageModels = new ArrayList<>();

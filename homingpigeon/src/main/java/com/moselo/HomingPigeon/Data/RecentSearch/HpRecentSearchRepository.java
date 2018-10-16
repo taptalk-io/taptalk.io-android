@@ -18,27 +18,19 @@ public class HpRecentSearchRepository {
     }
 
     public void insert(HpRecentSearchEntity entity) {
-        new Thread(() -> {
-            recentSearchDao.insert(entity);
-        }).start();
+        new Thread(() -> recentSearchDao.insert(entity)).start();
     }
 
     public void delete(HpRecentSearchEntity entity) {
-        new Thread(() -> {
-            recentSearchDao.delete(entity);
-        }).start();
+        new Thread(() -> recentSearchDao.delete(entity)).start();
     }
 
     public void delete(List<HpRecentSearchEntity> entities) {
-        new Thread(() -> {
-            recentSearchDao.delete(entities);
-        }).start();
+        new Thread(() -> recentSearchDao.delete(entities)).start();
     }
 
     public void update(HpRecentSearchEntity entity) {
-        new Thread(() -> {
-            recentSearchDao.update(entity);
-        }).start();
+        new Thread(() -> recentSearchDao.update(entity)).start();
     }
 
     public LiveData<List<HpRecentSearchEntity>> getAllRecentSearch() {

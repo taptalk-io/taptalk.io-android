@@ -25,6 +25,7 @@ public class HpDefaultConstant {
     public static final class DatabaseType {
         public static final String MESSAGE_DB = "MessageDB";
         public static final String SEARCH_DB = "SearchDB";
+        public static final String MY_CONTACT_DB = "MyContactDB";
     }
 
     public static final class MessageType {
