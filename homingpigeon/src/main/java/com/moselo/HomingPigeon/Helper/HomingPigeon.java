@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
@@ -106,16 +107,11 @@ public class HomingPigeon {
 
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
-        new HomingPigeonDialog.Builder(appContext)
-                .setMessage("ERROR")
-                .setMessage("Refresh Token Expired")
-                .setPrimaryButtonListener(v -> {
-                    HpChatManager.getInstance().disconnectAfterRefreshTokenExpired();
-                    HpDataManager.getInstance().deleteAllPreference();
-                    HpDataManager.getInstance().deleteAllFromDatabase();
-                    Intent intent = new Intent(appContext, HpLoginActivity.class);
-                    appContext.startActivity(intent);
-                }).setPrimaryButtonTitle("OK").show();
+        HpChatManager.getInstance().disconnectAfterRefreshTokenExpired();
+        HpDataManager.getInstance().deleteAllPreference();
+        HpDataManager.getInstance().deleteAllFromDatabase();
+        Intent intent = new Intent(appContext, HpLoginActivity.class);
+        appContext.startActivity(intent);
     }
 
     public static Context appContext;

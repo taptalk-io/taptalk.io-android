@@ -10,6 +10,7 @@ import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Exception.ApiRefreshTokenRunningException;
 import com.moselo.HomingPigeon.Exception.ApiSessionExpiredException;
 import com.moselo.HomingPigeon.Exception.AuthException;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
@@ -146,7 +147,7 @@ public class HpApiManager {
                     if (RESPONSE_SUCCESS == response.getStatus())
                         updateSession(response);
                     if (UNAUTHORIZED == response.getStatus()){
-
+                        HomingPigeon.refreshTokenExpired();
                     } else Observable.error(new AuthException(response.getError().getMessage()));
                 }).doOnError(throwable -> {
 
