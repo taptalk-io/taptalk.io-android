@@ -520,13 +520,15 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             runOnUiThread(() -> {
                 if (null != hpMessageAdapter) {
-                    flMessageList.setVisibility(View.VISIBLE);
-                    vm.addMessageModels(models);
-                    hpMessageAdapter.addMessage(models);
                     //state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-                    state = STATE.LOADED;
-                    if (NUM_OF_ITEM > entities.size())
+                    if (NUM_OF_ITEM > entities.size() && STATE.DONE != state)
                         callApiBefore(messageBeforeViewPaging);
+                    else if (STATE.WORKING == state) {
+                        state = STATE.LOADED;
+                        flMessageList.setVisibility(View.VISIBLE);
+                        vm.addMessageModels(models);
+                        hpMessageAdapter.addMessage(models);
+                    }
 
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
@@ -562,7 +564,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
             });
 
-            if (0 < vm.getMessageModels().size())
+            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size())
                 callApiBefore(messageBeforeView);
         }
 
@@ -644,12 +646,13 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
             }
 
-            state = NUM_OF_ITEM > responseMessages.size() ? STATE.DONE : STATE.LOADED;
+            state = response.getMetadata().getPerPage() > response.getMetadata().getPageCount() ? STATE.DONE : STATE.LOADED;
+            if (state == STATE.DONE) updateMessageDecoration();
 
             HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
                 @Override
                 public void onInsertFinished() {
-                    vm.getMessageEntities(vm.getRoom().getRoomID(), dbListenerPaging);
+                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
                     if (0 < responseMessages.size() && null != responseMessages.get(0) &&
                             HpDataManager.getInstance().getLastUpdatedMessageTimestamp() < responseMessages.get(0).getUpdated()) {
                         HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(responseMessages.get(0).getUpdated());
