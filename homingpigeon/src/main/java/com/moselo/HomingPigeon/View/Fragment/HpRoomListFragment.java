@@ -69,22 +69,7 @@ public class HpRoomListFragment extends Fragment {
     private RoomListInterface roomListInterface;
     private HpRoomListViewModel vm;
 
-    HpChatListener chatListener = new HpChatListener() {
-        @Override
-        public void onReceiveMessageInOtherRoom(HpMessageModel message) {
-            processMessageFromSocket(message);
-        }
-
-        @Override
-        public void onUpdateMessageInOtherRoom(HpMessageModel message) {
-            processMessageFromSocket(message);
-        }
-
-        @Override
-        public void onDeleteMessageInOtherRoom(HpMessageModel message) {
-            processMessageFromSocket(message);
-        }
-    };
+    private HpChatListener chatListener;
 
     public HpRoomListFragment() {
     }
@@ -128,6 +113,23 @@ public class HpRoomListFragment extends Fragment {
     }
 
     private void initListener() {
+        chatListener = new HpChatListener() {
+            @Override
+            public void onReceiveMessageInOtherRoom(HpMessageModel message) {
+                processMessageFromSocket(message);
+            }
+
+            @Override
+            public void onUpdateMessageInOtherRoom(HpMessageModel message) {
+                processMessageFromSocket(message);
+            }
+
+            @Override
+            public void onDeleteMessageInOtherRoom(HpMessageModel message) {
+                processMessageFromSocket(message);
+            }
+        };
+
         roomListInterface = (roomListModel, isSelected) -> {
             if (null != roomListModel && isSelected) {
                 vm.getSelectedRooms().put(roomListModel.getLastMessage().getLocalID(), roomListModel);
@@ -185,7 +187,8 @@ public class HpRoomListFragment extends Fragment {
         ivButtonMore.setOnClickListener(v -> {
 
         });
-        flSetupContainer.setOnClickListener(v -> {});
+        flSetupContainer.setOnClickListener(v -> {
+        });
     }
 
     private void openNewChatActivity() {
@@ -354,7 +357,6 @@ public class HpRoomListFragment extends Fragment {
                     viewAppearSequence();
                 }
             });
-//            flSetupContainer.setVisibility(View.GONE);
         }
 
         @Override
@@ -386,7 +388,6 @@ public class HpRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
             updateUiAfterGetDatabase();
-
         }
 
         @Override

@@ -28,14 +28,14 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest
 
 public class HpNewChatActivity extends HpBaseActivity {
 
-    LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
-    ImageView ivButtonBack, ivButtonSearch;
-    TextView tvTitle;
-    RecyclerView rvContactList;
-    NestedScrollView nsvNewChat;
+    private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
+    private ImageView ivButtonBack, ivButtonSearch;
+    private TextView tvTitle;
+    private RecyclerView rvContactList;
+    private NestedScrollView nsvNewChat;
 
-    HpContactInitialAdapter adapter;
-    HpContactListViewModel vm;
+    private HpContactInitialAdapter adapter;
+    private HpContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,6 +210,17 @@ public class HpNewChatActivity extends HpBaseActivity {
                 , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
                 , Long.parseLong("0"));
 
+        vm.getContactList().add(userCundy);
+
+        vm.getContactList().add(userDominic);
+
+        vm.getContactList().add(userJony);
+        vm.getContactList().add(userJefry);
+
+        vm.getContactList().add(userKevin);
+
+        vm.getContactList().add(userMichael);
+
         vm.getContactList().add(userRitchie);
         vm.getContactList().add(userRionaldo);
         vm.getContactList().add(userRichard);
@@ -217,18 +228,7 @@ public class HpNewChatActivity extends HpBaseActivity {
 
         vm.getContactList().add(userSanto);
 
-        vm.getContactList().add(userDominic);
-
-        vm.getContactList().add(userKevin);
-
         vm.getContactList().add(userWelly);
-
-        vm.getContactList().add(userJony);
-        vm.getContactList().add(userJefry);
-
-        vm.getContactList().add(userMichael);
-        
-        vm.getContactList().add(userCundy);
 
         vm.getContactList().add(userTest1);
         vm.getContactList().add(userTest2);
