@@ -293,8 +293,8 @@ public class HpDataManager {
     }
 
     //My Contact
-    public void getMyContactList() {
-        HpDatabaseManager.getInstance().getMyContactList();
+    public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
+        HpDatabaseManager.getInstance().getMyContactList(listener);
     }
 
     public void insertMyContactToDatabase(HpUserModel... userModels) {
@@ -303,6 +303,10 @@ public class HpDataManager {
 
     public void insertMyContactToDatabase(List<HpUserModel> userModels) {
         HpDatabaseManager.getInstance().insertMyContact(userModels);
+    }
+
+    public void insertAndGetMyContact(List<HpUserModel> userModels, HpDatabaseListener<HpUserModel> listener) {
+        HpDatabaseManager.getInstance().insertAndGetMyContact(userModels, listener);
     }
 
     public void deleteMyContactFromDatabase(HpUserModel... userModels) {

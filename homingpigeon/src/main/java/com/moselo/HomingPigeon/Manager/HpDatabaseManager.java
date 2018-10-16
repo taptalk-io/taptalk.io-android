@@ -180,9 +180,9 @@ public class HpDatabaseManager {
      * ==============================================================
      */
 
-    public void getMyContactList() {
+    public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
         if (null != myContactRepository)
-            myContactRepository.getAllMyContactList();
+            myContactRepository.getAllMyContactList(listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
@@ -195,6 +195,12 @@ public class HpDatabaseManager {
     public void insertMyContact(List<HpUserModel> userModels) {
         if (null != myContactRepository)
             myContactRepository.insert(userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void insertAndGetMyContact(List<HpUserModel> userModels, HpDatabaseListener<HpUserModel> listener) {
+        if (null != myContactRepository)
+            myContactRepository.insertAndGetContact(userModels, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
@@ -24,6 +25,14 @@ public class HpMyContactRepository {
         new Thread(() -> myContactDao.insert(userModels)).start();
     }
 
+    public void insertAndGetContact(List<HpUserModel> userModels, HpDatabaseListener<HpUserModel> listener) {
+        new Thread(() ->{
+            myContactDao.insert(userModels);
+            List<HpUserModel> myContactList = myContactDao.getAllMyContact();
+            listener.onSelectFinished(myContactList);
+        }).start();
+    }
+
     public void delete(HpUserModel... userModels) {
         new Thread(() -> myContactDao.delete(userModels)).start();
     }
@@ -36,9 +45,10 @@ public class HpMyContactRepository {
         new Thread(() -> myContactDao.update(userModel)).start();
     }
 
-    public void getAllMyContactList() {
+    public void getAllMyContactList(HpDatabaseListener<HpUserModel> listener) {
         new Thread(() -> {
             List<HpUserModel> myContactList = myContactDao.getAllMyContact();
+            listener.onSelectFinished(myContactList);
         });
     }
 }
