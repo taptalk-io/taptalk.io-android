@@ -354,10 +354,12 @@ public class HpChatActivity extends HpBaseChatActivity {
                 clEmptyChat.setVisibility(View.GONE);
                 flMessageList.setVisibility(View.VISIBLE);
             }
-            // Replace pending message with new message
-            String newID = newMessage.getLocalID();
-            boolean ownMessage = newMessage.getUser().getUserID().equals(HpDataManager
-                    .getInstance().getActiveUser().getUserID());
+        });
+        // Replace pending message with new message
+        String newID = newMessage.getLocalID();
+        boolean ownMessage = newMessage.getUser().getUserID().equals(HpDataManager
+                .getInstance().getActiveUser().getUserID());
+        runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
@@ -468,8 +470,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
-            runOnUiThread(() -> {
-                if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
+            if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
+                runOnUiThread(() -> {
                     // First load
                     hpMessageAdapter.setMessages(models);
                     if (models.size() == 0) {
@@ -488,15 +490,17 @@ public class HpChatActivity extends HpBaseChatActivity {
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
+                });
 
-                    /* Call Message List API
-                    Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
-                    Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
-                    kalau last updated dari getUpdated */
-                    if (models.size() > 0) {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(models.size() - 1).getCreated(), messageAfterView);
-                    }
-                } else if (null != hpMessageAdapter) {
+                /* Call Message List API
+                Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
+                Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
+                kalau last updated dari getUpdated */
+                if (models.size() > 0) {
+                    HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(models.size() - 1).getCreated(), messageAfterView);
+                }
+            } else if (null != hpMessageAdapter) {
+                runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
@@ -508,8 +512,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
-                }
-            });
+                });
+            }
         }
     };
 
