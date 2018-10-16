@@ -97,6 +97,9 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private STATE state = STATE.LOADED;
 
+    //endless scroll Listener
+    HpEndlessScrollListener endlessScrollListener;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -207,7 +210,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(HpDefaultConstant.K_ROOM));
         vm.setMyUserModel(HpDataManager.getInstance().getActiveUser());
-        //vm.setPendingMessages(HpChatManager.getInstance().getMessageQueueInActiveRoom());
     }
 
     @Override
@@ -267,6 +269,17 @@ public class HpChatActivity extends HpBaseChatActivity {
         hpCustomKeyboardAdapter = new HpCustomKeyboardAdapter(customKeyboardMenus);
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
+        endlessScrollListener = new HpEndlessScrollListener(messageLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                if (state == STATE.LOADED && 0 < hpMessageAdapter.getItems().size()) {
+                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
+                    state = STATE.WORKING;
+                }
+            }
+        };
 
         //this is for call database
         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
@@ -475,26 +488,21 @@ public class HpChatActivity extends HpBaseChatActivity {
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
-                    // Call Message List API
+
+                    /* Call Message List API
+                    Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
+                    Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
+                    kalau last updated dari getUpdated */
                     if (models.size() > 0) {
-                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getUpdated(), models.get(0).getUpdated(), messageAfterView);
+                        HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), models.get(models.size() - 1).getCreated(), models.get(models.size() - 1).getCreated(), messageAfterView);
                     }
                 } else if (null != hpMessageAdapter) {
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
-//                    state = NUM_OF_ITEM > entities.size() ? STATE.DONE : STATE.LOADED;
                     if (NUM_OF_ITEM > entities.size()) state = STATE.DONE;
                     else {
-                        rvMessageList.addOnScrollListener(new HpEndlessScrollListener(messageLayoutManager) {
-                            @Override
-                            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                                if (state == STATE.LOADED && 0 < hpMessageAdapter.getItemCount()) {
-                                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
-                                    state = STATE.WORKING;
-                                }
-                            }
-                        });
+                        rvMessageList.addOnScrollListener(endlessScrollListener);
                         state = STATE.LOADED;
                     }
                     if (rvMessageList.getVisibility() != View.VISIBLE)
@@ -520,14 +528,14 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
-            runOnUiThread(() -> {
-                if (null != hpMessageAdapter) {
-                    //state = 0 == entities.size() ? STATE.DONE : STATE.LOADED;
-                    if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
-                        callApiBefore(messageBeforeViewPaging);
-                    } else if (STATE.WORKING == state) {
-                        state = STATE.LOADED;
-                    }
+            if (null != hpMessageAdapter) {
+                if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
+                    callApiBefore(messageBeforeViewPaging);
+                } else if (STATE.WORKING == state) {
+                    state = STATE.LOADED;
+                }
+
+                runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
@@ -535,8 +543,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
-                }
-            });
+                });
+            }
         }
     };
 
