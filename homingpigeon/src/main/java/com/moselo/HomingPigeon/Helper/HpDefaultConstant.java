@@ -72,6 +72,11 @@ public class HpDefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
     }
 
+    public static final class Sorting {
+        public static final int DESCENDING = 1;
+        public static final int ASCENDING = 2;
+    }
+
     public static final class HttpResponseStatusCode {
         public static final int RESPONSE_SUCCESS = 200;
         public static final int RESPONSE_EMPTY = 204;

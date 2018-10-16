@@ -471,8 +471,17 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         addItem(0, message);
     }
 
+    public void addMessage(HpMessageModel message, int position, boolean isNotify) {
+        getItems().add(position, message);
+        if (isNotify) notifyItemInserted(position);
+    }
+
     public void addMessage(List<HpMessageModel> messages) {
         addItem(messages, true);
+    }
+
+    public void addMessage(int position, List<HpMessageModel> messages) {
+        addItem(position, messages, true);
     }
 
     public void setMessageAt(int position, HpMessageModel message) {

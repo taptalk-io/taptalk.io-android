@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -56,6 +57,8 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.ASCENDING;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.DESCENDING;
 
 public class HpChatActivity extends HpBaseChatActivity {
 
@@ -274,6 +277,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         endlessScrollListener = new HpEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.e(TAG, "onLoadMore: "+state );
                 if (state == STATE.LOADED && 0 < hpMessageAdapter.getItems().size()) {
                     vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
                     state = STATE.WORKING;
@@ -364,7 +368,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 // Scroll recycler to bottom
                 hpMessageAdapter.addMessage(newMessage);
                 rvMessageList.scrollToPosition(0);
-            } else if (!ownMessage) {
+            } else {
                 // Show unread badge
                 hpMessageAdapter.addMessage(newMessage);
                 vm.setUnreadCount(vm.getUnreadCount() + 1);
@@ -376,6 +380,32 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.removeMessagePointer(newID);
             }
             updateMessageDecoration();
+        });
+    }
+
+    private void addBeforeTextMessage(final HpMessageModel newMessage, List<HpMessageModel> tempBeforeMessages) {
+        String newID = newMessage.getLocalID();
+        runOnUiThread(() -> {
+            if (vm.getMessagePointer().containsKey(newID)) {
+                vm.updateMessagePointer(newMessage);
+                hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+            } else {
+                tempBeforeMessages.add(newMessage);
+            }
+            //updateMessageDecoration();
+        });
+    }
+
+    private void addAfterTextMessage(final HpMessageModel newMessage, List<HpMessageModel> tempAfterMessages) {
+        String newID = newMessage.getLocalID();
+        runOnUiThread(() -> {
+            if (vm.getMessagePointer().containsKey(newID)) {
+                vm.updateMessagePointer(newMessage);
+                hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+            } else {
+                tempAfterMessages.add(newMessage);
+            }
+            //updateMessageDecoration();
         });
     }
 
@@ -492,7 +522,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                     Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
-                    Log.e(TAG, "dbListener: " + vm.getMessageModels().size());
                     callApiAfter();
                 });
 
@@ -501,15 +530,16 @@ public class HpChatActivity extends HpBaseChatActivity {
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
-                    if (NUM_OF_ITEM > entities.size()) state = STATE.DONE;
-                    else {
-                        rvMessageList.addOnScrollListener(endlessScrollListener);
-                        state = STATE.LOADED;
-                    }
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
                 });
+            }
+
+            if (NUM_OF_ITEM > entities.size()) state = STATE.DONE;
+            else {
+                rvMessageList.addOnScrollListener(endlessScrollListener);
+                state = STATE.LOADED;
             }
         }
     };
@@ -537,6 +567,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
 
                 runOnUiThread(() -> {
+                    Log.e(TAG, "onSelectFinished: " );
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
@@ -555,25 +586,36 @@ public class HpChatActivity extends HpBaseChatActivity {
             vm.setInitialAPICallFinished(true);
 
             List<HpMessageEntity> responseMessages = new ArrayList<>();
+            List<HpMessageModel> messageAfterModels = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                    addAfterTextMessage(temp, messageAfterModels);
+                    new Thread(() -> {
+                        if (null != temp.getUpdated() &&
+                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
+                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
+                        }
+                    }).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
             }
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
-                @Override
-                public void onInsertFinished() {
-                    vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
-                    if (0 < responseMessages.size() && null != responseMessages.get(0) &&
-                            HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < responseMessages.get(0).getUpdated()) {
-                        HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), responseMessages.get(0).getUpdated());
-                    }
-                }
+            //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageAfterModels
+            mergeSort(messageAfterModels, ASCENDING);
+            runOnUiThread(() -> {
+                flMessageList.setVisibility(View.VISIBLE);
+                hpMessageAdapter.addMessage(0, messageAfterModels);
+                vm.setMessageModels(hpMessageAdapter.getItems());
+
+                if (rvMessageList.getVisibility() != View.VISIBLE)
+                    rvMessageList.setVisibility(View.VISIBLE);
+                if (state == STATE.DONE) updateMessageDecoration();
             });
+
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
 
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
                 callApiBefore(messageBeforeView);
@@ -614,27 +656,38 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             List<HpMessageEntity> responseMessages = new ArrayList<>();
+            List<HpMessageModel> messageBeforeModels = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                    addBeforeTextMessage(temp, messageBeforeModels);
+                    new Thread(() -> {
+                        if (null != temp.getUpdated() &&
+                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
+                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
+                        }
+                    }).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
             }
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
-                @Override
-                public void onInsertFinished() {
-                    vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
-                    new Thread(() -> {
-                        if (0 < responseMessages.size() && null != responseMessages.get(0) &&
-                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < responseMessages.get(0).getUpdated()) {
-                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), responseMessages.get(0).getUpdated());
-                        }
-                    }).start();
-                }
+            //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageBeforeModels
+            mergeSort(messageBeforeModels, DESCENDING);
+
+            runOnUiThread(() -> {
+                flMessageList.setVisibility(View.VISIBLE);
+                hpMessageAdapter.addMessage(messageBeforeModels);
+                vm.setMessageModels(hpMessageAdapter.getItems());
+
+                if (rvMessageList.getVisibility() != View.VISIBLE)
+                    rvMessageList.setVisibility(View.VISIBLE);
+                if (state == STATE.DONE) updateMessageDecoration();
             });
+
+
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
         }
 
         @Override
@@ -654,10 +707,19 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             List<HpMessageEntity> responseMessages = new ArrayList<>();
+            List<HpMessageModel> messageBeforeModels = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+
+                    addBeforeTextMessage(temp, messageBeforeModels);
+                    new Thread(() -> {
+                        if (null != temp.getUpdated() &&
+                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
+                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
+                        }
+                    }).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
@@ -666,18 +728,19 @@ public class HpChatActivity extends HpBaseChatActivity {
             state = response.getMetadata().getPerPage() > response.getMetadata().getPageCount() ? STATE.DONE : STATE.LOADED;
             if (state == STATE.DONE) updateMessageDecoration();
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
-                @Override
-                public void onInsertFinished() {
-                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
-                    new Thread(() -> {
-                        if (0 < responseMessages.size() && null != responseMessages.get(0) &&
-                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < responseMessages.get(0).getUpdated()) {
-                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), responseMessages.get(0).getUpdated());
-                        }
-                    }).start();
-                }
+            //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageBeforeModels
+            mergeSort(messageBeforeModels, DESCENDING);
+            runOnUiThread(() -> {
+                flMessageList.setVisibility(View.VISIBLE);
+                hpMessageAdapter.addMessage(messageBeforeModels);
+                vm.setMessageModels(hpMessageAdapter.getItems());
+
+                if (rvMessageList.getVisibility() != View.VISIBLE)
+                    rvMessageList.setVisibility(View.VISIBLE);
+                if (state == STATE.DONE) updateMessageDecoration();
             });
+
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
         }
 
         @Override
@@ -713,4 +776,77 @@ public class HpChatActivity extends HpBaseChatActivity {
             }
         }).start();
     }
+
+    private void mergeSort(List<HpMessageModel> messages, int sortDirection) {
+        int messageListSize = messages.size();
+        //merge proses divide
+        if (messageListSize < 2) {
+            return;
+        }
+
+        //ambil nilai tengah
+        int leftListSize = messageListSize / 2;
+        //sisa dari mediannya
+        int rightListSize = messageListSize - leftListSize;
+        //bkin list kiri sejumlah median sizenya
+        List<HpMessageModel> leftList = new ArrayList<>(leftListSize);
+        //bikin list kanan sejumlah sisanya (size - median)
+        List<HpMessageModel> rightList = new ArrayList<>(rightListSize);
+
+        for (int index = 0; index < leftListSize; index++)
+            leftList.add(index, messages.get(index));
+
+        for (int index = leftListSize; index < messageListSize; index++)
+            rightList.add((index - leftListSize), messages.get(index));
+
+        //recursive
+        mergeSort(leftList, sortDirection);
+        mergeSort(rightList, sortDirection);
+
+        //setelah selesai lalu di gabungin sambil di sort
+        merge(messages, leftList, rightList, leftListSize, rightListSize, sortDirection);
+    }
+
+    private void merge(List<HpMessageModel> messagesAll, List<HpMessageModel> leftList, List<HpMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
+        //Merge adalah fungsi buat Conquernya
+
+        //index left buat nentuin index leftList
+        //index right buat nentuin index rightList
+        //index combine buat nentuin index saat gabungin jd 1 list
+        int indexLeft = 0, indexRight = 0, indexCombine = 0;
+
+        while (indexLeft < leftSize && indexRight < rightSize) {
+            if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, leftList.get(indexLeft));
+                indexLeft+=1;
+                indexCombine+=1;
+            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, rightList.get(indexRight));
+                indexRight+=1;
+                indexCombine+=1;
+            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, leftList.get(indexLeft));
+                indexLeft+=1;
+                indexCombine+=1;
+            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, rightList.get(indexRight));
+                indexRight+=1;
+                indexCombine+=1;
+            }
+        }
+
+        //looping untuk masukin sisa di list masing masing
+        while (indexLeft < leftSize) {
+            messagesAll.set(indexCombine, leftList.get(indexLeft));
+            indexLeft+=1;
+            indexCombine+=1;
+        }
+
+        while (indexRight < rightSize) {
+            messagesAll.set(indexCombine, rightList.get(indexRight));
+            indexRight+=1;
+            indexCombine+=1;
+        }
+    }
+
 }
