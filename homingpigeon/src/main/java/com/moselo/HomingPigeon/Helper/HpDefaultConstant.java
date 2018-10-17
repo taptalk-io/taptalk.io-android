@@ -46,15 +46,13 @@ public class HpDefaultConstant {
         public static final int TYPE_WELCOME = 8006;
         public static final int TYPE_ASK_PRODUCT = 9007;
         public static final int TYPE_HIDDEN = 0x9196;
-        public static final int TYPE_LOADING = 0x9197;
     }
 
     public static final class BubbleType {
         public static final int TYPE_LOG = 0;
-        public static final int TYPE_LOADING = 1;
-        public static final int TYPE_BUBBLE_TEXT_RIGHT = 2;
-        public static final int TYPE_BUBBLE_TEXT_LEFT = 3;
-        public static final int TYPE_BUBBLE_PRODUCT_LIST = 4;
+        public static final int TYPE_BUBBLE_TEXT_RIGHT = 1;
+        public static final int TYPE_BUBBLE_TEXT_LEFT = 2;
+        public static final int TYPE_BUBBLE_PRODUCT_LIST = 3;
     }
 
     public static final class Extras {

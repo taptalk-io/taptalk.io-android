@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
@@ -31,7 +30,6 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOADING;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOG;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_PRODUCT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_TEXT;
@@ -58,8 +56,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 return new TextVH(parent, R.layout.hp_cell_chat_text_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.hp_cell_chat_product_list);
-            case TYPE_LOADING:
-                return new LoadingVH(parent, R.layout.hp_cell_chat_loading);
             default:
                 return new LogVH(parent, R.layout.hp_cell_chat_log);
         }
@@ -85,8 +81,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                     else return TYPE_BUBBLE_TEXT_LEFT;
                 case TYPE_PRODUCT:
                     return TYPE_BUBBLE_PRODUCT_LIST;
-                case HpDefaultConstant.MessageType.TYPE_LOADING:
-                    return TYPE_LOADING;
                 default:
                     return TYPE_LOG;
             }
@@ -490,18 +484,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         @Override
         protected void onBind(HpMessageModel item, int position) {
             tvLogMessage.setText(item.getBody());
-        }
-    }
-
-    public class LoadingVH extends HpBaseViewHolder<HpMessageModel> {
-
-        protected LoadingVH(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-        }
-
-        @Override
-        protected void onBind(HpMessageModel item, int position) {
-
         }
     }
 

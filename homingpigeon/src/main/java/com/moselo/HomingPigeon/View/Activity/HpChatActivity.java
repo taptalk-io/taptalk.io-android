@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +18,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
@@ -566,7 +564,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
 
                 runOnUiThread(() -> {
-                    Log.e(TAG, "onSelectFinished: " );
+                    Log.e(TAG, "onSelectFinished: ");
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
                     new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
@@ -618,7 +616,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            });
 
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
                 callApiBefore(messageBeforeView);
@@ -694,7 +693,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            });
         }
 
         @Override
@@ -752,7 +752,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            });
         }
 
         @Override
@@ -830,34 +831,34 @@ public class HpChatActivity extends HpBaseChatActivity {
         while (indexLeft < leftSize && indexRight < rightSize) {
             if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft+=1;
-                indexCombine+=1;
+                indexLeft += 1;
+                indexCombine += 1;
             } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight+=1;
-                indexCombine+=1;
+                indexRight += 1;
+                indexCombine += 1;
             } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft+=1;
-                indexCombine+=1;
+                indexLeft += 1;
+                indexCombine += 1;
             } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight+=1;
-                indexCombine+=1;
+                indexRight += 1;
+                indexCombine += 1;
             }
         }
 
         //looping untuk masukin sisa di list masing masing
         while (indexLeft < leftSize) {
             messagesAll.set(indexCombine, leftList.get(indexLeft));
-            indexLeft+=1;
-            indexCombine+=1;
+            indexLeft += 1;
+            indexCombine += 1;
         }
 
         while (indexRight < rightSize) {
             messagesAll.set(indexCombine, rightList.get(indexRight));
-            indexRight+=1;
-            indexCombine+=1;
+            indexRight += 1;
+            indexCombine += 1;
         }
     }
 
