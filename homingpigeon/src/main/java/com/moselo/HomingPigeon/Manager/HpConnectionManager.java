@@ -91,7 +91,6 @@ public class HpConnectionManager {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
                 try {
                     HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
-                    Log.e(TAG, "onMessage: " + response);
                     if (null != socketListeners && !socketListeners.isEmpty()) {
                         for (HomingPigeonSocketInterface listener : socketListeners)
                             listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);
@@ -227,6 +226,7 @@ public class HpConnectionManager {
                             for (HomingPigeonSocketInterface listener : socketListeners)
                                 listener.onSocketConnecting();
                         }
+                        HpDataManager.getInstance().validateAccessToken(new HpDefaultDataView<HpErrorModel>() {});
                         close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
                     } catch (IllegalStateException e) {

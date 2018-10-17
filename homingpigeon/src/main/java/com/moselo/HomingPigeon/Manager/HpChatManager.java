@@ -67,7 +67,7 @@ public class HpChatManager {
     private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
         @Override
         public void onSocketConnected() {
-            Log.e(TAG, "onSocketConnected: ");
+
             checkAndSendPendingMessages();
             isFinishChatFlow = false;
         }
@@ -101,7 +101,7 @@ public class HpChatManager {
                             .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
-                        Log.e(TAG, "onReceiveNewEmit: " + HpUtils.getInstance().toJsonString(messageEmit));
+
                         receiveMessageFromSocket(HpMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
@@ -306,7 +306,7 @@ public class HpChatManager {
      * save text to draft
      */
     public void saveMessageToDraft(String message) {
-        Log.e(TAG, "saveMessageToDraft: "+HpUtils.getInstance().toJsonString(getActiveRoom()) );
+
         messageDrafts.put(getActiveRoom().getRoomID(), message);
     }
 
@@ -318,7 +318,7 @@ public class HpChatManager {
      * send pending messages from queue
      */
     public void checkAndSendPendingMessages() {
-        Log.e(TAG, "checkAndSendPendingMessages: " + pendingMessages.size());
+
         if (!pendingMessages.isEmpty()) {
             HpMessageModel message = pendingMessages.entrySet().iterator().next().getValue();
             runSendMessageSequence(message);
@@ -346,13 +346,13 @@ public class HpChatManager {
     }
 
     private void runSendMessageSequence(HpMessageModel messageModel) {
-        Log.e(TAG, "runSendMessageSequence: " + HpConnectionManager.getInstance().getConnectionStatus());
+
         if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
             // Send message if socket is connected
             try {
-                Log.e(TAG, "runSendMessageSequence: connected " + messageModel.getBody());
+
                 sendEmit(kSocketNewMessage, HpMessageModel.BuilderEncrypt(messageModel));
             } catch (GeneralSecurityException e) {
                 e.printStackTrace();
@@ -360,7 +360,7 @@ public class HpChatManager {
         } else {
             // Add message to queue if socket is not connected
             pendingMessages.put(messageModel.getLocalID(), messageModel);
-            Log.e(TAG, "runSendMessageSequence: not connected");
+
         }
     }
 
@@ -419,7 +419,7 @@ public class HpChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        Log.e(TAG, "saveIncomingMessageAndDisconnect: ");
+
         HpConnectionManager.getInstance().close();
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())

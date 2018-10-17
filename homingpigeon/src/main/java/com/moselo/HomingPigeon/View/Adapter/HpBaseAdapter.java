@@ -78,7 +78,7 @@ public abstract class HpBaseAdapter<T, VH extends HpBaseViewHolder<T>> extends
 
     final public void addItem(int position, List<T> items, boolean isNotify) {
         this.addItem(position, items);
-        if (isNotify) notifyInserted(items);
+        if (isNotify) notifyItemRangeInserted(position, items.size());
     }
 
     final public void addItem(int position, List<T> items) {

@@ -125,7 +125,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         @Override
         protected void onBind(HpMessageModel item, int position) {
             tvMessageBody.setText(item.getBody());
-            tvMessageStatus.setText(HpTimeFormatter.durationString(item.getCreated()));
 
             if (isMessageFromMySelf(item)) {
                 // Message has been read

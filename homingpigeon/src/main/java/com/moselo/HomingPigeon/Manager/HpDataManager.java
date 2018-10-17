@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;

@@ -124,6 +124,9 @@ public class HpChatActivity extends HpBaseChatActivity {
         super.onResume();
         HpChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(HpChatManager.getInstance().getMessageFromDraft());
+
+        if (vm.isInitialAPICallFinished())
+            callApiAfter();
     }
 
     @Override
@@ -277,8 +280,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if (state == STATE.LOADED && 0 < hpMessageAdapter.getItems().size()) {
-                    vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
-                    state = STATE.WORKING;
+                    new Thread(() -> {
+                        vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
+                        state = STATE.WORKING;
+                    }).start();
                 }
             }
         };
@@ -322,7 +327,6 @@ public class HpChatActivity extends HpBaseChatActivity {
             public void onSocketConnected() {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
-                    Log.e(TAG, "onSocketConnected: " + vm.getMessageModels().size());
                     callApiAfter();
                 }
             }
@@ -373,10 +377,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 tvBadgeUnread.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setText(vm.getUnreadCount() + "");
             }
-            // Remove pending message
-            if (ownMessage) {
-                vm.removeMessagePointer(newID);
-            }
+
             updateMessageDecoration();
         });
     }
@@ -388,7 +389,10 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                new Thread(() -> tempBeforeMessages.add(newMessage)).start();
+                new Thread(() -> {
+                    tempBeforeMessages.add(newMessage);
+                    vm.addMessagePointer(newMessage);
+                }).start();
             }
             //updateMessageDecoration();
         });
@@ -401,7 +405,10 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                new Thread(() -> tempAfterMessages.add(newMessage)).start();
+                new Thread(() -> {
+                    tempAfterMessages.add(newMessage);
+                    vm.addMessagePointer(newMessage);
+                }).start();
             }
             //updateMessageDecoration();
         });
@@ -564,7 +571,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
 
                 runOnUiThread(() -> {
-                    Log.e(TAG, "onSelectFinished: ");
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
                     new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
@@ -584,8 +590,6 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
-            vm.setInitialAPICallFinished(true);
-
             List<HpMessageEntity> responseMessages = new ArrayList<>();
             List<HpMessageModel> messageAfterModels = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
@@ -609,6 +613,8 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(0, messageAfterModels);
+                if (vm.isOnBottom())
+                    rvMessageList.scrollToPosition(0);
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
@@ -619,9 +625,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
             });
 
-            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
+            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 callApiBefore(messageBeforeView);
             }
+            vm.setInitialAPICallFinished(true);
         }
 
         @Override
@@ -667,13 +674,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                    vm.addMessagePointer(temp);
                     addBeforeTextMessage(temp, messageBeforeModels);
-                    new Thread(() -> {
-                        if (null != temp.getUpdated() &&
-                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
-                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
-                        }
-                    }).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
@@ -723,14 +725,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
-
+                    vm.addMessagePointer(temp);
                     addBeforeTextMessage(temp, messageBeforeModels);
-                    new Thread(() -> {
-                        if (null != temp.getUpdated() &&
-                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
-                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
-                        }
-                    }).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
@@ -768,9 +764,9 @@ public class HpChatActivity extends HpBaseChatActivity {
     };
 
     public void callApiBefore(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
-        HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+        new Thread(() -> HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
                 , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
-                , beforeView);
+                , beforeView)).start();
     }
 
     private void callApiAfter() {
@@ -778,7 +774,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             if (vm.getMessageModels().size() > 0 && !HpDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
                 HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
-                        vm.getMessageModels().get(0).getUpdated(), messageAfterView);
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), messageAfterView);
             } else if (vm.getMessageModels().size() > 0) {
                 HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
@@ -829,19 +825,19 @@ public class HpChatActivity extends HpBaseChatActivity {
         int indexLeft = 0, indexRight = 0, indexCombine = 0;
 
         while (indexLeft < leftSize && indexRight < rightSize) {
-            if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
+            if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, leftList.get(indexLeft));
                 indexLeft += 1;
                 indexCombine += 1;
-            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
+            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, rightList.get(indexRight));
                 indexRight += 1;
                 indexCombine += 1;
-            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
+            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, leftList.get(indexLeft));
                 indexLeft += 1;
                 indexCombine += 1;
-            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
+            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, rightList.get(indexRight));
                 indexRight += 1;
                 indexCombine += 1;
