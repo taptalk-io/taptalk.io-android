@@ -113,6 +113,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
             // Set name, last message, and timestamp text
             tvFullName.setText(item.getLastMessage().getRoom().getRoomName());
             tvLastMessage.setText(item.getLastMessage().getBody());
+            // TODO: 17 October 2018 FORMAT TIMESTAMP OUTSIDE BIND
             tvLastMessageTime.setText(HpTimeFormatter.durationString(item.getLastMessage().getCreated()));
 
             // Check if room is muted

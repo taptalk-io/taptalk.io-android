@@ -220,7 +220,8 @@ public class HpSearchChatFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             vm.getSearchResults().clear();
-            String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
+            String searchKeyword = etSearch.getText().toString().toLowerCase().trim().replaceAll("[^A-Za-z0-9 ]", "");
+            adapter.setSearchKeyword(searchKeyword);
             if (searchKeyword.isEmpty()) {
                 showRecentSearches();
             } else {
@@ -237,9 +238,10 @@ public class HpSearchChatFragment extends Fragment {
     private HpDatabaseListener<HpMessageEntity> messageSearchListener = new HpDatabaseListener<HpMessageEntity>() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
-            if (vm.isProcessingSearchResults()) {
-                vm.setMessageResultsPending(true);
-            } else if (entities.size() > 0) {
+            if (entities.size() > 0) {
+                HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
+                sectionTitleMessages.setSectionTitle(getString(R.string.messages));
+                vm.addSearchResult(sectionTitleMessages);
                 for (HpMessageEntity entity : entities) {
                     HpSearchChatModel result = new HpSearchChatModel(MESSAGE_ITEM);
                     result.setMessage(entity);

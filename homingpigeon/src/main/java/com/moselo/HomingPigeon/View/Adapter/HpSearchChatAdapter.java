@@ -1,16 +1,21 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
+import android.support.constraint.ConstraintLayout;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 import com.moselo.HomingPigeon.R;
@@ -18,6 +23,8 @@ import com.moselo.HomingPigeon.R;
 import java.util.List;
 
 public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBaseViewHolder<HpSearchChatModel>> {
+
+    private String searchKeyword;
 
     public HpSearchChatAdapter(List<HpSearchChatModel> items) {
         setItems(items, true);
@@ -106,6 +113,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
     public class MessageItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
+        private ConstraintLayout clContainer;
         private View vSeparator;
         private TextView tvUserName;
         private TextView tvLastMessage;
@@ -114,11 +122,12 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
         MessageItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
+            clContainer = itemView.findViewById(R.id.cl_container);
             vSeparator = itemView.findViewById(R.id.v_separator);
             tvUserName = itemView.findViewById(R.id.tv_user_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
-            tvMessageTime = itemView.findViewById(R.id.tv_chat_time);
-            ivMessageStatus = itemView.findViewById(R.id.iv_chat_status);
+            tvMessageTime = itemView.findViewById(R.id.tv_message_time);
+            ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
         }
 
         @Override
@@ -130,10 +139,17 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
             HpMessageEntity message = item.getMessage();
             if (null == message) return;
 
-            tvUserName.setText(message.getUserFullName());
-            tvLastMessage.setText(message.getBody());
+            // Set Room Name
+            tvUserName.setText(message.getRoomName());
+
+            // Set message body with highlighted text
+            String highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.highlighted_string), "$1"));
+            tvLastMessage.setText(HpDataManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
+                    Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.you), highlightedText)) : Html.fromHtml(highlightedText));
+
+            // Set message timestamp
             // TODO: 17 October 2018 PROCESS DATE OUTSIDE BIND
-            tvMessageTime.setText(HpTimeFormatter.formatTimeAndDate(message.getCreated()));
+            tvMessageTime.setText(HpTimeFormatter.durationString(message.getCreated()));
 
             // Change Status Message Icon
             // Message is read
@@ -156,6 +172,18 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
             else if (null != message.getSending() && message.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_sending_grey);
             }
+
+            clContainer.setOnClickListener(v -> {
+                // TODO: 17 October 2018 OPEN CHAT ROOM & SCROLL POSITION TO MESSAGE
+                HpUtils.getInstance().startChatActivity(itemView.getContext(),
+                        message.getRoomID(),
+                        message.getRoomName(),
+                        /* TEMPORARY CHECK FOR NULL IMAGE */null != message.getRoomImage() ?
+                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, message.getRoomImage())
+                        /* TEMPORARY CHECK FOR NULL IMAGE */: null,
+                        message.getRoomType(),
+                        message.getRoomColor());
+            });
         }
     }
 
@@ -185,5 +213,13 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         protected void onBind(HpSearchChatModel item, int position) {
 
         }
+    }
+
+    public String getSearchKeyword() {
+        return searchKeyword;
+    }
+
+    public void setSearchKeyword(String searchKeyword) {
+        this.searchKeyword = searchKeyword;
     }
 }

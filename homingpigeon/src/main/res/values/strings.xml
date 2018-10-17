@@ -79,6 +79,8 @@
     <string name="continue_s">Continue</string>
     <string name="delivered_at">Delivered at</string>
     <string name="edit">Edit</string>
+    <string name="highlighted_string"><![CDATA[<font color=\'#2eccad\'>%s</font>]]></string>
+    <string name="messages">Messages</string>
     <string name="no_chats">No Chats</string>
     <string name="ok">OK</string>
     <string name="oops">Oops…</string>

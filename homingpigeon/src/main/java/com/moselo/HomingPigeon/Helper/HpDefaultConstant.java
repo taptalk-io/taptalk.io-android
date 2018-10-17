@@ -114,7 +114,7 @@ public class HpDefaultConstant {
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
     public static final int NUM_OF_ITEM = 50;
-    public static final int GROUP_MEMBER_LIMIT = 5;
+    public static final int GROUP_MEMBER_LIMIT = 50;
 
     public static final String APP_KEY_ID = "b43b48745dfa0e44k1";
     public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";

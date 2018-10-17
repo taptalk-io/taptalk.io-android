@@ -1,14 +1,11 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
@@ -42,7 +39,6 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.k
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOffline;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOnline;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
 public class HpChatManager {
 

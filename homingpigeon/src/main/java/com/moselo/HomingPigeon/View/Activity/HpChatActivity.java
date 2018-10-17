@@ -527,6 +527,9 @@ public class HpChatActivity extends HpBaseChatActivity {
                     } else {
                         // Message exists
                         vm.setMessageModels(models);
+                        if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                            clEmptyChat.setVisibility(View.GONE);
+                        }
                         flMessageList.setVisibility(View.VISIBLE);
                     }
                     rvMessageList.scrollToPosition(0);
@@ -541,6 +544,9 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             } else if (null != hpMessageAdapter) {
                 runOnUiThread(() -> {
+                    if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                        clEmptyChat.setVisibility(View.GONE);
+                    }
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
@@ -581,7 +587,6 @@ public class HpChatActivity extends HpBaseChatActivity {
 
                 runOnUiThread(() -> {
                     Log.e(TAG, "onSelectFinished: " );
-                    flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
                     vm.setMessageModels(hpMessageAdapter.getItems());
 
@@ -619,6 +624,9 @@ public class HpChatActivity extends HpBaseChatActivity {
             //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageAfterModels
             mergeSort(messageAfterModels, ASCENDING);
             runOnUiThread(() -> {
+                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                    clEmptyChat.setVisibility(View.GONE);
+                }
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(0, messageAfterModels);
                 vm.setMessageModels(hpMessageAdapter.getItems());
@@ -691,6 +699,9 @@ public class HpChatActivity extends HpBaseChatActivity {
             List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
 
             runOnUiThread(() -> {
+                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                    clEmptyChat.setVisibility(View.GONE);
+                }
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
                 vm.setMessageModels(hpMessageAdapter.getItems());
@@ -746,7 +757,6 @@ public class HpChatActivity extends HpBaseChatActivity {
             mergeSort(messageBeforeModels, DESCENDING);
             List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
             runOnUiThread(() -> {
-                flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
                 vm.setMessageModels(hpMessageAdapter.getItems());
 
