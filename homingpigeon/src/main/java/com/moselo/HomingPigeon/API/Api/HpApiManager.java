@@ -10,6 +10,7 @@ import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Exception.ApiRefreshTokenRunningException;
 import com.moselo.HomingPigeon.Exception.ApiSessionExpiredException;
 import com.moselo.HomingPigeon.Exception.AuthException;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
@@ -43,6 +44,8 @@ public class HpApiManager {
     private HomingPigeonRefreshTokenService hpRefresh;
     private static HpApiManager instance;
     private boolean isShouldRefreshToken = false;
+    //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
+    private boolean isLogout = false;
 
     public static HpApiManager getInstance() {
         return instance == null ? instance = new HpApiManager() : instance;
@@ -53,6 +56,14 @@ public class HpApiManager {
         this.homingPigeon = connection.getHomingPigeon();
         this.hpSocket = connection.getHpValidate();
         this.hpRefresh = connection.getHpRefresh();
+    }
+
+    public boolean isLogout() {
+        return isLogout;
+    }
+
+    public void setLogout(boolean logout) {
+        isLogout = logout;
     }
 
     public boolean isShouldRefreshToken() {
@@ -106,8 +117,8 @@ public class HpApiManager {
     private Observable validateException(Throwable t) {
         Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
         t.printStackTrace();
-        return (t instanceof ApiSessionExpiredException && isShouldRefreshToken) ? refreshToken() :
-                (t instanceof ApiRefreshTokenRunningException) ?
+        return (t instanceof ApiSessionExpiredException && isShouldRefreshToken && !isLogout) ? refreshToken() :
+                (t instanceof ApiRefreshTokenRunningException && !isLogout) ?
                        Observable.just(Boolean.TRUE) : Observable.error(t);
     }
 
@@ -146,7 +157,7 @@ public class HpApiManager {
                     if (RESPONSE_SUCCESS == response.getStatus())
                         updateSession(response);
                     if (UNAUTHORIZED == response.getStatus()){
-
+                        HomingPigeon.refreshTokenExpired();
                     } else Observable.error(new AuthException(response.getError().getMessage()));
                 }).doOnError(throwable -> {
 

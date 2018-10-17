@@ -23,6 +23,7 @@ public class HpDefaultConstant {
     public static final class DatabaseType {
         public static final String MESSAGE_DB = "MessageDB";
         public static final String SEARCH_DB = "SearchDB";
+        public static final String MY_CONTACT_DB = "MyContactDB";
     }
 
     public static final class MessageType {
@@ -68,6 +69,11 @@ public class HpDefaultConstant {
     public static final class PermissionRequest {
         public static final int PERMISSION_CAMERA = 1;
         public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
+    }
+
+    public static final class Sorting {
+        public static final int DESCENDING = 1;
+        public static final int ASCENDING = 2;
     }
 
     public static final class HttpResponseStatusCode {

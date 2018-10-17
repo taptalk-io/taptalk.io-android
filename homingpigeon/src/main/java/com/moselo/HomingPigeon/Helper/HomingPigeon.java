@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Interface.HomingPigeonTokenInterface;
@@ -20,6 +22,7 @@ import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 import com.orhanobut.hawk.Hawk;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class HomingPigeon {
@@ -43,9 +46,13 @@ public class HomingPigeon {
     public HomingPigeon(final Context appContext, HomingPigeonTokenInterface hpTokenInterface) {
         //init Hawk for Preference
         Hawk.init(appContext).build();
+        //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
         HpDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HpDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
+        HpDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
+        //ini buat ambil context dr app utama karena library module ga bsa punya app context sndiri
         HomingPigeon.appContext = appContext;
+
         if (HpDataManager.getInstance().checkAccessTokenAvailable())
             HpConnectionManager.getInstance().connect();
 
@@ -106,16 +113,12 @@ public class HomingPigeon {
 
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
-        new HomingPigeonDialog.Builder(appContext)
-                .setMessage("ERROR")
-                .setMessage("Refresh Token Expired")
-                .setPrimaryButtonListener(v -> {
-                    HpChatManager.getInstance().disconnectAfterRefreshTokenExpired();
-                    HpDataManager.getInstance().deleteAllPreference();
-                    HpDataManager.getInstance().deleteAllFromDatabase();
-                    Intent intent = new Intent(appContext, HpLoginActivity.class);
-                    appContext.startActivity(intent);
-                }).setPrimaryButtonTitle("OK").show();
+        HpApiManager.getInstance().setLogout(true);
+        HpChatManager.getInstance().disconnectAfterRefreshTokenExpired();
+        HpDataManager.getInstance().deleteAllPreference();
+        HpDataManager.getInstance().deleteAllFromDatabase();
+        Intent intent = new Intent(appContext, HpLoginActivity.class);
+        appContext.startActivity(intent);
     }
 
     public static Context appContext;

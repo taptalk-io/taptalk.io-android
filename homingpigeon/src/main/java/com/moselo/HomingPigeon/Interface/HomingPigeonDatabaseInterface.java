@@ -1,13 +1,11 @@
 package com.moselo.HomingPigeon.Interface;
 
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-
 import java.util.List;
 import java.util.Map;
 
-public interface HomingPigeonDatabaseInterface {
-    void onSelectFinished(List<HpMessageEntity> entities);
+public interface HomingPigeonDatabaseInterface<T> {
+    void onSelectFinished(List<T> entities);
     void onInsertFinished();
     void onCountedUnreadCount(String roomID, int unreadCount);
-    void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap);
+    void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap);
 }

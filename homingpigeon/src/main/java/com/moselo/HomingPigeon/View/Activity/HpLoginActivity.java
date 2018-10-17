@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
@@ -229,6 +230,7 @@ public class HpLoginActivity extends HpBaseActivity {
         @Override
         public void onSuccess(HpAuthTicketResponse response) {
             super.onSuccess(response);
+            HpApiManager.getInstance().setLogout(false);
             HomingPigeon.saveAuthTicketAndGetAccessToken(response.getTicket()
                             , accessTokenView);
         }

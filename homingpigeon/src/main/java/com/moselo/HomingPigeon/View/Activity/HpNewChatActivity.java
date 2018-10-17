@@ -1,13 +1,15 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.Manifest;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.HpUserRoleModel;
@@ -23,6 +27,9 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
@@ -53,10 +60,16 @@ public class HpNewChatActivity extends HpBaseActivity {
     @Override
     protected void initView() {
         //Dummy Contacts
-        if (vm.getContactList().size() == 0) {
-            setDummyData();
-        }
+        setDummyData();
         //End Dummy
+
+        //setting up listener for Live Data
+        vm.getContactListLive().observe(this, userModels -> {
+            vm.getContactList().clear();
+            vm.getContactList().addAll(userModels);
+            vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+            runOnUiThread(() -> adapter.setItems(vm.getSeparatedContacts()));
+        });
 
         getWindow().setBackgroundDrawable(null);
 
@@ -71,8 +84,6 @@ public class HpNewChatActivity extends HpBaseActivity {
         nsvNewChat = findViewById(R.id.nsv_new_chat);
 
         OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
-
-        vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getContactList()));
 
         adapter = new HpContactInitialAdapter(HpContactListAdapter.CHAT, vm.getSeparatedContacts());
         rvContactList.setAdapter(adapter);
@@ -209,31 +220,24 @@ public class HpNewChatActivity extends HpBaseActivity {
                 , HpImageURL.BuilderDummy(), "santo", "santo@moselo.com", "08979809026"
                 , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
                 , Long.parseLong("0"));
+        List<HpUserModel> userModels = new ArrayList<>();
+        userModels.add(userCundy);
+        userModels.add(userDominic);
+        userModels.add(userErwin);
+        userModels.add(userJony);
+        userModels.add(userJefry);
+        userModels.add(userKevin);
+        userModels.add(userMichael);
+        userModels.add(userRitchie);
+        userModels.add(userRionaldo);
+        userModels.add(userRichard);
+        userModels.add(userRizka);
+        userModels.add(userSanto);
+        userModels.add(userTest1);
+        userModels.add(userTest2);
+        userModels.add(userTest3);
+        userModels.add(userWelly);
 
-        vm.getContactList().add(userCundy);
-
-        vm.getContactList().add(userDominic);
-
-        vm.getContactList().add(userErwin);
-
-        vm.getContactList().add(userJony);
-        vm.getContactList().add(userJefry);
-
-        vm.getContactList().add(userKevin);
-
-        vm.getContactList().add(userMichael);
-
-        vm.getContactList().add(userRitchie);
-        vm.getContactList().add(userRionaldo);
-        vm.getContactList().add(userRichard);
-        vm.getContactList().add(userRizka);
-
-        vm.getContactList().add(userSanto);
-
-        vm.getContactList().add(userWelly);
-
-        vm.getContactList().add(userTest1);
-        vm.getContactList().add(userTest2);
-        vm.getContactList().add(userTest3);
+        HpDataManager.getInstance().insertMyContactToDatabase(userModels);
     }
 }

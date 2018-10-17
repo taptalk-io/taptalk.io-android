@@ -18,6 +18,8 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
@@ -39,7 +41,7 @@ public class HpDataManager {
 
     /**
      * =========================================================================================== *
-     *  GENERIC METHODS FOR PREFERENCE
+     * GENERIC METHODS FOR PREFERENCE
      * =========================================================================================== *
      */
 
@@ -69,8 +71,8 @@ public class HpDataManager {
 
     /**
      * =========================================================================================== *
-     *  PUBLIC METHODS FOR PREFERENCE (CALLS GENERIC METHODS ABOVE)
-     *  PUBLIC METHODS MAY NOT HAVE KEY AS PARAMETER
+     * PUBLIC METHODS FOR PREFERENCE (CALLS GENERIC METHODS ABOVE)
+     * PUBLIC METHODS MAY NOT HAVE KEY AS PARAMETER
      * =========================================================================================== *
      */
 
@@ -79,7 +81,7 @@ public class HpDataManager {
     }
 
     /**
-     *  ACTIVE USER
+     * ACTIVE USER
      */
     public boolean checkActiveUser() {
         if (null == getActiveUser())
@@ -96,7 +98,7 @@ public class HpDataManager {
     }
 
     /**
-     *  AUTH TICKET
+     * AUTH TICKET
      */
 
     public Boolean checkAuthTicketAvailable() {
@@ -116,7 +118,7 @@ public class HpDataManager {
     }
 
     /**
-     *  ACCESS TOKEN
+     * ACCESS TOKEN
      */
 
     public Boolean checkAccessTokenAvailable() {
@@ -140,7 +142,7 @@ public class HpDataManager {
     }
 
     /**
-     *  REFRESH TOKEN
+     * REFRESH TOKEN
      */
 
     public Boolean checkRefreshTokenAvailable() {
@@ -160,19 +162,39 @@ public class HpDataManager {
     }
 
     /**
-     *  LAST UPDATED MESSAGE
+     * LAST UPDATED MESSAGE
      */
 
-    public Long getLastUpdatedMessageTimestamp() {
-        return getLongTimestampPreference(K_LAST_UPDATED);
+    public Long getLastUpdatedMessageTimestamp(String roomID) {
+        return null == getLastUpdatedMessageTimestampMap() ? Long.parseLong("0")
+                : !getLastUpdatedMessageTimestampMap().containsKey(roomID) ? Long.parseLong("0") :
+                getLastUpdatedMessageTimestampMap().get(roomID);
     }
 
-    public void saveLastUpdatedMessageTimestamp(Long lastUpdated) {
-        saveLongTimestampPreference(lastUpdated, K_LAST_UPDATED);
+    public boolean checkKeyInLastMessageTimestamp(String roomID) {
+        return Long.parseLong("0") != getLastUpdatedMessageTimestamp(roomID);
+    }
+
+    public void saveLastUpdatedMessageTimestamp(String roomID, Long lastUpdated) {
+        saveLastUpdatedMessageTimestampMap(roomID, lastUpdated);
+    }
+
+    private HashMap<String, Long> getLastUpdatedMessageTimestampMap() {
+        return Hawk.get(K_LAST_UPDATED, null);
+    }
+
+    private void saveLastUpdatedMessageTimestampMap(String roomID, long lastUpdated) {
+        HashMap<String, Long> tempLastUpdated;
+        if (null != getLastUpdatedMessageTimestampMap())
+            tempLastUpdated = getLastUpdatedMessageTimestampMap();
+        else tempLastUpdated = new LinkedHashMap<>();
+
+        tempLastUpdated.put(roomID, lastUpdated);
+        Hawk.put(K_LAST_UPDATED, tempLastUpdated);
     }
 
     /**
-     *  ROOM LIST FIRST SETUP
+     * ROOM LIST FIRST SETUP
      */
 
     public Boolean isRoomListSetupFinished() {
@@ -195,20 +217,18 @@ public class HpDataManager {
 
     /**
      * =========================================================================================== *
-     *  DATABASE METHODS
+     * DATABASE METHODS
      * =========================================================================================== *
      */
 
+    //initialized Database Managernya yang di panggil di class Homing Pigeon
     public void initDatabaseManager(String databaseType, Application application) {
         HpDatabaseManager.getInstance().setRepository(databaseType, application);
     }
 
+    //Message
     public void insertToDatabase(HpMessageEntity messageEntity) {
         HpDatabaseManager.getInstance().insert(messageEntity);
-    }
-
-    public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
-        HpDatabaseManager.getInstance().insert(recentSearchEntity);
     }
 
     public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages) {
@@ -221,18 +241,6 @@ public class HpDataManager {
 
     public void deleteFromDatabase(String messageLocalID) {
         HpDatabaseManager.getInstance().delete(messageLocalID);
-    }
-
-    public void deleteAllFromDatabase() {
-        HpDatabaseManager.getInstance().deleteAll();
-    }
-
-    public void deleteFromDatabase(HpRecentSearchEntity recentSearchEntity) {
-        HpDatabaseManager.getInstance().delete(recentSearchEntity);
-    }
-
-    public void deleteFromDatabase(List<HpRecentSearchEntity> recentSearchEntities) {
-        HpDatabaseManager.getInstance().delete(recentSearchEntities);
     }
 
     public void updateSendingMessageToFailed() {
@@ -267,8 +275,59 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().getUnreadCountPerRoom(myID, roomID, listener);
     }
 
+    //Recent Search
+    public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
+        HpDatabaseManager.getInstance().insert(recentSearchEntity);
+    }
+
+    public void deleteFromDatabase(HpRecentSearchEntity recentSearchEntity) {
+        HpDatabaseManager.getInstance().delete(recentSearchEntity);
+    }
+
+    public void deleteFromDatabase(List<HpRecentSearchEntity> recentSearchEntities) {
+        HpDatabaseManager.getInstance().delete(recentSearchEntities);
+    }
+
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
-        return HpDataManager.getInstance().getRecentSearchLive();
+        return HpDatabaseManager.getInstance().getRecentSearchLive();
+    }
+
+    //My Contact
+    public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
+        HpDatabaseManager.getInstance().getMyContactList(listener);
+    }
+
+    public LiveData<List<HpUserModel>> getMyContactList() {
+        return HpDatabaseManager.getInstance().getMyContactList();
+    }
+
+    public void insertMyContactToDatabase(HpUserModel... userModels) {
+        HpDatabaseManager.getInstance().insertMyContact(userModels);
+    }
+
+    public void insertMyContactToDatabase(List<HpUserModel> userModels) {
+        HpDatabaseManager.getInstance().insertMyContact(userModels);
+    }
+
+    public void insertAndGetMyContact(List<HpUserModel> userModels, HpDatabaseListener<HpUserModel> listener) {
+        HpDatabaseManager.getInstance().insertAndGetMyContact(userModels, listener);
+    }
+
+    public void deleteMyContactFromDatabase(HpUserModel... userModels) {
+        HpDatabaseManager.getInstance().deleteMyContact(userModels);
+    }
+
+    public void deleteMyContactFromDatabase(List<HpUserModel> userModels) {
+        HpDatabaseManager.getInstance().deleteMyContact(userModels);
+    }
+
+    public void updateMyContact(HpUserModel userModels) {
+        HpDatabaseManager.getInstance().updateMyContact(userModels);
+    }
+
+    //General
+    public void deleteAllFromDatabase() {
+        HpDatabaseManager.getInstance().deleteAll();
     }
 
     /**
