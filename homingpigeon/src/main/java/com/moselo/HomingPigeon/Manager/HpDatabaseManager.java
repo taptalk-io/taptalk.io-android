@@ -116,6 +116,13 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void searchAllMessages(String keyword, HpDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.searchAllMessages(keyword, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public void getRoomList(String myID, List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, saveMessages, isCheckUnreadFirst, listener);

@@ -2,10 +2,8 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -18,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.HpUtils;
@@ -41,7 +38,6 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_MEMB
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.GROUP_MEMBER_LIMIT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.CREATE_GROUP;
 
 public class HpCreateNewGroupActivity extends HpBaseActivity {
@@ -187,11 +183,11 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         etSearch.setOnEditorActionListener(searchEditorListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonAction.setOnClickListener(v -> showOrHideSearchBar());
+        ivButtonAction.setOnClickListener(v -> toggleSearchBar());
         btnContinue.setOnClickListener(v -> openGroupSubjectActivity());
     }
 
-    private void showOrHideSearchBar() {
+    private void toggleSearchBar() {
         if (vm.isSelecting()) {
             // Show Toolbar
             vm.setSelecting(false);

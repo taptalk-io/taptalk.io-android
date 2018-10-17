@@ -78,7 +78,6 @@ public class HpRoomListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         activity = getActivity();
-        HpChatManager.getInstance().addChatListener(chatListener);
         return inflater.inflate(R.layout.hp_fragment_room_list, container, false);
     }
 
@@ -129,6 +128,7 @@ public class HpRoomListFragment extends Fragment {
                 processMessageFromSocket(message);
             }
         };
+        HpChatManager.getInstance().addChatListener(chatListener);
 
         roomListInterface = (roomListModel, isSelected) -> {
             if (null != roomListModel && isSelected) {

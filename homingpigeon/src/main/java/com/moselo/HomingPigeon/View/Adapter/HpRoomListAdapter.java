@@ -124,7 +124,8 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_10dp));
             }
 
-            //Change Status Message Icon
+            // Change Status Message Icon
+            // Message is read
             if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_read_green);
             }

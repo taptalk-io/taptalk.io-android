@@ -77,6 +77,7 @@
     <string name="chat_now">Chat Now</string>
     <string name="clear_history">Clear history</string>
     <string name="continue_s">Continue</string>
+    <string name="delivered_at">Delivered at</string>
     <string name="edit">Edit</string>
     <string name="no_chats">No Chats</string>
     <string name="ok">OK</string>
@@ -84,11 +85,12 @@
     <string name="recent_searches">Recent Searches</string>
     <string name="reply">Reply</string>
     <string name="search">Search</string>
+    <string name="search_results">Search Results</string>
     <string name="send">Send</string>
     <string name="sending">Sending…</string>
     <string name="send_a_message">Send a message…</string>
+    <string name="sent_at">Sent at</string>
+    <string name="unread_messages">Unread Messages</string>
     <string name="you">You</string>
     <string name="over_99">99+</string>
-    <string name="sent_at">Sent at</string>
-    <string name="delivered_at">Delivered at</string>
 </resources>

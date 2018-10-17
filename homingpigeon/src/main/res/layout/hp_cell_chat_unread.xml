@@ -4,16 +4,18 @@
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="28dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:layout_marginTop="22dp"
+    android:layout_marginBottom="24dp">
 
     <TextView
         android:id="@+id/tv_message"
         style="@style/HomingPigeonMessageLog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/grey_e4"
         android:gravity="center"
-        tools:text="Message Log" />
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:text="@string/unread_messages" />
 
 </android.support.constraint.ConstraintLayout>

@@ -4,14 +4,14 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 
 public class HpSearchChatModel {
-    public enum MyReturnType {
+    public enum Type {
         RECENT_TITLE, RECENT_ITEM,
         SECTION_TITLE, CHAT_ITEM,
         MESSAGE_ITEM, CONTACT_ITEM,
         EMPTY_STATE
     }
 
-    private MyReturnType myReturnType;
+    private Type type;
     private HpRecentSearchEntity recentSearch;
     private String sectionTitle;
     private HpRoomModel room;
@@ -19,16 +19,16 @@ public class HpSearchChatModel {
     private HpUserModel contact;
     private boolean isLastInSection = false;
 
-    public HpSearchChatModel(MyReturnType myReturnType) {
-        this.myReturnType = myReturnType;
+    public HpSearchChatModel(Type type) {
+        this.type = type;
     }
 
-    public MyReturnType getMyReturnType() {
-        return myReturnType;
+    public Type getType() {
+        return type;
     }
 
-    public void setMyReturnType(MyReturnType myReturnType) {
-        this.myReturnType = myReturnType;
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public HpRecentSearchEntity getRecentSearch() {

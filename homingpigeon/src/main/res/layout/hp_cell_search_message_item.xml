@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white">
@@ -10,9 +9,9 @@
         android:id="@+id/ll_name_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="11dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="18dp"
+        android:layout_marginBottom="11dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ll_time_status"
@@ -25,9 +24,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/hp_font_neueeinstellungbold"
             android:letterSpacing="-0.01"
+            android:text="Nadia Hanifah"
             android:textColor="#2c2c2c"
-            android:textSize="14sp"
-            android:text="Nadia Hanifah" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tv_last_message"
@@ -40,9 +39,9 @@
             android:lineSpacingExtra="4sp"
             android:maxLines="1"
             android:minLines="1"
+            android:text="Who did you get the flowers from ?"
             android:textColor="@color/grey_9b"
-            android:textSize="13sp"
-            android:text="Who did you get the flowers from ?" />
+            android:textSize="13sp" />
 
     </LinearLayout>
 
@@ -64,9 +63,9 @@
             android:gravity="end"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="5sp"
+            android:text="17:10"
             android:textColor="@color/grey_9b"
-            android:textSize="12sp"
-            android:text="17:10" />
+            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/iv_chat_status"
@@ -81,11 +80,11 @@
         android:id="@+id/v_separator"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@color/grey_ea"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

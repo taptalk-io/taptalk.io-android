@@ -2,12 +2,16 @@ package com.moselo.HomingPigeon.View.Adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
+import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 import com.moselo.HomingPigeon.R;
 
@@ -21,7 +25,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
     @Override
     public HpBaseViewHolder<HpSearchChatModel> onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (HpSearchChatModel.MyReturnType.values()[viewType]){
+        switch (HpSearchChatModel.Type.values()[viewType]){
             case RECENT_TITLE:
                 return new RecentTitleVH(parent, R.layout.hp_cell_recent_search_title);
             case RECENT_ITEM:
@@ -41,7 +45,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
     @Override
     public int getItemViewType(int position) {
-        return getItems().get(position).getMyReturnType().ordinal();
+        return getItems().get(position).getType().ordinal();
     }
 
     @Override
@@ -61,7 +65,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
         @Override
         protected void onBind(HpSearchChatModel item, int position) {
-            if (HpSearchChatModel.MyReturnType.SECTION_TITLE == item.getMyReturnType()) {
+            if (HpSearchChatModel.Type.SECTION_TITLE == item.getType()) {
                 tvClearHistory.setVisibility(View.GONE);
                 tvRecentTitle.setText(item.getSectionTitle());
             }
@@ -103,10 +107,18 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
     public class MessageItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private View vSeparator;
+        private TextView tvUserName;
+        private TextView tvLastMessage;
+        private TextView tvMessageTime;
+        private ImageView ivMessageStatus;
 
-        protected MessageItemVH(ViewGroup parent, int itemLayoutId) {
+        MessageItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            tvUserName = itemView.findViewById(R.id.tv_user_name);
+            tvLastMessage = itemView.findViewById(R.id.tv_last_message);
+            tvMessageTime = itemView.findViewById(R.id.tv_chat_time);
+            ivMessageStatus = itemView.findViewById(R.id.iv_chat_status);
         }
 
         @Override
@@ -114,6 +126,36 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
             if (item.isLastInSection())
                 vSeparator.setVisibility(View.GONE);
             else vSeparator.setVisibility(View.VISIBLE);
+
+            HpMessageEntity message = item.getMessage();
+            if (null == message) return;
+
+            tvUserName.setText(message.getUserFullName());
+            tvLastMessage.setText(message.getBody());
+            // TODO: 17 October 2018 PROCESS DATE OUTSIDE BIND
+            tvMessageTime.setText(HpTimeFormatter.formatTimeAndDate(message.getCreated()));
+
+            // Change Status Message Icon
+            // Message is read
+            if (null != message.getIsRead() && message.getIsRead()) {
+                ivMessageStatus.setImageResource(R.drawable.hp_ic_read_green);
+            }
+            // Message is delivered
+            else if (null != message.getDelivered() && message.getDelivered()) {
+                ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+            }
+            // Message failed to send
+            else if (null != message.getFailedSend() && message.getFailedSend()) {
+                ivMessageStatus.setImageResource(R.drawable.hp_ic_failed_grey);
+            }
+            // Message sent
+            else if (null != message.getSending() && !message.getSending()) {
+                ivMessageStatus.setImageResource(R.drawable.hp_ic_sent_grey);
+            }
+            // Message is sending
+            else if (null != message.getSending() && message.getSending()) {
+                ivMessageStatus.setImageResource(R.drawable.hp_ic_sending_grey);
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
@@ -80,6 +79,14 @@ public class HpMessageRepository {
     public void getMessageList(final String roomID, final HpDatabaseListener listener, final long lastTimestamp) {
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
+            listener.onSelectFinished(entities);
+        }).start();
+    }
+
+    public void searchAllMessages(String keyword, final HpDatabaseListener listener) {
+        new Thread(() -> {
+            String queryKeyword = "%" + keyword + '%';
+            List<HpMessageEntity> entities = messageDao.searchAllMessages(queryKeyword);
             listener.onSelectFinished(entities);
         }).start();
     }
