@@ -389,7 +389,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                tempBeforeMessages.add(newMessage);
+                new Thread(() -> tempBeforeMessages.add(newMessage)).start();
             }
             //updateMessageDecoration();
         });
@@ -402,7 +402,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                tempAfterMessages.add(newMessage);
+                new Thread(() -> tempAfterMessages.add(newMessage)).start();
             }
             //updateMessageDecoration();
         });
@@ -528,7 +528,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
-                    vm.setMessageModels(hpMessageAdapter.getItems());
+                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
@@ -568,7 +568,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                     Log.e(TAG, "onSelectFinished: " );
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
-                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems()));
+                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
@@ -606,7 +606,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(0, messageAfterModels);
-                vm.setMessageModels(hpMessageAdapter.getItems());
+                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
@@ -678,7 +678,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
-                vm.setMessageModels(hpMessageAdapter.getItems());
+                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
@@ -733,7 +733,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
-                vm.setMessageModels(hpMessageAdapter.getItems());
+                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
