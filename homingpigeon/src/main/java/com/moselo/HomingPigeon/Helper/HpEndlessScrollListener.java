@@ -13,7 +13,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
 
 public abstract class HpEndlessScrollListener extends RecyclerView.OnScrollListener {
 
-    private int visibleThreshold = NUM_OF_ITEM / 2;
+    private int visibleThreshold = NUM_OF_ITEM - 5;
     private int currentPage = 0;
     // The total number of items in the dataset after the last load
     private int previousTotalItemCount = 0;

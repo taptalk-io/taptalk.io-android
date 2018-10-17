@@ -20,7 +20,6 @@ public class HpMessageModel {
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private HpUserModel user;
     @JsonProperty("recipientID") private String recipientID;
-    @Nullable @JsonProperty("hasRead") private Boolean hasRead;
     @Nullable @JsonProperty("isRead") private Boolean isRead;
     @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
     @Nullable @JsonProperty("isHidden") private Boolean isHidden;
@@ -152,15 +151,6 @@ public class HpMessageModel {
 
     public void setRecipientID(String recipientID) {
         this.recipientID = recipientID;
-    }
-
-    @Nullable
-    public Boolean getHasRead() {
-        return hasRead;
-    }
-
-    public void setHasRead(@Nullable Boolean hasRead) {
-        this.hasRead = hasRead;
     }
 
     @Nullable

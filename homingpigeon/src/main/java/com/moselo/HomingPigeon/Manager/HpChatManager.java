@@ -244,7 +244,7 @@ public class HpChatManager {
     public HpMessageEntity convertToEntity(HpMessageModel model) {
         return new HpMessageEntity(
                 model.getMessageID(), model.getLocalID(), model.getBody(), model.getRecipientID(),
-                model.getType(), model.getCreated(), model.getUpdated(), model.getHasRead(), model.getIsRead(),
+                model.getType(), model.getCreated(), model.getUpdated(), model.getIsRead(),
                 model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
                 model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),
                 model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
