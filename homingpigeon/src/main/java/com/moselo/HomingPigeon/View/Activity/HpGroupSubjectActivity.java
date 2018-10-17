@@ -91,8 +91,10 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        if (null != vm.getGroupData().getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupData().getGroupName());
-        if (null != vm.getGroupData().getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupData().getGroupImage().toString());
+        if (null != vm.getGroupData().getGroupName())
+            intent.putExtra(GROUP_NAME, vm.getGroupData().getGroupName());
+        if (null != vm.getGroupData().getGroupImage())
+            intent.putExtra(GROUP_IMAGE, vm.getGroupData().getGroupImage().toString());
         setResult(RESULT_CANCELED, intent);
         finish();
     }
@@ -118,7 +120,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
 
         etGroupName.addTextChangedListener(groupNameWatcher);
 
-        adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupMembers(), null, vm.getMyID());
+        adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupMembers());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new HpHorizontalDecoration(0, 0,
@@ -132,20 +134,8 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-
         civGroupImage.setOnClickListener(v -> pickImageFromGallery());
-
-        btnCreateGroup.setOnClickListener(v -> {
-            String groupName = etGroupName.getText().toString();
-            if (!groupName.trim().isEmpty() && vm.getGroupData().getGroupMembers().size() > 0) {
-                // TODO: 19 September 2018 CREATE AND OPEN GROUP
-                Toast.makeText(this, "Group Created!", Toast.LENGTH_SHORT).show();
-                setResult(RESULT_OK);
-                finish();
-            } else {
-                Toast.makeText(this, R.string.error_message_group_name_empty, Toast.LENGTH_SHORT).show();
-            }
-        });
+        btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
     }
 
     private void pickImageFromGallery() {
@@ -181,6 +171,18 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
             }
         }).into(civGroupImage);
 
+    }
+
+    private void validateAndCreateGroup() {
+        String groupName = etGroupName.getText().toString();
+        if (!groupName.trim().isEmpty() && vm.getGroupData().getGroupMembers().size() > 0) {
+            // TODO: 19 September 2018 CREATE AND OPEN GROUP
+            Toast.makeText(this, "Group Created!", Toast.LENGTH_SHORT).show();
+            setResult(RESULT_OK);
+            finish();
+        } else {
+            Toast.makeText(this, R.string.error_message_group_name_empty, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private TextWatcher groupNameWatcher = new TextWatcher() {

@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.View.Fragment;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,32 +18,39 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.HpSearchChatAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
 
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.CHAT_ITEM;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.CONTACT_ITEM;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.EMPTY_STATE;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.MESSAGE_ITEM;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.RECENT_ITEM;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.RECENT_TITLE;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.MyReturnType.SECTION_TITLE;
+import java.util.List;
+
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.CHAT_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.CONTACT_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.EMPTY_STATE;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.MESSAGE_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.RECENT_ITEM;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.RECENT_TITLE;
+import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.SECTION_TITLE;
 
 public class HpSearchChatFragment extends Fragment {
 
     private static final String TAG = HpSearchChatFragment.class.getSimpleName();
+    private Activity activity;
+
     private ConstraintLayout clActionBar;
     private ImageView ivButtonBack;
-    private TextView tvTitle;
     private EditText etSearch;
     private ImageView ivButtonAction;
     private RecyclerView recyclerView;
+
     private HpSearchChatViewModel vm;
     private HpSearchChatAdapter adapter;
 
@@ -62,8 +70,8 @@ public class HpSearchChatFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        activity = getActivity();
         return inflater.inflate(R.layout.hp_fragment_search_chat, container, false);
     }
 
@@ -72,7 +80,17 @@ public class HpSearchChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initViewModel();
         initView(view);
-        setDummyDataforRecent();
+        showRecentSearches();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            clearSearch();
+        } else {
+            HpUtils.getInstance().showKeyboard(activity, etSearch);
+        }
     }
 
     private void initViewModel() {
@@ -82,140 +100,98 @@ public class HpSearchChatFragment extends Fragment {
     private void initView(View view) {
         clActionBar = view.findViewById(R.id.cl_action_bar);
         ivButtonBack = view.findViewById(R.id.iv_button_back);
-        tvTitle = view.findViewById(R.id.tv_title);
         etSearch = view.findViewById(R.id.et_search);
         ivButtonAction = view.findViewById(R.id.iv_button_action);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        ivButtonBack.setOnClickListener(v -> ((HpRoomListActivity) getActivity()).showRoomList());
-        ivButtonAction.setOnClickListener(v -> {
-            if (vm.isSearchActive()) {
-                showToolbar();
-                setDummyDataforRecent();
-            } else {
-                showSearchBar();
-                setDummyDataforSearchChat();
-            }
-        });
+        etSearch.addTextChangedListener(searchTextWatcher);
 
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().toLowerCase().equals("empty")) {
-                    setEmptyState();
-                } else {
-                    setDummyDataforSearchChat();
-                }
-            }
-        });
-
-        adapter = new HpSearchChatAdapter(vm.getSearchList());
+        adapter = new HpSearchChatAdapter(vm.getSearchResults());
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+
+        ivButtonBack.setOnClickListener(v -> ((HpRoomListActivity) activity).showRoomList());
+        ivButtonAction.setOnClickListener(v -> clearSearch());
     }
 
-    private void showToolbar() {
-        vm.setSearchActive(false);
-        tvTitle.setVisibility(View.VISIBLE);
-        etSearch.setVisibility(View.GONE);
+    private void clearSearch() {
         etSearch.setText("");
         etSearch.clearFocus();
-        ivButtonAction.setImageResource(R.drawable.hp_ic_search_grey);
-        HpUtils.getInstance().dismissKeyboard(getActivity());
-    }
-
-    private void showSearchBar() {
-        vm.setSearchActive(true);
-        tvTitle.setVisibility(View.GONE);
-        etSearch.setVisibility(View.VISIBLE);
-        etSearch.requestFocus();
-        ivButtonAction.setImageResource(R.drawable.hp_ic_close_grey);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) {
-            showToolbar();
-            setDummyDataforRecent();
-        }
+        HpUtils.getInstance().dismissKeyboard(activity);
     }
 
     // TODO: 24/09/18 apusin dummy ini kalau udah ada datanya
-    private void setDummyDataforRecent() {
-        vm.getSearchList().clear();
+    private void showRecentSearches() {
+        vm.getSearchResults().clear();
 
         HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
-        vm.addSearchList(recentTitleItem);
+        vm.addSearchResult(recentTitleItem);
 
         HpSearchChatModel recentItem = new HpSearchChatModel(RECENT_ITEM);
         HpRecentSearchEntity entity = new HpRecentSearchEntity("Mo Salah", System.currentTimeMillis());
         recentItem.setRecentSearch(entity);
-        vm.addSearchList(recentItem);
-        vm.addSearchList(recentItem);
-        vm.addSearchList(recentItem);
-        vm.addSearchList(recentItem);
-        adapter.setItems(vm.getSearchList(), false);
+        vm.addSearchResult(recentItem);
+        vm.addSearchResult(recentItem);
+        vm.addSearchResult(recentItem);
+        vm.addSearchResult(recentItem);
+        activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
 
     private void setEmptyState() {
-        vm.getSearchList().clear();
-
         HpSearchChatModel emptyTitle = new HpSearchChatModel(SECTION_TITLE);
-        emptyTitle.setSectionTitle("SEARCH RESULTS");
-
+        emptyTitle.setSectionTitle(getString(R.string.search_results));
         HpSearchChatModel emptyItem = new HpSearchChatModel(EMPTY_STATE);
 
-        vm.addSearchList(emptyTitle);
-        vm.addSearchList(emptyItem);
-        adapter.setItems(vm.getSearchList(), false);
+        vm.getSearchResults().clear();
+        vm.addSearchResult(emptyTitle);
+        vm.addSearchResult(emptyItem);
+        activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
 
-    private void setDummyDataforSearchChat() {
-        vm.getSearchList().clear();
+    private TextWatcher searchTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        HpSearchChatModel sectionTitleChats = new HpSearchChatModel(SECTION_TITLE);
-        sectionTitleChats.setSectionTitle("CHATS");
-        HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
-        sectionTitleMessages.setSectionTitle("MESSAGES");
-        HpSearchChatModel sectionTitleContacts = new HpSearchChatModel(SECTION_TITLE);
-        sectionTitleContacts.setSectionTitle("OTHER CONTACTS");
+        }
 
-        HpSearchChatModel chatItem = new HpSearchChatModel(CHAT_ITEM);
-        HpSearchChatModel messageItem = new HpSearchChatModel(MESSAGE_ITEM);
-        HpSearchChatModel messageItemLast = new HpSearchChatModel(MESSAGE_ITEM);
-        messageItemLast.setLastInSection(true);
-        HpSearchChatModel contactItem = new HpSearchChatModel(CONTACT_ITEM);
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            vm.getSearchResults().clear();
+            String searchKeyword = etSearch.getText().toString().toLowerCase().trim().replaceAll("[^A-Za-z0-9 ]", "");
+            adapter.setSearchKeyword(searchKeyword);
+            if (searchKeyword.isEmpty()) {
+                showRecentSearches();
+            } else {
+                HpDataManager.getInstance().searchAllMessagesFromDatabase(searchKeyword, messageSearchListener);
+            }
+        }
 
-        vm.addSearchList(sectionTitleChats);
-        vm.addSearchList(chatItem);
-        vm.addSearchList(sectionTitleMessages);
-        vm.addSearchList(messageItem);
-        vm.addSearchList(messageItem);
-        vm.addSearchList(messageItem);
-        vm.addSearchList(messageItem);
-        vm.addSearchList(messageItem);
-        vm.addSearchList(messageItem);
-        vm.addSearchList(messageItem);
-        vm.addSearchList(messageItemLast);
-        vm.addSearchList(sectionTitleContacts);
-        vm.addSearchList(contactItem);
-        vm.addSearchList(contactItem);
-        vm.addSearchList(contactItem);
-        vm.addSearchList(contactItem);
-        adapter.setItems(vm.getSearchList(), false);
-    }
+        @Override
+        public void afterTextChanged(Editable s) {
 
+        }
+    };
+
+    private HpDatabaseListener<HpMessageEntity> messageSearchListener = new HpDatabaseListener<HpMessageEntity>() {
+        @Override
+        public void onSelectFinished(List<HpMessageEntity> entities) {
+            if (entities.size() > 0) {
+                HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
+                sectionTitleMessages.setSectionTitle(getString(R.string.messages));
+                vm.addSearchResult(sectionTitleMessages);
+                for (HpMessageEntity entity : entities) {
+                    HpSearchChatModel result = new HpSearchChatModel(MESSAGE_ITEM);
+                    result.setMessage(entity);
+                    vm.addSearchResult(result);
+                }
+                vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
+                activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+            } else {
+                // TODO: 17 October 2018 CHECK IF OTHER RESULTS (CHAT ROOM, CONTACT) IS EMPTY
+                setEmptyState();
+            }
+        }
+    };
 }

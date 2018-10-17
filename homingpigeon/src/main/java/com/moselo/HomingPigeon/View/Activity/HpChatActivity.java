@@ -53,8 +53,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.ASCENDING;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.DESCENDING;
@@ -244,12 +242,14 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         getWindow().setBackgroundDrawable(null);
 
-        GlideApp.with(HpChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).centerCrop().into(civRoomImage);
+        tvRoomName.setText(vm.getRoom().getRoomName());
 
-        tvRoomName.setText(getIntent().getStringExtra(ROOM_NAME));
-
-        // TODO: 24 September 2018 LOAD ROOM IMAGE
-        civRoomImage.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+        if (null != vm.getRoom().getRoomImage()) {
+            GlideApp.with(this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civRoomImage);
+        } else {
+            // TODO: 16 October 2018 TEMPORARY
+            civRoomImage.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
+        }
 
         // TODO: 24 September 2018 UPDATE ROOM STATUS
         tvRoomStatus.setText("User Status");
@@ -288,7 +288,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             }
         };
 
-        //this is for call database
+        // Load items from database
         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -310,6 +310,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         sblChat.setSwipeInterface(swipeInterface);
+
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
@@ -508,16 +509,32 @@ public class HpChatActivity extends HpBaseChatActivity {
                     hpMessageAdapter.setMessages(models);
                     if (models.size() == 0) {
                         // Chat is empty
-                        // TODO: 24 September 2018 CHECK ROOM TYPE, LOAD USER AVATARS, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
+                        // TODO: 24 September 2018 CHECK ROOM TYPE, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
                         clEmptyChat.setVisibility(View.VISIBLE);
-                        tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + getIntent().getStringExtra(ROOM_NAME) + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
+                        tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
                         tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
-                        civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(getIntent().getIntExtra(K_COLOR, 0)));
+                        if (null != vm.getMyUserModel().getAvatarURL()) {
+                            Log.e(TAG, "onSelectFinished: " + vm.getMyUserModel().getAvatarURL().getThumbnail());
+                            GlideApp.with(HpChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
+                        } else {
+                            // TODO: 16 October 2018 TEMPORARY
+                            Log.e(TAG, "onSelectFinished: avatar null");
+                            civMyAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
+                        }
+                        if (null != vm.getRoom().getRoomImage()) {
+                            GlideApp.with(HpChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
+                        } else {
+                            // TODO: 16 October 2018 TEMPORARY
+                            civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
+                        }
                         // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
                         showCustomKeyboard();
                     } else {
                         // Message exists
                         vm.setMessageModels(models);
+                        if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                            clEmptyChat.setVisibility(View.GONE);
+                        }
                         flMessageList.setVisibility(View.VISIBLE);
                     }
                     rvMessageList.scrollToPosition(0);
@@ -532,6 +549,9 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             } else if (null != hpMessageAdapter) {
                 runOnUiThread(() -> {
+                    if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                        clEmptyChat.setVisibility(View.GONE);
+                    }
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
                     new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
@@ -611,6 +631,9 @@ public class HpChatActivity extends HpBaseChatActivity {
             //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageAfterModels
             mergeSort(messageAfterModels, ASCENDING);
             runOnUiThread(() -> {
+                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                    clEmptyChat.setVisibility(View.GONE);
+                }
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(0, messageAfterModels);
                 if (vm.isOnBottom())
@@ -686,6 +709,9 @@ public class HpChatActivity extends HpBaseChatActivity {
             List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
 
             runOnUiThread(() -> {
+                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                    clEmptyChat.setVisibility(View.GONE);
+                }
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
@@ -739,7 +765,6 @@ public class HpChatActivity extends HpBaseChatActivity {
             mergeSort(messageBeforeModels, DESCENDING);
             List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
             runOnUiThread(() -> {
-                flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 

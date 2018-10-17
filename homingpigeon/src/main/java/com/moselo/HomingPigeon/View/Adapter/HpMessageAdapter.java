@@ -129,7 +129,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             if (isMessageFromMySelf(item)) {
                 // Message has been read
                 if (null != item.getIsRead() && item.getIsRead() && item.isExpanded()) {
-                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
 
                     flBubble.setTranslationX(0);
@@ -148,7 +148,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 }
                 // Message is delivered
                 else if (null != item.getDelivered() && item.getDelivered() && item.isExpanded()) {
-                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.delivered_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
 
                     flBubble.setTranslationX(0);

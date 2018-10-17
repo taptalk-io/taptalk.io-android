@@ -1,12 +1,13 @@
 package com.moselo.HomingPigeon.Helper;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
-import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -15,8 +16,12 @@ import android.view.inputmethod.InputMethodManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Model.HpImageURL;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 
 import org.json.JSONObject;
 
@@ -29,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 
 public class HpUtils {
 
@@ -199,6 +206,13 @@ public class HpUtils {
 
         in.close();
         return fullString.toString();
+    }
+
+    public void startChatActivity(Context context, String roomID, String roomName, HpImageURL roomImage, int roomType, String roomColor) {
+        HpChatManager.getInstance().saveUnsentMessage();
+        Intent intent = new Intent(context, HpChatActivity.class);
+        intent.putExtra(K_ROOM, HpRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor));
+        context.startActivity(intent);
     }
 
     /**

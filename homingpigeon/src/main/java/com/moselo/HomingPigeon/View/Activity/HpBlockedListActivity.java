@@ -14,12 +14,12 @@ import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
 public class HpBlockedListActivity extends HpBaseActivity {
 
-    ImageView ivButtonBack;
-    RecyclerView rvBlockedList;
+    private ImageView ivButtonBack;
+    private RecyclerView rvBlockedList;
 
-    HpContactListAdapter adapter;
+    private HpContactListAdapter adapter;
 
-    HpContactListViewModel vm;
+    private HpContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +35,9 @@ public class HpBlockedListActivity extends HpBaseActivity {
 
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {
-            HpUserModel u1 = new HpUserModel("u1", "Bambang 1");
-            HpUserModel u2 = new HpUserModel("u2", "Bambang 2");
-            HpUserModel u3 = new HpUserModel("u3", "Bambang 3");
+            HpUserModel u1 = new HpUserModel("u1", "Dummy Spam 1");
+            HpUserModel u2 = new HpUserModel("u2", "Dummy Spam 2");
+            HpUserModel u3 = new HpUserModel("u3", "Dummy Spam 3");
             vm.getFilteredContacts().add(u1);
             vm.getFilteredContacts().add(u2);
             vm.getFilteredContacts().add(u3);

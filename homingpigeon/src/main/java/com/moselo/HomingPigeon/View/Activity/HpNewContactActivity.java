@@ -21,15 +21,15 @@ public class HpNewContactActivity extends HpBaseActivity {
 
     private static final String TAG = HpNewContactActivity.class.getSimpleName();
 
-    ImageView ivButtonBack, ivButtonCancel, ivExpertCover;
-    CircleImageView civAvatarExpert, civAvatarUser;
-    TextView tvSearchUsernameMessage, tvBtnAddContactExpert, tvExpertName, tvExpertCategory, tvBtnAddContactUser, tvUserName;
+    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover;
+    private CircleImageView civAvatarExpert, civAvatarUser;
+    private TextView tvSearchUsernameMessage, tvBtnAddContactExpert, tvExpertName, tvExpertCategory, tvBtnAddContactUser, tvUserName;
     
-    EditText etSearch;
-    CardView cvExpertCard, cvUserCard;
-    LinearLayout llBtnChatNowExpert, llBtnChatNowUser, llEmpty;
+    private EditText etSearch;
+    private CardView cvExpertCard, cvUserCard;
+    private LinearLayout llBtnChatNowExpert, llBtnChatNowUser, llEmpty;
 
-    HpNewContactViewModel newContactVM;
+    private HpNewContactViewModel newContactVM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

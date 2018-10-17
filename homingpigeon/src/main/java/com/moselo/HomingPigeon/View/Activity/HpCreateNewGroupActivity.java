@@ -2,14 +2,13 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,14 +16,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.HpUserRoleModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
@@ -38,22 +38,21 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_MEMB
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.GROUP_MEMBER_LIMIT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.CREATE_GROUP;
 
 public class HpCreateNewGroupActivity extends HpBaseActivity {
 
-    LinearLayout llGroupMembers;
-    ImageView ivButtonBack, ivButtonAction;
-    TextView tvTitle, tvMemberCount;
-    EditText etSearch;
-    Button btnContinue;
-    RecyclerView rvContactList, rvGroupMembers;
+    private LinearLayout llGroupMembers;
+    private ImageView ivButtonBack, ivButtonAction;
+    private TextView tvTitle, tvMemberCount;
+    private EditText etSearch;
+    private Button btnContinue;
+    private RecyclerView rvContactList, rvGroupMembers;
 
-    HpContactInitialAdapter contactListAdapter;
-    HpContactListAdapter selectedMembersAdapter;
-    ContactListInterface listener;
-    HpContactListViewModel vm;
+    private HpContactInitialAdapter contactListAdapter;
+    private HpContactListAdapter selectedMembersAdapter;
+    private ContactListInterface listener;
+    private HpContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +90,8 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
         vm.getSelectedContacts().add(myUser);
+
+        setDummyData();
     }
 
     private void initListener() {
@@ -103,13 +104,13 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         new HomingPigeonDialog.Builder(HpCreateNewGroupActivity.this)
-                        .setTitle(getString(R.string.cannot_add_more_people))
-                        .setMessage(getString(R.string.group_limit_reached))
-                        .setPrimaryButtonTitle("OK")
-                        .setPrimaryButtonListener(v -> {
+                                .setTitle(getString(R.string.cannot_add_more_people))
+                                .setMessage(getString(R.string.group_limit_reached))
+                                .setPrimaryButtonTitle("OK")
+                                .setPrimaryButtonListener(v -> {
 
-                        })
-                        .show();
+                                })
+                                .show();
                         return false;
                     }
                     vm.getSelectedContacts().add(contact);
@@ -152,32 +153,6 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
 
     @Override
     protected void initView() {
-        //Dummy Contacts
-        if (vm.getContactList().size() == 0) {
-            HpUserModel u0 = new HpUserModel("u0", "Ababa");
-            HpUserModel u1 = new HpUserModel("u1", "Bambang 1");
-            HpUserModel u2 = new HpUserModel("u2", "Bambang 2");
-            HpUserModel u3 = new HpUserModel("u3", "Bambang 3");
-            HpUserModel u4 = new HpUserModel("u4", "Caca");
-            HpUserModel u5 = new HpUserModel("u5", "Coco");
-            HpUserModel u6 = new HpUserModel("u6", "123asd");
-            HpUserModel u7 = new HpUserModel("u7", "!!!11111!!!");
-            HpUserModel u8 = new HpUserModel("u8", "!!wkwkwk!!");
-            vm.getContactList().add(u0);
-            vm.getContactList().add(u1);
-            vm.getContactList().add(u2);
-            vm.getContactList().add(u3);
-            vm.getContactList().add(u4);
-            vm.getContactList().add(u5);
-            vm.getContactList().add(u6);
-            vm.getContactList().add(u7);
-            vm.getContactList().add(u8);
-            vm.getFilteredContacts().addAll(vm.getContactList());
-        }
-        //End Dummy
-
-        getWindow().setBackgroundDrawable(null);
-
         llGroupMembers = findViewById(R.id.ll_group_members);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonAction = findViewById(R.id.iv_button_action);
@@ -189,6 +164,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         rvContactList = findViewById(R.id.rv_contact_list);
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
+        getWindow().setBackgroundDrawable(null);
         vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
 
         contactListAdapter = new HpContactInitialAdapter(HpContactListAdapter.SELECT, vm.getSeparatedContacts(), listener);
@@ -197,54 +173,47 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        selectedMembersAdapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener, vm.getSelectedContacts().get(0).getUserID());
+        selectedMembersAdapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         new Handler().post(waitAnimationsToFinishRunnable);
 
         etSearch.addTextChangedListener(searchTextWatcher);
-        etSearch.setOnEditorActionListener((v, actionId, event) -> {
-            updateFilteredContacts(etSearch.getText().toString().toLowerCase());
-            return true;
-        });
+        etSearch.setOnEditorActionListener(searchEditorListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-
-        ivButtonAction.setOnClickListener(v -> {
-            if (vm.isSelecting()) {
-                showToolbar();
-            } else {
-                showSearchBar();
-            }
-        });
-
-        btnContinue.setOnClickListener(v -> {
-            Intent intent = new Intent(this, HpGroupSubjectActivity.class);
-            intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
-            intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
-            if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());
-            if (null != vm.getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
-            startActivityForResult(intent, CREATE_GROUP);
-        });
+        ivButtonAction.setOnClickListener(v -> toggleSearchBar());
+        btnContinue.setOnClickListener(v -> openGroupSubjectActivity());
     }
 
-    private void showToolbar() {
-        vm.setSelecting(false);
-        tvTitle.setVisibility(View.VISIBLE);
-        etSearch.setVisibility(View.GONE);
-        etSearch.setText("");
-        etSearch.clearFocus();
-        ivButtonAction.setImageResource(R.drawable.hp_ic_search_grey);
-        HpUtils.getInstance().dismissKeyboard(this);
+    private void toggleSearchBar() {
+        if (vm.isSelecting()) {
+            // Show Toolbar
+            vm.setSelecting(false);
+            tvTitle.setVisibility(View.VISIBLE);
+            etSearch.setVisibility(View.GONE);
+            etSearch.setText("");
+            etSearch.clearFocus();
+            ivButtonAction.setImageResource(R.drawable.hp_ic_search_grey);
+            HpUtils.getInstance().dismissKeyboard(this);
+        } else {
+            // Show Search Bar
+            vm.setSelecting(true);
+            tvTitle.setVisibility(View.GONE);
+            etSearch.setVisibility(View.VISIBLE);
+            ivButtonAction.setImageResource(R.drawable.hp_ic_close_grey);
+            HpUtils.getInstance().showKeyboard(this, etSearch);
+        }
     }
 
-    private void showSearchBar() {
-        vm.setSelecting(true);
-        tvTitle.setVisibility(View.GONE);
-        etSearch.setVisibility(View.VISIBLE);
-        ivButtonAction.setImageResource(R.drawable.hp_ic_close_grey);
-        HpUtils.getInstance().showKeyboard(this, etSearch);
+    private void openGroupSubjectActivity() {
+        Intent intent = new Intent(this, HpGroupSubjectActivity.class);
+        intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
+        intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
+        if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());
+        if (null != vm.getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
+        startActivityForResult(intent, CREATE_GROUP);
     }
 
     private void updateSelectedMemberDecoration() {
@@ -293,10 +262,18 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         }
     };
 
+    private TextView.OnEditorActionListener searchEditorListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+            updateFilteredContacts(etSearch.getText().toString().toLowerCase());
+            return true;
+        }
+    };
+
     private Runnable waitAnimationsToFinishRunnable = new Runnable() {
         @Override
         public void run() {
-            if (rvGroupMembers.isAnimating()) {
+            if (rvGroupMembers.isAnimating() && null != rvGroupMembers.getItemAnimator()) {
                 // RecyclerView is still animating
                 rvGroupMembers.getItemAnimator().isRunning(() -> new Handler().post(waitAnimationsToFinishRunnable));
             } else {
@@ -306,4 +283,117 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
             }
         }
     };
+
+    // TODO: 28/09/18 Harus dihapus setelah fix
+    private void setDummyData() {
+        if (vm.getContactList().size() > 0) return;
+
+        HpUserModel userRitchie = HpUserModel.Builder("1", "1", "Ritchie Nathaniel"
+                , HpImageURL.BuilderDummy(), "ritchie", "ritchie@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115801488")
+                , Long.parseLong("0"));
+
+        HpUserModel userDominic = HpUserModel.Builder("2", "2", "Dominic Vedericho"
+                , HpImageURL.BuilderDummy(), "dominic", "dominic@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115918918")
+                , Long.parseLong("0"));
+
+        HpUserModel userRionaldo = HpUserModel.Builder("3", "3", "Rionaldo Linggautama"
+                , HpImageURL.BuilderDummy(), "rionaldo", "rionaldo@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116046534")
+                , Long.parseLong("0"));
+
+        HpUserModel userKevin = HpUserModel.Builder("4", "4", "Kevin Reynaldo"
+                , HpImageURL.BuilderDummy(), "kevin", "kevin@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116099655")
+                , Long.parseLong("0"));
+
+        HpUserModel userWelly = HpUserModel.Builder("5", "5", "Welly Kencana"
+                , HpImageURL.BuilderDummy(), "welly", "welly@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116147477")
+                , Long.parseLong("0"));
+
+        HpUserModel userJony = HpUserModel.Builder("6", "6", "Jony Lim"
+                , HpImageURL.BuilderDummy(), "jony", "jony@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116249323")
+                , Long.parseLong("0"));
+
+        HpUserModel userMichael = HpUserModel.Builder("7", "7", "Michael Tansy"
+                , HpImageURL.BuilderDummy(), "michael", "michael@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116355199")
+                , Long.parseLong("0"));
+
+        HpUserModel userRichard = HpUserModel.Builder("8", "8", "Richard Fang"
+                , HpImageURL.BuilderDummy(), "richard", "richard@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116398588")
+                , Long.parseLong("0"));
+
+        HpUserModel userErwin = HpUserModel.Builder("9", "9", "Erwin Andreas"
+                , HpImageURL.BuilderDummy(), "erwin", "erwin@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116452636")
+                , Long.parseLong("0"));
+
+        HpUserModel userJefry = HpUserModel.Builder("10", "10", "Jefry Lorentono"
+                , HpImageURL.BuilderDummy(), "jefry", "jefry@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116490366")
+                , Long.parseLong("0"));
+
+        HpUserModel userCundy = HpUserModel.Builder("11", "11", "Cundy Sunardy"
+                , HpImageURL.BuilderDummy(), "cundy", "cundy@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116531507")
+                , Long.parseLong("0"));
+
+        HpUserModel userRizka = HpUserModel.Builder("12", "12", "Rizka Fatmawati"
+                , HpImageURL.BuilderDummy(), "rizka", "rizka@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116567527")
+                , Long.parseLong("0"));
+
+        HpUserModel userTest1 = HpUserModel.Builder("13", "13", "Test 1"
+                , HpImageURL.BuilderDummy(), "test1", "test1@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116607839")
+                , Long.parseLong("0"));
+
+        HpUserModel userTest2 = HpUserModel.Builder("14", "14", "Test 2"
+                , HpImageURL.BuilderDummy(), "test2", "test2@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116655845")
+                , Long.parseLong("0"));
+
+        HpUserModel userTest3 = HpUserModel.Builder("15", "15", "Test 3"
+                , HpImageURL.BuilderDummy(), "test3", "test3@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
+                , Long.parseLong("0"));
+
+        HpUserModel userSanto = HpUserModel.Builder("17", "16", "Santo"
+                , HpImageURL.BuilderDummy(), "santo", "santo@moselo.com", "08979809026"
+                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
+                , Long.parseLong("0"));
+
+        vm.getContactList().add(userCundy);
+
+        vm.getContactList().add(userDominic);
+
+        vm.getContactList().add(userErwin);
+
+        vm.getContactList().add(userJony);
+        vm.getContactList().add(userJefry);
+
+        vm.getContactList().add(userKevin);
+
+        vm.getContactList().add(userMichael);
+
+        vm.getContactList().add(userRitchie);
+        vm.getContactList().add(userRionaldo);
+        vm.getContactList().add(userRichard);
+        vm.getContactList().add(userRizka);
+
+        vm.getContactList().add(userSanto);
+
+        vm.getContactList().add(userWelly);
+
+        vm.getContactList().add(userTest1);
+        vm.getContactList().add(userTest2);
+        vm.getContactList().add(userTest3);
+
+        vm.getFilteredContacts().addAll(vm.getContactList());
+    }
 }

@@ -35,14 +35,14 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest
 
 public class HpNewChatActivity extends HpBaseActivity {
 
-    LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
-    ImageView ivButtonBack, ivButtonSearch;
-    TextView tvTitle;
-    RecyclerView rvContactList;
-    NestedScrollView nsvNewChat;
+    private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
+    private ImageView ivButtonBack, ivButtonSearch;
+    private TextView tvTitle;
+    private RecyclerView rvContactList;
+    private NestedScrollView nsvNewChat;
 
-    HpContactInitialAdapter adapter;
-    HpContactListViewModel vm;
+    private HpContactInitialAdapter adapter;
+    private HpContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

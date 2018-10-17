@@ -13,7 +13,7 @@ public class HpRecentSearchEntity {
 
     @Ignore
     public HpRecentSearchEntity(@NonNull String searchText, long created) {
-        this.searchText = searchText;
+        this.searchText = searchText.toLowerCase();
         this.created = created;
     }
 

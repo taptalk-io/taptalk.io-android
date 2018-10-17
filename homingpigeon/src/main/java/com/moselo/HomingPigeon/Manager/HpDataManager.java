@@ -264,6 +264,10 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
     }
 
+    public void searchAllMessagesFromDatabase(String keyword, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().searchAllMessages(keyword, listener);
+    }
+
     public void getRoomList(String myID, List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().getRoomList(myID, saveMessages, isCheckUnreadFirst, listener);
     }

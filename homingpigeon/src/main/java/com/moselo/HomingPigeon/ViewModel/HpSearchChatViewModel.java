@@ -11,33 +11,24 @@ import java.util.List;
 
 public class HpSearchChatViewModel extends AndroidViewModel {
 
-    private boolean isSearchActive = false;
-    private List<HpSearchChatModel> searchList;
+    private List<HpSearchChatModel> searchResults;
 
     public HpSearchChatViewModel(@NonNull Application application) {
         super(application);
     }
 
-    public boolean isSearchActive() {
-        return isSearchActive;
+    public List<HpSearchChatModel> getSearchResults() {
+        return null != searchResults ? searchResults : new ArrayList<>();
     }
 
-    public void setSearchActive(boolean searchActive) {
-        isSearchActive = searchActive;
+    public void setSearchResults(List<HpSearchChatModel> searchResults) {
+        this.searchResults = searchResults;
     }
 
-    public List<HpSearchChatModel> getSearchList() {
-        return null != searchList? searchList : new ArrayList<>();
-    }
+    public void addSearchResult(HpSearchChatModel model) {
+        if (null == searchResults)
+            searchResults = new ArrayList<>();
 
-    public void setSearchList(List<HpSearchChatModel> searchList) {
-        this.searchList = searchList;
-    }
-
-    public void addSearchList(HpSearchChatModel model) {
-        if (null == searchList)
-            searchList = new ArrayList<>();
-
-        searchList.add(model);
+        searchResults.add(model);
     }
 }
