@@ -5,10 +5,13 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
 
 import java.security.GeneralSecurityException;
+
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_LOADING;
 
 public class HpMessageModel {
 
@@ -28,6 +31,7 @@ public class HpMessageModel {
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
     private Boolean isExpanded = false;
+    private Boolean isLoading = false;
 
     public HpMessageModel(@Nullable String messageID, @NonNull String localID, String body, HpRoomModel room,
                           Integer type, Long created, HpUserModel user, String recipientID, @Nullable Boolean isDeleted,
@@ -85,6 +89,13 @@ public class HpMessageModel {
                 messageModel.getSending(),
                 messageModel.getFailedSend(),
                 messageModel.getUpdated());
+    }
+
+    public static HpMessageModel BuilderLoadingCell() {
+        HpMessageModel model = new HpMessageModel();
+        model.setLoading(true);
+        model.setType(TYPE_LOADING);
+        return model;
     }
 
     @Nullable
@@ -222,6 +233,14 @@ public class HpMessageModel {
 
     public void setExpanded(boolean expanded) {
         isExpanded = expanded;
+    }
+
+    public Boolean getLoading() {
+        return isLoading;
+    }
+
+    public void setLoading(Boolean loading) {
+        isLoading = loading;
     }
 
     public void updateValue(HpMessageModel model){

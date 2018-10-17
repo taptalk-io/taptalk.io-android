@@ -163,25 +163,13 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <ProgressBar
-        android:id="@+id/pb_before"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:indeterminateTint="@color/warmPurple"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        app:layout_constraintBottom_toTopOf="@id/fl_message_list"
-        android:visibility="gone"/>
-
     <FrameLayout
         android:id="@+id/fl_message_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/pb_after"
-        app:layout_constraintTop_toBottomOf="@id/pb_before">
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
         <com.moselo.HomingPigeon.Helper.HpChatRecyclerView
             android:id="@+id/rv_message_list"
@@ -192,18 +180,6 @@
             android:scrollbars="vertical" />
 
     </FrameLayout>
-
-    <ProgressBar
-        android:id="@+id/pb_after"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:indeterminateTint="@color/warmPurple"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fl_message_list"
-        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
-        android:visibility="gone"/>
 
     <fragment
         android:id="@+id/f_connection_status"

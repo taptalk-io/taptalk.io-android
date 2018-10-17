@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -32,7 +31,10 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOADING;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOG;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_PRODUCT;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_TEXT;
 
 public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHolder<HpMessageModel>> {
 
@@ -56,6 +58,8 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 return new TextVH(parent, R.layout.hp_cell_chat_text_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.hp_cell_chat_product_list);
+            case TYPE_LOADING:
+                return new LoadingVH(parent, R.layout.hp_cell_chat_loading);
             default:
                 return new LogVH(parent, R.layout.hp_cell_chat_log);
         }
@@ -75,12 +79,14 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 messageType = messageModel.getType();
 
             switch (messageType) {
-                case HpDefaultConstant.MessageType.TYPE_TEXT:
+                case TYPE_TEXT:
                     if (isMessageFromMySelf(messageModel))
                         return TYPE_BUBBLE_TEXT_RIGHT;
                     else return TYPE_BUBBLE_TEXT_LEFT;
-                case HpDefaultConstant.MessageType.TYPE_PRODUCT:
+                case TYPE_PRODUCT:
                     return TYPE_BUBBLE_PRODUCT_LIST;
+                case HpDefaultConstant.MessageType.TYPE_LOADING:
+                    return TYPE_LOADING;
                 default:
                     return TYPE_LOG;
             }
@@ -187,7 +193,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                     animateSend();
                 } else if (null != item.getSending() && !item.getSending() && !item.isExpanded()) {
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
-
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
                     animateSend();
@@ -485,6 +490,18 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         @Override
         protected void onBind(HpMessageModel item, int position) {
             tvLogMessage.setText(item.getBody());
+        }
+    }
+
+    public class LoadingVH extends HpBaseViewHolder<HpMessageModel> {
+
+        protected LoadingVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+        }
+
+        @Override
+        protected void onBind(HpMessageModel item, int position) {
+
         }
     }
 
