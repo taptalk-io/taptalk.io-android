@@ -277,7 +277,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         endlessScrollListener = new HpEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                Log.e(TAG, "onLoadMore: "+state );
                 if (state == STATE.LOADED && 0 < hpMessageAdapter.getItems().size()) {
                     vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
                     state = STATE.WORKING;
@@ -569,7 +568,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                     Log.e(TAG, "onSelectFinished: " );
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
-                    vm.setMessageModels(hpMessageAdapter.getItems());
+                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems()));
 
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
