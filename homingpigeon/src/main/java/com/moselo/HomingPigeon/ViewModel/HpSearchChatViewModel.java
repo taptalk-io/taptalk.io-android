@@ -12,7 +12,6 @@ import java.util.List;
 public class HpSearchChatViewModel extends AndroidViewModel {
 
     private List<HpSearchChatModel> searchResults;
-    private boolean isSearchActive;
 
     public HpSearchChatViewModel(@NonNull Application application) {
         super(application);
@@ -31,13 +30,5 @@ public class HpSearchChatViewModel extends AndroidViewModel {
             searchResults = new ArrayList<>();
 
         searchResults.add(model);
-    }
-
-    public boolean isSearchActive() {
-        return isSearchActive;
-    }
-
-    public void setSearchActive(boolean searchActive) {
-        isSearchActive = searchActive;
     }
 }

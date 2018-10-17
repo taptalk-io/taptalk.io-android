@@ -27,18 +27,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/HomingPigeonToolbarTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/search"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_action"
-            app:layout_constraintStart_toEndOf="@id/iv_button_back"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <EditText
             android:id="@+id/et_search"
             style="@style/HomingPigeonSearchBar"
@@ -47,7 +35,6 @@
             android:hint="@string/search_chat_placeholder"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -59,7 +46,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/hp_ic_search_grey"
+            android:src="@drawable/hp_ic_close_grey"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

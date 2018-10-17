@@ -23,16 +23,13 @@ import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.HpSearchChatAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.CHAT_ITEM;
@@ -50,7 +47,6 @@ public class HpSearchChatFragment extends Fragment {
 
     private ConstraintLayout clActionBar;
     private ImageView ivButtonBack;
-    private TextView tvTitle;
     private EditText etSearch;
     private ImageView ivButtonAction;
     private RecyclerView recyclerView;
@@ -87,6 +83,16 @@ public class HpSearchChatFragment extends Fragment {
         showRecentSearches();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            clearSearch();
+        } else {
+            HpUtils.getInstance().showKeyboard(activity, etSearch);
+        }
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpSearchChatViewModel.class);
     }
@@ -94,13 +100,9 @@ public class HpSearchChatFragment extends Fragment {
     private void initView(View view) {
         clActionBar = view.findViewById(R.id.cl_action_bar);
         ivButtonBack = view.findViewById(R.id.iv_button_back);
-        tvTitle = view.findViewById(R.id.tv_title);
         etSearch = view.findViewById(R.id.et_search);
         ivButtonAction = view.findViewById(R.id.iv_button_action);
         recyclerView = view.findViewById(R.id.recyclerView);
-
-        ivButtonBack.setOnClickListener(v -> ((HpRoomListActivity) activity).showRoomList());
-        ivButtonAction.setOnClickListener(v -> toggleSearchBar());
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
@@ -109,43 +111,15 @@ public class HpSearchChatFragment extends Fragment {
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+
+        ivButtonBack.setOnClickListener(v -> ((HpRoomListActivity) activity).showRoomList());
+        ivButtonAction.setOnClickListener(v -> clearSearch());
     }
 
-    private void toggleSearchBar() {
-        if (vm.isSearchActive()) {
-            showToolbar();
-            showRecentSearches();
-        } else {
-            showSearchBar();
-            setDummyDataforSearchChat();
-        }
-    }
-
-    private void showToolbar() {
-        vm.setSearchActive(false);
-        tvTitle.setVisibility(View.VISIBLE);
-        etSearch.setVisibility(View.GONE);
+    private void clearSearch() {
         etSearch.setText("");
         etSearch.clearFocus();
-        ivButtonAction.setImageResource(R.drawable.hp_ic_search_grey);
-        HpUtils.getInstance().dismissKeyboard(getActivity());
-    }
-
-    private void showSearchBar() {
-        vm.setSearchActive(true);
-        tvTitle.setVisibility(View.GONE);
-        etSearch.setVisibility(View.VISIBLE);
-        etSearch.requestFocus();
-        ivButtonAction.setImageResource(R.drawable.hp_ic_close_grey);
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) {
-            showToolbar();
-            showRecentSearches();
-        }
+        HpUtils.getInstance().dismissKeyboard(activity);
     }
 
     // TODO: 24/09/18 apusin dummy ini kalau udah ada datanya
@@ -173,41 +147,6 @@ public class HpSearchChatFragment extends Fragment {
         vm.getSearchResults().clear();
         vm.addSearchResult(emptyTitle);
         vm.addSearchResult(emptyItem);
-        activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
-    }
-
-    private void setDummyDataforSearchChat() {
-        vm.getSearchResults().clear();
-
-        HpSearchChatModel sectionTitleChats = new HpSearchChatModel(SECTION_TITLE);
-        sectionTitleChats.setSectionTitle("CHATS");
-        HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
-        sectionTitleMessages.setSectionTitle("MESSAGES");
-        HpSearchChatModel sectionTitleContacts = new HpSearchChatModel(SECTION_TITLE);
-        sectionTitleContacts.setSectionTitle("OTHER CONTACTS");
-
-        HpSearchChatModel chatItem = new HpSearchChatModel(CHAT_ITEM);
-        HpSearchChatModel messageItem = new HpSearchChatModel(MESSAGE_ITEM);
-        HpSearchChatModel messageItemLast = new HpSearchChatModel(MESSAGE_ITEM);
-        messageItemLast.setLastInSection(true);
-        HpSearchChatModel contactItem = new HpSearchChatModel(CONTACT_ITEM);
-
-        vm.addSearchResult(sectionTitleChats);
-        vm.addSearchResult(chatItem);
-        vm.addSearchResult(sectionTitleMessages);
-        vm.addSearchResult(messageItem);
-        vm.addSearchResult(messageItem);
-        vm.addSearchResult(messageItem);
-        vm.addSearchResult(messageItem);
-        vm.addSearchResult(messageItem);
-        vm.addSearchResult(messageItem);
-        vm.addSearchResult(messageItem);
-        vm.addSearchResult(messageItemLast);
-        vm.addSearchResult(sectionTitleContacts);
-        vm.addSearchResult(contactItem);
-        vm.addSearchResult(contactItem);
-        vm.addSearchResult(contactItem);
-        vm.addSearchResult(contactItem);
         activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
 
