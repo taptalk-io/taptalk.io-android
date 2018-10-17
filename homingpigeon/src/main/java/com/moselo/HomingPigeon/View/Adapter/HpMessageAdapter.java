@@ -220,12 +220,15 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         private void onBubbleClicked(HpMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 resendMessage(item);
-            } else if (null != item.getSending() && !item.getSending()) {
+            } else if ((null != item.getSending() && !item.getSending()) ||
+                    (null != item.getDelivered() && item.getDelivered()) ||
+                    (null != item.getIsRead() && item.getIsRead())) {
                 if (item.isExpanded()) {
                     // Shrink bubble
                     item.setExpanded(false);
                 } else {
                     // Expand clicked bubble
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     shrinkExpandedBubble();
                     item.setExpanded(true);
                 }
