@@ -29,10 +29,8 @@ public class HpLoginActivity extends HpBaseActivity {
 
     private static final String TAG = HpLoginActivity.class.getSimpleName();
     private TextInputEditText etUsername;
-    private TextInputEditText etPassword;
     private TextView tvSignIn;
     private ProgressBar progressBar;
-    private View vOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,41 +48,26 @@ public class HpLoginActivity extends HpBaseActivity {
     @Override
     protected void initView() {
         etUsername = findViewById(R.id.et_username);
-        etPassword = findViewById(R.id.et_password);
         tvSignIn = findViewById(R.id.tv_sign_in);
         progressBar = findViewById(R.id.pb_signing_in);
-        vOverlay = findViewById(R.id.v_signing_in);
 
-        etPassword.setOnEditorActionListener((v, actionId, event) -> {
+        etUsername.setOnEditorActionListener((v, actionId, event) -> {
             attemptLogin();
             return false;
         });
 
         tvSignIn.setOnClickListener(v -> attemptLogin());
-
-        vOverlay.setOnClickListener(v -> {
-        });
-    }
-
-    private boolean isEmailValid(CharSequence email) {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
-
-    private boolean isPasswordValid(String password) {
-        return password.length() > 5;
     }
 
     private void attemptLogin() {
         if (etUsername.getText().toString().equals("")) {
             etUsername.setError("Please fill your username.");
-        } else if (etPassword.getText().toString().equals("")) {
-            etPassword.setError("Please fill your password.");
         } else if (!checkValidUsername(etUsername.getText().toString().toLowerCase())) {
             etUsername.setError("Please enter valid username.");
         } else {
             HpUtils.getInstance().dismissKeyboard(this);
             progressBar.setVisibility(View.VISIBLE);
-            vOverlay.setVisibility(View.VISIBLE);
+            tvSignIn.setVisibility(View.GONE);
 
             new Thread(() -> {
                 try {
@@ -287,7 +270,7 @@ public class HpLoginActivity extends HpBaseActivity {
                 .setPrimaryButtonTitle("OK")
                 .setPrimaryButtonListener(view -> {
                     progressBar.setVisibility(View.GONE);
-                    vOverlay.setVisibility(View.GONE);
+                    tvSignIn.setVisibility(View.VISIBLE);
                 }).show();
     }
 }

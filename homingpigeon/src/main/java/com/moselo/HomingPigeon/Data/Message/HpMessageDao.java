@@ -34,7 +34,7 @@ public interface HpMessageDao {
             " roomImage, type, body, created, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
-            "recipientID, hasRead, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
+            "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
             " from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
     List<HpMessageEntity> getAllMessageList(String roomID);
 
@@ -42,7 +42,7 @@ public interface HpMessageDao {
             "roomImage, type, body, created, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
-            "recipientID, hasRead, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend " +
+            "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend " +
             "from Message_Table where " +
             "created in (select distinct created from Message_Table where created < :lastTimestamp and RoomID like :roomID order by created desc limit " + numOfItem + " ) " +
             "and RoomID like :roomID order by created desc")
@@ -51,7 +51,7 @@ public interface HpMessageDao {
     @Query("select localID, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
-            "roomName, secondQuery.roomID, roomType, body, created, hasRead, isDelivered, isFailedSend, " +
+            "roomName, secondQuery.roomID, roomType, body, created, isDelivered, isFailedSend, " +
             "isSending, recipientID, type from (select roomID, max(created) as max_created from Message_Table group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created order by firstQuery.created desc")
     List<HpMessageEntity> getAllRoomList();
 
@@ -60,11 +60,11 @@ public interface HpMessageDao {
             " roomImage, type, body, created, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
-            "recipientID, hasRead, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
+            "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
             " from Message_Table where body like :keyword order by created desc")
     List<HpMessageEntity> searchAllMessages(String keyword);
 
-    //@Query("select count(hasRead) from message_table where hasRead = 0 and RoomID like :roomID and userID not like :userID")
+    //@Query("select count(isRead) from message_table where isRead = 0 and RoomID like :roomID and userID not like :userID")
     @Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID and userID not like :userID")
     Integer getUnreadCount(String userID, String roomID);
 

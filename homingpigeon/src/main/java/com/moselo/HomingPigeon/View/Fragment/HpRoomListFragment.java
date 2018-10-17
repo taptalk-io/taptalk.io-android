@@ -282,7 +282,6 @@ public class HpRoomListFragment extends Fragment {
                 roomLastMessage.setDeleted(message.getDeleted());
                 roomLastMessage.setSending(message.getSending());
                 roomLastMessage.setFailedSend(message.getFailedSend());
-                roomLastMessage.setHasRead(message.getHasRead());
                 roomLastMessage.setIsRead(message.getIsRead());
                 roomLastMessage.setDelivered(message.getDelivered());
                 roomLastMessage.setHidden(message.getHidden());

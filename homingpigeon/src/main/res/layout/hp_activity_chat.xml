@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/cl_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -182,42 +181,6 @@
 
     </FrameLayout>
 
-    <!--<LinearLayout-->
-        <!--android:id="@+id/ll_connection_status"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="20dp"-->
-        <!--android:background="@drawable/hp_bg_status_connecting"-->
-        <!--android:gravity="center"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:visibility="gone"-->
-        <!--app:layout_constraintBottom_toTopOf="@id/rv_contact_list"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/tv_connection_status"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:fontFamily="@font/hp_font_latobold"-->
-            <!--android:text="@string/connecting"-->
-            <!--android:textColor="@color/white"-->
-            <!--android:textSize="12dp" />-->
-
-        <!--<ProgressBar-->
-            <!--android:id="@+id/pb_connecting"-->
-            <!--android:layout_width="9dp"-->
-            <!--android:layout_height="9dp"-->
-            <!--android:layout_marginStart="4dp" />-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/iv_connection_status"-->
-            <!--android:layout_width="9dp"-->
-            <!--android:layout_height="9dp"-->
-            <!--android:layout_marginStart="4dp"-->
-            <!--android:src="@drawable/hp_ic_connected_white"-->
-            <!--android:visibility="gone" />-->
-
-    <!--</LinearLayout>-->
-
     <fragment
         android:id="@+id/f_connection_status"
         class="com.moselo.HomingPigeon.View.Fragment.HpConnectionStatusFragment"
@@ -258,6 +221,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/hp_bg_f5f5f5_white_270_stroke_e4e4e4_1dp_rounded_18dp"
+            android:fontFamily="@font/hp_font_latoregular"
             android:hint="@string/send_a_message"
             android:inputType="textMultiLine"
             android:letterSpacing="-0.02"
@@ -270,7 +234,6 @@
             android:textColor="@color/black_44"
             android:textColorHint="@color/grey_9b"
             android:textSize="15sp"
-            android:fontFamily="@font/hp_font_latoregular"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_send"
             app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
@@ -283,9 +246,9 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="2dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/hp_ic_attach_grey"
             app:layout_constraintBottom_toBottomOf="@id/et_chat"
             app:layout_constraintEnd_toEndOf="@id/et_chat" />

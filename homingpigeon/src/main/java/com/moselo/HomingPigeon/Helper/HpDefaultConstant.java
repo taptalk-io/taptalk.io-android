@@ -41,9 +41,9 @@ public class HpDefaultConstant {
         public static final int TYPE_PRODUCT = 9001;
         public static final int TYPE_CATEGORY = 9002;
         public static final int TYPE_ORDER_CARD = 9003;
-        public static final int TYPE_HIDDEN = 0x9196;
         public static final int TYPE_WELCOME = 8006;
         public static final int TYPE_ASK_PRODUCT = 9007;
+        public static final int TYPE_HIDDEN = 0x9196;
     }
 
     public static final class BubbleType {

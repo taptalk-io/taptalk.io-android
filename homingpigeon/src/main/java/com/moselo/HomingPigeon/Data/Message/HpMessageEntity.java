@@ -17,7 +17,6 @@ public class HpMessageEntity {
     @ColumnInfo(name = "type") private Integer type;
     @ColumnInfo(name = "created") private Long created;
     @Nullable @ColumnInfo(name = "updated") private Long updated;
-    @Nullable @ColumnInfo(name = "hasRead") private Boolean hasRead;
     @Nullable @ColumnInfo(name = "isRead") private Boolean isRead;
     @Nullable @ColumnInfo(name = "isDelivered") private Boolean isDelivered;
     @Nullable @ColumnInfo(name = "isHidden") private Boolean isHidden;
@@ -45,7 +44,7 @@ public class HpMessageEntity {
 
     public HpMessageEntity(@Nullable String messageID, @NonNull String localID, String body,
                            String recipientID, Integer type, Long created,
-                           @Nullable Long updated, @Nullable Boolean hasRead,
+                           @Nullable Long updated,
                            @Nullable Boolean isRead, @Nullable Boolean isDelivered,
                            @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                            @Nullable Boolean isSending, @Nullable Boolean isFailedSend, String roomID,
@@ -62,7 +61,6 @@ public class HpMessageEntity {
         this.type = type;
         this.created = created;
         this.updated = updated;
-        this.hasRead = hasRead;
         this.isRead = isRead;
         this.isDelivered = isDelivered;
         this.isHidden = isHidden;
@@ -146,15 +144,6 @@ public class HpMessageEntity {
 
     public void setUpdated(@Nullable Long updated) {
         this.updated = updated;
-    }
-
-    @Nullable
-    public Boolean getHasRead() {
-        return hasRead;
-    }
-
-    public void setHasRead(@Nullable Boolean hasRead) {
-        this.hasRead = hasRead;
     }
 
     @Nullable

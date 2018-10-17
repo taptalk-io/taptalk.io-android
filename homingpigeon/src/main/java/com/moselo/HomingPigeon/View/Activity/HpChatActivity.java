@@ -5,7 +5,6 @@ import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -277,7 +276,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         endlessScrollListener = new HpEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                Log.e(TAG, "onLoadMore: "+state );
                 if (state == STATE.LOADED && 0 < hpMessageAdapter.getItems().size()) {
                     vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
                     state = STATE.WORKING;
@@ -391,7 +389,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                tempBeforeMessages.add(newMessage);
+                new Thread(() -> tempBeforeMessages.add(newMessage)).start();
             }
             //updateMessageDecoration();
         });
@@ -404,7 +402,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                tempAfterMessages.add(newMessage);
+                new Thread(() -> tempAfterMessages.add(newMessage)).start();
             }
             //updateMessageDecoration();
         });
@@ -549,7 +547,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                     }
                     flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.setMessages(models);
-                    vm.setMessageModels(hpMessageAdapter.getItems());
+                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
@@ -586,9 +584,10 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
 
                 runOnUiThread(() -> {
-                    Log.e(TAG, "onSelectFinished: " );
+                    Log.e(TAG, "onSelectFinished: ");
+                    flMessageList.setVisibility(View.VISIBLE);
                     hpMessageAdapter.addMessage(models);
-                    vm.setMessageModels(hpMessageAdapter.getItems());
+                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
@@ -599,6 +598,10 @@ public class HpChatActivity extends HpBaseChatActivity {
     };
 
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageAfterView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+        @Override
+        public void startLoading() {
+        }
+
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             vm.setInitialAPICallFinished(true);
@@ -629,14 +632,15 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(0, messageAfterModels);
-                vm.setMessageModels(hpMessageAdapter.getItems());
+                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            });
 
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
                 callApiBefore(messageBeforeView);
@@ -675,6 +679,10 @@ public class HpChatActivity extends HpBaseChatActivity {
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
         @Override
+        public void startLoading() {
+        }
+
+        @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             List<HpMessageEntity> responseMessages = new ArrayList<>();
             List<HpMessageModel> messageBeforeModels = new ArrayList<>();
@@ -704,15 +712,15 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
                 flMessageList.setVisibility(View.VISIBLE);
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
-                vm.setMessageModels(hpMessageAdapter.getItems());
+                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            });
         }
 
         @Override
@@ -729,6 +737,10 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     //message before yang di panggil pas pagination db balikin data di bawah limit
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeViewPaging = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+        @Override
+        public void startLoading() {
+        }
+
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             List<HpMessageEntity> responseMessages = new ArrayList<>();
@@ -758,14 +770,15 @@ public class HpChatActivity extends HpBaseChatActivity {
             List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
             runOnUiThread(() -> {
                 hpMessageAdapter.addMessage(messageBeforeModelsSorted);
-                vm.setMessageModels(hpMessageAdapter.getItems());
+                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            });
         }
 
         @Override
@@ -843,34 +856,34 @@ public class HpChatActivity extends HpBaseChatActivity {
         while (indexLeft < leftSize && indexRight < rightSize) {
             if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft+=1;
-                indexCombine+=1;
+                indexLeft += 1;
+                indexCombine += 1;
             } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight+=1;
-                indexCombine+=1;
+                indexRight += 1;
+                indexCombine += 1;
             } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft+=1;
-                indexCombine+=1;
+                indexLeft += 1;
+                indexCombine += 1;
             } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
                 messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight+=1;
-                indexCombine+=1;
+                indexRight += 1;
+                indexCombine += 1;
             }
         }
 
         //looping untuk masukin sisa di list masing masing
         while (indexLeft < leftSize) {
             messagesAll.set(indexCombine, leftList.get(indexLeft));
-            indexLeft+=1;
-            indexCombine+=1;
+            indexLeft += 1;
+            indexCombine += 1;
         }
 
         while (indexRight < rightSize) {
             messagesAll.set(indexCombine, rightList.get(indexRight));
-            indexRight+=1;
-            indexCombine+=1;
+            indexRight += 1;
+            indexCombine += 1;
         }
     }
 

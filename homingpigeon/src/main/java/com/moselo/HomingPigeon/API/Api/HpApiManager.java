@@ -116,7 +116,6 @@ public class HpApiManager {
 
     private Observable validateException(Throwable t) {
         Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
-        t.printStackTrace();
         return (t instanceof ApiSessionExpiredException && isShouldRefreshToken && !isLogout) ? refreshToken() :
                 (t instanceof ApiRefreshTokenRunningException && !isLogout) ?
                        Observable.just(Boolean.TRUE) : Observable.error(t);

@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
@@ -33,6 +31,8 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_B
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOG;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_PRODUCT;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_TEXT;
 
 public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHolder<HpMessageModel>> {
 
@@ -75,11 +75,11 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 messageType = messageModel.getType();
 
             switch (messageType) {
-                case HpDefaultConstant.MessageType.TYPE_TEXT:
+                case TYPE_TEXT:
                     if (isMessageFromMySelf(messageModel))
                         return TYPE_BUBBLE_TEXT_RIGHT;
                     else return TYPE_BUBBLE_TEXT_LEFT;
-                case HpDefaultConstant.MessageType.TYPE_PRODUCT:
+                case TYPE_PRODUCT:
                     return TYPE_BUBBLE_PRODUCT_LIST;
                 default:
                     return TYPE_LOG;
@@ -129,8 +129,16 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
             if (isMessageFromMySelf(item)) {
                 // Message has been read
-                if (null != item.getIsRead() && item.getIsRead()) {
+                if (null != item.getIsRead() && item.getIsRead() && item.isExpanded()) {
                     tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
+                    ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
+
+                    flBubble.setTranslationX(0);
+                    ivMessageStatus.setTranslationX(0);
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                    tvMessageStatus.setVisibility(View.GONE);
+                    ivSending.setAlpha(0f);
+                } else if (null != item.getIsRead() && item.getIsRead() && !item.isExpanded()) {
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
 
                     flBubble.setTranslationX(0);
@@ -140,8 +148,16 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                     ivSending.setAlpha(0f);
                 }
                 // Message is delivered
-                else if (null != item.getDelivered() && item.getDelivered()) {
+                else if (null != item.getDelivered() && item.getDelivered() && item.isExpanded()) {
                     tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
+                    ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+
+                    flBubble.setTranslationX(0);
+                    ivMessageStatus.setTranslationX(0);
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                    tvMessageStatus.setVisibility(View.GONE);
+                    ivSending.setAlpha(0f);
+                } else if (null != item.getDelivered() && item.getDelivered() && !item.isExpanded()) {
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
 
                     flBubble.setTranslationX(0);
@@ -162,10 +178,15 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                     ivSending.setAlpha(0f);
                 }
                 // Message sent
-                else if (null != item.getSending() && !item.getSending()) {
+                else if (null != item.getSending() && !item.getSending() && item.isExpanded()) {
                     tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
 
+                    tvMessageStatus.setVisibility(View.GONE);
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                    animateSend();
+                } else if (null != item.getSending() && !item.getSending() && !item.isExpanded()) {
+                    ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
                     animateSend();
@@ -198,12 +219,15 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         private void onBubbleClicked(HpMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 resendMessage(item);
-            } else if (null != item.getSending() && !item.getSending()) {
+            } else if ((null != item.getSending() && !item.getSending()) ||
+                    (null != item.getDelivered() && item.getDelivered()) ||
+                    (null != item.getIsRead() && item.getIsRead())) {
                 if (item.isExpanded()) {
                     // Shrink bubble
                     item.setExpanded(false);
                 } else {
                     // Expand clicked bubble
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatTimeAndDate(item.getCreated())));
                     shrinkExpandedBubble();
                     item.setExpanded(true);
                 }
