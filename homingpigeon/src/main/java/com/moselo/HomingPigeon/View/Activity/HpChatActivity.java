@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
@@ -82,6 +83,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
     private View vStatusBadge;
+    private ProgressBar pbAfter;
+    private ProgressBar pbBefore;
 
     // RecyclerView
     private HpMessageAdapter hpMessageAdapter;
@@ -239,6 +242,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
         etChat = (EditText) findViewById(R.id.et_chat);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
+        pbAfter = (ProgressBar) findViewById(R.id.pb_after);
+        pbBefore = (ProgressBar) findViewById(R.id.pb_before);
 
         getWindow().setBackgroundDrawable(null);
 
@@ -580,6 +585,12 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageAfterView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
         @Override
+        public void startLoading() {
+            if (View.GONE == pbAfter.getVisibility())
+                runOnUiThread(() -> pbAfter.setVisibility(View.VISIBLE));
+        }
+
+        @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             vm.setInitialAPICallFinished(true);
 
@@ -613,6 +624,9 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
+            if (View.VISIBLE == pbAfter.getVisibility())
+                runOnUiThread(() -> pbAfter.setVisibility(View.GONE));
+
             HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
 
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
@@ -629,6 +643,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                         .show();
             }
             Log.e(TAG, "onError: " + error.getMessage());
+            if (View.VISIBLE == pbAfter.getVisibility())
+                runOnUiThread(() -> pbAfter.setVisibility(View.GONE));
 
             if (0 < vm.getMessageModels().size())
                 callApiBefore(messageBeforeView);
@@ -643,6 +659,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                         .show();
             }
             Log.e(TAG, "onError: " + errorMessage);
+            if (View.VISIBLE == pbAfter.getVisibility())
+                runOnUiThread(() -> pbAfter.setVisibility(View.GONE));
 
             if (0 < vm.getMessageModels().size())
                 callApiBefore(messageBeforeView);
@@ -651,6 +669,12 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeView = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+        @Override
+        public void startLoading() {
+            if (View.GONE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.VISIBLE));
+        }
+
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             List<HpMessageEntity> responseMessages = new ArrayList<>();
@@ -685,6 +709,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
+            if (View.VISIBLE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.GONE));
 
             HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
         }
@@ -692,17 +718,27 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onError(HpErrorModel error) {
             super.onError(error);
+            if (View.VISIBLE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.GONE));
         }
 
         @Override
         public void onError(Throwable throwable) {
             super.onError(throwable);
+            if (View.VISIBLE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.GONE));
         }
     };
 
 
     //message before yang di panggil pas pagination db balikin data di bawah limit
     private HpDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeViewPaging = new HpDefaultDataView<HpGetMessageListbyRoomResponse>() {
+        @Override
+        public void startLoading() {
+            if (View.GONE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.VISIBLE));
+        }
+
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
             List<HpMessageEntity> responseMessages = new ArrayList<>();
@@ -740,17 +776,24 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
+            if (View.VISIBLE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.GONE));
+
             HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {});
         }
 
         @Override
         public void onError(HpErrorModel error) {
             super.onError(error);
+            if (View.VISIBLE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.GONE));
         }
 
         @Override
         public void onError(Throwable throwable) {
             super.onError(throwable);
+            if (View.VISIBLE == pbBefore.getVisibility())
+                runOnUiThread(() -> pbBefore.setVisibility(View.GONE));
         }
     };
 

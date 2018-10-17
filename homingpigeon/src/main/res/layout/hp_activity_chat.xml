@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/cl_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -164,13 +163,25 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <ProgressBar
+        android:id="@+id/pb_before"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/warmPurple"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        app:layout_constraintBottom_toTopOf="@id/fl_message_list"
+        android:visibility="gone"/>
+
     <FrameLayout
         android:id="@+id/fl_message_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+        app:layout_constraintBottom_toTopOf="@id/pb_after"
+        app:layout_constraintTop_toBottomOf="@id/pb_before">
 
         <com.moselo.HomingPigeon.Helper.HpChatRecyclerView
             android:id="@+id/rv_message_list"
@@ -181,6 +192,18 @@
             android:scrollbars="vertical" />
 
     </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_after"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/warmPurple"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fl_message_list"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
+        android:visibility="gone"/>
 
     <fragment
         android:id="@+id/f_connection_status"
@@ -222,6 +245,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/hp_bg_f5f5f5_white_270_stroke_e4e4e4_1dp_rounded_18dp"
+            android:fontFamily="@font/hp_font_latoregular"
             android:hint="@string/send_a_message"
             android:inputType="textMultiLine"
             android:letterSpacing="-0.02"
@@ -234,7 +258,6 @@
             android:textColor="@color/black_44"
             android:textColorHint="@color/grey_9b"
             android:textSize="15sp"
-            android:fontFamily="@font/hp_font_latoregular"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_send"
             app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
@@ -247,9 +270,9 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="2dp"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/hp_ic_attach_grey"
             app:layout_constraintBottom_toBottomOf="@id/et_chat"
             app:layout_constraintEnd_toEndOf="@id/et_chat" />
