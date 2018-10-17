@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.Data.Contact;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -32,4 +33,9 @@ public interface HpMyContactDao {
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
             "created, updated, isSelected from mycontact order by name asc")
     List<HpUserModel> getAllMyContact();
+
+    @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
+            "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
+            "created, updated, isSelected from mycontact order by name asc")
+    LiveData<List<HpUserModel>> getAllMyContactLive();
 }

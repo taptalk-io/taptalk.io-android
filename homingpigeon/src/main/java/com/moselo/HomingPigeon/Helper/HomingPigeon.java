@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Interface.HomingPigeonTokenInterface;
@@ -112,6 +113,7 @@ public class HomingPigeon {
 
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
+        HpApiManager.getInstance().setLogout(true);
         HpChatManager.getInstance().disconnectAfterRefreshTokenExpired();
         HpDataManager.getInstance().deleteAllPreference();
         HpDataManager.getInstance().deleteAllFromDatabase();

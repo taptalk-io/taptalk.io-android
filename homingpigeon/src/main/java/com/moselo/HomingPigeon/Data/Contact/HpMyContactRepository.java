@@ -11,10 +11,12 @@ import java.util.List;
 
 public class HpMyContactRepository {
     private HpMyContactDao myContactDao;
+    private LiveData<List<HpUserModel>> myContactListLive;
 
     public HpMyContactRepository(Application application) {
         HomingPigeonDatabase db = HomingPigeonDatabase.getDatabase(application);
         myContactDao = db.myContactDao();
+        myContactListLive = myContactDao.getAllMyContactLive();
     }
 
     public void insert(HpUserModel... userModels) {
@@ -50,5 +52,9 @@ public class HpMyContactRepository {
             List<HpUserModel> myContactList = myContactDao.getAllMyContact();
             listener.onSelectFinished(myContactList);
         });
+    }
+
+    public LiveData<List<HpUserModel>> getMyContactListLive() {
+        return myContactListLive;
     }
 }

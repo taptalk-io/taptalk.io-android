@@ -186,6 +186,12 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
+    public LiveData<List<HpUserModel>> getMyContactList() {
+        if (null != myContactRepository)
+            return myContactRepository.getMyContactListLive();
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
     public void insertMyContact(HpUserModel... userModels) {
         if (null != myContactRepository)
             myContactRepository.insert(userModels);

@@ -2,8 +2,10 @@ package com.moselo.HomingPigeon.ViewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.ArrayList;
@@ -12,6 +14,7 @@ import java.util.List;
 public class HpContactListViewModel extends AndroidViewModel {
 
     // Contact List needs to be sorted ascending by name
+    private LiveData<List<HpUserModel>> contactListLive;
     private List<HpUserModel> contactList;
     private List<HpUserModel> filteredContacts;
     private List<HpUserModel> selectedContacts;
@@ -22,6 +25,11 @@ public class HpContactListViewModel extends AndroidViewModel {
 
     public HpContactListViewModel(@NonNull Application application) {
         super(application);
+        contactListLive = HpDataManager.getInstance().getMyContactList();
+    }
+
+    public LiveData<List<HpUserModel>> getContactListLive() {
+        return contactListLive;
     }
 
     public List<HpUserModel> getContactList() {

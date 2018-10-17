@@ -1,11 +1,13 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.Manifest;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -60,6 +62,14 @@ public class HpNewChatActivity extends HpBaseActivity {
         //Dummy Contacts
         setDummyData();
         //End Dummy
+
+        //setting up listener for Live Data
+        vm.getContactListLive().observe(this, userModels -> {
+            vm.getContactList().clear();
+            vm.getContactList().addAll(userModels);
+            vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+            runOnUiThread(() -> adapter.setItems(vm.getSeparatedContacts()));
+        });
 
         getWindow().setBackgroundDrawable(null);
 
@@ -228,14 +238,6 @@ public class HpNewChatActivity extends HpBaseActivity {
         userModels.add(userTest3);
         userModels.add(userWelly);
 
-        HpDataManager.getInstance().insertAndGetMyContact(userModels, new HpDatabaseListener<HpUserModel>() {
-            @Override
-            public void onSelectFinished(List<HpUserModel> entities) {
-                vm.getContactList().clear();
-                vm.getContactList().addAll(entities);
-                vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getContactList()));
-                runOnUiThread(() -> adapter.setItems(vm.getSeparatedContacts()));
-            }
-        });
+        HpDataManager.getInstance().insertMyContactToDatabase(userModels);
     }
 }
