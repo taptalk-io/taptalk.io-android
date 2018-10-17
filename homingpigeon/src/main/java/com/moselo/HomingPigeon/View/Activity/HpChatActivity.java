@@ -336,6 +336,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     private void updateMessageDecoration() {
+        //ini buat margin atas sma bawah chatnya (recyclerView Message List)
         if (rvMessageList.getItemDecorationCount() > 0) {
             rvMessageList.removeItemDecorationAt(0);
         }
@@ -344,16 +345,21 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void attemptSend() {
         String message = etChat.getText().toString();
+        //ngecekin yang mau di kirim itu kosong atau nggak
         if (!TextUtils.isEmpty(message.trim())) {
+            //ngereset isi edit text yang buat kirim chat
             etChat.setText("");
+            //tutup bubble yang lagi expand
             hpMessageAdapter.shrinkExpandedBubble();
             HpChatManager.getInstance().sendTextMessage(message);
+            //scroll to Bottom
             rvMessageList.scrollToPosition(0);
         }
     }
 
     private void addNewTextMessage(final HpMessageModel newMessage) {
         runOnUiThread(() -> {
+            //ini ngecek kalau masih ada logo empty chat ilangin dlu
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
                 clEmptyChat.setVisibility(View.GONE);
                 flMessageList.setVisibility(View.VISIBLE);
@@ -361,19 +367,25 @@ public class HpChatActivity extends HpBaseChatActivity {
         });
         // Replace pending message with new message
         String newID = newMessage.getLocalID();
+        //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
         boolean ownMessage = newMessage.getUser().getUserID().equals(HpDataManager
                 .getInstance().getActiveUser().getUserID());
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
+                //ngecekin dlu ada ga di hashMap
+                //kalau ada brati di update dlu
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (vm.isOnBottom() || ownMessage) {
-                // Scroll recycler to bottom
+                //kalau ga ada di hashMap kita liat lagi itu pesan kita sndiri atau nggak kalau pesan kita brati di scroll ke bawah
+                //selain itu kalau user lagi di bottom juga di scroll ke bawah
                 hpMessageAdapter.addMessage(newMessage);
+                // Scroll recycler to bottom
                 rvMessageList.scrollToPosition(0);
             } else {
-                // Show unread badge
+                //kalau slain itu lgsg di masukin aja sama update unreadCount
                 hpMessageAdapter.addMessage(newMessage);
+                // Show unread badge
                 vm.setUnreadCount(vm.getUnreadCount() + 1);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setText(vm.getUnreadCount() + "");
@@ -383,14 +395,18 @@ public class HpChatActivity extends HpBaseChatActivity {
         });
     }
 
+    //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
+    // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
     private void addBeforeTextMessage(final HpMessageModel newMessage, List<HpMessageModel> tempBeforeMessages) {
         String newID = newMessage.getLocalID();
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
+                //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
                 new Thread(() -> {
+                    //kalau belom ada masukin kedalam list dan hash map
                     tempBeforeMessages.add(newMessage);
                     vm.addMessagePointer(newMessage);
                 }).start();
@@ -399,14 +415,18 @@ public class HpChatActivity extends HpBaseChatActivity {
         });
     }
 
+    //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
+    // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
     private void addAfterTextMessage(final HpMessageModel newMessage, List<HpMessageModel> tempAfterMessages) {
         String newID = newMessage.getLocalID();
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
+                //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
                 new Thread(() -> {
+                    //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
                     vm.addMessagePointer(newMessage);
                 }).start();
@@ -610,7 +630,9 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
+            //response message itu entity jadi buat disimpen ke database
             List<HpMessageEntity> responseMessages = new ArrayList<>();
+            //messageAfterModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
             List<HpMessageModel> messageAfterModels = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
                 try {
@@ -618,6 +640,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
                     addAfterTextMessage(temp, messageAfterModels);
                     new Thread(() -> {
+                        //ini buat update last update timestamp yang ada di preference
+                        //ini di taruh di new Thread biar ga bkin scrollingnya lag
                         if (null != temp.getUpdated() &&
                                 HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
                             HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
@@ -628,16 +652,21 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
             }
 
-            //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageAfterModels
+            //sorting message balikan dari api after
+            //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageAfterModels, ASCENDING);
             runOnUiThread(() -> {
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
                 flMessageList.setVisibility(View.VISIBLE);
+                //masukin datanya ke dalem recyclerView
+                //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 hpMessageAdapter.addMessage(0, messageAfterModels);
-                if (vm.isOnBottom())
-                    rvMessageList.scrollToPosition(0);
+                //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
+                //kalau user ga lagi ada di bottom ga usah di turunin
+                if (vm.isOnBottom()) rvMessageList.scrollToPosition(0);
+                //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
@@ -648,9 +677,11 @@ public class HpChatActivity extends HpBaseChatActivity {
             HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
             });
 
+            //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 callApiBefore(messageBeforeView);
             }
+            //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
             vm.setInitialAPICallFinished(true);
         }
 
@@ -691,29 +722,33 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
+            //response message itu entity jadi buat disimpen ke database
             List<HpMessageEntity> responseMessages = new ArrayList<>();
+            //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
             List<HpMessageModel> messageBeforeModels = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
-                    vm.addMessagePointer(temp);
                     addBeforeTextMessage(temp, messageBeforeModels);
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
             }
 
-            //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageBeforeModels
+            //sorting message balikan dari api before
+            //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageBeforeModels, DESCENDING);
-            List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
 
             runOnUiThread(() -> {
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
                 flMessageList.setVisibility(View.VISIBLE);
-                hpMessageAdapter.addMessage(messageBeforeModelsSorted);
+
+                //ini di taronya di belakang karena message before itu buat message yang lama-lama
+                hpMessageAdapter.addMessage(messageBeforeModels);
+                //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
@@ -745,27 +780,32 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSuccess(HpGetMessageListbyRoomResponse response) {
+            //response message itu entity jadi buat disimpen ke database
             List<HpMessageEntity> responseMessages = new ArrayList<>();
+            //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
             List<HpMessageModel> messageBeforeModels = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
                     responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
-                    vm.addMessagePointer(temp);
                     addBeforeTextMessage(temp, messageBeforeModels);
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
             }
 
+            //ini ngecek kalau misalnya balikan apinya itu perPagenya > pageCount brati berenti ga usah pagination lagi (State.DONE)
+            //selain itu paginationnya bisa lanjut lagi
             state = response.getMetadata().getPerPage() > response.getMetadata().getPageCount() ? STATE.DONE : STATE.LOADED;
             if (state == STATE.DONE) updateMessageDecoration();
 
-            //copy hasil sort ke dalem list baru karena keluar warning kalau langsung pake messageBeforeModels
+            //sorting message balikan dari api before
+            //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageBeforeModels, DESCENDING);
-            List<HpMessageModel> messageBeforeModelsSorted = messageBeforeModels;
             runOnUiThread(() -> {
-                hpMessageAdapter.addMessage(messageBeforeModelsSorted);
+                //ini di taronya di belakang karena message before itu buat message yang lama-lama
+                hpMessageAdapter.addMessage(messageBeforeModels);
+                //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
@@ -789,12 +829,23 @@ public class HpChatActivity extends HpBaseChatActivity {
     };
 
     public void callApiBefore(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
+        /*call api before rules:
+        * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
         new Thread(() -> HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
                 , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
                 , beforeView)).start();
     }
 
     private void callApiAfter() {
+        /*call api after rules:
+        --> kalau chat ga kosong, dan kita udah ada lastTimeStamp di preference
+            brati parameternya minCreated = created pling kecil dari yang ada di recyclerView
+            dan last Updatenya = dari preference
+        --> kalau chat ga kosong, dan kita belum ada lastTimeStamp di preference
+            brati parameternya minCreated = lastUpdated = created paling kecil dari yang ada di recyclerView
+        --> selain itu ga usah manggil api after
+
+        ps: di jalanin di new Thread biar ga ganggun main Thread aja*/
         new Thread(() -> {
             if (vm.getMessageModels().size() > 0 && !HpDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
                 HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
@@ -805,8 +856,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
                         HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()),
                         messageAfterView);
-            } else {
-                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(), (long) 0, (long) 0, messageAfterView);
             }
         }).start();
     }
