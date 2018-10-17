@@ -214,6 +214,8 @@ public class HpNewChatActivity extends HpBaseActivity {
 
         vm.getContactList().add(userDominic);
 
+        vm.getContactList().add(userErwin);
+
         vm.getContactList().add(userJony);
         vm.getContactList().add(userJefry);
 

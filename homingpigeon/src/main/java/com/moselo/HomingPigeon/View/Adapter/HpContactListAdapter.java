@@ -1,9 +1,6 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -11,26 +8,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.GlideApp;
+import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 
 import java.util.List;
-
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_MY_USERNAME;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
 public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewHolder<HpUserModel>> {
 
@@ -48,13 +36,14 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
     public HpContactListAdapter(int viewType, List<HpUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
+        this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
     }
 
-    public HpContactListAdapter(int viewType, List<HpUserModel> contactList, @Nullable ContactListInterface listener, String myID) {
+    public HpContactListAdapter(int viewType, List<HpUserModel> contactList, @Nullable ContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
-        this.myID = myID;
+        this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
     }
 
     @NonNull
@@ -130,19 +119,14 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
             itemView.setOnClickListener(v -> {
                 switch (viewType) {
                     case CHAT:
-                        HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
-
                         if (!myID.equals(item.getUserID())) {
-                            HpChatManager.getInstance().saveUnsentMessage();
-                            Intent intent = new Intent(itemView.getContext(), HpChatActivity.class);
-                            intent.putExtra(K_MY_USERNAME, myUser.getName());
-                            intent.putExtra(ROOM_NAME, item.getName());
-                            intent.putExtra(K_COLOR, randomColor);
-                            intent.putExtra(K_ROOM, HpRoomModel.Builder(HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
-                                    item.getName(), 1));
-                            itemView.getContext().startActivity(intent);
-
-                            HpDataManager.getInstance().saveRecipientID(item.getUserID());
+                            HpUtils.getInstance().startChatActivity(
+                                    itemView.getContext(),
+                                    HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
+                                    item.getName(),
+                                    item.getAvatarURL(),
+                                    1,
+                                    /* TEMPORARY ROOM COLOR */randomColor + "");
                         }
                         break;
                     case SELECT:

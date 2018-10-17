@@ -177,7 +177,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        selectedMembersAdapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener, vm.getSelectedContacts().get(0).getUserID());
+        selectedMembersAdapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
@@ -375,6 +375,8 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         vm.getContactList().add(userCundy);
 
         vm.getContactList().add(userDominic);
+
+        vm.getContactList().add(userErwin);
 
         vm.getContactList().add(userJony);
         vm.getContactList().add(userJefry);

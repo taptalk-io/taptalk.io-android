@@ -222,7 +222,11 @@ public class HpChatManager {
                 entity.getMessageID(),
                 entity.getLocalID(),
                 entity.getBody(),
-                new HpRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType()),
+                new HpRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
+                        /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
+                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage())
+                        /* TEMPORARY CHECK FOR NULL IMAGE */: null
+                        , entity.getRoomColor()),
                 entity.getType(),
                 entity.getCreated(),
                 new HpUserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),

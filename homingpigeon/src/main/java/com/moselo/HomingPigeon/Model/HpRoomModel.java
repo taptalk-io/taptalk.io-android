@@ -15,27 +15,28 @@ public class HpRoomModel implements Parcelable {
     @JsonProperty("roomID") @JsonAlias("id") private String roomID;
     @JsonProperty("name") private String roomName;
     @JsonProperty("color") private String roomColor;
-    @JsonProperty("imageURL") private HpImageURL roomImage;
     @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
+    @Nullable @JsonProperty("imageURL") private HpImageURL roomImage;
     @Nullable @JsonProperty("groupParticipants") private List<HpUserModel> groupParticipants;
     @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
     private boolean isMuted;
     private boolean isSelected;
 
-    public HpRoomModel(String roomID, String roomName, int roomType) {
+    public HpRoomModel(String roomID, String roomName, int roomType, HpImageURL roomImage, String roomColor) {
         this.roomID = roomID;
         this.roomName = roomName;
         this.roomType = roomType;
         // TODO: 11/10/18 INI NNTI DI ILANGIN 
         this.roomImage = HpImageURL.BuilderDummy();
+        this.roomColor = roomColor;
     }
 
     public HpRoomModel() {
     }
 
-    public static HpRoomModel Builder(String roomID, String roomName, int roomType){
-        return new HpRoomModel(roomID, roomName, roomType);
+    public static HpRoomModel Builder(String roomID, String roomName, int roomType, HpImageURL roomImage, String roomColor){
+        return new HpRoomModel(roomID, roomName, roomType, roomImage, roomColor);
     }
 
     public String getRoomID() {
@@ -70,20 +71,21 @@ public class HpRoomModel implements Parcelable {
         this.roomType = roomType;
     }
 
-    public HpImageURL getRoomImage() {
-        return roomImage;
-    }
-
-    public void setRoomImage(HpImageURL roomImage) {
-        this.roomImage = roomImage;
-    }
-
     public int getUnreadCount() {
         return unreadCount;
     }
 
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
+    }
+
+    @Nullable
+    public HpImageURL getRoomImage() {
+        return roomImage;
+    }
+
+    public void setRoomImage(@Nullable HpImageURL roomImage) {
+        this.roomImage = roomImage;
     }
 
     @Nullable

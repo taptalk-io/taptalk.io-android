@@ -85,7 +85,7 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
             if (!Character.isAlphabetic(initial)) initial = '#';
             tvInitial.setText(String.valueOf(initial));
 
-            adapter = new HpContactListAdapter(viewType, getItemAt(position), listener, myID);
+            adapter = new HpContactListAdapter(viewType, getItemAt(position), listener);
             rvContactInitial.setAdapter(adapter);
             rvContactInitial.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.VERTICAL, false));
             rvContactInitial.setHasFixedSize(false);

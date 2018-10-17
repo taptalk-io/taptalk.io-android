@@ -120,7 +120,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
 
         etGroupName.addTextChangedListener(groupNameWatcher);
 
-        adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupMembers(), null, vm.getMyID());
+        adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupMembers());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new HpHorizontalDecoration(0, 0,

@@ -1,10 +1,7 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
@@ -16,31 +13,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.DiffCallback.RoomListDiffCallback;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import java.util.List;
-
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.ROOM_NAME;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_COLOR;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_MY_USERNAME;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 
 public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseViewHolder<HpRoomListModel>> {
 
@@ -155,8 +143,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
             // Message is sending
             else if (null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_sending_grey);
-            }
-            else {
+            } else {
                 Log.e(TAG, "no status: " + item.getLastMessage().getBody());
             }
 
@@ -189,15 +176,13 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
                     String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ? HpChatManager.getInstance().arrangeRoomId(myUserID, userModel.getUserID()) : HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
 
                     if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                        HpChatManager.getInstance().saveUnsentMessage();
-                        Intent intent = new Intent(itemView.getContext(), HpChatActivity.class);
-                        intent.putExtra(K_MY_USERNAME, myUsername);
-                        intent.putExtra(ROOM_NAME, item.getLastMessage().getRoom().getRoomName());
-                        intent.putExtra(K_COLOR, randomColor);
-                        intent.putExtra(K_ROOM, HpRoomModel.Builder(roomID,
-                                item.getLastMessage().getRoom().getRoomName(), item.getLastMessage().getRoom().getRoomType()));
-                        itemView.getContext().startActivity(intent);
-
+                        HpUtils.getInstance().startChatActivity(
+                                itemView.getContext(),
+                                roomID,
+                                item.getLastMessage().getRoom().getRoomName(),
+                                item.getLastMessage().getRoom().getRoomImage(),
+                                item.getLastMessage().getRoom().getRoomType(),
+                                item.getLastMessage().getRoom().getRoomColor());
                         HpDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
                     } else {
                         Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
