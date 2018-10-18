@@ -254,7 +254,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         // TODO: 24 September 2018 UPDATE ROOM STATUS
         tvRoomStatus.setText("User Status");
 
-        hpMessageAdapter = new HpMessageAdapter(this, chatListener);
+        hpMessageAdapter = new HpMessageAdapter(chatListener);
         hpMessageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);

@@ -48,9 +48,12 @@ public class HpDefaultConstant {
 
     public static final class BubbleType {
         public static final int TYPE_LOG = 0;
-        public static final int TYPE_BUBBLE_TEXT_RIGHT = 1;
-        public static final int TYPE_BUBBLE_TEXT_LEFT = 2;
-        public static final int TYPE_BUBBLE_PRODUCT_LIST = 3;
+        public static final int TYPE_BUBBLE_TEXT_RIGHT = 1001;
+        public static final int TYPE_BUBBLE_TEXT_LEFT = 1002;
+        public static final int TYPE_BUBBLE_IMAGE_RIGHT = 1011;
+        public static final int TYPE_BUBBLE_IMAGE_LEFT = 1012;
+
+        public static final int TYPE_BUBBLE_PRODUCT_LIST = 3001;
     }
 
     public static final class Extras {
