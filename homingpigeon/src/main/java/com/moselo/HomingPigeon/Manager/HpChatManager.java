@@ -271,7 +271,6 @@ public class HpChatManager {
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 HpMessageModel messageModel = buildTextMessage(substr, activeRoom);
-
                 // Add entity to list
                 messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
 
@@ -280,7 +279,6 @@ public class HpChatManager {
             }
         } else {
             HpMessageModel messageModel = buildTextMessage(textMessage, activeRoom);
-
             // Send message
             sendMessage(messageModel);
         }

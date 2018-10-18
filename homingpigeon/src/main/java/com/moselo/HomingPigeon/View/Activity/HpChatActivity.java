@@ -749,7 +749,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             mergeSort(messageBeforeModels, DESCENDING);
 
             runOnUiThread(() -> {
-                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < messageBeforeModels.size()) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
                 flMessageList.setVisibility(View.VISIBLE);
