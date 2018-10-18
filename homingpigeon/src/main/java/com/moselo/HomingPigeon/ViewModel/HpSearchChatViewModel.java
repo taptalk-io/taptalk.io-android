@@ -2,8 +2,11 @@ package com.moselo.HomingPigeon.ViewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 
@@ -14,7 +17,9 @@ import java.util.Map;
 
 public class HpSearchChatViewModel extends AndroidViewModel {
 
+    private LiveData<List<HpRecentSearchEntity>> recentSearchList;
     private List<HpSearchChatModel> searchResults;
+    private List<HpSearchChatModel> recentSearches;
     private Map<String, HpRoomModel> roomPointer;
     private String searchKeyword;
 
@@ -64,5 +69,25 @@ public class HpSearchChatViewModel extends AndroidViewModel {
 
     public void setSearchKeyword(String searchKeyword) {
         this.searchKeyword = searchKeyword;
+    }
+
+    public LiveData<List<HpRecentSearchEntity>> getRecentSearchList() {
+        return null == recentSearchList? recentSearchList = HpDataManager.getInstance().getRecentSearchLive() : recentSearchList;
+    }
+
+    public List<HpSearchChatModel> getRecentSearches() {
+        return null == recentSearches? recentSearches = new ArrayList<>() : recentSearches;
+    }
+
+    public void clearRecentSearches() {
+        getRecentSearches().clear();
+    }
+
+    public void addRecentSearches(HpSearchChatModel item) {
+        getRecentSearches().add(item);
+    }
+
+    public void setRecentSearches(List<HpSearchChatModel> recentSearches) {
+        this.recentSearches = recentSearches;
     }
 }

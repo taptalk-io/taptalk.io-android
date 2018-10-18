@@ -84,7 +84,7 @@ public class HpSearchChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initViewModel();
         initView(view);
-        showRecentSearches();
+        setRecentSearchItemsFromDatabase();
     }
 
     @Override
@@ -126,21 +126,27 @@ public class HpSearchChatFragment extends Fragment {
         HpUtils.getInstance().dismissKeyboard(activity);
     }
 
+    private void setRecentSearchItemsFromDatabase() {
+        vm.getRecentSearchList().observe(this, hpRecentSearchEntities -> {
+            vm.clearRecentSearches();
+
+            HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
+            vm.addRecentSearches(recentTitleItem);
+
+            if (null != hpRecentSearchEntities)
+                for (HpRecentSearchEntity entity : hpRecentSearchEntities) {
+                    HpSearchChatModel recentItem = new HpSearchChatModel(RECENT_ITEM);
+                    recentItem.setRecentSearch(entity);
+                    vm.addRecentSearches(recentItem);
+                }
+        });
+
+        showRecentSearches();
+    }
+
     // TODO: 24/09/18 apusin dummy ini kalau udah ada datanya
     private void showRecentSearches() {
-        vm.clearSearchResults();
-
-        HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
-        vm.addSearchResult(recentTitleItem);
-
-        HpSearchChatModel recentItem = new HpSearchChatModel(RECENT_ITEM);
-        HpRecentSearchEntity entity = new HpRecentSearchEntity("Mo Salah", System.currentTimeMillis());
-        recentItem.setRecentSearch(entity);
-        vm.addSearchResult(recentItem);
-        vm.addSearchResult(recentItem);
-        vm.addSearchResult(recentItem);
-        vm.addSearchResult(recentItem);
-        activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+        activity.runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
     }
 
     private void setEmptyState() {
