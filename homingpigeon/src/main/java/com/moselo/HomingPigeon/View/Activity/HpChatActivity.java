@@ -560,11 +560,19 @@ public class HpChatActivity extends HpBaseChatActivity {
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
 
+
+                    //ini buat ngecek kalau room nya kosong manggil api before aja
+                    //sebaliknya kalau roomnya ada isinya manggil after baru before*
+                    //* = kalau jumlah itemnya < 50
+                    if (0 < vm.getMessageModels().size()) {
                     /* Call Message List API
                     Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
-                    callApiAfter();
+                        callApiAfter();
+                    } else {
+                        callApiBefore(messageBeforeView);
+                    }
                 });
 
             } else if (null != hpMessageAdapter) {
@@ -830,10 +838,17 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     public void callApiBefore(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
         /*call api before rules:
-        * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
-        new Thread(() -> HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
-                , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
-                , beforeView)).start();
+         * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
+        new Thread(() -> {
+            //ini ngecek kalau misalnya isi message modelnya itu kosong manggil api before maxCreated = current TimeStamp
+            if (0 < vm.getMessageModels().size())
+                HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+                        , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
+                        , beforeView);
+            else HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+                    , System.currentTimeMillis()
+                    , beforeView);
+        }).start();
     }
 
     private void callApiAfter() {
