@@ -28,6 +28,7 @@ public class HpMessageModel {
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
     private Boolean isExpanded = false;
+    private Boolean isSendAnimateFinished = false;
 
     public HpMessageModel(@Nullable String messageID, @NonNull String localID, String body, HpRoomModel room,
                           Integer type, Long created, HpUserModel user, String recipientID, @Nullable Boolean isDeleted,
@@ -222,6 +223,14 @@ public class HpMessageModel {
 
     public void setExpanded(boolean expanded) {
         isExpanded = expanded;
+    }
+
+    public Boolean getSendAnimateFinished() {
+        return isSendAnimateFinished;
+    }
+
+    public void setSendAnimateFinished(Boolean sendAnimateFinished) {
+        isSendAnimateFinished = sendAnimateFinished;
     }
 
     public void updateValue(HpMessageModel model) {

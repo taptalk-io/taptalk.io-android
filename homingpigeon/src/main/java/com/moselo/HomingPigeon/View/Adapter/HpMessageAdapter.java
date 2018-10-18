@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -183,12 +184,12 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    animateSend();
+                    animateSend(item);
                 } else if (null != item.getSending() && !item.getSending() && !item.isExpanded()) {
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
                     tvMessageStatus.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    animateSend();
+                    animateSend(item);
                 }
                 // Message is sending
                 else if (null != item.getSending() && item.getSending()) {
@@ -318,8 +319,10 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             }
         }
 
-        private void animateSend() {
-            if (ivSending.getAlpha() == 0f) return;
+        private void animateSend(HpMessageModel item) {
+            if (ivSending.getAlpha() == 0f) {
+                return;
+            }
 
             ivMessageStatus.setTranslationX(initialTranslationX);
             flBubble.setTranslationX(initialTranslationX);
