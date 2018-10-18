@@ -28,15 +28,15 @@ import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpNewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -220,27 +220,36 @@ public class HpRoomListFragment extends Fragment {
         hideSelectionActionBar();
     }
 
+    //ini adalah fungsi yang di panggil pertama kali pas onResume
     private void viewAppearSequence() {
         if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+            //selama di apps (foreground) ga perlu panggil API, ambil local dari database aja
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
         } else {
+            //kalau kita dari background atau pertama kali buka apps, kita baru jalanin full cycle
             runFullRefreshSequence();
         }
     }
 
     private void getDatabaseAndAnimateResult() {
-            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbAnimatedListener);
+        //viewnya pake yang dbAnimatedListener
+        HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbAnimatedListener);
     }
 
+    //ini fungsi untuk manggil full cycle dari room List
     private void runFullRefreshSequence() {
         if (vm.getRoomList().size() > 0) {
+            //kalau ga recyclerView ga kosong, kita check unread dlu baru update tampilan
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), true, dbListener);
         } else {
+            //kalau recyclerView masih kosong, kita tampilin room dlu baru update tampilannya
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), false, dbListener);
         }
     }
 
     private void fetchDataFromAPI() {
+        //kalau pertama kali kita call api getRoomListFromAPI
+        //setelah itu kita panggilnya api pending and update message
         if (vm.isDoneFirstSetup()) {
             HpDataManager.getInstance().getPendingAndUpdatedMessage(roomListView);
         } else {
@@ -248,20 +257,28 @@ public class HpRoomListFragment extends Fragment {
         }
     }
 
+    /*ini adalah fungsi yang update tampilan setelah dapet data dari database
+     * parameter isAnimated itu gunanya buat nentuin datanya kalau berubah perlu di animate atau nggak*/
     private void updateUiAfterGetDatabase(boolean isAnimated) {
         activity.runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
             } else if (null != adapter && (!HpRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated)) {
+                //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
+                //isShouldNotLoadFromAPI ini buat load dari database yang pertama
+                //is animate nya itu buat kalau misalnya perlu di animate dari parameter
                 adapter.addRoomList(vm.getRoomList());
                 rvContactList.scrollToPosition(0);
                 llRoomEmpty.setVisibility(View.GONE);
             } else if (null != adapter && HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+                //ini pas kalau ga perlu untuk di animate changesnya
                 adapter.setItems(vm.getRoomList(), false);
                 llRoomEmpty.setVisibility(View.GONE);
             }
             flSetupContainer.setVisibility(View.GONE);
 
+            //ini buat ngubah isShouldNotLoadFromAPInya pas get data pertama
+            //setelah itu fetch data dari api sesuai dengan cycle yang di butuhin
             if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
                 HpRoomListViewModel.setShouldNotLoadFromAPI(true);
                 fetchDataFromAPI();
@@ -322,6 +339,7 @@ public class HpRoomListFragment extends Fragment {
     private HpDefaultDataView<HpGetRoomListResponse> roomListView = new HpDefaultDataView<HpGetRoomListResponse>() {
         @Override
         public void startLoading() {
+            //ini buat munculin setup dialog pas pertama kali buka apps
             if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
                 flSetupContainer.setVisibility(View.VISIBLE);
             }
@@ -329,6 +347,7 @@ public class HpRoomListFragment extends Fragment {
 
         @Override
         public void endLoading() {
+            //save preference kalau kita udah munculin setup dialog
             fabNewChat.show();
             if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
                 HpDataManager.getInstance().setRoomListSetupFinished();
@@ -338,6 +357,7 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void onSuccess(HpGetRoomListResponse response) {
             super.onSuccess(response);
+            //sebagai tanda kalau udah manggil api (Get message from API)
             vm.setDoneFirstSetup(true);
 
             List<HpMessageEntity> tempMessage = new ArrayList<>();
@@ -351,9 +371,12 @@ public class HpRoomListFragment extends Fragment {
                 }
             }
 
+            //hasil dari API disimpen ke dalem database
             HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
                 @Override
                 public void onInsertFinished() {
+                    //setelah selesai insert database, kita panggil fungsi buat ambil data terbaru dari
+                    //database dan animasiin perubahannya
                     getDatabaseAndAnimateResult();
                 }
             });
@@ -378,15 +401,18 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
             List<HpRoomListModel> messageModels = new ArrayList<>();
+            //ngubah entity yang dari database jadi model
             for (HpMessageEntity entity : entities) {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
+                //update unread count nya per room
                 HpDataManager.getInstance().getUnreadCountPerRoom(vm.getMyUserID(), entity.getRoomID(), dbListener);
             }
 
             vm.setRoomList(messageModels);
+            //update UI
             updateUiAfterGetDatabase(false);
         }
 
