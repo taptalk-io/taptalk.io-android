@@ -130,8 +130,11 @@ public class HpChatActivity extends HpBaseChatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) HpChatManager.getInstance().saveMessageToDraft(draft);
+        else HpChatManager.getInstance().removeDraft();
+
         HpChatManager.getInstance().deleteActiveRoom();
     }
 
@@ -288,7 +291,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             }
         };
 
-        // Load items from database
+        // Load items from database for the First Time (First Load)
         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -571,7 +574,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                     kalau last updated dari getUpdated */
                         callApiAfter();
                     } else {
-                        callApiBefore(messageBeforeView);
+                        fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
                     }
                 });
 
@@ -613,7 +616,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             if (null != hpMessageAdapter) {
                 if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
-                    callApiBefore(messageBeforeViewPaging);
+                    fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
                 } else if (STATE.WORKING == state) {
                     state = STATE.LOADED;
                 }
@@ -687,7 +690,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
-                callApiBefore(messageBeforeView);
+                fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             }
             //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
             vm.setInitialAPICallFinished(true);
@@ -704,7 +707,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             Log.e(TAG, "onError: " + error.getMessage());
 
             if (0 < vm.getMessageModels().size())
-                callApiBefore(messageBeforeView);
+                fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
 
         @Override
@@ -718,7 +721,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             Log.e(TAG, "onError: " + errorMessage);
 
             if (0 < vm.getMessageModels().size())
-                callApiBefore(messageBeforeView);
+                fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     };
 
@@ -836,8 +839,9 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    public void callApiBefore(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
-        /*call api before rules:
+    //ini Fungsi buat manggil Api Before
+    public void fetchBeforeMessageFromAPIAndUpdateUI(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
+        /*fetchBeforeMessageFromAPIAndUpdateUI rules:
          * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
         new Thread(() -> {
             //ini ngecek kalau misalnya isi message modelnya itu kosong manggil api before maxCreated = current TimeStamp
@@ -946,5 +950,4 @@ public class HpChatActivity extends HpBaseChatActivity {
             indexCombine += 1;
         }
     }
-
 }

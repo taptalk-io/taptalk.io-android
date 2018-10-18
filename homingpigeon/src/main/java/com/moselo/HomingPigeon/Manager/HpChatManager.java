@@ -305,12 +305,15 @@ public class HpChatManager {
      * save text to draft
      */
     public void saveMessageToDraft(String message) {
-
         messageDrafts.put(getActiveRoom().getRoomID(), message);
     }
 
     public String getMessageFromDraft() {
-        return messageDrafts.get(activeRoom);
+        return messageDrafts.get(getActiveRoom().getRoomID());
+    }
+
+    public void removeDraft() {
+        messageDrafts.remove(getActiveRoom().getRoomID());
     }
 
     /**

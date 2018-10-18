@@ -454,7 +454,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     private void animateSend(HpMessageModel item, FrameLayout flBubble, ImageView ivSending, ImageView ivMessageStatus) {
         if (!item.isNeedAnimateSend()) return;
 
-        item.setNeedAnimateSend(true);
+        item.setNeedAnimateSend(false);
         ivMessageStatus.setTranslationX(initialTranslationX);
         flBubble.setTranslationX(initialTranslationX);
         ivSending.setTranslationX(0);
