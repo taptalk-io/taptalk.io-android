@@ -239,27 +239,27 @@ public class HpRoomListFragment extends Fragment {
     //ini fungsi untuk manggil full cycle dari room List
     private void runFullRefreshSequence() {
         if (vm.getRoomList().size() > 0) {
-            //kalau ga recyclerView ga kosong, kita check unread dlu baru update tampilan
+            //kalau ga recyclerView ga kosong, kita check dan update unread dlu baru update tampilan
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), true, dbListener);
         } else {
-            //kalau recyclerView masih kosong, kita tampilin room dlu baru update tampilannya
+            //kalau recyclerView masih kosong, kita tampilin room dlu baru update unreadnya
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), false, dbListener);
         }
     }
 
     private void fetchDataFromAPI() {
-        //kalau pertama kali kita call api getRoomListFromAPI
+        //kalau pertama kali kita call api getMessageRoomListAndUnread
         //setelah itu kita panggilnya api pending and update message
         if (vm.isDoneFirstSetup()) {
-            HpDataManager.getInstance().getPendingAndUpdatedMessage(roomListView);
+            HpDataManager.getInstance().getNewAndUpdatedMessage(roomListView);
         } else {
-            HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser().getUserID(), roomListView);
+            HpDataManager.getInstance().getMessageRoomListAndUnread(HpDataManager.getInstance().getActiveUser().getUserID(), roomListView);
         }
     }
 
     /*ini adalah fungsi yang update tampilan setelah dapet data dari database
      * parameter isAnimated itu gunanya buat nentuin datanya kalau berubah perlu di animate atau nggak*/
-    private void updateUiAfterGetDatabase(boolean isAnimated) {
+    private void reloadLocalDataAndUpdateUILogic(boolean isAnimated) {
         activity.runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
@@ -413,7 +413,7 @@ public class HpRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
             //update UI
-            updateUiAfterGetDatabase(false);
+            reloadLocalDataAndUpdateUILogic(false);
         }
 
         @Override
@@ -436,7 +436,7 @@ public class HpRoomListFragment extends Fragment {
             }
 
             vm.setRoomList(messageModels);
-            updateUiAfterGetDatabase(false);
+            reloadLocalDataAndUpdateUILogic(false);
         }
     };
 
@@ -454,7 +454,7 @@ public class HpRoomListFragment extends Fragment {
             }
 
             vm.setRoomList(messageModels);
-            updateUiAfterGetDatabase(true);
+            reloadLocalDataAndUpdateUILogic(true);
         }
     };
 }
