@@ -443,7 +443,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         Log.e(TAG, "animateSend: " + ivSending.getAlpha());
         if (!item.isNeedAnimateSend()) return;
 
-        item.setNeedAnimateSend(true);
+        item.setNeedAnimateSend(false);
         ivMessageStatus.setTranslationX(initialTranslationX);
         flBubble.setTranslationX(initialTranslationX);
         ivSending.setTranslationX(0);
