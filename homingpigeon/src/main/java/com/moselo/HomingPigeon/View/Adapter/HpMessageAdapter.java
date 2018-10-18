@@ -1,6 +1,5 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -230,7 +229,10 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         }
     }
 
-    private void checkAndUpdateMessageStatus(HpMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, @Nullable TextView tvUsername, @Nullable CircleImageView civAvatar, @Nullable ImageView ivMessageStatus, @Nullable ImageView ivSending) {
+    private void checkAndUpdateMessageStatus(HpMessageModel item, View itemView, FrameLayout flBubble,
+                                             TextView tvMessageStatus, @Nullable TextView tvUsername,
+                                             @Nullable CircleImageView civAvatar, @Nullable ImageView ivMessageStatus,
+                                             @Nullable ImageView ivSending) {
         if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
             // Message has been read
             if (null != item.getIsRead() && item.getIsRead() && item.isExpanded()) {
@@ -288,15 +290,25 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
                 tvMessageStatus.setVisibility(View.GONE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
-                animateSend(flBubble, ivSending, ivMessageStatus);
+                if (!item.isNeedAnimateSend()){
+                    flBubble.setTranslationX(0);
+                    ivMessageStatus.setTranslationX(0);
+                    ivSending.setAlpha(0f);
+                } else animateSend(item, flBubble, ivSending, ivMessageStatus);
+
             } else if (null != item.getSending() && !item.getSending() && !item.isExpanded()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
                 tvMessageStatus.setVisibility(View.GONE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
-                animateSend(flBubble, ivSending, ivMessageStatus);
+                if (!item.isNeedAnimateSend()){
+                    flBubble.setTranslationX(0);
+                    ivMessageStatus.setTranslationX(0);
+                    ivSending.setAlpha(0f);
+                } else animateSend(item, flBubble, ivSending, ivMessageStatus);
             }
             // Message is sending
             else if (null != item.getSending() && item.getSending()) {
+                item.setNeedAnimateSend(true);
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
 
                 flBubble.setTranslationX(initialTranslationX);
@@ -354,7 +366,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             // Bubble is deselected/shrunk
             flBubble.setForeground(null);
             if (isMessageFromMySelf(item) && null != ivMessageStatus) {
-                if (null != item.getFailedSend() && item.getFailedSend()) {
+                if ((null != item.getFailedSend() && item.getFailedSend())) {
                     ivReply.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
@@ -376,6 +388,8 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                         ivMessageStatus.setVisibility(View.VISIBLE);
                         tvMessageStatus.setVisibility(View.GONE);
                     }
+                } else if (null != item.getSending() && item.getSending()) {
+                    ivReply.setVisibility(View.GONE);
                 }
             }
             // Message from others
@@ -425,10 +439,11 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         listener.onRetrySendMessage(item);
     }
 
-    private void animateSend(FrameLayout flBubble, ImageView ivSending, ImageView ivMessageStatus) {
+    private void animateSend(HpMessageModel item, FrameLayout flBubble, ImageView ivSending, ImageView ivMessageStatus) {
         Log.e(TAG, "animateSend: " + ivSending.getAlpha());
-        if (ivSending.getAlpha() == 0f) return;
+        if (!item.isNeedAnimateSend()) return;
 
+        item.setNeedAnimateSend(true);
         ivMessageStatus.setTranslationX(initialTranslationX);
         flBubble.setTranslationX(initialTranslationX);
         ivSending.setTranslationX(0);
