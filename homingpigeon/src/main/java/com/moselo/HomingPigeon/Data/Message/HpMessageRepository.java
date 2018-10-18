@@ -108,6 +108,14 @@ public class HpMessageRepository {
         }).start();
     }
 
+    public void searchAllChatRooms(String keyword, final HpDatabaseListener listener) {
+        new Thread(() -> {
+            String queryKeyword = "%" + keyword + '%';
+            List<HpMessageEntity> entities = messageDao.searchAllChatRooms(queryKeyword);
+            listener.onSelectFinished(entities);
+        }).start();
+    }
+
     public void getRoomList(String myID, boolean isCheckUnreadFirst, final HpDatabaseListener listener) {
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllRoomList();

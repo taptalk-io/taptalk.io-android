@@ -22,7 +22,6 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
@@ -67,15 +66,14 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
 
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
+        private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivMute, ivMessageStatus;
-        private CircleImageView ivAvatar;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
-        private HpMessageModel item;
 
-        protected RoomListVH(ViewGroup parent, int itemLayoutId) {
+        RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             clContainer = itemView.findViewById(R.id.cl_container);
-            ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivMute = itemView.findViewById(R.id.iv_mute);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
@@ -89,23 +87,23 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
         protected void onBind(HpRoomListModel item, int position) {
             final HpUserModel userModel = item.getLastMessage().getUser();
             final int randomColor = HpUtils.getInstance().getRandomColor(userModel.getName());
+            Resources resource = itemView.getContext().getResources();
 
             if (null != item.getLastMessage().getRoom().getRoomImage()) {
-                GlideApp.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).centerCrop().into(ivAvatar);
+                GlideApp.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).centerCrop().into(civAvatar);
             } else {
                 avatarTint = ColorStateList.valueOf(randomColor);
-                ivAvatar.setBackgroundTintList(avatarTint);
+                civAvatar.setBackgroundTintList(avatarTint);
             }
 
             // Change avatar icon and background
-            Resources resource = itemView.getContext().getResources();
             if (item.getLastMessage().getRoom().isSelected()) {
                 // Item is selected
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_select));
                 clContainer.setBackgroundColor(resource.getColor(R.color.transparent_black_18));
             } else {
                 // Item not selected
-                // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
+                // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_verified));
                 clContainer.setBackgroundColor(resource.getColor(R.color.transparent));
             }

@@ -72,7 +72,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
         ContactListHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
-            ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            ivAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivSelection = itemView.findViewById(R.id.iv_selection);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
@@ -150,7 +150,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
         SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
-            ivAvatar = itemView.findViewById(R.id.iv_avatar);
+            ivAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
         }

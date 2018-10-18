@@ -12,7 +12,7 @@
     android:orientation="vertical">
 
     <com.moselo.HomingPigeon.Helper.CircleImageView
-        android:id="@+id/iv_avatar"
+        android:id="@+id/civ_avatar"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginStart="16dp"
@@ -32,8 +32,8 @@
         android:layout_width="22dp"
         android:layout_height="22dp"
         android:src="@drawable/hp_ic_verified"
-        app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
-        app:layout_constraintEnd_toEndOf="@id/iv_avatar" />
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
 
     <TextView
         android:id="@+id/tv_full_name"
@@ -42,10 +42,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="68dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/iv_avatar"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/iv_avatar"
-        app:layout_constraintTop_toTopOf="@id/iv_avatar"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/civ_avatar"
         tools:text="Username" />
 
     <ImageView
@@ -66,6 +66,6 @@
         android:layout_marginStart="8dp"
         android:background="@color/grey_ea"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/iv_avatar" />
+        app:layout_constraintStart_toEndOf="@id/civ_avatar" />
 
 </android.support.constraint.ConstraintLayout>

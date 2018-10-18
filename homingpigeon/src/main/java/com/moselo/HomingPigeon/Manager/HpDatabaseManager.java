@@ -135,6 +135,13 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void searchAllRooms(String keyword, HpDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.searchAllChatRooms(keyword, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public void getUnreadCountPerRoom(String myID, String roomID, final HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getUnreadCountPerRoom(myID, roomID, listener);
@@ -196,6 +203,12 @@ public class HpDatabaseManager {
     public LiveData<List<HpUserModel>> getMyContactList() {
         if (null != myContactRepository)
             return myContactRepository.getMyContactListLive();
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void searchAllMyContacts(String keyword, HpDatabaseListener<HpUserModel> listener) {
+        if (null != myContactRepository)
+            myContactRepository.searchAllMyContacts(keyword, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 

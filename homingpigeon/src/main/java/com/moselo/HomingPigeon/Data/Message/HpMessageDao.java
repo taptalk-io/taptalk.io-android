@@ -48,14 +48,6 @@ public interface HpMessageDao {
             "and RoomID like :roomID order by created desc")
     List<HpMessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);
 
-    @Query("select localID, " +
-            "userID, xcUserID, userFullName, userImage, username, userEmail, " +
-            "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
-            "roomName, secondQuery.roomID, roomType, body, created, isDelivered, isFailedSend, " +
-            "isSending, recipientID, type from (select roomID, max(created) as max_created from Message_Table group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created order by firstQuery.created desc")
-    List<HpMessageEntity> getAllRoomList();
-
-
     @Query("select messageID, localID, roomID, roomName, roomColor, roomType," +
             " roomImage, type, body, created, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
@@ -63,6 +55,19 @@ public interface HpMessageDao {
             "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
             " from Message_Table where body like :keyword order by created desc")
     List<HpMessageEntity> searchAllMessages(String keyword);
+
+    @Query("select localID, userID, xcUserID, userFullName, userImage, username, userEmail, " +
+            "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
+            "roomName, secondQuery.roomID, roomType, body, created, isDelivered, isFailedSend, " +
+            "isSending, recipientID, type from (select roomID, max(created) as max_created from Message_Table group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created order by firstQuery.created desc")
+    List<HpMessageEntity> getAllRoomList();
+
+    @Query("select localID, userID, xcUserID, userFullName, userImage, username, userEmail, " +
+            "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
+            "roomName, secondQuery.roomID, roomType, body, created, isDelivered, isFailedSend, " +
+            "isSending, recipientID, type from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
+            "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword order by firstQuery.created desc")
+    List<HpMessageEntity> searchAllChatRooms(String keyword);
 
     //@Query("select count(isRead) from message_table where isRead = 0 and RoomID like :roomID and userID not like :userID")
     @Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID and userID not like :userID")

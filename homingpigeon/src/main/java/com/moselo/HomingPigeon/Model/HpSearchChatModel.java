@@ -7,8 +7,8 @@ public class HpSearchChatModel {
     public enum Type {
         RECENT_TITLE, RECENT_ITEM,
         SECTION_TITLE, CHAT_ITEM,
-        MESSAGE_ITEM, CONTACT_ITEM,
-        EMPTY_STATE
+        MESSAGE_ITEM, ROOM_ITEM,
+        CONTACT_ITEM, EMPTY_STATE
     }
 
     private Type type;

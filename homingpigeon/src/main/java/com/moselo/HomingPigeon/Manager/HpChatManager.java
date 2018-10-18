@@ -219,6 +219,7 @@ public class HpChatManager {
                 entity.getLocalID(),
                 entity.getBody(),
                 new HpRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
+                        // TODO: 18 October 2018 REMOVE CHECK
                         /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
                         HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage())
                         /* TEMPORARY CHECK FOR NULL IMAGE */: null

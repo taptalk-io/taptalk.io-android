@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
+import android.content.res.Resources;
 import android.support.constraint.ConstraintLayout;
 import android.text.Html;
 import android.view.View;
@@ -16,7 +17,7 @@ import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 import com.moselo.HomingPigeon.R;
 
@@ -41,6 +42,8 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                 return new RecentTitleVH(parent, R.layout.hp_cell_recent_search_title);
             case CHAT_ITEM:
                 return new ChatItemVH(parent, R.layout.hp_cell_search_chat_item);
+            case ROOM_ITEM:
+                return new RoomItemVH(parent, R.layout.hp_cell_search_room_item);
             case CONTACT_ITEM:
                 return new ContactItemVH(parent, R.layout.hp_cell_search_contact_item);
             case MESSAGE_ITEM:
@@ -178,6 +181,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                 HpUtils.getInstance().startChatActivity(itemView.getContext(),
                         message.getRoomID(),
                         message.getRoomName(),
+                        // TODO: 18 October 2018 REMOVE CHECK
                         /* TEMPORARY CHECK FOR NULL IMAGE */null != message.getRoomImage() ?
                         HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, message.getRoomImage())
                         /* TEMPORARY CHECK FOR NULL IMAGE */: null,
@@ -187,25 +191,95 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         }
     }
 
-    public class ContactItemVH extends HpBaseViewHolder<HpSearchChatModel> {
+    public class RoomItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
-        private CircleImageView civContactAvatar;
+        private View vSeparator;
+        private ConstraintLayout clContainer;
+        private CircleImageView civAvatar;
+        private ImageView ivAvatarIcon;
+        private TextView tvRoomName, tvRoomStatus, tvBadgeUnread;
 
-        protected ContactItemVH(ViewGroup parent, int itemLayoutId) {
+        RoomItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
-            civContactAvatar = itemView.findViewById(R.id.civ_contact_avatar);
+            vSeparator = itemView.findViewById(R.id.v_separator);
+            clContainer = itemView.findViewById(R.id.cl_container);
+            civAvatar = itemView.findViewById(R.id.civ_avatar);
+            ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
+            tvRoomName = itemView.findViewById(R.id.tv_room_name);
+            tvRoomStatus = itemView.findViewById(R.id.tv_room_status);
+            tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
         }
 
         @Override
         protected void onBind(HpSearchChatModel item, int position) {
-            GlideApp.with(itemView.getContext()).load("https://images.performgroup.com/di/library/GOAL/bd/53/mohamed-salah-liverpool-2018-19_e6x5i309jkl11i2uzq838u0ve.jpg?t=-423079251")
-                    .centerCrop().override(HpUtils.getInstance().getScreenWidth(), HpUtils.getInstance().getScreeHeight()).into(civContactAvatar);
+            Resources resource = itemView.getContext().getResources();
+
+            if (item.isLastInSection())
+                vSeparator.setVisibility(View.GONE);
+            else vSeparator.setVisibility(View.VISIBLE);
+
+            HpRoomModel room = item.getRoom();
+            if (null == room) return;
+
+            // Load avatar
+            if (null != room.getRoomImage() && null != room.getRoomImage().getThumbnail()) {
+                GlideApp.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
+            }
+
+            // Set room name with highlighted text
+            String highlightedText = room.getRoomName().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.highlighted_string), "$1"));
+            tvRoomName.setText(Html.fromHtml(highlightedText));
+
+            // Change avatar icon
+            // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
+            ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_verified));
+
+            // TODO: 18 October 2018 UPDATE ONLINE STATUS
+
+            // Show unread count
+            int unreadCount = room.getUnreadCount();
+            if (0 < unreadCount && unreadCount < 100) {
+                tvBadgeUnread.setText(room.getUnreadCount() + "");
+                tvBadgeUnread.setVisibility(View.VISIBLE);
+            } else if (unreadCount >= 100) {
+                tvBadgeUnread.setText(R.string.over_99);
+                tvBadgeUnread.setVisibility(View.VISIBLE);
+            } else {
+                tvBadgeUnread.setVisibility(View.GONE);
+            }
+
+            // Check if room is muted
+            if (room.isMuted()) {
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_9b9b9b_rounded_10dp));
+            } else {
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_10dp));
+            }
+
+            clContainer.setOnClickListener(v ->
+                    HpUtils.getInstance().startChatActivity(itemView.getContext(),
+                    room.getRoomID(),
+                    room.getRoomName(),
+                    room.getRoomImage(),
+                    room.getRoomType(),
+                    room.getRoomColor()));
+        }
+    }
+
+    public class ContactItemVH extends HpBaseViewHolder<HpSearchChatModel> {
+
+        ContactItemVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+        }
+
+        @Override
+        protected void onBind(HpSearchChatModel item, int position) {
+
         }
     }
 
     public class EmptyItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
-        protected EmptyItemVH(ViewGroup parent, int itemLayoutId) {
+        EmptyItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
         }
 

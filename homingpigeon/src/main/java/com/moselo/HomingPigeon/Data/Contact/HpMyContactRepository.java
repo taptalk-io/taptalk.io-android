@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Data.Contact;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.HomingPigeonDatabase;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
@@ -51,10 +52,18 @@ public class HpMyContactRepository {
         new Thread(() -> {
             List<HpUserModel> myContactList = myContactDao.getAllMyContact();
             listener.onSelectFinished(myContactList);
-        });
+        }).start();
     }
 
     public LiveData<List<HpUserModel>> getMyContactListLive() {
         return myContactListLive;
+    }
+
+    public void searchAllMyContacts(String keyword, HpDatabaseListener<HpUserModel> listener) {
+        new Thread(() -> {
+            String queryKeyword = "%" + keyword + '%';
+            List<HpUserModel> myContactList = myContactDao.searchAllMyContacts(queryKeyword);
+            listener.onSelectFinished(myContactList);
+        }).start();
     }
 }

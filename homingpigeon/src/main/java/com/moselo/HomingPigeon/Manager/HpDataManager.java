@@ -276,6 +276,10 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().getRoomList(myID, isCheckUnreadFirst, listener);
     }
 
+    public void searchAllRoomsFromDatabase(String keyword, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().searchAllRooms(keyword, listener);
+    }
+
     public void getUnreadCountPerRoom(String myID, String roomID, final HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().getUnreadCountPerRoom(myID, roomID, listener);
     }
@@ -304,6 +308,9 @@ public class HpDataManager {
 
     public LiveData<List<HpUserModel>> getMyContactList() {
         return HpDatabaseManager.getInstance().getMyContactList();
+    }
+    public void searchAllMyContacts(String keyword, HpDatabaseListener<HpUserModel> listener) {
+        HpDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
     }
 
     public void insertMyContactToDatabase(HpUserModel... userModels) {

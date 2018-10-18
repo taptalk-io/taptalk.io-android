@@ -75,6 +75,7 @@
     <!--General-->
     <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
+    <string name="chats_and_contacts">Chats and Contacts</string>
     <string name="clear_history">Clear history</string>
     <string name="continue_s">Continue</string>
     <string name="delivered_at">Delivered at</string>
