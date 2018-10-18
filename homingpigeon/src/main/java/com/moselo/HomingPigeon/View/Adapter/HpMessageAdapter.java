@@ -201,8 +201,9 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
         @Override
         protected void onBind(HpMessageModel item, int position) {
-            if (null == adapter)
+            if (null == adapter) {
                 adapter = new HpProductListAdapter(item, myUserModel);
+            }
 
             rvProductList.setAdapter(adapter);
             rvProductList.setHasFixedSize(false);
@@ -290,7 +291,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
                 tvMessageStatus.setVisibility(View.GONE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
-                if (!item.isNeedAnimateSend()){
+                if (!item.isNeedAnimateSend()) {
                     flBubble.setTranslationX(0);
                     ivMessageStatus.setTranslationX(0);
                     ivSending.setAlpha(0f);
@@ -300,7 +301,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
                 tvMessageStatus.setVisibility(View.GONE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
-                if (!item.isNeedAnimateSend()){
+                if (!item.isNeedAnimateSend()) {
                     flBubble.setTranslationX(0);
                     ivMessageStatus.setTranslationX(0);
                     ivSending.setAlpha(0f);
@@ -340,7 +341,9 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             expandedBubble = item;
             animateFadeInToBottom(tvMessageStatus);
             if (isMessageFromMySelf(item) && null != ivMessageStatus) {
+                // Right Bubble
                 if (animate) {
+                    // Animate expand
                     animateFadeOutToBottom(ivMessageStatus);
                     animateShowToLeft(ivReply);
                 } else {
@@ -352,7 +355,9 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 }
                 flBubble.setForeground(bubbleOverlayRight);
             } else {
+                // Left Bubble
                 if (animate) {
+                    // Animate expand
                     animateShowToRight(ivReply);
                 } else {
                     ivReply.setVisibility(View.VISIBLE);
@@ -366,20 +371,26 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             // Bubble is deselected/shrunk
             flBubble.setForeground(null);
             if (isMessageFromMySelf(item) && null != ivMessageStatus) {
+                // Right bubble
                 if ((null != item.getFailedSend() && item.getFailedSend())) {
+                    // Message failed to send
                     ivReply.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
                     ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
                     tvMessageStatus.setVisibility(View.VISIBLE);
                 } else if (null != item.getSending() && !item.getSending()) {
                     if (null != item.getIsRead() && item.getIsRead()) {
+                        // Message has been read
                         ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
                     } else if (null != item.getDelivered() && item.getDelivered()) {
+                        // Message is delivered
                         ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
                     } else if (null != item.getSending() && !item.getSending()) {
+                        // Message sent
                         ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
                     }
                     if (animate) {
+                        // Animate shrink
                         animateHideToRight(ivReply);
                         animateFadeInToTop(ivMessageStatus);
                         animateFadeOutToTop(tvMessageStatus);
@@ -394,6 +405,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             }
             // Message from others
             else if (animate) {
+                // Animate shrink
                 animateHideToLeft(ivReply);
                 animateFadeOutToTop(tvMessageStatus);
             } else {
@@ -440,7 +452,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     }
 
     private void animateSend(HpMessageModel item, FrameLayout flBubble, ImageView ivSending, ImageView ivMessageStatus) {
-        Log.e(TAG, "animateSend: " + ivSending.getAlpha());
         if (!item.isNeedAnimateSend()) return;
 
         item.setNeedAnimateSend(true);
