@@ -228,6 +228,10 @@ public class HpRoomListFragment extends Fragment {
         }
     }
 
+    private void getDatabaseAndAnimateResult() {
+            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbAnimatedListener);
+    }
+
     private void runFullRefreshSequence() {
         if (vm.getRoomList().size() > 0) {
             HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), true, dbListener);
@@ -244,11 +248,11 @@ public class HpRoomListFragment extends Fragment {
         }
     }
 
-    private void updateUiAfterGetDatabase() {
+    private void updateUiAfterGetDatabase(boolean isAnimated) {
         activity.runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
-            } else if (null != adapter && !HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+            } else if (null != adapter && (!HpRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated)) {
                 adapter.addRoomList(vm.getRoomList());
                 rvContactList.scrollToPosition(0);
                 llRoomEmpty.setVisibility(View.GONE);
@@ -261,8 +265,6 @@ public class HpRoomListFragment extends Fragment {
             if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
                 HpRoomListViewModel.setShouldNotLoadFromAPI(true);
                 fetchDataFromAPI();
-            } else {
-                vm.setApiCalled(false);
             }
         });
     }
@@ -337,7 +339,6 @@ public class HpRoomListFragment extends Fragment {
         public void onSuccess(HpGetRoomListResponse response) {
             super.onSuccess(response);
             vm.setDoneFirstSetup(true);
-            vm.setApiCalled(true);
 
             List<HpMessageEntity> tempMessage = new ArrayList<>();
             for (HpMessageModel message : response.getMessages()) {
@@ -353,7 +354,7 @@ public class HpRoomListFragment extends Fragment {
             HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
                 @Override
                 public void onInsertFinished() {
-                    viewAppearSequence();
+                    getDatabaseAndAnimateResult();
                 }
             });
         }
@@ -386,7 +387,7 @@ public class HpRoomListFragment extends Fragment {
             }
 
             vm.setRoomList(messageModels);
-            updateUiAfterGetDatabase();
+            updateUiAfterGetDatabase(false);
         }
 
         @Override
@@ -409,7 +410,25 @@ public class HpRoomListFragment extends Fragment {
             }
 
             vm.setRoomList(messageModels);
-            updateUiAfterGetDatabase();
+            updateUiAfterGetDatabase(false);
+        }
+    };
+
+    private HpDatabaseListener<HpMessageEntity> dbAnimatedListener = new HpDatabaseListener<HpMessageEntity>() {
+
+        @Override
+        public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
+            List<HpRoomListModel> messageModels = new ArrayList<>();
+            for (HpMessageEntity entity : entities) {
+                HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
+                messageModels.add(roomModel);
+                vm.addRoomPointer(roomModel);
+                vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
+            }
+
+            vm.setRoomList(messageModels);
+            updateUiAfterGetDatabase(true);
         }
     };
 }
