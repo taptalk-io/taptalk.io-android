@@ -363,6 +363,10 @@ public class HpDataManager {
         HpApiManager.getInstance().getRoomList(userID, new DefaultSubscriber<>(view));
     }
 
+    public void getPendingAndUpdatedMessage(HpDefaultDataView<HpGetRoomListResponse> view) {
+        HpApiManager.getInstance().getPendingAndUpdatedMessage(new DefaultSubscriber<>(view));
+    }
+
     public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, HpDefaultDataView<HpGetMessageListbyRoomResponse> view) {
         HpApiManager.getInstance().getMessageListByRoomAfter(roomID, minCreated, lastUpdated, new DefaultSubscriber<>(view));
     }

@@ -238,8 +238,7 @@ public class HpRoomListFragment extends Fragment {
 
     private void fetchDataFromAPI() {
         if (vm.isDoneFirstSetup()) {
-            // TODO: 08/10/18 nanti masukin api untuk call pending message
-            HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser().getUserID(), roomListView);
+            HpDataManager.getInstance().getPendingAndUpdatedMessage(roomListView);
         } else {
             HpDataManager.getInstance().getRoomListFromAPI(HpDataManager.getInstance().getActiveUser().getUserID(), roomListView);
         }
@@ -258,6 +257,7 @@ public class HpRoomListFragment extends Fragment {
                 llRoomEmpty.setVisibility(View.GONE);
             }
             flSetupContainer.setVisibility(View.GONE);
+
             if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
                 HpRoomListViewModel.setShouldNotLoadFromAPI(true);
                 fetchDataFromAPI();

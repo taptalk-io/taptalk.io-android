@@ -26,9 +26,13 @@ public interface HomingPigeonApiService {
     @POST("chat/message/room_list_and_unread")
     Observable<BaseResponse<HpGetRoomListResponse>> getRoomList(@Body HpCommonRequest request);
 
+    @POST("chat/message/new_and_updated")
+    Observable<BaseResponse<HpGetRoomListResponse>> getPendingAndUpdatedMessage();
+
     @POST("chat/message/list_by_room/after")
     Observable<BaseResponse<HpGetMessageListbyRoomResponse>> getMessageListByRoomAfter(@Body HpGetMessageListbyRoomAfterRequest request);
 
     @POST("chat/message/list_by_room/before")
     Observable<BaseResponse<HpGetMessageListbyRoomResponse>> getMessageListByRoomBefore(@Body HpGetMessageListbyRoomBeforeRequest request);
+
 }

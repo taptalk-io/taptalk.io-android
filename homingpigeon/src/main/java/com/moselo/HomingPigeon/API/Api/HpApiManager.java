@@ -176,6 +176,10 @@ public class HpApiManager {
         execute(homingPigeon.getRoomList(request), subscriber);
     }
 
+    public void getPendingAndUpdatedMessage(Subscriber<BaseResponse<HpGetRoomListResponse>> subscriber) {
+        execute(homingPigeon.getPendingAndUpdatedMessage(), subscriber);
+    }
+
     public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<BaseResponse<HpGetMessageListbyRoomResponse>> subscriber) {
         HpGetMessageListbyRoomAfterRequest request = new HpGetMessageListbyRoomAfterRequest(roomID, minCreated, lastUpdated);
         execute(homingPigeon.getMessageListByRoomAfter(request), subscriber);
