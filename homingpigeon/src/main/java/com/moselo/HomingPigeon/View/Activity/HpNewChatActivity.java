@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
@@ -23,6 +24,7 @@ import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.HpUserRoleModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
@@ -59,9 +61,8 @@ public class HpNewChatActivity extends HpBaseActivity {
 
     @Override
     protected void initView() {
-        //Dummy Contacts
-        setDummyData();
-        //End Dummy
+        //call API
+        HpDataManager.getInstance().getMyContactListFromAPI(getContactView);
 
         //setting up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
@@ -240,4 +241,11 @@ public class HpNewChatActivity extends HpBaseActivity {
 
         HpDataManager.getInstance().insertMyContactToDatabase(userModels);
     }
+
+    HpDefaultDataView<HpContactResponse> getContactView = new HpDefaultDataView<HpContactResponse>() {
+        @Override
+        public void onSuccess(HpContactResponse response) {
+            setDummyData();
+        }
+    };
 }
