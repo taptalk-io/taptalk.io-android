@@ -22,6 +22,9 @@ public interface HpRecentSearchDao {
     @Delete
     void delete(List<HpRecentSearchEntity> entities);
 
+    @Query("delete from recent_search")
+    void deleteAllRecentSearch();
+
     @Update
     void update(HpRecentSearchEntity entity);
 

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
@@ -80,21 +81,29 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                 tvRecentTitle.setText(item.getSectionTitle());
             }
             else tvClearHistory.setVisibility(View.VISIBLE);
+
+            //ini ngecek karena VH ini di pake di section title jga biar ga slalu ke set listenernya
+            if (View.VISIBLE == tvClearHistory.getVisibility()) {
+                tvClearHistory.setOnClickListener(v -> HpDataManager.getInstance().deleteAllRecentSearch());
+            }
         }
     }
 
     public class RecentItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private TextView tvSearchText;
+        private ImageView ivCloseBtn;
 
         protected RecentItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             tvSearchText = itemView.findViewById(R.id.tv_search_text);
+            ivCloseBtn = itemView.findViewById(R.id.iv_close_btn);
         }
 
         @Override
         protected void onBind(HpSearchChatModel item, int position) {
             tvSearchText.setText(item.getRecentSearch().getSearchText());
+            ivCloseBtn.setOnClickListener(v -> HpDataManager.getInstance().deleteFromDatabase(item.getRecentSearch()));
         }
     }
 
@@ -255,13 +264,17 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_10dp));
             }
 
-            clContainer.setOnClickListener(v ->
-                    HpUtils.getInstance().startChatActivity(itemView.getContext(),
-                    room.getRoomID(),
-                    room.getRoomName(),
-                    room.getRoomImage(),
-                    room.getRoomType(),
-                    room.getRoomColor()));
+            clContainer.setOnClickListener(v -> {
+                HpUtils.getInstance().startChatActivity(itemView.getContext(),
+                        room.getRoomID(),
+                        room.getRoomName(),
+                        room.getRoomImage(),
+                        room.getRoomType(),
+                        room.getRoomColor());
+
+                HpRecentSearchEntity recentItem = HpRecentSearchEntity.Builder(room.getRoomName());
+                HpDataManager.getInstance().insertToDatabase(recentItem);
+            });
         }
     }
 
