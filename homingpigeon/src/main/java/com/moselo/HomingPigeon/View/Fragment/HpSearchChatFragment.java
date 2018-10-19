@@ -116,6 +116,14 @@ public class HpSearchChatFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                HpUtils.getInstance().dismissKeyboard(activity);
+            }
+        });
+
         ivButtonBack.setOnClickListener(v -> {
             ((HpRoomListActivity) activity).showRoomList();
             HpUtils.getInstance().dismissKeyboard(activity);
