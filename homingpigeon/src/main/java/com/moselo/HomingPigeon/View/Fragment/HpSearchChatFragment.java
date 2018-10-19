@@ -190,7 +190,6 @@ public class HpSearchChatFragment extends Fragment {
                 showRecentSearches();
             } else {
                 //etSearch.removeTextChangedListener(this);
-                Log.e(TAG, "onTextChanged search started: " + vm.getSearchKeyword());
                 HpDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
                 //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
                 vm.setRecentSearchShown(false);

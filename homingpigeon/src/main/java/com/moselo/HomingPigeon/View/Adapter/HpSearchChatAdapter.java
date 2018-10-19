@@ -80,10 +80,9 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                 tvClearHistory.setVisibility(View.GONE);
                 tvRecentTitle.setText(item.getSectionTitle());
             }
-            else tvClearHistory.setVisibility(View.VISIBLE);
-
-            //ini ngecek karena VH ini di pake di section title jga biar ga slalu ke set listenernya
-            if (View.VISIBLE == tvClearHistory.getVisibility()) {
+            else {
+                tvClearHistory.setVisibility(View.VISIBLE);
+                //ini ngecek karena VH ini di pake di section title jga biar ga slalu ke set listenernya
                 tvClearHistory.setOnClickListener(v -> HpDataManager.getInstance().deleteAllRecentSearch());
             }
         }
