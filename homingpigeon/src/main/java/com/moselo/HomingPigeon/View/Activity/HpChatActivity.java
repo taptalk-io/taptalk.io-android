@@ -202,8 +202,10 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onMessageClicked(HpMessageModel message, boolean isExpanded) {
-            super.onMessageClicked(message, isExpanded);
+        public void onBubbleExpanded() {
+            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                rvMessageList.smoothScrollToPosition(0);
+            }
         }
 
         @Override
