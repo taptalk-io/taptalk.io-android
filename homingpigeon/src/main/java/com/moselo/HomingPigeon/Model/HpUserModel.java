@@ -2,7 +2,6 @@ package com.moselo.HomingPigeon.Model;
 
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -17,7 +16,8 @@ public class HpUserModel implements Parcelable {
 
     //userID itu userID dari Bisnis Server kalau xcUserID itu userID dari Chat Server
     // (mereka berdua bisa sama bisa juga beda)
-    @PrimaryKey @NonNull @JsonProperty("userID") @JsonAlias("id") private String userID;
+    @PrimaryKey @NonNull @JsonProperty("userID") @JsonAlias("id")
+    private String userID;
     @JsonProperty("xcUserID") private String xcUserID;
     @JsonProperty("fullname") private String name;
     @Embedded @JsonProperty("imageURL") private HpImageURL avatarURL;
@@ -61,22 +61,24 @@ public class HpUserModel implements Parcelable {
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
             , @Nullable Long updated) {
         return new HpUserModel(userID, xcUserID, name, avatarURL, username, email, phoneNumber, userRole
-        , lastLogin, lastActivity, requireChangePassword, created, updated);
+                , lastLogin, lastActivity, requireChangePassword, created, updated);
     }
 
-    public static HpUserModel Builder(String userID, String name){
+    public static HpUserModel Builder(String userID, String name) {
         return new HpUserModel(userID, name);
     }
 
     public HpUserModel() {
     }
 
-    @JsonProperty("userID") @JsonAlias("id")
+    @JsonProperty("userID")
+    @JsonAlias("id")
     public String getUserID() {
         return userID;
     }
 
-    @JsonProperty("userID") @JsonAlias("id")
+    @JsonProperty("userID")
+    @JsonAlias("id")
     public void setUserID(String userID) {
         this.userID = userID;
     }
@@ -107,7 +109,8 @@ public class HpUserModel implements Parcelable {
         this.avatarURL = avatarURL;
     }
 
-    @Nullable @JsonProperty("username")
+    @Nullable
+    @JsonProperty("username")
     public String getUsername() {
         return username;
     }
@@ -117,7 +120,8 @@ public class HpUserModel implements Parcelable {
         this.username = username;
     }
 
-    @Nullable @JsonProperty("email")
+    @Nullable
+    @JsonProperty("email")
     public String getEmail() {
         return email;
     }
@@ -127,7 +131,8 @@ public class HpUserModel implements Parcelable {
         this.email = email;
     }
 
-    @Nullable @JsonProperty("phone")
+    @Nullable
+    @JsonProperty("phone")
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -137,7 +142,8 @@ public class HpUserModel implements Parcelable {
         this.phoneNumber = phoneNumber;
     }
 
-    @Nullable @JsonProperty("userRole")
+    @Nullable
+    @JsonProperty("userRole")
     public HpUserRoleModel getUserRole() {
         return userRole;
     }
@@ -147,7 +153,8 @@ public class HpUserModel implements Parcelable {
         this.userRole = userRole;
     }
 
-    @Nullable @JsonProperty("lastLogin")
+    @Nullable
+    @JsonProperty("lastLogin")
     public Long getLastLogin() {
         return lastLogin;
     }
