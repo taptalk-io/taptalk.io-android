@@ -182,12 +182,8 @@ public class HpSearchChatFragment extends Fragment {
 
     //ini fungsi buat set tampilan kalau lagi empty
     private void setEmptyState() {
-        HpSearchChatModel emptyTitle = new HpSearchChatModel(SECTION_TITLE);
-        emptyTitle.setSectionTitle(getString(R.string.search_results));
         HpSearchChatModel emptyItem = new HpSearchChatModel(EMPTY_STATE);
-
         vm.clearSearchResults();
-        vm.addSearchResult(emptyTitle);
         vm.addSearchResult(emptyItem);
         activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
