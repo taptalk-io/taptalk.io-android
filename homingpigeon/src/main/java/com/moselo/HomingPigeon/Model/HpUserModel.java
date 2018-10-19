@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Model;
 
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -32,6 +33,7 @@ public class HpUserModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     private boolean isSelected;
 
+    @Ignore
     public HpUserModel(String userID, String xcUserID, String name, HpImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable HpUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
@@ -51,9 +53,13 @@ public class HpUserModel implements Parcelable {
         this.updated = updated;
     }
 
+    @Ignore
     public HpUserModel(String userID, String name) {
         this.userID = userID;
         this.name = name;
+    }
+
+    public HpUserModel() {
     }
 
     public static HpUserModel Builder(String userID, String xcUserID, String name, HpImageURL avatarURL, @Nullable String username
@@ -66,9 +72,6 @@ public class HpUserModel implements Parcelable {
 
     public static HpUserModel Builder(String userID, String name) {
         return new HpUserModel(userID, name);
-    }
-
-    public HpUserModel() {
     }
 
     @JsonProperty("userID")
