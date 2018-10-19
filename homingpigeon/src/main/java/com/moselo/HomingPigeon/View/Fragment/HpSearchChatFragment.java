@@ -116,7 +116,10 @@ public class HpSearchChatFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        ivButtonBack.setOnClickListener(v -> ((HpRoomListActivity) activity).showRoomList());
+        ivButtonBack.setOnClickListener(v -> {
+            ((HpRoomListActivity) activity).showRoomList();
+            HpUtils.getInstance().dismissKeyboard(activity);
+        });
         ivButtonAction.setOnClickListener(v -> clearSearch());
     }
 
@@ -127,6 +130,7 @@ public class HpSearchChatFragment extends Fragment {
     }
 
     private void setRecentSearchItemsFromDatabase() {
+        //observe databasenya pake live data
         vm.getRecentSearchList().observe(this, hpRecentSearchEntities -> {
             vm.clearRecentSearches();
 
@@ -141,6 +145,9 @@ public class HpSearchChatFragment extends Fragment {
                 }
             }
 
+            //kalau ada perubahan sama databasenya ga lgsg diubah karena nnti bakal ngilangin hasil search yang muncul
+            //kalau lagi muncul hasil search updatenya tunggu fungsi showRecentSearch dipanggil
+            //kalau lagi muncul halaman recent search baru set items
             if (vm.isRecentSearchShown())
                 activity.runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
         });
@@ -148,12 +155,15 @@ public class HpSearchChatFragment extends Fragment {
         showRecentSearches();
     }
 
-    // TODO: 24/09/18 apusin dummy ini kalau udah ada datanya
+    //ini function buat munculin recent search nya lagi
+    //jadi dy gantiin isi recyclerView nya sama list yang diisi di setRecentSearchItemsFromDatabase (dari LiveData)
     private void showRecentSearches() {
         activity.runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
+        //flag untuk nandain kalau skrg lagi munculin halaman recent Search
         vm.setRecentSearchShown(true);
     }
 
+    //ini fungsi buat set tampilan kalau lagi empty
     private void setEmptyState() {
         HpSearchChatModel emptyTitle = new HpSearchChatModel(SECTION_TITLE);
         emptyTitle.setSectionTitle(getString(R.string.search_results));
@@ -182,6 +192,7 @@ public class HpSearchChatFragment extends Fragment {
                 //etSearch.removeTextChangedListener(this);
                 Log.e(TAG, "onTextChanged search started: " + vm.getSearchKeyword());
                 HpDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
+                //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
                 vm.setRecentSearchShown(false);
             }
         }
