@@ -2,7 +2,6 @@ package com.moselo.HomingPigeon.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;
@@ -284,7 +283,11 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().getUnreadCountPerRoom(myID, roomID, listener);
     }
 
+    public void deleteAllMessage() {
+        HpDatabaseManager.getInstance().deleteAllMessage();
+    }
     //Recent Search
+
     public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
         HpDatabaseManager.getInstance().insert(recentSearchEntity);
     }
@@ -297,18 +300,22 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().delete(recentSearchEntities);
     }
 
+    public void deleteAllRecentSearch() {
+        HpDatabaseManager.getInstance().deleteAllRecentSearch();
+    }
+
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
         return HpDatabaseManager.getInstance().getRecentSearchLive();
     }
-
     //My Contact
+
     public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
         HpDatabaseManager.getInstance().getMyContactList(listener);
     }
-
     public LiveData<List<HpUserModel>> getMyContactList() {
         return HpDatabaseManager.getInstance().getMyContactList();
     }
+
     public void searchAllMyContacts(String keyword, HpDatabaseListener<HpUserModel> listener) {
         HpDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
     }
@@ -333,13 +340,19 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().deleteMyContact(userModels);
     }
 
+    public void deleteAllContact() {
+        HpDatabaseManager.getInstance().deleteAllContact();
+    }
+
     public void updateMyContact(HpUserModel userModels) {
         HpDatabaseManager.getInstance().updateMyContact(userModels);
     }
 
     //General
     public void deleteAllFromDatabase() {
-        HpDatabaseManager.getInstance().deleteAll();
+        new Thread(this::deleteAllMessage).start();
+        new Thread(this::deleteAllRecentSearch).start();
+        new Thread(this::deleteAllContact).start();
     }
 
     /**

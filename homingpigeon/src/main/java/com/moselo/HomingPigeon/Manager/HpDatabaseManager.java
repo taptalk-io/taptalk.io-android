@@ -9,7 +9,6 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageRepository;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchRepository;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
@@ -81,9 +80,9 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void deleteAll() {
+    public void deleteAllMessage() {
         if (null != messageRepository)
-            messageRepository.deleteAll();
+            messageRepository.deleteAllMessage();
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -182,6 +181,13 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Recent Search Repository was not initialized");
     }
 
+    public void deleteAllRecentSearch() {
+        if (null != searchRepository)
+            searchRepository.deleteAllRecentSearch();
+        else
+            throw new IllegalStateException("Recent Search Repository was not initialized");
+    }
+
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
         if (null != searchRepository)
             return searchRepository.getAllRecentSearch();
@@ -239,6 +245,12 @@ public class HpDatabaseManager {
     public void deleteMyContact(List<HpUserModel> userModels) {
         if (null != myContactRepository)
             myContactRepository.delete(userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void deleteAllContact() {
+        if (null != myContactRepository)
+            myContactRepository.deleteAllContact();
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 

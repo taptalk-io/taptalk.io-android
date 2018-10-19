@@ -29,6 +29,10 @@ public class HpRecentSearchRepository {
         new Thread(() -> recentSearchDao.delete(entities)).start();
     }
 
+    public void deleteAllRecentSearch() {
+        new Thread(() -> recentSearchDao.deleteAllRecentSearch()).start();
+    }
+
     public void update(HpRecentSearchEntity entity) {
         new Thread(() -> recentSearchDao.update(entity)).start();
     }

@@ -22,6 +22,7 @@ public class HpSearchChatViewModel extends AndroidViewModel {
     private List<HpSearchChatModel> recentSearches;
     private Map<String, HpRoomModel> roomPointer;
     private String searchKeyword;
+    private boolean isRecentSearchShown;
 
     public HpSearchChatViewModel(@NonNull Application application) {
         super(application);
@@ -89,5 +90,13 @@ public class HpSearchChatViewModel extends AndroidViewModel {
 
     public void setRecentSearches(List<HpSearchChatModel> recentSearches) {
         this.recentSearches = recentSearches;
+    }
+
+    public boolean isRecentSearchShown() {
+        return isRecentSearchShown;
+    }
+
+    public void setRecentSearchShown(boolean recentSearchShown) {
+        isRecentSearchShown = recentSearchShown;
     }
 }

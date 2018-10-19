@@ -133,12 +133,16 @@ public class HpSearchChatFragment extends Fragment {
             HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
             vm.addRecentSearches(recentTitleItem);
 
-            if (null != hpRecentSearchEntities)
+            if (null != hpRecentSearchEntities) {
                 for (HpRecentSearchEntity entity : hpRecentSearchEntities) {
                     HpSearchChatModel recentItem = new HpSearchChatModel(RECENT_ITEM);
                     recentItem.setRecentSearch(entity);
                     vm.addRecentSearches(recentItem);
                 }
+            }
+
+            if (vm.isRecentSearchShown())
+                activity.runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
         });
 
         showRecentSearches();
@@ -147,6 +151,7 @@ public class HpSearchChatFragment extends Fragment {
     // TODO: 24/09/18 apusin dummy ini kalau udah ada datanya
     private void showRecentSearches() {
         activity.runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
+        vm.setRecentSearchShown(true);
     }
 
     private void setEmptyState() {
@@ -177,6 +182,7 @@ public class HpSearchChatFragment extends Fragment {
                 //etSearch.removeTextChangedListener(this);
                 Log.e(TAG, "onTextChanged search started: " + vm.getSearchKeyword());
                 HpDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
+                vm.setRecentSearchShown(false);
             }
         }
 

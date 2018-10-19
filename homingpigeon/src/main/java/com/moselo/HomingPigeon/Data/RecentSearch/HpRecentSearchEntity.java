@@ -20,6 +20,13 @@ public class HpRecentSearchEntity {
     public HpRecentSearchEntity() {
     }
 
+    public static HpRecentSearchEntity Builder(String text) {
+        HpRecentSearchEntity model = new HpRecentSearchEntity();
+        model.setSearchText(text);
+        model.setCreated(System.currentTimeMillis());
+        return model;
+    }
+
     @NonNull
     public String getSearchText() {
         return searchText;

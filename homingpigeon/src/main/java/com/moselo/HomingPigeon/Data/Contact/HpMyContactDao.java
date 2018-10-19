@@ -26,6 +26,9 @@ public interface HpMyContactDao {
     @Delete
     void delete(List<HpUserModel> userModels);
 
+    @Query("delete from mycontact")
+    void deleteAllContact();
+
     @Update
     void update(HpUserModel userModel);
 

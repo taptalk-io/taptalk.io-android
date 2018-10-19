@@ -44,6 +44,10 @@ public class HpMyContactRepository {
         new Thread(() -> myContactDao.delete(userModels)).start();
     }
 
+    public void deleteAllContact() {
+        new Thread(() -> myContactDao.deleteAllContact()).start();
+    }
+
     public void update(HpUserModel userModel) {
         new Thread(() -> myContactDao.update(userModel)).start();
     }
