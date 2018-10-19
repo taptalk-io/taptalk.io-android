@@ -7,12 +7,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
+import com.moselo.HomingPigeon.View.Fragment.HpBarcodeScannerFragment;
 
 public class HpQRDetection implements Detector.Processor<Barcode> {
     private Activity activity;
+    private HpBarcodeScannerFragment.ScanListener listener;
 
-    public HpQRDetection(Activity activity) {
+    public HpQRDetection(Activity activity, HpBarcodeScannerFragment.ScanListener listener) {
         this.activity = activity;
+        this.listener = listener;
     }
 
     @Override
@@ -26,7 +29,7 @@ public class HpQRDetection implements Detector.Processor<Barcode> {
 
         if (0 < barcodes.size()) {
             // TODO: 14/09/18 nnti di jalanin sesuai sama flow SOP nya
-            activity.runOnUiThread(() -> Toast.makeText(activity, barcodes.valueAt(0).displayValue, Toast.LENGTH_SHORT).show());
+            activity.runOnUiThread(() -> listener.onScanSuccess());
         }
     }
 }

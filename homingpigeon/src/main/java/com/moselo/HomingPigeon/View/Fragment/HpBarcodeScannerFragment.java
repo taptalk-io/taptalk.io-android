@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.View.Fragment;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.moselo.HomingPigeon.Helper.HpQRDetection;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
+import com.moselo.HomingPigeon.View.Activity.HpScanResultActivity;
 
 import java.io.IOException;
 
@@ -33,6 +35,17 @@ public class HpBarcodeScannerFragment extends Fragment {
 
     private CameraSource cameraSource;
     private BarcodeDetector barcodeDetector;
+
+    public interface ScanListener {
+        void onScanSuccess();
+    }
+
+    private ScanListener scanListener = () -> {
+        Intent intent = new Intent(getContext(), HpScanResultActivity.class);
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.hp_fade_in, R.anim.hp_stay);
+        getActivity().finish();
+    };
 
     public HpBarcodeScannerFragment() {
         // Required empty public constructor
@@ -64,7 +77,7 @@ public class HpBarcodeScannerFragment extends Fragment {
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
-        barcodeDetector.setProcessor(new HpQRDetection(getActivity()));
+        barcodeDetector.setProcessor(new HpQRDetection(getActivity(), scanListener));
 
         cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
                 .setAutoFocusEnabled(true)

@@ -22,6 +22,8 @@
         <activity android:name=".View.Activity.HpSearchContactActivity" />
         <activity android:name=".View.Activity.HpNewContactActivity" />
         <activity android:name=".View.Activity.HpBlockedListActivity" />
+        <activity android:name=".View.Activity.HpScanResultActivity"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".View.Activity.HpCreateNewGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
