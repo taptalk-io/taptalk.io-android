@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/cl_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:background="@drawable/hp_bg_purplish_pink_medium_purple"
+    android:background="@drawable/hp_bg_purplish_pink_medium_purple"
     tools:context=".View.Activity.HpScanResultActivity">
 
 
@@ -14,7 +13,7 @@
         android:id="@+id/cv_result"
         android:layout_width="291dp"
         android:layout_height="332dp"
-        android:alpha="0"
+        android:alpha="1"
         android:clipToPadding="true"
         app:cardCornerRadius="32dp"
         app:cardUseCompatPadding="true"
@@ -23,6 +22,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="86dp"
+            tools:background="@color/colorAccent">
+
+            <com.moselo.HomingPigeon.Helper.CircleImageView
+                android:id="@+id/civ_contact_avatar"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                tools:background="@color/brightBlue"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/civ_my_avatar"
+                android:visibility="visible"/>
+
+            <com.moselo.HomingPigeon.Helper.CircleImageView
+                android:id="@+id/civ_my_avatar"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/civ_contact_avatar"
+                tools:background="@color/red" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
 
