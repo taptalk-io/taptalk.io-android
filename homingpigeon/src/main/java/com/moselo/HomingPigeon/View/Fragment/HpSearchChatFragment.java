@@ -196,15 +196,17 @@ public class HpSearchChatFragment extends Fragment {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (etSearch.getText().toString().equals(" ")) {
+                // Clear keyword when EditText only contains a space
+                etSearch.setText("");
+                return;
+            }
+
             vm.clearSearchResults();
             vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().trim().replaceAll("[^A-Za-z0-9 ]", ""));
             adapter.setSearchKeyword(vm.getSearchKeyword());
             if (vm.getSearchKeyword().isEmpty()) {
                 showRecentSearches();
-            } else if (vm.getSearchKeyword().equals(" ")) {
-                // Clear keyword when EditText only contains a space
-                etSearch.setText("");
-                vm.setSearchKeyword("");
             } else {
                 HpDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
                 //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
