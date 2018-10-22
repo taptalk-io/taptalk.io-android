@@ -19,6 +19,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpQRDetection;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
@@ -27,6 +28,7 @@ import com.moselo.HomingPigeon.View.Activity.HpScanResultActivity;
 import java.io.IOException;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.SCAN_RESULT;
 
 public class HpBarcodeScannerFragment extends Fragment {
 
@@ -38,7 +40,7 @@ public class HpBarcodeScannerFragment extends Fragment {
     private BarcodeDetector barcodeDetector;
 
     public interface ScanListener {
-        void onScanSuccess();
+        void onScanSuccess(String textValue);
     }
 
     public HpBarcodeScannerFragment() {
@@ -71,9 +73,9 @@ public class HpBarcodeScannerFragment extends Fragment {
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
-        ScanListener scanListener = () -> {
-            Intent intent;
-            intent = new Intent(getContext(), HpScanResultActivity.class);
+        ScanListener scanListener = (String textValue) -> {
+            Intent intent = new Intent(getContext(), HpScanResultActivity.class);
+            intent.putExtra(SCAN_RESULT, textValue);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.hp_fade_in, R.anim.hp_stay);
             getActivity().finish();

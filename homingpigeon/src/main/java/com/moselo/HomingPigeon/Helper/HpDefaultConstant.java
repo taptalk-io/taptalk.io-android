@@ -122,5 +122,7 @@ public class HpDefaultConstant {
     public static final String APP_KEY_ID = "b43b48745dfa0e44k1";
     public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";
 
+    public static final String SCAN_RESULT = "kScanResult";
+
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
 }

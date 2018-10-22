@@ -19,6 +19,8 @@ import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpScanResultViewModel;
 
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.SCAN_RESULT;
+
 public class HpScanResultActivity extends HpBaseActivity {
 
     private HpScanResultViewModel mViewModel;
@@ -35,6 +37,8 @@ public class HpScanResultActivity extends HpBaseActivity {
     private TextView tvAlreadyContact;
     private TextView tvThisIsYou;
 
+    private String scanResult;
+
     public static HpScanResultActivity newInstance() {
         return new HpScanResultActivity();
     }
@@ -44,6 +48,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.hp_scan_result_activity);
         mViewModel = ViewModelProviders.of(this).get(HpScanResultViewModel.class);
+        scanResult = "";
         initView();
     }
 
@@ -60,11 +65,17 @@ public class HpScanResultActivity extends HpBaseActivity {
         tvAlreadyContact = findViewById(R.id.tv_already_contact);
         tvThisIsYou = findViewById(R.id.tv_this_is_you);
 
+        scanResult = getIntent().getStringExtra(SCAN_RESULT);
+
         GlideApp.with(this).load(HpImageURL.BuilderDummy().getThumbnail()).centerCrop().into(civMyAvatar);
         GlideApp.with(this).load("https://cdn-images-1.medium.com/max/2000/1*bn2ci0duzDEfyVwlBjeM2Q.jpeg").centerCrop().into(civContactAvatar);
-//        animateAlreadyContact();
-        llButton.setOnClickListener(v -> animateAddSuccess());
-//        viewThisIsYou();
+
+        if ("old".equals(scanResult.toLowerCase()))
+            animateAlreadyContact();
+        else if ("me".equals(scanResult.toLowerCase()))
+            viewThisIsYou();
+        else
+            llButton.setOnClickListener(v -> animateAddSuccess());
     }
 
     public void viewThisIsYou() {
@@ -83,6 +94,8 @@ public class HpScanResultActivity extends HpBaseActivity {
                         llTextUsername.setVisibility(View.GONE);
                         tvAlreadyContact.setVisibility(View.VISIBLE);
                         llButton.setVisibility(View.VISIBLE);
+                        ivButtonIcon.setImageResource(R.drawable.hp_ic_chat_white);
+                        tvButtonTitle.setText("Chat Now");
                         llButton.animate().alpha(1f).start();
                         civContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(HpUtils.getInstance().dpToPx(-54)).withEndAction(
                                 () -> {
