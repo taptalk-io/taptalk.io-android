@@ -11,22 +11,42 @@ import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
 import java.security.GeneralSecurityException;
 
 public class HpMessageModel {
+    // TODO: 22/10/18 if this class have more attribute, dont forget to add it to CopyMessageModel function
 
-    @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
-    @NonNull @JsonProperty("localID") private String localID;
+    @Nullable
+    @JsonProperty("messageID")
+    @JsonAlias("id")
+    private String messageID;
+    @NonNull
+    @JsonProperty("localID")
+    private String localID;
     @JsonProperty("room") private HpRoomModel room;
     @JsonProperty("type") private int type;
     @JsonProperty("body") private String body;
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private HpUserModel user;
     @JsonProperty("recipientID") private String recipientID;
-    @Nullable @JsonProperty("isRead") private Boolean isRead;
-    @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
-    @Nullable @JsonProperty("isHidden") private Boolean isHidden;
-    @Nullable @JsonProperty("isDeleted") private Boolean isDeleted;
-    @Nullable @JsonProperty("isSending") private Boolean isSending;
-    @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
-    @Nullable @JsonProperty("updated") private Long updated;
+    @Nullable
+    @JsonProperty("isRead")
+    private Boolean isRead;
+    @Nullable
+    @JsonProperty("isDelivered")
+    private Boolean isDelivered;
+    @Nullable
+    @JsonProperty("isHidden")
+    private Boolean isHidden;
+    @Nullable
+    @JsonProperty("isDeleted")
+    private Boolean isDeleted;
+    @Nullable
+    @JsonProperty("isSending")
+    private Boolean isSending;
+    @Nullable
+    @JsonProperty("isFailedSend")
+    private Boolean isFailedSend;
+    @Nullable
+    @JsonProperty("updated")
+    private Long updated;
     private boolean isExpanded;
     private boolean isNeedAnimateSend;
 
@@ -246,5 +266,21 @@ public class HpMessageModel {
         this.isFailedSend = model.getFailedSend();
         this.updated = model.getUpdated();
         // Update when adding fields to model
+    }
+
+    public HpMessageModel copyMessageModel() {
+        return new HpMessageModel(
+                getMessageID(),
+                getLocalID(),
+                getBody(),
+                getRoom(),
+                getType(),
+                getCreated(),
+                getUser(),
+                getRecipientID(),
+                getDeleted(),
+                getSending(),
+                getFailedSend(),
+                getUpdated());
     }
 }

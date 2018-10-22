@@ -340,8 +340,10 @@ public class HpChatManager {
     private void sendMessage(HpMessageModel messageModel) {
         // Call listener
         if (null != chatListeners && !chatListeners.isEmpty()) {
-            for (HpChatListener chatListener : chatListeners)
-                chatListener.onSendTextMessage(messageModel);
+            for (HpChatListener chatListener : chatListeners) {
+                HpMessageModel tempNewMessage = messageModel.copyMessageModel();
+                chatListener.onSendTextMessage(tempNewMessage);
+            }
         }
 
         runSendMessageSequence(messageModel);
@@ -456,23 +458,26 @@ public class HpChatManager {
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() && null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
             for (HpChatListener chatListener : chatListeners) {
+                HpMessageModel tempNewMessage = newMessage.copyMessageModel();
                 if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInActiveRoom(newMessage);
+                    chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
                 else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInActiveRoom(newMessage);
+                    chatListener.onUpdateMessageInActiveRoom(tempNewMessage);
                 else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInActiveRoom(newMessage);
+                    chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
             }
         }
         // Receive message outside active room
         else if (null != chatListeners && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
             for (HpChatListener chatListener : chatListeners) {
+                HpMessageModel tempNewMessage = newMessage.copyMessageModel();
+
                 if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInOtherRoom(newMessage);
+                    chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
                 else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInOtherRoom(newMessage);
+                    chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
                 else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInOtherRoom(newMessage);
+                    chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
             }
         }
     }
