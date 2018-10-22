@@ -87,18 +87,7 @@ public class HpRoomListFragment extends Fragment {
         initViewModel();
         initListener();
         initView(view);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         viewAppearSequence();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
     }
 
     @Override
@@ -119,12 +108,32 @@ public class HpRoomListFragment extends Fragment {
             }
 
             @Override
+            public void onReceiveMessageInActiveRoom(HpMessageModel message) {
+                processMessageFromSocket(message);
+            }
+
+            @Override
             public void onUpdateMessageInOtherRoom(HpMessageModel message) {
                 processMessageFromSocket(message);
             }
 
             @Override
+            public void onUpdateMessageInActiveRoom(HpMessageModel message) {
+                processMessageFromSocket(message);
+            }
+
+            @Override
             public void onDeleteMessageInOtherRoom(HpMessageModel message) {
+                processMessageFromSocket(message);
+            }
+
+            @Override
+            public void onDeleteMessageInActiveRoom(HpMessageModel message) {
+                processMessageFromSocket(message);
+            }
+
+            @Override
+            public void onSendTextMessage(HpMessageModel message) {
                 processMessageFromSocket(message);
             }
         };
