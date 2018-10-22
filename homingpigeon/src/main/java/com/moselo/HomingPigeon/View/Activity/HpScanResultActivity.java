@@ -33,6 +33,7 @@ public class HpScanResultActivity extends HpBaseActivity {
     private LinearLayout llTextUsername;
     private LinearLayout llAddSuccess;
     private ImageView ivButtonIcon;
+    private ImageView ivButtonClose;
     private TextView tvButtonTitle;
     private TextView tvAlreadyContact;
     private TextView tvThisIsYou;
@@ -61,6 +62,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         llTextUsername = findViewById(R.id.ll_text_username);
         llAddSuccess = findViewById(R.id.ll_add_success);
         ivButtonIcon = findViewById(R.id.iv_button_icon);
+        ivButtonClose = findViewById(R.id.iv_button_close);
         tvButtonTitle = findViewById(R.id.tv_button_title);
         tvAlreadyContact = findViewById(R.id.tv_already_contact);
         tvThisIsYou = findViewById(R.id.tv_this_is_you);
@@ -69,6 +71,8 @@ public class HpScanResultActivity extends HpBaseActivity {
 
         GlideApp.with(this).load(HpImageURL.BuilderDummy().getThumbnail()).centerCrop().into(civMyAvatar);
         GlideApp.with(this).load("https://cdn-images-1.medium.com/max/2000/1*bn2ci0duzDEfyVwlBjeM2Q.jpeg").centerCrop().into(civContactAvatar);
+
+        ivButtonClose.setOnClickListener(v -> onBackPressed());
 
         if ("old".equals(scanResult.toLowerCase()))
             animateAlreadyContact();

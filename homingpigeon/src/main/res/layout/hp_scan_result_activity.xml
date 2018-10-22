@@ -30,16 +30,30 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true">
 
+            <ImageView
+                android:id="@+id/iv_button_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:padding="24dp"
+                android:src="@drawable/hp_close_icon_white_black_rounded"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_avatar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="86dp"
                 app:layout_constraintBottom_toTopOf="@id/fl_name_card_data"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:background="@color/colorAccent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <com.moselo.HomingPigeon.Helper.CircleImageView
                     android:id="@+id/civ_contact_avatar"
@@ -76,9 +90,9 @@
                     android:id="@+id/ll_text_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="26dp"
                     android:animateLayoutChanges="true"
                     android:orientation="vertical"
-                    android:layout_marginBottom="26dp"
                     android:visibility="visible">
 
                     <TextView
@@ -160,10 +174,10 @@
                 android:alpha="1"
                 android:animateLayoutChanges="true"
                 android:background="@color/colorAccent"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:visibility="visible"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -191,17 +205,17 @@
                 android:id="@+id/tv_this_is_you"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/black_44"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
                 android:letterSpacing="0.01"
                 android:text="@string/this_is_you"
-                android:gravity="center"
+                android:textColor="@color/black_44"
+                android:textSize="13sp"
                 android:visibility="gone"
-                android:layout_marginBottom="24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/fl_name_card_data"/>
+                app:layout_constraintTop_toBottomOf="@id/fl_name_card_data" />
 
 
         </android.support.constraint.ConstraintLayout>
