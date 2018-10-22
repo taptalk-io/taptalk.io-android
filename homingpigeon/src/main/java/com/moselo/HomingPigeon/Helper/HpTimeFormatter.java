@@ -1,5 +1,9 @@
 package com.moselo.HomingPigeon.Helper;
 
+import android.content.Context;
+
+import com.moselo.HomingPigeon.R;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -22,9 +26,6 @@ public class HpTimeFormatter {
             TimeUnit.HOURS.toMillis(1),
             TimeUnit.MINUTES.toMillis(1),
             TimeUnit.SECONDS.toMillis(1));
-
-    public static final int TYPE_DEFAULT = 0;
-    public static final int TYPE_ONLINE_STATUS = 1;
 
     public static String durationString(long timestamp) {
         long timeGap;
@@ -51,7 +52,34 @@ public class HpTimeFormatter {
         } else if (timeGap <= HpTimeFormatter.times.get(3) * 6 + midnightTimeGap) {
             return formatDay(timestamp);
         } else {
-            return formatTimeAndDate(timestamp);
+            return formatDate(timestamp);
+        }
+    }
+
+    public static String durationChatString(Context context, long timestamp) {
+        long timeGap;
+        long timeNow = Calendar.getInstance().getTimeInMillis();
+        Calendar past = Calendar.getInstance();
+        past.setTime(new Date(timestamp));
+        timeGap = timeNow - past.getTimeInMillis();
+
+        long midnightTimeGap;
+        Calendar midnightToday = Calendar.getInstance();
+        midnightToday.setTime(new Date(timeNow));
+        midnightToday.set(Calendar.HOUR, -12);
+        midnightToday.set(Calendar.MINUTE, 0);
+        midnightToday.set(Calendar.SECOND, 0);
+        midnightTimeGap = timeNow - midnightToday.getTimeInMillis();
+        String sentAt = context.getString(R.string.sent_at);
+
+        if (timestamp == 0) {
+            return "";
+        } else if (timeGap <= midnightTimeGap) {
+            return sentAt+" "+formatClock(timestamp);
+        } else if (timeGap <= HpTimeFormatter.times.get(3) + midnightTimeGap) {
+            return "Sent Yesterday at "+formatClock(timestamp);
+        } else {
+            return sentAt+" "+formatDate(timestamp)+" "+formatClock(timestamp);
         }
     }
 
@@ -60,7 +88,7 @@ public class HpTimeFormatter {
         return timeSdf.format(timestamp);
     }
 
-    public static String formatTimeAndDate(long timestamp) {
+    public static String formatDate(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
