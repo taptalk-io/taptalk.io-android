@@ -12,6 +12,7 @@ import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
@@ -398,5 +399,9 @@ public class HpDataManager {
 
     public void getMyContactListFromAPI(HpDefaultDataView<HpContactResponse> view) {
         HpApiManager.getInstance().getMyContactListFromAPI(new DefaultSubscriber<>(view));
+    }
+
+    public void addContactAPI(String userID, HpDefaultDataView<HpCommonResponse> view) {
+        HpApiManager.getInstance().addContact(userID, new DefaultSubscriber<>(view));
     }
 }

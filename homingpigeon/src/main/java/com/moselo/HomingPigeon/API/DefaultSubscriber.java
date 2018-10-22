@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.API;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.API.View.HpView;
+import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 
 import rx.Subscriber;
 

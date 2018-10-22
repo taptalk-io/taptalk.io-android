@@ -1,16 +1,8 @@
 package com.moselo.HomingPigeon.API.Service;
 
-import com.moselo.HomingPigeon.API.BaseResponse;
-import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomBeforeRequest;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
 
-import retrofit2.http.Body;
 import retrofit2.http.POST;
 import rx.Observable;
 
