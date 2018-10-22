@@ -18,6 +18,7 @@ import android.widget.Button;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HpQRDetection;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
@@ -29,7 +30,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest
 
 public class HpBarcodeScannerFragment extends Fragment {
 
-    private static final String TAG = HpBarcodeScannerFragment.class.getSimpleName() ;
+    private static final String TAG = HpBarcodeScannerFragment.class.getSimpleName();
     private SurfaceView svScanner;
     private Button btnShowQRCode;
 
@@ -39,13 +40,6 @@ public class HpBarcodeScannerFragment extends Fragment {
     public interface ScanListener {
         void onScanSuccess();
     }
-
-    private ScanListener scanListener = () -> {
-        Intent intent = new Intent(getContext(), HpScanResultActivity.class);
-        startActivity(intent);
-        getActivity().overridePendingTransition(R.anim.hp_fade_in, R.anim.hp_stay);
-        getActivity().finish();
-    };
 
     public HpBarcodeScannerFragment() {
         // Required empty public constructor
@@ -76,6 +70,14 @@ public class HpBarcodeScannerFragment extends Fragment {
         barcodeDetector = new BarcodeDetector.Builder(getContext())
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
+
+        ScanListener scanListener = () -> {
+            Intent intent;
+            intent = new Intent(getContext(), HpScanResultActivity.class);
+            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.hp_fade_in, R.anim.hp_stay);
+            getActivity().finish();
+        };
 
         barcodeDetector.setProcessor(new HpQRDetection(getActivity(), scanListener));
 
@@ -119,7 +121,7 @@ public class HpBarcodeScannerFragment extends Fragment {
     public void startCameraSource() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
-        }else {
+        } else {
             try {
                 cameraSource.start(svScanner.getHolder());
             } catch (IOException e) {

@@ -28,7 +28,6 @@ public class HpQRDetection implements Detector.Processor<Barcode> {
         final SparseArray<Barcode> barcodes = detections.getDetectedItems();
 
         if (0 < barcodes.size()) {
-            // TODO: 14/09/18 nnti di jalanin sesuai sama flow SOP nya
             activity.runOnUiThread(() -> listener.onScanSuccess());
         }
     }

@@ -11,9 +11,12 @@
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv_result"
-        android:layout_width="291dp"
-        android:layout_height="332dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="42dp"
+        android:layout_marginEnd="42dp"
         android:alpha="1"
+        android:animateLayoutChanges="true"
         android:clipToPadding="true"
         app:cardCornerRadius="32dp"
         app:cardUseCompatPadding="true"
@@ -24,13 +27,15 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_avatar"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
+                app:layout_constraintBottom_toTopOf="@id/fl_name_card_data"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -41,7 +46,7 @@
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:visibility="visible"
-                    app:layout_constraintEnd_toStartOf="@id/civ_my_avatar"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:background="@color/brightBlue" />
@@ -51,15 +56,18 @@
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/civ_contact_avatar"
+                    app:layout_constraintStart_toStartOf="parent"
                     tools:background="@color/red" />
 
             </android.support.constraint.ConstraintLayout>
 
             <FrameLayout
+                android:id="@+id/fl_name_card_data"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@id/ll_button"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:animateLayoutChanges="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cl_avatar">
@@ -68,36 +76,34 @@
                     android:id="@+id/ll_text_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
                     android:orientation="vertical"
+                    android:layout_marginBottom="26dp"
                     android:visibility="visible">
 
                     <TextView
                         android:id="@+id/user_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:text="NAMANYABERNAMA"
-                        android:maxLines="2"
-                        android:ellipsize="end"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginEnd="24dp"
-                        android:fontFamily="@font/hp_font_neueeinstellungbold"
-                        android:textColor="@color/mediumPurple"
-                        android:textSize="20sp"
                         android:layout_marginTop="13dp"
-                        />
+                        android:ellipsize="end"
+                        android:fontFamily="@font/hp_font_neueeinstellungbold"
+                        android:gravity="center_horizontal"
+                        android:maxLines="2"
+                        android:text="NAMANYABERNAMA"
+                        android:textColor="@color/mediumPurple"
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/user_fullname"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/hp_font_neueeinstellungregular"
                         android:gravity="center_horizontal"
                         android:text="Vivamus adipiscing fermentum quam "
-                        android:fontFamily="@font/hp_font_neueeinstellungregular"
                         android:textColor="@color/mediumPurple"
-                        android:textSize="13sp"
-                        android:layout_marginTop="4dp"
-                        />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -105,28 +111,29 @@
                     android:id="@+id/ll_add_success"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:alpha="0"
+                    android:orientation="vertical"
                     android:visibility="gone">
 
                     <ImageView
+                        android:id="@+id/iv_add_success"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/hp_ic_audio_green_blue"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="40dp"/>
+                        android:layout_marginTop="40dp"
+                        android:src="@drawable/hp_ic_add_contact" />
 
                     <TextView
                         android:id="@+id/tv_add_success"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="41dp"
+                        android:fontFamily="@font/hp_font_neueeinstellungregular"
                         android:gravity="center_horizontal"
                         android:text=" You have added Chandravadan to your contacts"
-                        android:fontFamily="@font/hp_font_neueeinstellungregular"
                         android:textColor="@color/mediumPurple"
-                        android:textSize="13sp"
-                        android:layout_marginTop="8dp"
-                        />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -134,9 +141,11 @@
                     android:id="@+id/tv_already_contact"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="64dp"
+                    android:layout_marginBottom="40dp"
                     android:alpha="0"
                     android:fontFamily="@font/hp_font_neueeinstellungregular"
-                    android:gravity="center"
+                    android:gravity="center_horizontal"
                     android:text="Chandravadan is already in your contacts"
                     android:textAlignment="center"
                     android:textColor="@color/mediumPurple"
@@ -146,22 +155,25 @@
 
             <LinearLayout
                 android:id="@+id/ll_button"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="54dp"
-                android:alpha="0"
+                android:alpha="1"
+                android:animateLayoutChanges="true"
                 android:background="@color/colorAccent"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="gone"
+                android:visibility="visible"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fl_name_card_data">
 
                 <ImageView
                     android:id="@+id/iv_button_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/hp_ic_chat_white" />
+                    android:src="@drawable/hp_ic_add_white" />
 
                 <TextView
                     android:id="@+id/tv_button_title"
@@ -169,11 +181,27 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/hp_font_neueeinstellungbold"
-                    android:text="Chat Now"
+                    android:text="Add to Contacts"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_this_is_you"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/black_44"
+                android:letterSpacing="0.01"
+                android:text="@string/this_is_you"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fl_name_card_data"/>
 
 
         </android.support.constraint.ConstraintLayout>

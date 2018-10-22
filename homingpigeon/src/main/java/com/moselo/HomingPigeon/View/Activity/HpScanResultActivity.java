@@ -33,6 +33,7 @@ public class HpScanResultActivity extends HpBaseActivity {
     private ImageView ivButtonIcon;
     private TextView tvButtonTitle;
     private TextView tvAlreadyContact;
+    private TextView tvThisIsYou;
 
     public static HpScanResultActivity newInstance() {
         return new HpScanResultActivity();
@@ -57,74 +58,63 @@ public class HpScanResultActivity extends HpBaseActivity {
         ivButtonIcon = findViewById(R.id.iv_button_icon);
         tvButtonTitle = findViewById(R.id.tv_button_title);
         tvAlreadyContact = findViewById(R.id.tv_already_contact);
+        tvThisIsYou = findViewById(R.id.tv_this_is_you);
 
         GlideApp.with(this).load(HpImageURL.BuilderDummy().getThumbnail()).centerCrop().into(civMyAvatar);
         GlideApp.with(this).load("https://cdn-images-1.medium.com/max/2000/1*bn2ci0duzDEfyVwlBjeM2Q.jpeg").centerCrop().into(civContactAvatar);
-        animateAlreadyContact();
-//        animateAddSuccess();
+//        animateAlreadyContact();
+        llButton.setOnClickListener(v -> animateAddSuccess());
+//        viewThisIsYou();
+    }
+
+    public void viewThisIsYou() {
+        llButton.setVisibility(View.GONE);
+        tvThisIsYou.setVisibility(View.VISIBLE);
     }
 
     public void animateAlreadyContact() {
         civContactAvatar.setTranslationX(HpUtils.getInstance().dpToPx(-291));
-        civMyAvatar.setTranslationX(HpUtils.getInstance().dpToPx(-30));
+        civMyAvatar.setTranslationX(0);
         cvResult.animate()
                 .alpha(1f).withEndAction(
                 () -> {
-                    civMyAvatar.animate().scaleY(0.8f).start();
-                    civContactAvatar.animate().scaleY(0.8f).start();
+                    llButton.animate().alpha(0f).start();
                     llTextUsername.animate().alpha(0f).withEndAction(() -> {
                         llTextUsername.setVisibility(View.GONE);
-                        tvAlreadyContact.setScaleY(0.8f);
                         tvAlreadyContact.setVisibility(View.VISIBLE);
-                        tvAlreadyContact.animate().alpha(1f).start();
+                        llButton.setVisibility(View.VISIBLE);
+                        llButton.animate().alpha(1f).start();
+                        civContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(HpUtils.getInstance().dpToPx(-54)).withEndAction(
+                                () -> {
+                                    civContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(HpUtils.getInstance().dpToPx(-24)).start();
+                                    civMyAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(HpUtils.getInstance().dpToPx(48)).withEndAction(
+                                            () -> civMyAvatar.animate().setInterpolator(new AccelerateInterpolator()).setDuration(150).translationX(24).start()).start();
+                                }).start();
                     }).start();
-                    tvButtonTitle.setScaleY(0.8f);
-                    tvButtonTitle.setVisibility(View.VISIBLE);
-                    tvButtonTitle.animate().alpha(1f).start();
-                    ivButtonIcon.setScaleY(0.8f);
-                    ivButtonIcon.setVisibility(View.VISIBLE);
-                    ivButtonIcon.animate().alpha(1f).start();
-                    llButton.setVisibility(View.VISIBLE);
-                    llButton.animate().alpha(1f).start();
-                    cvResult.animate().scaleY(1.25f).withEndAction(
-                            () -> civContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(HpUtils.getInstance().dpToPx(-24)).withEndAction(
-                                    () -> {
-                                        civContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(HpUtils.getInstance().dpToPx(10)).start();
-                                        civMyAvatar.animate().setDuration(100).translationX(HpUtils.getInstance().dpToPx(0)).withEndAction(
-                                                () -> civMyAvatar.animate().setDuration(100).translationX(-50).start()).start();
-                                    }).start()).start();
                 }).start();
     }
 
     public void animateAddSuccess() {
         civContactAvatar.setTranslationX(HpUtils.getInstance().dpToPx(-291));
-        civMyAvatar.setTranslationX(HpUtils.getInstance().dpToPx(-30));
+        civMyAvatar.setTranslationX(0);
         cvResult.animate()
                 .alpha(1f).withEndAction(
                 () -> {
-                    civMyAvatar.animate().scaleY(0.8f).start();
-                    civContactAvatar.animate().scaleY(0.8f).start();
+                    llButton.animate().alpha(0f).start();
                     llTextUsername.animate().alpha(0f).withEndAction(() -> {
                         llTextUsername.setVisibility(View.GONE);
-                        llAddSuccess.setScaleY(0.8f);
                         llAddSuccess.setVisibility(View.VISIBLE);
-                        llAddSuccess.animate().alpha(1f).start();
+                        llButton.setVisibility(View.VISIBLE);
+                        ivButtonIcon.setImageResource(R.drawable.hp_ic_chat_white);
+                        tvButtonTitle.setText("Chat Now");
+                        llButton.animate().alpha(1f).start();
+                        civContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(HpUtils.getInstance().dpToPx(-54)).withEndAction(
+                                () -> {
+                                    civContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(HpUtils.getInstance().dpToPx(-24)).start();
+                                    civMyAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(HpUtils.getInstance().dpToPx(48)).withEndAction(
+                                            () -> civMyAvatar.animate().setInterpolator(new AccelerateInterpolator()).setDuration(150).translationX(24).start()).start();
+                                }).start();
                     }).start();
-                    tvButtonTitle.setScaleY(0.8f);
-                    tvButtonTitle.setVisibility(View.VISIBLE);
-                    tvButtonTitle.animate().alpha(1f).start();
-                    ivButtonIcon.setScaleY(0.8f);
-                    ivButtonIcon.setVisibility(View.VISIBLE);
-                    ivButtonIcon.animate().alpha(1f).start();
-                    llButton.setVisibility(View.VISIBLE);
-                    llButton.animate().alpha(1f).start();
-                    cvResult.animate().scaleY(1.25f).withEndAction(
-                            () -> civContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(HpUtils.getInstance().dpToPx(-24)).withEndAction(
-                                    () -> {
-                                        civContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(HpUtils.getInstance().dpToPx(10)).start();
-                                        civMyAvatar.animate().setDuration(100).translationX(HpUtils.getInstance().dpToPx(0)).withEndAction(
-                                                () -> civMyAvatar.animate().setDuration(100).translationX(-50).start()).start();
-                                    }).start()).start();
                 }).start();
     }
 }
