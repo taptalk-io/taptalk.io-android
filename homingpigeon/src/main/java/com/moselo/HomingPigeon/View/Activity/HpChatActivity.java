@@ -676,6 +676,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 //masukin datanya ke dalem recyclerView
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 hpMessageAdapter.addMessage(0, messageAfterModels);
+                updateMessageDecoration();
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
                 if (vm.isOnBottom()) rvMessageList.scrollToPosition(0);
@@ -761,6 +762,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 hpMessageAdapter.addMessage(messageBeforeModels);
+                updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
@@ -818,6 +820,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 hpMessageAdapter.addMessage(messageBeforeModels);
+                updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
 
