@@ -69,7 +69,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         private TextView tvClearHistory;
         private TextView tvRecentTitle;
 
-        protected RecentTitleVH(ViewGroup parent, int itemLayoutId) {
+        RecentTitleVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             tvClearHistory = itemView.findViewById(R.id.tv_clear_history);
             tvRecentTitle = itemView.findViewById(R.id.tv_recent_title);
@@ -88,12 +88,13 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         }
     }
 
+    // Unused
     public class RecentItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private TextView tvSearchText;
         private ImageView ivCloseBtn;
 
-        protected RecentItemVH(ViewGroup parent, int itemLayoutId) {
+        RecentItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             tvSearchText = itemView.findViewById(R.id.tv_search_text);
             ivCloseBtn = itemView.findViewById(R.id.iv_close_btn);
@@ -106,6 +107,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         }
     }
 
+    // Unused
     public class ChatItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         private CircleImageView civAvatar;

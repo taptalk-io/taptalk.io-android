@@ -222,12 +222,12 @@ public class HpDataManager {
      * =========================================================================================== *
      */
 
-    //initialized Database Managernya yang di panggil di class Homing Pigeon
+    // initialized Database Managernya yang di panggil di class Homing Pigeon
     public void initDatabaseManager(String databaseType, Application application) {
         HpDatabaseManager.getInstance().setRepository(databaseType, application);
     }
 
-    //Message
+    // Message
     public void insertToDatabase(HpMessageEntity messageEntity) {
         HpDatabaseManager.getInstance().insert(messageEntity);
     }
@@ -268,27 +268,27 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().searchAllMessages(keyword, listener);
     }
 
-    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getRoomList(myID, saveMessages, isCheckUnreadFirst, listener);
+    public void getRoomList(List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
-    public void getRoomList(String myID, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getRoomList(myID, isCheckUnreadFirst, listener);
+    public void getRoomList(boolean isCheckUnreadFirst, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), isCheckUnreadFirst, listener);
     }
 
     public void searchAllRoomsFromDatabase(String keyword, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().searchAllRooms(keyword, listener);
+        HpDatabaseManager.getInstance().searchAllRooms(getActiveUser().getUserID(), keyword, listener);
     }
 
-    public void getUnreadCountPerRoom(String myID, String roomID, final HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getUnreadCountPerRoom(myID, roomID, listener);
+    public void getUnreadCountPerRoom(String roomID, final HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getUnreadCountPerRoom(getActiveUser().getUserID(), roomID, listener);
     }
 
     public void deleteAllMessage() {
         HpDatabaseManager.getInstance().deleteAllMessage();
     }
-    //Recent Search
 
+    // Recent Search
     public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
         HpDatabaseManager.getInstance().insert(recentSearchEntity);
     }
@@ -308,8 +308,8 @@ public class HpDataManager {
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
         return HpDatabaseManager.getInstance().getRecentSearchLive();
     }
-    //My Contact
 
+    // My Contact
     public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
         HpDatabaseManager.getInstance().getMyContactList(listener);
     }

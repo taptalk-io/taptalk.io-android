@@ -36,6 +36,7 @@ import com.moselo.HomingPigeon.View.Adapter.HpSearchChatAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.EMPTY_STATE;
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.MESSAGE_ITEM;
@@ -157,7 +158,6 @@ public class HpSearchChatFragment extends Fragment {
                             HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage()),
                             entity.getRoomColor());
                     recentItem.setRoom(roomModel);
-                    Log.e(TAG, "setRecentSearchItemsFromDatabase: " + recentItem.getRoom().getRoomName());
                     vm.addRecentSearches(recentItem);
                 }
             }
@@ -201,6 +201,10 @@ public class HpSearchChatFragment extends Fragment {
             adapter.setSearchKeyword(vm.getSearchKeyword());
             if (vm.getSearchKeyword().isEmpty()) {
                 showRecentSearches();
+            } else if (vm.getSearchKeyword().equals(" ")) {
+                // Clear keyword when EditText only contains a space
+                etSearch.setText("");
+                vm.setSearchKeyword("");
             } else {
                 HpDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
                 //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
@@ -216,8 +220,7 @@ public class HpSearchChatFragment extends Fragment {
 
     private HpDatabaseListener<HpMessageEntity> roomSearchListener = new HpDatabaseListener<HpMessageEntity>() {
         @Override
-        public void onSelectFinished(List<HpMessageEntity> entities) {
-            Log.e(TAG, "onSelectFinished search room finished: " + entities.size());
+        public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
             if (entities.size() > 0) {
                 HpSearchChatModel sectionTitleChatsAndContacts = new HpSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.chats_and_contacts));
@@ -235,6 +238,7 @@ public class HpSearchChatFragment extends Fragment {
                             }, entity.getRoomImage())
                             /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                             entity.getRoomColor());
+                    room.setUnreadCount(unreadMap.get(room.getRoomID()));
                     result.setRoom(room);
                     vm.addSearchResult(result);
                 }
@@ -247,7 +251,6 @@ public class HpSearchChatFragment extends Fragment {
     private HpDatabaseListener<HpUserModel> contactSearchListener = new HpDatabaseListener<HpUserModel>() {
         @Override
         public void onSelectFinished(List<HpUserModel> entities) {
-            Log.e(TAG, "onSelectFinished search contact finished: " + entities.size());
             if (entities.size() > 0) {
                 if (vm.getSearchResults().size() == 0) {
                     HpSearchChatModel sectionTitleChatsAndContacts = new HpSearchChatModel(SECTION_TITLE);
@@ -281,7 +284,6 @@ public class HpSearchChatFragment extends Fragment {
     private HpDatabaseListener<HpMessageEntity> messageSearchListener = new HpDatabaseListener<HpMessageEntity>() {
         @Override
         public void onSelectFinished(List<HpMessageEntity> entities) {
-            Log.e(TAG, "onSelectFinished search message finished: " + entities.size());
             if (entities.size() > 0) {
                 HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
                 sectionTitleMessages.setSectionTitle(getString(R.string.messages));

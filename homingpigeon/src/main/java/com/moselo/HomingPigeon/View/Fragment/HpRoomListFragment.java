@@ -224,7 +224,7 @@ public class HpRoomListFragment extends Fragment {
     private void viewAppearSequence() {
         if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
             //selama di apps (foreground) ga perlu panggil API, ambil local dari database aja
-            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbListener);
+            HpDataManager.getInstance().getRoomList(true, dbListener);
         } else {
             //kalau kita dari background atau pertama kali buka apps, kita baru jalanin full cycle
             runFullRefreshSequence();
@@ -233,17 +233,17 @@ public class HpRoomListFragment extends Fragment {
 
     private void getDatabaseAndAnimateResult() {
         //viewnya pake yang dbAnimatedListener
-        HpDataManager.getInstance().getRoomList(vm.getMyUserID(), true, dbAnimatedListener);
+        HpDataManager.getInstance().getRoomList(true, dbAnimatedListener);
     }
 
     //ini fungsi untuk manggil full cycle dari room List
     private void runFullRefreshSequence() {
         if (vm.getRoomList().size() > 0) {
             //kalau ga recyclerView ga kosong, kita check dan update unread dlu baru update tampilan
-            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), true, dbListener);
+            HpDataManager.getInstance().getRoomList(HpChatManager.getInstance().getSaveMessages(), true, dbListener);
         } else {
             //kalau recyclerView masih kosong, kita tampilin room dlu baru update unreadnya
-            HpDataManager.getInstance().getRoomList(vm.getMyUserID(), HpChatManager.getInstance().getSaveMessages(), false, dbListener);
+            HpDataManager.getInstance().getRoomList(HpChatManager.getInstance().getSaveMessages(), false, dbListener);
         }
     }
 
@@ -408,7 +408,7 @@ public class HpRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 //update unread count nya per room
-                HpDataManager.getInstance().getUnreadCountPerRoom(vm.getMyUserID(), entity.getRoomID(), dbListener);
+                HpDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
             }
 
             vm.setRoomList(messageModels);

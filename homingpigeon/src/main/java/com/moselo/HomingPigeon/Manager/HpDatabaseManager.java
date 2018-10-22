@@ -134,9 +134,9 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void searchAllRooms(String keyword, HpDatabaseListener listener) {
+    public void searchAllRooms(String myID, String keyword, HpDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.searchAllChatRooms(keyword, listener);
+            messageRepository.searchAllChatRooms(myID, keyword, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
