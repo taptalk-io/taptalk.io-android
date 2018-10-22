@@ -36,11 +36,11 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
     public HpBaseViewHolder<HpSearchChatModel> onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (HpSearchChatModel.Type.values()[viewType]){
             case RECENT_TITLE:
-                return new RecentTitleVH(parent, R.layout.hp_cell_recent_search_title);
+                return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
             case RECENT_ITEM:
                 return new RecentItemVH(parent, R.layout.hp_cell_recent_search_item);
             case SECTION_TITLE:
-                return new RecentTitleVH(parent, R.layout.hp_cell_recent_search_title);
+                return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
             case CHAT_ITEM:
                 return new ChatItemVH(parent, R.layout.hp_cell_search_chat_item);
             case ROOM_ITEM:
@@ -65,6 +65,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
     }
 
     public class RecentTitleVH extends HpBaseViewHolder<HpSearchChatModel> {
+
         private TextView tvClearHistory;
         private TextView tvRecentTitle;
 
@@ -79,8 +80,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
             if (HpSearchChatModel.Type.SECTION_TITLE == item.getType()) {
                 tvClearHistory.setVisibility(View.GONE);
                 tvRecentTitle.setText(item.getSectionTitle());
-            }
-            else {
+            } else {
                 tvClearHistory.setVisibility(View.VISIBLE);
                 //ini ngecek karena VH ini di pake di section title jga biar ga slalu ke set listenernya
                 tvClearHistory.setOnClickListener(v -> HpDataManager.getInstance().deleteAllRecentSearch());
@@ -101,7 +101,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
         @Override
         protected void onBind(HpSearchChatModel item, int position) {
-            tvSearchText.setText(item.getRecentSearch().getSearchText());
+//            tvSearchText.setText(item.getRecentSearch().getSearchText());
             ivCloseBtn.setOnClickListener(v -> HpDataManager.getInstance().deleteFromDatabase(item.getRecentSearch()));
         }
     }
@@ -271,7 +271,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                         room.getRoomType(),
                         room.getRoomColor());
 
-                HpRecentSearchEntity recentItem = HpRecentSearchEntity.Builder(room.getRoomName());
+                HpRecentSearchEntity recentItem = HpRecentSearchEntity.Builder(item);
                 HpDataManager.getInstance().insertToDatabase(recentItem);
             });
         }

@@ -47,6 +47,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private float initialTranslationX = HpUtils.getInstance().dpToPx(-16);
+    private long defaultAnimationTime = 200L;
 
     public HpMessageAdapter(HpChatListener listener) {
         myUserModel = HpDataManager.getInstance().getActiveUser();
@@ -430,7 +431,6 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 item.setExpanded(true);
             }
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, true);
-            listener.onMessageClicked(item, item.isExpanded());
         }
     }
 
@@ -484,7 +484,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         view.animate()
                 .translationY(0)
                 .alpha(1f)
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
     }
@@ -496,16 +496,17 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         view.animate()
                 .translationY(0)
                 .alpha(1f)
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
+        new Handler().postDelayed(() -> listener.onBubbleExpanded(), 50L);
     }
 
     private void animateFadeOutToTop(View view) {
         view.animate()
                 .translationY(HpUtils.getInstance().dpToPx(-24))
                 .alpha(0)
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .withEndAction(() -> {
                     view.setVisibility(View.GONE);
@@ -519,7 +520,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         view.animate()
                 .translationY(HpUtils.getInstance().dpToPx(24))
                 .alpha(0)
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .withEndAction(() -> {
                     view.setVisibility(View.GONE);
@@ -537,7 +538,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 .translationX(0)
                 .alpha(1f)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .start();
     }
 
@@ -549,7 +550,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 .translationX(0)
                 .alpha(1f)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .start();
     }
 
@@ -558,7 +559,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 .translationX(HpUtils.getInstance().dpToPx(-32))
                 .alpha(0f)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .withEndAction(() -> {
                     view.setVisibility(View.GONE);
                     view.setAlpha(1);
@@ -572,7 +573,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 .translationX(HpUtils.getInstance().dpToPx(32))
                 .alpha(0f)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setDuration(150L)
+                .setDuration(defaultAnimationTime)
                 .withEndAction(() -> {
                     view.setVisibility(View.GONE);
                     view.setAlpha(1);

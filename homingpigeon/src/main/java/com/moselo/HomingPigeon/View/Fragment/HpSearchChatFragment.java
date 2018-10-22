@@ -116,6 +116,14 @@ public class HpSearchChatFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                HpUtils.getInstance().dismissKeyboard(activity);
+            }
+        });
+
         ivButtonBack.setOnClickListener(v -> {
             ((HpRoomListActivity) activity).showRoomList();
             HpUtils.getInstance().dismissKeyboard(activity);
@@ -134,13 +142,22 @@ public class HpSearchChatFragment extends Fragment {
         vm.getRecentSearchList().observe(this, hpRecentSearchEntities -> {
             vm.clearRecentSearches();
 
-            HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
-            vm.addRecentSearches(recentTitleItem);
+            if (null != hpRecentSearchEntities && hpRecentSearchEntities.size() > 0) {
+                HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
+                vm.addRecentSearches(recentTitleItem);
+            }
 
             if (null != hpRecentSearchEntities) {
                 for (HpRecentSearchEntity entity : hpRecentSearchEntities) {
-                    HpSearchChatModel recentItem = new HpSearchChatModel(RECENT_ITEM);
-                    recentItem.setRecentSearch(entity);
+                    HpSearchChatModel recentItem = new HpSearchChatModel(ROOM_ITEM);
+                    HpRoomModel roomModel = new HpRoomModel(
+                            entity.getRoomID(),
+                            entity.getRoomName(),
+                            entity.getRoomType(),
+                            HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage()),
+                            entity.getRoomColor());
+                    recentItem.setRoom(roomModel);
+                    Log.e(TAG, "setRecentSearchItemsFromDatabase: " + recentItem.getRoom().getRoomName());
                     vm.addRecentSearches(recentItem);
                 }
             }
@@ -165,12 +182,8 @@ public class HpSearchChatFragment extends Fragment {
 
     //ini fungsi buat set tampilan kalau lagi empty
     private void setEmptyState() {
-        HpSearchChatModel emptyTitle = new HpSearchChatModel(SECTION_TITLE);
-        emptyTitle.setSectionTitle(getString(R.string.search_results));
         HpSearchChatModel emptyItem = new HpSearchChatModel(EMPTY_STATE);
-
         vm.clearSearchResults();
-        vm.addSearchResult(emptyTitle);
         vm.addSearchResult(emptyItem);
         activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
@@ -189,7 +202,6 @@ public class HpSearchChatFragment extends Fragment {
             if (vm.getSearchKeyword().isEmpty()) {
                 showRecentSearches();
             } else {
-                //etSearch.removeTextChangedListener(this);
                 HpDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
                 //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
                 vm.setRecentSearchShown(false);
@@ -253,6 +265,7 @@ public class HpSearchChatFragment extends Fragment {
                             contact.getAvatarURL(),
                             /* SET DEFAULT ROOM COLOR*/""
                     );
+                    // Check if result already contains contact from chat room query
                     if (!vm.resultContainsRoom(room.getRoomID())) {
                         result.setRoom(room);
                         vm.addSearchResult(result);
@@ -283,7 +296,6 @@ public class HpSearchChatFragment extends Fragment {
             } else if (vm.getSearchResults().size() == 0) {
                 setEmptyState();
             }
-            //etSearch.addTextChangedListener(searchTextWatcher);
         }
     };
 }

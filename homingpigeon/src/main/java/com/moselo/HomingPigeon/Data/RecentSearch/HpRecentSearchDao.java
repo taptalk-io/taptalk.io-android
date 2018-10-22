@@ -28,6 +28,6 @@ public interface HpRecentSearchDao {
     @Update
     void update(HpRecentSearchEntity entity);
 
-    @Query("select * from Recent_Search order by Created desc")
+    @Query("select * from Recent_Search order by created desc")
     LiveData<List<HpRecentSearchEntity>> getAllRecentSearchLive();
 }

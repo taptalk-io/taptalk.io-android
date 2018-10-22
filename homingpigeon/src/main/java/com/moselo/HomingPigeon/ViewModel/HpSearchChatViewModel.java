@@ -73,11 +73,11 @@ public class HpSearchChatViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<HpRecentSearchEntity>> getRecentSearchList() {
-        return null == recentSearchList? recentSearchList = HpDataManager.getInstance().getRecentSearchLive() : recentSearchList;
+        return null == recentSearchList ? recentSearchList = HpDataManager.getInstance().getRecentSearchLive() : recentSearchList;
     }
 
     public List<HpSearchChatModel> getRecentSearches() {
-        return null == recentSearches? recentSearches = new ArrayList<>() : recentSearches;
+        return null == recentSearches ? recentSearches = new ArrayList<>() : recentSearches;
     }
 
     public void clearRecentSearches() {
