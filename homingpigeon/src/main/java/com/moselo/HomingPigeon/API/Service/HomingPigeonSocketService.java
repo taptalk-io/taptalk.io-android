@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.API.Service;
 
-import com.moselo.HomingPigeon.API.BaseResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 
 import retrofit2.http.GET;

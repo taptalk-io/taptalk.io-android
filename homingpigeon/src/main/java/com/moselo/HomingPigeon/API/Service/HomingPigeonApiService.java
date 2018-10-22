@@ -1,10 +1,11 @@
 package com.moselo.HomingPigeon.API.Service;
 
-import com.moselo.HomingPigeon.API.BaseResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomBeforeRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
@@ -38,5 +39,8 @@ public interface HomingPigeonApiService {
 
     @POST("client/contact/list")
     Observable<BaseResponse<HpContactResponse>> getMyContactListFromAPI();
+
+    @POST("/client/contact/add")
+    Observable<BaseResponse<HpCommonResponse>> addContact(@Body HpCommonRequest request);
 
 }

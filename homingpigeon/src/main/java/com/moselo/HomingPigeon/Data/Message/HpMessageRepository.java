@@ -108,11 +108,14 @@ public class HpMessageRepository {
         }).start();
     }
 
-    public void searchAllChatRooms(String keyword, final HpDatabaseListener listener) {
+    public void searchAllChatRooms(String myID, String keyword, final HpDatabaseListener listener) {
         new Thread(() -> {
             String queryKeyword = "%" + keyword + '%';
             List<HpMessageEntity> entities = messageDao.searchAllChatRooms(queryKeyword);
-            listener.onSelectFinished(entities);
+            Map<String, Integer> unreadMap = new LinkedHashMap<>();
+            for (HpMessageEntity entity : entities)
+                unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+            listener.onSelectedRoomList(entities, unreadMap);
         }).start();
     }
 

@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.API;
+package com.moselo.HomingPigeon.Model.ResponseModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

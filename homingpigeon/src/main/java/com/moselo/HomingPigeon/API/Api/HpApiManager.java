@@ -2,7 +2,7 @@ package com.moselo.HomingPigeon.API.Api;
 
 import android.util.Log;
 
-import com.moselo.HomingPigeon.API.BaseResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonRefreshTokenService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonSocketService;
@@ -11,7 +11,6 @@ import com.moselo.HomingPigeon.Exception.ApiRefreshTokenRunningException;
 import com.moselo.HomingPigeon.Exception.ApiSessionExpiredException;
 import com.moselo.HomingPigeon.Exception.AuthException;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
@@ -19,13 +18,11 @@ import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomBeforeRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -33,8 +30,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static com.moselo.HomingPigeon.Helper.HomingPigeon.appContext;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpErrorCode.TOKEN_EXPIRED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
@@ -193,5 +188,10 @@ public class HpApiManager {
 
     public void getMyContactListFromAPI(Subscriber<BaseResponse<HpContactResponse>> subscriber) {
         execute(homingPigeon.getMyContactListFromAPI(), subscriber);
+    }
+
+    public void addContact(String userID, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
+        HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
+        execute(homingPigeon.addContact(request), subscriber);
     }
 }
