@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.ASCENDING;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.DESCENDING;
@@ -216,7 +218,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
-        vm.setRoom(getIntent().getParcelableExtra(HpDefaultConstant.K_ROOM));
+        vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(HpDataManager.getInstance().getActiveUser());
     }
 
@@ -316,6 +318,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         sblChat.setSwipeInterface(swipeInterface);
 
+        civRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
@@ -338,6 +341,12 @@ public class HpChatActivity extends HpBaseChatActivity {
             }
         };
         HpConnectionManager.getInstance().addSocketListener(socketListener);
+    }
+
+    private void openRoomProfile() {
+        Intent intent = new Intent(this, HpProfileActivity.class);
+        intent.putExtra(K_ROOM, vm.getRoom());
+        startActivity(intent);
     }
 
     private void updateMessageDecoration() {
