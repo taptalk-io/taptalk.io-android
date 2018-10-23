@@ -39,8 +39,10 @@
     <color name="black_2c">#2c2c2c</color>
     <color name="black">#000000</color>
 
-    <color name="transparent">#00ffffff</color>
-    <color name="transparent_black_18">#2e000000</color>
+    <color name="transparent_white">#00ffffff</color>
+    <color name="transparent_black">#00000000</color>
+    <color name="transparent_black_18">#2d000000</color>
+    <color name="transparent_black_40">#66000000</color>
     <color name="transparent_charcoal">#6604040f</color>
 
     <color name="color0">#fdc3a7</color>
