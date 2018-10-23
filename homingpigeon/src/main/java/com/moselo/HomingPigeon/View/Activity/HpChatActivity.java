@@ -75,7 +75,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     private FrameLayout flMessageList;
     private ConstraintLayout clEmptyChat, clChatComposer;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend;
+    private ImageView ibToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
     private View vStatusBadge;
@@ -231,7 +232,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send);
-        ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
+        ibToBottom = (ImageView) findViewById(R.id.ib_to_bottom);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
         civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
@@ -301,11 +302,11 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
                     vm.setUnreadCount(0);
-                    ivToBottom.setVisibility(View.INVISIBLE);
+                    ibToBottom.setVisibility(View.INVISIBLE);
                     tvBadgeUnread.setVisibility(View.INVISIBLE);
                 } else {
                     vm.setOnBottom(false);
-                    ivToBottom.setVisibility(View.VISIBLE);
+                    ibToBottom.setVisibility(View.VISIBLE);
                 }
             });
         }
@@ -320,7 +321,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> attemptSend());
-        ivToBottom.setOnClickListener(v -> scrollToBottom());
+        ibToBottom.setOnClickListener(v -> scrollToBottom());
     }
 
     private void initHelper() {
@@ -442,7 +443,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
-        ivToBottom.setVisibility(View.INVISIBLE);
+        ibToBottom.setVisibility(View.INVISIBLE);
         tvBadgeUnread.setVisibility(View.INVISIBLE);
         vm.setUnreadCount(0);
     }

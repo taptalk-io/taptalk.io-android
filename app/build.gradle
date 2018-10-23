@@ -4,7 +4,7 @@ android {
     def globalConfig = rootProject.extensions.getByName("ext")
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.moselo.Homing_Pigeon"
+        applicationId "com.moselo.HomingPigeon.Sample"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1

@@ -288,13 +288,14 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_to_bottom"
+    <ImageButton
+        android:id="@+id/ib_to_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/hp_bg_circle_f3f3f3"
+        android:foreground="?attr/selectableItemBackground"
         android:elevation="4dp"
         android:padding="15dp"
         android:src="@drawable/hp_ic_scroll_to_bottom_chat"
