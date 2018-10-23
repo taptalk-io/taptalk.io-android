@@ -1,0 +1,104 @@
+{
+  "project_info": {
+    "project_number": "476210333801",
+    "firebase_url": "https://homing-pigeon-212208.firebaseio.com",
+    "project_id": "homing-pigeon-212208",
+    "storage_bucket": "homing-pigeon-212208.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476210333801:android:27a363211a35f469",
+        "android_client_info": {
+          "package_name": "com.moselo.HomingPigeon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476210333801:android:a59138a5ea2a7928",
+        "android_client_info": {
+          "package_name": "com.moselo.HomingPigeon.Sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476210333801:android:ac88961eda840e3c",
+        "android_client_info": {
+          "package_name": "com.moselo.HomingPigeon.Sample.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

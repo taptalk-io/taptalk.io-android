@@ -15,7 +15,7 @@ android {
     signingConfigs{
         release {
             try {
-                def Properties props = new Properties()
+                Properties props = new Properties()
                 def propFile = file(globalConfig.signingProps)
                 if (propFile.canRead()) {
                     props.load(new FileInputStream(propFile))
