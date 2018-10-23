@@ -404,4 +404,8 @@ public class HpDataManager {
     public void addContactAPI(String userID, HpDefaultDataView<HpCommonResponse> view) {
         HpApiManager.getInstance().addContact(userID, new DefaultSubscriber<>(view));
     }
+
+    public void removeContactAPI(String userID, HpDefaultDataView<HpCommonResponse> view) {
+        HpApiManager.getInstance().removeContact(userID, new DefaultSubscriber<>(view));
+    }
 }

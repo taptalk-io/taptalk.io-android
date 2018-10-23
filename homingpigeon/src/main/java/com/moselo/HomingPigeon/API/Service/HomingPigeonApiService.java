@@ -43,4 +43,6 @@ public interface HomingPigeonApiService {
     @POST("/client/contact/add")
     Observable<BaseResponse<HpCommonResponse>> addContact(@Body HpCommonRequest request);
 
+    @POST("/client/contact/remove")
+    Observable<BaseResponse<HpCommonResponse>> removeContact(@Body HpCommonRequest request);
 }
