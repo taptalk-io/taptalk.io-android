@@ -72,7 +72,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         RecentTitleVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             tvClearHistory = itemView.findViewById(R.id.tv_clear_history);
-            tvRecentTitle = itemView.findViewById(R.id.tv_recent_title);
+            tvRecentTitle = itemView.findViewById(R.id.tv_section_title);
         }
 
         @Override
