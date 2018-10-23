@@ -24,6 +24,7 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpImageListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
 
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 
 public class HpProfileActivity extends HpBaseActivity {
@@ -96,19 +97,6 @@ public class HpProfileActivity extends HpBaseActivity {
         swNotifications.setChecked(!vm.getRoom().isMuted());
         swNotifications.setOnCheckedChangeListener(notificationCheckListener);
 
-        // Custom span count for recycler view
-//        glm = new GridLayoutManager(this, 2);
-//        glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-//            @Override
-//            public int getSpanSize(int position) {
-//                if (position < 5) {
-//                    return 1;
-//                } else {
-//                    return 3;
-//                }
-//            }
-//        });
-
         // TODO: 23 October 2018 GET SHARED MEDIA
 
         // Dummy media
@@ -180,7 +168,6 @@ public class HpProfileActivity extends HpBaseActivity {
         private int scrollRange = -1;
         private int nameTranslationY = HpUtils.getInstance().dpToPx(8);
         private int scrimHeight;
-        private final int ANIMATION_DURATION = 200;
 
         private ValueAnimator transitionToGreen, transitionToWhite;
 
@@ -191,18 +178,6 @@ public class HpProfileActivity extends HpBaseActivity {
                 scrimHeight = llToolbarCollapsed.getLayoutParams().height * 3 / 2;
                 scrollRange = appBarLayout.getTotalScrollRange() - scrimHeight;
                 collapsingToolbarLayout.setScrimVisibleHeightTrigger(scrimHeight);
-                transitionToGreen = ValueAnimator.ofArgb(
-                        ivButtonBack.getSolidColor(),
-                        getResources().getColor(R.color.greenBlue));
-                transitionToGreen.setDuration(ANIMATION_DURATION);
-                transitionToGreen.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
-                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
-                transitionToWhite = ValueAnimator.ofArgb(
-                        ivButtonBack.getSolidColor(),
-                        getResources().getColor(R.color.white));
-                transitionToWhite.setDuration(ANIMATION_DURATION);
-                transitionToWhite.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
-                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
             }
 
             if (Math.abs(verticalOffset) >= scrollRange && !isShowing) {
@@ -211,52 +186,107 @@ public class HpProfileActivity extends HpBaseActivity {
                 llToolbarCollapsed.setVisibility(View.VISIBLE);
                 llToolbarCollapsed.animate()
                         .alpha(1f)
-                        .setDuration(ANIMATION_DURATION)
+                        .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
                 tvCollapsedName.setTranslationY(nameTranslationY);
                 tvCollapsedName.animate()
                         .translationY(0)
                         .alpha(1f)
-                        .setDuration(ANIMATION_DURATION)
+                        .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
                 vProfileSeparator.animate()
                         .alpha(1f)
-                        .setDuration(ANIMATION_DURATION)
+                        .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                transitionToWhite.cancel();
-                transitionToGreen.start();
+                getTransitionWhite().cancel();
+                getTransitionGreen().start();
             } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
                 isShowing = false;
                 llToolbarCollapsed.animate()
                         .alpha(0f)
-                        .setDuration(ANIMATION_DURATION)
+                        .setDuration(DEFAULT_ANIMATION_TIME)
                         .withEndAction(() -> llToolbarCollapsed.setVisibility(View.GONE))
                         .start();
                 tvCollapsedName.animate()
                         .translationY(nameTranslationY)
                         .alpha(0f)
-                        .setDuration(ANIMATION_DURATION)
+                        .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
                 vProfileSeparator.animate()
                         .alpha(0f)
-                        .setDuration(ANIMATION_DURATION)
+                        .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                transitionToGreen.cancel();
-                transitionToWhite.start();
+                getTransitionGreen().cancel();
+                getTransitionWhite().start();
             }
+        }
+
+        private ValueAnimator getTransitionGreen() {
+            if (null == transitionToGreen) {
+                transitionToGreen = ValueAnimator.ofArgb(
+                        getResources().getColor(R.color.white),
+                        getResources().getColor(R.color.greenBlue));
+                transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
+                transitionToGreen.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
+                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
+            }
+            return transitionToGreen;
+        }
+
+        private ValueAnimator getTransitionWhite() {
+            if (null == transitionToWhite) {
+                transitionToWhite = ValueAnimator.ofArgb(
+                        getResources().getColor(R.color.greenBlue),
+                        getResources().getColor(R.color.white));
+                transitionToWhite.setDuration(DEFAULT_ANIMATION_TIME);
+                transitionToWhite.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
+                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
+            }
+            return transitionToWhite;
         }
     };
 
     private CompoundButton.OnCheckedChangeListener notificationCheckListener = new CompoundButton.OnCheckedChangeListener() {
+
+        private ValueAnimator transitionToGreen, transitionToGrey;
+
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
             // TODO: 23 October 2018 TURN NOTIFICATIONS ON/OFF
             if (isChecked) {
-                ivNotifications.setImageResource(R.drawable.hp_ic_notifications_green);
+                // Turn notifications ON
+                getTransitionGrey().cancel();
+                getTransitionGreen().start();
             } else {
-                ivNotifications.setImageResource(R.drawable.hp_ic_notifications_grey);
+                // Turn notifications OFF
+                getTransitionGreen().cancel();
+                getTransitionGrey().start();
             }
+        }
+
+        private ValueAnimator getTransitionGreen() {
+            if (null == transitionToGreen) {
+                transitionToGreen = ValueAnimator.ofArgb(
+                        getResources().getColor(R.color.grey_9b),
+                        getResources().getColor(R.color.greenBlue));
+                transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
+                transitionToGreen.addUpdateListener(valueAnimator -> ivNotifications.setColorFilter(
+                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
+            }
+            return transitionToGreen;
+        }
+
+        private ValueAnimator getTransitionGrey() {
+            if (null == transitionToGrey) {
+                transitionToGrey = ValueAnimator.ofArgb(
+                        getResources().getColor(R.color.greenBlue),
+                        getResources().getColor(R.color.grey_9b));
+                transitionToGrey.setDuration(DEFAULT_ANIMATION_TIME);
+                transitionToGrey.addUpdateListener(valueAnimator -> ivNotifications.setColorFilter(
+                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
+            }
+            return transitionToGrey;
         }
     };
 }
