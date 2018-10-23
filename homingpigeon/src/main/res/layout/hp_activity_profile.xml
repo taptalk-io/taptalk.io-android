@@ -10,7 +10,8 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_behavior="com.moselo.HomingPigeon.Helper.FixAppBarLayoutBehavior">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar_layout"
@@ -95,12 +96,14 @@
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!--focusableInTouchMode is needed to prevent RecyclerView from scrolling to top of NestedScrollView-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
             android:orientation="vertical">
 
             <View
@@ -109,14 +112,14 @@
                 android:layout_height="1dp"
                 android:alpha="0"
                 android:background="@color/grey_ea"
-                android:elevation="1dp" />
+                android:elevation="2dp" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_notifications"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/white"
-                android:elevation="1dp"
+                android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:orientation="horizontal">
 
@@ -156,14 +159,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/grey_ea"
-                android:elevation="1dp" />
+                android:elevation="2dp" />
 
             <LinearLayout
                 android:id="@+id/ll_button_conversation_color"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/white"
-                android:elevation="1dp"
+                android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
                 android:orientation="horizontal">
@@ -187,14 +190,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/grey_ea"
-                android:elevation="1dp" />
+                android:elevation="2dp" />
 
             <LinearLayout
                 android:id="@+id/ll_button_block_user"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/white"
-                android:elevation="1dp"
+                android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
                 android:orientation="horizontal">
@@ -218,14 +221,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/grey_ea"
-                android:elevation="1dp" />
+                android:elevation="2dp" />
 
             <LinearLayout
                 android:id="@+id/ll_button_clear_chat"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/white"
-                android:elevation="1dp"
+                android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
                 android:orientation="horizontal">
@@ -252,7 +255,10 @@
                 android:id="@+id/rv_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:overScrollMode="never" />
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:paddingStart="1dp"
+                android:paddingEnd="0dp"/>
 
         </LinearLayout>
 

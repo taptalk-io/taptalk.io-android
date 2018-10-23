@@ -4,13 +4,12 @@ import android.animation.ValueAnimator;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
-import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -20,14 +19,16 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.R;
+import com.moselo.HomingPigeon.View.Adapter.HpImageListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 
 public class HpProfileActivity extends HpBaseActivity {
 
-    private ConstraintLayout clButtonNotifications, clSharedMediaTitle;
+    private ConstraintLayout clButtonNotifications;
     private LinearLayout llToolbarCollapsed, llButtonConversationColor, llButtonBlockUser, llButtonClearChat;
     private ImageView ivProfile, ivButtonBack, ivNotifications;
     private TextView tvFullName, tvCollapsedName, tvSharedMediaLabel;
@@ -37,6 +38,7 @@ public class HpProfileActivity extends HpBaseActivity {
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private AppBarLayout appBarLayout;
+    private HpImageListAdapter sharedMediaAdapter;
 
     private HpProfileViewModel vm;
 
@@ -57,7 +59,6 @@ public class HpProfileActivity extends HpBaseActivity {
     @Override
     protected void initView() {
         clButtonNotifications = findViewById(R.id.cl_button_notifications);
-        clSharedMediaTitle = findViewById(R.id.cl_title_container);
         llToolbarCollapsed = findViewById(R.id.ll_toolbar_collapsed);
         llButtonConversationColor = findViewById(R.id.ll_button_conversation_color);
         llButtonBlockUser = findViewById(R.id.ll_button_block_user);
@@ -109,10 +110,44 @@ public class HpProfileActivity extends HpBaseActivity {
 //        });
 
         // TODO: 23 October 2018 GET SHARED MEDIA
-        tvSharedMediaLabel.setText(getString(R.string.shared_media));
 
-//        clSharedMediaTitle.setVisibility(View.GONE);
-//        rvProfile.setVisibility(View.GONE);
+        // Dummy media
+        HpImageURL dummyImage = vm.getRoom().getRoomImage();
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        vm.getSharedMedias().add(dummyImage);
+        // End dummy
+
+        if (vm.getSharedMedias().size() > 0) {
+            // Has shared media
+            tvSharedMediaLabel.setText(getString(R.string.shared_media));
+            sharedMediaAdapter = new HpImageListAdapter(vm.getSharedMedias());
+            rvProfile.setAdapter(sharedMediaAdapter);
+            rvProfile.setLayoutManager(new GridLayoutManager(this, 3));
+        } else {
+            tvSharedMediaLabel.setVisibility(View.GONE);
+            rvProfile.setVisibility(View.GONE);
+        }
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
@@ -145,7 +180,7 @@ public class HpProfileActivity extends HpBaseActivity {
         private int scrollRange = -1;
         private int nameTranslationY = HpUtils.getInstance().dpToPx(8);
         private int scrimHeight;
-        private final int ANIMATION_DURATION = 300;
+        private final int ANIMATION_DURATION = 200;
 
         private ValueAnimator transitionToGreen, transitionToWhite;
 
@@ -153,7 +188,7 @@ public class HpProfileActivity extends HpBaseActivity {
         public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
             if (scrollRange == -1) {
                 // Initialize
-                scrimHeight = llToolbarCollapsed.getLayoutParams().height * 2;
+                scrimHeight = llToolbarCollapsed.getLayoutParams().height * 3 / 2;
                 scrollRange = appBarLayout.getTotalScrollRange() - scrimHeight;
                 collapsingToolbarLayout.setScrimVisibleHeightTrigger(scrimHeight);
                 transitionToGreen = ValueAnimator.ofArgb(
