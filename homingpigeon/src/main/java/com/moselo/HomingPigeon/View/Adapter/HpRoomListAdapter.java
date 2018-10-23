@@ -105,7 +105,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_verified));
-                clContainer.setBackgroundColor(resource.getColor(R.color.transparent));
+                clContainer.setBackgroundColor(resource.getColor(R.color.transparent_white));
             }
 
             // Set name, last message, and timestamp text

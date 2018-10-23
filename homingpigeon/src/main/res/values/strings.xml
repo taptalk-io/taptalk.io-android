@@ -17,6 +17,13 @@
     <string name="send_services_icon">💌</string>
     <string name="create_order_card">Create order card</string>
     <string name="create_order_card_icon">✏️</string>
+    <string name="recent">Recent</string>
+    <string name="search_results">Search Results</string>
+    <string name="notifications">Notifications</string>
+    <string name="conversation_color">Conversation Color</string>
+    <string name="block_user">Block User</string>
+    <string name="clear_chat">Clear Chat</string>
+    <string name="shared_media">Shared Media</string>
 
     <!--Chat Room List-->
     <string name="setting_up_your_chatroom">Setting up your chatroom</string>
@@ -85,10 +92,8 @@
     <string name="no_chats">No Chats</string>
     <string name="ok">OK</string>
     <string name="oops">Oops…</string>
-    <string name="recent">Recent</string>
     <string name="reply">Reply</string>
     <string name="search">Search</string>
-    <string name="search_results">Search Results</string>
     <string name="send">Send</string>
     <string name="sending">Sending…</string>
     <string name="send_a_message">Send a message…</string>

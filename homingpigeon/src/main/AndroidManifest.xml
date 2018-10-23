@@ -14,8 +14,9 @@
             android:stopWithTask="false" />
 
         <activity android:name=".View.Activity.HpBarcodeScannerActivity" />
-        <activity android:name=".View.Activity.HpChatActivity"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".View.Activity.HpChatActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".View.Activity.HpLoginActivity" />
         <activity android:name=".View.Activity.HpRoomListActivity" />
         <activity android:name=".View.Activity.HpNewChatActivity" />
@@ -30,6 +31,7 @@
         <activity
             android:name=".View.Activity.HpGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".View.Activity.HpProfileActivity" />
     </application>
 
 </manifest>

@@ -39,7 +39,7 @@
     </style>
 
     <style name="HomingPigeonSearchBar">
-        <item name="android:background">@color/transparent</item>
+        <item name="android:background">@color/transparent_white</item>
         <item name="android:fontFamily">@font/hp_font_latoregular</item>
         <item name="android:imeOptions">actionSearch</item>
         <item name="android:inputType">text</item>
