@@ -24,6 +24,7 @@ import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -34,6 +35,7 @@ import com.orhanobut.hawk.NoEncryption;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_TEXT_REPLY;
 
@@ -149,6 +151,7 @@ public class HomingPigeon {
         public String chatSender = "", chatMessage = "";
         public int smallIcon;
         public boolean isNeedReply;
+        public HpRoomModel roomModel;
         public NotificationCompat.Builder notificationBuilder;
 
         public NotificationBuilder(Context context) {
@@ -175,9 +178,15 @@ public class HomingPigeon {
             return this;
         }
 
+        public NotificationBuilder setOnClickAction(HpRoomModel roomModel) {
+            this.roomModel = roomModel;
+            return this;
+        }
+
         public Notification build() {
             this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
             addReply();
+            if (null != roomModel) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
         }
 
@@ -198,6 +207,19 @@ public class HomingPigeon {
 
                 notificationBuilder.addAction(action);
             }
+        }
+
+        private void addPendingIntentWhenClicked() {
+            Intent intent;
+            if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
+                intent = new Intent(context, HpRoomListActivity.class);
+            } else {
+                intent = new Intent(context, HpLoginActivity.class);
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra(K_ROOM, roomModel);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+            notificationBuilder.setContentIntent(pendingIntent);
         }
 
         public void show() {

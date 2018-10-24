@@ -9,7 +9,6 @@ import android.support.v4.app.RemoteInput;
 import android.widget.Toast;
 
 import com.moselo.HomingPigeon.Manager.HpChatManager;
-import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_TEXT_REPLY;
@@ -20,9 +19,8 @@ public class HpReplyBroadcastReceiver extends BroadcastReceiver {
         String text = getMessageText(intent).toString();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
-        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-        HpChatManager.getInstance().sendDirectReplyTextMessage(text, new HpRoomModel("3-4", "Kevin Reynaldo",
-                1, HpImageURL.BuilderDummy(), "#2eccad"));
+        Toast.makeText(context, "Reply Success", Toast.LENGTH_SHORT).show();
+        HpChatManager.getInstance().sendDirectReplyTextMessage(text, HpRoomModel.BuilderDummy());
     }
 
     private CharSequence getMessageText(Intent intent) {

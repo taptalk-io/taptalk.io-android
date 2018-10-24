@@ -215,6 +215,13 @@ public class HpUtils {
         context.startActivity(intent);
     }
 
+    public void startChatActivity(Context context, HpRoomModel roomModel) {
+        HpChatManager.getInstance().saveUnsentMessage();
+        Intent intent = new Intent(context, HpChatActivity.class);
+        intent.putExtra(K_ROOM, roomModel);
+        context.startActivity(intent);
+    }
+
     /**
      * Convert a translucent themed Activity
      * {@link android.R.attr#windowIsTranslucent} to a fullscreen opaque

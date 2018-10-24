@@ -38,6 +38,10 @@ public class HpRoomModel implements Parcelable {
         return new HpRoomModel(roomID, roomName, roomType, roomImage, roomColor);
     }
 
+    public static HpRoomModel BuilderDummy(){
+        return new HpRoomModel("3-4", "Kevin Reynaldo", 1, HpImageURL.BuilderDummy(), "#2eccad");
+    }
+
     public String getRoomID() {
         return roomID;
     }

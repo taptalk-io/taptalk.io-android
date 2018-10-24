@@ -49,9 +49,10 @@ public class HpChatManager {
     private HpRoomModel activeRoom;
     private HpUserModel activeUser;
     private boolean isCheckPendingArraySequenceActive = false;
-    private boolean isPendingMessageExist = false;
-    private boolean isFileUploadExist = false;
-    private boolean isFinishChatFlow = false;
+    private boolean isPendingMessageExist;
+    private boolean isFileUploadExist;
+    private boolean isFinishChatFlow;
+    private boolean isReplyTriggered;
     private final Integer CHARACTER_LIMIT = 1000;
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
@@ -289,6 +290,7 @@ public class HpChatManager {
     }
 
     public void sendDirectReplyTextMessage(String textMessage, HpRoomModel roomModel) {
+        HpConnectionManager.getInstance().connect();
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
@@ -580,5 +582,13 @@ public class HpChatManager {
 
     public void setFinishChatFlow(boolean finishChatFlow) {
         isFinishChatFlow = finishChatFlow;
+    }
+
+    public boolean isReplyTriggered() {
+        return isReplyTriggered;
+    }
+
+    public void setReplyTriggered(boolean replyTriggered) {
+        isReplyTriggered = replyTriggered;
     }
 }

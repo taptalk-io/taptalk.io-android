@@ -2,9 +2,14 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.os.Bundle;
 
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
+import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Fragment.HpRoomListFragment;
 import com.moselo.HomingPigeon.View.Fragment.HpSearchChatFragment;
+
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 
 public class HpRoomListActivity extends HpBaseActivity {
 
@@ -29,7 +34,15 @@ public class HpRoomListActivity extends HpBaseActivity {
     protected void initView() {
         fRoomList = (HpRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
         fSearchFragment = (HpSearchChatFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_search_chat);
+        redirectToChatActivityFromNotification();
         showRoomList();
+    }
+
+    private void redirectToChatActivityFromNotification() {
+        HpRoomModel roomModel = getIntent().getParcelableExtra(K_ROOM);
+        if (null != roomModel) {
+            HpUtils.getInstance().startChatActivity(this, roomModel);
+        }
     }
 
     public void showRoomList() {
