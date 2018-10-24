@@ -1,13 +1,11 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.Manifest;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,7 +17,6 @@ import android.widget.TextView;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -92,36 +89,11 @@ public class HpNewChatActivity extends HpBaseActivity {
         rvContactList.setHasFixedSize(false);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-
-        ivButtonSearch.setOnClickListener(v -> {
-            Intent intent = new Intent(this, HpSearchContactActivity.class);
-            startActivity(intent);
-        });
-
-        llButtonNewContact.setOnClickListener(v -> {
-            openNewUsername();
-        });
-
+        ivButtonSearch.setOnClickListener(v -> searchContact());
+        llButtonNewContact.setOnClickListener(v -> addNewContact());
         llButtonScanQR.setOnClickListener(v -> openQRScanner());
-
-        llButtonNewGroup.setOnClickListener(v -> {
-            Intent intent = new Intent(this, HpCreateNewGroupActivity.class);
-            startActivity(intent);
-        });
-
-        llBlockedContacts.setOnClickListener(v -> {
-            Intent intent = new Intent(this, HpBlockedListActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    private void openQRScanner() {
-        if (HpUtils.getInstance().hasPermissions(HpNewChatActivity.this, Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(HpNewChatActivity.this, HpBarcodeScannerActivity.class);
-            startActivity(intent);
-        } else {
-            ActivityCompat.requestPermissions(HpNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
-        }
+        llButtonNewGroup.setOnClickListener(v -> createNewGroup());
+        llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
     }
 
     @Override
@@ -135,8 +107,32 @@ public class HpNewChatActivity extends HpBaseActivity {
         }
     }
 
-    private void openNewUsername() {
+    private void openQRScanner() {
+        if (HpUtils.getInstance().hasPermissions(HpNewChatActivity.this, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(HpNewChatActivity.this, HpBarcodeScannerActivity.class);
+            startActivity(intent);
+        } else {
+            ActivityCompat.requestPermissions(HpNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+        }
+    }
+
+    private void searchContact() {
+        Intent intent = new Intent(this, HpSearchContactActivity.class);
+        startActivity(intent);
+    }
+
+    private void addNewContact() {
         Intent intent = new Intent(HpNewChatActivity.this, HpNewContactActivity.class);
+        startActivity(intent);
+    }
+
+    private void createNewGroup() {
+        Intent intent = new Intent(this, HpCreateNewGroupActivity.class);
+        startActivity(intent);
+    }
+
+    private void viewBlockedContacts() {
+        Intent intent = new Intent(this, HpBlockedListActivity.class);
         startActivity(intent);
     }
 

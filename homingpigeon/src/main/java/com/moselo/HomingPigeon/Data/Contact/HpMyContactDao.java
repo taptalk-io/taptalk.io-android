@@ -34,16 +34,16 @@ public interface HpMyContactDao {
 
     @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated, isSelected from mycontact order by name asc")
+            "created, updated from mycontact order by name asc")
     List<HpUserModel> getAllMyContact();
 
     @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated, isSelected from mycontact order by name asc")
+            "created, updated from mycontact order by name asc")
     LiveData<List<HpUserModel>> getAllMyContactLive();
 
     @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated, isSelected from mycontact where name like :keyword order by name asc")
+            "created, updated from mycontact where name like :keyword order by name asc")
     List<HpUserModel> searchAllMyContacts(String keyword);
 }

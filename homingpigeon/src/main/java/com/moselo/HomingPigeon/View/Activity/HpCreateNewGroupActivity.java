@@ -97,10 +97,10 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     private void initListener() {
         listener = new ContactListInterface() {
             @Override
-            public boolean onContactSelected(HpUserModel contact, boolean isSelected) {
+            public boolean onContactSelected(HpUserModel contact) {
                 HpUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
-                if (isSelected) {
+                if (!vm.getSelectedContacts().contains(contact)) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         new HomingPigeonDialog.Builder(HpCreateNewGroupActivity.this)
@@ -132,15 +132,11 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
             }
 
             @Override
-            public void onContactRemoved(HpUserModel contact) {
+            public void onContactDeselected(HpUserModel contact) {
                 HpUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
-                if (vm.getFilteredContacts().contains(contact)) {
-                    int index = vm.getFilteredContacts().indexOf(contact);
-                    vm.getFilteredContacts().get(index).setSelected(false);
-                    contactListAdapter.notifyDataSetChanged();
-                }
+                contactListAdapter.notifyDataSetChanged();
                 if (vm.getSelectedContacts().size() > 1) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
@@ -167,12 +163,14 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         getWindow().setBackgroundDrawable(null);
         vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
 
-        contactListAdapter = new HpContactInitialAdapter(HpContactListAdapter.SELECT, vm.getSeparatedContacts(), listener);
+        // All contacts adapter
+        contactListAdapter = new HpContactInitialAdapter(HpContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
         rvContactList.setAdapter(contactListAdapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
+        // Selected members adapter
         selectedMembersAdapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
