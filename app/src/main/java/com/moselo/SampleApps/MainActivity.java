@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Sample.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
