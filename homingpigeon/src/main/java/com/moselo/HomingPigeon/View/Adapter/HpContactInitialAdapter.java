@@ -18,6 +18,7 @@ import java.util.List;
 public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactInitialAdapter.ContactListHolder> {
 
     private List<List<HpUserModel>> contactList;
+    private List<HpUserModel> selectedContacts;
     private ContactListInterface listener;
     private int viewType;
 
@@ -26,9 +27,11 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
         this.contactList = contactList;
     }
 
-    public HpContactInitialAdapter(int viewType, List<List<HpUserModel>> contactList, ContactListInterface listener) {
+    // Constructor for selectable contacts
+    public HpContactInitialAdapter(int viewType, List<List<HpUserModel>> contactList, List<HpUserModel> selectedContacts, ContactListInterface listener) {
         this.viewType = viewType;
         this.contactList = contactList;
+        this.selectedContacts = selectedContacts;
         this.listener = listener;
     }
 
@@ -68,14 +71,12 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
         private TextView tvInitial;
         private List<HpUserModel> item;
         private HpContactListAdapter adapter;
-        private String myID;
 
         ContactListHolder(View itemView) {
             super(itemView);
 
             tvInitial = itemView.findViewById(R.id.tv_initial);
             rvContactInitial = itemView.findViewById(R.id.rv_contact_list_initial);
-            myID = HpDataManager.getInstance().getActiveUser().getUserID();
         }
 
         void onBind(int position) {
@@ -85,7 +86,11 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
             if (!Character.isAlphabetic(initial)) initial = '#';
             tvInitial.setText(String.valueOf(initial));
 
-            adapter = new HpContactListAdapter(viewType, getItemAt(position), listener);
+            if (viewType == HpContactListAdapter.SELECT && null != selectedContacts) {
+                adapter = new HpContactListAdapter(getItemAt(position), selectedContacts, listener);
+            } else {
+                adapter = new HpContactListAdapter(viewType, getItemAt(position), listener);
+            }
             rvContactInitial.setAdapter(adapter);
             rvContactInitial.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.VERTICAL, false));
             rvContactInitial.setHasFixedSize(false);

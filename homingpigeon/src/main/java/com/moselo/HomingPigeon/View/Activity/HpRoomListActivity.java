@@ -54,7 +54,11 @@ public class HpRoomListActivity extends HpBaseActivity {
     public void onBackPressed() {
         switch (state) {
             case STATE_ROOM_LIST:
-                super.onBackPressed();
+                if (fRoomList.isSelecting()) {
+                    fRoomList.cancelSelection();
+                } else {
+                    super.onBackPressed();
+                }
                 break;
             case STATE_SEARCH_CHAT:
                 showRoomList();

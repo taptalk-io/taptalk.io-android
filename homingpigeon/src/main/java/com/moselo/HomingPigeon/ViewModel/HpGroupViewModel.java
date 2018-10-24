@@ -4,22 +4,22 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Model.HpGroupModel;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
 
 public class HpGroupViewModel extends AndroidViewModel {
 
-    private HpGroupModel groupData;
+    private HpRoomModel groupData;
     private String myID;
 
     public HpGroupViewModel(@NonNull Application application) {
         super(application);
     }
 
-    public HpGroupModel getGroupData() {
-        return groupData == null ? groupData = new HpGroupModel() : groupData;
+    public HpRoomModel getGroupData() {
+        return groupData == null ? groupData = new HpRoomModel() : groupData;
     }
 
-    public void setGroupData(HpGroupModel groupData) {
+    public void setGroupData(HpRoomModel groupData) {
         this.groupData = groupData;
     }
 

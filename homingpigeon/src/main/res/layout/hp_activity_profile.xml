@@ -193,7 +193,7 @@
                 android:elevation="2dp" />
 
             <LinearLayout
-                android:id="@+id/ll_button_block_user"
+                android:id="@+id/ll_button_block_or_view"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/white"
@@ -203,12 +203,14 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/iv_block_or_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/hp_ic_block_grey" />
 
                 <TextView
+                    android:id="@+id/tv_block_or_view"
                     style="@style/HomingPigeonMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -234,12 +236,14 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/iv_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/hp_ic_delete_red" />
 
                 <TextView
+                    android:id="@+id/tv_delete"
                     style="@style/HomingPigeonMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

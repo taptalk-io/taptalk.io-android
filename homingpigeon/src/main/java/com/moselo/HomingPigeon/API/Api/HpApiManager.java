@@ -194,4 +194,9 @@ public class HpApiManager {
         HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
         execute(homingPigeon.addContact(request), subscriber);
     }
+
+    public void removeContact(String userID, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
+        HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
+        execute(homingPigeon.removeContact(request), subscriber);
+    }
 }

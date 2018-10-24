@@ -5,14 +5,10 @@ import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 
 public class HpSearchChatModel {
     public enum Type {
-        RECENT_TITLE, RECENT_ITEM,
-        SECTION_TITLE, CHAT_ITEM,
-        MESSAGE_ITEM, ROOM_ITEM,
-        CONTACT_ITEM, EMPTY_STATE
+        RECENT_TITLE, SECTION_TITLE, MESSAGE_ITEM, ROOM_ITEM, EMPTY_STATE
     }
 
     private Type type;
-    private HpRecentSearchEntity recentSearch;
     private String sectionTitle;
     private HpRoomModel room;
     private HpMessageEntity message;
@@ -29,14 +25,6 @@ public class HpSearchChatModel {
 
     public void setType(Type type) {
         this.type = type;
-    }
-
-    public HpRecentSearchEntity getRecentSearch() {
-        return recentSearch;
-    }
-
-    public void setRecentSearch(HpRecentSearchEntity recentSearch) {
-        this.recentSearch = recentSearch;
     }
 
     public String getSectionTitle() {

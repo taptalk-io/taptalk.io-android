@@ -63,7 +63,7 @@ public class HpRoomListViewModel extends AndroidViewModel {
     }
 
     public int getSelectedCount() {
-        return selectedRooms.size();
+        return getSelectedRooms().size();
     }
 
     public boolean isSelecting() {

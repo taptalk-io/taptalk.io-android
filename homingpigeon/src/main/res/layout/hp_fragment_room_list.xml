@@ -51,9 +51,9 @@
 
         <ImageView
             android:id="@+id/iv_button_cancel_selection"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="16dp"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:padding="16dp"
             android:src="@drawable/hp_ic_back_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -63,7 +63,7 @@
             android:id="@+id/tv_selection_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:fontFamily="@font/hp_font_latoregular"
@@ -78,25 +78,28 @@
 
         <ImageView
             android:id="@+id/iv_button_mute"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
             android:src="@drawable/hp_ic_mute_white"
             app:layout_constraintEnd_toStartOf="@id/iv_button_delete" />
 
         <ImageView
             android:id="@+id/iv_button_delete"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
             android:src="@drawable/hp_ic_delete_white"
             app:layout_constraintEnd_toStartOf="@id/iv_button_more" />
 
         <ImageView
             android:id="@+id/iv_button_more"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
             android:src="@drawable/hp_ic_more_options_white"
             app:layout_constraintEnd_toEndOf="parent" />
 

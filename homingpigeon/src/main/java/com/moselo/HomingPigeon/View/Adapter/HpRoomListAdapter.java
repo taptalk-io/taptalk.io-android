@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
+import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
@@ -33,22 +33,11 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
 
     private HpRoomListViewModel vm;
     private RoomListInterface roomListInterface;
-    private ColorStateList avatarTint;
-    private String myUsername;
 
-    public HpRoomListAdapter(HpRoomListViewModel vm, String myUsername, RoomListInterface roomListInterface) {
+    public HpRoomListAdapter(HpRoomListViewModel vm, RoomListInterface roomListInterface) {
         setItems(vm.getRoomList(), false);
         this.vm = vm;
-        this.myUsername = myUsername;
         this.roomListInterface = roomListInterface;
-    }
-
-    public void addRoomList(List<HpRoomListModel> roomList) {
-        RoomListDiffCallback diffCallback = new RoomListDiffCallback(getItems(), roomList);
-        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
-
-        setItemsWithoutNotify(roomList);
-        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -69,6 +58,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivMute, ivMessageStatus;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
+        private View vSeparator;
 
         RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -81,31 +71,33 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
+            vSeparator = itemView.findViewById(R.id.v_separator);
         }
 
         @Override
         protected void onBind(HpRoomListModel item, int position) {
-            final HpUserModel userModel = item.getLastMessage().getUser();
-            final int randomColor = HpUtils.getInstance().getRandomColor(userModel.getName());
+            final int randomColor = HpUtils.getInstance().getRandomColor(item.getLastMessage().getUser().getName());
             Resources resource = itemView.getContext().getResources();
 
             if (null != item.getLastMessage().getRoom().getRoomImage()) {
                 GlideApp.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).centerCrop().into(civAvatar);
             } else {
-                avatarTint = ColorStateList.valueOf(randomColor);
+                ColorStateList avatarTint = ColorStateList.valueOf(randomColor);
                 civAvatar.setBackgroundTintList(avatarTint);
             }
 
             // Change avatar icon and background
-            if (item.getLastMessage().getRoom().isSelected()) {
+            if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
                 // Item is selected
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_select));
                 clContainer.setBackgroundColor(resource.getColor(R.color.transparent_black_18));
+                vSeparator.setVisibility(View.GONE);
             } else {
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_verified));
                 clContainer.setBackgroundColor(resource.getColor(R.color.transparent_white));
+                vSeparator.setVisibility(View.VISIBLE);
             }
 
             // Set name, last message, and timestamp text
@@ -143,8 +135,6 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
             // Message is sending
             else if (null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_sending_grey);
-            } else {
-                Log.e(TAG, "no status: " + item.getLastMessage().getBody());
             }
 
             // Show unread count
@@ -162,42 +152,65 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
                 tvBadgeUnread.setVisibility(View.GONE);
             }
 
-            itemView.setOnClickListener(v -> {
-                if (vm.isSelecting()) {
-                    // Select room when other room is already selected
-                    item.getLastMessage().getRoom().setSelected(!item.getLastMessage().getRoom().isSelected());
-                    roomListInterface.onRoomSelected(item, item.getLastMessage().getRoom().isSelected());
-                    notifyItemChanged(position);
-                } else {
-                    // Open chat room on click
-                    HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
-
-                    String myUserID = myUser.getUserID();
-                    String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ? HpChatManager.getInstance().arrangeRoomId(myUserID, userModel.getUserID()) : HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
-
-                    if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                        HpUtils.getInstance().startChatActivity(
-                                itemView.getContext(),
-                                roomID,
-                                item.getLastMessage().getRoom().getRoomName(),
-                                item.getLastMessage().getRoom().getRoomImage(),
-                                item.getLastMessage().getRoom().getRoomType(),
-                                item.getLastMessage().getRoom().getRoomColor());
-                        HpDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
-                    } else {
-                        Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            // Select room on long click
-            itemView.setOnLongClickListener(v -> {
-                v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                item.getLastMessage().getRoom().setSelected(!item.getLastMessage().getRoom().isSelected());
-                roomListInterface.onRoomSelected(item, item.getLastMessage().getRoom().isSelected());
-                notifyItemChanged(position);
-                return true;
-            });
+            itemView.setOnClickListener(v -> onRoomClicked(itemView, item, position));
+            itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
+    }
+
+    private void onRoomClicked(View itemView, HpRoomListModel item, int position) {
+        if (vm.isSelecting()) {
+            // Select room when other room is already selected
+            onRoomSelected(item, position);
+        } else {
+            // Open chat room on click
+            HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
+
+            String myUserID = myUser.getUserID();
+            String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?
+                    HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getUser().getUserID()) :
+                    HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
+
+            if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
+                HpUtils.getInstance().startChatActivity(
+                        itemView.getContext(),
+                        roomID,
+                        item.getLastMessage().getRoom().getRoomName(),
+                        item.getLastMessage().getRoom().getRoomImage(),
+                        item.getLastMessage().getRoom().getRoomType(),
+                        item.getLastMessage().getRoom().getRoomColor());
+                HpDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
+            } else {
+                Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private boolean onRoomLongClicked(View v, HpRoomListModel item, int position) {
+        // Select room on long click
+        v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        onRoomSelected(item, position);
+        return true;
+    }
+
+    private void onRoomSelected(HpRoomListModel item, int position) {
+        HpRoomModel room = item.getLastMessage().getRoom();
+
+        if (!vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
+            // Room selected
+            vm.getSelectedRooms().put(item.getLastMessage().getRoom().getRoomID(), item);
+        } else {
+            // Room deselected
+            vm.getSelectedRooms().remove(item.getLastMessage().getRoom().getRoomID());
+        }
+        roomListInterface.onRoomSelected();
+        notifyItemChanged(position);
+    }
+
+    public void addRoomList(List<HpRoomListModel> roomList) {
+        RoomListDiffCallback diffCallback = new RoomListDiffCallback(getItems(), roomList);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+
+        setItemsWithoutNotify(roomList);
+        diffResult.dispatchUpdatesTo(this);
     }
 }

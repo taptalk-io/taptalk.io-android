@@ -24,6 +24,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
 
     private ContactListInterface listener;
     private ColorStateList avatarTint;
+    private List<HpUserModel> selectedContacts;
     private String myID;
     private int viewType;
     private boolean isAnimating = true;
@@ -44,6 +45,15 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
         this.viewType = viewType;
         this.listener = listener;
         this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
+    }
+
+    // Constructor for selectable contacts
+    public HpContactListAdapter(List<HpUserModel> contactList, List<HpUserModel> selectedContacts, @Nullable ContactListInterface listener) {
+        setItems(contactList, false);
+        this.viewType = SELECT;
+        this.selectedContacts = selectedContacts;
+        this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
+        this.listener = listener;
     }
 
     @NonNull
@@ -106,38 +116,41 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
             }
 
             // Show/hide selection
-            if (viewType == SELECT && item.isSelected()) {
+            if (viewType == SELECT && selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.hp_ic_circle_active);
-            } else if (viewType == SELECT && !item.isSelected()) {
+            } else if (viewType == SELECT && !selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.hp_ic_circle_inactive);
             } else {
                 ivSelection.setVisibility(View.GONE);
             }
 
-            itemView.setOnClickListener(v -> {
-                switch (viewType) {
-                    case CHAT:
-                        if (!myID.equals(item.getUserID())) {
-                            HpUtils.getInstance().startChatActivity(
-                                    itemView.getContext(),
-                                    HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
-                                    item.getName(),
-                                    item.getAvatarURL(),
-                                    1,
-                                    /* TEMPORARY ROOM COLOR */randomColor + "");
-                        }
-                        break;
-                    case SELECT:
-                        if (null != listener && listener.onContactSelected(item, !item.isSelected())) {
-                            isAnimating = true;
-                            item.setSelected(!item.isSelected());
-                            notifyItemChanged(position);
-                        }
-                        break;
-                }
-            });
+            itemView.setOnClickListener(v -> onContactClicked(item, position));
+        }
+
+        private void onContactClicked(HpUserModel item, int position) {
+            switch (viewType) {
+                case CHAT:
+                    if (!myID.equals(item.getUserID())) {
+                        HpUtils.getInstance().startChatActivity(
+                                itemView.getContext(),
+                                HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
+                                item.getName(),
+                                item.getAvatarURL(),
+                                1,
+                                /* TEMPORARY ROOM COLOR */HpUtils.getInstance().getRandomColor(item.getName()) + "");
+                    }
+                    break;
+                case SELECT:
+                    if (item.getUserID().equals(myID)) {
+                        return;
+                    } else if (null != listener && listener.onContactSelected(item)) {
+                        isAnimating = true;
+                        notifyItemChanged(position);
+                    }
+                    break;
+            }
         }
     }
 
@@ -186,12 +199,14 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
                 ivAvatarIcon.setImageResource(R.drawable.hp_ic_close_red_circle);
             }
 
-            itemView.setOnClickListener(v -> {
-                if (null != listener && !item.getUserID().equals(myID) && !isAnimating) {
-                    isAnimating = true;
-                    listener.onContactRemoved(item);
-                }
-            });
+            itemView.setOnClickListener(v -> deselectContact(item));
+        }
+
+        private void deselectContact(HpUserModel item) {
+            if (null != listener && !item.getUserID().equals(myID) && !isAnimating) {
+                isAnimating = true;
+                listener.onContactDeselected(item);
+            }
         }
     }
 

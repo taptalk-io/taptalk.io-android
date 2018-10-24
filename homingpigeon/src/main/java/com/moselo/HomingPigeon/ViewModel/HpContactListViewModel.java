@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class HpContactListViewModel extends AndroidViewModel {
     private List<HpUserModel> filteredContacts;
     private List<HpUserModel> selectedContacts;
     private List<List<HpUserModel>> separatedContacts;
-    private String groupImage;
+    private HpImageURL groupImage;
     private String groupName;
     private boolean isSelecting;
 
@@ -64,11 +65,11 @@ public class HpContactListViewModel extends AndroidViewModel {
         this.separatedContacts = separatedContacts;
     }
 
-    public String getGroupImage() {
+    public HpImageURL getGroupImage() {
         return groupImage;
     }
 
-    public void setGroupImage(String groupImage) {
+    public void setGroupImage(HpImageURL groupImage) {
         this.groupImage = groupImage;
     }
 

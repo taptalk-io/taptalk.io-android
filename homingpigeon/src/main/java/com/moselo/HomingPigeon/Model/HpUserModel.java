@@ -31,7 +31,6 @@ public class HpUserModel implements Parcelable {
     @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;
     @Nullable @JsonProperty("created") private Long created;
     @Nullable @JsonProperty("updated") private Long updated;
-    private boolean isSelected;
 
     @Ignore
     public HpUserModel(String userID, String xcUserID, String name, HpImageURL avatarURL, @Nullable String username
@@ -203,15 +202,6 @@ public class HpUserModel implements Parcelable {
         this.updated = updated;
     }
 
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
-
-
     @Override
     public int describeContents() {
         return 0;
@@ -232,7 +222,6 @@ public class HpUserModel implements Parcelable {
         dest.writeValue(this.requireChangePassword);
         dest.writeValue(this.created);
         dest.writeValue(this.updated);
-        dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
     }
 
     protected HpUserModel(Parcel in) {
@@ -249,7 +238,6 @@ public class HpUserModel implements Parcelable {
         this.requireChangePassword = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
-        this.isSelected = in.readByte() != 0;
     }
 
     public static final Creator<HpUserModel> CREATOR = new Creator<HpUserModel>() {

@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.text.Html;
 import android.view.View;
@@ -32,25 +33,20 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         setItems(items, true);
     }
 
+    @NonNull
     @Override
-    public HpBaseViewHolder<HpSearchChatModel> onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (HpSearchChatModel.Type.values()[viewType]){
+    public HpBaseViewHolder<HpSearchChatModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (HpSearchChatModel.Type.values()[viewType]) {
             case RECENT_TITLE:
                 return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
-            case RECENT_ITEM:
-                return new RecentItemVH(parent, R.layout.hp_cell_recent_search_item);
             case SECTION_TITLE:
                 return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
-            case CHAT_ITEM:
-                return new ChatItemVH(parent, R.layout.hp_cell_search_chat_item);
             case ROOM_ITEM:
                 return new RoomItemVH(parent, R.layout.hp_cell_search_room_item);
-            case CONTACT_ITEM:
-                return new ContactItemVH(parent, R.layout.hp_cell_search_contact_item);
             case MESSAGE_ITEM:
                 return new MessageItemVH(parent, R.layout.hp_cell_search_message_item);
             default:
-                return new EmptyItemVH(parent, R.layout.hp_cell_search_recent_empty);
+                return new EmptyItemVH(parent, R.layout.hp_cell_search_empty);
         }
     }
 
@@ -85,42 +81,6 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                 //ini ngecek karena VH ini di pake di section title jga biar ga slalu ke set listenernya
                 tvClearHistory.setOnClickListener(v -> HpDataManager.getInstance().deleteAllRecentSearch());
             }
-        }
-    }
-
-    // Unused
-    public class RecentItemVH extends HpBaseViewHolder<HpSearchChatModel> {
-
-        private TextView tvSearchText;
-        private ImageView ivCloseBtn;
-
-        RecentItemVH(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-            tvSearchText = itemView.findViewById(R.id.tv_search_text);
-            ivCloseBtn = itemView.findViewById(R.id.iv_close_btn);
-        }
-
-        @Override
-        protected void onBind(HpSearchChatModel item, int position) {
-//            tvSearchText.setText(item.getRecentSearch().getSearchText());
-            ivCloseBtn.setOnClickListener(v -> HpDataManager.getInstance().deleteFromDatabase(item.getRecentSearch()));
-        }
-    }
-
-    // Unused
-    public class ChatItemVH extends HpBaseViewHolder<HpSearchChatModel> {
-
-        private CircleImageView civAvatar;
-
-        protected ChatItemVH(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-            civAvatar = itemView.findViewById(R.id.civ_avatar);
-        }
-
-        @Override
-        protected void onBind(HpSearchChatModel item, int position) {
-            GlideApp.with(itemView.getContext()).load("https://images.performgroup.com/di/library/GOAL/bd/53/mohamed-salah-liverpool-2018-19_e6x5i309jkl11i2uzq838u0ve.jpg?t=-423079251")
-                    .centerCrop().override(HpUtils.getInstance().getScreenWidth(), HpUtils.getInstance().getScreeHeight()).into(civAvatar);
         }
     }
 
@@ -193,8 +153,9 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                         message.getRoomName(),
                         // TODO: 18 October 2018 REMOVE CHECK
                         /* TEMPORARY CHECK FOR NULL IMAGE */null != message.getRoomImage() ?
-                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, message.getRoomImage())
-                        /* TEMPORARY CHECK FOR NULL IMAGE */: null,
+                                HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                                }, message.getRoomImage())
+                                /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                         message.getRoomType(),
                         message.getRoomColor());
             });
@@ -207,7 +168,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon;
-        private TextView tvRoomName, tvRoomStatus, tvBadgeUnread;
+        private TextView tvRoomName, tvBadgeUnread;
 
         RoomItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -216,7 +177,6 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             tvRoomName = itemView.findViewById(R.id.tv_room_name);
-            tvRoomStatus = itemView.findViewById(R.id.tv_room_status);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
         }
 
@@ -279,18 +239,6 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         }
     }
 
-    public class ContactItemVH extends HpBaseViewHolder<HpSearchChatModel> {
-
-        ContactItemVH(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-        }
-
-        @Override
-        protected void onBind(HpSearchChatModel item, int position) {
-
-        }
-    }
-
     public class EmptyItemVH extends HpBaseViewHolder<HpSearchChatModel> {
 
         EmptyItemVH(ViewGroup parent, int itemLayoutId) {
@@ -301,10 +249,6 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         protected void onBind(HpSearchChatModel item, int position) {
 
         }
-    }
-
-    public String getSearchKeyword() {
-        return searchKeyword;
     }
 
     public void setSearchKeyword(String searchKeyword) {
