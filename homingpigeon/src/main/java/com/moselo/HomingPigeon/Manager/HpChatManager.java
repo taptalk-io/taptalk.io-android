@@ -272,7 +272,7 @@ public class HpChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                HpMessageModel messageModel = buildTextMessage(substr, activeRoom);
+                HpMessageModel messageModel = buildTextMessage(substr, activeRoom, getActiveUser());
                 // Add entity to list
                 messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
 
@@ -280,7 +280,7 @@ public class HpChatManager {
                 sendMessage(messageModel);
             }
         } else {
-            HpMessageModel messageModel = buildTextMessage(textMessage, activeRoom);
+            HpMessageModel messageModel = buildTextMessage(textMessage, activeRoom, getActiveUser());
             // Send message
             sendMessage(messageModel);
         }
@@ -288,7 +288,31 @@ public class HpChatManager {
         //checkAndSendPendingMessages();
     }
 
-    private HpMessageModel buildTextMessage(String message, HpRoomModel room) {
+    public void sendDirectReplyTextMessage(String textMessage, HpRoomModel roomModel) {
+        Integer startIndex;
+        if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
+            List<HpMessageEntity> messageEntities = new ArrayList<>();
+            Integer length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                HpMessageModel messageModel = buildTextMessage(substr, roomModel, HpDataManager.getInstance().getActiveUser());
+                // Add entity to list
+                messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
+
+                // Send truncated message
+                sendMessage(messageModel);
+            }
+        } else {
+            HpMessageModel messageModel = buildTextMessage(textMessage, roomModel, HpDataManager.getInstance().getActiveUser());
+            // Send message
+            sendMessage(messageModel);
+        }
+        // Run queue after list is updated
+        //checkAndSendPendingMessages();
+    }
+
+    private HpMessageModel buildTextMessage(String message, HpRoomModel room, HpUserModel user) {
         // Create new HpMessageModel based on text
         String[] splitedRoomID = room.getRoomID().split("-");
         String otherUserID = !splitedRoomID[0].equals(getActiveUser().getUserID()) ? splitedRoomID[0] : splitedRoomID[1];
@@ -297,7 +321,7 @@ public class HpChatManager {
                 room,
                 HpDefaultConstant.MessageType.TYPE_TEXT,
                 System.currentTimeMillis(),
-                getActiveUser(), otherUserID);
+                user, otherUserID);
 
         return messageModel;
     }

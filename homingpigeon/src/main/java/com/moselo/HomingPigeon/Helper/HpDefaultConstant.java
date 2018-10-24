@@ -97,6 +97,12 @@ public class HpDefaultConstant {
 //        public static final String TOKEN_INVALID = "40103";
 //    }
 
+    public static final class Notification {
+        public static final String K_FIREBASE_TOKEN = "kFirebaseToken";
+        public static final String K_TEXT_REPLY = "kTextReply";
+        public static final int K_REPLY_REQ_CODE = 1;
+    }
+
     public static final class TokenHeaderConst {
         public static final int NOT_USE_REFRESH_TOKEN = 1;
         public static final int USE_REFRESH_TOKEN = 2;
@@ -123,8 +129,6 @@ public class HpDefaultConstant {
     public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";
 
     public static final String SCAN_RESULT = "kScanResult";
-
-    public static final String K_FIREBASE_TOKEN = "kFirebaseToken";
 
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
 }

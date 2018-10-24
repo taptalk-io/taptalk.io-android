@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <receiver android:name="com.moselo.HomingPigeon.BroadcastReceiver.HpReplyBroadcastReceiver"
+            android:enabled="true"/>
+
         <service android:name="com.moselo.SampleApps.Firebase.MyFireMsgService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

@@ -18,6 +18,7 @@ public class MyFireMsgService extends FirebaseMessagingService {
                 .setChatMessage("ISdalkdsfjljdflkqjwflkqwjfkleqwjfklqwejfklewflkwnfklnweefklenwfklenwkflnweqklfnweqklfnweklfnwqeklfnlkwefnklewqfnklewfnlkewfnlekwfnelwkfnewklI")
                 .setChatSender("Welly Kencana")
                 .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                .setNeedReply(true)
                 .show();
     }
 

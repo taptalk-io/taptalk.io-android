@@ -5,15 +5,18 @@ import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.BroadcastReceiver.HpReplyBroadcastReceiver;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Interface.HomingPigeonTokenInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -31,6 +34,8 @@ import com.orhanobut.hawk.NoEncryption;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_REPLY_REQ_CODE;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_TEXT_REPLY;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
@@ -143,6 +148,7 @@ public class HomingPigeon {
         public Context context;
         public String chatSender = "", chatMessage = "";
         public int smallIcon;
+        public boolean isNeedReply;
         public NotificationCompat.Builder notificationBuilder;
 
         public NotificationBuilder(Context context) {
@@ -164,9 +170,34 @@ public class HomingPigeon {
             return this;
         }
 
+        public NotificationBuilder setNeedReply(boolean needReply) {
+            isNeedReply = needReply;
+            return this;
+        }
+
         public Notification build() {
             this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
+            addReply();
             return this.notificationBuilder.build();
+        }
+
+        private void addReply() {
+            if (isNeedReply && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                RemoteInput remoteInput = new RemoteInput.Builder(K_TEXT_REPLY)
+                        .setLabel("Reply").build();
+                Intent intent = new Intent(context, HpReplyBroadcastReceiver.class);
+                intent.setAction(K_TEXT_REPLY);
+                PendingIntent replyPendingIntent = PendingIntent.getBroadcast(context, K_REPLY_REQ_CODE,
+                        intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                NotificationCompat.Action action = new NotificationCompat.Action.Builder(smallIcon,
+                        "Reply", replyPendingIntent)
+                        .addRemoteInput(remoteInput)
+                        .setAllowGeneratedReplies(true)
+                        .build();
+
+                notificationBuilder.addAction(action);
+            }
         }
 
         public void show() {

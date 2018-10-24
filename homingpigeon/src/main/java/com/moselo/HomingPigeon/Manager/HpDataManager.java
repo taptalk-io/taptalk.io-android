@@ -27,13 +27,13 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_FIREBASE_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
 
 public class HpDataManager {
     private static HpDataManager instance;
@@ -336,6 +336,7 @@ public class HpDataManager {
     public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
         HpDatabaseManager.getInstance().getMyContactList(listener);
     }
+
     public LiveData<List<HpUserModel>> getMyContactList() {
         return HpDatabaseManager.getInstance().getMyContactList();
     }
