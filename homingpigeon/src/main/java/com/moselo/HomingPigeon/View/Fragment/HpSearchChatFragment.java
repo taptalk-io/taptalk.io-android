@@ -40,7 +40,6 @@ import java.util.Map;
 
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.EMPTY_STATE;
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.MESSAGE_ITEM;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.RECENT_ITEM;
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.RECENT_TITLE;
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.ROOM_ITEM;
 import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.SECTION_TITLE;
