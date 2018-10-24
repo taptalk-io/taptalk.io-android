@@ -87,7 +87,7 @@ public class HpRoomListFragment extends Fragment {
         initViewModel();
         initListener();
         initView(view);
-        viewAppearSequence();
+        viewLoadedSequence();
     }
 
     @Override
@@ -230,7 +230,7 @@ public class HpRoomListFragment extends Fragment {
     }
 
     //ini adalah fungsi yang di panggil pertama kali pas onResume
-    private void viewAppearSequence() {
+    private void viewLoadedSequence() {
         if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
             //selama di apps (foreground) ga perlu panggil API, ambil local dari database aja
             HpDataManager.getInstance().getRoomList(true, dbListener);

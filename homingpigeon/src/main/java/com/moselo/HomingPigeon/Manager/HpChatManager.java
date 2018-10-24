@@ -1,7 +1,5 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
@@ -221,15 +219,18 @@ public class HpChatManager {
                 new HpRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
                         // TODO: 18 October 2018 REMOVE CHECK
                         /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage())
-                        /* TEMPORARY CHECK FOR NULL IMAGE */: null
+                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                        }, entity.getRoomImage())
+                        /* TEMPORARY CHECK FOR NULL IMAGE */ : null
                         , entity.getRoomColor()),
                 entity.getType(),
                 entity.getCreated(),
                 new HpUserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
-                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getUserImage()),
+                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                        }, entity.getUserImage()),
                         entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
-                        HpUtils.getInstance().fromJSON(new TypeReference<HpUserRoleModel>() {}, entity.getUserRole()),
+                        HpUtils.getInstance().fromJSON(new TypeReference<HpUserRoleModel>() {
+                        }, entity.getUserRole()),
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated()),
                 entity.getRecipientID(),

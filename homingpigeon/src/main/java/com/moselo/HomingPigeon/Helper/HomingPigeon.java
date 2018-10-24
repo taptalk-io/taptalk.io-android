@@ -2,8 +2,13 @@ package com.moselo.HomingPigeon.Helper;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
@@ -15,6 +20,7 @@ import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
+import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -129,6 +135,48 @@ public class HomingPigeon {
     public static void saveFirebaseToken(String newFirebaseToken) {
         if (!HpDataManager.getInstance().checkFirebaseToken(newFirebaseToken)) {
             HpDataManager.getInstance().saveFirebaseToken(newFirebaseToken);
+        }
+    }
+
+    //Builder buat setting isi dari Notification chat
+    public static class NotificationBuilder {
+        public Context context;
+        public String chatSender = "", chatMessage = "";
+        public int smallIcon;
+        public NotificationCompat.Builder notificationBuilder;
+
+        public NotificationBuilder(Context context) {
+            this.context = context;
+        }
+
+        public NotificationBuilder setChatSender(String chatSender) {
+            this.chatSender = chatSender;
+            return this;
+        }
+
+        public NotificationBuilder setChatMessage(String chatMessage) {
+            this.chatMessage = chatMessage;
+            return this;
+        }
+
+        public NotificationBuilder setSmallIcon(int smallIcon) {
+            this.smallIcon = smallIcon;
+            return this;
+        }
+
+        public Notification build() {
+            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
+            return this.notificationBuilder.build();
+        }
+
+        public void show() {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(HpNotificationManager.getInstance().getChannelID(), "Notification", NotificationManager.IMPORTANCE_HIGH);
+                notificationManager.createNotificationChannel(channel);
+            }
+            notificationManager.notify(0, build());
         }
     }
 
