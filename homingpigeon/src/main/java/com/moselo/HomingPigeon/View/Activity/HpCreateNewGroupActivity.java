@@ -79,7 +79,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
                     case CREATE_GROUP:
                         if (null != data) {
                             vm.setGroupName(data.getStringExtra(GROUP_NAME));
-                            vm.setGroupImage(data.getStringExtra(GROUP_IMAGE));
+                            vm.setGroupImage(data.getParcelableExtra(GROUP_IMAGE));
                         }
                         break;
                 }

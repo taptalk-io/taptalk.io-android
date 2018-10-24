@@ -30,9 +30,9 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 public class HpProfileActivity extends HpBaseActivity {
 
     private ConstraintLayout clButtonNotifications;
-    private LinearLayout llToolbarCollapsed, llButtonConversationColor, llButtonBlockUser, llButtonClearChat;
-    private ImageView ivProfile, ivButtonBack, ivNotifications;
-    private TextView tvFullName, tvCollapsedName, tvSharedMediaLabel;
+    private LinearLayout llToolbarCollapsed, llButtonConversationColor, llButtonBlockOrView, llButtonClearChat;
+    private ImageView ivProfile, ivButtonBack, ivNotifications, ivBlockOrView, ivDelete;
+    private TextView tvFullName, tvCollapsedName, tvBlockOrView, tvDelete, tvSharedMediaLabel;
     private View vGradient, vProfileSeparator;
     private Switch swNotifications;
     private RecyclerView rvProfile;
@@ -62,13 +62,17 @@ public class HpProfileActivity extends HpBaseActivity {
         clButtonNotifications = findViewById(R.id.cl_button_notifications);
         llToolbarCollapsed = findViewById(R.id.ll_toolbar_collapsed);
         llButtonConversationColor = findViewById(R.id.ll_button_conversation_color);
-        llButtonBlockUser = findViewById(R.id.ll_button_block_user);
+        llButtonBlockOrView = findViewById(R.id.ll_button_block_or_view);
         llButtonClearChat = findViewById(R.id.ll_button_clear_chat);
         ivProfile = findViewById(R.id.iv_profile);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivNotifications = findViewById(R.id.iv_notifications);
+        ivBlockOrView = findViewById(R.id.iv_block_or_view);
+        ivDelete = findViewById(R.id.iv_delete);
         tvFullName = findViewById(R.id.tv_full_name);
         tvCollapsedName = findViewById(R.id.tv_collapsed_name);
+        tvBlockOrView = findViewById(R.id.tv_block_or_view);
+        tvDelete = findViewById(R.id.tv_delete);
         tvSharedMediaLabel = findViewById(R.id.tv_section_title);
         vGradient = findViewById(R.id.v_gradient);
         vProfileSeparator = findViewById(R.id.v_profile_separator);
@@ -81,6 +85,14 @@ public class HpProfileActivity extends HpBaseActivity {
 
         if (null != vm.getRoom().getRoomImage()) {
             GlideApp.with(this).load(vm.getRoom().getRoomImage().getFullsize()).into(ivProfile);
+        }
+
+        // TODO: 24 October 2018 CHECK IF ROOM TYPE IS GROUP
+        if (vm.getRoom().getRoomType() != 1) {
+            ivBlockOrView.setImageResource(R.drawable.hp_ic_members_grey);
+            ivDelete.setImageResource(R.drawable.hp_ic_exit_red);
+            tvBlockOrView.setText(getString(R.string.view_members));
+            tvDelete.setText(getString(R.string.exit_group));
         }
 
         tvFullName.setText(vm.getRoom().getRoomName());
@@ -142,8 +154,8 @@ public class HpProfileActivity extends HpBaseActivity {
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         clButtonNotifications.setOnClickListener(v -> onNotificationClicked());
         llButtonConversationColor.setOnClickListener(v -> changeConversationColor());
-        llButtonBlockUser.setOnClickListener(v -> blockUser());
-        llButtonClearChat.setOnClickListener(v -> clearChatRoom());
+        llButtonBlockOrView.setOnClickListener(v -> blockUserOrViewMembers());
+        llButtonClearChat.setOnClickListener(v -> clearChatOrExitGroup());
     }
 
     private void onNotificationClicked() {
@@ -154,12 +166,12 @@ public class HpProfileActivity extends HpBaseActivity {
         // TODO: 23 October 2018 CHANGE CONVERSATION COLOR
     }
 
-    private void blockUser() {
-        // TODO: 23 October 2018 BLOCK USER
+    private void blockUserOrViewMembers() {
+        // TODO: 23 October 2018 BLOCK USER / VIEW GROUP MEMBERS
     }
 
-    private void clearChatRoom() {
-        // TODO: 23 October 2018 DELETE MESSAGES FROM ROOM
+    private void clearChatOrExitGroup() {
+        // TODO: 23 October 2018 DELETE MESSAGES FROM ROOM / EXIT GROUP
     }
 
     private AppBarLayout.OnOffsetChangedListener offsetChangedListener = new AppBarLayout.OnOffsetChangedListener() {

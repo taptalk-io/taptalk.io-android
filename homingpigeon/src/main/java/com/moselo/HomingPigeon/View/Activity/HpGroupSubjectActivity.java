@@ -29,6 +29,7 @@ import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
+import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpGroupViewModel;
@@ -38,6 +39,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_MEMB
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_NAME;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.GROUP_MEMBER_LIMIT;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 
@@ -50,8 +52,8 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
     private Button btnCreateGroup;
     private RecyclerView rvGroupMembers;
 
-    HpContactListAdapter adapter;
-    HpGroupViewModel vm;
+    private HpContactListAdapter adapter;
+    private HpGroupViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,10 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
                 switch (requestCode) {
                     case PICK_GROUP_IMAGE:
                         if (null == data.getData()) return;
-                        vm.getGroupData().setGroupImage(data.getData().toString());
+                        HpImageURL groupImage = new HpImageURL();
+                        groupImage.setThumbnail(data.getData().toString());
+                        groupImage.setFullsize(data.getData().toString());
+                        vm.getGroupData().setRoomImage(groupImage);
                         loadGroupImage();
                         break;
                 }
@@ -91,10 +96,10 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        if (null != vm.getGroupData().getGroupName())
-            intent.putExtra(GROUP_NAME, vm.getGroupData().getGroupName());
-        if (null != vm.getGroupData().getGroupImage())
-            intent.putExtra(GROUP_IMAGE, vm.getGroupData().getGroupImage().toString());
+        if (null != vm.getGroupData().getRoomName())
+            intent.putExtra(GROUP_NAME, vm.getGroupData().getRoomName());
+        if (null != vm.getGroupData().getRoomImage())
+            intent.putExtra(GROUP_IMAGE, vm.getGroupData().getRoomImage());
         setResult(RESULT_CANCELED, intent);
         finish();
     }
@@ -102,9 +107,9 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpGroupViewModel.class);
         vm.setMyID(getIntent().getStringExtra(MY_ID));
-        vm.getGroupData().setGroupMembers(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
-        vm.getGroupData().setGroupName(getIntent().getStringExtra(GROUP_NAME));
-        vm.getGroupData().setGroupImage(getIntent().getStringExtra(GROUP_IMAGE));
+        vm.getGroupData().setGroupParticipants(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
+        vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
+        vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
     }
 
     @Override
@@ -120,7 +125,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
 
         etGroupName.addTextChangedListener(groupNameWatcher);
 
-        adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupMembers());
+        adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new HpHorizontalDecoration(0, 0,
@@ -150,13 +155,13 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
     }
 
     private void loadGroupName() {
-        if (null == vm.getGroupData().getGroupName()) return;
-        etGroupName.setText(vm.getGroupData().getGroupName());
+        if (null == vm.getGroupData().getRoomName()) return;
+        etGroupName.setText(vm.getGroupData().getRoomName());
     }
 
     private void loadGroupImage() {
-        if (null == vm.getGroupData().getGroupImage()) return;
-        GlideApp.with(HpGroupSubjectActivity.this).load(vm.getGroupData().getGroupImage()).listener(new RequestListener<Drawable>() {
+        if (null == vm.getGroupData().getRoomImage()) return;
+        GlideApp.with(this).load(vm.getGroupData().getRoomImage().getThumbnail()).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 civGroupImage.setImageResource(R.drawable.hp_bg_circle_d9d9d9);
@@ -175,9 +180,11 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
 
     private void validateAndCreateGroup() {
         String groupName = etGroupName.getText().toString();
-        if (!groupName.trim().isEmpty() && vm.getGroupData().getGroupMembers().size() > 0) {
-            // TODO: 19 September 2018 CREATE AND OPEN GROUP
-            Toast.makeText(this, "Group Created!", Toast.LENGTH_SHORT).show();
+        if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
+            // TODO: 19 September 2018 CREATE GROUP
+            Intent intent = new Intent(this, HpProfileActivity.class);
+            intent.putExtra(K_ROOM, vm.getGroupData());
+            startActivity(intent);
             setResult(RESULT_OK);
             finish();
         } else {
@@ -195,10 +202,10 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
                 btnCreateGroup.setBackgroundResource(R.drawable.hp_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp);
-                vm.getGroupData().setGroupName(s.toString());
+                vm.getGroupData().setRoomName(s.toString());
             } else {
                 btnCreateGroup.setBackgroundResource(R.drawable.hp_bg_d9d9d9_rounded_6dp);
-                vm.getGroupData().setGroupName("");
+                vm.getGroupData().setRoomName("");
             }
         }
 

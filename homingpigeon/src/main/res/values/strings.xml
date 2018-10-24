@@ -22,7 +22,9 @@
     <string name="notifications">Notifications</string>
     <string name="conversation_color">Conversation Color</string>
     <string name="block_user">Block User</string>
+    <string name="view_members">View Members</string>
     <string name="clear_chat">Clear Chat</string>
+    <string name="exit_group">Exit Group</string>
     <string name="shared_media">Shared Media</string>
 
     <!--Chat Room List-->
