@@ -92,10 +92,10 @@ public class HpDefaultConstant {
         public static final int INTERNAL_SERVER_ERROR = 500;
     }
 
-    public static final class HttpErrorCode {
-        public static final String TOKEN_EXPIRED = "40104";
-        public static final String TOKEN_INVALID = "40103";
-    }
+//    public static final class HttpErrorCode {
+//        public static final String TOKEN_EXPIRED = "40104";
+//        public static final String TOKEN_INVALID = "40103";
+//    }
 
     public static final class TokenHeaderConst {
         public static final int NOT_USE_REFRESH_TOKEN = 1;
@@ -123,6 +123,8 @@ public class HpDefaultConstant {
     public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";
 
     public static final String SCAN_RESULT = "kScanResult";
+
+    public static final String K_FIREBASE_TOKEN = "kFirebaseToken";
 
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
 }

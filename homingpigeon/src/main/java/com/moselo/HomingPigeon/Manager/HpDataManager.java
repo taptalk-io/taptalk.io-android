@@ -27,6 +27,7 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_FIREBASE_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
@@ -215,6 +216,27 @@ public class HpDataManager {
     // TODO: 14/09/18 TEMP
     public void saveRecipientID(String recipientID) {
         Hawk.put(K_RECIPIENT_ID, recipientID);
+    }
+
+    /**
+     * Firebase Token
+     */
+    public void saveFirebaseToken(String firebaseToken) {
+        saveStringPreference(firebaseToken, K_FIREBASE_TOKEN);
+    }
+
+    public String getFirebaseToken() {
+        return getStringPreference(K_FIREBASE_TOKEN);
+    }
+
+    public Boolean checkFirebaseToken(String newFirebaseToken) {
+        if (!checkPreferenceKeyAvailable(K_FIREBASE_TOKEN))
+            return false;
+        else if (newFirebaseToken.equals(getFirebaseToken())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

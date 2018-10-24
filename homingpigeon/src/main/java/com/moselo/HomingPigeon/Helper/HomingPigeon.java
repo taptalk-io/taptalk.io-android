@@ -20,6 +20,7 @@ import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 import com.orhanobut.hawk.Hawk;
+import com.orhanobut.hawk.NoEncryption;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
@@ -45,7 +46,11 @@ public class HomingPigeon {
 
     public HomingPigeon(final Context appContext, HomingPigeonTokenInterface hpTokenInterface) {
         //init Hawk for Preference
-        Hawk.init(appContext).build();
+        //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
+        if (BuildConfig.BUILD_TYPE.equals("dev"))
+            Hawk.init(appContext).setEncryption(new NoEncryption()).build();
+        else Hawk.init(appContext).build();
+
         //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
         HpDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
         HpDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
@@ -119,6 +124,12 @@ public class HomingPigeon {
         HpDataManager.getInstance().deleteAllFromDatabase();
         Intent intent = new Intent(appContext, HpLoginActivity.class);
         appContext.startActivity(intent);
+    }
+
+    public static void saveFirebaseToken(String newFirebaseToken) {
+        if (!HpDataManager.getInstance().checkFirebaseToken(newFirebaseToken)) {
+            HpDataManager.getInstance().saveFirebaseToken(newFirebaseToken);
+        }
     }
 
     public static Context appContext;
