@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +33,6 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
 
     private HpRoomListViewModel vm;
     private RoomListInterface roomListInterface;
-    private ColorStateList avatarTint;
 
     public HpRoomListAdapter(HpRoomListViewModel vm, RoomListInterface roomListInterface) {
         setItems(vm.getRoomList(), false);
@@ -84,14 +82,12 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
             if (null != item.getLastMessage().getRoom().getRoomImage()) {
                 GlideApp.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).centerCrop().into(civAvatar);
             } else {
-                avatarTint = ColorStateList.valueOf(randomColor);
+                ColorStateList avatarTint = ColorStateList.valueOf(randomColor);
                 civAvatar.setBackgroundTintList(avatarTint);
             }
 
             // Change avatar icon and background
-            Log.e(TAG, "onBind: " + item.getLastMessage().getRoom().getRoomName());
-            Log.e(TAG, "onBind: isSelected = " + item.getLastMessage().getRoom().isSelected());
-            if (item.getLastMessage().getRoom().isSelected()) {
+            if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
                 // Item is selected
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_select));
                 clContainer.setBackgroundColor(resource.getColor(R.color.transparent_black_18));
@@ -198,9 +194,15 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
 
     private void onRoomSelected(HpRoomListModel item, int position) {
         HpRoomModel room = item.getLastMessage().getRoom();
-        room.setSelected(!room.isSelected());
-        Log.e(RoomListVH.class.getSimpleName(), "onRoomSelected: " + room.isSelected());
-        roomListInterface.onRoomSelected(item, room.isSelected());
+
+        if (!vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
+            // Room selected
+            vm.getSelectedRooms().put(item.getLastMessage().getRoom().getRoomID(), item);
+        } else {
+            // Room deselected
+            vm.getSelectedRooms().remove(item.getLastMessage().getRoom().getRoomID());
+        }
+        roomListInterface.onRoomSelected();
         notifyItemChanged(position);
     }
 

@@ -46,8 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_MY_USERNAME;
-
 public class HpRoomListFragment extends Fragment {
 
     private String TAG = HpRoomListFragment.class.getSimpleName();
@@ -136,15 +134,7 @@ public class HpRoomListFragment extends Fragment {
         };
         HpChatManager.getInstance().addChatListener(chatListener);
 
-        roomListInterface = (roomListModel, isSelected) -> {
-            Log.e(TAG, "initListener: " + isSelected);
-            if (null != roomListModel && isSelected) {
-                // Room selected
-                vm.getSelectedRooms().put(roomListModel.getLastMessage().getLocalID(), roomListModel);
-            } else if (null != roomListModel) {
-                // Room deselected
-                vm.getSelectedRooms().remove(roomListModel.getLastMessage().getLocalID());
-            }
+        roomListInterface = () -> {
             if (vm.getSelectedCount() > 0) {
                 showSelectionActionBar();
             } else {
@@ -334,9 +324,6 @@ public class HpRoomListFragment extends Fragment {
     }
 
     public void cancelSelection() {
-        for (Map.Entry<String, HpRoomListModel> entry : vm.getSelectedRooms().entrySet()) {
-            entry.getValue().getLastMessage().getRoom().setSelected(false);
-        }
         vm.getSelectedRooms().clear();
         adapter.notifyDataSetChanged();
         hideSelectionActionBar();

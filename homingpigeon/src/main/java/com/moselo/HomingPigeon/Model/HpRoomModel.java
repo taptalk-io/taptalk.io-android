@@ -21,7 +21,6 @@ public class HpRoomModel implements Parcelable {
     @Nullable @JsonProperty("groupParticipants") private List<HpUserModel> groupParticipants;
     @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
     private boolean isMuted;
-    private boolean isSelected;
 
     public HpRoomModel(String roomID, String roomName, int roomType, HpImageURL roomImage, String roomColor) {
         this.roomID = roomID;
@@ -114,14 +113,6 @@ public class HpRoomModel implements Parcelable {
         isMuted = muted;
     }
 
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
-    }
-
 
     @Override
     public int describeContents() {
@@ -139,7 +130,6 @@ public class HpRoomModel implements Parcelable {
         dest.writeTypedList(this.groupParticipants);
         dest.writeValue(this.numOfParticipants);
         dest.writeByte(this.isMuted ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
     }
 
     protected HpRoomModel(Parcel in) {
@@ -152,7 +142,6 @@ public class HpRoomModel implements Parcelable {
         this.groupParticipants = in.createTypedArrayList(HpUserModel.CREATOR);
         this.numOfParticipants = (Integer) in.readValue(Integer.class.getClassLoader());
         this.isMuted = in.readByte() != 0;
-        this.isSelected = in.readByte() != 0;
     }
 
     public static final Parcelable.Creator<HpRoomModel> CREATOR = new Parcelable.Creator<HpRoomModel>() {
