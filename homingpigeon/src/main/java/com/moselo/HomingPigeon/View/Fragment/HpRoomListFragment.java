@@ -3,7 +3,6 @@ package com.moselo.HomingPigeon.View.Fragment;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
@@ -60,7 +58,6 @@ public class HpRoomListFragment extends Fragment {
     private LinearLayout llRoomEmpty;
     private TextView tvSelectionCount;
     private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
-    private ProgressBar pbSettingUp;
     private FloatingActionButton fabNewChat;
 
     private RecyclerView rvContactList;
@@ -140,9 +137,12 @@ public class HpRoomListFragment extends Fragment {
         HpChatManager.getInstance().addChatListener(chatListener);
 
         roomListInterface = (roomListModel, isSelected) -> {
+            Log.e(TAG, "initListener: " + isSelected);
             if (null != roomListModel && isSelected) {
+                // Room selected
                 vm.getSelectedRooms().put(roomListModel.getLastMessage().getLocalID(), roomListModel);
             } else if (null != roomListModel) {
+                // Room deselected
                 vm.getSelectedRooms().remove(roomListModel.getLastMessage().getLocalID());
             }
             if (vm.getSelectedCount() > 0) {
@@ -165,17 +165,14 @@ public class HpRoomListFragment extends Fragment {
         ivButtonMute = view.findViewById(R.id.iv_button_mute);
         ivButtonDelete = view.findViewById(R.id.iv_button_delete);
         ivButtonMore = view.findViewById(R.id.iv_button_more);
-        pbSettingUp = view.findViewById(R.id.pb_setting_up);
         fabNewChat = view.findViewById(R.id.fab_new_chat);
         rvContactList = view.findViewById(R.id.rv_contact_list);
-
-        pbSettingUp.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.amethyst), PorterDuff.Mode.SRC_IN);
 
         flSetupContainer.setVisibility(View.GONE);
 
         if (vm.isSelecting()) showSelectionActionBar();
 
-        adapter = new HpRoomListAdapter(vm, activity.getIntent().getStringExtra(K_MY_USERNAME), roomListInterface);
+        adapter = new HpRoomListAdapter(vm, roomListInterface);
         llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(llm);
@@ -203,30 +200,6 @@ public class HpRoomListFragment extends Fragment {
     private void openNewChatActivity() {
         Intent intent = new Intent(getContext(), HpNewChatActivity.class);
         startActivity(intent);
-    }
-
-    private void showSelectionActionBar() {
-        vm.setSelecting(true);
-        tvSelectionCount.setText(vm.getSelectedCount() + "");
-        clButtonSearch.setElevation(0);
-        clButtonSearch.setVisibility(View.INVISIBLE);
-        clSelection.setVisibility(View.VISIBLE);
-    }
-
-    private void hideSelectionActionBar() {
-        vm.setSelecting(false);
-        clButtonSearch.setElevation(HpUtils.getInstance().dpToPx(2));
-        clButtonSearch.setVisibility(View.VISIBLE);
-        clSelection.setVisibility(View.INVISIBLE);
-    }
-
-    private void cancelSelection() {
-        for (Map.Entry<String, HpRoomListModel> entry : vm.getSelectedRooms().entrySet()) {
-            entry.getValue().getLastMessage().getRoom().setSelected(false);
-        }
-        vm.getSelectedRooms().clear();
-        adapter.notifyDataSetChanged();
-        hideSelectionActionBar();
     }
 
     //ini adalah fungsi yang di panggil pertama kali pas onResume
@@ -343,6 +316,34 @@ public class HpRoomListFragment extends Fragment {
             vm.getRoomList().add(0, newRoomList);
             activity.runOnUiThread(() -> adapter.notifyItemInserted(0));
         }
+    }
+
+    private void showSelectionActionBar() {
+        vm.setSelecting(true);
+        tvSelectionCount.setText(vm.getSelectedCount() + "");
+        clButtonSearch.setElevation(0);
+        clButtonSearch.setVisibility(View.INVISIBLE);
+        clSelection.setVisibility(View.VISIBLE);
+    }
+
+    private void hideSelectionActionBar() {
+        vm.setSelecting(false);
+        clButtonSearch.setElevation(HpUtils.getInstance().dpToPx(2));
+        clButtonSearch.setVisibility(View.VISIBLE);
+        clSelection.setVisibility(View.INVISIBLE);
+    }
+
+    public void cancelSelection() {
+        for (Map.Entry<String, HpRoomListModel> entry : vm.getSelectedRooms().entrySet()) {
+            entry.getValue().getLastMessage().getRoom().setSelected(false);
+        }
+        vm.getSelectedRooms().clear();
+        adapter.notifyDataSetChanged();
+        hideSelectionActionBar();
+    }
+
+    public boolean isSelecting() {
+        return vm.isSelecting();
     }
 
     private HpDefaultDataView<HpGetRoomListResponse> roomListView = new HpDefaultDataView<HpGetRoomListResponse>() {

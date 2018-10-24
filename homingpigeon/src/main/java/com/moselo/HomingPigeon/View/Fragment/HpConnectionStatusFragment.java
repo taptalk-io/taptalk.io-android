@@ -87,8 +87,6 @@ public class HpConnectionStatusFragment extends Fragment implements HomingPigeon
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
         pbConnecting = view.findViewById(R.id.pb_connecting);
-
-        pbConnecting.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
     }
 
     private void initConnectionStatus() {

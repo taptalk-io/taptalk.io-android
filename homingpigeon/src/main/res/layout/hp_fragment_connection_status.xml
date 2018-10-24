@@ -23,7 +23,8 @@
         android:id="@+id/pb_connecting"
         android:layout_width="9dp"
         android:layout_height="9dp"
-        android:layout_marginStart="4dp" />
+        android:layout_marginStart="4dp"
+        android:indeterminateTint="@color/white" />
 
     <ImageView
         android:id="@+id/iv_connection_status"
