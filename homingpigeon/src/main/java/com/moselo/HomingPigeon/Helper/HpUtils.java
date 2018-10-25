@@ -308,10 +308,4 @@ public class HpUtils {
         } catch (Throwable t) {
         }
     }
-
-    public String arrangeRoomId(String userId, String friendId) {
-        int myId = (null != userId && !"null".equals(userId)) ? Integer.parseInt(userId) : 0;
-        int fId = (null != friendId && !"null".equals(friendId)) ? Integer.parseInt(friendId) : 0;
-        return myId < fId ? myId + "-" + fId : fId + "-" + myId;
-    }
 }
