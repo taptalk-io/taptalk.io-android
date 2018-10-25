@@ -8,4 +8,5 @@ public interface HomingPigeonDatabaseInterface<T> {
     void onInsertFinished();
     void onCountedUnreadCount(String roomID, int unreadCount);
     void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap);
+    void onContactCheckFinished(int isContact);
 }

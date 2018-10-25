@@ -351,6 +351,10 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().updateMyContact(userModels);
     }
 
+    public void checkUserInMyContacts(String userID, HpDatabaseListener<HpUserModel> listener) {
+        HpDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
+    }
+
     //General
     public void deleteAllFromDatabase() {
         new Thread(this::deleteAllMessage).start();

@@ -10,4 +10,5 @@ public abstract class HpDatabaseListener<T> implements HomingPigeonDatabaseInter
     @Override public void onInsertFinished() {}
     @Override public void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap) {}
     @Override public void onCountedUnreadCount(String roomID, int unreadCount) {}
+    @Override public void onContactCheckFinished(int isContact) {}
 }

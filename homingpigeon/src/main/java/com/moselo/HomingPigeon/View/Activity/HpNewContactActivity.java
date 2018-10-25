@@ -2,18 +2,31 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+import android.os.CountDownTimer;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
+import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
 
@@ -21,15 +34,15 @@ public class HpNewContactActivity extends HpBaseActivity {
 
     private static final String TAG = HpNewContactActivity.class.getSimpleName();
 
-    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover;
-    private CircleImageView civAvatarExpert, civAvatarUser;
-    private TextView tvSearchUsernameMessage, tvBtnAddContactExpert, tvExpertName, tvExpertCategory, tvBtnAddContactUser, tvUserName;
-    
+    private ConstraintLayout clSearchResult, clButtonAction;
+    private LinearLayout llEmpty;
+    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage;
+    private CircleImageView civAvatar;
+    private TextView tvSearchUsernameGuide, tvUserName, tvCategory, tvButtonText;
     private EditText etSearch;
-    private CardView cvExpertCard, cvUserCard;
-    private LinearLayout llBtnChatNowExpert, llBtnChatNowUser, llEmpty;
+    private ProgressBar pbSearch, pbButton;
 
-    private HpNewContactViewModel newContactVM;
+    private HpNewContactViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,108 +51,266 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         initViewModel();
         initView();
-        setupDummyData();
         HpUtils.getInstance().showKeyboard(this, etSearch);
+    }
+
+    private void initViewModel() {
+        vm = ViewModelProviders.of(this).get(HpNewContactViewModel.class);
     }
 
     @Override
     protected void initView() {
-        etSearch = findViewById(R.id.et_search);
+        clSearchResult = findViewById(R.id.cl_search_result);
+        clButtonAction = findViewById(R.id.cl_button_action);
+        llEmpty = findViewById(R.id.ll_empty);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonCancel = findViewById(R.id.iv_button_cancel);
-        tvSearchUsernameMessage = findViewById(R.id.tv_search_username_message);
-        cvExpertCard = findViewById(R.id.cv_expert_card);
         ivExpertCover = findViewById(R.id.iv_expert_cover);
-        civAvatarExpert = findViewById(R.id.civ_expert_avatar);
-        tvBtnAddContactExpert = findViewById(R.id.tv_btn_add_contact_expert);
-        llBtnChatNowExpert = findViewById(R.id.ll_btn_chat_now_expert);
-        tvExpertName = findViewById(R.id.tv_expert_name);
-        tvExpertCategory = findViewById(R.id.tv_expert_category);
-        cvUserCard = findViewById(R.id.cv_user_card);
-        civAvatarUser = findViewById(R.id.civ_user_avatar);
-        tvBtnAddContactUser = findViewById(R.id.tv_btn_add_contact_user);
-        llBtnChatNowUser = findViewById(R.id.ll_btn_chat_now_user);
+        ivAvatarIcon = findViewById(R.id.iv_avatar_icon);
+        ivButtonImage = findViewById(R.id.iv_button_image);
+        civAvatar = findViewById(R.id.civ_avatar);
+        tvSearchUsernameGuide = findViewById(R.id.tv_search_username_guide);
         tvUserName = findViewById(R.id.tv_user_name);
-        llEmpty = findViewById(R.id.ll_empty);
+        tvCategory = findViewById(R.id.tv_category);
+        tvButtonText = findViewById(R.id.tv_button_text);
+        etSearch = findViewById(R.id.et_search);
+        pbSearch = findViewById(R.id.pb_search);
+        pbButton = findViewById(R.id.pb_button);
 
-        // TODO: 18/09/18 fix these (only dummy)
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (0 == s.toString().length()) {
-                    tvSearchUsernameMessage.setTextColor(View.VISIBLE);
-                    cvExpertCard.setVisibility(View.GONE);
-                    cvUserCard.setVisibility(View.GONE);
-                    llEmpty.setVisibility(View.GONE);
-                } else if ("empty".equals(s.toString())) {
-                    tvSearchUsernameMessage.setTextColor(View.GONE);
-                    cvExpertCard.setVisibility(View.GONE);
-                    cvUserCard.setVisibility(View.GONE);
-                    llEmpty.setVisibility(View.VISIBLE);
-                } else {
-                    tvSearchUsernameMessage.setTextColor(View.GONE);
-                    cvExpertCard.setVisibility(View.VISIBLE);
-                    cvUserCard.setVisibility(View.GONE);
-                    llEmpty.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        tvBtnAddContactExpert.setOnClickListener(v -> {
-            tvBtnAddContactExpert.setVisibility(View.GONE);
-            llBtnChatNowExpert.setVisibility(View.VISIBLE);
-        });
-
-        llBtnChatNowExpert.setOnClickListener(v -> {
-            tvSearchUsernameMessage.setTextColor(View.GONE);
-            cvExpertCard.setVisibility(View.GONE);
-            cvUserCard.setVisibility(View.VISIBLE);
-            llEmpty.setVisibility(View.GONE);
-        });
-
-        tvBtnAddContactUser.setOnClickListener(v -> {
-            tvBtnAddContactUser.setVisibility(View.GONE);
-            llBtnChatNowUser.setVisibility(View.VISIBLE);
-        });
-
-        llBtnChatNowUser.setOnClickListener(v -> {
-            tvSearchUsernameMessage.setTextColor(View.GONE);
-            cvExpertCard.setVisibility(View.VISIBLE);
-            cvUserCard.setVisibility(View.GONE);
-            llEmpty.setVisibility(View.GONE);
-        });
+        etSearch.addTextChangedListener(contactSearchWatcher);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-
-        ivButtonCancel.setOnClickListener(v -> {
-            etSearch.setText("");
-            tvSearchUsernameMessage.setTextColor(View.VISIBLE);
-            cvExpertCard.setVisibility(View.GONE);
-            cvUserCard.setVisibility(View.GONE);
-            llEmpty.setVisibility(View.GONE);
-        });
+        ivButtonCancel.setOnClickListener(v -> clearSearch());
     }
 
-    private void initViewModel() {
-        newContactVM = ViewModelProviders.of(this).get(HpNewContactViewModel.class);
+    private void clearSearch() {
+        etSearch.setText("");
+        HpUtils.getInstance().dismissKeyboard(this);
+        showEmpty();
     }
 
-    // TODO: 17/09/18 must be deleted if the real data comes
-    private void setupDummyData() {
-        GlideApp.with(this).load("https://images.pexels.com/photos/1115128/pexels-photo-1115128.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
-                .centerCrop().override(HpUtils.getInstance().getScreenWidth(), HpUtils.getInstance().getScreeHeight()).into(civAvatarUser);
-
-        GlideApp.with(this).load("https://images.pexels.com/photos/1115128/pexels-photo-1115128.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
-                .centerCrop().override(HpUtils.getInstance().getScreenWidth(), HpUtils.getInstance().getScreeHeight()).into(civAvatarExpert);
+    private void showEmpty() {
+        tvSearchUsernameGuide.setVisibility(View.VISIBLE);
+        ivExpertCover.setVisibility(View.GONE);
+        civAvatar.setVisibility(View.GONE);
+        ivAvatarIcon.setVisibility(View.GONE);
+        tvUserName.setVisibility(View.GONE);
+        tvCategory.setVisibility(View.GONE);
+        clButtonAction.setVisibility(View.GONE);
+        llEmpty.setVisibility(View.GONE);
     }
+
+    private void showResultNotFound() {
+        tvSearchUsernameGuide.setVisibility(View.GONE);
+        ivExpertCover.setVisibility(View.GONE);
+        civAvatar.setVisibility(View.GONE);
+        ivAvatarIcon.setVisibility(View.GONE);
+        tvUserName.setVisibility(View.GONE);
+        tvCategory.setVisibility(View.GONE);
+        clButtonAction.setVisibility(View.GONE);
+        llEmpty.setVisibility(View.VISIBLE);
+    }
+
+    private void showUserView() {
+        tvSearchUsernameGuide.setVisibility(View.GONE);
+        ivExpertCover.setVisibility(View.GONE);
+        civAvatar.setVisibility(View.VISIBLE);
+        ivAvatarIcon.setVisibility(View.GONE);
+        tvUserName.setVisibility(View.VISIBLE);
+        tvCategory.setVisibility(View.GONE);
+        clButtonAction.setVisibility(View.VISIBLE);
+        llEmpty.setVisibility(View.GONE);
+
+        // Remove bottom constraint from avatar
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(clSearchResult);
+        constraintSet.clear(civAvatar.getId(), ConstraintSet.BOTTOM);
+        constraintSet.applyTo(clSearchResult);
+
+        if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
+            GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
+        }
+        // TODO: 25 October 2018 TESTING
+        civAvatar.setImageResource(R.drawable.hp_bg_circle_vibrantgreen);
+
+        tvUserName.setText(vm.getSearchResult().getName());
+
+        // Check if user is in my contacts
+        tvButtonText.setVisibility(View.GONE);
+        ivButtonImage.setVisibility(View.GONE);
+        pbButton.setVisibility(View.VISIBLE);
+        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), contactCheckListener);
+    }
+
+    private void showExpertView() {
+        tvSearchUsernameGuide.setVisibility(View.GONE);
+        ivExpertCover.setVisibility(View.VISIBLE);
+        civAvatar.setVisibility(View.VISIBLE);
+        ivAvatarIcon.setVisibility(View.VISIBLE);
+        tvUserName.setVisibility(View.VISIBLE);
+        tvCategory.setVisibility(View.VISIBLE);
+        clButtonAction.setVisibility(View.VISIBLE);
+        llEmpty.setVisibility(View.GONE);
+
+        // Set bottom constraint from avatar to cover image
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(clSearchResult);
+        constraintSet.connect(civAvatar.getId(), ConstraintSet.BOTTOM, ivExpertCover.getId(), ConstraintSet.BOTTOM);
+        constraintSet.applyTo(clSearchResult);
+
+        if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
+            GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
+            // TODO: 25 October 2018 LOAD COVER IMAGE
+            GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
+        }
+        // TODO: 25 October 2018 TESTING
+        civAvatar.setImageResource(R.drawable.hp_bg_circle_vibrantgreen);
+        ivExpertCover.setImageResource(R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_10dp);
+
+        tvUserName.setText(vm.getSearchResult().getName());
+
+        // TODO: 25 October 2018 SET CATEGORY
+        if (null != vm.getSearchResult().getUserRole()) tvCategory.setText(vm.getSearchResult().getUserRole().getRoleName());
+        // TODO: 25 October 2018 TESTING
+        tvCategory.setText("Category");
+
+        // Check if user is in my contacts
+        tvButtonText.setVisibility(View.GONE);
+        ivButtonImage.setVisibility(View.GONE);
+        pbButton.setVisibility(View.VISIBLE);
+        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), contactCheckListener);
+    }
+
+    private void addToContact() {
+        // TODO: 25 October 2018
+    }
+
+    private void openChatRoom() {
+        // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
+        HpUtils.getInstance().startChatActivity(
+                this,
+                HpChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
+                vm.getSearchResult().getName(),
+                vm.getSearchResult().getAvatarURL(),
+                1,
+                /* TEMPORARY ROOM COLOR */HpUtils.getInstance().getRandomColor(vm.getSearchResult().getName()) + "");
+    }
+
+    private TextWatcher contactSearchWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            // TODO: 25 October 2018 CANCEL API CALL IF RUNNING
+            searchTimer.cancel();
+            if (s.length() > 0) {
+                Log.e(TAG, "onTextChanged: ");
+                searchTimer.start();
+            } else {
+                showEmpty();
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    private CountDownTimer searchTimer = new CountDownTimer(300L, 10L) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+        }
+
+        @Override
+        public void onFinish() {
+            Log.e(TAG, "onFinish: ");
+            ivButtonCancel.setVisibility(View.INVISIBLE);
+            pbSearch.setVisibility(View.VISIBLE);
+            HpDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getContactView);
+        }
+    };
+
+    HpDatabaseListener<HpUserModel> contactCheckListener = new HpDatabaseListener<HpUserModel>() {
+        @Override
+        public void onContactCheckFinished(int isContact) {
+            Log.e(TAG, "onContactCheckFinished: " + isContact);
+            if (isContact == 0) {
+                // Searched user is not a contact
+                runOnUiThread(() -> {
+                    ivButtonImage.setVisibility(View.GONE);
+                    tvButtonText.setVisibility(View.VISIBLE);
+                    pbButton.setVisibility(View.GONE);
+                    tvButtonText.setText(getString(R.string.add_to_contacts));
+                    clButtonAction.setOnClickListener(v -> addToContact());
+                });
+            } else {
+                // Searched user is in my contacts
+                runOnUiThread(() -> {
+                    ivButtonImage.setVisibility(View.VISIBLE);
+                    tvButtonText.setVisibility(View.VISIBLE);
+                    pbButton.setVisibility(View.GONE);
+                    tvButtonText.setText(getString(R.string.chat_now));
+                    clButtonAction.setOnClickListener(v -> openChatRoom());
+                });
+            }
+        }
+    };
+
+    HpDefaultDataView<HpGetUserResponse> getContactView = new HpDefaultDataView<HpGetUserResponse>() {
+
+        // TODO: 25 October 2018 TESTING
+        int tempCount;
+
+        @Override
+        public void onSuccess(HpGetUserResponse response) {
+            vm.setSearchResult(response.getUser());
+
+            // TODO: 25 October 2018 CHECK USER ROLE
+            if (tempCount % 2 == 0) {
+                showExpertView();
+            } else {
+                showUserView();
+            }
+            tempCount++;
+        }
+
+        @Override
+        public void endLoading() {
+            ivButtonCancel.setVisibility(View.VISIBLE);
+            pbSearch.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        public void onError(HpErrorModel error) {
+            // TODO: 25 October 2018 CHECK ERROR CODE FOR USER NOT FOUND
+            if (error.getCode().charAt(0) == '4') {
+                showResultNotFound();
+                endLoading();
+            } else {
+                if (BuildConfig.DEBUG) {
+                    new HomingPigeonDialog.Builder(HpNewContactActivity.this)
+                            .setTitle(getString(R.string.error))
+                            .setMessage(error.getMessage())
+                            .setPrimaryButtonListener(v -> endLoading())
+                            .show();
+                }
+            }
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            if (BuildConfig.DEBUG) {
+                new HomingPigeonDialog.Builder(HpNewContactActivity.this)
+                        .setTitle(getString(R.string.error))
+                        .setMessage(errorMessage)
+                        .setPrimaryButtonListener(v -> endLoading())
+                        .show();
+            }
+        }
+    };
 }

@@ -64,6 +64,7 @@
     <string name="chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
 
     <!--Error Message-->
+    <string name="error">Error</string>
     <string name="could_not_find_any_results">Could not find any results</string>
     <string name="failed_to_load_image">Failed to load image.</string>
     <string name="message_send_failed">Failed to send, tap to retry</string>

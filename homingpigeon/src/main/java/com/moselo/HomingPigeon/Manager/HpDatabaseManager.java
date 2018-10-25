@@ -260,4 +260,9 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
+    public void checkUserInMyContacts(String userID, HpDatabaseListener<HpUserModel> listener) {
+        if (null != myContactRepository)
+            myContactRepository.checkUserInMyContacts(userID, listener);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
 }
