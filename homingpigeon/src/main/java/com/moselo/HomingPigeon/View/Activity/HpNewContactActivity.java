@@ -204,10 +204,9 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            // TODO: 25 October 2018 CANCEL API CALL IF RUNNING
+            HpDataManager.getInstance().cancelUserSearchApiCall();
             searchTimer.cancel();
             if (s.length() > 0) {
-                Log.e(TAG, "onTextChanged: ");
                 searchTimer.start();
             } else {
                 showEmpty();
@@ -228,10 +227,9 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onFinish() {
-            Log.e(TAG, "onFinish: ");
             ivButtonCancel.setVisibility(View.INVISIBLE);
             pbSearch.setVisibility(View.VISIBLE);
-            HpDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getContactView);
+            HpDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
         }
     };
 
@@ -261,7 +259,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    HpDefaultDataView<HpGetUserResponse> getContactView = new HpDefaultDataView<HpGetUserResponse>() {
+    HpDefaultDataView<HpGetUserResponse> getUserView = new HpDefaultDataView<HpGetUserResponse>() {
 
         // TODO: 25 October 2018 TESTING
         int tempCount;
@@ -304,6 +302,7 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
+            // TODO: 25 October 2018 RE-CALL API IF INTERNET IS CONNECTED
             if (BuildConfig.DEBUG) {
                 new HomingPigeonDialog.Builder(HpNewContactActivity.this)
                         .setTitle(getString(R.string.error))

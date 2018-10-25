@@ -351,6 +351,7 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().updateMyContact(userModels);
     }
 
+    // FIXME: 25 October 2018 MAKE FUNCTION RETURN BOOLEAN OR GET FRIEND STATUS FROM API
     public void checkUserInMyContacts(String userID, HpDatabaseListener<HpUserModel> listener) {
         HpDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
     }
@@ -414,15 +415,25 @@ public class HpDataManager {
         HpApiManager.getInstance().removeContact(userID, new DefaultSubscriber<>(view));
     }
 
+    // Search User
+    private DefaultSubscriber searchUserSubscriber;
+
     public void getUserByIdFromApi(String id, HpDefaultDataView<HpGetUserResponse> view) {
-        HpApiManager.getInstance().getUserByID(id, new DefaultSubscriber<>(view));
+        HpApiManager.getInstance().getUserByID(id, searchUserSubscriber = new DefaultSubscriber<>(view));
     }
 
     public void getUserByXcUserIdFromApi(String xcUserID, HpDefaultDataView<HpGetUserResponse> view) {
-        HpApiManager.getInstance().getUserByXcUserID(xcUserID, new DefaultSubscriber<>(view));
+        HpApiManager.getInstance().getUserByXcUserID(xcUserID, searchUserSubscriber = new DefaultSubscriber<>(view));
     }
 
     public void getUserByUsernameFromApi(String username, HpDefaultDataView<HpGetUserResponse> view) {
-        HpApiManager.getInstance().getUserByUsername(username, new DefaultSubscriber<>(view));
+        HpApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new DefaultSubscriber<>(view));
+    }
+
+    // FIXME: 25 October 2018
+    public void cancelUserSearchApiCall() {
+        if (null != searchUserSubscriber) {
+            searchUserSubscriber.unsubscribe();
+        }
     }
 }
