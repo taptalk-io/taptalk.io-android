@@ -41,18 +41,19 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.k
 public class HpChatManager {
 
     private final String TAG = HpChatManager.class.getSimpleName();
+    private String openRoom;
     private static HpChatManager instance;
     private List<HpChatListener> chatListeners;
     List<HpMessageEntity> saveMessages; //message to be save
     private Map<String, HpMessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
+    private List<String> replyMessageLocalIDs;
     private HpRoomModel activeRoom;
     private HpUserModel activeUser;
     private boolean isCheckPendingArraySequenceActive = false;
     private boolean isPendingMessageExist;
     private boolean isFileUploadExist;
     private boolean isFinishChatFlow;
-    private boolean isReplyTriggered;
     private final Integer CHARACTER_LIMIT = 1000;
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
@@ -173,8 +174,24 @@ public class HpChatManager {
         return activeRoom;
     }
 
-    public void setActiveRoom(HpRoomModel roomId) {
-        this.activeRoom = roomId;
+    public void setActiveRoom(HpRoomModel room) {
+        this.activeRoom = room;
+        //ini kenapa di taro disini karena setiap ada active room otomatis open room nya juga akan diubah
+        //kecuali kalau misalnya active roomnya itu diubah jadi null
+        if (null != room) setOpenRoom(room.getRoomID());
+    }
+
+    //Open room itu buat nyimpen roomID apa yang dibuka
+    // Apa bedanya sama activeRoom? bedanya adalah klo active room itu di pause lgsg jd null
+    // kalau open room slama dy belom ke destroy activitynya ga akan jadi null
+    //kegunaannya buat di pake pas reply yang ada di background
+    //ngecekin karena dy trigger onNewMessageFromOtherRoom, jadi kalau roomnya lagi ga di buka jangan di push messagenya ke UI
+    public String getOpenRoom() {
+        return openRoom;
+    }
+
+    public void setOpenRoom(String openRoom) {
+        this.openRoom = openRoom;
     }
 
     public HpUserModel getActiveUser() {
@@ -290,7 +307,9 @@ public class HpChatManager {
     }
 
     public void sendDirectReplyTextMessage(String textMessage, HpRoomModel roomModel) {
-        HpConnectionManager.getInstance().connect();
+        if (!HomingPigeon.isForeground)
+            HpConnectionManager.getInstance().connect();
+
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
@@ -302,11 +321,22 @@ public class HpChatManager {
                 // Add entity to list
                 messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
 
+                // save LocalID to list of Reply Local IDs
+                // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
+                // ini kalau misalnya message yang di kirim > character limit
+                addReplyMessageLocalID(messageModel.getLocalID());
+
                 // Send truncated message
                 sendMessage(messageModel);
             }
         } else {
             HpMessageModel messageModel = buildTextMessage(textMessage, roomModel, HpDataManager.getInstance().getActiveUser());
+
+            // save LocalID to list of Reply Local IDs
+            // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
+            // ini kalau misalnya message yang di kirim < character limit (1x dikirim aja)
+            addReplyMessageLocalID(messageModel.getLocalID());
+
             // Send message
             sendMessage(messageModel);
         }
@@ -507,6 +537,12 @@ public class HpChatManager {
                     chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
             }
         }
+
+        //check the message is from our direct reply or not (in background)
+        if (!isReplyMessageLocalIDsEmpty()) {
+            removeReplyMessageLocalID(newMessage.getLocalID());
+            if (isReplyMessageLocalIDsEmpty()) checkPendingBackgroundTask();
+        }
     }
 
     public void saveNewMessageToList() {
@@ -584,11 +620,22 @@ public class HpChatManager {
         isFinishChatFlow = finishChatFlow;
     }
 
-    public boolean isReplyTriggered() {
-        return isReplyTriggered;
+    public List<String> getReplyMessageLocalIDs() {
+        return null == replyMessageLocalIDs ? replyMessageLocalIDs = new ArrayList<>() : replyMessageLocalIDs;
     }
 
-    public void setReplyTriggered(boolean replyTriggered) {
-        isReplyTriggered = replyTriggered;
+    public void addReplyMessageLocalID(String localID) {
+        //masukin local ID ke dalem list kalau misalnya appsnya lagi ga di foreground aja,
+        //karena kalau di foreground kita ga boleh matiin socketnya cman krna reply
+        if (!HomingPigeon.isForeground)
+            getReplyMessageLocalIDs().add(localID);
+    }
+
+    public void removeReplyMessageLocalID(String localID) {
+        getReplyMessageLocalIDs().remove(localID);
+    }
+
+    public boolean isReplyMessageLocalIDsEmpty() {
+        return getReplyMessageLocalIDs().isEmpty();
     }
 }

@@ -117,6 +117,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //ini buat reset openRoom
+        HpChatManager.getInstance().setOpenRoom(null);
         HpChatManager.getInstance().removeChatListener(chatListener);
     }
 
@@ -173,6 +175,9 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onReceiveMessageInOtherRoom(HpMessageModel message) {
             super.onReceiveMessageInOtherRoom(message);
+            if (null != HpChatManager.getInstance().getOpenRoom() &&
+                    HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
+                addNewTextMessage(message);
         }
 
         @Override
