@@ -1,5 +1,8 @@
 package com.moselo.HomingPigeon.API.Service;
 
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
@@ -11,6 +14,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -40,9 +44,18 @@ public interface HomingPigeonApiService {
     @POST("client/contact/list")
     Observable<BaseResponse<HpContactResponse>> getMyContactListFromAPI();
 
-    @POST("/client/contact/add")
+    @POST("client/contact/add")
     Observable<BaseResponse<HpCommonResponse>> addContact(@Body HpCommonRequest request);
 
-    @POST("/client/contact/remove")
+    @POST("client/contact/remove")
     Observable<BaseResponse<HpCommonResponse>> removeContact(@Body HpCommonRequest request);
+
+    @POST("client/user/get_by_id")
+    Observable<BaseResponse<HpGetUserResponse>> getUserByID(@Body HpGetUserByIdRequest request);
+
+    @POST("client/user/get_by_xcuserid")
+    Observable<BaseResponse<HpGetUserResponse>> getUserByXcUserID(@Body HpGetUserByXcUserIdRequest request);
+
+    @POST("client/user/get_by_username")
+    Observable<BaseResponse<HpGetUserResponse>> getUserByUsername(@Body HpGetUserByUsernameRequest request);
 }

@@ -17,6 +17,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.Calendar;
@@ -401,11 +402,23 @@ public class HpDataManager {
         HpApiManager.getInstance().getMyContactListFromAPI(new DefaultSubscriber<>(view));
     }
 
-    public void addContactAPI(String userID, HpDefaultDataView<HpCommonResponse> view) {
+    public void addContactApi(String userID, HpDefaultDataView<HpCommonResponse> view) {
         HpApiManager.getInstance().addContact(userID, new DefaultSubscriber<>(view));
     }
 
-    public void removeContactAPI(String userID, HpDefaultDataView<HpCommonResponse> view) {
+    public void removeContactApi(String userID, HpDefaultDataView<HpCommonResponse> view) {
         HpApiManager.getInstance().removeContact(userID, new DefaultSubscriber<>(view));
+    }
+
+    public void getUserByIdFromApi(String id, HpDefaultDataView<HpGetUserResponse> view) {
+        HpApiManager.getInstance().getUserByID(id, new DefaultSubscriber<>(view));
+    }
+
+    public void getUserByXcUserIdFromApi(String xcUserID, HpDefaultDataView<HpGetUserResponse> view) {
+        HpApiManager.getInstance().getUserByXcUserID(xcUserID, new DefaultSubscriber<>(view));
+    }
+
+    public void getUserByUsernameFromApi(String username, HpDefaultDataView<HpGetUserResponse> view) {
+        HpApiManager.getInstance().getUserByUsername(username, new DefaultSubscriber<>(view));
     }
 }

@@ -2,6 +2,9 @@ package com.moselo.HomingPigeon.API.Api;
 
 import android.util.Log;
 
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonRefreshTokenService;
@@ -23,6 +26,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -198,5 +202,20 @@ public class HpApiManager {
     public void removeContact(String userID, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
         HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
         execute(homingPigeon.removeContact(request), subscriber);
+    }
+
+    public void getUserByID(String id, Subscriber<BaseResponse<HpGetUserResponse>> subscriber) {
+        HpGetUserByIdRequest request = new HpGetUserByIdRequest(id);
+        execute(homingPigeon.getUserByID(request), subscriber);
+    }
+
+    public void getUserByXcUserID(String xcUserID, Subscriber<BaseResponse<HpGetUserResponse>> subscriber) {
+        HpGetUserByXcUserIdRequest request = new HpGetUserByXcUserIdRequest(xcUserID);
+        execute(homingPigeon.getUserByXcUserID(request), subscriber);
+    }
+
+    public void getUserByUsername(String username, Subscriber<BaseResponse<HpGetUserResponse>> subscriber) {
+        HpGetUserByUsernameRequest request = new HpGetUserByUsernameRequest(username);
+        execute(homingPigeon.getUserByUsername(request), subscriber);
     }
 }
