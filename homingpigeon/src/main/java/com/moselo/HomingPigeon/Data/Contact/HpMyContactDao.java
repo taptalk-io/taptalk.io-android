@@ -46,4 +46,7 @@ public interface HpMyContactDao {
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
             "created, updated from mycontact where name like :keyword order by name asc")
     List<HpUserModel> searchAllMyContacts(String keyword);
+
+    @Query("select count(userID) from mycontact where userID like :userID")
+    Integer checkUserInMyContacts(String userID);
 }

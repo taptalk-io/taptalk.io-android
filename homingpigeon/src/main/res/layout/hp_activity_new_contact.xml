@@ -10,6 +10,7 @@
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:animateLayoutChanges="true"
         android:background="@color/white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
@@ -38,6 +39,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_cancel"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginEnd="?attr/actionBarSize" />
+
+        <ProgressBar
+            android:id="@+id/pb_search"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:indeterminateTint="@color/greenBlue"
+            android:padding="18dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -55,7 +68,7 @@
     </android.support.constraint.ConstraintLayout>
 
     <TextView
-        android:id="@+id/tv_search_username_message"
+        android:id="@+id/tv_search_username_guide"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -74,284 +87,154 @@
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cv_expert_card"
-        android:layout_width="0dp"
+        android:id="@+id/cv_search_result"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:elevation="1dp"
-        android:visibility="gone"
         app:cardCornerRadius="8dp"
+        app:cardElevation="1dp"
         app:cardUseCompatPadding="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        tools:background="@color/brightRed">
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_search_result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:background="@color/white">
 
             <ImageView
                 android:id="@+id/iv_expert_cover"
-                android:layout_width="0dp"
-                android:layout_height="93dp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:scaleType="centerCrop"
                 android:src="@color/mediumPurple"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <com.moselo.HomingPigeon.Helper.CircleImageView
-                android:id="@+id/civ_expert_avatar"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="60dp"
-                app:civ_border_color="@color/white"
-                app:civ_border_width="4dp"
+                android:visibility="gone"
+                app:layout_constraintDimensionRatio="W, 7:25"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:background="@color/brightBlue"
-                tools:src="@drawable/hp_ic_documents_green_blue" />
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.moselo.HomingPigeon.Helper.CircleImageView
+                android:id="@+id/civ_avatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:visibility="gone"
+                app:civ_border_color="@color/white"
+                app:civ_border_width="4dp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_expert_cover"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_expert_cover"
+                app:layout_goneMarginTop="4dp"
+                tools:src="@drawable/hp_bg_circle_vibrantgreen" />
 
             <ImageView
+                android:id="@+id/iv_avatar_icon"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginBottom="4dp"
                 android:src="@drawable/hp_ic_verified"
-                app:layout_constraintBottom_toBottomOf="@id/civ_expert_avatar"
-                app:layout_constraintEnd_toEndOf="@id/civ_expert_avatar" />
-
-            <FrameLayout
-                android:id="@+id/fl_btn_expert"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_margin="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <TextView
-                    android:id="@+id/tv_btn_add_contact_expert"
-                    style="@style/HomingPigeonButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:gravity="center"
-                    android:text="@string/add_to_contacts"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <LinearLayout
-                    android:id="@+id/ll_btn_chat_now_expert"
-                    style="@style/HomingPigeonButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-
-                    <TextView
-                        android:id="@+id/tv_chat_now"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/hp_font_latobold"
-                        android:gravity="center_horizontal"
-                        android:letterSpacing="-0.01"
-                        android:text="@string/chat_now"
-                        android:textColor="#ffffff"
-                        android:textSize="17sp" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="2dp"
-                        android:src="@drawable/hp_ic_chat_white" />
-
-                </LinearLayout>
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_expert_data"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="56dp"
-                android:layout_marginTop="9dp"
-                android:layout_marginEnd="56dp"
-                android:layout_marginBottom="26dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toTopOf="@id/fl_btn_expert"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/civ_expert_avatar">
-
-                <TextView
-                    android:id="@+id/tv_expert_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/hp_font_neueeinstellungbold"
-                    android:gravity="center_horizontal"
-                    android:letterSpacing="-0.01"
-                    android:maxLines="2"
-                    android:text="Arsya Nafisa"
-                    android:textColor="@color/black_44"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/tv_expert_category"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/hp_font_latoregular"
-                    android:gravity="center_horizontal"
-                    android:letterSpacing="-0.01"
-                    android:lineSpacingExtra="3sp"
-                    android:maxLines="1"
-                    android:text="Makeup Artist"
-                    android:textColor="@color/grey_9b"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-        </android.support.constraint.ConstraintLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cv_user_card"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:elevation="1dp"
-        android:visibility="gone"
-        app:cardCornerRadius="8dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        tools:background="@color/brightRed">
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white">
-
-            <com.moselo.HomingPigeon.Helper.CircleImageView
-                android:id="@+id/civ_user_avatar"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="8dp"
-                app:civ_border_color="@color/white"
-                app:civ_border_width="4dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:background="@color/brightBlue"
-                tools:src="@drawable/hp_ic_documents_green_blue" />
-
-            <FrameLayout
-                android:id="@+id/fl_btn_user"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_margin="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <TextView
-                    android:id="@+id/tv_btn_add_contact_user"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/hp_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:fontFamily="@font/hp_font_latobold"
-                    android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:gravity="center"
-                    android:letterSpacing="-0.01"
-                    android:text="@string/add_to_contacts"
-                    android:textColor="#ffffff"
-                    android:textSize="17sp"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <LinearLayout
-                    android:id="@+id/ll_btn_chat_now_user"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/hp_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
-
-                    <TextView
-                        android:id="@+id/tv_chat_now_user"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/hp_font_latobold"
-                        android:gravity="center_horizontal"
-                        android:letterSpacing="-0.01"
-                        android:text="@string/chat_now"
-                        android:textColor="#ffffff"
-                        android:textSize="17sp" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="2dp"
-                        android:src="@drawable/hp_ic_chat_white" />
-
-                </LinearLayout>
-
-            </FrameLayout>
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+                app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
 
             <TextView
                 android:id="@+id/tv_user_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="9dp"
-                android:layout_marginBottom="19dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="56dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/hp_font_neueeinstellungbold"
                 android:gravity="center_horizontal"
                 android:letterSpacing="-0.01"
                 android:maxLines="2"
-                android:text="Binar Fajar"
                 android:textColor="@color/black_44"
                 android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@id/fl_btn_user"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/civ_user_avatar" />
+                app:layout_constraintTop_toBottomOf="@id/civ_avatar"
+                tools:text="Arsya Nafisa" />
+
+            <TextView
+                android:id="@+id/tv_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="56dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/hp_font_latoregular"
+                android:gravity="center_horizontal"
+                android:letterSpacing="-0.01"
+                android:lineSpacingExtra="3sp"
+                android:maxLines="1"
+                android:textColor="@color/grey_9b"
+                android:textSize="13sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_user_name"
+                tools:text="Makeup Artist" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_button_action"
+                style="@style/HomingPigeonButton"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="26dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_category"
+                app:layout_goneMarginTop="19dp">
+
+                <TextView
+                    android:id="@+id/tv_button_text"
+                    style="@style/HomingPigeonButtonText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/chat_now"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_button_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
+                    android:src="@drawable/hp_ic_chat_white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_button_text"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/pb_button"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:indeterminateTint="@color/white"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
 

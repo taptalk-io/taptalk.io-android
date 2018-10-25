@@ -17,6 +17,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.Calendar;
@@ -349,6 +350,10 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
+    public void insertMyContactToDatabase(HpDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+        HpDatabaseManager.getInstance().insertMyContact(listener, userModels);
+    }
+
     public void insertMyContactToDatabase(List<HpUserModel> userModels) {
         HpDatabaseManager.getInstance().insertMyContact(userModels);
     }
@@ -371,6 +376,11 @@ public class HpDataManager {
 
     public void updateMyContact(HpUserModel userModels) {
         HpDatabaseManager.getInstance().updateMyContact(userModels);
+    }
+
+    // FIXME: 25 October 2018 MAKE FUNCTION RETURN BOOLEAN OR GET FRIEND STATUS FROM API
+    public void checkUserInMyContacts(String userID, HpDatabaseListener<HpUserModel> listener) {
+        HpDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
     }
 
     //General
@@ -424,11 +434,33 @@ public class HpDataManager {
         HpApiManager.getInstance().getMyContactListFromAPI(new DefaultSubscriber<>(view));
     }
 
-    public void addContactAPI(String userID, HpDefaultDataView<HpCommonResponse> view) {
+    public void addContactApi(String userID, HpDefaultDataView<HpCommonResponse> view) {
         HpApiManager.getInstance().addContact(userID, new DefaultSubscriber<>(view));
     }
 
-    public void removeContactAPI(String userID, HpDefaultDataView<HpCommonResponse> view) {
+    public void removeContactApi(String userID, HpDefaultDataView<HpCommonResponse> view) {
         HpApiManager.getInstance().removeContact(userID, new DefaultSubscriber<>(view));
+    }
+
+    // Search User
+    private DefaultSubscriber searchUserSubscriber;
+
+    public void getUserByIdFromApi(String id, HpDefaultDataView<HpGetUserResponse> view) {
+        HpApiManager.getInstance().getUserByID(id, searchUserSubscriber = new DefaultSubscriber<>(view));
+    }
+
+    public void getUserByXcUserIdFromApi(String xcUserID, HpDefaultDataView<HpGetUserResponse> view) {
+        HpApiManager.getInstance().getUserByXcUserID(xcUserID, searchUserSubscriber = new DefaultSubscriber<>(view));
+    }
+
+    public void getUserByUsernameFromApi(String username, HpDefaultDataView<HpGetUserResponse> view) {
+        HpApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new DefaultSubscriber<>(view));
+    }
+
+    // FIXME: 25 October 2018
+    public void cancelUserSearchApiCall() {
+        if (null != searchUserSubscriber) {
+            searchUserSubscriber.unsubscribe();
+        }
     }
 }

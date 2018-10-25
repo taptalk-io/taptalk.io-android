@@ -133,6 +133,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
             switch (viewType) {
                 case CHAT:
                     if (!myID.equals(item.getUserID())) {
+                        // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
                         HpUtils.getInstance().startChatActivity(
                                 itemView.getContext(),
                                 HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),

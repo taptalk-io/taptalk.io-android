@@ -18,9 +18,8 @@ import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Model.HpImageURL;
+import com.moselo.HomingPigeon.Model.HpContactModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
-import com.moselo.HomingPigeon.Model.HpUserRoleModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
@@ -136,112 +135,15 @@ public class HpNewChatActivity extends HpBaseActivity {
         startActivity(intent);
     }
 
-    // TODO: 28/09/18 Harus dihapus setelah fix
-    private void setDummyData() {
-        HpUserModel userRitchie = HpUserModel.Builder("1", "1", "Ritchie Nathaniel"
-                , HpImageURL.BuilderDummy(), "ritchie", "ritchie@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115801488")
-                , Long.parseLong("0"));
-
-        HpUserModel userDominic = HpUserModel.Builder("2", "2", "Dominic Vedericho"
-                , HpImageURL.BuilderDummy(), "dominic", "dominic@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115918918")
-                , Long.parseLong("0"));
-
-        HpUserModel userRionaldo = HpUserModel.Builder("3", "3", "Rionaldo Linggautama"
-                , HpImageURL.BuilderDummy(), "rionaldo", "rionaldo@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116046534")
-                , Long.parseLong("0"));
-
-        HpUserModel userKevin = HpUserModel.Builder("4", "4", "Kevin Reynaldo"
-                , HpImageURL.BuilderDummy(), "kevin", "kevin@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116099655")
-                , Long.parseLong("0"));
-
-        HpUserModel userWelly = HpUserModel.Builder("5", "5", "Welly Kencana"
-                , HpImageURL.BuilderDummy(), "welly", "welly@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116147477")
-                , Long.parseLong("0"));
-
-        HpUserModel userJony = HpUserModel.Builder("6", "6", "Jony Lim"
-                , HpImageURL.BuilderDummy(), "jony", "jony@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116249323")
-                , Long.parseLong("0"));
-
-        HpUserModel userMichael = HpUserModel.Builder("7", "7", "Michael Tansy"
-                , HpImageURL.BuilderDummy(), "michael", "michael@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116355199")
-                , Long.parseLong("0"));
-
-        HpUserModel userRichard = HpUserModel.Builder("8", "8", "Richard Fang"
-                , HpImageURL.BuilderDummy(), "richard", "richard@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116398588")
-                , Long.parseLong("0"));
-
-        HpUserModel userErwin = HpUserModel.Builder("9", "9", "Erwin Andreas"
-                , HpImageURL.BuilderDummy(), "erwin", "erwin@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116452636")
-                , Long.parseLong("0"));
-
-        HpUserModel userJefry = HpUserModel.Builder("10", "10", "Jefry Lorentono"
-                , HpImageURL.BuilderDummy(), "jefry", "jefry@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116490366")
-                , Long.parseLong("0"));
-
-        HpUserModel userCundy = HpUserModel.Builder("11", "11", "Cundy Sunardy"
-                , HpImageURL.BuilderDummy(), "cundy", "cundy@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116531507")
-                , Long.parseLong("0"));
-
-        HpUserModel userRizka = HpUserModel.Builder("12", "12", "Rizka Fatmawati"
-                , HpImageURL.BuilderDummy(), "rizka", "rizka@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116567527")
-                , Long.parseLong("0"));
-
-        HpUserModel userTest1 = HpUserModel.Builder("13", "13", "Test 1"
-                , HpImageURL.BuilderDummy(), "test1", "test1@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116607839")
-                , Long.parseLong("0"));
-
-        HpUserModel userTest2 = HpUserModel.Builder("14", "14", "Test 2"
-                , HpImageURL.BuilderDummy(), "test2", "test2@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116655845")
-                , Long.parseLong("0"));
-
-        HpUserModel userTest3 = HpUserModel.Builder("15", "15", "Test 3"
-                , HpImageURL.BuilderDummy(), "test3", "test3@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
-                , Long.parseLong("0"));
-
-        HpUserModel userSanto = HpUserModel.Builder("17", "16", "Santo"
-                , HpImageURL.BuilderDummy(), "santo", "santo@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
-                , Long.parseLong("0"));
-        List<HpUserModel> userModels = new ArrayList<>();
-        userModels.add(userCundy);
-        userModels.add(userDominic);
-        userModels.add(userErwin);
-        userModels.add(userJony);
-        userModels.add(userJefry);
-        userModels.add(userKevin);
-        userModels.add(userMichael);
-        userModels.add(userRitchie);
-        userModels.add(userRionaldo);
-        userModels.add(userRichard);
-        userModels.add(userRizka);
-        userModels.add(userSanto);
-        userModels.add(userTest1);
-        userModels.add(userTest2);
-        userModels.add(userTest3);
-        userModels.add(userWelly);
-
-        HpDataManager.getInstance().insertMyContactToDatabase(userModels);
-    }
-
     HpDefaultDataView<HpContactResponse> getContactView = new HpDefaultDataView<HpContactResponse>() {
         @Override
         public void onSuccess(HpContactResponse response) {
-            setDummyData();
+            // Insert contacts to database
+            List<HpUserModel> users = new ArrayList<>();
+            for (HpContactModel contact : response.getContacts()) {
+                users.add(contact.getUser());
+            }
+            HpDataManager.getInstance().insertMyContactToDatabase(users);
         }
     };
 }
