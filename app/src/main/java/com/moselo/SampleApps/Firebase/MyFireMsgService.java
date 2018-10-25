@@ -7,6 +7,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Sample.R;
+import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 
 public class MyFireMsgService extends FirebaseMessagingService {
     private static final String TAG = MyFireMsgService.class.getSimpleName();
@@ -20,7 +21,7 @@ public class MyFireMsgService extends FirebaseMessagingService {
                 .setChatSender("Welly Kencana")
                 .setSmallIcon(R.mipmap.ic_launcher_foreground)
                 .setNeedReply(false)
-                .setOnClickAction(HpRoomModel.BuilderDummy())
+                .setOnClickAction(HpRoomModel.BuilderDummy(), HpRoomListActivity.class)
                 .show();
     }
 

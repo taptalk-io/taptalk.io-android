@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
-import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
@@ -153,6 +152,7 @@ public class HomingPigeon {
         public boolean isNeedReply;
         public HpRoomModel roomModel;
         public NotificationCompat.Builder notificationBuilder;
+        private Class aClass;
 
         public NotificationBuilder(Context context) {
             this.context = context;
@@ -178,15 +178,16 @@ public class HomingPigeon {
             return this;
         }
 
-        public NotificationBuilder setOnClickAction(HpRoomModel roomModel) {
+        public NotificationBuilder setOnClickAction(HpRoomModel roomModel, Class aClass) {
             this.roomModel = roomModel;
+            this.aClass = aClass;
             return this;
         }
 
         public Notification build() {
             this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
             addReply();
-            if (null != roomModel) addPendingIntentWhenClicked();
+            if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
         }
 
@@ -210,12 +211,7 @@ public class HomingPigeon {
         }
 
         private void addPendingIntentWhenClicked() {
-            Intent intent;
-            if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
-                intent = new Intent(context, HpRoomListActivity.class);
-            } else {
-                intent = new Intent(context, HpLoginActivity.class);
-            }
+            Intent intent = new Intent(context, aClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra(K_ROOM, roomModel);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
