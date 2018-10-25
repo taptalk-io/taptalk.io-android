@@ -19,7 +19,6 @@ public class HpReplyBroadcastReceiver extends BroadcastReceiver {
         String text = getMessageText(intent).toString();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
-        Toast.makeText(context, "Reply Success", Toast.LENGTH_SHORT).show();
         HpChatManager.getInstance().sendDirectReplyTextMessage(text, HpRoomModel.BuilderDummy());
     }
 

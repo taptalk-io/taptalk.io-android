@@ -1,5 +1,7 @@
 package com.moselo.HomingPigeon.Manager;
 
+import android.widget.Toast;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
@@ -541,7 +543,10 @@ public class HpChatManager {
         //check the message is from our direct reply or not (in background)
         if (!isReplyMessageLocalIDsEmpty()) {
             removeReplyMessageLocalID(newMessage.getLocalID());
-            if (isReplyMessageLocalIDsEmpty()) checkPendingBackgroundTask();
+            if (isReplyMessageLocalIDsEmpty()) {
+                checkPendingBackgroundTask();
+                Toast.makeText(HomingPigeon.appContext, "Reply Success", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

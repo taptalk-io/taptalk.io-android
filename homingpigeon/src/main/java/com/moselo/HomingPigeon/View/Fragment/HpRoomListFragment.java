@@ -264,7 +264,6 @@ public class HpRoomListFragment extends Fragment {
 
         if (null != roomList) {
             //room nya ada di listnya
-            Log.e(TAG, "processMessageFromSocket: " + messageRoomID + " : " + HpUtils.getInstance().toJsonString(roomList));
             HpMessageModel roomLastMessage = roomList.getLastMessage();
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID())) {
