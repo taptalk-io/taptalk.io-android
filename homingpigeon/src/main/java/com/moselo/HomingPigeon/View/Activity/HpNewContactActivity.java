@@ -7,25 +7,27 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
@@ -78,15 +80,23 @@ public class HpNewContactActivity extends HpBaseActivity {
         pbButton = findViewById(R.id.pb_button);
 
         etSearch.addTextChangedListener(contactSearchWatcher);
+        etSearch.setOnEditorActionListener((textView, i, keyEvent) -> onSearchEditorClicked());
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonCancel.setOnClickListener(v -> clearSearch());
     }
 
+    private boolean onSearchEditorClicked() {
+        HpDataManager.getInstance().cancelUserSearchApiCall();
+        HpDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
+        return true;
+    }
+
     private void clearSearch() {
-        etSearch.setText("");
+        //showEmpty();
         HpUtils.getInstance().dismissKeyboard(this);
-        showEmpty();
+        etSearch.setText("");
+        etSearch.clearFocus();
     }
 
     private void showEmpty() {
@@ -139,7 +149,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvButtonText.setVisibility(View.GONE);
         ivButtonImage.setVisibility(View.GONE);
         pbButton.setVisibility(View.VISIBLE);
-        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), contactCheckListener);
+        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
     }
 
     private void showExpertView() {
@@ -178,11 +188,20 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvButtonText.setVisibility(View.GONE);
         ivButtonImage.setVisibility(View.GONE);
         pbButton.setVisibility(View.VISIBLE);
-        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), contactCheckListener);
+        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+    }
+
+    private void showSearchResult() {
+        // TODO: 25 October 2018 CHECK USER ROLE
+        if (null != vm.getSearchResult().getUserRole() && vm.getSearchResult().getUserRole().getUserRoleID().equals("1")) {
+            showUserView();
+        } else {
+            showExpertView();
+        }
     }
 
     private void addToContact() {
-        // TODO: 25 October 2018
+        HpDataManager.getInstance().addContactApi(vm.getSearchResult().getUserID(), addContactView);
     }
 
     private void openChatRoom() {
@@ -194,6 +213,26 @@ public class HpNewContactActivity extends HpBaseActivity {
                 vm.getSearchResult().getAvatarURL(),
                 1,
                 /* TEMPORARY ROOM COLOR */HpUtils.getInstance().getRandomColor(vm.getSearchResult().getName()) + "");
+    }
+
+    private void enableInput() {
+        runOnUiThread(() -> {
+            etSearch.setEnabled(true);
+            etSearch.addTextChangedListener(contactSearchWatcher);
+            ivButtonCancel.setOnClickListener(v -> clearSearch());
+            showSearchResult();
+        });
+    }
+
+    private void disableInput() {
+        runOnUiThread(() -> {
+            tvButtonText.setVisibility(View.GONE);
+            pbButton.setVisibility(View.VISIBLE);
+            etSearch.setEnabled(false);
+            etSearch.removeTextChangedListener(contactSearchWatcher);
+            ivButtonCancel.setOnClickListener(null);
+            HpUtils.getInstance().dismissKeyboard(this);
+        });
     }
 
     private TextWatcher contactSearchWatcher = new TextWatcher() {
@@ -219,7 +258,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    private CountDownTimer searchTimer = new CountDownTimer(300L, 10L) {
+    private CountDownTimer searchTimer = new CountDownTimer(300L, 100L) {
         @Override
         public void onTick(long millisUntilFinished) {
 
@@ -227,16 +266,14 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onFinish() {
-            ivButtonCancel.setVisibility(View.INVISIBLE);
-            pbSearch.setVisibility(View.VISIBLE);
             HpDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
         }
     };
 
-    HpDatabaseListener<HpUserModel> contactCheckListener = new HpDatabaseListener<HpUserModel>() {
+    HpDatabaseListener<HpUserModel> dbListener = new HpDatabaseListener<HpUserModel>() {
         @Override
         public void onContactCheckFinished(int isContact) {
-            Log.e(TAG, "onContactCheckFinished: " + isContact);
+            // Update action button after contact check finishes
             if (isContact == 0) {
                 // Searched user is not a contact
                 runOnUiThread(() -> {
@@ -257,24 +294,19 @@ public class HpNewContactActivity extends HpBaseActivity {
                 });
             }
         }
+
+        @Override
+        public void onInsertFinished() {
+            // Re-enable editing and update view after add contact finishes
+            enableInput();
+        }
     };
 
     HpDefaultDataView<HpGetUserResponse> getUserView = new HpDefaultDataView<HpGetUserResponse>() {
-
-        // TODO: 25 October 2018 TESTING
-        int tempCount;
-
         @Override
-        public void onSuccess(HpGetUserResponse response) {
-            vm.setSearchResult(response.getUser());
-
-            // TODO: 25 October 2018 CHECK USER ROLE
-            if (tempCount % 2 == 0) {
-                showExpertView();
-            } else {
-                showUserView();
-            }
-            tempCount++;
+        public void startLoading() {
+            ivButtonCancel.setVisibility(View.INVISIBLE);
+            pbSearch.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -284,9 +316,15 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
 
         @Override
+        public void onSuccess(HpGetUserResponse response) {
+            vm.setSearchResult(response.getUser());
+            showSearchResult();
+        }
+
+        @Override
         public void onError(HpErrorModel error) {
-            // TODO: 25 October 2018 CHECK ERROR CODE FOR USER NOT FOUND
-            if (error.getCode().charAt(0) == '4') {
+            if (error.getCode().equals(String.valueOf(HpDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED))) {
+                // User not found
                 showResultNotFound();
                 endLoading();
             } else {
@@ -294,7 +332,8 @@ public class HpNewContactActivity extends HpBaseActivity {
                     new HomingPigeonDialog.Builder(HpNewContactActivity.this)
                             .setTitle(getString(R.string.error))
                             .setMessage(error.getMessage())
-                            .setPrimaryButtonListener(v -> endLoading())
+                            .setPrimaryButtonTitle(getString(R.string.ok))
+                            .setPrimaryButtonListener(true, v -> endLoading())
                             .show();
                 }
             }
@@ -307,9 +346,41 @@ public class HpNewContactActivity extends HpBaseActivity {
                 new HomingPigeonDialog.Builder(HpNewContactActivity.this)
                         .setTitle(getString(R.string.error))
                         .setMessage(errorMessage)
-                        .setPrimaryButtonListener(v -> endLoading())
+                        .setPrimaryButtonTitle(getString(R.string.ok))
+                        .setPrimaryButtonListener(true, v -> endLoading())
                         .show();
             }
+        }
+    };
+
+    HpDefaultDataView<HpCommonResponse> addContactView = new HpDefaultDataView<HpCommonResponse>() {
+        @Override
+        public void startLoading() {
+            // Disable editing when loading
+            disableInput();
+        }
+
+        @Override
+        public void onSuccess(HpCommonResponse response) {
+            // Add contact to database
+            HpDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult());
+        }
+
+        @Override
+        public void onError(HpErrorModel error) {
+            enableInput();
+            new HomingPigeonDialog.Builder(HpNewContactActivity.this)
+                    .setTitle(getString(R.string.error))
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle(getString(R.string.ok))
+                    .setPrimaryButtonListener(true, null)
+                    .show();
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            enableInput();
+            Toast.makeText(HpNewContactActivity.this, getString(R.string.error_message_general), Toast.LENGTH_SHORT).show();
         }
     };
 }

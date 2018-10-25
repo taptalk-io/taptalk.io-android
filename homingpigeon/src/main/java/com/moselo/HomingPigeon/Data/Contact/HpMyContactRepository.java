@@ -23,6 +23,13 @@ public class HpMyContactRepository {
         new Thread(() -> myContactDao.insert(userModels)).start();
     }
 
+    public void insert(HpDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+        new Thread(() -> {
+            myContactDao.insert(userModels);
+            listener.onInsertFinished();
+        }).start();
+    }
+
     public void insert(List<HpUserModel> userModels) {
         new Thread(() -> myContactDao.insert(userModels)).start();
     }

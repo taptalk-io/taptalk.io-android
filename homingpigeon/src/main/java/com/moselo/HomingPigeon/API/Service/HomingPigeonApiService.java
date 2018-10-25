@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.API.Service;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpUserIdRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
@@ -45,10 +46,10 @@ public interface HomingPigeonApiService {
     Observable<BaseResponse<HpContactResponse>> getMyContactListFromAPI();
 
     @POST("client/contact/add")
-    Observable<BaseResponse<HpCommonResponse>> addContact(@Body HpCommonRequest request);
+    Observable<BaseResponse<HpCommonResponse>> addContact(@Body HpUserIdRequest request);
 
     @POST("client/contact/remove")
-    Observable<BaseResponse<HpCommonResponse>> removeContact(@Body HpCommonRequest request);
+    Observable<BaseResponse<HpCommonResponse>> removeContact(@Body HpUserIdRequest request);
 
     @POST("client/user/get_by_id")
     Observable<BaseResponse<HpGetUserResponse>> getUserByID(@Body HpGetUserByIdRequest request);

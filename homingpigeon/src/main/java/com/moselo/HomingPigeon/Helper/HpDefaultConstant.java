@@ -92,6 +92,20 @@ public class HpDefaultConstant {
         public static final int INTERNAL_SERVER_ERROR = 500;
     }
 
+    public static final class ApiErrorCode {
+        public static final int HTTP_HEADER_VALIDATION_FAILED = 40001;
+        public static final int API_PARAMETER_VALIDATION_FAILED = 40002;
+        public static final int SERVER_KEY_NOT_PROVIDED = 49101;
+        public static final int INVALID_SERVER_KEY = 49102;
+        public static final int SERVER_KEY_NOT_FOUND = 49103;
+        public static final int SERVER_KEY_INCOMPATIBLE = 49104;
+        public static final int SERVER_KEY_EXPIRED = 49106;
+        public static final int SERVER_KEY_NOT_ENABLED_BY_CUSTOMER = 49201;
+        public static final int SERVER_NOT_AVAILABLE = 49202;
+        public static final int ERROR_VALIDATING_SERVER_KEY = 50001;
+        public static final int OTHER_ERRORS = 99999;
+    }
+
     public static final class HttpErrorCode {
         public static final String TOKEN_EXPIRED = "40104";
         public static final String TOKEN_INVALID = "40103";

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpUserIdRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonRefreshTokenService;
@@ -195,12 +196,12 @@ public class HpApiManager {
     }
 
     public void addContact(String userID, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
-        HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
+        HpUserIdRequest request = new HpUserIdRequest(userID);
         execute(homingPigeon.addContact(request), subscriber);
     }
 
     public void removeContact(String userID, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
-        HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
+        HpUserIdRequest request = new HpUserIdRequest(userID);
         execute(homingPigeon.removeContact(request), subscriber);
     }
 

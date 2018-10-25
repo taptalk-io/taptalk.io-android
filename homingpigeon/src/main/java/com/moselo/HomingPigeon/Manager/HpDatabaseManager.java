@@ -224,6 +224,12 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
+    public void insertMyContact(HpDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+        if (null != myContactRepository)
+            myContactRepository.insert(listener, userModels);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
     public void insertMyContact(List<HpUserModel> userModels) {
         if (null != myContactRepository)
             myContactRepository.insert(userModels);

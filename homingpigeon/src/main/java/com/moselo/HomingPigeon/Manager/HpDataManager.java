@@ -327,6 +327,10 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
+    public void insertMyContactToDatabase(HpDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+        HpDatabaseManager.getInstance().insertMyContact(listener, userModels);
+    }
+
     public void insertMyContactToDatabase(List<HpUserModel> userModels) {
         HpDatabaseManager.getInstance().insertMyContact(userModels);
     }
