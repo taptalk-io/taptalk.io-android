@@ -25,6 +25,7 @@ import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
+import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
@@ -43,6 +44,7 @@ public class HomingPigeon {
     public static boolean isForeground = true;
     private Thread.UncaughtExceptionHandler defaultUEH;
     private HomingPigeonTokenInterface hpTokenInterface;
+    private static int clientAppIcon = R.drawable.hp_ic_launcher_background;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -144,11 +146,19 @@ public class HomingPigeon {
         }
     }
 
+    public static void saveAppIcon(int clientAppIcon) {
+        HomingPigeon.clientAppIcon = clientAppIcon;
+    }
+
+    public static int getClientAppIcon() {
+        return clientAppIcon;
+    }
+
     //Builder buat setting isi dari Notification chat
     public static class NotificationBuilder {
         public Context context;
         public String chatSender = "", chatMessage = "";
-        public int smallIcon;
+        public int smallIcon, messageID = 0;
         public boolean isNeedReply;
         public HpRoomModel roomModel;
         public NotificationCompat.Builder notificationBuilder;
@@ -165,6 +175,11 @@ public class HomingPigeon {
 
         public NotificationBuilder setChatMessage(String chatMessage) {
             this.chatMessage = chatMessage;
+            return this;
+        }
+
+        public NotificationBuilder setMessageID(int messageID) {
+            this.messageID = messageID;
             return this;
         }
 
@@ -185,7 +200,7 @@ public class HomingPigeon {
         }
 
         public Notification build() {
-            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
+            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubbleInBackground(this);
             addReply();
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
@@ -225,7 +240,7 @@ public class HomingPigeon {
                 NotificationChannel channel = new NotificationChannel(HpNotificationManager.getInstance().getChannelID(), "Notification", NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(channel);
             }
-            notificationManager.notify(0, build());
+            notificationManager.notify(messageID, build());
         }
     }
 

@@ -40,6 +40,7 @@ import com.moselo.HomingPigeon.Listener.HpSocketListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
@@ -175,6 +176,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onReceiveMessageInOtherRoom(HpMessageModel message) {
             super.onReceiveMessageInOtherRoom(message);
+
+            HpNotificationManager.getInstance().createAndShowInAppNotification(HpChatActivity.this, message);
             if (null != HpChatManager.getInstance().getOpenRoom() &&
                     HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
                 addNewTextMessage(message);
