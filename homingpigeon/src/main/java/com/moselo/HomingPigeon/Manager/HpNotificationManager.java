@@ -109,20 +109,20 @@ public class HpNotificationManager {
                             tempNotifListMessage.get(2).getCreated(),
                             tempNotifListMessage.get(2).getUser().getName());
                     break;
-               default:
-                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-4).getBody(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-4).getCreated(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-4).getUser().getName());
-                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-3).getBody(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-3).getCreated(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-3).getUser().getName());
-                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-2).getBody(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-2).getCreated(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-2).getUser().getName());
-                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-1).getBody(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-1).getCreated(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-1).getUser().getName());
-                   break;
+                default:
+                    messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize - 4).getBody(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 4).getCreated(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 4).getUser().getName());
+                    messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize - 3).getBody(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 3).getCreated(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 3).getUser().getName());
+                    messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize - 2).getBody(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 2).getCreated(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 2).getUser().getName());
+                    messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize - 1).getBody(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 1).getCreated(),
+                            tempNotifListMessage.get(tempNotifListMessageSize - 1).getUser().getName());
+                    break;
             }
         }
 
@@ -137,12 +137,13 @@ public class HpNotificationManager {
     }
 
     public void createAndShowInAppNotification(Context context, HpMessageModel newMessageModel) {
-        new HomingPigeon.NotificationBuilder(context)
-                .setNotificationMessage(newMessageModel)
-                .setSmallIcon(HomingPigeon.getClientAppIcon())
-                .setNeedReply(false)
-                .setOnClickAction(HpRoomListActivity.class)
-                .show();
+        if (HomingPigeon.isForeground)
+            new HomingPigeon.NotificationBuilder(context)
+                    .setNotificationMessage(newMessageModel)
+                    .setSmallIcon(HomingPigeon.getClientAppIcon())
+                    .setNeedReply(false)
+                    .setOnClickAction(HpRoomListActivity.class)
+                    .show();
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
