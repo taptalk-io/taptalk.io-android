@@ -86,6 +86,12 @@ public class HpRoomListFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        // TODO: 29 October 2018 UPDATE UNREAD BADGE
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         HpChatManager.getInstance().removeChatListener(chatListener);
@@ -282,20 +288,22 @@ public class HpRoomListFragment extends Fragment {
                 //last message nya beda sama yang ada di tampilan
                 roomList.setLastMessage(message);
 
+                // Add unread count by 1 if sender is not self
                 if (!roomList.getLastMessage().getUser().getUserID()
                         .equals(HpDataManager.getInstance().getActiveUser().getUserID())) {
-                    //kalau beda yang ngirim unread countnya tambah 1
                     roomList.setUnreadCount(roomList.getUnreadCount() + 1);
                 }
 
+                // Move room to top
                 int oldPos = vm.getRoomList().indexOf(roomList);
                 vm.getRoomList().remove(roomList);
                 vm.getRoomList().add(0, roomList);
+
                 activity.runOnUiThread(() -> {
-                    boolean scrollToTop = llm.findFirstCompletelyVisibleItemPosition() == 0;
                     adapter.notifyItemChanged(oldPos);
                     adapter.notifyItemMoved(oldPos, 0);
-                    if (scrollToTop) rvContactList.scrollToPosition(0);
+                    // Scroll to top
+                    if (llm.findFirstCompletelyVisibleItemPosition() == 0) rvContactList.scrollToPosition(0);
                 });
             }
         } else {
