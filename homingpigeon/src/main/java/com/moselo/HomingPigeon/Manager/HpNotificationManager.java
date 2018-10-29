@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.Manager;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -133,6 +134,11 @@ public class HpNotificationManager {
                 .setNeedReply(false)
                 .setOnClickAction(HpRoomListActivity.class)
                 .show();
+    }
+
+    public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(roomID, 0);
     }
 
 }

@@ -113,6 +113,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         initView();
         initHelper();
         initListener();
+        cancelNotificationWhenEnterRoom();
     }
 
     @Override
@@ -350,6 +351,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             }
         };
         HpConnectionManager.getInstance().addSocketListener(socketListener);
+    }
+
+    private void cancelNotificationWhenEnterRoom() {
+        HpNotificationManager.getInstance().cancelNotificationWhenEnterRoom(this, vm.getRoom().getRoomID());
     }
 
     private void openRoomProfile() {
