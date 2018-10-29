@@ -31,6 +31,7 @@ import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
@@ -83,6 +84,25 @@ public class HpRoomListFragment extends Fragment {
         initListener();
         initView(view);
         viewLoadedSequence();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        HpNotificationManager.getInstance().setRoomListAppear(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        HpNotificationManager.getInstance().setRoomListAppear(false);
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (hidden)
+            HpNotificationManager.getInstance().setRoomListAppear(false);
+        else HpNotificationManager.getInstance().setRoomListAppear(true);
     }
 
     @Override

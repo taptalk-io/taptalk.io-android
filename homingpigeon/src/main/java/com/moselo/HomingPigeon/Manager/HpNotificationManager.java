@@ -20,6 +20,7 @@ public class HpNotificationManager {
     private static HpNotificationManager instance;
     private String channelID = "fcm_fallback_notification_channel";
     private Map<String, List<HpMessageModel>> notifMessagesMap;
+    private boolean isRoomListAppear;
 
     public static HpNotificationManager getInstance() {
         return null == instance ? (instance = new HpNotificationManager()) : instance;
@@ -31,6 +32,14 @@ public class HpNotificationManager {
 
     public Map<String, List<HpMessageModel>> getNotifMessagesMap() {
         return null == notifMessagesMap ? notifMessagesMap = new LinkedHashMap<>() : notifMessagesMap;
+    }
+
+    public boolean isRoomListAppear() {
+        return isRoomListAppear;
+    }
+
+    public void setRoomListAppear(boolean roomListAppear) {
+        isRoomListAppear = roomListAppear;
     }
 
     public void addNotifMessageToMap(HpMessageModel notifMessage) {
@@ -82,37 +91,37 @@ public class HpNotificationManager {
                             tempNotifListMessage.get(0).getUser().getName());
                     break;
                 case 2:
-                    messageStyle.addMessage(tempNotifListMessage.get(1).getBody(),
-                            tempNotifListMessage.get(1).getCreated(),
-                            tempNotifListMessage.get(1).getUser().getName());
                     messageStyle.addMessage(tempNotifListMessage.get(0).getBody(),
                             tempNotifListMessage.get(0).getCreated(),
                             tempNotifListMessage.get(0).getUser().getName());
+                    messageStyle.addMessage(tempNotifListMessage.get(1).getBody(),
+                            tempNotifListMessage.get(1).getCreated(),
+                            tempNotifListMessage.get(1).getUser().getName());
                     break;
                 case 3:
+                    messageStyle.addMessage(tempNotifListMessage.get(0).getBody(),
+                            tempNotifListMessage.get(0).getCreated(),
+                            tempNotifListMessage.get(0).getUser().getName());
+                    messageStyle.addMessage(tempNotifListMessage.get(1).getBody(),
+                            tempNotifListMessage.get(1).getCreated(),
+                            tempNotifListMessage.get(1).getUser().getName());
                     messageStyle.addMessage(tempNotifListMessage.get(2).getBody(),
                             tempNotifListMessage.get(2).getCreated(),
                             tempNotifListMessage.get(2).getUser().getName());
-                    messageStyle.addMessage(tempNotifListMessage.get(1).getBody(),
-                            tempNotifListMessage.get(1).getCreated(),
-                            tempNotifListMessage.get(1).getUser().getName());
-                    messageStyle.addMessage(tempNotifListMessage.get(0).getBody(),
-                            tempNotifListMessage.get(0).getCreated(),
-                            tempNotifListMessage.get(0).getUser().getName());
                     break;
                default:
-                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-1).getBody(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-1).getCreated(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-1).getUser().getName());
-                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-2).getBody(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-2).getCreated(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-2).getUser().getName());
-                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-3).getBody(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-3).getCreated(),
-                           tempNotifListMessage.get(tempNotifListMessageSize-3).getUser().getName());
                    messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-4).getBody(),
                            tempNotifListMessage.get(tempNotifListMessageSize-4).getCreated(),
                            tempNotifListMessage.get(tempNotifListMessageSize-4).getUser().getName());
+                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-3).getBody(),
+                           tempNotifListMessage.get(tempNotifListMessageSize-3).getCreated(),
+                           tempNotifListMessage.get(tempNotifListMessageSize-3).getUser().getName());
+                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-2).getBody(),
+                           tempNotifListMessage.get(tempNotifListMessageSize-2).getCreated(),
+                           tempNotifListMessage.get(tempNotifListMessageSize-2).getUser().getName());
+                   messageStyle.addMessage(tempNotifListMessage.get(tempNotifListMessageSize-1).getBody(),
+                           tempNotifListMessage.get(tempNotifListMessageSize-1).getCreated(),
+                           tempNotifListMessage.get(tempNotifListMessageSize-1).getUser().getName());
                    break;
             }
         }

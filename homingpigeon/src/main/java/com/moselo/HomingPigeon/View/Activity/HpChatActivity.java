@@ -178,7 +178,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         public void onReceiveMessageInOtherRoom(HpMessageModel message) {
             super.onReceiveMessageInOtherRoom(message);
 
-            HpNotificationManager.getInstance().createAndShowInAppNotification(HpChatActivity.this, message);
             if (null != HpChatManager.getInstance().getOpenRoom() &&
                     HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
                 addNewTextMessage(message);
