@@ -23,6 +23,7 @@ import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
@@ -158,29 +159,31 @@ public class HomingPigeon {
     public static class NotificationBuilder {
         public Context context;
         public String chatSender = "", chatMessage = "";
-        public int smallIcon, messageID = 0;
-        public boolean isNeedReply;
-        public HpRoomModel roomModel;
-        public NotificationCompat.Builder notificationBuilder;
+        public HpMessageModel notificationMessage;
+        public int smallIcon;
+        boolean isNeedReply;
+        HpRoomModel roomModel;
+        NotificationCompat.Builder notificationBuilder;
         private Class aClass;
 
         public NotificationBuilder(Context context) {
             this.context = context;
         }
 
-        public NotificationBuilder setChatSender(String chatSender) {
+        public NotificationBuilder setNotificationMessage(HpMessageModel notificationMessage) {
+            this.notificationMessage = notificationMessage;
+            HpNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
+            setChatMessage(notificationMessage.getBody());
+            setChatSender(notificationMessage.getUser().getName());
+            return this;
+        }
+
+        private void setChatSender(String chatSender) {
             this.chatSender = chatSender;
-            return this;
         }
 
-        public NotificationBuilder setChatMessage(String chatMessage) {
+        private void setChatMessage(String chatMessage) {
             this.chatMessage = chatMessage;
-            return this;
-        }
-
-        public NotificationBuilder setMessageID(int messageID) {
-            this.messageID = messageID;
-            return this;
         }
 
         public NotificationBuilder setSmallIcon(int smallIcon) {
@@ -193,8 +196,8 @@ public class HomingPigeon {
             return this;
         }
 
-        public NotificationBuilder setOnClickAction(HpRoomModel roomModel, Class aClass) {
-            this.roomModel = roomModel;
+        public NotificationBuilder setOnClickAction(Class aClass) {
+            this.roomModel = notificationMessage.getRoom();
             this.aClass = aClass;
             return this;
         }
@@ -240,7 +243,7 @@ public class HomingPigeon {
                 NotificationChannel channel = new NotificationChannel(HpNotificationManager.getInstance().getChannelID(), "Notification", NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(channel);
             }
-            notificationManager.notify(messageID, build());
+            notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
         }
     }
 

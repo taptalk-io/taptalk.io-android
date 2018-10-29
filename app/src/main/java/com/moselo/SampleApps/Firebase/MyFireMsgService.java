@@ -5,7 +5,10 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
+import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Sample.R;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 
@@ -17,11 +20,13 @@ public class MyFireMsgService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         Log.e(TAG, "onMessageReceived: " );
         new HomingPigeon.NotificationBuilder(this)
-                .setChatMessage("ISdalkdsfjljdflkqjwflkqwjfkleqwjfklqwejfklewflkwnfklnweefklenwfklenwkflnweqklfnweqklfnweklfnwqeklfnlkwefnklewqfnklewfnlkewfnlekwfnelwkfnewklI")
-                .setChatSender("Welly Kencana")
+                .setNotificationMessage(HpMessageModel.Builder(
+                        "TEST", HpRoomModel.BuilderDummy(), 1, System.currentTimeMillis(),
+                        HpUserModel.Builder("4", "Kevin Reynaldo"), HpDataManager.getInstance().getActiveUser().getUserID()
+                ))
                 .setSmallIcon(R.mipmap.ic_launcher_foreground)
                 .setNeedReply(false)
-                .setOnClickAction(HpRoomModel.BuilderDummy(), HpRoomListActivity.class)
+                .setOnClickAction(HpRoomListActivity.class)
                 .show();
     }
 
