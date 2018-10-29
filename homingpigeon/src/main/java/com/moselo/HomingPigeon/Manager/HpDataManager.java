@@ -99,6 +99,7 @@ public class HpDataManager {
 
     public void saveActiveUser(HpUserModel user) {
         Hawk.put(K_USER, user);
+        HpChatManager.getInstance().setActiveUser(user);
     }
 
     /**

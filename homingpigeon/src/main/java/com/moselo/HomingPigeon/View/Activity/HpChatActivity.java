@@ -210,6 +210,16 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
+        public void onMessageRead(HpMessageModel message) {
+            Log.e(TAG, "onMessageRead: " + vm.getUnreadCount());
+            if (vm.getUnreadCount() == 0) return;
+
+            message.setIsRead(true);
+            vm.removeUnreadMessage(message.getLocalID());
+            updateUnreadCount();
+        }
+
+        @Override
         public void onBubbleExpanded() {
             if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                 rvMessageList.smoothScrollToPosition(0);
@@ -308,9 +318,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
-                    vm.setUnreadCount(0);
                     ibToBottom.setVisibility(View.INVISIBLE);
-                    tvBadgeUnread.setVisibility(View.INVISIBLE);
                 } else {
                     vm.setOnBottom(false);
                     ibToBottom.setVisibility(View.VISIBLE);
@@ -355,6 +363,17 @@ public class HpChatActivity extends HpBaseChatActivity {
         startActivity(intent);
     }
 
+    private void updateUnreadCount() {
+        runOnUiThread(() -> {
+            if (vm.isOnBottom() || vm.getUnreadCount() == 0) {
+                tvBadgeUnread.setVisibility(View.INVISIBLE);
+            } else if (vm.getUnreadCount() > 0){
+                tvBadgeUnread.setText(vm.getUnreadCount() + "");
+                tvBadgeUnread.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
     private void updateMessageDecoration() {
         //ini buat margin atas sma bawah chatnya (recyclerView Message List)
         if (rvMessageList.getItemDecorationCount() > 0) {
@@ -392,25 +411,19 @@ public class HpChatActivity extends HpBaseChatActivity {
                 .getInstance().getActiveUser().getUserID());
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
-                //ngecekin dlu ada ga di hashMap
-                //kalau ada brati di update dlu
+                // Update message instead of adding when message pointer already contains the same local ID
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (vm.isOnBottom() || ownMessage) {
-                //kalau ga ada di hashMap kita liat lagi itu pesan kita sndiri atau nggak kalau pesan kita brati di scroll ke bawah
-                //selain itu kalau user lagi di bottom juga di scroll ke bawah
+                // Scroll recycler to bottom if own message or recycler is already on bottom
                 hpMessageAdapter.addMessage(newMessage);
-                // Scroll recycler to bottom
                 rvMessageList.scrollToPosition(0);
             } else {
-                //kalau slain itu lgsg di masukin aja sama update unreadCount
+                // Message from other people is received when recycler is scrolled up
                 hpMessageAdapter.addMessage(newMessage);
-                // Show unread badge
-                vm.setUnreadCount(vm.getUnreadCount() + 1);
-                tvBadgeUnread.setVisibility(View.VISIBLE);
-                tvBadgeUnread.setText(vm.getUnreadCount() + "");
+                vm.addUnreadMessage(newMessage);
+                updateUnreadCount();
             }
-
             updateMessageDecoration();
         });
     }
@@ -458,8 +471,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
         ibToBottom.setVisibility(View.INVISIBLE);
-        tvBadgeUnread.setVisibility(View.INVISIBLE);
-        vm.setUnreadCount(0);
+        vm.clearUnreadMessages();
+        updateUnreadCount();
     }
 
     private void toggleCustomKeyboard() {

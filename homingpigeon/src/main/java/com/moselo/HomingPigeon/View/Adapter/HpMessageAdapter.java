@@ -332,6 +332,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 tvUsername.setText(item.getUser().getUsername());
                 //tvUsername.setVisibility(View.VISIBLE);
             }
+            listener.onMessageRead(item);
         }
     }
 

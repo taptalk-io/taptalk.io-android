@@ -99,7 +99,6 @@ public class HpChatManager {
                             .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
-
                         receiveMessageFromSocket(HpMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
@@ -510,6 +509,12 @@ public class HpChatManager {
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
+
+        // TODO: 29 October 2018 TEMPORARY
+        // Change isRead to false when received message is from others
+        if (!activeUser.getUserID().equals(newMessage.getUser().getUserID())) {
+            newMessage.setIsRead(false);
+        }
 
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);

@@ -321,10 +321,10 @@
         android:textColor="#ffffff"
         android:textSize="11dp"
         android:translationY="-14dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/iv_to_bottom"
-        app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
-        app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="@id/ib_to_bottom"
+        app:layout_constraintEnd_toEndOf="@id/ib_to_bottom"
+        app:layout_constraintTop_toTopOf="@+id/ib_to_bottom"
         tools:text="1" />
 
 </android.support.constraint.ConstraintLayout>
