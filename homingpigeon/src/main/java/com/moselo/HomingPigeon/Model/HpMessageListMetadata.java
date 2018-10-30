@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Deprecated
 public class HpMessageListMetadata {
     @JsonProperty("perPage") private Integer perPage;
     @JsonProperty("pageCount") private Integer pageCount;

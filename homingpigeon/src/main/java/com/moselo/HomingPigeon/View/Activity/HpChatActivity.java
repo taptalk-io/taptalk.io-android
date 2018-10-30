@@ -523,7 +523,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     private void pickImageFromGallery() {
-        // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE
+        // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE / USE CUSTOM PICKER
         if (HpUtils.getInstance().hasPermissions(HpChatActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Intent intent = new Intent();
             intent.setType(getString(R.string.intent_pick_image));
@@ -912,7 +912,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             //ini ngecek kalau misalnya balikan apinya itu perPagenya > pageCount brati berenti ga usah pagination lagi (State.DONE)
             //selain itu paginationnya bisa lanjut lagi
-            state = response.getMetadata().getPerPage() > response.getMetadata().getPageCount() ? STATE.DONE : STATE.LOADED;
+            state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
             if (state == STATE.DONE) updateMessageDecoration();
 
             //sorting message balikan dari api before
