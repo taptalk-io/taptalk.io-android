@@ -108,4 +108,5 @@
     <string name="this_is_you">This is you</string>
     <string name="you_have_added">You have added </string>
     <string name="to_your_contacts"> to your contacts</string>
+    <string name="is_already_in_your_contacts">is already in your contacts</string>
 </resources>
