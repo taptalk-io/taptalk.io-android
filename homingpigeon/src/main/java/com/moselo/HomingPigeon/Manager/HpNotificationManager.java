@@ -2,7 +2,9 @@ package com.moselo.HomingPigeon.Manager;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -10,15 +12,19 @@ import android.support.v4.app.NotificationCompat;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
+import com.moselo.HomingPigeon.View.Fragment.HpRoomListFragment;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
+
 public class HpNotificationManager {
     private static HpNotificationManager instance;
     private String channelID = "fcm_fallback_notification_channel";
+    private String notificationGroup = "homing-pigeon";
     private Map<String, List<HpMessageModel>> notifMessagesMap;
     private boolean isRoomListAppear;
 
@@ -71,8 +77,34 @@ public class HpNotificationManager {
         }
     }
 
+    public NotificationCompat.Builder createSummaryNotificationBubble(Context context, Class aClass) {
+        int chatSize = 0, messageSize = 0;
+        for (Map.Entry<String, List<HpMessageModel>> item : notifMessagesMap.entrySet()) {
+            chatSize++;
+            messageSize+=item.getValue().size();
+        }
+        String summaryContent = messageSize + " messages from " + chatSize + " chats";
+        return new NotificationCompat.Builder(context, channelID)
+                .setSmallIcon(HomingPigeon.getClientAppIcon())
+                .setContentTitle(HomingPigeon.getClientAppName())
+                .setContentText(summaryContent)
+                .setGroupSummary(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setContentIntent(addPendingIntentForSummaryNotification(context, aClass))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setGroup(notificationGroup)
+                .setAutoCancel(true)
+                .setStyle(new NotificationCompat.InboxStyle().setSummaryText(summaryContent));
+    }
+
+    private PendingIntent addPendingIntentForSummaryNotification(Context context, Class aClass) {
+        Intent intent = new Intent(context, aClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+    }
+
     //buat create notification when the apps is in background
-    public NotificationCompat.Builder createNotificationBubbleInBackground(HomingPigeon.NotificationBuilder builder) {
+    public NotificationCompat.Builder createNotificationBubble(HomingPigeon.NotificationBuilder builder) {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(builder.chatSender);
         String notifMessageRoomID = builder.notificationMessage.getRoom().getRoomID();
@@ -131,6 +163,7 @@ public class HpNotificationManager {
                 .setStyle(messageStyle)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
+                .setGroup(notificationGroup)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setCategory(Notification.CATEGORY_MESSAGE);

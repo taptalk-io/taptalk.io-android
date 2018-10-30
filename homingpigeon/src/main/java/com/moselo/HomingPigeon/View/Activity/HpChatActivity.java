@@ -408,6 +408,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void cancelNotificationWhenEnterRoom() {
         HpNotificationManager.getInstance().cancelNotificationWhenEnterRoom(this, vm.getRoom().getRoomID());
+        HpNotificationManager.getInstance().clearNotifMessagesMap(vm.getRoom().getRoomID());
     }
 
     private void openRoomProfile() {
