@@ -15,6 +15,7 @@ import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.HpUserRoleModel;
+import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -531,7 +532,21 @@ public class HpChatManager {
                     chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
             }
         }
-        // Receive message outside active room
+        // Receive message outside active room (not in room List)
+        else if (null != chatListeners && !HpNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+            HpNotificationManager.getInstance().createAndShowInAppNotification(HomingPigeon.appContext, newMessage);
+            for (HpChatListener chatListener : chatListeners) {
+                HpMessageModel tempNewMessage = newMessage.copyMessageModel();
+
+                if (kSocketNewMessage.equals(eventName))
+                    chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
+                else if (kSocketUpdateMessage.equals(eventName))
+                    chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
+                else if (kSocketDeleteMessage.equals(eventName))
+                    chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+            }
+        }
+        // Receive message outside active room (in room List)
         else if (null != chatListeners && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
             for (HpChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = newMessage.copyMessageModel();

@@ -5,6 +5,7 @@ import android.app.Application;
 import com.facebook.stetho.Stetho;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Interface.HomingPigeonTokenInterface;
+import com.moselo.HomingPigeon.Sample.R;
 
 public class SampleApplication extends Application {
 
@@ -14,6 +15,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         HomingPigeon.init(this, hpTokenInterface);
+        HomingPigeon.saveAppIcon(R.mipmap.ic_launcher_foreground);
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

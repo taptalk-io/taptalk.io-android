@@ -14,6 +14,7 @@ public interface HomingPigeonChatInterface {
     void onRetrySendMessage(HpMessageModel message);
     void onSendFailed(HpMessageModel message);
     void onMessageRead(HpMessageModel message);
+    void onLayoutLoaded(HpMessageModel message);
     void onBubbleExpanded();
     void onOutsideClicked();
 }

@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
@@ -31,6 +32,8 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
+
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ADDED_CONTACT;
 
 public class HpNewContactActivity extends HpBaseActivity {
 
@@ -362,6 +365,12 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onSuccess(HpCommonResponse response) {
+            // Change To Animation Page
+            Intent intent = new Intent(HpNewContactActivity.this, HpScanResultActivity.class);
+            intent.putExtra(ADDED_CONTACT, vm.getSearchResult());
+            startActivity(intent);
+            finish();
+
             // Add contact to database
             HpDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult());
         }

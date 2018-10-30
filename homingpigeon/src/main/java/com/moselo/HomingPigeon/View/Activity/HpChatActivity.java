@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,9 +45,9 @@ import com.moselo.HomingPigeon.Listener.HpSocketListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.R;
@@ -64,7 +63,6 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.SEND_IMAGE_TO_CHAT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.ASCENDING;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.DESCENDING;
@@ -122,6 +120,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         initView();
         initHelper();
         initListener();
+        cancelNotificationWhenEnterRoom();
     }
 
     @Override
@@ -172,7 +171,12 @@ public class HpChatActivity extends HpBaseChatActivity {
                 switch (requestCode) {
                     case SEND_IMAGE_TO_CHAT:
                         if (null == data.getData()) return;
-                        addNewImageMessage(data.getData().toString());
+                        // TODO: 30 October 2018 BUILD AND SEND IMAGE MESSAGE
+                        // Show Dummy Message
+                        addNewTextMessage(new HpMessageModel(
+                                "", data.getData().toString(), data.getData().toString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
+                                System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
+                                true, false, System.currentTimeMillis()));
                         break;
                 }
         }
@@ -210,6 +214,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onReceiveMessageInOtherRoom(HpMessageModel message) {
             super.onReceiveMessageInOtherRoom(message);
+
             if (null != HpChatManager.getInstance().getOpenRoom() &&
                     HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
                 addNewTextMessage(message);
@@ -264,6 +269,15 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onOutsideClicked() {
             HpUtils.getInstance().dismissKeyboard(HpChatActivity.this);
+        }
+
+        @Override
+        public void onLayoutLoaded(HpMessageModel message) {
+            if (message.getUser().getUserID().equals(vm.getMyUserModel().getUserID())
+                    || messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                // Scroll recycler to bottom when image finished loading if message is sent by user or recycler is on bottom
+                rvMessageList.scrollToPosition(0);
+            }
         }
     };
 
@@ -392,6 +406,10 @@ public class HpChatActivity extends HpBaseChatActivity {
         HpConnectionManager.getInstance().addSocketListener(socketListener);
     }
 
+    private void cancelNotificationWhenEnterRoom() {
+        HpNotificationManager.getInstance().cancelNotificationWhenEnterRoom(this, vm.getRoom().getRoomID());
+    }
+
     private void openRoomProfile() {
         Intent intent = new Intent(this, HpProfileActivity.class);
         intent.putExtra(K_ROOM, vm.getRoom());
@@ -513,16 +531,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         } else {
             ActivityCompat.requestPermissions(HpChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
         }
-    }
-
-    private void addNewImageMessage(String imageUri) {
-        // Dummy Message
-        HpMessageModel imageMessage = new HpMessageModel(
-                "", imageUri, imageUri, vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
-                System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
-                true, false, System.currentTimeMillis());
-        hpMessageAdapter.addMessage(imageMessage);
-        rvMessageList.scrollToPosition(0);
     }
 
     private void scrollToBottom() {

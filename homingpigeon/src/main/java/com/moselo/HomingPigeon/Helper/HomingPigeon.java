@@ -23,8 +23,10 @@ import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
+import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
@@ -43,6 +45,7 @@ public class HomingPigeon {
     public static boolean isForeground = true;
     private Thread.UncaughtExceptionHandler defaultUEH;
     private HomingPigeonTokenInterface hpTokenInterface;
+    private static int clientAppIcon = R.drawable.hp_ic_launcher_background;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -144,28 +147,43 @@ public class HomingPigeon {
         }
     }
 
+    public static void saveAppIcon(int clientAppIcon) {
+        HomingPigeon.clientAppIcon = clientAppIcon;
+    }
+
+    public static int getClientAppIcon() {
+        return clientAppIcon;
+    }
+
     //Builder buat setting isi dari Notification chat
     public static class NotificationBuilder {
         public Context context;
         public String chatSender = "", chatMessage = "";
+        public HpMessageModel notificationMessage;
         public int smallIcon;
-        public boolean isNeedReply;
-        public HpRoomModel roomModel;
-        public NotificationCompat.Builder notificationBuilder;
+        boolean isNeedReply;
+        HpRoomModel roomModel;
+        NotificationCompat.Builder notificationBuilder;
         private Class aClass;
 
         public NotificationBuilder(Context context) {
             this.context = context;
         }
 
-        public NotificationBuilder setChatSender(String chatSender) {
-            this.chatSender = chatSender;
+        public NotificationBuilder setNotificationMessage(HpMessageModel notificationMessage) {
+            this.notificationMessage = notificationMessage;
+            HpNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
+            setChatMessage(notificationMessage.getBody());
+            setChatSender(notificationMessage.getUser().getName());
             return this;
         }
 
-        public NotificationBuilder setChatMessage(String chatMessage) {
+        private void setChatSender(String chatSender) {
+            this.chatSender = chatSender;
+        }
+
+        private void setChatMessage(String chatMessage) {
             this.chatMessage = chatMessage;
-            return this;
         }
 
         public NotificationBuilder setSmallIcon(int smallIcon) {
@@ -178,14 +196,14 @@ public class HomingPigeon {
             return this;
         }
 
-        public NotificationBuilder setOnClickAction(HpRoomModel roomModel, Class aClass) {
-            this.roomModel = roomModel;
+        public NotificationBuilder setOnClickAction(Class aClass) {
+            this.roomModel = notificationMessage.getRoom();
             this.aClass = aClass;
             return this;
         }
 
         public Notification build() {
-            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
+            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubbleInBackground(this);
             addReply();
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
@@ -225,7 +243,7 @@ public class HomingPigeon {
                 NotificationChannel channel = new NotificationChannel(HpNotificationManager.getInstance().getChannelID(), "Notification", NotificationManager.IMPORTANCE_HIGH);
                 notificationManager.createNotificationChannel(channel);
             }
-            notificationManager.notify(0, build());
+            notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
         }
     }
 

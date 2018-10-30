@@ -106,4 +106,6 @@
     <string name="you">You</string>
     <string name="over_99">99+</string>
     <string name="this_is_you">This is you</string>
+    <string name="you_have_added">You have added </string>
+    <string name="to_your_contacts"> to your contacts</string>
 </resources>
