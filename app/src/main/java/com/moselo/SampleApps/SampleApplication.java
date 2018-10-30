@@ -15,7 +15,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         HomingPigeon.init(this, hpTokenInterface);
-        HomingPigeon.saveAppIcon(R.mipmap.ic_launcher_foreground);
+        HomingPigeon.saveAppInfo(R.mipmap.ic_launcher_foreground, getResources().getString(R.string.app_name));
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

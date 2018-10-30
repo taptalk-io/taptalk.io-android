@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
 
 import com.facebook.stetho.Stetho;
@@ -46,6 +47,7 @@ public class HomingPigeon {
     private Thread.UncaughtExceptionHandler defaultUEH;
     private HomingPigeonTokenInterface hpTokenInterface;
     private static int clientAppIcon = R.drawable.hp_ic_launcher_background;
+    private static String clientAppName = "";
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -72,6 +74,7 @@ public class HomingPigeon {
         HpDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
         //ini buat ambil context dr app utama karena library module ga bsa punya app context sndiri
         HomingPigeon.appContext = appContext;
+        clientAppName = appContext.getResources().getString(R.string.app_name);
 
         if (HpDataManager.getInstance().checkAccessTokenAvailable())
             HpConnectionManager.getInstance().connect();
@@ -147,12 +150,17 @@ public class HomingPigeon {
         }
     }
 
-    public static void saveAppIcon(int clientAppIcon) {
+    public static void saveAppInfo(int clientAppIcon, String clientAppName) {
         HomingPigeon.clientAppIcon = clientAppIcon;
+        HomingPigeon.clientAppName = clientAppName;
     }
 
     public static int getClientAppIcon() {
         return clientAppIcon;
+    }
+
+    public static String getClientAppName() {
+        return clientAppName;
     }
 
     //Builder buat setting isi dari Notification chat
@@ -203,7 +211,7 @@ public class HomingPigeon {
         }
 
         public Notification build() {
-            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubbleInBackground(this);
+            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
             addReply();
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
@@ -237,13 +245,12 @@ public class HomingPigeon {
         }
 
         public void show() {
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(HomingPigeon.appContext);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(HpNotificationManager.getInstance().getChannelID(), "Notification", NotificationManager.IMPORTANCE_HIGH);
-                notificationManager.createNotificationChannel(channel);
-            }
             notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
+
+            if (1 < HpNotificationManager.getInstance().getNotifMessagesMap().size())
+                notificationManager.notify(0, HpNotificationManager.getInstance().createSummaryNotificationBubble(context, aClass).build());
         }
     }
 
