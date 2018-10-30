@@ -1,26 +1,38 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
+import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
 import com.moselo.HomingPigeon.Model.HpAttachmentModel;
 import com.moselo.HomingPigeon.R;
 
+import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_AUDIO;
+import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_CAMERA;
+import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_CONTACT;
+import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_DOCUMENT;
+import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_GALLERY;
+import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_LOCATION;
 import static com.moselo.HomingPigeon.Model.HpAttachmentModel.createAttachMenu;
 
 public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, HpBaseViewHolder<HpAttachmentModel>> {
 
-    public HpAttachmentAdapter() {
+    private HpAttachmentListener attachmentListener;
+    View.OnClickListener onClickListener;
+
+    public HpAttachmentAdapter(HpAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.attachmentListener = attachmentListener;
+        this.onClickListener = onClickListener;
         setItems(createAttachMenu(), false);
     }
 
+    @NonNull
     @Override
-    public HpBaseViewHolder<HpAttachmentModel> onCreateViewHolder(ViewGroup parent, int viewType) {
+    public HpBaseViewHolder<HpAttachmentModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new AttachmentVH(parent, R.layout.hp_cell_attachment_menu);
     }
 
@@ -34,13 +46,13 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, HpBase
         return super.getItemCount();
     }
 
-    public class AttachmentVH extends HpBaseViewHolder<HpAttachmentModel> implements View.OnClickListener {
+    public class AttachmentVH extends HpBaseViewHolder<HpAttachmentModel> {
+
         private ImageView ivAttachIcon;
         private TextView tvAttachTitle;
         private View vAttachMenuSeparator;
-        private int position = -1;
 
-        protected AttachmentVH(ViewGroup parent, int itemLayoutId) {
+        AttachmentVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             ivAttachIcon = itemView.findViewById(R.id.iv_attach_icon);
             tvAttachTitle = itemView.findViewById(R.id.tv_attach_title);
@@ -52,34 +64,35 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, HpBase
             ivAttachIcon.setImageDrawable(itemView.getResources().getDrawable(item.getIcon()));
             tvAttachTitle.setText(itemView.getResources().getText(item.getTitleIds()));
 
-            this.position = position;
-
             if (getItemCount() - 1 == position)
                 vAttachMenuSeparator.setVisibility(View.GONE);
             else vAttachMenuSeparator.setVisibility(View.VISIBLE);
 
-            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(v -> onAttachmentClicked(item));
         }
 
-        @Override
-        public void onClick(View v) {
-            if (position % 2 == 0)
-                new HomingPigeonDialog.Builder(itemView.getContext())
-                        .setTitle("Title Here")
-                        .setMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.")
-                        .setPrimaryButtonTitle("Primary")
-                        .setPrimaryButtonListener(false, v1 -> Toast.makeText(itemView.getContext(), "Primary Button", Toast.LENGTH_SHORT).show())
-                        .setSecondaryButtonTitle("Secondary")
-                        .setSecondaryButtonListener(true, v12 -> Toast.makeText(itemView.getContext(), "Secondary Button", Toast.LENGTH_SHORT).show())
-                        .show();
-            else
-                new HomingPigeonDialog.Builder(itemView.getContext())
-                        .setTitle("Title Here")
-                        .setMessage("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the standard.")
-                        .setPrimaryButtonTitle("Primary")
-                        .setPrimaryButtonListener(true, v1 -> Toast.makeText(itemView.getContext(), "Primary Button", Toast.LENGTH_SHORT).show())
-                        .show();
+        private void onAttachmentClicked(HpAttachmentModel item) {
+            switch (item.getId()) {
+                case ID_DOCUMENT:
+                    attachmentListener.onDocumentSelected();
+                    break;
+                case ID_CAMERA:
+                    attachmentListener.onCameraSelected();
+                    break;
+                case ID_GALLERY:
+                    attachmentListener.onGallerySelected();
+                    break;
+                case ID_AUDIO:
+                    attachmentListener.onAudioSelected();
+                    break;
+                case ID_LOCATION:
+                    attachmentListener.onLocationSelected();
+                    break;
+                case ID_CONTACT:
+                    attachmentListener.onContactSelected();
+                    break;
+            }
+            onClickListener.onClick(itemView);
         }
-
     }
 }

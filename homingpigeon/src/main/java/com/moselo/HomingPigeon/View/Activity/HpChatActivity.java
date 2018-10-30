@@ -1,12 +1,17 @@
 package com.moselo.HomingPigeon.View.Activity;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -34,6 +39,7 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.SwipeBackLayout.SwipeBackLayout;
+import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HpSocketListener;
@@ -42,6 +48,7 @@ import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.R;
@@ -56,6 +63,9 @@ import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.SEND_IMAGE_TO_CHAT;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.ASCENDING;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.DESCENDING;
 
@@ -151,6 +161,31 @@ public class HpChatActivity extends HpBaseChatActivity {
         } else {
             HpChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case RESULT_OK:
+                switch (requestCode) {
+                    case SEND_IMAGE_TO_CHAT:
+                        if (null == data.getData()) return;
+                        addNewImageMessage(data.getData().toString());
+                        break;
+                }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case PERMISSION_READ_EXTERNAL_STORAGE:
+                    pickImageFromGallery();
+                    break;
+            }
         }
     }
 
@@ -468,6 +503,28 @@ public class HpChatActivity extends HpBaseChatActivity {
         });
     }
 
+    private void pickImageFromGallery() {
+        // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE
+        if (HpUtils.getInstance().hasPermissions(HpChatActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            Intent intent = new Intent();
+            intent.setType(getString(R.string.intent_pick_image));
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, getString(R.string.intent_select_picture)), SEND_IMAGE_TO_CHAT);
+        } else {
+            ActivityCompat.requestPermissions(HpChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
+        }
+    }
+
+    private void addNewImageMessage(String imageUri) {
+        // Dummy Message
+        HpMessageModel imageMessage = new HpMessageModel(
+                "", imageUri, imageUri, vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
+                System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
+                true, false, System.currentTimeMillis());
+        hpMessageAdapter.addMessage(imageMessage);
+        rvMessageList.scrollToPosition(0);
+    }
+
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
         ibToBottom.setVisibility(View.INVISIBLE);
@@ -500,7 +557,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void openAttachMenu() {
         HpUtils.getInstance().dismissKeyboard(this);
-        HpAttachmentBottomSheet attachBottomSheet = new HpAttachmentBottomSheet();
+        HpAttachmentBottomSheet attachBottomSheet = new HpAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
@@ -661,6 +718,13 @@ public class HpChatActivity extends HpBaseChatActivity {
                     if (state == STATE.DONE) updateMessageDecoration();
                 });
             }
+        }
+    };
+
+    private HpAttachmentListener attachmentListener = new HpAttachmentListener() {
+        @Override
+        public void onGallerySelected() {
+            pickImageFromGallery();
         }
     };
 

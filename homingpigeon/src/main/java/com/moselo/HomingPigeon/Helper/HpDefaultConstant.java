@@ -67,6 +67,7 @@ public class HpDefaultConstant {
     public static final class RequestCode {
         public static final int CREATE_GROUP = 10;
         public static final int PICK_GROUP_IMAGE = 11;
+        public static final int SEND_IMAGE_TO_CHAT = 12;
     }
 
     public static final class PermissionRequest {

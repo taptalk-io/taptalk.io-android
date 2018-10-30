@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.HpRoundedCornerImageView;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
@@ -157,6 +158,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         private ConstraintLayout clContainer;
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
+        private HpRoundedCornerImageView rcivImageBody;
         private ImageView ivMessageStatus, ivReply, ivSending;
         private TextView tvMessageStatus;
 
@@ -165,6 +167,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
             clContainer = itemView.findViewById(R.id.cl_container);
             flBubble = itemView.findViewById(R.id.fl_bubble);
+            rcivImageBody = itemView.findViewById(R.id.rciv_image);
             ivReply = itemView.findViewById(R.id.iv_reply);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
 
@@ -182,6 +185,8 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivSending);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+
+            GlideApp.with(itemView.getContext()).load(item.getBody()).into(rcivImageBody);
 
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));

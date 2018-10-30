@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -56,8 +57,11 @@
             android:adjustViewBounds="true"
             android:background="?attr/selectableItemBackground"
             android:foreground="@drawable/hp_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/hp_bg_9b9b9b_rounded_10dp" />
+            app:bottomLeftRadius="8dp"
+            app:bottomRightRadius="8dp"
+            app:topLeftRadius="8dp"
+            app:topRightRadius="1dp"
+            tools:src="@color/colorAccent" />
 
     </FrameLayout>
 

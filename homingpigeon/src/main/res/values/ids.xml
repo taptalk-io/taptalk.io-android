@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="bt_document" type="id" />
-    <item name="bt_camera" type="id" />
-    <item name="bt_gallery" type="id" />
-    <item name="bt_audio" type="id" />
-    <item name="bt_location" type="id" />
-    <item name="bt_contact" type="id" />
-</resources>

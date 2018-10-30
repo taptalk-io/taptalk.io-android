@@ -10,15 +10,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpAttachmentAdapter;
 
 public class HpAttachmentBottomSheet extends BottomSheetDialogFragment {
 
     private RecyclerView recyclerView;
+    private HpAttachmentListener attachmentListener;
+    private View.OnClickListener onClickListener = v -> dismiss();
 
     public HpAttachmentBottomSheet() {
         // Required empty public constructor
+    }
+
+    public HpAttachmentBottomSheet(HpAttachmentListener attachmentListener) {
+        this.attachmentListener = attachmentListener;
     }
 
     public static HpAttachmentBottomSheet newInstance() {
@@ -34,7 +41,7 @@ public class HpAttachmentBottomSheet extends BottomSheetDialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.hp_bottom_sheet_recycler, container, false);
     }
@@ -44,7 +51,7 @@ public class HpAttachmentBottomSheet extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        recyclerView.setAdapter(new HpAttachmentAdapter());
+        recyclerView.setAdapter(new HpAttachmentAdapter(attachmentListener, onClickListener));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
     }

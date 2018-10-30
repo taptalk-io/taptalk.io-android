@@ -10,6 +10,13 @@ public class HpAttachmentModel {
     private int titleIds;
     private int id;
 
+    public static final int ID_DOCUMENT = 1;
+    public static final int ID_CAMERA = 2;
+    public static final int ID_GALLERY = 3;
+    public static final int ID_AUDIO = 4;
+    public static final int ID_LOCATION = 5;
+    public static final int ID_CONTACT = 6;
+
     public HpAttachmentModel(int icon, int titleIds, int id) {
         this.icon = icon;
         this.titleIds = titleIds;
@@ -60,12 +67,12 @@ public class HpAttachmentModel {
         };
 
         int[] ids = {
-                R.id.bt_document,
-                R.id.bt_camera,
-                R.id.bt_gallery,
-                R.id.bt_audio,
-                R.id.bt_location,
-                R.id.bt_contact
+                ID_DOCUMENT,
+                ID_CAMERA,
+                ID_GALLERY,
+                ID_AUDIO,
+                ID_LOCATION,
+                ID_CONTACT
         };
 
         List<HpAttachmentModel> attachMenus = new ArrayList<>();

@@ -245,9 +245,9 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/hp_ic_attach_grey"
             app:layout_constraintBottom_toBottomOf="@id/et_chat"
             app:layout_constraintEnd_toEndOf="@id/et_chat" />
@@ -298,8 +298,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/hp_bg_circle_f3f3f3"
-        android:foreground="?attr/selectableItemBackground"
         android:elevation="4dp"
+        android:foreground="?attr/selectableItemBackground"
         android:padding="15dp"
         android:src="@drawable/hp_ic_scroll_to_bottom_chat"
         android:visibility="invisible"
@@ -322,8 +322,8 @@
         android:textSize="11dp"
         android:translationY="-14dp"
         android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="@id/ib_to_bottom"
         app:layout_constraintEnd_toEndOf="@id/ib_to_bottom"
+        app:layout_constraintStart_toStartOf="@id/ib_to_bottom"
         app:layout_constraintTop_toTopOf="@+id/ib_to_bottom"
         tools:text="1" />
 
