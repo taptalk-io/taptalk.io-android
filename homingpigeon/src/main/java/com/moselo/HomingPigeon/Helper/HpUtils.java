@@ -8,13 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +30,6 @@ import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
@@ -250,8 +246,12 @@ public class HpUtils {
         }
     }
 
-    public void takePicture(Activity activity, int requestCode, Uri uri) {
+    /**
+     * @return Uri to receive saved image path
+     */
+    public Uri takePicture(Activity activity, int requestCode) {
         // Reminder: Handle onRequestPermissionsResult in activity
+        Uri imageUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
@@ -261,11 +261,12 @@ public class HpUtils {
         } else {
             // All permissions granted
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(intent, requestCode);
             }
         }
+        return imageUri;
     }
 
     /**

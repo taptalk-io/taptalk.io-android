@@ -1,16 +1,12 @@
 package com.moselo.HomingPigeon.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -106,8 +102,6 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private HpSocketListener socketListener;
 
-    private Uri cameraImageUri;
-
     //enum Scrolling
     private enum STATE {
         WORKING, LOADED, DONE
@@ -183,10 +177,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             case RESULT_OK:
                 switch (requestCode) {
                     case SEND_IMAGE_FROM_CAMERA:
-                        Log.e(TAG, "onActivityResult: " + cameraImageUri.toString());
+                        if (null == vm.getCameraImageUri()) return;
                         // Show Dummy Message
                         addNewTextMessage(new HpMessageModel(
-                                "", cameraImageUri.toString(), cameraImageUri.toString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
+                                "", vm.getCameraImageUri().toString(), vm.getCameraImageUri().toString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
                                 System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
                                 true, false, System.currentTimeMillis()));
                         break;
@@ -209,10 +203,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             switch (requestCode) {
                 case PERMISSION_CAMERA:
                 case PERMISSION_WRITE_EXTERNAL_STORAGE:
-                    if (null == cameraImageUri) {
-                        cameraImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
-                    }
-                    HpUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA, cameraImageUri);
+                    vm.setCameraImageUri(HpUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE:
                     HpUtils.getInstance().pickImageFromGallery(HpChatActivity.this, SEND_IMAGE_FROM_GALLERY);
@@ -761,10 +752,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     private HpAttachmentListener attachmentListener = new HpAttachmentListener() {
         @Override
         public void onCameraSelected() {
-            if (null == cameraImageUri) {
-                cameraImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
-            }
-            HpUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA, cameraImageUri);
+            vm.setCameraImageUri(HpUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA));
         }
 
         @Override
