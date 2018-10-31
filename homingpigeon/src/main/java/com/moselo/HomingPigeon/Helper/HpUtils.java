@@ -355,4 +355,17 @@ public class HpUtils {
         } catch (Throwable t) {
         }
     }
+
+    /**
+     * Ini buat munculin dialog kalau ga ada internet
+     */
+    public void showNoInternetErrorDialog(Context context) {
+        // TODO: 31/10/18 ini textnya masih dummy
+        new HomingPigeonDialog.Builder(context)
+                .setTitle("Error")
+                .setMessage(context.getString(R.string.no_internet_show_error))
+                .setPrimaryButtonTitle("OK")
+                .setPrimaryButtonListener(v -> {
+                }).show();
+    }
 }

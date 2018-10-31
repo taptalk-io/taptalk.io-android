@@ -13,7 +13,6 @@ import com.moselo.HomingPigeon.View.Fragment.HpShowQRFragment;
 public class HpBarcodeScannerActivity extends HpBaseActivity {
     private HpBarcodeScannerFragment fBarcodeScanner;
     private HpShowQRFragment fShowQR;
-    private HpScanResultActivity fScanResult;
     private TextView tvToolbarTitle;
     private ImageView ivBack;
     private FrameLayout flToolbar;

@@ -56,7 +56,7 @@ public class HpShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap(HpDataManager.getInstance().getActiveUser().getUsername());
+            bitmap = encodeAsBitmap(HpDataManager.getInstance().getActiveUser().getUserID());
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();
