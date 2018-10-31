@@ -372,7 +372,7 @@ public class HpNewContactActivity extends HpBaseActivity {
             finish();
 
             // Add contact to database
-            HpDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult());
+            HpDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult().hpUserModelForAddToDB());
         }
 
         @Override
