@@ -251,7 +251,6 @@ public class HpUtils {
      */
     public Uri takePicture(Activity activity, int requestCode) {
         // Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
-        Uri imageUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
@@ -260,13 +259,15 @@ public class HpUtils {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
         } else {
             // All permissions granted
+            Uri imageUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(intent, requestCode);
             }
+            return imageUri;
         }
-        return imageUri;
+        return null;
     }
 
     /**
