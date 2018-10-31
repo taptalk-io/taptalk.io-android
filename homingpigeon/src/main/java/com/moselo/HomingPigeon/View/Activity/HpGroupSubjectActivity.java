@@ -1,6 +1,5 @@
 package com.moselo.HomingPigeon.View.Activity;
 
-import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -87,7 +85,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    pickImageFromGallery();
+                    HpUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE);
                     break;
             }
         }
@@ -139,19 +137,8 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        civGroupImage.setOnClickListener(v -> pickImageFromGallery());
+        civGroupImage.setOnClickListener(v -> HpUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE));
         btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
-    }
-
-    private void pickImageFromGallery() {
-        if (HpUtils.getInstance().hasPermissions(HpGroupSubjectActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Intent intent = new Intent();
-            intent.setType(getString(R.string.intent_pick_image));
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.intent_select_picture)), PICK_GROUP_IMAGE);
-        } else {
-            ActivityCompat.requestPermissions(HpGroupSubjectActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
-        }
     }
 
     private void loadGroupName() {

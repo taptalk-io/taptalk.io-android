@@ -3,6 +3,8 @@ package com.moselo.HomingPigeon.ViewModel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.net.Uri;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
@@ -24,6 +26,7 @@ public class HpChatViewModel extends AndroidViewModel {
     private List<HpMessageModel> messageModels;
     private HpUserModel myUserModel;
     private HpRoomModel room;
+    private Uri cameraImageUri;
     private String otherUserID = "0";
     private long lastTimestamp = 0;
     private int numUsers;
@@ -126,6 +129,14 @@ public class HpChatViewModel extends AndroidViewModel {
     public void setRoom(HpRoomModel room) {
         this.room = room;
         HpChatManager.getInstance().setActiveRoom(room);
+    }
+
+    public Uri getCameraImageUri() {
+        return cameraImageUri;
+    }
+
+    public void setCameraImageUri(Uri cameraImageUri) {
+        this.cameraImageUri = cameraImageUri;
     }
 
     public long getLastTimestamp() {

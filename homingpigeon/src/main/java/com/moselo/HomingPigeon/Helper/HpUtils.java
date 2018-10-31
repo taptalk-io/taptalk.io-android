@@ -1,13 +1,20 @@
 package com.moselo.HomingPigeon.Helper;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +33,7 @@ import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
@@ -36,6 +44,9 @@ import java.util.Objects;
 import java.util.Random;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
 
 public class HpUtils {
 
@@ -71,7 +82,7 @@ public class HpUtils {
         try {
             return objectMapper.readValue(jsonPacket, type);
         } catch (Exception e) {
-            Log.e(HpUtils.class.getSimpleName(), "fromJSON: ",e );
+            Log.e(HpUtils.class.getSimpleName(), "fromJSON: ", e);
             return null;
         }
     }
@@ -222,6 +233,41 @@ public class HpUtils {
         context.startActivity(intent);
     }
 
+    public void pickImageFromGallery(Activity activity, int requestCode) {
+        // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE / USE CUSTOM PICKER
+        // Reminder: Handle onRequestPermissionsResult in activity
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Check read storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
+        } else {
+            // Permission granted
+            Intent intent = new Intent();
+            intent.setType(activity.getString(R.string.intent_pick_image));
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.intent_select_picture)), requestCode);
+            }
+        }
+    }
+
+    public void takePicture(Activity activity, int requestCode, Uri uri) {
+        // Reminder: Handle onRequestPermissionsResult in activity
+        if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
+            // Check camera permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+        } else if (!hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Check write storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
+        } else {
+            // All permissions granted
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                activity.startActivityForResult(intent, requestCode);
+            }
+        }
+    }
+
     /**
      * Convert a translucent themed Activity
      * {@link android.R.attr#windowIsTranslucent} to a fullscreen opaque
@@ -278,7 +324,7 @@ public class HpUtils {
             Method method = Activity.class.getDeclaredMethod("convertToTranslucent",
                     translucentConversionListenerClazz);
             method.setAccessible(true);
-            method.invoke(activity, new Object[] {
+            method.invoke(activity, new Object[]{
                     null
             });
         } catch (Throwable t) {

@@ -1,16 +1,18 @@
 package com.moselo.HomingPigeon.View.Activity;
 
-import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -62,8 +64,11 @@ import java.util.List;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.SEND_IMAGE_TO_CHAT;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.ASCENDING;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.DESCENDING;
 
@@ -101,6 +106,8 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private HpSocketListener socketListener;
 
+    private Uri cameraImageUri;
+
     //enum Scrolling
     private enum STATE {
         WORKING, LOADED, DONE
@@ -110,6 +117,12 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     //endless scroll Listener
     HpEndlessScrollListener endlessScrollListener;
+
+    /**
+     * =========================================================================================== *
+     * OVERRIDE METHODS
+     * =========================================================================================== *
+     */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -164,17 +177,25 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         switch (resultCode) {
             case RESULT_OK:
                 switch (requestCode) {
-                    case SEND_IMAGE_TO_CHAT:
-                        if (null == data.getData()) return;
+                    case SEND_IMAGE_FROM_CAMERA:
+                        Log.e(TAG, "onActivityResult: " + cameraImageUri.toString());
+                        // Show Dummy Message
+                        addNewTextMessage(new HpMessageModel(
+                                "", cameraImageUri.toString(), cameraImageUri.toString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
+                                System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
+                                true, false, System.currentTimeMillis()));
+                        break;
+                    case SEND_IMAGE_FROM_GALLERY:
+                        if (null == intent) return;
                         // TODO: 30 October 2018 BUILD AND SEND IMAGE MESSAGE
                         // Show Dummy Message
                         addNewTextMessage(new HpMessageModel(
-                                "", data.getData().toString(), data.getData().toString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
+                                "", intent.getDataString(), intent.getDataString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
                                 System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
                                 true, false, System.currentTimeMillis()));
                         break;
@@ -186,100 +207,25 @@ public class HpChatActivity extends HpBaseChatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
+                case PERMISSION_CAMERA:
+                case PERMISSION_WRITE_EXTERNAL_STORAGE:
+                    if (null == cameraImageUri) {
+                        cameraImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
+                    }
+                    HpUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA, cameraImageUri);
+                    break;
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    pickImageFromGallery();
+                    HpUtils.getInstance().pickImageFromGallery(HpChatActivity.this, SEND_IMAGE_FROM_GALLERY);
                     break;
             }
         }
     }
 
-    HpChatListener chatListener = new HpChatListener() {
-        @Override
-        public void onReceiveMessageInActiveRoom(HpMessageModel message) {
-            addNewTextMessage(message);
-        }
-
-        @Override
-        public void onUpdateMessageInActiveRoom(HpMessageModel message) {
-            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewTextMessage(message);
-        }
-
-        @Override
-        public void onDeleteMessageInActiveRoom(HpMessageModel message) {
-            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewTextMessage(message);
-        }
-
-        @Override
-        public void onReceiveMessageInOtherRoom(HpMessageModel message) {
-            super.onReceiveMessageInOtherRoom(message);
-
-            if (null != HpChatManager.getInstance().getOpenRoom() &&
-                    HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
-                addNewTextMessage(message);
-        }
-
-        @Override
-        public void onUpdateMessageInOtherRoom(HpMessageModel message) {
-            super.onUpdateMessageInOtherRoom(message);
-        }
-
-        @Override
-        public void onDeleteMessageInOtherRoom(HpMessageModel message) {
-            super.onDeleteMessageInOtherRoom(message);
-        }
-
-        @Override
-        public void onSendTextMessage(HpMessageModel message) {
-            addNewTextMessage(message);
-            vm.addMessagePointer(message);
-        }
-
-        @Override
-        public void onRetrySendMessage(HpMessageModel message) {
-            vm.delete(message.getLocalID());
-            HpChatManager.getInstance().sendTextMessage(message.getBody());
-        }
-
-        @Override
-        public void onSendFailed(HpMessageModel message) {
-            vm.updateMessagePointer(message);
-            vm.removeMessagePointer(message.getLocalID());
-            runOnUiThread(() -> hpMessageAdapter.notifyItemRangeChanged(0, hpMessageAdapter.getItemCount()));
-        }
-
-        @Override
-        public void onMessageRead(HpMessageModel message) {
-            Log.e(TAG, "onMessageRead: " + vm.getUnreadCount());
-            if (vm.getUnreadCount() == 0) return;
-
-            message.setIsRead(true);
-            vm.removeUnreadMessage(message.getLocalID());
-            updateUnreadCount();
-        }
-
-        @Override
-        public void onBubbleExpanded() {
-            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
-                rvMessageList.smoothScrollToPosition(0);
-            }
-        }
-
-        @Override
-        public void onOutsideClicked() {
-            HpUtils.getInstance().dismissKeyboard(HpChatActivity.this);
-        }
-
-        @Override
-        public void onLayoutLoaded(HpMessageModel message) {
-            if (message.getUser().getUserID().equals(vm.getMyUserModel().getUserID())
-                    || messageLayoutManager.findFirstVisibleItemPosition() == 0) {
-                // Scroll recycler to bottom when image finished loading if message is sent by user or recycler is on bottom
-                rvMessageList.scrollToPosition(0);
-            }
-        }
-    };
+    /**
+     * =========================================================================================== *
+     * PRIVATE METHODS
+     * =========================================================================================== *
+     */
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
@@ -522,18 +468,6 @@ public class HpChatActivity extends HpBaseChatActivity {
         });
     }
 
-    private void pickImageFromGallery() {
-        // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE / USE CUSTOM PICKER
-        if (HpUtils.getInstance().hasPermissions(HpChatActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Intent intent = new Intent();
-            intent.setType(getString(R.string.intent_pick_image));
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, getString(R.string.intent_select_picture)), SEND_IMAGE_TO_CHAT);
-        } else {
-            ActivityCompat.requestPermissions(HpChatActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
-        }
-    }
-
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
         ibToBottom.setVisibility(View.INVISIBLE);
@@ -569,6 +503,100 @@ public class HpChatActivity extends HpBaseChatActivity {
         HpAttachmentBottomSheet attachBottomSheet = new HpAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
+
+    /**
+     * =========================================================================================== *
+     * LISTENERS / DATA VIEWS
+     * =========================================================================================== *
+     */
+
+    private HpChatListener chatListener = new HpChatListener() {
+        @Override
+        public void onReceiveMessageInActiveRoom(HpMessageModel message) {
+            addNewTextMessage(message);
+        }
+
+        @Override
+        public void onUpdateMessageInActiveRoom(HpMessageModel message) {
+            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+            addNewTextMessage(message);
+        }
+
+        @Override
+        public void onDeleteMessageInActiveRoom(HpMessageModel message) {
+            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+            addNewTextMessage(message);
+        }
+
+        @Override
+        public void onReceiveMessageInOtherRoom(HpMessageModel message) {
+            super.onReceiveMessageInOtherRoom(message);
+
+            if (null != HpChatManager.getInstance().getOpenRoom() &&
+                    HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
+                addNewTextMessage(message);
+        }
+
+        @Override
+        public void onUpdateMessageInOtherRoom(HpMessageModel message) {
+            super.onUpdateMessageInOtherRoom(message);
+        }
+
+        @Override
+        public void onDeleteMessageInOtherRoom(HpMessageModel message) {
+            super.onDeleteMessageInOtherRoom(message);
+        }
+
+        @Override
+        public void onSendTextMessage(HpMessageModel message) {
+            addNewTextMessage(message);
+            vm.addMessagePointer(message);
+        }
+
+        @Override
+        public void onRetrySendMessage(HpMessageModel message) {
+            vm.delete(message.getLocalID());
+            HpChatManager.getInstance().sendTextMessage(message.getBody());
+        }
+
+        @Override
+        public void onSendFailed(HpMessageModel message) {
+            vm.updateMessagePointer(message);
+            vm.removeMessagePointer(message.getLocalID());
+            runOnUiThread(() -> hpMessageAdapter.notifyItemRangeChanged(0, hpMessageAdapter.getItemCount()));
+        }
+
+        @Override
+        public void onMessageRead(HpMessageModel message) {
+            Log.e(TAG, "onMessageRead: " + vm.getUnreadCount());
+            if (vm.getUnreadCount() == 0) return;
+
+            message.setIsRead(true);
+            vm.removeUnreadMessage(message.getLocalID());
+            updateUnreadCount();
+        }
+
+        @Override
+        public void onBubbleExpanded() {
+            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                rvMessageList.smoothScrollToPosition(0);
+            }
+        }
+
+        @Override
+        public void onOutsideClicked() {
+            HpUtils.getInstance().dismissKeyboard(HpChatActivity.this);
+        }
+
+        @Override
+        public void onLayoutLoaded(HpMessageModel message) {
+            if (message.getUser().getUserID().equals(vm.getMyUserModel().getUserID())
+                    || messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                // Scroll recycler to bottom when image finished loading if message is sent by user or recycler is on bottom
+                rvMessageList.scrollToPosition(0);
+            }
+        }
+    };
 
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
@@ -732,8 +760,16 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private HpAttachmentListener attachmentListener = new HpAttachmentListener() {
         @Override
+        public void onCameraSelected() {
+            if (null == cameraImageUri) {
+                cameraImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
+            }
+            HpUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA, cameraImageUri);
+        }
+
+        @Override
         public void onGallerySelected() {
-            pickImageFromGallery();
+            HpUtils.getInstance().pickImageFromGallery(HpChatActivity.this, SEND_IMAGE_FROM_GALLERY);
         }
     };
 

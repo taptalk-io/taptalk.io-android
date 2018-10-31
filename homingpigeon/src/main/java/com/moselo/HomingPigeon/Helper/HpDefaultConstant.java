@@ -67,12 +67,14 @@ public class HpDefaultConstant {
     public static final class RequestCode {
         public static final int CREATE_GROUP = 10;
         public static final int PICK_GROUP_IMAGE = 11;
-        public static final int SEND_IMAGE_TO_CHAT = 12;
+        public static final int SEND_IMAGE_FROM_CAMERA = 12;
+        public static final int SEND_IMAGE_FROM_GALLERY = 13;
     }
 
     public static final class PermissionRequest {
         public static final int PERMISSION_CAMERA = 1;
         public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 3;
     }
 
     public static final class Sorting {
