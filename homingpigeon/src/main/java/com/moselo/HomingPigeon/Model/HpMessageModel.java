@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
@@ -28,8 +29,7 @@ public class HpMessageModel {
     @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
-    private boolean isExpanded;
-    private boolean isNeedAnimateSend;
+    @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
 
     public HpMessageModel(@Nullable String messageID, @NonNull String localID, String body, HpRoomModel room,
                           Integer type, Long created, HpUserModel user, String recipientID, @Nullable Boolean isDeleted,
@@ -224,6 +224,14 @@ public class HpMessageModel {
 
     public void setExpanded(boolean expanded) {
         isExpanded = expanded;
+    }
+
+    public boolean isFirstLoadFinished() {
+        return isFirstLoadFinished;
+    }
+
+    public void setFirstLoadFinished(boolean firstLoadFinished) {
+        isFirstLoadFinished = firstLoadFinished;
     }
 
     public boolean isNeedAnimateSend() {

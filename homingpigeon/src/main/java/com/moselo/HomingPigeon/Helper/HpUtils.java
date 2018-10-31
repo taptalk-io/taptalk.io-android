@@ -250,7 +250,7 @@ public class HpUtils {
      * @return Uri to receive saved image path
      */
     public Uri takePicture(Activity activity, int requestCode) {
-        // Reminder: Handle onRequestPermissionsResult in activity
+        // Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
         Uri imageUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission

@@ -151,7 +151,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        
+
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) HpChatManager.getInstance().saveMessageToDraft(draft);
         else HpChatManager.getInstance().removeDraft();
@@ -175,23 +175,16 @@ public class HpChatActivity extends HpBaseChatActivity {
         super.onActivityResult(requestCode, resultCode, intent);
         switch (resultCode) {
             case RESULT_OK:
+                // Set active room to prevent null pointer when returning to chat
+                HpChatManager.getInstance().setActiveRoom(vm.getRoom());
                 switch (requestCode) {
                     case SEND_IMAGE_FROM_CAMERA:
                         if (null == vm.getCameraImageUri()) return;
-                        // Show Dummy Message
-                        addNewTextMessage(new HpMessageModel(
-                                "", vm.getCameraImageUri().toString(), vm.getCameraImageUri().toString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
-                                System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
-                                true, false, System.currentTimeMillis()));
+                        HpChatManager.getInstance().sendImageMessage(vm.getCameraImageUri().toString());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) return;
-                        // TODO: 30 October 2018 BUILD AND SEND IMAGE MESSAGE
-                        // Show Dummy Message
-                        addNewTextMessage(new HpMessageModel(
-                                "", intent.getDataString(), intent.getDataString(), vm.getRoom(), HpDefaultConstant.MessageType.TYPE_IMAGE,
-                                System.currentTimeMillis(), vm.getMyUserModel(), vm.getOtherUserID(), false,
-                                true, false, System.currentTimeMillis()));
+                        HpChatManager.getInstance().sendImageMessage(intent.getDataString());
                         break;
                 }
         }
@@ -322,7 +315,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
-        ivButtonSend.setOnClickListener(v -> attemptSend());
+        ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
         ibToBottom.setOnClickListener(v -> scrollToBottom());
     }
 
@@ -358,7 +351,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         runOnUiThread(() -> {
             if (vm.isOnBottom() || vm.getUnreadCount() == 0) {
                 tvBadgeUnread.setVisibility(View.INVISIBLE);
-            } else if (vm.getUnreadCount() > 0){
+            } else if (vm.getUnreadCount() > 0) {
                 tvBadgeUnread.setText(vm.getUnreadCount() + "");
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             }
@@ -373,7 +366,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         rvMessageList.addItemDecoration(new HpVerticalDecoration(HpUtils.getInstance().dpToPx(10), 0, hpMessageAdapter.getItemCount() - 1));
     }
 
-    private void attemptSend() {
+    // Previously attemptSend
+    private void buildAndSendTextMessage() {
         String message = etChat.getText().toString();
         //ngecekin yang mau di kirim itu kosong atau nggak
         if (!TextUtils.isEmpty(message.trim())) {
@@ -387,7 +381,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     }
 
-    private void addNewTextMessage(final HpMessageModel newMessage) {
+    // Previously addNewTextMessage
+    private void addNewMessage(final HpMessageModel newMessage) {
         runOnUiThread(() -> {
             //ini ngecek kalau masih ada logo empty chat ilangin dlu
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -504,19 +499,19 @@ public class HpChatActivity extends HpBaseChatActivity {
     private HpChatListener chatListener = new HpChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(HpMessageModel message) {
-            addNewTextMessage(message);
+            addNewMessage(message);
         }
 
         @Override
         public void onUpdateMessageInActiveRoom(HpMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewTextMessage(message);
+            addNewMessage(message);
         }
 
         @Override
         public void onDeleteMessageInActiveRoom(HpMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewTextMessage(message);
+            addNewMessage(message);
         }
 
         @Override
@@ -525,7 +520,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
             if (null != HpChatManager.getInstance().getOpenRoom() &&
                     HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
-                addNewTextMessage(message);
+                addNewMessage(message);
         }
 
         @Override
@@ -540,14 +535,28 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSendTextMessage(HpMessageModel message) {
-            addNewTextMessage(message);
+            addNewMessage(message);
+            vm.addMessagePointer(message);
+        }
+
+        @Override
+        public void onSendImageMessage(HpMessageModel message) {
+            addNewMessage(message);
             vm.addMessagePointer(message);
         }
 
         @Override
         public void onRetrySendMessage(HpMessageModel message) {
             vm.delete(message.getLocalID());
-            HpChatManager.getInstance().sendTextMessage(message.getBody());
+            switch (message.getType()) {
+                case HpDefaultConstant.MessageType.TYPE_TEXT:
+                    HpChatManager.getInstance().sendTextMessage(message.getBody());
+                    break;
+                case HpDefaultConstant.MessageType.TYPE_IMAGE:
+                    // TODO: 31 October 2018 CHECK IMAGE ENCODE
+                    HpChatManager.getInstance().sendImageMessage(message.getBody());
+                    break;
+            }
         }
 
         @Override
@@ -581,6 +590,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onLayoutLoaded(HpMessageModel message) {
+            Log.e(TAG, "onLayoutLoaded: " + message.getBody());
             if (message.getUser().getUserID().equals(vm.getMyUserModel().getUserID())
                     || messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                 // Scroll recycler to bottom when image finished loading if message is sent by user or recycler is on bottom
@@ -652,7 +662,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                         tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
                         tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
                         if (null != vm.getMyUserModel().getAvatarURL()) {
-                            Log.e(TAG, "onSelectFinished: " + vm.getMyUserModel().getAvatarURL().getThumbnail());
                             GlideApp.with(HpChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
                         } else {
                             // TODO: 16 October 2018 TEMPORARY

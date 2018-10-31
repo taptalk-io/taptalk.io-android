@@ -11,6 +11,7 @@ public interface HomingPigeonChatInterface {
     void onUpdateMessageInOtherRoom(HpMessageModel message);
     void onDeleteMessageInOtherRoom(HpMessageModel message);
     void onSendTextMessage(HpMessageModel message);
+    void onSendImageMessage(HpMessageModel message);
     void onRetrySendMessage(HpMessageModel message);
     void onSendFailed(HpMessageModel message);
     void onMessageRead(HpMessageModel message);

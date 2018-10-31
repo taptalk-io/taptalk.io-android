@@ -1,6 +1,7 @@
 package com.moselo.HomingPigeon.View.Adapter;
 
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,9 +14,11 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -160,20 +163,24 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     public class ImageVH extends HpBaseViewHolder<HpMessageModel> {
 
         private ConstraintLayout clContainer;
-        private FrameLayout flBubble;
+        private FrameLayout flBubble, flProgress;
         private CircleImageView civAvatar;
         private HpRoundedCornerImageView rcivImageBody;
-        private ImageView ivMessageStatus, ivReply, ivSending;
+        private ImageView ivMessageStatus, ivReply, ivSending, ivProgress;
         private TextView tvMessageStatus;
+        private ProgressBar pbProgress;
 
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
             flBubble = itemView.findViewById(R.id.fl_bubble);
+            flProgress = itemView.findViewById(R.id.fl_progress);
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
             ivReply = itemView.findViewById(R.id.iv_reply);
+            ivProgress = itemView.findViewById(R.id.iv_progress);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -190,7 +197,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivSending);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
 
-            GlideApp.with(itemView.getContext()).load(item.getBody()).listener(new RequestListener<Drawable>() {
+            GlideApp.with(itemView.getContext()).load(item.getBody()).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     return false;
@@ -198,7 +205,34 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
                 @Override
                 public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    if (item.isFirstLoadFinished()) {
+                        // Image is already loaded
+                        flProgress.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    // Image is loading for the first time
+                    item.setFirstLoadFinished(true);
                     listener.onLayoutLoaded(item);
+                    // TODO: 31 October 2018 TESTING DUMMY IMAGE PROGRESS BAR
+                    if (isMessageFromMySelf(item)) {
+                        flBubble.setForeground(bubbleOverlayRight);
+                    } else {
+                        flBubble.setForeground(bubbleOverlayLeft);
+                    }
+                    flProgress.setVisibility(View.VISIBLE);
+                    new CountDownTimer(1000, 10) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            pbProgress.setProgress((int) (1000 - millisUntilFinished) / 10);
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            flProgress.setVisibility(View.GONE);
+                            flBubble.setForeground(null);
+                        }
+                    }.start();
                     return false;
                 }
             }).into(rcivImageBody);
@@ -358,7 +392,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void expandOrShrinkBubble(HpMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, @Nullable ImageView ivMessageStatus, ImageView ivReply, boolean animate) {
         if (item.isExpanded()) {
-            // Bubble is selected/expanded
+            // Expand bubble
             expandedBubble = item;
             animateFadeInToBottom(tvMessageStatus);
             if (isMessageFromMySelf(item) && null != ivMessageStatus) {
@@ -389,7 +423,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 flBubble.setForeground(bubbleOverlayLeft);
             }
         } else {
-            // Bubble is deselected/shrunk
+            // Shrink bubble
             flBubble.setForeground(null);
             if (isMessageFromMySelf(item) && null != ivMessageStatus) {
                 // Right bubble

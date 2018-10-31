@@ -5,7 +5,6 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
@@ -15,7 +14,6 @@ import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.HpUserRoleModel;
-import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -40,28 +38,30 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.k
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOffline;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOnline;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_IMAGE;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_TEXT;
 
 public class HpChatManager {
 
     private final String TAG = HpChatManager.class.getSimpleName();
-    private String openRoom;
     private static HpChatManager instance;
-    private List<HpChatListener> chatListeners;
-    List<HpMessageEntity> saveMessages; //message to be save
     private Map<String, HpMessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
+    private List<HpChatListener> chatListeners;
+    private List<HpMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
     private HpRoomModel activeRoom;
     private HpUserModel activeUser;
+    private ScheduledExecutorService scheduler;
+    private String openRoom;
     private boolean isCheckPendingArraySequenceActive = false;
     private boolean isPendingMessageExist;
     private boolean isFileUploadExist;
     private boolean isFinishChatFlow;
-    private final Integer CHARACTER_LIMIT = 1000;
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
-    private ScheduledExecutorService scheduler;
+    private final Integer CHARACTER_LIMIT = 1000;
 
     private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
         @Override
@@ -229,6 +229,14 @@ public class HpChatManager {
     }
 
     /**
+     * get other user ID from the currently active room
+     */
+    private String getOtherUserIdFromActiveRoom() {
+        String[] splitRoomID = activeRoom.getRoomID().split("-");
+        return !splitRoomID[0].equals(getActiveUser().getUserID()) ? splitRoomID[0] : splitRoomID[1];
+    }
+
+    /**
      * convert HpMessageEntity to HpMessageModel
      */
     public HpMessageModel convertToModel(HpMessageEntity entity) {
@@ -297,12 +305,12 @@ public class HpChatManager {
                 messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
 
                 // Send truncated message
-                sendMessage(messageModel);
+                triggerListenerAndSendTextMessage(messageModel);
             }
         } else {
             HpMessageModel messageModel = buildTextMessage(textMessage, activeRoom, getActiveUser());
             // Send message
-            sendMessage(messageModel);
+            triggerListenerAndSendTextMessage(messageModel);
         }
         // Run queue after list is updated
         //checkAndSendPendingMessages();
@@ -329,7 +337,7 @@ public class HpChatManager {
                 addReplyMessageLocalID(messageModel.getLocalID());
 
                 // Send truncated message
-                sendMessage(messageModel);
+                triggerListenerAndSendTextMessage(messageModel);
             }
         } else {
             HpMessageModel messageModel = buildTextMessage(textMessage, roomModel, HpDataManager.getInstance().getActiveUser());
@@ -340,7 +348,7 @@ public class HpChatManager {
             addReplyMessageLocalID(messageModel.getLocalID());
 
             // Send message
-            sendMessage(messageModel);
+            triggerListenerAndSendTextMessage(messageModel);
         }
         // Run queue after list is updated
         //checkAndSendPendingMessages();
@@ -348,16 +356,44 @@ public class HpChatManager {
 
     private HpMessageModel buildTextMessage(String message, HpRoomModel room, HpUserModel user) {
         // Create new HpMessageModel based on text
-        String[] splitedRoomID = room.getRoomID().split("-");
-        String otherUserID = !splitedRoomID[0].equals(getActiveUser().getUserID()) ? splitedRoomID[0] : splitedRoomID[1];
-        HpMessageModel messageModel = HpMessageModel.Builder(
+        return HpMessageModel.Builder(
                 message,
                 room,
-                HpDefaultConstant.MessageType.TYPE_TEXT,
+                TYPE_TEXT,
                 System.currentTimeMillis(),
-                user, otherUserID);
+                user, getOtherUserIdFromActiveRoom());
+    }
 
-        return messageModel;
+    // Previously sendMessage
+    private void triggerListenerAndSendTextMessage(HpMessageModel messageModel) {
+        // Call listener
+        if (null != chatListeners && !chatListeners.isEmpty()) {
+            for (HpChatListener chatListener : chatListeners) {
+                HpMessageModel tempNewMessage = messageModel.copyMessageModel();
+                chatListener.onSendTextMessage(tempNewMessage);
+            }
+        }
+        runSendMessageSequence(messageModel);
+    }
+
+    public void sendImageMessage(String imageUri) {
+        // TODO: 31 October 2018 ENCODE IMAGE
+        HpMessageModel messageModel = HpMessageModel.Builder(
+                imageUri,
+                activeRoom,
+                TYPE_IMAGE,
+                System.currentTimeMillis(),
+                activeUser,
+                getOtherUserIdFromActiveRoom());
+
+        if (null != chatListeners && !chatListeners.isEmpty()) {
+            for (HpChatListener chatListener : chatListeners) {
+                HpMessageModel tempNewMessage = messageModel.copyMessageModel();
+                chatListener.onSendImageMessage(tempNewMessage);
+            }
+        }
+        // TODO: 31 October 2018 SEND MESSAGE TO SERVER
+        //runSendMessageSequence(messageModel);
     }
 
     /**
@@ -394,20 +430,8 @@ public class HpChatManager {
     }
 
     /**
-     * sending Message to server
+     * Send message to server
      */
-    private void sendMessage(HpMessageModel messageModel) {
-        // Call listener
-        if (null != chatListeners && !chatListeners.isEmpty()) {
-            for (HpChatListener chatListener : chatListeners) {
-                HpMessageModel tempNewMessage = messageModel.copyMessageModel();
-                chatListener.onSendTextMessage(tempNewMessage);
-            }
-        }
-
-        runSendMessageSequence(messageModel);
-    }
-
     private void runSendMessageSequence(HpMessageModel messageModel) {
 
         if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.CONNECTED) {
@@ -428,7 +452,7 @@ public class HpChatManager {
     }
 
     /**
-     * Sending Emit to Server
+     * Send emit to server
      */
     private void sendEmit(String eventName, HpMessageModel messageModel) {
         HpEmitModel<HpMessageModel> hpEmitModel;

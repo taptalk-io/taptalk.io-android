@@ -11,6 +11,7 @@ public abstract class HpChatListener implements HomingPigeonChatInterface {
     @Override public void onUpdateMessageInOtherRoom(HpMessageModel message) {}
     @Override public void onDeleteMessageInOtherRoom(HpMessageModel message) {}
     @Override public void onSendTextMessage(HpMessageModel message) {}
+    @Override public void onSendImageMessage(HpMessageModel message) {}
     @Override public void onRetrySendMessage(HpMessageModel message) {}
     @Override public void onSendFailed(HpMessageModel message) {}
     @Override public void onMessageRead(HpMessageModel message) {}
