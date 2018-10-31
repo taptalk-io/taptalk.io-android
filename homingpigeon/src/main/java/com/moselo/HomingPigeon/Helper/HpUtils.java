@@ -71,7 +71,7 @@ public class HpUtils {
         try {
             return objectMapper.readValue(jsonPacket, type);
         } catch (Exception e) {
-            Log.e(HpUtils.class.getSimpleName(), "fromJSON: ",e );
+            Log.e(HpUtils.class.getSimpleName(), "fromJSON: ", e);
             return null;
         }
     }
@@ -278,7 +278,7 @@ public class HpUtils {
             Method method = Activity.class.getDeclaredMethod("convertToTranslucent",
                     translucentConversionListenerClazz);
             method.setAccessible(true);
-            method.invoke(activity, new Object[] {
+            method.invoke(activity, new Object[]{
                     null
             });
         } catch (Throwable t) {
@@ -307,5 +307,18 @@ public class HpUtils {
             convertToTranslucent.invoke(activity, null, options);
         } catch (Throwable t) {
         }
+    }
+
+    /**
+     * Ini buat munculin dialog kalau ga ada internet
+     */
+    public void showNoInternetErrorDialog(Context context) {
+        // TODO: 31/10/18 ini textnya masih dummy
+        new HomingPigeonDialog.Builder(context)
+                .setTitle("Error")
+                .setMessage(context.getString(R.string.no_internet_show_error))
+                .setPrimaryButtonTitle("OK")
+                .setPrimaryButtonListener(v -> {
+                }).show();
     }
 }

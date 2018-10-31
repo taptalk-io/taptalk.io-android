@@ -18,6 +18,7 @@ import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
+import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -95,13 +96,6 @@ public class HpScanResultActivity extends HpBaseActivity {
 
         if (null != addedContactUserModel) setUpFromNewContact();
         else if (null != scanResult) setUpFromScanQR();
-
-//        if ("old".equals(scanResult.toLowerCase()))
-//            animateAlreadyContact();
-//        else if ("me".equals(scanResult.toLowerCase()))
-//            viewThisIsYou();
-//        else
-//            llButton.setOnClickListener(v -> animateAddSuccess());
     }
 
     private void setUpFromNewContact() {
@@ -198,6 +192,29 @@ public class HpScanResultActivity extends HpBaseActivity {
         @Override
         public void onError(HpErrorModel error) {
             super.onError(error);
+            tvButtonTitle.setVisibility(View.VISIBLE);
+            ivButtonIcon.setVisibility(View.VISIBLE);
+            pbAddLoading.setVisibility(View.GONE);
+            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+                    .setTitle("Error")
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonListener(v -> {
+                    }).show();
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            super.onError(throwable);
+            tvButtonTitle.setVisibility(View.VISIBLE);
+            ivButtonIcon.setVisibility(View.VISIBLE);
+            pbAddLoading.setVisibility(View.GONE);
+            // TODO: 31/10/18 ini textnya masih dummy
+            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+                    .setTitle("Error")
+                    .setMessage(getString(R.string.api_call_return_error))
+                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonListener(v -> {}).show();
         }
     };
 
@@ -211,6 +228,26 @@ public class HpScanResultActivity extends HpBaseActivity {
         @Override
         public void onError(HpErrorModel error) {
             super.onError(error);
+            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+                    .setTitle("Error")
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonListener(v -> {
+                        onBackPressed();
+                    }).show();
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            super.onError(throwable);
+            // TODO: 31/10/18 ini textnya masih dummy
+            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+                    .setTitle("Error")
+                    .setMessage(getString(R.string.api_call_return_error))
+                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonListener(v -> {
+                        onBackPressed();
+                    }).show();
         }
     };
 
