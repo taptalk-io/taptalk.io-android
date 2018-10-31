@@ -141,7 +141,7 @@ public class HpNewChatActivity extends HpBaseActivity {
             // Insert contacts to database
             List<HpUserModel> users = new ArrayList<>();
             for (HpContactModel contact : response.getContacts()) {
-                users.add(contact.getUser());
+                users.add(contact.getUser().hpUserModelForAddToDB());
             }
             HpDataManager.getInstance().insertMyContactToDatabase(users);
         }

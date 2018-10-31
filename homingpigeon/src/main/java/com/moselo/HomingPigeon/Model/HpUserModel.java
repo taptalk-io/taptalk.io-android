@@ -31,6 +31,8 @@ public class HpUserModel implements Parcelable {
     @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;
     @Nullable @JsonProperty("created") private Long created;
     @Nullable @JsonProperty("updated") private Long updated;
+    @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
+    @Nullable @JsonProperty("isRequestAccepted") private Boolean isRequestAccepted;
 
     @Ignore
     public HpUserModel(String userID, String xcUserID, String name, HpImageURL avatarURL, @Nullable String username
@@ -71,6 +73,12 @@ public class HpUserModel implements Parcelable {
 
     public static HpUserModel Builder(String userID, String name) {
         return new HpUserModel(userID, name);
+    }
+
+    public HpUserModel hpUserModelForAddToDB() {
+        this.setRequestAccepted(true);
+        this.setRequestPending(false);
+        return this;
     }
 
     @JsonProperty("userID")
@@ -202,6 +210,25 @@ public class HpUserModel implements Parcelable {
         this.updated = updated;
     }
 
+    @Nullable
+    public Boolean getRequestPending() {
+        return isRequestPending;
+    }
+
+    public void setRequestPending(@Nullable Boolean requestPending) {
+        isRequestPending = requestPending;
+    }
+
+    @Nullable
+    public Boolean getRequestAccepted() {
+        return isRequestAccepted;
+    }
+
+    public void setRequestAccepted(@Nullable Boolean requestAccepted) {
+        isRequestAccepted = requestAccepted;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -222,6 +249,8 @@ public class HpUserModel implements Parcelable {
         dest.writeValue(this.requireChangePassword);
         dest.writeValue(this.created);
         dest.writeValue(this.updated);
+        dest.writeValue(this.isRequestPending);
+        dest.writeValue(this.isRequestAccepted);
     }
 
     protected HpUserModel(Parcel in) {
@@ -238,6 +267,8 @@ public class HpUserModel implements Parcelable {
         this.requireChangePassword = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
+        this.isRequestPending = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isRequestAccepted = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public static final Creator<HpUserModel> CREATOR = new Creator<HpUserModel>() {

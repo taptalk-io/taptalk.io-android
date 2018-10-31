@@ -175,7 +175,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         @Override
         public void onSuccess(HpCommonResponse response) {
             super.onSuccess(response);
-            HpDataManager.getInstance().insertMyContactToDatabase(contactModel);
+            HpDataManager.getInstance().insertMyContactToDatabase(contactModel.hpUserModelForAddToDB());
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);
