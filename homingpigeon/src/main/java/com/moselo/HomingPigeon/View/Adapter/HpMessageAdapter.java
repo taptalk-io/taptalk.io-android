@@ -213,45 +213,47 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivSending);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
 
-            GlideApp.with(itemView.getContext()).load(item.getBody()).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).listener(new RequestListener<Drawable>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                    if (item.isFirstLoadFinished()) {
-                        // Image is already loaded
-                        flProgress.setVisibility(View.GONE);
+            if (!item.getBody().isEmpty()) {
+                GlideApp.with(itemView.getContext()).load(item.getBody()).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         return false;
                     }
 
-                    // Image is loading for the first time
-                    item.setFirstLoadFinished(true);
-                    listener.onLayoutLoaded(item);
-                    // TODO: 31 October 2018 TESTING DUMMY IMAGE PROGRESS BAR
-                    if (isMessageFromMySelf(item)) {
-                        flBubble.setForeground(bubbleOverlayRight);
-                    } else {
-                        flBubble.setForeground(bubbleOverlayLeft);
-                    }
-                    flProgress.setVisibility(View.VISIBLE);
-                    new CountDownTimer(1000, 10) {
-                        @Override
-                        public void onTick(long millisUntilFinished) {
-                            pbProgress.setProgress((int) (1000 - millisUntilFinished) / 10);
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        if (item.isFirstLoadFinished()) {
+                            // Image is already loaded
+                            flProgress.setVisibility(View.GONE);
+                            return false;
                         }
 
-                        @Override
-                        public void onFinish() {
-                            flProgress.setVisibility(View.GONE);
-                            flBubble.setForeground(null);
+                        // Image is loading for the first time
+                        item.setFirstLoadFinished(true);
+                        listener.onLayoutLoaded(item);
+                        // TODO: 31 October 2018 TESTING DUMMY IMAGE PROGRESS BAR
+                        if (isMessageFromMySelf(item)) {
+                            flBubble.setForeground(bubbleOverlayRight);
+                        } else {
+                            flBubble.setForeground(bubbleOverlayLeft);
                         }
-                    }.start();
-                    return false;
-                }
-            }).into(rcivImageBody);
+                        flProgress.setVisibility(View.VISIBLE);
+                        new CountDownTimer(1000, 10) {
+                            @Override
+                            public void onTick(long millisUntilFinished) {
+                                pbProgress.setProgress((int) (1000 - millisUntilFinished) / 10);
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                flProgress.setVisibility(View.GONE);
+                                flBubble.setForeground(null);
+                            }
+                        }.start();
+                        return false;
+                    }
+                }).into(rcivImageBody);
+            }
 
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));

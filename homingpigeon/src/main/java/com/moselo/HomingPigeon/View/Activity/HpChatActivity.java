@@ -181,11 +181,11 @@ public class HpChatActivity extends HpBaseChatActivity {
                 switch (requestCode) {
                     case SEND_IMAGE_FROM_CAMERA:
                         if (null == vm.getCameraImageUri()) return;
-                        HpChatManager.getInstance().sendImageMessage(vm.getCameraImageUri().toString());
+                        HpChatManager.getInstance().sendImageMessage(HpChatActivity.this, vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) return;
-                        HpChatManager.getInstance().sendImageMessage(intent.getDataString());
+                        HpChatManager.getInstance().sendImageMessage(HpChatActivity.this, intent.getData());
                         break;
                 }
         }
@@ -564,9 +564,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             // TODO: 1 November 2018 TESTING REPLY LAYOUT
             if (null != vm.getReplyTo()) {
                 message.setReplyTo(vm.getReplyTo());
-                Log.e(TAG, "onSendTextMessage: " + message.getReplyTo().getBody());
                 vm.setReplyTo(null);
-                Log.e(TAG, "onSendTextMessage: " + message.getReplyTo().getBody());
             }
             addNewMessage(message);
             vm.addMessagePointer(message);
@@ -612,7 +610,6 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onMessageRead(HpMessageModel message) {
-            Log.e(TAG, "onMessageRead: " + vm.getUnreadCount());
             if (vm.getUnreadCount() == 0) return;
 
             message.setIsRead(true);
