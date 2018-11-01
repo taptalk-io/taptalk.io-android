@@ -5,6 +5,7 @@ import android.util.Log;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpPushNotificationRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpUserIdRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
@@ -170,6 +171,12 @@ public class HpApiManager {
 
     public void validateAccessToken(Subscriber<BaseResponse<HpErrorModel>> subscriber) {
         execute(hpSocket.validateAccessToken(), subscriber);
+    }
+
+    //HpCommonResponse itu temporary
+    public void registerFcmTokenToServer(String fcmToken, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
+        HpPushNotificationRequest request = HpPushNotificationRequest.Builder(fcmToken);
+        execute(homingPigeon.registerFcmTokenToServer(request), subscriber);
     }
 
     public void getRoomList(String userID, Subscriber<BaseResponse<HpGetRoomListResponse>> subscriber) {

@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.API.Service;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpPushNotificationRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpUserIdRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
@@ -36,14 +37,18 @@ public interface HomingPigeonApiService {
     @POST("chat/message/new_and_updated")
     Observable<BaseResponse<HpGetRoomListResponse>> getPendingAndUpdatedMessage();
 
-    @POST("chat/message/list_by_room/after")
-    Observable<BaseResponse<HpGetMessageListbyRoomResponse>> getMessageListByRoomAfter(@Body HpGetMessageListbyRoomAfterRequest request);
-
     @POST("chat/message/list_by_room/before")
     Observable<BaseResponse<HpGetMessageListbyRoomResponse>> getMessageListByRoomBefore(@Body HpGetMessageListbyRoomBeforeRequest request);
 
     @POST("client/contact/list")
     Observable<BaseResponse<HpContactResponse>> getMyContactListFromAPI();
+
+    //HpCommonResponse itu temporary nnti kalau udah ada response yang bener harus di ganti
+    @POST("client/push_notification/update")
+    Observable<BaseResponse<HpCommonResponse>> registerFcmTokenToServer(@Body HpPushNotificationRequest request);
+
+    @POST("chat/message/list_by_room/after")
+    Observable<BaseResponse<HpGetMessageListbyRoomResponse>> getMessageListByRoomAfter(@Body HpGetMessageListbyRoomAfterRequest request);
 
     @POST("client/contact/add")
     Observable<BaseResponse<HpCommonResponse>> addContact(@Body HpUserIdRequest request);
