@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -84,12 +85,12 @@ public class HpChatActivity extends HpBaseChatActivity {
     private HpChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clEmptyChat, clChatComposer;
+    private ConstraintLayout clEmptyChat, clReply, clChatComposer;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonChatMenu, ivButtonAttach, ivButtonSend;
-    private ImageView ibToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend;
+    private ImageButton ibToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
-    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvBadgeUnread;
+    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvReplySender, tvReplyBody, tvBadgeUnread;
     private View vStatusBadge;
 
     // RecyclerView
@@ -180,11 +181,11 @@ public class HpChatActivity extends HpBaseChatActivity {
                 switch (requestCode) {
                     case SEND_IMAGE_FROM_CAMERA:
                         if (null == vm.getCameraImageUri()) return;
-                        HpChatManager.getInstance().sendImageMessage(vm.getCameraImageUri().toString());
+                        HpChatManager.getInstance().sendImageMessage(HpChatActivity.this, vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) return;
-                        HpChatManager.getInstance().sendImageMessage(intent.getDataString());
+                        HpChatManager.getInstance().sendImageMessage(HpChatActivity.this, intent.getData());
                         break;
                 }
         }
@@ -222,13 +223,15 @@ public class HpChatActivity extends HpBaseChatActivity {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
+        clReply = (ConstraintLayout) findViewById(R.id.cl_reply);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
         ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
+         ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
         ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send);
-        ibToBottom = (ImageView) findViewById(R.id.ib_to_bottom);
+        ibToBottom = (ImageButton) findViewById(R.id.ib_to_bottom);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
         civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
@@ -236,11 +239,13 @@ public class HpChatActivity extends HpBaseChatActivity {
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
+        tvReplySender = (TextView) findViewById(R.id.tv_reply_sender);
+        tvReplyBody= (TextView) findViewById(R.id.tv_reply_body);
+        tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         rvMessageList = (HpChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
         etChat = (EditText) findViewById(R.id.et_chat);
-        tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
 
         getWindow().setBackgroundDrawable(null);
 
@@ -313,6 +318,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         civRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonCancelReply.setOnClickListener(v -> hideReplyLayout());
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
@@ -383,6 +389,11 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     // Previously addNewTextMessage
     private void addNewMessage(final HpMessageModel newMessage) {
+        if (null != newMessage.getReplyTo()) {
+            Log.e(TAG, "addNewMessage: " + newMessage.getReplyTo().getBody());
+        } else {
+            Log.e(TAG, "addNewMessage: no replyTo");
+        }
         runOnUiThread(() -> {
             //ini ngecek kalau masih ada logo empty chat ilangin dlu
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -452,6 +463,21 @@ public class HpChatActivity extends HpBaseChatActivity {
             }
             //updateMessageDecoration();
         });
+    }
+
+    private void showReplyLayout(HpMessageModel message) {
+        // TODO: 1 November 2018 HANDLE NON-TEXT MESSAGES
+        vm.setReplyTo(message);
+        clReply.setVisibility(View.VISIBLE);
+        tvReplySender.setText(message.getUser().getName());
+        tvReplyBody.setText(message.getBody());
+        etChat.requestFocus();
+        HpUtils.getInstance().showKeyboard(this, etChat);
+    }
+
+    private void hideReplyLayout() {
+        vm.setReplyTo(null);
+        clReply.setVisibility(View.GONE);
     }
 
     private void scrollToBottom() {
@@ -535,14 +561,30 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSendTextMessage(HpMessageModel message) {
+            // TODO: 1 November 2018 TESTING REPLY LAYOUT
+            if (null != vm.getReplyTo()) {
+                message.setReplyTo(vm.getReplyTo());
+                vm.setReplyTo(null);
+            }
             addNewMessage(message);
             vm.addMessagePointer(message);
+            if (clReply.getVisibility() == View.VISIBLE) {
+                clReply.setVisibility(View.GONE);
+            }
         }
 
         @Override
         public void onSendImageMessage(HpMessageModel message) {
             addNewMessage(message);
             vm.addMessagePointer(message);
+            if (clReply.getVisibility() == View.VISIBLE) {
+                clReply.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onReplyMessage(HpMessageModel message) {
+            showReplyLayout(message);
         }
 
         @Override
@@ -568,7 +610,6 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onMessageRead(HpMessageModel message) {
-            Log.e(TAG, "onMessageRead: " + vm.getUnreadCount());
             if (vm.getUnreadCount() == 0) return;
 
             message.setIsRead(true);

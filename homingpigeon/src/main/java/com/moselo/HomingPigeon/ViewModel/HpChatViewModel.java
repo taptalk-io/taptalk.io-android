@@ -26,6 +26,7 @@ public class HpChatViewModel extends AndroidViewModel {
     private List<HpMessageModel> messageModels;
     private HpUserModel myUserModel;
     private HpRoomModel room;
+    private HpMessageModel replyTo;
     private Uri cameraImageUri;
     private String otherUserID = "0";
     private long lastTimestamp = 0;
@@ -129,6 +130,14 @@ public class HpChatViewModel extends AndroidViewModel {
     public void setRoom(HpRoomModel room) {
         this.room = room;
         HpChatManager.getInstance().setActiveRoom(room);
+    }
+
+    public HpMessageModel getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(HpMessageModel replyTo) {
+        this.replyTo = replyTo;
     }
 
     public Uri getCameraImageUri() {

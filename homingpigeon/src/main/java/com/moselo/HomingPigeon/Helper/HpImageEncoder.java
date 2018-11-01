@@ -9,10 +9,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,7 +29,36 @@ public class HpImageEncoder {
         return instance == null ? (instance = new HpImageEncoder()) : instance;
     }
 
-    public String encodeToBase64(Activity activity, Uri imageUri, int maxSize) {
+    public String encodeToBase64(Uri imageUri, int maxSize) {
+        final InputStream imageStream;
+        try {
+            Log.e("]]]]", "encodeToBase64 imageUri: " + imageUri.getPath());
+            imageStream = HomingPigeon.appContext.getContentResolver().openInputStream(imageUri);
+            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+            final Bitmap resizedImage = scaleDown(selectedImage, maxSize, true);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            resizedImage.compress(Bitmap.CompressFormat.WEBP, 100, byteArrayOutputStream);
+            String encoded = "data:image/webp;base64," + Base64.encodeToString(
+                    byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+            return encoded;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width, height, filter);
+        return newBitmap;
+    }
+
+    public String encodeToBase64(Uri imageUri, int maxSize, Activity activity) {
         final InputStream imageStream;
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -56,21 +87,27 @@ public class HpImageEncoder {
     }
 
     private Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
+
         int originalWidth = bitmap.getWidth();
         int originalHeight = bitmap.getHeight();
         int resizedWidth = maxDimension;
         int resizedHeight = maxDimension;
 
         if (originalHeight > originalWidth) {
+            resizedHeight = maxDimension;
             resizedWidth = (int) (resizedHeight * (float) originalWidth / (float) originalHeight);
         } else if (originalWidth > originalHeight) {
+            resizedWidth = maxDimension;
             resizedHeight = (int) (resizedWidth * (float) originalHeight / (float) originalWidth);
+        } else if (originalHeight == originalWidth) {
+            resizedHeight = maxDimension;
+            resizedWidth = maxDimension;
         }
         return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false);
     }
 
     private Bitmap getCorrectedImage(Bitmap image, Uri imageUri, Activity activity) {
-        ExifInterface exif;
+        ExifInterface exif = null;
         try {
             if (getPath(activity, imageUri) != null) {
                 exif = new ExifInterface(getPath(activity, imageUri));
@@ -79,13 +116,16 @@ public class HpImageEncoder {
                 return rotated;
             }
         } catch (IOException e) {
-            return rotateBitmap(image, 0);
+            Bitmap rotated = rotateBitmap(image, 0);
+            return rotated;
         }
         int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-        return rotateBitmap(image, orientation);
+        Bitmap rotated = rotateBitmap(image, orientation);
+        return rotated;
     }
 
     private Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+
         Matrix matrix = new Matrix();
         switch (orientation) {
             case ExifInterface.ORIENTATION_NORMAL:
@@ -127,8 +167,11 @@ public class HpImageEncoder {
     }
 
     private String getPath(final Context context, final Uri uri) {
+
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+
         // DocumentProvider
-        if (DocumentsContract.isDocumentUri(context, uri)) {
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
@@ -163,41 +206,29 @@ public class HpImageEncoder {
                 } else if ("audio".equals(type)) {
                     contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
+
                 final String selection = "_id=?";
                 final String[] selectionArgs = new String[]{
                         split[1]
                 };
+
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
         }
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
             // Return the remote address
-            if (isGooglePhotosUri(uri)) {
+            if (isGooglePhotosUri(uri))
                 return uri.getLastPathSegment();
-            }
+
             return getDataColumn(context, uri, null, null);
         }
         // File
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
         }
-        return null;
-    }
 
-    private String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
-        final String column = "_data";
-        final String[] projection = {
-                column
-        };
-
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
-                null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                final int index = cursor.getColumnIndexOrThrow(column);
-                return cursor.getString(index);
-            }
-        }
         return null;
     }
 
@@ -215,5 +246,28 @@ public class HpImageEncoder {
 
     private boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    private String getDataColumn(Context context, Uri uri, String selection,
+                                       String[] selectionArgs) {
+
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {
+                column
+        };
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
     }
 }
