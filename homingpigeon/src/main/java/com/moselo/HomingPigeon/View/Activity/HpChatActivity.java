@@ -389,6 +389,11 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     // Previously addNewTextMessage
     private void addNewMessage(final HpMessageModel newMessage) {
+        if (null != newMessage.getReplyTo()) {
+            Log.e(TAG, "addNewMessage: " + newMessage.getReplyTo().getBody());
+        } else {
+            Log.e(TAG, "addNewMessage: no replyTo");
+        }
         runOnUiThread(() -> {
             //ini ngecek kalau masih ada logo empty chat ilangin dlu
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -462,6 +467,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void showReplyLayout(HpMessageModel message) {
         // TODO: 1 November 2018 HANDLE NON-TEXT MESSAGES
+        vm.setReplyTo(message);
         clReply.setVisibility(View.VISIBLE);
         tvReplySender.setText(message.getUser().getName());
         tvReplyBody.setText(message.getBody());
@@ -470,6 +476,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     private void hideReplyLayout() {
+        vm.setReplyTo(null);
         clReply.setVisibility(View.GONE);
     }
 
@@ -554,6 +561,13 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSendTextMessage(HpMessageModel message) {
+            // TODO: 1 November 2018 TESTING REPLY LAYOUT
+            if (null != vm.getReplyTo()) {
+                message.setReplyTo(vm.getReplyTo());
+                Log.e(TAG, "onSendTextMessage: " + message.getReplyTo().getBody());
+                vm.setReplyTo(null);
+                Log.e(TAG, "onSendTextMessage: " + message.getReplyTo().getBody());
+            }
             addNewMessage(message);
             vm.addMessagePointer(message);
             if (clReply.getVisibility() == View.VISIBLE) {

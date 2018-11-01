@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    android:id="@+id/cl_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -52,21 +51,42 @@
                 style="@style/HomingPigeonMessageUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:textColor="@color/black_44"
+                android:layout_marginBottom="2dp"
+                android:textColor="@color/mediumPurple"
                 android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@id/tv_message_body"
+                app:layout_constraintBottom_toTopOf="@id/cl_reply"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="User Name" />
+
+            <View
+                android:id="@+id/v_reply_background"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/hp_bg_f3f3f3_rounded_8dp"
+                app:layout_constraintBottom_toBottomOf="@id/cl_reply"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/cl_reply" />
+
+            <include
+                android:id="@+id/cl_reply"
+                layout="@layout/hp_layout_reply_chat_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_message_body"
+                app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
 
             <TextView
                 android:id="@+id/tv_message_body"
                 style="@style/HomingPigeonMessageBody"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:textColor="@color/black_2c"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_user_name"
+                app:layout_constraintTop_toBottomOf="@id/cl_reply"
                 tools:text="Hey there, love your work!" />
 
         </android.support.constraint.ConstraintLayout>

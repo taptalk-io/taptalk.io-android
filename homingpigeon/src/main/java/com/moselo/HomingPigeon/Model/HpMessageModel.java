@@ -29,6 +29,7 @@ public class HpMessageModel {
     @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
+    @JsonIgnore private HpMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
 
     public HpMessageModel(@Nullable String messageID, @NonNull String localID, String body, HpRoomModel room,
@@ -240,6 +241,14 @@ public class HpMessageModel {
 
     public void setNeedAnimateSend(boolean sendAnimateFinished) {
         isNeedAnimateSend = sendAnimateFinished;
+    }
+
+    public HpMessageModel getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(HpMessageModel replyTo) {
+        this.replyTo = replyTo;
     }
 
     public void updateValue(HpMessageModel model) {

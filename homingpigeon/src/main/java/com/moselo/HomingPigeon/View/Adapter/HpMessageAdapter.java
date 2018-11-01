@@ -123,20 +123,25 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     public class TextVH extends HpBaseViewHolder<HpMessageModel> {
 
-        private ConstraintLayout clContainer;
+        private ConstraintLayout clContainer, clReply;
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus, ivReply, ivSending;
-        private TextView tvUsername, tvMessageBody, tvMessageStatus;
+        private TextView tvUsername, tvMessageBody, tvMessageStatus, tvReplySenderName, tvReplyBody;
+        private View vReplyBackground;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
+            clReply = itemView.findViewById(R.id.cl_reply);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivReply = itemView.findViewById(R.id.iv_reply);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvReplySenderName = itemView.findViewById(R.id.tv_reply_sender);
+            tvReplyBody = itemView.findViewById(R.id.tv_reply_body);
+            vReplyBackground = itemView.findViewById(R.id.v_reply_background);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -150,6 +155,17 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         @Override
         protected void onBind(HpMessageModel item, int position) {
             tvMessageBody.setText(item.getBody());
+
+            // TODO: 1 November 2018 TESTING REPLY LAYOUT
+            if (null != item.getReplyTo() && !item.getReplyTo().getBody().isEmpty()) {
+                clReply.setVisibility(View.VISIBLE);
+                vReplyBackground.setVisibility(View.VISIBLE);
+                tvReplySenderName.setText(item.getReplyTo().getUser().getName());
+                tvReplyBody.setText(item.getReplyTo().getBody());
+            } else {
+                clReply.setVisibility(View.GONE);
+                vReplyBackground.setVisibility(View.GONE);
+            }
 
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, tvUsername, civAvatar, ivMessageStatus, ivSending);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
