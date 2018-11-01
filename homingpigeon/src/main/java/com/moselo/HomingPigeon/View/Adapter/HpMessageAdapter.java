@@ -496,8 +496,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     }
 
     private void onReplyButtonClicked(HpMessageModel item) {
-        // TODO: 1 October 2018 REPLY
-        shrinkExpandedBubble();
+        listener.onReplyMessage(item);
     }
 
     private void resendMessage(HpMessageModel item) {

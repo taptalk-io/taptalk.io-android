@@ -117,6 +117,21 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="HomingPigeonReplySenderName">
+        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/black_44</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="HomingPigeonReplyBody">
+        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/black_44</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">1sp</item>
+    </style>
+
     <style name="HomingPigeonUnreadBadge">
         <item name="android:background">@drawable/hp_bg_amethyst_mediumpurple_270_rounded_10dp</item>
         <item name="android:fontFamily">@font/hp_font_latobold</item>
