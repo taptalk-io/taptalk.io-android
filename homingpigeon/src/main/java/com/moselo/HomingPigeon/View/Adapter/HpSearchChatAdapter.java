@@ -122,7 +122,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
             // Set message timestamp
             // TODO: 17 October 2018 PROCESS DATE OUTSIDE BIND
-            tvMessageTime.setText(HpTimeFormatter.durationString(message.getCreated()));
+            tvMessageTime.setText(HpTimeFormatter.getInstance().durationString(message.getCreated()));
 
             // Change Status Message Icon
             // Message is read

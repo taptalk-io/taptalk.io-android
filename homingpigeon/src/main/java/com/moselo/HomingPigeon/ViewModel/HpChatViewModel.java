@@ -4,7 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.net.Uri;
-import android.util.Log;
+import android.os.Handler;
 
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
@@ -28,8 +28,10 @@ public class HpChatViewModel extends AndroidViewModel {
     private HpRoomModel room;
     private HpMessageModel replyTo;
     private Uri cameraImageUri;
+    private Handler lastActivityHandler;
     private String otherUserID = "0";
     private long lastTimestamp = 0;
+    private long lastActivity;
     private int numUsers;
     private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
 
@@ -148,12 +150,24 @@ public class HpChatViewModel extends AndroidViewModel {
         this.cameraImageUri = cameraImageUri;
     }
 
+    public Handler getLastActivityHandler() {
+        return null == lastActivityHandler ? lastActivityHandler = new Handler() : lastActivityHandler;
+    }
+
     public long getLastTimestamp() {
         return lastTimestamp;
     }
 
     public void setLastTimestamp(long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
+    }
+
+    public long getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(long lastActivity) {
+        this.lastActivity = lastActivity;
     }
 
     public int getNumUsers() {

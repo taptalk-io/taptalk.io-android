@@ -139,8 +139,16 @@ public class HpChatManager {
                 case kSocketAuthentication:
                     break;
                 case kSocketUserOnline:
+                    // TODO: 2 November 2018 GET EMIT DATA
+                    for (HpChatListener listener : chatListeners) {
+                        listener.onUserOnline();
+                    }
                     break;
                 case kSocketUserOffline:
+                    // TODO: 2 November 2018 GET EMIT DATA
+                    for (HpChatListener listener : chatListeners) {
+                        listener.onUserOffline(System.currentTimeMillis());
+                    }
                     break;
             }
         }

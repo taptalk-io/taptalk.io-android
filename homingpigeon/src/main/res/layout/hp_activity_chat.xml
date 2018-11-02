@@ -47,12 +47,12 @@
             android:id="@+id/v_room_status_badge"
             android:layout_width="7dp"
             android:layout_height="7dp"
-            android:background="@drawable/hp_bg_circle_vibrantgreen"
             app:layout_constraintBottom_toBottomOf="@id/tv_room_status"
             app:layout_constraintEnd_toStartOf="@id/tv_room_status"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_room_status" />
+            app:layout_constraintTop_toTopOf="@id/tv_room_status"
+            tools:background="@drawable/hp_bg_circle_vibrantgreen" />
 
         <TextView
             android:id="@+id/tv_room_status"
