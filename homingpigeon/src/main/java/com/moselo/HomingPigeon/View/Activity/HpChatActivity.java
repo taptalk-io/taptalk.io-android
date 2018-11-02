@@ -1142,7 +1142,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     };
 
     private Runnable lastActivityRunnable = new Runnable() {
-        final int INTERVAL = 1000/* * 60*/;
+        final int INTERVAL = 1000 * 60;
 
         @Override
         public void run() {
@@ -1150,8 +1150,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                 vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_orangeyellow));
                 tvRoomStatus.setText(HpTimeFormatter.getInstance().getLastActivityString(HpChatActivity.this, vm.getLastActivity()));
             });
-            vm.setLastActivity(vm.getLastActivity() - (1000 * 60 * 60 *10));
-            Log.e(TAG, "run: " + HpTimeFormatter.getInstance().formatClock(vm.getLastActivity()));
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);
         }
     };

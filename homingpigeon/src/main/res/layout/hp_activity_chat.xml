@@ -222,7 +222,7 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/hp_bg_easterpurple_rounded_8dp_0dp_8dp_0dp"
+                android:background="@drawable/hp_bg_easterpurple_rounded_4dp_0dp_4dp_0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_cancel_reply"
                 app:layout_constraintTop_toTopOf="parent" />
