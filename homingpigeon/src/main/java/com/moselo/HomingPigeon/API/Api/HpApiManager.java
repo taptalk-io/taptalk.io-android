@@ -173,7 +173,6 @@ public class HpApiManager {
         execute(hpSocket.validateAccessToken(), subscriber);
     }
 
-    //HpCommonResponse itu temporary
     public void registerFcmTokenToServer(String fcmToken, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
         HpPushNotificationRequest request = HpPushNotificationRequest.Builder(fcmToken);
         execute(homingPigeon.registerFcmTokenToServer(request), subscriber);

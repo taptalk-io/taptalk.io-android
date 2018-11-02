@@ -415,7 +415,6 @@ public class HpDataManager {
         HpApiManager.getInstance().validateAccessToken(new DefaultSubscriber<>(view));
     }
 
-    //HpCommonResponse itu temporary
     public void registerFcmTokenToServer(String fcmToken, HpDefaultDataView<HpCommonResponse> view) {
         HpApiManager.getInstance().registerFcmTokenToServer(fcmToken, new DefaultSubscriber(view));
     }

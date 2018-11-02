@@ -43,7 +43,6 @@ public interface HomingPigeonApiService {
     @POST("client/contact/list")
     Observable<BaseResponse<HpContactResponse>> getMyContactListFromAPI();
 
-    //HpCommonResponse itu temporary nnti kalau udah ada response yang bener harus di ganti
     @POST("client/push_notification/update")
     Observable<BaseResponse<HpCommonResponse>> registerFcmTokenToServer(@Body HpPushNotificationRequest request);
 

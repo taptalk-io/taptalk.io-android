@@ -148,4 +148,6 @@ public class HpDefaultConstant {
     public static final String ADDED_CONTACT = "kAddedContact";
 
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
+
+    public static final String HP_NOTIFICATION_CHANNEL = "homingPigeon_channel_id";
 }
