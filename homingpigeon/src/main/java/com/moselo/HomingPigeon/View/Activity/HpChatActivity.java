@@ -230,7 +230,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
         ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
-         ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
+        ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
         ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send);
@@ -243,7 +243,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
         tvReplySender = (TextView) findViewById(R.id.tv_reply_sender);
-        tvReplyBody= (TextView) findViewById(R.id.tv_reply_body);
+        tvReplyBody = (TextView) findViewById(R.id.tv_reply_body);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         rvMessageList = (HpChatRecyclerView) findViewById(R.id.rv_message_list);
@@ -685,11 +685,10 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSendImageMessage(HpMessageModel message) {
+            // TODO: 5 November 2018 TESTING IMAGE MESSAGE STATUS
+            message.setNeedAnimateSend(true);
+            message.setSending(false);
             addNewMessage(message);
-            vm.addMessagePointer(message);
-            if (clReply.getVisibility() == View.VISIBLE) {
-                clReply.setVisibility(View.GONE);
-            }
         }
 
         @Override
@@ -1147,7 +1146,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void run() {
             runOnUiThread(() -> {
-                vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_orangeyellow));
+                vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_butterscotch));
                 tvRoomStatus.setText(HpTimeFormatter.getInstance().getLastActivityString(HpChatActivity.this, vm.getLastActivity()));
             });
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);

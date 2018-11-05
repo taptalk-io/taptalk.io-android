@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="#f0f0f0"
+    android:background="@color/white_f3"
     tools:context=".View.Activity.HpChatActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -166,10 +166,10 @@
         android:id="@+id/fl_message_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
         tools:background="@color/transparent_charcoal">
-        android:visibility="gone"
 
         <com.moselo.HomingPigeon.Helper.HpChatRecyclerView
             android:id="@+id/rv_message_list"
