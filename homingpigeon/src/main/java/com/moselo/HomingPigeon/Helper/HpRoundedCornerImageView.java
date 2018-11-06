@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -16,7 +17,7 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
     private Path path;
     private RectF rounded;
     private AttributeSet attributeSet;
-    private int w, h, oldW, oldH;
+    private int w, h, oldW, oldH, minWidth, minHeight, maxWidth, maxHeight;
     private final float DEFAULT_RADIUS = HpUtils.getInstance().dpToPx(4);
 
     public float topLeftRad = DEFAULT_RADIUS;
@@ -53,6 +54,10 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             topRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_topRightRadius, topRightRad) * 1.1f;
             bottomLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomLeftRadius, bottomLeftRad) * 1.1f;
             bottomRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomRightRadius, bottomRightRad) * 1.1f;
+            minWidth = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minWidth, minWidth);
+            minHeight = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minHeight, minHeight);
+            Log.e("]]]]", "init minWidth: " + minWidth);
+            Log.e("]]]]", "init minHeight: " + minHeight);
             typedArray.recycle();
         }
     }
@@ -137,11 +142,100 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
     }
 
     @Override
+    public void setMaxWidth(int maxWidth) {
+        super.setMaxWidth(maxWidth);
+        this.maxWidth = maxWidth;
+        Log.e("]]]]", "setMaxWidth: " + maxWidth);
+    }
+
+    @Override
+    public void setMaxHeight(int maxHeight) {
+        super.setMaxHeight(maxHeight);
+        this.maxHeight = maxHeight;
+        Log.e("]]]]", "setMaxHeight: " + maxHeight);
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int mode = MeasureSpec.getMode(widthMeasureSpec);
         int size = MeasureSpec.getSize(widthMeasureSpec);
 
         MeasureSpec.makeMeasureSpec(size, mode);
+
+        Drawable drawable = getDrawable();
+        if (drawable != null) {
+            int wMode = MeasureSpec.getMode(widthMeasureSpec);
+            int hMode = MeasureSpec.getMode(heightMeasureSpec);
+            if (wMode == MeasureSpec.EXACTLY || hMode == MeasureSpec.EXACTLY) {
+                return;
+            }
+
+            // Calculate the most appropriate size for the view. Take into
+            // account minWidth, minHeight, maxWith, maxHeight and allowed size
+            // for the view.
+            int maxWidth = wMode == MeasureSpec.AT_MOST
+                    ? Math.min(MeasureSpec.getSize(widthMeasureSpec), this.maxWidth)
+                    : this.maxWidth;
+            int maxHeight = hMode == MeasureSpec.AT_MOST
+                    ? Math.min(MeasureSpec.getSize(heightMeasureSpec), this.maxHeight)
+                    : this.maxHeight;
+            Log.e("]]]]", "onMeasure maxWidth: " + maxWidth);
+            Log.e("]]]]", "onMeasure maxHeight: " + maxHeight);
+
+            int dWidth = drawable.getIntrinsicWidth();
+            int dHeight = drawable.getIntrinsicHeight();
+            float ratio = ((float) dWidth) / dHeight;
+            Log.e("]]]]", "onMeasure dWidth: " + dWidth);
+            Log.e("]]]]", "onMeasure dHeight: " + dHeight);
+
+            int resultWidth, resultHeight;
+            // Ratio > 0.78 -> use maxWidth
+            // Ratio < 0.78 -> use maxHeight
+            if (ratio > 0.78f) {
+                if (dWidth > maxWidth) {
+                    resultWidth = maxWidth;
+                    resultHeight = (int) (resultWidth / ratio);
+                } else if (dWidth < minWidth) {
+                    resultWidth = minWidth;
+                    resultHeight = (int) (resultWidth / ratio);
+                } else {
+                    resultWidth = dWidth;
+                    resultHeight = dHeight;
+                }
+            } else {
+                if (dHeight > maxHeight) {
+                    resultHeight = maxHeight;
+                    resultWidth = (int) (resultHeight * ratio);
+                } else if (dHeight < minHeight) {
+                    resultHeight = minHeight;
+                    resultWidth = (int) (resultHeight * ratio);
+                } else {
+                    resultWidth = dWidth;
+                    resultHeight = dHeight;
+                }
+            }
+
+//            int width = Math.min(Math.max(dWidth, getSuggestedMinimumWidth()), maxWidth);
+//            int height = (int) (width / ratio);
+//
+//            height = Math.min(Math.max(height, getSuggestedMinimumHeight()), maxHeight);
+//            width = (int) (height * ratio);
+//
+//            if (width > maxWidth) {
+//                width = maxWidth;
+//                height = (int) (width / ratio);
+//            }
+//
+//            if (dWidth < minWidth) {
+//                width = minWidth;
+//                height = (int) (width / ratio);
+//                Log.e("]]]]", "onMeasure minWidth: " + width);
+//            }
+
+            Log.e("]]]]", "onMeasure width: " + resultWidth);
+            Log.e("]]]]", "onMeasure height: " + resultHeight);
+            setMeasuredDimension(resultWidth, resultHeight);
+        }
     }
 }
