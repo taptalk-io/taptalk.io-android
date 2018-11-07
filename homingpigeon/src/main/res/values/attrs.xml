@@ -22,5 +22,6 @@
         <attr name="bottomRightRadius" format="dimension" />
         <attr name="minWidth" format="dimension" />
         <attr name="minHeight" format="dimension" />
+        <attr name="dimensionRatio" format="float" />
     </declare-styleable>
 </resources>
