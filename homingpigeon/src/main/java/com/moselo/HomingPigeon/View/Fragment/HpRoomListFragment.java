@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,13 +15,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
-import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -350,6 +350,29 @@ public class HpRoomListFragment extends Fragment {
         hideSelectionActionBar();
     }
 
+    private void showNewChatButton() {
+        if (ivButtonNewChat.getVisibility() == View.VISIBLE) {
+            return;
+        }
+        ivButtonNewChat.setTranslationY(HpUtils.getInstance().dpToPx(120));
+        ivButtonNewChat.setVisibility(View.VISIBLE);
+            ivButtonNewChat.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .start();
+    }
+
+    private void hideNewChatButton() {
+        if (ivButtonNewChat.getVisibility() == View.GONE || ivButtonNewChat.getTranslationY() > 0) {
+            return;
+        }
+        ivButtonNewChat.animate()
+                .translationY(HpUtils.getInstance().dpToPx(120))
+                .setInterpolator(new AccelerateInterpolator())
+                .withEndAction(() -> ivButtonNewChat.setVisibility(View.GONE))
+                .start();
+    }
+
     public boolean isSelecting() {
         return vm.isSelecting();
     }
@@ -360,7 +383,7 @@ public class HpRoomListFragment extends Fragment {
             //ini buat munculin setup dialog pas pertama kali buka apps
             if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
                 flSetupContainer.setVisibility(View.VISIBLE);
-                ivButtonNewChat.setVisibility(View.GONE);
+                hideNewChatButton();
             }
         }
 
@@ -368,7 +391,7 @@ public class HpRoomListFragment extends Fragment {
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
             flSetupContainer.setVisibility(View.GONE);
-            ivButtonNewChat.setVisibility(View.VISIBLE);
+            showNewChatButton();
             if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
                 HpDataManager.getInstance().setRoomListSetupFinished();
             }
@@ -409,7 +432,7 @@ public class HpRoomListFragment extends Fragment {
             super.onError(error);
             Log.e(TAG, "onError: " + error.getMessage());
             flSetupContainer.setVisibility(View.GONE);
-            ivButtonNewChat.setVisibility(View.VISIBLE);
+            showNewChatButton();
         }
 
         @Override
@@ -417,7 +440,7 @@ public class HpRoomListFragment extends Fragment {
             super.onError(errorMessage);
             Log.e(TAG, "onError: " + errorMessage);
             flSetupContainer.setVisibility(View.GONE);
-            ivButtonNewChat.setVisibility(View.VISIBLE);
+            showNewChatButton();
         }
     };
 
