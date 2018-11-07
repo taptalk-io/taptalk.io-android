@@ -8,7 +8,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.R;
 
@@ -59,9 +58,6 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             minHeight = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minHeight, minHeight);
             minHeight = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minHeight, minHeight);
             dimensionRatio = typedArray.getFloat(R.styleable.HpRoundedCornerImageView_dimensionRatio, dimensionRatio);
-            Log.e("]]]]", "init minWidth: " + minWidth);
-            Log.e("]]]]", "init minHeight: " + minHeight);
-            Log.e("]]]]", "init dimensionRatio: " + dimensionRatio);
             typedArray.recycle();
         }
     }
@@ -181,20 +177,17 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
         // Calculate the most appropriate size for the view. Take into
         // account minWidth, minHeight, maxWith, maxHeight and allowed size
         // for the view.
+        // FIXME: 7 November 2018 minWidth AND minHeight ARE NOT WORKING
         int maxWidth = wMode == MeasureSpec.AT_MOST
                 ? Math.min(MeasureSpec.getSize(widthMeasureSpec), this.maxWidth)
                 : this.maxWidth;
         int maxHeight = hMode == MeasureSpec.AT_MOST
                 ? Math.min(MeasureSpec.getSize(heightMeasureSpec), this.maxHeight)
                 : this.maxHeight;
-        Log.e("]]]]", "onMeasure maxWidth: " + maxWidth);
-        Log.e("]]]]", "onMeasure maxHeight: " + maxHeight);
 
         int dWidth = drawable.getIntrinsicWidth();
         int dHeight = drawable.getIntrinsicHeight();
         float ratio = ((float) dWidth) / dHeight;
-        Log.e("]]]]", "onMeasure dWidth: " + dWidth);
-        Log.e("]]]]", "onMeasure dHeight: " + dHeight);
 
         int resultWidth, resultHeight;
         // Ratio > 0.78 -> use maxWidth
@@ -222,26 +215,6 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
                 resultHeight = dHeight;
             }
         }
-
-//            int width = Math.min(Math.max(dWidth, getSuggestedMinimumWidth()), maxWidth);
-//            int height = (int) (width / ratio);
-//
-//            height = Math.min(Math.max(height, getSuggestedMinimumHeight()), maxHeight);
-//            width = (int) (height * ratio);
-//
-//            if (width > maxWidth) {
-//                width = maxWidth;
-//                height = (int) (width / ratio);
-//            }
-//
-//            if (dWidth < minWidth) {
-//                width = minWidth;
-//                height = (int) (width / ratio);
-//                Log.e("]]]]", "onMeasure minWidth: " + width);
-//            }
-
-        Log.e("]]]]", "onMeasure width: " + resultWidth);
-        Log.e("]]]]", "onMeasure height: " + resultHeight);
         setMeasuredDimension(resultWidth, resultHeight);
     }
 }
