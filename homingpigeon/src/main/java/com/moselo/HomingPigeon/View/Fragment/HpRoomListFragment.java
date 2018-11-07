@@ -56,8 +56,7 @@ public class HpRoomListFragment extends Fragment {
     private FrameLayout flSetupContainer;
     private LinearLayout llRoomEmpty;
     private TextView tvSelectionCount;
-    private ImageView ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
-    private FloatingActionButton fabNewChat;
+    private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
 
     private RecyclerView rvContactList;
     private LinearLayoutManager llm;
@@ -172,11 +171,11 @@ public class HpRoomListFragment extends Fragment {
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         tvSelectionCount = view.findViewById(R.id.tv_selection_count);
+        ivButtonNewChat = view.findViewById(R.id.iv_button_new_chat);
         ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
         ivButtonMute = view.findViewById(R.id.iv_button_mute);
         ivButtonDelete = view.findViewById(R.id.iv_button_delete);
         ivButtonMore = view.findViewById(R.id.iv_button_more);
-        fabNewChat = view.findViewById(R.id.fab_new_chat);
         rvContactList = view.findViewById(R.id.rv_contact_list);
 
         flSetupContainer.setVisibility(View.GONE);
@@ -193,7 +192,7 @@ public class HpRoomListFragment extends Fragment {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         clButtonSearch.setOnClickListener(v -> ((HpRoomListActivity) activity).showSearchChat());
-        fabNewChat.setOnClickListener(v -> openNewChatActivity());
+        ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
         ivButtonMute.setOnClickListener(v -> {
 
@@ -361,13 +360,15 @@ public class HpRoomListFragment extends Fragment {
             //ini buat munculin setup dialog pas pertama kali buka apps
             if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
                 flSetupContainer.setVisibility(View.VISIBLE);
+                ivButtonNewChat.setVisibility(View.GONE);
             }
         }
 
         @Override
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
-            fabNewChat.show();
+            flSetupContainer.setVisibility(View.GONE);
+            ivButtonNewChat.setVisibility(View.VISIBLE);
             if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
                 HpDataManager.getInstance().setRoomListSetupFinished();
             }
@@ -379,40 +380,44 @@ public class HpRoomListFragment extends Fragment {
             //sebagai tanda kalau udah manggil api (Get message from API)
             vm.setDoneFirstSetup(true);
 
-            List<HpMessageEntity> tempMessage = new ArrayList<>();
-            for (HpMessageModel message : response.getMessages()) {
-                try {
-                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
-                    tempMessage.add(HpChatManager.getInstance().convertToEntity(temp));
-                } catch (GeneralSecurityException e) {
-                    e.printStackTrace();
-                    Log.e(TAG, "onSuccess: ", e);
+            if (response.getMessages().size() > 0) {
+                List<HpMessageEntity> tempMessage = new ArrayList<>();
+                for (HpMessageModel message : response.getMessages()) {
+                    try {
+                        HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                        tempMessage.add(HpChatManager.getInstance().convertToEntity(temp));
+                    } catch (GeneralSecurityException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "onSuccess: ", e);
+                    }
                 }
-            }
 
-            //hasil dari API disimpen ke dalem database
-            HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
-                @Override
-                public void onInsertFinished() {
-                    //setelah selesai insert database, kita panggil fungsi buat ambil data terbaru dari
-                    //database dan animasiin perubahannya
-                    getDatabaseAndAnimateResult();
-                }
-            });
+                //hasil dari API disimpen ke dalem database
+                HpDataManager.getInstance().insertToDatabase(tempMessage, false, new HpDatabaseListener() {
+                    @Override
+                    public void onInsertFinished() {
+                        //setelah selesai insert database, kita panggil fungsi buat ambil data terbaru dari
+                        //database dan animasiin perubahannya
+                        getDatabaseAndAnimateResult();
+                    }
+                });
+            }
         }
 
         @Override
         public void onError(HpErrorModel error) {
             super.onError(error);
-            if (BuildConfig.DEBUG) Log.e(TAG, "onError: " + error.getMessage());
+            Log.e(TAG, "onError: " + error.getMessage());
             flSetupContainer.setVisibility(View.GONE);
+            ivButtonNewChat.setVisibility(View.VISIBLE);
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
-            if (BuildConfig.DEBUG) Log.e(TAG, "onError: " + errorMessage);
+            Log.e(TAG, "onError: " + errorMessage);
             flSetupContainer.setVisibility(View.GONE);
+            ivButtonNewChat.setVisibility(View.VISIBLE);
         }
     };
 

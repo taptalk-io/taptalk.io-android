@@ -88,8 +88,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     private FrameLayout flMessageList;
     private ConstraintLayout clEmptyChat, clReply, clChatComposer;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend;
-    private ImageButton ibToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvReplySender, tvReplyBody, tvBadgeUnread;
     private View vStatusBadge;
@@ -234,7 +233,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send);
-        ibToBottom = (ImageButton) findViewById(R.id.ib_to_bottom);
+        ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
         civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
@@ -305,10 +304,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
-                    ibToBottom.setVisibility(View.INVISIBLE);
+                    ivToBottom.setVisibility(View.INVISIBLE);
                 } else {
                     vm.setOnBottom(false);
-                    ibToBottom.setVisibility(View.VISIBLE);
+                    ivToBottom.setVisibility(View.VISIBLE);
                 }
             });
         }
@@ -325,7 +324,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
-        ibToBottom.setOnClickListener(v -> scrollToBottom());
+        ivToBottom.setOnClickListener(v -> scrollToBottom());
     }
 
     private void initHelper() {
@@ -480,7 +479,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
-        ibToBottom.setVisibility(View.INVISIBLE);
+        ivToBottom.setVisibility(View.INVISIBLE);
         vm.clearUnreadMessages();
         updateUnreadCount();
     }
