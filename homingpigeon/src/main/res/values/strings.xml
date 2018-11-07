@@ -87,6 +87,8 @@
     <string name="failed_to_load_image">Failed to load image.</string>
     <string name="message_send_failed">Failed to send, tap to retry</string>
     <string name="error_message_group_name_empty">Please enter a group name.</string>
+    <string name="internet_connection_lost">Internet Connection Lost</string>
+    <string name="please_check_your_connection">Please check your connection</string>
     <string name="no_internet_show_error">Oops! It seems like you are offline, please check your connection.</string>
     <string name="api_call_return_error">Oops! there is an error, please try again later.</string>
 

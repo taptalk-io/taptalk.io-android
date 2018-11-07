@@ -17,15 +17,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
-import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Listener.HpSocketListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
@@ -34,12 +35,13 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
 
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ADDED_CONTACT;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
 
 public class HpNewContactActivity extends HpBaseActivity {
 
     private static final String TAG = HpNewContactActivity.class.getSimpleName();
 
-    private ConstraintLayout clSearchResult, clButtonAction;
+    private ConstraintLayout clSearchResult, clButtonAction, clConnectionLost;
     private LinearLayout llEmpty;
     private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage;
     private CircleImageView civAvatar;
@@ -56,6 +58,7 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         initViewModel();
         initView();
+        initListener();
         HpUtils.getInstance().showKeyboard(this, etSearch);
     }
 
@@ -67,6 +70,7 @@ public class HpNewContactActivity extends HpBaseActivity {
     protected void initView() {
         clSearchResult = findViewById(R.id.cl_search_result);
         clButtonAction = findViewById(R.id.cl_button_action);
+        clConnectionLost = findViewById(R.id.cl_connection_lost);
         llEmpty = findViewById(R.id.ll_empty);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonCancel = findViewById(R.id.iv_button_cancel);
@@ -87,6 +91,10 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonCancel.setOnClickListener(v -> clearSearch());
+    }
+
+    private void initListener() {
+        HpConnectionManager.getInstance().addSocketListener(socketListener);
     }
 
     private boolean onSearchEditorClicked() {
@@ -111,6 +119,9 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvCategory.setVisibility(View.GONE);
         clButtonAction.setVisibility(View.GONE);
         llEmpty.setVisibility(View.GONE);
+        clConnectionLost.setVisibility(View.GONE);
+        ivButtonCancel.setVisibility(View.VISIBLE);
+        pbSearch.setVisibility(View.INVISIBLE);
     }
 
     private void showResultNotFound() {
@@ -122,6 +133,19 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvCategory.setVisibility(View.GONE);
         clButtonAction.setVisibility(View.GONE);
         llEmpty.setVisibility(View.VISIBLE);
+        clConnectionLost.setVisibility(View.GONE);
+    }
+
+    private void showConnectionLost() {
+        tvSearchUsernameGuide.setVisibility(View.GONE);
+        ivExpertCover.setVisibility(View.GONE);
+        civAvatar.setVisibility(View.GONE);
+        ivAvatarIcon.setVisibility(View.GONE);
+        tvUserName.setVisibility(View.GONE);
+        tvCategory.setVisibility(View.GONE);
+        clButtonAction.setVisibility(View.GONE);
+        llEmpty.setVisibility(View.GONE);
+        clConnectionLost.setVisibility(View.VISIBLE);
     }
 
     private void showUserView() {
@@ -133,6 +157,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvCategory.setVisibility(View.GONE);
         clButtonAction.setVisibility(View.VISIBLE);
         llEmpty.setVisibility(View.GONE);
+        clConnectionLost.setVisibility(View.GONE);
 
         // Remove bottom constraint from avatar
         ConstraintSet constraintSet = new ConstraintSet();
@@ -164,6 +189,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvCategory.setVisibility(View.VISIBLE);
         clButtonAction.setVisibility(View.VISIBLE);
         llEmpty.setVisibility(View.GONE);
+        clConnectionLost.setVisibility(View.GONE);
 
         // Set bottom constraint from avatar to cover image
         ConstraintSet constraintSet = new ConstraintSet();
@@ -252,6 +278,7 @@ public class HpNewContactActivity extends HpBaseActivity {
                 searchTimer.start();
             } else {
                 showEmpty();
+                vm.setPendingSearch("");
             }
         }
 
@@ -326,32 +353,27 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onError(HpErrorModel error) {
-            if (error.getCode().equals(String.valueOf(HpDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED))) {
+            if (error.getCode().equals(String.valueOf(API_PARAMETER_VALIDATION_FAILED))) {
                 // User not found
                 showResultNotFound();
                 endLoading();
             } else {
-                if (BuildConfig.DEBUG) {
-                    new HomingPigeonDialog.Builder(HpNewContactActivity.this)
-                            .setTitle(getString(R.string.error))
-                            .setMessage(error.getMessage())
-                            .setPrimaryButtonTitle(getString(R.string.ok))
-                            .setPrimaryButtonListener(true, v -> endLoading())
-                            .show();
-                }
+                // Other errors
+                new HomingPigeonDialog.Builder(HpNewContactActivity.this)
+                        .setTitle(getString(R.string.error))
+                        .setMessage(error.getMessage())
+                        .setPrimaryButtonTitle(getString(R.string.ok))
+                        .setPrimaryButtonListener(true, v -> endLoading())
+                        .show();
             }
         }
 
         @Override
         public void onError(String errorMessage) {
-            // TODO: 25 October 2018 RE-CALL API IF INTERNET IS CONNECTED
-            if (BuildConfig.DEBUG) {
-                new HomingPigeonDialog.Builder(HpNewContactActivity.this)
-                        .setTitle(getString(R.string.error))
-                        .setMessage(errorMessage)
-                        .setPrimaryButtonTitle(getString(R.string.ok))
-                        .setPrimaryButtonListener(true, v -> endLoading())
-                        .show();
+            if (!HpNetworkStateManager.getInstance().hasNetworkConnection(HpNewContactActivity.this)) {
+                // No internet connection
+                vm.setPendingSearch(etSearch.getText().toString());
+                showConnectionLost();
             }
         }
     };
@@ -390,6 +412,18 @@ public class HpNewContactActivity extends HpBaseActivity {
         public void onError(String errorMessage) {
             enableInput();
             Toast.makeText(HpNewContactActivity.this, getString(R.string.error_message_general), Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private HpSocketListener socketListener = new HpSocketListener() {
+        @Override
+        public void onSocketConnected() {
+            // Resume pending search on connect
+            if (vm.getPendingSearch().isEmpty()) {
+                return;
+            }
+            HpDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), getUserView);
+            vm.setPendingSearch("");
         }
     };
 }

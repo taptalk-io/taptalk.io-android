@@ -9,6 +9,7 @@ import com.moselo.HomingPigeon.Model.HpUserModel;
 public class HpNewContactViewModel extends AndroidViewModel {
 
     private HpUserModel searchResult;
+    private String pendingSearch;
 
     public HpNewContactViewModel(@NonNull Application application) {
         super(application);
@@ -20,5 +21,13 @@ public class HpNewContactViewModel extends AndroidViewModel {
 
     public void setSearchResult(HpUserModel searchResult) {
         this.searchResult = searchResult;
+    }
+
+    public String getPendingSearch() {
+        return pendingSearch;
+    }
+
+    public void setPendingSearch(String pendingSearch) {
+        this.pendingSearch = pendingSearch;
     }
 }
