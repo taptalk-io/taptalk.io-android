@@ -18,6 +18,7 @@ import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
 
@@ -245,6 +246,7 @@ public class HpLoginActivity extends HpBaseActivity {
             HpDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
             HpDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
             HpDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
+            registerFcmToken();
 
             HpDataManager.getInstance().saveActiveUser(response.getUser());
             runOnUiThread(() -> {
@@ -272,5 +274,9 @@ public class HpLoginActivity extends HpBaseActivity {
                     progressBar.setVisibility(View.GONE);
                     tvSignIn.setVisibility(View.VISIBLE);
                 }).show();
+    }
+
+    private void registerFcmToken(){
+        new Thread(() -> HpDataManager.getInstance().registerFcmTokenToServer(HpDataManager.getInstance().getFirebaseToken(), new HpDefaultDataView<HpCommonResponse>() {})).start();
     }
 }

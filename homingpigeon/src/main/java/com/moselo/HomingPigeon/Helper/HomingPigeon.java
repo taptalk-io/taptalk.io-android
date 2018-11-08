@@ -151,7 +151,6 @@ public class HomingPigeon {
     public static void saveFirebaseToken(String newFirebaseToken) {
         if (!HpDataManager.getInstance().checkFirebaseToken(newFirebaseToken)) {
             HpDataManager.getInstance().saveFirebaseToken(newFirebaseToken);
-            HpDataManager.getInstance().registerFcmTokenToServer(newFirebaseToken, new HpDefaultDataView<HpCommonResponse>() {});
         }
     }
 

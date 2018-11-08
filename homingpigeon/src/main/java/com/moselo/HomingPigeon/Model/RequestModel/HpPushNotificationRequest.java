@@ -21,7 +21,7 @@ public class HpPushNotificationRequest {
         //apnToken di biarin kosong karena di android cman pake fcmToken
         //apnToken itu buat di iOS
         //kalau apn Token boleh ga dikirim, di hapus aja
-        return new HpPushNotificationRequest(fcmToken, "");
+        return new HpPushNotificationRequest(fcmToken, null);
     }
 
     public String getFcmToken() {
