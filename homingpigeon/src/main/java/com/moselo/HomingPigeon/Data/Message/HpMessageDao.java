@@ -8,12 +8,17 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import retrofit2.http.DELETE;
+
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
 
 @Dao
 public interface HpMessageDao {
 
     int numOfItem = NUM_OF_ITEM;
+
+    @DELETE
+    void delete(List<HpMessageEntity> messageEntities);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(HpMessageEntity messageEntity);

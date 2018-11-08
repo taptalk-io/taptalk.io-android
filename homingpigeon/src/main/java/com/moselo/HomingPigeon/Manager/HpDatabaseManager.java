@@ -52,6 +52,13 @@ public class HpDatabaseManager {
      * ==============================================================
      */
 
+    public void deleteMessage(List<HpMessageEntity> messageEntities) {
+        if (null != messageRepository)
+            messageRepository.delete(messageEntities);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public void insert(HpMessageEntity messageEntity) {
         if (null != messageRepository)
             messageRepository.insert(messageEntity);

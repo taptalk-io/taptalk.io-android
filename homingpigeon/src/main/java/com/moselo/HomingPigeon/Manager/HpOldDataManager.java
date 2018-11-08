@@ -7,4 +7,8 @@ public class HpOldDataManager {
     public static HpOldDataManager getInstance() {
         return null == instance ? instance = new HpOldDataManager() : instance;
     }
+
+    public void startAutoCleanProcess() {
+        
+    }
 }
