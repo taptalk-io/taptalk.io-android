@@ -270,8 +270,8 @@ public class HpDataManager {
     }
 
     // Message
-    public void deleteMessage(List<HpMessageEntity> messageEntities) {
-        HpDatabaseManager.getInstance().deleteMessage(messageEntities);
+    public void deleteMessage(List<HpMessageEntity> messageEntities, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().deleteMessage(messageEntities, listener);
     }
 
     public void insertToDatabase(HpMessageEntity messageEntity) {

@@ -26,6 +26,7 @@ import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
+import com.moselo.HomingPigeon.Manager.HpOldDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
@@ -80,8 +81,11 @@ public class HomingPigeon {
         HomingPigeon.appContext = appContext;
         clientAppName = appContext.getResources().getString(R.string.app_name);
 
-        if (HpDataManager.getInstance().checkAccessTokenAvailable())
+        if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
             HpConnectionManager.getInstance().connect();
+            Log.e("HpOldDataManager", "HomingPigeon: ");
+            HpOldDataManager.getInstance().startAutoCleanProcess();
+        }
 
         HpDataManager.getInstance().updateSendingMessageToFailed();
 

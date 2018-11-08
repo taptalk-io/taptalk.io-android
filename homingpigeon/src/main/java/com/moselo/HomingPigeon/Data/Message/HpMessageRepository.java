@@ -25,8 +25,11 @@ public class HpMessageRepository {
         allMessages = messageDao.getAllMessage();
     }
 
-    public void delete(List<HpMessageEntity> messageEntities) {
-        new Thread(() -> messageDao.delete(messageEntities)).start();
+    public void delete(List<HpMessageEntity> messageEntities, HpDatabaseListener listener) {
+        new Thread(() -> {
+            messageDao.delete(messageEntities);
+            listener.onDeleteFinished();
+        }).start();
     }
 
     public void insert(HpMessageEntity message) {
