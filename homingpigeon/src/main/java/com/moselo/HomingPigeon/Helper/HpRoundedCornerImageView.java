@@ -8,6 +8,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.R;
 
@@ -49,11 +50,10 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
         }
         if (attributeSet != null) {
             TypedArray typedArray = getContext().obtainStyledAttributes(attributeSet, R.styleable.HpRoundedCornerImageView);
-            // FIXME: 1.1f multiplier used for radius correction
-            topLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_topLeftRadius, topLeftRad) * 1.1f;
-            topRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_topRightRadius, topRightRad) * 1.1f;
-            bottomLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomLeftRadius, bottomLeftRad) * 1.1f;
-            bottomRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomRightRadius, bottomRightRad) * 1.1f;
+            topLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_topLeftRadius, topLeftRad);
+            topRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_topRightRadius, topRightRad);
+            bottomLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomLeftRadius, bottomLeftRad);
+            bottomRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomRightRadius, bottomRightRad);
             minWidth = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minWidth, minWidth);
             minHeight = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minHeight, minHeight);
             minHeight = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minHeight, minHeight);
@@ -64,43 +64,43 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
 
     public void setCornerRadius(float radius) {
         this.attributeSet = null;
-        this.topLeftRad = radius * 1.1f;
-        this.topRightRad = radius * 1.1f;
-        this.bottomLeftRad = radius * 1.1f;
-        this.bottomRightRad = radius * 1.1f;
+        this.topLeftRad = radius;
+        this.topRightRad = radius;
+        this.bottomLeftRad = radius;
+        this.bottomRightRad = radius;
         onSizeChanged(w, h, oldW, oldH);
     }
 
     public void setCornerRadius(float topLeftRad, float topRightRad, float bottomLeftRad, float bottomRightRad) {
         this.attributeSet = null;
-        this.topLeftRad = topLeftRad * 1.1f;
-        this.topRightRad = topRightRad * 1.1f;
-        this.bottomLeftRad = bottomLeftRad * 1.1f;
-        this.bottomRightRad = bottomRightRad * 1.1f;
+        this.topLeftRad = topLeftRad;
+        this.topRightRad = topRightRad;
+        this.bottomLeftRad = bottomLeftRad;
+        this.bottomRightRad = bottomRightRad;
         onSizeChanged(w, h, oldW, oldH);
     }
 
     public void setTopLeftRadius(float topLeftRad) {
         this.attributeSet = null;
-        this.topLeftRad = topLeftRad * 1.1f;
+        this.topLeftRad = topLeftRad;
         onSizeChanged(w, h, oldW, oldH);
     }
 
     public void setTopRightRadius(float topRightRad) {
         this.attributeSet = null;
-        this.topRightRad = topRightRad * 1.1f;
+        this.topRightRad = topRightRad;
         onSizeChanged(w, h, oldW, oldH);
     }
 
     public void setBottomLeftRadius(float bottomLeftRad) {
         this.attributeSet = null;
-        this.bottomLeftRad = bottomLeftRad * 1.1f;
+        this.bottomLeftRad = bottomLeftRad;
         onSizeChanged(w, h, oldW, oldH);
     }
 
     public void setBottomRightRadius(float bottomRightRad) {
         this.attributeSet = null;
-        this.bottomRightRad = bottomRightRad * 1.1f;
+        this.bottomRightRad = bottomRightRad;
         onSizeChanged(w, h, oldW, oldH);
     }
 
@@ -177,33 +177,40 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
         // Calculate the most appropriate size for the view. Take into
         // account minWidth, minHeight, maxWith, maxHeight and allowed size
         // for the view.
-        int maxWidth = wMode == MeasureSpec.AT_MOST
-                ? Math.min(MeasureSpec.getSize(widthMeasureSpec), this.maxWidth)
-                : this.maxWidth;
-        int maxHeight = hMode == MeasureSpec.AT_MOST
-                ? Math.min(MeasureSpec.getSize(heightMeasureSpec), this.maxHeight)
-                : this.maxHeight;
+//        int maxWidth = wMode == MeasureSpec.AT_MOST
+//                ? Math.min(MeasureSpec.getSize(widthMeasureSpec), this.maxWidth)
+//                : this.maxWidth;
+//        int maxHeight = hMode == MeasureSpec.AT_MOST
+//                ? Math.min(MeasureSpec.getSize(heightMeasureSpec), this.maxHeight)
+//                : this.maxHeight;
 
-        // FIXME: 7 November 2018 minWidth AND minHeight ARE NOT WORKING, DRAWABLE DIMENSIONS ALWAYS RETURN SCREEN SIZE
+        // FIXME: 7 November 2018 minWidth AND minHeight ARE NOT WORKING, DRAWABLE DIMENSIONS RETURN WRONG SIZE
         int dWidth = drawable.getIntrinsicWidth();
         int dHeight = drawable.getIntrinsicHeight();
         float ratio = ((float) dWidth) / dHeight;
+        Log.e("]]]]", "dWidth: " + dWidth);
+        Log.e("]]]]", "dHeight: " + dHeight);
 
         int resultWidth, resultHeight;
         if (ratio > ((float) maxWidth / minHeight)) {
             // Image width is higher than maxWidth, but height is lower than minHeight
             // Set width to maxWidth, height to minHeight and crop image
+            Log.e("]]]]", "ratio >>>: " + ratio);
+            Log.e("]]]]", "ratio limit: " + ((float) maxWidth / minHeight));
             resultWidth = maxWidth;
             resultHeight = minHeight;
             setScaleType(ScaleType.CENTER_CROP);
         } else if (ratio < ((float) minWidth / maxHeight)) {
             // Image height is higher than maxHeight, but width is lower than minWidth
             // Set width to minWidth, height to maxHeight and crop image
+            Log.e("]]]]", "ratio <<<: " + ratio);
+            Log.e("]]]]", "ratio limit: " + ((float) minWidth / maxHeight));
             resultWidth = minWidth;
             resultHeight = maxHeight;
             setScaleType(ScaleType.CENTER_CROP);
         } else if (ratio > dimensionRatio) {
             // Width ratio is higher than limit -> use maxWidth
+            Log.e("]]]]", "ratio >: " + ratio);
             if (dWidth > maxWidth) {
                 resultWidth = maxWidth;
                 resultHeight = (int) (resultWidth / ratio);
@@ -217,6 +224,7 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             setScaleType(ScaleType.FIT_CENTER);
         } else {
             // Height ratio is higher than limit -> use maxHeight
+            Log.e("]]]]", "ratio <: " + ratio);
             if (dHeight > maxHeight) {
                 resultHeight = maxHeight;
                 resultWidth = (int) (resultHeight * ratio);
@@ -229,6 +237,8 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             }
             setScaleType(ScaleType.FIT_CENTER);
         }
+        Log.e("]]]]", "resultWidth: " + resultWidth);
+        Log.e("]]]]", "resultHeight: " + resultHeight);
         setMeasuredDimension(resultWidth, resultHeight);
     }
 }

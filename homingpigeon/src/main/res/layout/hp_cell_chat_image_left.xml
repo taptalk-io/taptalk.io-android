@@ -43,13 +43,13 @@
             android:foreground="@drawable/hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp"
             android:maxWidth="234dp"
             android:maxHeight="300dp"
-            app:bottomLeftRadius="8dp"
-            app:bottomRightRadius="8dp"
+            app:bottomLeftRadius="9dp"
+            app:bottomRightRadius="9dp"
             app:dimensionRatio="0.78"
             app:minHeight="100dp"
             app:minWidth="78dp"
             app:topLeftRadius="1dp"
-            app:topRightRadius="8dp"
+            app:topRightRadius="9dp"
             tools:src="@drawable/hp_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp" />
 
         <FrameLayout
