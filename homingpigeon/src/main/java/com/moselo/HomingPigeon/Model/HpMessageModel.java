@@ -11,9 +11,10 @@ import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
 
 import java.security.GeneralSecurityException;
 
+/**
+ * If this class has more attribute, don't forget to add it to copyMessageModel function
+ */
 public class HpMessageModel {
-    // TODO: 22/10/18 if this class have more attribute, dont forget to add it to CopyMessageModel function
-
     @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
     @NonNull @JsonProperty("localID") private String localID;
     @JsonProperty("room") private HpRoomModel room;

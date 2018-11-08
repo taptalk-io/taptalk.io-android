@@ -18,7 +18,14 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class HpTimeFormatter {
-    public static final List<Long> times = Arrays.asList(
+
+    private static HpTimeFormatter instance;
+
+    public static HpTimeFormatter getInstance() {
+        return null == instance ? instance = new HpTimeFormatter() : instance;
+    }
+
+    private static final List<Long> times = Arrays.asList(
             TimeUnit.DAYS.toMillis(365),
             TimeUnit.DAYS.toMillis(30),
             TimeUnit.DAYS.toMillis(7),
@@ -27,7 +34,7 @@ public class HpTimeFormatter {
             TimeUnit.MINUTES.toMillis(1),
             TimeUnit.SECONDS.toMillis(1));
 
-    public static String durationString(long timestamp) {
+    public String durationString(long timestamp) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();
         Calendar past = Calendar.getInstance();
@@ -48,7 +55,7 @@ public class HpTimeFormatter {
         } else if (timeGap <= midnightTimeGap) {
             return formatClock(timestamp);
         } else if (timeGap <= HpTimeFormatter.times.get(3) + midnightTimeGap) {
-            return "Yesterday";
+            return HomingPigeon.appContext.getString(R.string.yesterday);
         } else if (timeGap <= HpTimeFormatter.times.get(3) * 6 + midnightTimeGap) {
             return formatDay(timestamp);
         } else {
@@ -56,7 +63,7 @@ public class HpTimeFormatter {
         }
     }
 
-    public static String durationChatString(Context context, long timestamp) {
+    public String durationChatString(Context context, long timestamp) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();
         Calendar past = Calendar.getInstance();
@@ -75,25 +82,79 @@ public class HpTimeFormatter {
         if (timestamp == 0) {
             return "";
         } else if (timeGap <= midnightTimeGap) {
-            return sentAt+" "+formatClock(timestamp);
+            return String.format("%s %s", sentAt, formatClock(timestamp));
         } else if (timeGap <= HpTimeFormatter.times.get(3) + midnightTimeGap) {
-            return "Sent Yesterday at "+formatClock(timestamp);
+            return String.format(context.getString(R.string.sent_yesterday_at), formatClock(timestamp));
         } else {
-            return sentAt+" "+formatDate(timestamp)+" "+formatClock(timestamp);
+            return String.format("%s %s %s", sentAt, formatDate(timestamp), formatClock(timestamp));
         }
     }
 
-    public static String formatClock(long timestamp) {
+    public String getLastActivityString(Context context, long timestamp) {
+        long timeGap;
+        long timeNow = Calendar.getInstance().getTimeInMillis();
+        Calendar past = Calendar.getInstance();
+        past.setTime(new Date(timestamp));
+        timeGap = timeNow - past.getTimeInMillis();
+
+        long midnightTimeGap;
+        Calendar midnightToday = Calendar.getInstance();
+        midnightToday.setTime(new Date(timeNow));
+        midnightToday.set(Calendar.HOUR, -12);
+        midnightToday.set(Calendar.MINUTE, 0);
+        midnightToday.set(Calendar.SECOND, 0);
+        midnightTimeGap = timeNow - midnightToday.getTimeInMillis();
+
+        if (timestamp == 0) {
+            return "";
+        } else if (timeGap <= midnightTimeGap) {
+            if (timeGap < times.get(5)) {
+                return context.getString(R.string.last_seen_recently);
+            } else if (timeGap < times.get(4)) {
+                long numberOfMinutes = timeGap / times.get(5);
+                if (timeGap < TimeUnit.MINUTES.toMillis(2))
+                    return String.format(Locale.getDefault(), context.getString(R.string.minute_ago), numberOfMinutes);
+                else
+                    return String.format(Locale.getDefault(), context.getString(R.string.minutes_ago), numberOfMinutes);
+            } else {
+                long numberOfHour = timeGap / times.get(4);
+                if (timeGap < TimeUnit.HOURS.toMillis(2))
+                    return String.format(Locale.getDefault(), context.getString(R.string.hour_ago), numberOfHour);
+                else
+                    return String.format(Locale.getDefault(), context.getString(R.string.hours_ago), numberOfHour);
+            }
+        } else if (timeGap <= times.get(3) + midnightTimeGap) {
+            Date yesterdayTime = new Date(timestamp);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            String time = sdf.format(yesterdayTime);
+            return String.format(context.getString(R.string.last_seen_yesterday_at), time);
+        } else if (timeGap <= times.get(3) * 6 + midnightTimeGap) {
+            long numberOfDays = timeGap / times.get(3);
+            if (timeGap < TimeUnit.DAYS.toMillis(2))
+                return String.format(Locale.getDefault(), context.getString(R.string.day_ago), numberOfDays);
+            else
+                return String.format(Locale.getDefault(), context.getString(R.string.days_ago), numberOfDays);
+        } else if (timeGap <= times.get(2)) {
+            return context.getString(R.string.last_seen_a_week_ago);
+        } else {
+            Date date = new Date(timestamp);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+            String dateString = sdf.format(date);
+            return String.format(context.getString(R.string.last_seen), dateString);
+        }
+    }
+
+    public String formatClock(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
 
-    public static String formatDate(long timestamp) {
+    public String formatDate(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
 
-    public static String formatDay(long timestamp) {
+    public String formatDay(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("EEE", Locale.getDefault());
         return timeSdf.format(timestamp);
     }

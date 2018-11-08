@@ -19,4 +19,6 @@ public abstract class HpChatListener implements HomingPigeonChatInterface {
     @Override public void onLayoutLoaded(HpMessageModel message) {}
     @Override public void onBubbleExpanded() {}
     @Override public void onOutsideClicked() {}
+    @Override public void onUserOnline() {}
+    @Override public void onUserOffline(Long lastActivity) {}
 }

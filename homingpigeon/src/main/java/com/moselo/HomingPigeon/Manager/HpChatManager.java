@@ -139,8 +139,16 @@ public class HpChatManager {
                 case kSocketAuthentication:
                     break;
                 case kSocketUserOnline:
+                    // TODO: 2 November 2018 GET EMIT DATA
+                    for (HpChatListener listener : chatListeners) {
+                        listener.onUserOnline();
+                    }
                     break;
                 case kSocketUserOffline:
+                    // TODO: 2 November 2018 GET EMIT DATA
+                    for (HpChatListener listener : chatListeners) {
+                        listener.onUserOffline(System.currentTimeMillis());
+                    }
                     break;
             }
         }
@@ -387,10 +395,8 @@ public class HpChatManager {
 
         new Thread(() -> {
             // Encode image to base 64
-            Log.e(TAG, "sendImageMessage: encode started");
             // TODO: 1 November 2018 UPDATE ENCODE METHOD
             String encodedImage = HpImageEncoder.getInstance().encodeToBase64(imageUri, maxImageSize, activity);
-            Log.e(TAG, "sendImageMessage: encode finished " + encodedImage);
             messageModel.setBody(encodedImage);
             // TODO: 31 October 2018 SEND MESSAGE TO SERVER
         }).start();

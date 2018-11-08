@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="#f0f0f0"
+    android:background="@color/white_f3"
     tools:context=".View.Activity.HpChatActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -47,12 +47,12 @@
             android:id="@+id/v_room_status_badge"
             android:layout_width="7dp"
             android:layout_height="7dp"
-            android:background="@drawable/hp_bg_circle_vibrantgreen"
             app:layout_constraintBottom_toBottomOf="@id/tv_room_status"
             app:layout_constraintEnd_toStartOf="@id/tv_room_status"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_room_status" />
+            app:layout_constraintTop_toTopOf="@id/tv_room_status"
+            tools:background="@drawable/hp_bg_circle_vibrantgreen" />
 
         <TextView
             android:id="@+id/tv_room_status"
@@ -166,10 +166,10 @@
         android:id="@+id/fl_message_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
         tools:background="@color/transparent_charcoal">
-        android:visibility="gone"
 
         <com.moselo.HomingPigeon.Helper.HpChatRecyclerView
             android:id="@+id/rv_message_list"
@@ -222,7 +222,7 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/hp_bg_easterpurple_rounded_8dp_0dp_8dp_0dp"
+                android:background="@drawable/hp_bg_easterpurple_rounded_4dp_0dp_4dp_0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_cancel_reply"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -356,16 +356,14 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ImageButton
-        android:id="@+id/ib_to_bottom"
+    <ImageView
+        android:id="@+id/iv_to_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/hp_bg_circle_f3f3f3"
-        android:clickable="true"
-        android:elevation="4dp"
-        android:focusable="true"
+        android:background="@drawable/hp_bg_white_circle_button_ripple"
+        android:elevation="8dp"
         android:padding="15dp"
         android:src="@drawable/hp_ic_scroll_to_bottom_chat"
         android:visibility="invisible"
@@ -388,9 +386,9 @@
         android:textSize="11dp"
         android:translationY="-14dp"
         android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="@id/ib_to_bottom"
-        app:layout_constraintStart_toStartOf="@id/ib_to_bottom"
-        app:layout_constraintTop_toTopOf="@+id/ib_to_bottom"
+        app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
+        app:layout_constraintStart_toStartOf="@id/iv_to_bottom"
+        app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
         tools:text="1" />
 
 </android.support.constraint.ConstraintLayout>

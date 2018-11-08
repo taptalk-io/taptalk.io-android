@@ -19,4 +19,6 @@ public interface HomingPigeonChatInterface {
     void onLayoutLoaded(HpMessageModel message);
     void onBubbleExpanded();
     void onOutsideClicked();
+    void onUserOnline();
+    void onUserOffline(Long lastActivity);
 }

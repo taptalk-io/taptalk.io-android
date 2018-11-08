@@ -167,7 +167,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 vReplyBackground.setVisibility(View.GONE);
             }
 
-            checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, tvUsername, civAvatar, ivMessageStatus, ivSending);
+            checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, tvUsername, civAvatar, ivMessageStatus, ivReply, ivSending);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
 
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
@@ -208,10 +208,9 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
         @Override
         protected void onBind(HpMessageModel item, int position) {
-            tvMessageStatus.setText(HpTimeFormatter.durationString(item.getCreated()));
+            tvMessageStatus.setText(HpTimeFormatter.getInstance().durationString(item.getCreated()));
 
-            checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivSending);
-            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+            checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivReply, ivSending);
 
             if (!item.getBody().isEmpty()) {
                 GlideApp.with(itemView.getContext()).load(item.getBody()).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).listener(new RequestListener<Drawable>() {
@@ -256,7 +255,9 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             }
 
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
+            flBubble.setOnClickListener(v -> {
+                // TODO: 5 November 2018 VIEW IMAGE
+            });
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
     }
@@ -305,45 +306,40 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     private void checkAndUpdateMessageStatus(HpMessageModel item, View itemView, FrameLayout flBubble,
                                              TextView tvMessageStatus, @Nullable TextView tvUsername,
                                              @Nullable CircleImageView civAvatar, @Nullable ImageView ivMessageStatus,
-                                             @Nullable ImageView ivSending) {
+                                             @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
+            // Set timestamp text on non-text or expanded bubble
+            if (item.getType() != TYPE_TEXT || item.isExpanded()) {
+                tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.getInstance().formatDate(item.getCreated())));
+            }
             // Message has been read
-            if (null != item.getIsRead() && item.getIsRead() && item.isExpanded()) {
-                tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatDate(item.getCreated())));
+            if (null != item.getIsRead() && item.getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
-
                 flBubble.setTranslationX(0);
-                ivMessageStatus.setTranslationX(0);
                 ivMessageStatus.setVisibility(View.VISIBLE);
-                tvMessageStatus.setVisibility(View.GONE);
                 ivSending.setAlpha(0f);
-            } else if (null != item.getIsRead() && item.getIsRead() && !item.isExpanded()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
-
-                flBubble.setTranslationX(0);
-                ivMessageStatus.setTranslationX(0);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                tvMessageStatus.setVisibility(View.GONE);
-                ivSending.setAlpha(0f);
+                // Show status text and reply button for non-text bubbles
+                if (item.getType() == TYPE_TEXT) {
+                    tvMessageStatus.setVisibility(View.GONE);
+                } else if (null != ivReply) {
+                    tvMessageStatus.setVisibility(View.VISIBLE);
+                    ivReply.setVisibility(View.VISIBLE);
+                }
             }
             // Message is delivered
-            else if (null != item.getDelivered() && item.getDelivered() && item.isExpanded()) {
-                tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatDate(item.getCreated())));
+            else if (null != item.getDelivered() && item.getDelivered()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
-
                 flBubble.setTranslationX(0);
-                ivMessageStatus.setTranslationX(0);
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvMessageStatus.setVisibility(View.GONE);
                 ivSending.setAlpha(0f);
-            } else if (null != item.getDelivered() && item.getDelivered() && !item.isExpanded()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
-
-                flBubble.setTranslationX(0);
-                ivMessageStatus.setTranslationX(0);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                tvMessageStatus.setVisibility(View.GONE);
-                ivSending.setAlpha(0f);
+                // Show status text and reply button for non-text bubbles
+                if (item.getType() == TYPE_TEXT) {
+                    tvMessageStatus.setVisibility(View.GONE);
+                } else if (null != ivReply) {
+                    tvMessageStatus.setVisibility(View.VISIBLE);
+                    ivReply.setVisibility(View.VISIBLE);
+                }
             }
             // Message failed to send
             else if (null != item.getFailedSend() && item.getFailedSend()) {
@@ -351,33 +347,19 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
 
                 flBubble.setTranslationX(0);
-                ivMessageStatus.setTranslationX(0);
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvMessageStatus.setVisibility(View.VISIBLE);
                 ivSending.setAlpha(0f);
+                if (null != ivReply) {
+                    ivReply.setVisibility(View.GONE);
+                }
             }
             // Message sent
-            else if (null != item.getSending() && !item.getSending() && item.isExpanded()) {
-                tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.formatDate(item.getCreated())));
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
-
-                tvMessageStatus.setVisibility(View.GONE);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                if (!item.isNeedAnimateSend()) {
-                    flBubble.setTranslationX(0);
-                    ivMessageStatus.setTranslationX(0);
-                    ivSending.setAlpha(0f);
-                } else animateSend(item, flBubble, ivSending, ivMessageStatus);
-
-            } else if (null != item.getSending() && !item.getSending() && !item.isExpanded()) {
+            else if (null != item.getSending() && !item.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
                 tvMessageStatus.setVisibility(View.GONE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
-                if (!item.isNeedAnimateSend()) {
-                    flBubble.setTranslationX(0);
-                    ivMessageStatus.setTranslationX(0);
-                    ivSending.setAlpha(0f);
-                } else animateSend(item, flBubble, ivSending, ivMessageStatus);
+                animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
             }
             // Message is sending
             else if (null != item.getSending() && item.getSending()) {
@@ -385,12 +367,14 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
 
                 flBubble.setTranslationX(initialTranslationX);
-                ivMessageStatus.setTranslationX(initialTranslationX);
                 ivSending.setTranslationX(0);
                 ivSending.setTranslationY(0);
                 tvMessageStatus.setVisibility(View.GONE);
                 ivMessageStatus.setVisibility(View.GONE);
                 ivSending.setAlpha(1f);
+                if (null != ivReply) {
+                    ivReply.setVisibility(View.GONE);
+                }
             }
             ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
         } else {
@@ -473,6 +457,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                         tvMessageStatus.setVisibility(View.GONE);
                     }
                 } else if (null != item.getSending() && item.getSending()) {
+                    // Message is sending
                     ivReply.setVisibility(View.GONE);
                 }
             }
@@ -499,7 +484,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 item.setExpanded(false);
             } else {
                 // Expand clicked bubble
-                tvMessageStatus.setText(HpTimeFormatter.durationChatString(itemView.getContext(), item.getCreated()));
+                tvMessageStatus.setText(HpTimeFormatter.getInstance().durationChatString(itemView.getContext(), item.getCreated()));
                 shrinkExpandedBubble();
                 item.setExpanded(true);
             }
@@ -522,31 +507,43 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         listener.onRetrySendMessage(item);
     }
 
-    private void animateSend(HpMessageModel item, FrameLayout flBubble, ImageView ivSending, ImageView ivMessageStatus) {
-        if (!item.isNeedAnimateSend()) return;
+    private void animateSend(HpMessageModel item, FrameLayout flBubble, ImageView ivSending,
+                             ImageView ivMessageStatus, @Nullable ImageView ivReply) {
+        if (!item.isNeedAnimateSend()) {
+            // Set bubble state to post-animation
+            flBubble.setTranslationX(0);
+            ivMessageStatus.setTranslationX(0);
+            ivSending.setAlpha(0f);
+        } else {
+            // Animate bubble
+            item.setNeedAnimateSend(false);
+            //ivMessageStatus.setTranslationX(initialTranslationX);
+            flBubble.setTranslationX(initialTranslationX);
+            ivSending.setTranslationX(0);
+            ivSending.setTranslationY(0);
+            new Handler().postDelayed(() -> {
+//                ivMessageStatus.animate()
+//                        .translationX(0)
+//                        .setDuration(160L)
+//                        .start();
+                flBubble.animate()
+                        .translationX(0)
+                        .setDuration(160L)
+                        .start();
+                ivSending.animate()
+                        .translationX(HpUtils.getInstance().dpToPx(36))
+                        .translationY(HpUtils.getInstance().dpToPx(-23))
+                        .setDuration(360L)
+                        .setInterpolator(new AccelerateInterpolator(0.5f))
+                        .withEndAction(() -> ivSending.setAlpha(0f))
+                        .start();
+            }, 200L);
 
-        item.setNeedAnimateSend(false);
-        ivMessageStatus.setTranslationX(initialTranslationX);
-        flBubble.setTranslationX(initialTranslationX);
-        ivSending.setTranslationX(0);
-        ivSending.setTranslationY(0);
-        new Handler().postDelayed(() -> {
-            ivMessageStatus.animate()
-                    .translationX(0)
-                    .setDuration(160L)
-                    .start();
-            flBubble.animate()
-                    .translationX(0)
-                    .setDuration(160L)
-                    .start();
-            ivSending.animate()
-                    .translationX(HpUtils.getInstance().dpToPx(36))
-                    .translationY(HpUtils.getInstance().dpToPx(-23))
-                    .setDuration(360L)
-                    .setInterpolator(new AccelerateInterpolator(0.5f))
-                    .withEndAction(() -> ivSending.setAlpha(0f))
-                    .start();
-        }, 200L);
+            // Animate reply button
+            if (null != ivReply) {
+                animateShowToLeft(ivReply);
+            }
+        }
     }
 
     private void animateFadeInToTop(View view) {

@@ -7,14 +7,12 @@
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
     android:paddingEnd="8dp"
-    tools:background="@drawable/hp_bg_f3f3f3_rounded_8dp">
+    tools:background="@drawable/hp_bg_f3f3f3_rounded_4dp">
 
     <View
         android:layout_width="4dp"
         android:layout_height="0dp"
-        android:layout_marginTop="1.2dp"
-        android:layout_marginBottom="1.2dp"
-        android:background="@drawable/hp_bg_easterpurple_rounded_8dp_0dp_8dp_0dp"
+        android:background="@drawable/hp_bg_easterpurple_rounded_4dp_0dp_4dp_0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

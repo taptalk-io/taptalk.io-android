@@ -33,6 +33,7 @@ import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpChatRecyclerView;
 import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpEndlessScrollListener;
+import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -87,8 +88,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     private FrameLayout flMessageList;
     private ConstraintLayout clEmptyChat, clReply, clChatComposer;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend;
-    private ImageButton ibToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvReplySender, tvReplyBody, tvBadgeUnread;
     private View vStatusBadge;
@@ -137,6 +137,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         //ini buat reset openRoom
         HpChatManager.getInstance().setOpenRoom(null);
         HpChatManager.getInstance().removeChatListener(chatListener);
+        // Stop offline timer
+        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
     }
 
     @Override
@@ -227,11 +229,11 @@ public class HpChatActivity extends HpBaseChatActivity {
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
         ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
-         ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
+        ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
         ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send);
-        ibToBottom = (ImageButton) findViewById(R.id.ib_to_bottom);
+        ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
         civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
@@ -240,7 +242,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
         tvReplySender = (TextView) findViewById(R.id.tv_reply_sender);
-        tvReplyBody= (TextView) findViewById(R.id.tv_reply_body);
+        tvReplyBody = (TextView) findViewById(R.id.tv_reply_body);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         rvMessageList = (HpChatRecyclerView) findViewById(R.id.rv_message_list);
@@ -259,7 +261,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         // TODO: 24 September 2018 UPDATE ROOM STATUS
-        tvRoomStatus.setText("User Status");
+        chatListener.onUserOffline(System.currentTimeMillis());
 
         hpMessageAdapter = new HpMessageAdapter(chatListener);
         hpMessageAdapter.setMessages(vm.getMessageModels());
@@ -302,10 +304,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
-                    ibToBottom.setVisibility(View.INVISIBLE);
+                    ivToBottom.setVisibility(View.INVISIBLE);
                 } else {
                     vm.setOnBottom(false);
-                    ibToBottom.setVisibility(View.VISIBLE);
+                    ivToBottom.setVisibility(View.VISIBLE);
                 }
             });
         }
@@ -322,7 +324,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
-        ibToBottom.setOnClickListener(v -> scrollToBottom());
+        ivToBottom.setOnClickListener(v -> scrollToBottom());
     }
 
     private void initHelper() {
@@ -358,7 +360,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             if (vm.isOnBottom() || vm.getUnreadCount() == 0) {
                 tvBadgeUnread.setVisibility(View.INVISIBLE);
             } else if (vm.getUnreadCount() > 0) {
-                tvBadgeUnread.setText(vm.getUnreadCount() + "");
+                tvBadgeUnread.setText(String.valueOf(vm.getUnreadCount()));
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             }
         });
@@ -389,11 +391,6 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     // Previously addNewTextMessage
     private void addNewMessage(final HpMessageModel newMessage) {
-        if (null != newMessage.getReplyTo()) {
-            Log.e(TAG, "addNewMessage: " + newMessage.getReplyTo().getBody());
-        } else {
-            Log.e(TAG, "addNewMessage: no replyTo");
-        }
         runOnUiThread(() -> {
             //ini ngecek kalau masih ada logo empty chat ilangin dlu
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -482,7 +479,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
-        ibToBottom.setVisibility(View.INVISIBLE);
+        ivToBottom.setVisibility(View.INVISIBLE);
         vm.clearUnreadMessages();
         updateUnreadCount();
     }
@@ -514,6 +511,118 @@ public class HpChatActivity extends HpBaseChatActivity {
         HpUtils.getInstance().dismissKeyboard(this);
         HpAttachmentBottomSheet attachBottomSheet = new HpAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
+    }
+
+    //ini Fungsi buat manggil Api Before
+    private void fetchBeforeMessageFromAPIAndUpdateUI(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
+        /*fetchBeforeMessageFromAPIAndUpdateUI rules:
+         * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
+        new Thread(() -> {
+            //ini ngecek kalau misalnya isi message modelnya itu kosong manggil api before maxCreated = current TimeStamp
+            if (0 < vm.getMessageModels().size())
+                HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+                        , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
+                        , beforeView);
+            else HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+                    , System.currentTimeMillis()
+                    , beforeView);
+        }).start();
+    }
+
+    private void callApiAfter() {
+        /*call api after rules:
+        --> kalau chat ga kosong, dan kita udah ada lastTimeStamp di preference
+            brati parameternya minCreated = created pling kecil dari yang ada di recyclerView
+            dan last Updatenya = dari preference
+        --> kalau chat ga kosong, dan kita belum ada lastTimeStamp di preference
+            brati parameternya minCreated = lastUpdated = created paling kecil dari yang ada di recyclerView
+        --> selain itu ga usah manggil api after
+
+        ps: di jalanin di new Thread biar ga ganggun main Thread aja*/
+        new Thread(() -> {
+            if (vm.getMessageModels().size() > 0 && !HpDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
+                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), messageAfterView);
+            } else if (vm.getMessageModels().size() > 0) {
+                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
+                        HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()),
+                        messageAfterView);
+            }
+        }).start();
+    }
+
+    private void mergeSort(List<HpMessageModel> messages, int sortDirection) {
+        int messageListSize = messages.size();
+        //merge proses divide
+        if (messageListSize < 2) {
+            return;
+        }
+
+        //ambil nilai tengah
+        int leftListSize = messageListSize / 2;
+        //sisa dari mediannya
+        int rightListSize = messageListSize - leftListSize;
+        //bkin list kiri sejumlah median sizenya
+        List<HpMessageModel> leftList = new ArrayList<>(leftListSize);
+        //bikin list kanan sejumlah sisanya (size - median)
+        List<HpMessageModel> rightList = new ArrayList<>(rightListSize);
+
+        for (int index = 0; index < leftListSize; index++)
+            leftList.add(index, messages.get(index));
+
+        for (int index = leftListSize; index < messageListSize; index++)
+            rightList.add((index - leftListSize), messages.get(index));
+
+        //recursive
+        mergeSort(leftList, sortDirection);
+        mergeSort(rightList, sortDirection);
+
+        //setelah selesai lalu di gabungin sambil di sort
+        merge(messages, leftList, rightList, leftListSize, rightListSize, sortDirection);
+    }
+
+    private void merge(List<HpMessageModel> messagesAll, List<HpMessageModel> leftList, List<HpMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
+        //Merge adalah fungsi buat Conquernya
+
+        //index left buat nentuin index leftList
+        //index right buat nentuin index rightList
+        //index combine buat nentuin index saat gabungin jd 1 list
+        int indexLeft = 0, indexRight = 0, indexCombine = 0;
+
+        while (indexLeft < leftSize && indexRight < rightSize) {
+            if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, leftList.get(indexLeft));
+                indexLeft += 1;
+                indexCombine += 1;
+            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, rightList.get(indexRight));
+                indexRight += 1;
+                indexCombine += 1;
+            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, leftList.get(indexLeft));
+                indexLeft += 1;
+                indexCombine += 1;
+            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, rightList.get(indexRight));
+                indexRight += 1;
+                indexCombine += 1;
+            }
+        }
+
+        //looping untuk masukin sisa di list masing masing
+        while (indexLeft < leftSize) {
+            messagesAll.set(indexCombine, leftList.get(indexLeft));
+            indexLeft += 1;
+            indexCombine += 1;
+        }
+
+        while (indexRight < rightSize) {
+            messagesAll.set(indexCombine, rightList.get(indexRight));
+            indexRight += 1;
+            indexCombine += 1;
+        }
     }
 
     /**
@@ -575,11 +684,10 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onSendImageMessage(HpMessageModel message) {
+            // TODO: 5 November 2018 TESTING IMAGE MESSAGE STATUS
+            message.setNeedAnimateSend(true);
+            message.setSending(false);
             addNewMessage(message);
-            vm.addMessagePointer(message);
-            if (clReply.getVisibility() == View.VISIBLE) {
-                clReply.setVisibility(View.GONE);
-            }
         }
 
         @Override
@@ -595,7 +703,6 @@ public class HpChatActivity extends HpBaseChatActivity {
                     HpChatManager.getInstance().sendTextMessage(message.getBody());
                     break;
                 case HpDefaultConstant.MessageType.TYPE_IMAGE:
-                    // TODO: 31 October 2018 CHECK IMAGE ENCODE
                     HpChatManager.getInstance().sendImageMessage(message.getBody());
                     break;
             }
@@ -637,6 +744,19 @@ public class HpChatActivity extends HpBaseChatActivity {
                 // Scroll recycler to bottom when image finished loading if message is sent by user or recycler is on bottom
                 rvMessageList.scrollToPosition(0);
             }
+        }
+
+        @Override
+        public void onUserOnline() {
+            vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_vibrantgreen));
+            tvRoomStatus.setText(getString(R.string.active_now));
+            vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+        }
+
+        @Override
+        public void onUserOffline(Long lastActivity) {
+            vm.setLastActivity(lastActivity);
+            lastActivityRunnable.run();
         }
     };
 
@@ -1019,115 +1139,16 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    //ini Fungsi buat manggil Api Before
-    public void fetchBeforeMessageFromAPIAndUpdateUI(HpDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
-        /*fetchBeforeMessageFromAPIAndUpdateUI rules:
-         * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
-        new Thread(() -> {
-            //ini ngecek kalau misalnya isi message modelnya itu kosong manggil api before maxCreated = current TimeStamp
-            if (0 < vm.getMessageModels().size())
-                HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
-                        , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
-                        , beforeView);
-            else HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
-                    , System.currentTimeMillis()
-                    , beforeView);
-        }).start();
-    }
+    private Runnable lastActivityRunnable = new Runnable() {
+        final int INTERVAL = 1000 * 60;
 
-    private void callApiAfter() {
-        /*call api after rules:
-        --> kalau chat ga kosong, dan kita udah ada lastTimeStamp di preference
-            brati parameternya minCreated = created pling kecil dari yang ada di recyclerView
-            dan last Updatenya = dari preference
-        --> kalau chat ga kosong, dan kita belum ada lastTimeStamp di preference
-            brati parameternya minCreated = lastUpdated = created paling kecil dari yang ada di recyclerView
-        --> selain itu ga usah manggil api after
-
-        ps: di jalanin di new Thread biar ga ganggun main Thread aja*/
-        new Thread(() -> {
-            if (vm.getMessageModels().size() > 0 && !HpDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
-                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
-                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
-                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), messageAfterView);
-            } else if (vm.getMessageModels().size() > 0) {
-                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
-                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
-                        HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()),
-                        messageAfterView);
-            }
-        }).start();
-    }
-
-    private void mergeSort(List<HpMessageModel> messages, int sortDirection) {
-        int messageListSize = messages.size();
-        //merge proses divide
-        if (messageListSize < 2) {
-            return;
+        @Override
+        public void run() {
+            runOnUiThread(() -> {
+                vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_butterscotch));
+                tvRoomStatus.setText(HpTimeFormatter.getInstance().getLastActivityString(HpChatActivity.this, vm.getLastActivity()));
+            });
+            vm.getLastActivityHandler().postDelayed(this, INTERVAL);
         }
-
-        //ambil nilai tengah
-        int leftListSize = messageListSize / 2;
-        //sisa dari mediannya
-        int rightListSize = messageListSize - leftListSize;
-        //bkin list kiri sejumlah median sizenya
-        List<HpMessageModel> leftList = new ArrayList<>(leftListSize);
-        //bikin list kanan sejumlah sisanya (size - median)
-        List<HpMessageModel> rightList = new ArrayList<>(rightListSize);
-
-        for (int index = 0; index < leftListSize; index++)
-            leftList.add(index, messages.get(index));
-
-        for (int index = leftListSize; index < messageListSize; index++)
-            rightList.add((index - leftListSize), messages.get(index));
-
-        //recursive
-        mergeSort(leftList, sortDirection);
-        mergeSort(rightList, sortDirection);
-
-        //setelah selesai lalu di gabungin sambil di sort
-        merge(messages, leftList, rightList, leftListSize, rightListSize, sortDirection);
-    }
-
-    private void merge(List<HpMessageModel> messagesAll, List<HpMessageModel> leftList, List<HpMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
-        //Merge adalah fungsi buat Conquernya
-
-        //index left buat nentuin index leftList
-        //index right buat nentuin index rightList
-        //index combine buat nentuin index saat gabungin jd 1 list
-        int indexLeft = 0, indexRight = 0, indexCombine = 0;
-
-        while (indexLeft < leftSize && indexRight < rightSize) {
-            if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft += 1;
-                indexCombine += 1;
-            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight += 1;
-                indexCombine += 1;
-            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft += 1;
-                indexCombine += 1;
-            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight += 1;
-                indexCombine += 1;
-            }
-        }
-
-        //looping untuk masukin sisa di list masing masing
-        while (indexLeft < leftSize) {
-            messagesAll.set(indexCombine, leftList.get(indexLeft));
-            indexLeft += 1;
-            indexCombine += 1;
-        }
-
-        while (indexRight < rightSize) {
-            messagesAll.set(indexCombine, rightList.get(indexRight));
-            indexRight += 1;
-            indexCombine += 1;
-        }
-    }
+    };
 }

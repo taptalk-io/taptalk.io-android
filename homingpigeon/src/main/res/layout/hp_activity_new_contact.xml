@@ -280,4 +280,59 @@
 
     </LinearLayout>
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_connection_lost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/cream_white"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <ImageView
+            android:id="@+id/iv_connection_lost"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:padding="4dp"
+            android:src="@drawable/ic_connection_lost"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_connection_lost"
+            style="@style/HomingPigeonRoomName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="start"
+            android:text="@string/internet_connection_lost"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_connection_lost"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_connection_lost_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/hp_font_neueeinstellungregular"
+            android:text="@string/please_check_your_connection"
+            android:textColor="@color/black_44"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_connection_lost"
+            app:layout_constraintTop_toBottomOf="@id/tv_connection_lost" />
+    </android.support.constraint.ConstraintLayout>
+
 </android.support.constraint.ConstraintLayout>
