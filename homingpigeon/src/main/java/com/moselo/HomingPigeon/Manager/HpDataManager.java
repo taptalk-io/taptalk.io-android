@@ -8,6 +8,7 @@ import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
+import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -35,6 +36,7 @@ import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
+import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
 
 public class HpDataManager {
     private static HpDataManager instance;
@@ -239,6 +241,22 @@ public class HpDataManager {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Old Data (Auto Clean) Last Delete Timestamp
+     */
+    public void saveLastDeleteTimestamp(Long lastDeleteTimestamp) {
+        saveLongTimestampPreference(lastDeleteTimestamp, K_LAST_DELETE_TIMESTAMP);
+    }
+
+    public Long getLastDeleteTimestamp() {
+        return getLongTimestampPreference(K_LAST_DELETE_TIMESTAMP);
+    }
+
+    public Boolean checkLastDeleteTimestamp() {
+        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp()) return false;
+        else return 0 != getLastDeleteTimestamp();
     }
 
     /**
