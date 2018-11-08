@@ -73,17 +73,24 @@ public class HpMessageRepository {
         return allMessages;
     }
 
-    public void getMessageList(final String roomID, final HpDatabaseListener listener) {
+    public void getMessageListDesc(final String roomID, final HpDatabaseListener listener) {
         new Thread(() -> {
-            allMessageList = messageDao.getAllMessageList(roomID);
+            allMessageList = messageDao.getAllMessageListDesc(roomID);
             listener.onSelectFinished(allMessageList);
         }).start();
     }
 
-    public void getMessageList(final String roomID, final HpDatabaseListener listener, final long lastTimestamp) {
+    public void getMessageListDesc(final String roomID, final HpDatabaseListener listener, final long lastTimestamp) {
         new Thread(() -> {
             List<HpMessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
             listener.onSelectFinished(entities);
+        }).start();
+    }
+
+    public void getMessageListAsc(final String roomID, final HpDatabaseListener listener) {
+        new Thread(() -> {
+            allMessageList = messageDao.getAllMessageListAsc(roomID);
+            listener.onSelectFinished(allMessageList);
         }).start();
     }
 

@@ -41,7 +41,15 @@ public interface HpMessageDao {
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
             "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
             " from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
-    List<HpMessageEntity> getAllMessageList(String roomID);
+    List<HpMessageEntity> getAllMessageListDesc(String roomID);
+
+    @Query("select messageID, localID, roomID, roomName, roomColor, roomType," +
+            " roomImage, type, body, created, " +
+            "userID, xcUserID, userFullName, userImage, username, userEmail, " +
+            "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
+            "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
+            " from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
+    List<HpMessageEntity> getAllMessageListAsc(String roomID);
 
     @Query("select messageID, localID, roomID, roomName, roomColor, roomType, " +
             "roomImage, type, body, created, " +

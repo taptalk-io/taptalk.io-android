@@ -8,7 +8,6 @@ import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -303,12 +302,16 @@ public class HpDataManager {
         return HpDatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabase(String roomID, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getMessages(roomID, listener);
+    public void getMessagesFromDatabaseDesc(String roomID, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
     }
 
-    public void getMessagesFromDatabase(String roomID, HpDatabaseListener listener, long lastTimestamp) {
-        HpDatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
+    public void getMessagesFromDatabaseDesc(String roomID, HpDatabaseListener listener, long lastTimestamp) {
+        HpDatabaseManager.getInstance().getMessagesDesc(roomID, listener, lastTimestamp);
+    }
+
+    public void getMessagesFromDatabaseAsc(String roomID, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getMessagesAsc(roomID, listener);
     }
 
     public void searchAllMessagesFromDatabase(String keyword, HpDatabaseListener listener) {
