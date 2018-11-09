@@ -213,10 +213,14 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivReply, ivSending);
 
-            Log.e(TAG, "onBind: " + item.getImageWidth() + ", " + item.getImageHeight());
-            rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
+            if (item.isFirstLoadFinished()) {
+                flProgress.setVisibility(View.GONE);
+            }
+
             if (!item.getBody().isEmpty()) {
-                GlideApp.with(itemView.getContext()).load(item.getBody()).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).listener(new RequestListener<Drawable>() {
+                rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
+                int placeholder = isMessageFromMySelf(item) ? R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.hp_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
+                GlideApp.with(itemView.getContext()).load(item.getBody()).placeholder(placeholder).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         return false;
@@ -225,8 +229,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                         if (item.isFirstLoadFinished()) {
-                            // Image is already loaded
-                            flProgress.setVisibility(View.GONE);
+                            // Image has been loaded once
                             return false;
                         }
 

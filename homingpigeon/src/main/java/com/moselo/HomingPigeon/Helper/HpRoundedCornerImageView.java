@@ -8,7 +8,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import com.moselo.HomingPigeon.R;
 
@@ -107,7 +106,6 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
     public void setImageDimensions(int width, int height) {
         imageWidth = width;
         imageHeight = height;
-        Log.e("]]]]", "setImageDimensions: " + width + ", " + height);
     }
 
     @Override
@@ -167,8 +165,6 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
 
         MeasureSpec.makeMeasureSpec(size, mode);
 
-        Log.e("]]]]", "imageWidth: " + imageWidth);
-        Log.e("]]]]", "imageHeight: " + imageHeight);
         if (dimensionRatio == 0) {
             return;
         }
@@ -182,28 +178,22 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             return;
         }
 
-        float ratio = ((float) imageWidth) / imageHeight;
-
         int resultWidth, resultHeight;
+        float ratio = ((float) imageWidth) / imageHeight;
         if (ratio > ((float) maxWidth / minHeight)) {
             // Image width is higher than maxWidth, but height is lower than minHeight
             // Set width to maxWidth, height to minHeight and crop image
-            Log.e("]]]]", "ratio >>>: " + ratio);
-            Log.e("]]]]", "ratio limit: " + ((float) maxWidth / minHeight));
             resultWidth = maxWidth;
             resultHeight = minHeight;
             setScaleType(ScaleType.CENTER_CROP);
         } else if (ratio < ((float) minWidth / maxHeight)) {
             // Image height is higher than maxHeight, but width is lower than minWidth
             // Set width to minWidth, height to maxHeight and crop image
-            Log.e("]]]]", "ratio <<<: " + ratio);
-            Log.e("]]]]", "ratio limit: " + ((float) minWidth / maxHeight));
             resultWidth = minWidth;
             resultHeight = maxHeight;
             setScaleType(ScaleType.CENTER_CROP);
         } else if (ratio > dimensionRatio) {
             // Width ratio is higher than limit -> use maxWidth
-            Log.e("]]]]", "ratio >: " + ratio);
             if (imageWidth > maxWidth) {
                 resultWidth = maxWidth;
                 resultHeight = (int) (resultWidth / ratio);
@@ -217,7 +207,6 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             setScaleType(ScaleType.FIT_CENTER);
         } else {
             // Height ratio is higher than limit -> use maxHeight
-            Log.e("]]]]", "ratio <: " + ratio);
             if (imageHeight > maxHeight) {
                 resultHeight = maxHeight;
                 resultWidth = (int) (resultHeight * ratio);
@@ -230,8 +219,6 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             }
             setScaleType(ScaleType.FIT_CENTER);
         }
-        Log.e("]]]]", "resultWidth: " + resultWidth);
-        Log.e("]]]]", "resultHeight: " + resultHeight);
         setMeasuredDimension(resultWidth, resultHeight);
     }
 }

@@ -269,6 +269,9 @@ public class HpChatActivity extends HpBaseChatActivity {
         rvMessageList.setAdapter(hpMessageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
+        // FIXME: 9 November 2018 IMAGES CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
+        rvMessageList.getRecycledViewPool().setMaxRecycledViews(HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0);
+        rvMessageList.getRecycledViewPool().setMaxRecycledViews(HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
