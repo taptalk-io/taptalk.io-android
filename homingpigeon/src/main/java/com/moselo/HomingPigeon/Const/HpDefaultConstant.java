@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.Helper;
+package com.moselo.HomingPigeon.Const;
 
 public class HpDefaultConstant {
 
@@ -45,7 +45,7 @@ public class HpDefaultConstant {
         public static final int TYPE_CATEGORY = 2002;
         public static final int TYPE_ORDER_CARD = 2003;
         public static final int TYPE_CONFIRM_MY_PAYMENT = 2004;
-        
+
         public static final int TYPE_HIDDEN = 0x9196;
     }
 

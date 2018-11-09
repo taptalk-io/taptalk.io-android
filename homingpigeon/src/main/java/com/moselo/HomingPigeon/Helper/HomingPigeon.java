@@ -29,7 +29,6 @@ import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Manager.HpOldDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
@@ -38,13 +37,13 @@ import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HP_NOTIFICATION_CHANNEL;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_REPLY_REQ_CODE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_TEXT_REPLY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HP_NOTIFICATION_CHANNEL;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_REPLY_REQ_CODE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_TEXT_REPLY;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;

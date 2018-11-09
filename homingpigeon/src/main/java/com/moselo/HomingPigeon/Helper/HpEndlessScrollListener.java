@@ -5,7 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.NUM_OF_ITEM;
 
 /**
  * Created by Rionaldo on 6/6/17.

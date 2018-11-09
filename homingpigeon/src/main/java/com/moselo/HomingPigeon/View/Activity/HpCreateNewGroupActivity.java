@@ -33,12 +33,12 @@ import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_IMAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_MEMBERS;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.GROUP_NAME;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Extras.MY_ID;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.GROUP_MEMBER_LIMIT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.CREATE_GROUP;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_IMAGE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_NAME;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.MY_ID;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.GROUP_MEMBER_LIMIT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.RequestCode.CREATE_GROUP;
 
 public class HpCreateNewGroupActivity extends HpBaseActivity {
 

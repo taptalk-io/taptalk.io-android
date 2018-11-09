@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.TextInputEditText;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,7 +23,7 @@ import com.moselo.HomingPigeon.R;
 
 import java.net.URL;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_MY_USERNAME;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_MY_USERNAME;
 
 public class HpLoginActivity extends HpBaseActivity {
 

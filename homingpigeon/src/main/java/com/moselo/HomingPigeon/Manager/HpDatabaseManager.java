@@ -13,9 +13,9 @@ import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class HpDatabaseManager {
     private static HpDatabaseManager instance;

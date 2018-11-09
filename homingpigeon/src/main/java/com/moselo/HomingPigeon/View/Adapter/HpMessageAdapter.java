@@ -36,15 +36,15 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.BubbleType.TYPE_LOG;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_IMAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_PRODUCT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_TEXT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_LOG;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_IMAGE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_PRODUCT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_TEXT;
 
 public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHolder<HpMessageModel>> {
 

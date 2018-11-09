@@ -39,10 +39,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
 
 public class HpUtils {
 

@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,7 +30,7 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
 import com.moselo.HomingPigeon.Helper.HpChatRecyclerView;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
+import com.moselo.HomingPigeon.Const.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpEndlessScrollListener;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
@@ -60,15 +59,15 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.ASCENDING;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Sorting.DESCENDING;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.NUM_OF_ITEM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Sorting.ASCENDING;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Sorting.DESCENDING;
 
 public class HpChatActivity extends HpBaseChatActivity {
 

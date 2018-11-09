@@ -36,8 +36,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
 public class HpApiManager {
     private static final String TAG = HpApiManager.class.getSimpleName();

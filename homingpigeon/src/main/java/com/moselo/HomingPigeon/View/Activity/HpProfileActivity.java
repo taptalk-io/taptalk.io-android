@@ -24,8 +24,8 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpImageListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DEFAULT_ANIMATION_TIME;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DEFAULT_ANIMATION_TIME;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
 
 public class HpProfileActivity extends HpBaseActivity {
 

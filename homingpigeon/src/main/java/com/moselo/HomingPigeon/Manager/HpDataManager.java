@@ -25,17 +25,17 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_LAST_UPDATED;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_RECIPIENT_ID;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_USER;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
 
 public class HpDataManager {
     private static HpDataManager instance;
