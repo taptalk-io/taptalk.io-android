@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.Const.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -29,6 +30,7 @@ import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.CONTACT_LIST;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
 public class HpNewChatActivity extends HpBaseActivity {
@@ -117,6 +119,7 @@ public class HpNewChatActivity extends HpBaseActivity {
 
     private void searchContact() {
         Intent intent = new Intent(this, HpSearchContactActivity.class);
+        intent.putExtra(CONTACT_LIST, (ArrayList<HpUserModel>) vm.getContactList());
         startActivity(intent);
     }
 
