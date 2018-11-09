@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.API.DefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
@@ -24,15 +23,14 @@ import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpScanResultViewModel;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ADDED_CONTACT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.SCAN_RESULT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ADDED_CONTACT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.SCAN_RESULT;
 
 public class HpScanResultActivity extends HpBaseActivity {
 

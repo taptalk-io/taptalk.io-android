@@ -98,11 +98,11 @@ public class HpChatViewModel extends AndroidViewModel {
     }
 
     public void getMessageEntities(String roomID, HpDatabaseListener listener) {
-        HpDataManager.getInstance().getMessagesFromDatabase(roomID, listener);
+        HpDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener);
     }
 
     public void getMessageByTimestamp(String roomID, HpDatabaseListener listener, long lastTimestamp) {
-        HpDataManager.getInstance().getMessagesFromDatabase(roomID, listener, lastTimestamp);
+        HpDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
     }
 
     public List<HpMessageModel> getMessageModels() {

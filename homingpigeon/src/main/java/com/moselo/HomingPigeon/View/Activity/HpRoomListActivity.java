@@ -2,14 +2,13 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.os.Bundle;
 
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Fragment.HpRoomListFragment;
 import com.moselo.HomingPigeon.View.Fragment.HpSearchChatFragment;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
 
 public class HpRoomListActivity extends HpBaseActivity {
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.HpPushNotificationRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpUserIdRequest;
 import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
@@ -35,8 +36,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
 public class HpApiManager {
     private static final String TAG = HpApiManager.class.getSimpleName();
@@ -170,6 +171,11 @@ public class HpApiManager {
 
     public void validateAccessToken(Subscriber<BaseResponse<HpErrorModel>> subscriber) {
         execute(hpSocket.validateAccessToken(), subscriber);
+    }
+
+    public void registerFcmTokenToServer(String fcmToken, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
+        HpPushNotificationRequest request = HpPushNotificationRequest.Builder(fcmToken);
+        execute(homingPigeon.registerFcmTokenToServer(request), subscriber);
     }
 
     public void getRoomList(String userID, Subscriber<BaseResponse<HpGetRoomListResponse>> subscriber) {

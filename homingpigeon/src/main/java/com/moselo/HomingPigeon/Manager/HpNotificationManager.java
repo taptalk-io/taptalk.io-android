@@ -1,6 +1,5 @@
 package com.moselo.HomingPigeon.Manager;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,28 +11,23 @@ import android.support.v4.app.NotificationCompat;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
-import com.moselo.HomingPigeon.View.Fragment.HpRoomListFragment;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HP_NOTIFICATION_CHANNEL;
 
 public class HpNotificationManager {
+    private static final String TAG = HpNotificationManager.class.getSimpleName();
     private static HpNotificationManager instance;
-    private String channelID = "fcm_fallback_notification_channel";
     private String notificationGroup = "homing-pigeon";
     private Map<String, List<HpMessageModel>> notifMessagesMap;
     private boolean isRoomListAppear;
 
     public static HpNotificationManager getInstance() {
         return null == instance ? (instance = new HpNotificationManager()) : instance;
-    }
-
-    public String getChannelID() {
-        return channelID;
     }
 
     public Map<String, List<HpMessageModel>> getNotifMessagesMap() {
@@ -81,20 +75,21 @@ public class HpNotificationManager {
         int chatSize = 0, messageSize = 0;
         for (Map.Entry<String, List<HpMessageModel>> item : notifMessagesMap.entrySet()) {
             chatSize++;
-            messageSize+=item.getValue().size();
+            messageSize += item.getValue().size();
         }
         String summaryContent = messageSize + " messages from " + chatSize + " chats";
-        return new NotificationCompat.Builder(context, channelID)
+
+        return new NotificationCompat.Builder(context, HP_NOTIFICATION_CHANNEL)
                 .setSmallIcon(HomingPigeon.getClientAppIcon())
                 .setContentTitle(HomingPigeon.getClientAppName())
                 .setContentText(summaryContent)
-                .setGroupSummary(true)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setContentIntent(addPendingIntentForSummaryNotification(context, aClass))
-                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setStyle(new NotificationCompat.InboxStyle()/*.setSummaryText(summaryContent)*/)
                 .setGroup(notificationGroup)
+                .setGroupSummary(true)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .setContentIntent(addPendingIntentForSummaryNotification(context, aClass))
                 .setAutoCancel(true)
-                .setStyle(new NotificationCompat.InboxStyle().setSummaryText(summaryContent));
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE);
     }
 
     private PendingIntent addPendingIntentForSummaryNotification(Context context, Class aClass) {
@@ -158,25 +153,37 @@ public class HpNotificationManager {
             }
         }
 
-        return new NotificationCompat.Builder(builder.context, channelID)
+        return new NotificationCompat.Builder(builder.context, HP_NOTIFICATION_CHANNEL)
+                .setContentTitle(builder.chatSender)
+                .setContentText(builder.chatMessage)
                 .setSmallIcon(builder.smallIcon)
                 .setStyle(messageStyle)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setGroup(notificationGroup)
-                .setDefaults(Notification.DEFAULT_ALL)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setCategory(Notification.CATEGORY_MESSAGE);
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE);
     }
 
     public void createAndShowInAppNotification(Context context, HpMessageModel newMessageModel) {
-        if (HomingPigeon.isForeground)
+        if (HomingPigeon.isForeground) {
             new HomingPigeon.NotificationBuilder(context)
                     .setNotificationMessage(newMessageModel)
                     .setSmallIcon(HomingPigeon.getClientAppIcon())
                     .setNeedReply(false)
                     .setOnClickAction(HpRoomListActivity.class)
                     .show();
+        }
+    }
+
+    public void createAndShowBackgroundNotification(Context context, int notificationIcon, HpMessageModel newMessageModel) {
+        new HomingPigeon.NotificationBuilder(context)
+                .setNotificationMessage(newMessageModel)
+                .setSmallIcon(notificationIcon)
+                .setNeedReply(false)
+                .setOnClickAction(HpRoomListActivity.class)
+                .show();
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {

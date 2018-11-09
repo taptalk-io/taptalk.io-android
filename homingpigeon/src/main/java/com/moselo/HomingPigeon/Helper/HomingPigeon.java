@@ -8,10 +8,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
@@ -24,6 +26,7 @@ import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
+import com.moselo.HomingPigeon.Manager.HpOldDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
@@ -34,12 +37,13 @@ import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_REPLY_REQ_CODE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_TEXT_REPLY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HP_NOTIFICATION_CHANNEL;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_REPLY_REQ_CODE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_TEXT_REPLY;
 
 public class HomingPigeon {
     public static HomingPigeon homingPigeon;
@@ -76,8 +80,11 @@ public class HomingPigeon {
         HomingPigeon.appContext = appContext;
         clientAppName = appContext.getResources().getString(R.string.app_name);
 
-        if (HpDataManager.getInstance().checkAccessTokenAvailable())
+        if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
             HpConnectionManager.getInstance().connect();
+            Log.e("HpOldDataManager", "HomingPigeon: ");
+            HpOldDataManager.getInstance().startAutoCleanProcess();
+        }
 
         HpDataManager.getInstance().updateSendingMessageToFailed();
 
@@ -244,13 +251,29 @@ public class HomingPigeon {
             notificationBuilder.setContentIntent(pendingIntent);
         }
 
+        private void createNotificationChannel() {
+            NotificationManager notificationManager = (NotificationManager) HomingPigeon.appContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && null == notificationManager.getNotificationChannel(HP_NOTIFICATION_CHANNEL)) {
+                NotificationChannel notificationChannel = new NotificationChannel(HP_NOTIFICATION_CHANNEL, "Homing Pigeon Notifications", NotificationManager.IMPORTANCE_HIGH);
+
+                // Configure the notification channel.
+                notificationChannel.setDescription("HomingPigeon Notification");
+                notificationChannel.enableLights(true);
+                notificationChannel.setLightColor(Color.parseColor("#2eccad"));
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+
         public void show() {
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(HomingPigeon.appContext);
+            createNotificationChannel();
 
             notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
 
-            if (1 < HpNotificationManager.getInstance().getNotifMessagesMap().size())
+            if (1 < HpNotificationManager.getInstance().getNotifMessagesMap().size()) {
                 notificationManager.notify(0, HpNotificationManager.getInstance().createSummaryNotificationBubble(context, aClass).build());
+            }
+
         }
     }
 

@@ -25,16 +25,17 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_AUTH_TICKET;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_LAST_UPDATED;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_RECIPIENT_ID;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_LAST_UPDATED;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_RECIPIENT_ID;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_USER;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
 
 public class HpDataManager {
     private static HpDataManager instance;
@@ -242,6 +243,22 @@ public class HpDataManager {
     }
 
     /**
+     * Old Data (Auto Clean) Last Delete Timestamp
+     */
+    public void saveLastDeleteTimestamp(Long lastDeleteTimestamp) {
+        saveLongTimestampPreference(lastDeleteTimestamp, K_LAST_DELETE_TIMESTAMP);
+    }
+
+    public Long getLastDeleteTimestamp() {
+        return getLongTimestampPreference(K_LAST_DELETE_TIMESTAMP);
+    }
+
+    public Boolean checkLastDeleteTimestamp() {
+        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp()) return false;
+        else return 0 != getLastDeleteTimestamp();
+    }
+
+    /**
      * =========================================================================================== *
      * DATABASE METHODS
      * =========================================================================================== *
@@ -253,6 +270,10 @@ public class HpDataManager {
     }
 
     // Message
+    public void deleteMessage(List<HpMessageEntity> messageEntities, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().deleteMessage(messageEntities, listener);
+    }
+
     public void insertToDatabase(HpMessageEntity messageEntity) {
         HpDatabaseManager.getInstance().insert(messageEntity);
     }
@@ -281,12 +302,16 @@ public class HpDataManager {
         return HpDatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabase(String roomID, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getMessages(roomID, listener);
+    public void getMessagesFromDatabaseDesc(String roomID, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
     }
 
-    public void getMessagesFromDatabase(String roomID, HpDatabaseListener listener, long lastTimestamp) {
-        HpDatabaseManager.getInstance().getMessages(roomID, listener, lastTimestamp);
+    public void getMessagesFromDatabaseDesc(String roomID, HpDatabaseListener listener, long lastTimestamp) {
+        HpDatabaseManager.getInstance().getMessagesDesc(roomID, listener, lastTimestamp);
+    }
+
+    public void getMessagesFromDatabaseAsc(String roomID, HpDatabaseListener listener) {
+        HpDatabaseManager.getInstance().getMessagesAsc(roomID, listener);
     }
 
     public void searchAllMessagesFromDatabase(String keyword, HpDatabaseListener listener) {
@@ -413,6 +438,10 @@ public class HpDataManager {
 
     public void validateAccessToken(HpDefaultDataView<HpErrorModel> view) {
         HpApiManager.getInstance().validateAccessToken(new DefaultSubscriber<>(view));
+    }
+
+    public void registerFcmTokenToServer(String fcmToken, HpDefaultDataView<HpCommonResponse> view) {
+        HpApiManager.getInstance().registerFcmTokenToServer(fcmToken, new DefaultSubscriber(view));
     }
 
     public void getMessageRoomListAndUnread(String userID, HpDefaultDataView<HpGetRoomListResponse> view) {

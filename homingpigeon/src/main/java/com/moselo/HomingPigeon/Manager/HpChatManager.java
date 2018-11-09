@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -34,19 +33,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kEventOpenRoom;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketAuthentication;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketCloseRoom;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketNewMessage;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketOpenMessage;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketStartTyping;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketStopTyping;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOffline;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ConnectionEvent.kSocketUserOnline;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_IMAGE;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.MessageType.TYPE_TEXT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kEventOpenRoom;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketCloseRoom;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketNewMessage;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketStartTyping;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketUserOffline;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketUserOnline;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_IMAGE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_TEXT;
 
 public class HpChatManager {
 

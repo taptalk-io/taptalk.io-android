@@ -16,12 +16,21 @@ android {
 
     buildTypes {
         release {
+            buildConfigField "String", "BASE_URL_API", '"https://hp-dev.moselo.com:8080/api/v1/"'
+            buildConfigField "String", "BASE_URL_SOCKET", '"https://hp-dev.moselo.com:8080/"'
+            buildConfigField "String", "BASE_WSS", '"wss://hp-dev.moselo.com:8080/pigeon"'
             minifyEnabled false
         }
         staging {
+            buildConfigField "String", "BASE_URL_API", '"https://hp-dev.moselo.com:8080/api/v1/"'
+            buildConfigField "String", "BASE_URL_SOCKET", '"https://hp-dev.moselo.com:8080/"'
+            buildConfigField "String", "BASE_WSS", '"wss://hp-dev.moselo.com:8080/pigeon"'
             minifyEnabled false
         }
         dev {
+            buildConfigField "String", "BASE_URL_API", '"https://hp-dev.moselo.com:8080/api/v1/"'
+            buildConfigField "String", "BASE_URL_SOCKET", '"https://hp-dev.moselo.com:8080/"'
+            buildConfigField "String", "BASE_WSS", '"wss://hp-dev.moselo.com:8080/pigeon"'
             minifyEnabled false
         }
     }
@@ -61,12 +70,12 @@ dependencies {
     implementation "com.commonsware.cwac:saferoom:0.4.4"
 
     //Jackson
-    implementation "com.fasterxml.jackson.core:jackson-core:2.9.4"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:2.9.4"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.4"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.9.7"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.9.7"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.7"
 
     //GMS
-    implementation 'com.google.android.gms:play-services-vision:16.2.0'
+    implementation 'com.google.android.gms:play-services-vision:17.0.2'
 
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.8.0'
@@ -74,7 +83,7 @@ dependencies {
 
     //OKHTTP
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
 
     //Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'

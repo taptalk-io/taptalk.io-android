@@ -5,7 +5,6 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
@@ -28,9 +27,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.moselo.HomingPigeon.Helper.HomingPigeon.appContext;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.APP_KEY_ID;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.CONNECTING;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.DISCONNECTED;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
@@ -40,7 +39,7 @@ public class HpConnectionManager {
     private String TAG = HpConnectionManager.class.getSimpleName();
     private static HpConnectionManager instance;
     private WebSocketClient webSocketClient;
-    private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon";
+    private String webSocketEndpoint = BuildConfig.BASE_WSS;
     //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;

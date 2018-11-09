@@ -255,7 +255,7 @@ public class HpRoomListFragment extends Fragment {
         activity.runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
-            } else if (null != adapter && (!HpRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated)) {
+            } else if (null != adapter && (!HpRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && HpNotificationManager.getInstance().isRoomListAppear()) {
                 //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
                 //isShouldNotLoadFromAPI ini buat load dari database yang pertama
                 //is animate nya itu buat kalau misalnya perlu di animate dari parameter

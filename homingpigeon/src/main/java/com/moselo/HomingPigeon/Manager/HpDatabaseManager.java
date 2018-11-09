@@ -13,9 +13,9 @@ import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MESSAGE_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class HpDatabaseManager {
     private static HpDatabaseManager instance;
@@ -51,6 +51,13 @@ public class HpDatabaseManager {
      * Message Table
      * ==============================================================
      */
+
+    public void deleteMessage(List<HpMessageEntity> messageEntities, HpDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.delete(messageEntities, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
 
     public void insert(HpMessageEntity messageEntity) {
         if (null != messageRepository)
@@ -101,16 +108,23 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessages(String roomID, HpDatabaseListener listener) {
+    public void getMessagesDesc(String roomID, HpDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getMessageList(roomID, listener);
+            messageRepository.getMessageListDesc(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessages(String roomID, HpDatabaseListener listener, long lastTimestamp) {
+    public void getMessagesDesc(String roomID, HpDatabaseListener listener, long lastTimestamp) {
         if (null != messageRepository)
-            messageRepository.getMessageList(roomID, listener, lastTimestamp);
+            messageRepository.getMessageListDesc(roomID, listener, lastTimestamp);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getMessagesAsc(String roomID, HpDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.getMessageListAsc(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }

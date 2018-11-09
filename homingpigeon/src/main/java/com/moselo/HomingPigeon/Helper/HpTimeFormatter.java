@@ -158,4 +158,12 @@ public class HpTimeFormatter {
         SimpleDateFormat timeSdf = new SimpleDateFormat("EEE", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
+
+    public boolean checkOverOneWeekOrNot(long timestamp) {
+        return timestamp >= times.get(2);
+    }
+
+    public boolean checkOverOneMonthOrNot(long timestamp) {
+        return timestamp >= times.get(1);
+    }
 }

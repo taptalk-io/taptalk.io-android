@@ -18,8 +18,6 @@ import android.widget.Button;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpQRDetection;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
@@ -27,8 +25,8 @@ import com.moselo.HomingPigeon.View.Activity.HpScanResultActivity;
 
 import java.io.IOException;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.SCAN_RESULT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.SCAN_RESULT;
 
 public class HpBarcodeScannerFragment extends Fragment {
 

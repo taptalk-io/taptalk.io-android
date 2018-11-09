@@ -10,7 +10,7 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageDao;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchDao;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
+import com.moselo.HomingPigeon.Const.HpDefaultConstant;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 @Database(entities = {HpMessageEntity.class, HpRecentSearchEntity.class, HpUserModel.class}, version = HpDefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)

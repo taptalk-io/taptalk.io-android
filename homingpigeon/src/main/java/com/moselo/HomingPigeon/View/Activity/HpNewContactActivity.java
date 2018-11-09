@@ -34,8 +34,8 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ADDED_CONTACT;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ADDED_CONTACT;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
 
 public class HpNewContactActivity extends HpBaseActivity {
 

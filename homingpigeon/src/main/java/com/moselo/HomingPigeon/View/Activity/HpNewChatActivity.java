@@ -29,7 +29,7 @@ import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
 public class HpNewChatActivity extends HpBaseActivity {
 

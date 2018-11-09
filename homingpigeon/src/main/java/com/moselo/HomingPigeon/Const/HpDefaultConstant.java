@@ -1,4 +1,4 @@
-package com.moselo.HomingPigeon.Helper;
+package com.moselo.HomingPigeon.Const;
 
 public class HpDefaultConstant {
 
@@ -45,7 +45,7 @@ public class HpDefaultConstant {
         public static final int TYPE_CATEGORY = 2002;
         public static final int TYPE_ORDER_CARD = 2003;
         public static final int TYPE_CONFIRM_MY_PAYMENT = 2004;
-        
+
         public static final int TYPE_HIDDEN = 0x9196;
     }
 
@@ -123,6 +123,10 @@ public class HpDefaultConstant {
         public static final int USE_REFRESH_TOKEN = 2;
     }
 
+    public static final class OldDataConst {
+        public static final String K_LAST_DELETE_TIMESTAMP = "kLastDeleteTimestamp";
+    }
+
     public static final String K_REFRESH_TOKEN = "kRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kAccessToken";
@@ -148,4 +152,6 @@ public class HpDefaultConstant {
     public static final String ADDED_CONTACT = "kAddedContact";
 
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
+
+    public static final String HP_NOTIFICATION_CHANNEL = "homingPigeon_channel_id";
 }

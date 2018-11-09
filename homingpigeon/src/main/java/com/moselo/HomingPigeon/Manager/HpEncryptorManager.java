@@ -1,7 +1,7 @@
 package com.moselo.HomingPigeon.Manager;
 
 import com.moselo.HomingPigeon.Helper.AESCrypt;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
+import com.moselo.HomingPigeon.Const.HpDefaultConstant;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 
 import java.security.GeneralSecurityException;

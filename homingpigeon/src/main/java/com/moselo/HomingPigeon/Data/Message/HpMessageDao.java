@@ -2,18 +2,22 @@ package com.moselo.HomingPigeon.Data.Message;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.NUM_OF_ITEM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.NUM_OF_ITEM;
 
 @Dao
 public interface HpMessageDao {
 
     int numOfItem = NUM_OF_ITEM;
+
+    @Delete
+    void delete(List<HpMessageEntity> messageEntities);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(HpMessageEntity messageEntity);
@@ -36,7 +40,15 @@ public interface HpMessageDao {
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
             "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
             " from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
-    List<HpMessageEntity> getAllMessageList(String roomID);
+    List<HpMessageEntity> getAllMessageListDesc(String roomID);
+
+    @Query("select messageID, localID, roomID, roomName, roomColor, roomType," +
+            " roomImage, type, body, created, " +
+            "userID, xcUserID, userFullName, userImage, username, userEmail, " +
+            "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
+            "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
+            " from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
+    List<HpMessageEntity> getAllMessageListAsc(String roomID);
 
     @Query("select messageID, localID, roomID, roomName, roomColor, roomType, " +
             "roomImage, type, body, created, " +

@@ -6,12 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.RemoteInput;
-import android.widget.Toast;
 
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.Notification.K_TEXT_REPLY;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_TEXT_REPLY;
 
 public class HpReplyBroadcastReceiver extends BroadcastReceiver {
     @Override

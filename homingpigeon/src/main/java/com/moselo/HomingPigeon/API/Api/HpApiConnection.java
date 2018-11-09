@@ -8,8 +8,6 @@ import com.moselo.HomingPigeon.API.Service.HomingPigeonApiService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonRefreshTokenService;
 import com.moselo.HomingPigeon.API.Service.HomingPigeonSocketService;
 import com.moselo.HomingPigeon.BuildConfig;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpDefaultConstant;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -21,8 +19,8 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
 
 public class HpApiConnection {
 

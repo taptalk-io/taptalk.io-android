@@ -14,10 +14,10 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_ID;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.APP_KEY_SECRET;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
-import static com.moselo.HomingPigeon.Helper.HpDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.APP_KEY_ID;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
 
 public class HpHeaderRequestInterceptor implements Interceptor {
     public static final String TAG = HpHeaderRequestInterceptor.class.getSimpleName();
