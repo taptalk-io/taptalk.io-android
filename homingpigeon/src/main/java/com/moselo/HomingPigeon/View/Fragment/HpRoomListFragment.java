@@ -268,6 +268,7 @@ public class HpRoomListFragment extends Fragment {
                 llRoomEmpty.setVisibility(View.GONE);
             }
             flSetupContainer.setVisibility(View.GONE);
+            showNewChatButton();
 
             //ini buat ngubah isShouldNotLoadFromAPInya pas get data pertama
             //setelah itu fetch data dari api sesuai dengan cycle yang di butuhin
@@ -390,8 +391,6 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
-            flSetupContainer.setVisibility(View.GONE);
-            showNewChatButton();
             if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
                 HpDataManager.getInstance().setRoomListSetupFinished();
             }
@@ -424,6 +423,8 @@ public class HpRoomListFragment extends Fragment {
                         getDatabaseAndAnimateResult();
                     }
                 });
+            } else {
+                reloadLocalDataAndUpdateUILogic(true);
             }
         }
 

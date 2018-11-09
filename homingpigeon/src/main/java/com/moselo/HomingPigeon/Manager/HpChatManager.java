@@ -395,11 +395,10 @@ public class HpChatManager {
         // TODO: 8 November 2018 CHECK IMAGE WIDTH/HEIGHT AFTER ENCODE
         // Get image width and height
         String pathName = HpFileUtils.getInstance().getFilePath(HomingPigeon.appContext, imageUri);
-        Log.e(TAG, "sendImageMessage pathName: " + pathName);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(pathName, options);
+        BitmapFactory.decodeFile(pathName, options);
         int orientation = HpFileUtils.getInstance().getImageOrientation(imageUri, HomingPigeon.appContext);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
             messageModel.setImageWidth(options.outHeight);
@@ -408,8 +407,6 @@ public class HpChatManager {
             messageModel.setImageWidth(options.outWidth);
             messageModel.setImageHeight(options.outHeight);
         }
-        Log.e(TAG, "sendImageMessage imageWidth: " + messageModel.getImageWidth());
-        Log.e(TAG, "sendImageMessage imageHeight: " + messageModel.getImageHeight());
 
         // Trigger listener to create temporary image in activity
         triggerSendMessageListener(messageModel);
