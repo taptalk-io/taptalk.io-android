@@ -308,9 +308,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
+            android:background="@drawable/hp_bg_grey_ripple"
             android:src="@drawable/hp_ic_attach_grey"
             app:layout_constraintBottom_toBottomOf="@id/et_chat"
             app:layout_constraintEnd_toEndOf="@id/et_chat" />

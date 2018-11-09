@@ -11,6 +11,14 @@ import android.util.AttributeSet;
 
 import com.moselo.HomingPigeon.R;
 
+/**
+ **** Use app:cornerRadius to set a universal corner radius for the ImageView
+ **** Setting individual radius (e.g. app:topLeftRadius) will override cornerRadius value
+ **** app:dimensionRatio is used to set a limit to the ImageView's dimension ratio
+ **** app:minWidth, app:minHeight, android:maxWidth, android:maxHeight are required along with
+ *    app:dimensionRatio to to limit the view's ratio
+ **** corner radius value might be inaccurate (less than the set value)
+ */
 public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompatImageView {
 
     private Path path;
@@ -49,14 +57,20 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
         }
         if (attributeSet != null) {
             TypedArray typedArray = getContext().obtainStyledAttributes(attributeSet, R.styleable.HpRoundedCornerImageView);
+            // Set values from cornerRadius
+            topLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_cornerRadius, topLeftRad);
+            topRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_cornerRadius, topRightRad);
+            bottomLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_cornerRadius, bottomLeftRad);
+            bottomRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_cornerRadius, bottomRightRad);
+            // Set values from individual radius
             topLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_topLeftRadius, topLeftRad);
             topRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_topRightRadius, topRightRad);
             bottomLeftRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomLeftRadius, bottomLeftRad);
             bottomRightRad = typedArray.getDimension(R.styleable.HpRoundedCornerImageView_bottomRightRadius, bottomRightRad);
+
+            dimensionRatio = typedArray.getFloat(R.styleable.HpRoundedCornerImageView_dimensionRatio, dimensionRatio);
             minWidth = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minWidth, minWidth);
             minHeight = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minHeight, minHeight);
-            minHeight = (int) typedArray.getDimension(R.styleable.HpRoundedCornerImageView_minHeight, minHeight);
-            dimensionRatio = typedArray.getFloat(R.styleable.HpRoundedCornerImageView_dimensionRatio, dimensionRatio);
             typedArray.recycle();
         }
     }
@@ -165,7 +179,7 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
 
         MeasureSpec.makeMeasureSpec(size, mode);
 
-        if (dimensionRatio == 0) {
+        if (dimensionRatio == 0 || minWidth == 0 || minHeight == 0 || maxWidth == 0 || maxHeight == 0) {
             return;
         }
         Drawable drawable = getDrawable();
