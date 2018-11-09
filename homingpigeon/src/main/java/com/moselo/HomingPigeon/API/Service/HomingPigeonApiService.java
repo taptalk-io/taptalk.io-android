@@ -23,7 +23,8 @@ import retrofit2.http.POST;
 import rx.Observable;
 
 public interface HomingPigeonApiService {
-    String BASE_URL = "https://hp-staging.moselo.com:8080/api/v1/";
+    String BASE_URL = "https://hp-dev.moselo.com:8080/api/v1/";
+    //String BASE_URL = "dev.taptalk.io:8080/api/v1/";
 
     @POST("server/auth_ticket/request")
     Observable<BaseResponse<HpAuthTicketResponse>> getAuthTicket(@Body HpAuthTicketRequest request);

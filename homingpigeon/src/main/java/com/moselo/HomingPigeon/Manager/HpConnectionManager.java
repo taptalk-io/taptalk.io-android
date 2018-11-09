@@ -40,7 +40,7 @@ public class HpConnectionManager {
     private String TAG = HpConnectionManager.class.getSimpleName();
     private static HpConnectionManager instance;
     private WebSocketClient webSocketClient;
-    private String webSocketEndpoint = "wss://hp-staging.moselo.com:8080/pigeon";
+    private String webSocketEndpoint = "wss://hp-dev.moselo.com:8080/pigeon";
     //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
