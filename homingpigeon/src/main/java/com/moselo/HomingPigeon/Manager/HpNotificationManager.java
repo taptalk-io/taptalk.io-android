@@ -78,7 +78,7 @@ public class HpNotificationManager {
             messageSize += item.getValue().size();
         }
         String summaryContent = messageSize + " messages from " + chatSize + " chats";
-        
+
         return new NotificationCompat.Builder(context, HP_NOTIFICATION_CHANNEL)
                 .setSmallIcon(HomingPigeon.getClientAppIcon())
                 .setContentTitle(HomingPigeon.getClientAppName())
@@ -175,6 +175,15 @@ public class HpNotificationManager {
                     .setOnClickAction(HpRoomListActivity.class)
                     .show();
         }
+    }
+
+    public void createAndShowBackgroundNotification(Context context, int notificationIcon, HpMessageModel newMessageModel) {
+        new HomingPigeon.NotificationBuilder(context)
+                .setNotificationMessage(newMessageModel)
+                .setSmallIcon(notificationIcon)
+                .setNeedReply(false)
+                .setOnClickAction(HpRoomListActivity.class)
+                .show();
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
