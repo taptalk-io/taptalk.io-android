@@ -32,6 +32,7 @@ public class HpMessageModel {
     @Nullable @JsonProperty("updated") private Long updated;
     @JsonIgnore private HpMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
+    @JsonIgnore private int imageWidth, imageHeight;
 
     public HpMessageModel(@Nullable String messageID, @NonNull String localID, String body, HpRoomModel room,
                           Integer type, Long created, HpUserModel user, String recipientID, @Nullable Boolean isDeleted,
@@ -250,6 +251,22 @@ public class HpMessageModel {
 
     public void setReplyTo(HpMessageModel replyTo) {
         this.replyTo = replyTo;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public void setImageWidth(int imageWidth) {
+        this.imageWidth = imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
+    }
+
+    public void setImageHeight(int imageHeight) {
+        this.imageHeight = imageHeight;
     }
 
     public void updateValue(HpMessageModel model) {

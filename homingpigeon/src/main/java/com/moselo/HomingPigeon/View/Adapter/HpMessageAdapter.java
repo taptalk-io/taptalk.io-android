@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -212,6 +213,8 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivReply, ivSending);
 
+            Log.e(TAG, "onBind: " + item.getImageWidth() + ", " + item.getImageHeight());
+            rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
             if (!item.getBody().isEmpty()) {
                 GlideApp.with(itemView.getContext()).load(item.getBody()).diskCacheStrategy(DiskCacheStrategy.AUTOMATIC).listener(new RequestListener<Drawable>() {
                     @Override

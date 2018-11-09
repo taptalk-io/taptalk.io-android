@@ -1,6 +1,9 @@
 package com.moselo.HomingPigeon.Manager;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -8,7 +11,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpImageEncoder;
+import com.moselo.HomingPigeon.Helper.HpFileUtils;
 import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
@@ -390,16 +393,35 @@ public class HpChatManager {
                 activeUser,
                 getOtherUserIdFromActiveRoom());
 
+        // TODO: 8 November 2018 CHECK IMAGE WIDTH/HEIGHT AFTER ENCODE
+        // Get image width and height
+        String pathName = HpFileUtils.getInstance().getFilePath(HomingPigeon.appContext, imageUri);
+        Log.e(TAG, "sendImageMessage pathName: " + pathName);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(pathName, options);
+        int orientation = HpFileUtils.getInstance().getImageOrientation(imageUri, HomingPigeon.appContext);
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            messageModel.setImageWidth(options.outHeight);
+            messageModel.setImageHeight(options.outWidth);
+        } else {
+            messageModel.setImageWidth(options.outWidth);
+            messageModel.setImageHeight(options.outHeight);
+        }
+        Log.e(TAG, "sendImageMessage imageWidth: " + messageModel.getImageWidth());
+        Log.e(TAG, "sendImageMessage imageHeight: " + messageModel.getImageHeight());
+
         // Trigger listener to create temporary image in activity
         triggerSendMessageListener(messageModel);
 
-        new Thread(() -> {
-            // Encode image to base 64
-            // TODO: 1 November 2018 UPDATE ENCODE METHOD
-            String encodedImage = HpImageEncoder.getInstance().encodeToBase64(imageUri, maxImageSize, activity);
-            messageModel.setBody(encodedImage);
-            // TODO: 31 October 2018 SEND MESSAGE TO SERVER
-        }).start();
+//        new Thread(() -> {
+//            // Encode image to base 64
+//            // TODO: 1 November 2018 UPDATE ENCODE METHOD
+//            String encodedImage = HpFileUtils.getInstance().encodeToBase64(imageUri, maxImageSize, activity);
+//            messageModel.setBody(encodedImage);
+//            // TODO: 31 October 2018 SEND MESSAGE TO SERVER
+//        }).start();
     }
 
     // Send image without encoding
@@ -419,6 +441,9 @@ public class HpChatManager {
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (HpChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = messageModel.copyMessageModel();
+                // TODO: 8 November 2018 TESTING
+                tempNewMessage.setImageWidth(messageModel.getImageWidth());
+                tempNewMessage.setImageHeight(messageModel.getImageHeight());
                 chatListener.onSendTextMessage(tempNewMessage);
             }
         }

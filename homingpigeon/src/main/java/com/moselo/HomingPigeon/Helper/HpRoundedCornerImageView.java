@@ -17,7 +17,7 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
     private Path path;
     private RectF rounded;
     private AttributeSet attributeSet;
-    private int w, h, oldW, oldH, minWidth, minHeight, maxWidth, maxHeight;
+    private int w, h, oldW, oldH, imageWidth, imageHeight, minWidth, minHeight, maxWidth, maxHeight;
     private float dimensionRatio;
     private final float DEFAULT_RADIUS = HpUtils.getInstance().dpToPx(4);
 
@@ -104,6 +104,12 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
         onSizeChanged(w, h, oldW, oldH);
     }
 
+    public void setImageDimensions(int width, int height) {
+        imageWidth = width;
+        imageHeight = height;
+        Log.e("]]]]", "setImageDimensions: " + width + ", " + height);
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -161,6 +167,8 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
 
         MeasureSpec.makeMeasureSpec(size, mode);
 
+        Log.e("]]]]", "imageWidth: " + imageWidth);
+        Log.e("]]]]", "imageHeight: " + imageHeight);
         if (dimensionRatio == 0) {
             return;
         }
@@ -174,22 +182,7 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
             return;
         }
 
-        // Calculate the most appropriate size for the view. Take into
-        // account minWidth, minHeight, maxWith, maxHeight and allowed size
-        // for the view.
-//        int maxWidth = wMode == MeasureSpec.AT_MOST
-//                ? Math.min(MeasureSpec.getSize(widthMeasureSpec), this.maxWidth)
-//                : this.maxWidth;
-//        int maxHeight = hMode == MeasureSpec.AT_MOST
-//                ? Math.min(MeasureSpec.getSize(heightMeasureSpec), this.maxHeight)
-//                : this.maxHeight;
-
-        // FIXME: 7 November 2018 minWidth AND minHeight ARE NOT WORKING, DRAWABLE DIMENSIONS RETURN WRONG SIZE
-        int dWidth = drawable.getIntrinsicWidth();
-        int dHeight = drawable.getIntrinsicHeight();
-        float ratio = ((float) dWidth) / dHeight;
-        Log.e("]]]]", "dWidth: " + dWidth);
-        Log.e("]]]]", "dHeight: " + dHeight);
+        float ratio = ((float) imageWidth) / imageHeight;
 
         int resultWidth, resultHeight;
         if (ratio > ((float) maxWidth / minHeight)) {
@@ -211,29 +204,29 @@ public class HpRoundedCornerImageView extends android.support.v7.widget.AppCompa
         } else if (ratio > dimensionRatio) {
             // Width ratio is higher than limit -> use maxWidth
             Log.e("]]]]", "ratio >: " + ratio);
-            if (dWidth > maxWidth) {
+            if (imageWidth > maxWidth) {
                 resultWidth = maxWidth;
                 resultHeight = (int) (resultWidth / ratio);
-            } else if (dWidth < minWidth) {
+            } else if (imageWidth < minWidth) {
                 resultWidth = minWidth;
                 resultHeight = (int) (resultWidth / ratio);
             } else {
-                resultWidth = dWidth;
-                resultHeight = dHeight;
+                resultWidth = imageWidth;
+                resultHeight = imageHeight;
             }
             setScaleType(ScaleType.FIT_CENTER);
         } else {
             // Height ratio is higher than limit -> use maxHeight
             Log.e("]]]]", "ratio <: " + ratio);
-            if (dHeight > maxHeight) {
+            if (imageHeight > maxHeight) {
                 resultHeight = maxHeight;
                 resultWidth = (int) (resultHeight * ratio);
-            } else if (dHeight < minHeight) {
+            } else if (imageHeight < minHeight) {
                 resultHeight = minHeight;
                 resultWidth = (int) (resultHeight * ratio);
             } else {
-                resultWidth = dWidth;
-                resultHeight = dHeight;
+                resultWidth = imageWidth;
+                resultHeight = imageHeight;
             }
             setScaleType(ScaleType.FIT_CENTER);
         }
