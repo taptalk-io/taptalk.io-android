@@ -112,5 +112,4 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
 }
 
-GoogleServicesPlugin.config.disableVersionCheck = true
 apply plugin: 'com.google.gms.google-services'
