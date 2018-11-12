@@ -1,5 +1,3 @@
-import com.google.gms.googleservices.GoogleServicesPlugin
-
 apply plugin: 'com.android.application'
 
 android {
@@ -14,7 +12,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs{
+    signingConfigs {
         release {
             try {
                 Properties props = new Properties()
@@ -108,7 +106,7 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.3.0'
 
     //FireBase
-    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
 }
 
