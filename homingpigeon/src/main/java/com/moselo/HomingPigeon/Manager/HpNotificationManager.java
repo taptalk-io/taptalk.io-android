@@ -8,7 +8,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 
@@ -178,6 +180,7 @@ public class HpNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, HpMessageModel newMessageModel) {
+        HpDataManager.getInstance().insertToDatabase(HpChatManager.getInstance().convertToEntity(newMessageModel));
         new HomingPigeon.NotificationBuilder(context)
                 .setNotificationMessage(newMessageModel)
                 .setSmallIcon(notificationIcon)
