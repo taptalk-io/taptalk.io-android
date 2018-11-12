@@ -100,6 +100,10 @@
     <string name="location">Location</string>
     <string name="contact">Contact</string>
 
+    <!--Product/Order-->
+    <string name="price">Price</string>
+    <string name="rating">Rating</string>
+
     <!--Intent-->
     <string name="intent_pick_image">image/*</string>
     <string name="intent_select_picture">Select Picture</string>
@@ -126,4 +130,7 @@
     <string name="unread_messages">Unread Messages</string>
     <string name="you">You</string>
     <string name="over_99">99+</string>
+    <string name="details">Details</string>
+    <string name="order_now">Order Now</string>
+    <string name="no_review_yet">No review yet</string>
 </resources>
