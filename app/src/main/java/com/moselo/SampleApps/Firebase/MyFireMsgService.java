@@ -7,6 +7,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
 import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Sample.R;
@@ -19,6 +20,7 @@ public class MyFireMsgService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        HpNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
         HpMessageModel notifModel = HpUtils.getInstance().fromJSON(new TypeReference<HpMessageModel>() {
         }, remoteMessage.getData().get("body"));
         try {
