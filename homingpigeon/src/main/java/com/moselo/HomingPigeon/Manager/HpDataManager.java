@@ -10,6 +10,7 @@ import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
@@ -24,6 +25,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
@@ -35,6 +37,7 @@ import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_USER;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
 
 public class HpDataManager {
@@ -254,8 +257,24 @@ public class HpDataManager {
     }
 
     public Boolean checkLastDeleteTimestamp() {
-        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp()) return false;
+        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp())
+            return false;
         else return 0 != getLastDeleteTimestamp();
+    }
+
+    /**
+     * Notification Message Map
+     */
+    public void saveNotificationMessageMap(Map<String, List<HpMessageModel>> notifMessagesMap) {
+        Hawk.put(K_NOTIFICATION_MESSAGE_MAP, notifMessagesMap);
+    }
+
+    public Map<String, List<HpMessageModel>> getNotificationMessageMap() {
+        return Hawk.get(K_NOTIFICATION_MESSAGE_MAP, null);
+    }
+
+    public void clearNotificationMessageMap() {
+        Hawk.delete(K_NOTIFICATION_MESSAGE_MAP);
     }
 
     /**

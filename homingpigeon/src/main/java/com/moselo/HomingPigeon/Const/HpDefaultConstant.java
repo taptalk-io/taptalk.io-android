@@ -101,6 +101,7 @@ public class HpDefaultConstant {
     public static final class Notification {
         public static final String K_FIREBASE_TOKEN = "kFirebaseToken";
         public static final String K_TEXT_REPLY = "kTextReply";
+        public static final String K_NOTIFICATION_MESSAGE_MAP = "kNotificationMessageMap";
         public static final int K_REPLY_REQ_CODE = 1;
     }
 
