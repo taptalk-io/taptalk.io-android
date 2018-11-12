@@ -8,7 +8,7 @@
     android:layout_marginEnd="8dp"
     android:layout_marginBottom="8dp"
     android:background="@drawable/hp_bg_white_rounded_8dp"
-    android:foreground="@drawable/hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_ededed_1dp">
+    android:foreground="@drawable/hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/grey_ed"
+            android:background="@color/grey_ea"
             app:layout_constraintBottom_toBottomOf="@id/tv_product_name" />
 
         <TextView
@@ -111,7 +111,7 @@
             android:id="@+id/v_description_separator"
             android:layout_width="1dp"
             android:layout_height="0dp"
-            android:background="@color/grey_ed"
+            android:background="@color/grey_ea"
             app:layout_constraintBottom_toBottomOf="@id/tv_price"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -120,7 +120,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/grey_ed"
+            android:background="@color/grey_ea"
             app:layout_constraintBottom_toBottomOf="@id/tv_price" />
 
         <TextView
@@ -130,6 +130,7 @@
             android:layout_height="wrap_content"
             android:maxLines="3"
             android:minLines="3"
+            android:lineSpacingExtra="3sp"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -139,7 +140,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/grey_ed"
+            android:background="@color/grey_ea"
             app:layout_constraintBottom_toBottomOf="@id/tv_product_description" />
 
         <TextView
@@ -180,7 +181,7 @@
             android:id="@+id/v_button_separator"
             android:layout_width="1dp"
             android:layout_height="0dp"
-            android:background="@color/grey_ed"
+            android:background="@color/grey_ea"
             app:layout_constraintBottom_toBottomOf="@id/tv_button_details"
             app:layout_constraintEnd_toStartOf="@id/tv_button_order"
             app:layout_constraintStart_toEndOf="@id/tv_button_details"

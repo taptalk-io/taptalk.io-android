@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -19,7 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -283,7 +281,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         @Override
         protected void onBind(HpMessageModel item, int position) {
             if (null == adapter) {
-                adapter = new HpProductListAdapter(item, myUserModel);
+                adapter = new HpProductListAdapter(item, myUserModel, listener);
             }
 
             rvProductList.setAdapter(adapter);

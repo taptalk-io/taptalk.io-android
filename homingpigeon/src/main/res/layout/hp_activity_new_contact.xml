@@ -299,7 +299,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:padding="4dp"
-            android:src="@drawable/ic_connection_lost"
+            android:src="@drawable/hp_ic_connection_lost"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

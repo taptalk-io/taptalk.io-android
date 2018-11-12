@@ -12,6 +12,7 @@ import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.HpRoundedCornerImageView;
 import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpProductModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -25,16 +26,18 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
     private List<HpProductModel> items = new ArrayList<>();
     private HpMessageModel messageModel;
     private HpUserModel myUserModel;
+    private HpChatListener chatListener;
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
 
-    public HpProductListAdapter(HpMessageModel messageModel, HpUserModel myUserModel) {
+    public HpProductListAdapter(HpMessageModel messageModel, HpUserModel myUserModel, HpChatListener chatListener) {
         setItems(HpUtils.getInstance().fromJSON(
                 new TypeReference<List<HpProductModel>>() {
                 },
                 messageModel.getBody()), false);
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
+        this.chatListener = chatListener;
     }
 
     @NonNull
@@ -81,13 +84,13 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonOrder.setVisibility(View.GONE);
                 rcivProductImage.setCornerRadius(HpUtils.getInstance().dpToPx(11), HpUtils.getInstance().dpToPx(2), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_8dp_1dp_8dp_8dp_stroke_ededed_1dp));
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
             } else {
                 // Other seller's products
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonOrder.setVisibility(View.VISIBLE);
                 rcivProductImage.setCornerRadius(HpUtils.getInstance().dpToPx(2), HpUtils.getInstance().dpToPx(11), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_ededed_1dp));
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
             GlideApp.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
@@ -107,6 +110,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
             }
 
+            flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             tvButtonDetails.setOnClickListener(v -> viewProductDetail());
             tvButtonOrder.setOnClickListener(v -> orderProduct());
         }
