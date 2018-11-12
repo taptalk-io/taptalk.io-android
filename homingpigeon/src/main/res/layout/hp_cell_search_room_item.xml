@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:animateLayoutChanges="true"
+    android:background="@color/white"
+    android:foreground="?attr/selectableItemBackground"
+    android:orientation="vertical">
+
+    <com.moselo.HomingPigeon.Helper.CircleImageView
+        android:id="@+id/civ_avatar"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/hp_bg_circle_9b9b9b"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@id/tv_room_name"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_avatar_icon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/hp_ic_verified"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
+
+    <TextView
+        android:id="@+id/tv_room_name"
+        style="@style/HomingPigeonContactName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="28dp"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toStartOf="@id/tv_badge_unread"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Username" />
+
+    <!--<View-->
+        <!--android:id="@+id/v_room_status_badge"-->
+        <!--android:layout_width="7dp"-->
+        <!--android:layout_height="7dp"-->
+        <!--android:background="@drawable/hp_bg_circle_vibrantgreen"-->
+        <!--app:layout_constraintBottom_toBottomOf="@id/tv_room_status"-->
+        <!--app:layout_constraintStart_toStartOf="@id/tv_room_name"-->
+        <!--app:layout_constraintTop_toTopOf="@id/tv_room_status" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tv_room_status"-->
+        <!--style="@style/HomingPigeonRoomMessage"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="3dp"-->
+        <!--app:layout_constraintBottom_toBottomOf="@id/civ_avatar"-->
+        <!--app:layout_constraintEnd_toEndOf="@id/tv_room_name"-->
+        <!--app:layout_constraintStart_toEndOf="@id/v_room_status_badge"-->
+        <!--app:layout_constraintTop_toBottomOf="@id/tv_room_name"-->
+        <!--tools:text="Active Now" />-->
+
+    <TextView
+        android:id="@+id/tv_badge_unread"
+        style="@style/HomingPigeonUnreadBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1" />
+
+    <View
+        android:id="@+id/v_separator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="62dp"
+        android:background="@color/grey_ea"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ll_connection_status"
+    android:layout_width="match_parent"
+    android:layout_height="20dp"
+    android:background="@drawable/hp_bg_status_connecting"
+    android:gravity="center"
+    android:orientation="horizontal"
+    app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
+    app:layout_constraintTop_toBottomOf="@+id/cl_button_search">
+
+    <TextView
+        android:id="@+id/tv_connection_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/hp_font_latobold"
+        android:text="@string/connecting"
+        android:textColor="@color/white"
+        android:textSize="12dp" />
+
+    <ProgressBar
+        android:id="@+id/pb_connecting"
+        android:layout_width="9dp"
+        android:layout_height="9dp"
+        android:layout_marginStart="4dp"
+        android:indeterminateTint="@color/white" />
+
+    <ImageView
+        android:id="@+id/iv_connection_status"
+        android:layout_width="9dp"
+        android:layout_height="9dp"
+        android:layout_marginStart="4dp"
+        android:src="@drawable/hp_ic_connected_white"
+        android:visibility="gone" />
+
+</LinearLayout>

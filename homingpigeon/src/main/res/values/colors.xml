@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/warmPurple</color>
+    <color name="colorPrimaryDark">@color/darkPurple</color>
+    <color name="colorAccent">@color/tealish</color>
+    <color name="colorAccentLight">@color/lightTeal</color>
+
+    <color name="darkPurple">#51276c</color>
+    <color name="warmPurple">#6d3492</color>
+    <color name="purply">#793da0</color>
+    <color name="mediumPurple">#784198</color>
+    <color name="amethyst">#9954c2</color>
+    <color name="easterPurple">#c96cff</color>
+    <color name="purplishPink">#c854a5</color>
+    <color name="brightRed">#ff2323</color>
+    <color name="tomato">#ec2c2b</color>
+    <color name="red">#d90a0a</color>
+    <color name="butterscotch">#ffb438</color>
+    <color name="orangeYellow">#ff9f00</color>
+    <color name="tangerine">#ffa107</color>
+    <color name="cream_white">#fffdea</color>
+    <color name="leafyGreen">#3bc73d</color>
+    <color name="vibrantGreen">#19c700</color>
+    <color name="green">#2db80f</color>
+    <color name="greenBlue">#00b793</color>
+    <color name="tealish">#2eccad</color>
+    <color name="aquaMarine">#3de1c1</color>
+    <color name="lightTeal">#a7ebde</color>
+    <color name="brightBlue">#007aff</color>
+
+    <color name="white">#ffffff</color>
+    <color name="white_fa">#fafafa</color>
+    <color name="white_f8">#f8f8f8</color>
+    <color name="white_f5">#f5f5f5</color>
+    <color name="white_f3">#f3f3f3</color>
+    <color name="grey_ed">#ededed</color>
+    <color name="grey_ea">#eaeaea</color>
+    <color name="grey_e4">#e4e4e4</color>
+    <color name="grey_d9">#d9d9d9</color>
+    <color name="grey_cb">#cbcbcb</color>
+    <color name="grey_9b">#9b9b9b</color>
+    <color name="black_44">#444444</color>
+    <color name="black_2c">#2c2c2c</color>
+    <color name="black">#000000</color>
+
+    <color name="transparent_white">#00ffffff</color>
+    <color name="transparent_black">#00000000</color>
+    <color name="transparent_black_18">#2d000000</color>
+    <color name="transparent_black_40">#66000000</color>
+    <color name="transparent_charcoal">#6604040f</color>
+
+    <color name="color0">#fdc3a7</color>
+    <color name="color1">#d0e69d</color>
+    <color name="color2">#99d39e</color>
+    <color name="color3">#a9ddc7</color>
+    <color name="color4">#c6d3e9</color>
+    <color name="color5">#d5c0e2</color>
+    <color name="color6">#f599b5</color>
+    <color name="color7">#ffb3b8</color>
+    <color name="color8">#fdd38d</color>
+    <color name="color9">#b4e6f1</color>
+
+    <array name="pastel_colors">
+        <item>@color/color0</item>
+        <item>@color/color1</item>
+        <item>@color/color2</item>
+        <item>@color/color3</item>
+        <item>@color/color4</item>
+        <item>@color/color5</item>
+        <item>@color/color6</item>
+        <item>@color/color7</item>
+        <item>@color/color8</item>
+        <item>@color/color9</item>
+    </array>
+</resources>

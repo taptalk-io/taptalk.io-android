@@ -2,10 +2,37 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.moselo.HomingPigeon">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <application>
-        <activity android:name=".Testing.LibraryActivity"></activity>
+    <application android:theme="@style/AppTheme">
+        <service
+            android:name=".Helper.HomingPigeonEndAppService"
+            android:stopWithTask="false" />
+
+        <activity android:name=".View.Activity.HpBarcodeScannerActivity" />
+        <activity
+            android:name=".View.Activity.HpChatActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".View.Activity.HpLoginActivity" />
+        <activity android:name=".View.Activity.HpRoomListActivity" />
+        <activity android:name=".View.Activity.HpNewChatActivity" />
+        <activity android:name=".View.Activity.HpSearchContactActivity" />
+        <activity android:name=".View.Activity.HpNewContactActivity" />
+        <activity android:name=".View.Activity.HpBlockedListActivity" />
+        <activity android:name=".View.Activity.HpScanResultActivity"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name=".View.Activity.HpCreateNewGroupActivity"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".View.Activity.HpGroupSubjectActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".View.Activity.HpProfileActivity" />
     </application>
 
 </manifest>
