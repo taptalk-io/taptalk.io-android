@@ -2,6 +2,7 @@ package com.moselo.HomingPigeon.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.util.Log;
 
 import com.moselo.HomingPigeon.API.Api.HpApiManager;
 import com.moselo.HomingPigeon.API.DefaultSubscriber;
@@ -41,6 +42,7 @@ import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_NOT
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
 
 public class HpDataManager {
+    private static final String TAG = HpDataManager.class.getSimpleName();
     private static HpDataManager instance;
 
     public static HpDataManager getInstance() {
@@ -265,16 +267,20 @@ public class HpDataManager {
     /**
      * Notification Message Map
      */
-    public void saveNotificationMessageMap(Map<String, List<HpMessageModel>> notifMessagesMap) {
+    public void saveNotificationMessageMap(String notifMessagesMap) {
         Hawk.put(K_NOTIFICATION_MESSAGE_MAP, notifMessagesMap);
     }
 
-    public Map<String, List<HpMessageModel>> getNotificationMessageMap() {
+    public String getNotificationMessageMap() {
         return Hawk.get(K_NOTIFICATION_MESSAGE_MAP, null);
     }
 
     public void clearNotificationMessageMap() {
         Hawk.delete(K_NOTIFICATION_MESSAGE_MAP);
+    }
+
+    public boolean checkNotificationMap() {
+        return checkPreferenceKeyAvailable(K_NOTIFICATION_MESSAGE_MAP);
     }
 
     /**

@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 
@@ -32,6 +35,10 @@ public class HpNotificationManager {
 
     public Map<String, List<HpMessageModel>> getNotifMessagesMap() {
         return null == notifMessagesMap ? notifMessagesMap = new LinkedHashMap<>() : notifMessagesMap;
+    }
+
+    public void setNotifMessagesMap(Map<String, List<HpMessageModel>> notifMessagesMap) {
+        this.notifMessagesMap = notifMessagesMap;
     }
 
     public boolean isRoomListAppear() {
@@ -190,6 +197,23 @@ public class HpNotificationManager {
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(roomID, 0);
+    }
+
+    public void saveNotificationMessageMapToPreference() {
+        if (0 < getNotifMessagesMap().size()) {
+            HpDataManager.getInstance().saveNotificationMessageMap(HpUtils.getInstance().toJsonString(getNotifMessagesMap()));
+        }
+    }
+
+    public void updateNotificationMessageMapWhenAppKilled() {
+        if (HpDataManager.getInstance().checkNotificationMap() && 0 == getNotifMessagesMap().size()) {
+            Map<String, List<HpMessageModel>> tempNotifMessage = HpUtils.getInstance().fromJSON(
+                    new TypeReference<Map<String, List<HpMessageModel>>>() {
+                    },
+                    HpDataManager.getInstance().getNotificationMessageMap());
+            setNotifMessagesMap(tempNotifMessage);
+            HpDataManager.getInstance().clearNotificationMessageMap();
+        }
     }
 
 }

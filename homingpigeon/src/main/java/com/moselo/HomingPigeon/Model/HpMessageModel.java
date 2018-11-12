@@ -1,5 +1,7 @@
 package com.moselo.HomingPigeon.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -14,7 +16,7 @@ import java.security.GeneralSecurityException;
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
  */
-public class HpMessageModel {
+public class HpMessageModel implements Parcelable {
     @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
     @NonNull @JsonProperty("localID") private String localID;
     @JsonProperty("room") private HpRoomModel room;
@@ -299,4 +301,71 @@ public class HpMessageModel {
                 getFailedSend(),
                 getUpdated());
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.messageID);
+        dest.writeString(this.localID);
+        dest.writeParcelable(this.room, flags);
+        dest.writeInt(this.type);
+        dest.writeString(this.body);
+        dest.writeValue(this.created);
+        dest.writeParcelable(this.user, flags);
+        dest.writeString(this.recipientID);
+        dest.writeValue(this.isRead);
+        dest.writeValue(this.isDelivered);
+        dest.writeValue(this.isHidden);
+        dest.writeValue(this.isDeleted);
+        dest.writeValue(this.isSending);
+        dest.writeValue(this.isFailedSend);
+        dest.writeValue(this.updated);
+        dest.writeParcelable(this.replyTo, flags);
+        dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isFirstLoadFinished ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isNeedAnimateSend ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.imageWidth);
+        dest.writeInt(this.imageHeight);
+    }
+
+    protected HpMessageModel(Parcel in) {
+        this.messageID = in.readString();
+        this.localID = in.readString();
+        this.room = in.readParcelable(HpRoomModel.class.getClassLoader());
+        this.type = in.readInt();
+        this.body = in.readString();
+        this.created = (Long) in.readValue(Long.class.getClassLoader());
+        this.user = in.readParcelable(HpUserModel.class.getClassLoader());
+        this.recipientID = in.readString();
+        this.isRead = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isDelivered = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isHidden = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isDeleted = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isSending = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isFailedSend = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.updated = (Long) in.readValue(Long.class.getClassLoader());
+        this.replyTo = in.readParcelable(HpMessageModel.class.getClassLoader());
+        this.isExpanded = in.readByte() != 0;
+        this.isFirstLoadFinished = in.readByte() != 0;
+        this.isNeedAnimateSend = in.readByte() != 0;
+        this.imageWidth = in.readInt();
+        this.imageHeight = in.readInt();
+    }
+
+    public static final Parcelable.Creator<HpMessageModel> CREATOR = new Parcelable.Creator<HpMessageModel>() {
+        @Override
+        public HpMessageModel createFromParcel(Parcel source) {
+            return new HpMessageModel(source);
+        }
+
+        @Override
+        public HpMessageModel[] newArray(int size) {
+            return new HpMessageModel[size];
+        }
+    };
 }
