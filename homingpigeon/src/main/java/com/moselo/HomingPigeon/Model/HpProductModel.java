@@ -12,16 +12,18 @@ public class HpProductModel {
     @JsonProperty("productName") private String name;
     @JsonProperty("thumbnailURL") private HpImageURL thumbnail;
     @JsonProperty("subcategory") private HpPairIdNameModel subcategory;
-    @JsonProperty("productID") private String prodID;
+    @JsonProperty("productID") private String productID;
     @JsonProperty("price") private Long price;
     @JsonProperty("type") private String type;
+    private String description;
+    private float rating;
 
     @Ignore
-    public HpProductModel(String name, HpImageURL thumbnail, HpPairIdNameModel subcategory, String prodID, Long price, String type) {
+    public HpProductModel(String name, HpImageURL thumbnail, HpPairIdNameModel subcategory, String productID, Long price, String type) {
         this.name = name;
         this.thumbnail = thumbnail;
         this.subcategory = subcategory;
-        this.prodID = prodID;
+        this.productID = productID;
         this.price = price;
         this.type = type;
     }
@@ -52,12 +54,12 @@ public class HpProductModel {
         this.subcategory = subcategory;
     }
 
-    public String getProdID() {
-        return prodID;
+    public String getProductID() {
+        return productID;
     }
 
-    public void setProdID(String prodID) {
-        this.prodID = prodID;
+    public void setProductID(String productID) {
+        this.productID = productID;
     }
 
     public Long getPrice() {
@@ -74,5 +76,21 @@ public class HpProductModel {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 }

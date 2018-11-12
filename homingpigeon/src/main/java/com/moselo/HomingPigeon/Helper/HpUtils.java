@@ -36,6 +36,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
@@ -213,6 +214,11 @@ public class HpUtils {
 
         in.close();
         return fullString.toString();
+    }
+
+    public String formatCurrencyRp(long value) {
+        String str = String.format(Locale.getDefault(), "%,d", value);
+        return "Rp " + str.replace(",", ".");
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, HpImageURL roomImage, int roomType, String roomColor) {
