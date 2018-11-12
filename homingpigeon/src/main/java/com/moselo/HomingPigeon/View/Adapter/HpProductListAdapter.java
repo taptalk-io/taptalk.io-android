@@ -3,6 +3,7 @@ package com.moselo.HomingPigeon.View.Adapter;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,6 +54,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
 
     public class ProductVH extends HpBaseViewHolder<HpProductModel> {
 
+        FrameLayout flContainer;
         HpRoundedCornerImageView rcivProductImage;
         TextView tvProductName, tvPrice, tvRating, tvProductDescription, tvButtonDetails, tvButtonOrder;
         ImageView ivRatingIcon;
@@ -60,6 +62,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
 
         ProductVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
+            flContainer = itemView.findViewById(R.id.fl_container);
             rcivProductImage = itemView.findViewById(R.id.rciv_product_image);
             tvProductName = itemView.findViewById(R.id.tv_product_name);
             tvPrice = itemView.findViewById(R.id.tv_price);
@@ -74,11 +77,17 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
         @Override
         protected void onBind(HpProductModel item, int position) {
             if (getItemViewType() == TYPE_SELLER) {
+                // My products
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonOrder.setVisibility(View.GONE);
+                rcivProductImage.setCornerRadius(HpUtils.getInstance().dpToPx(11), HpUtils.getInstance().dpToPx(2), 0, 0);
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_8dp_1dp_8dp_8dp_stroke_ededed_1dp));
             } else {
+                // Other seller's products
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonOrder.setVisibility(View.VISIBLE);
+                rcivProductImage.setCornerRadius(HpUtils.getInstance().dpToPx(2), HpUtils.getInstance().dpToPx(11), 0, 0);
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_ededed_1dp));
             }
 
             GlideApp.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
@@ -92,7 +101,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
                 tvRating.setText(ratingString);
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.purply));
             } else {
-                // Hide rating
+                // Product has no rating
                 ivRatingIcon.setVisibility(View.GONE);
                 tvRating.setText(itemView.getContext().getString(R.string.no_review_yet));
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
