@@ -74,11 +74,11 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
         @Override
         protected void onBind(HpProductModel item, int position) {
             if (getItemViewType() == TYPE_SELLER) {
-                vButtonSeparator.setVisibility(View.VISIBLE);
-                tvButtonOrder.setVisibility(View.VISIBLE);
-            } else {
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonOrder.setVisibility(View.GONE);
+            } else {
+                vButtonSeparator.setVisibility(View.VISIBLE);
+                tvButtonOrder.setVisibility(View.VISIBLE);
             }
 
             GlideApp.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);

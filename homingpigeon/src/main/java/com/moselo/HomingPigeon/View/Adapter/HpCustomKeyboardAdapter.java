@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
+import com.moselo.HomingPigeon.Interface.HpCustomKeyboardInterface;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.R;
 
@@ -12,8 +13,11 @@ import java.util.List;
 
 public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel, HpBaseViewHolder<HpCustomKeyboardModel>> {
 
-    public HpCustomKeyboardAdapter(List<HpCustomKeyboardModel> keyboardMenuList) {
+    private HpCustomKeyboardInterface listener;
+
+    public HpCustomKeyboardAdapter(List<HpCustomKeyboardModel> keyboardMenuList, HpCustomKeyboardInterface listener) {
         setItems(keyboardMenuList);
+        this.listener = listener;
     }
 
     @NonNull
@@ -44,12 +48,16 @@ public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel
     private void onMenuClicked(HpCustomKeyboardModel.Type type) {
         switch (type) {
             case SEE_PRICE_LIST:
+                listener.onSeePriceListClicked();
                 break;
             case READ_EXPERT_NOTES:
+                listener.onReadExpertNotesClicked();
                 break;
             case SEND_SERVICES:
+                listener.onSendServicesClicked();
                 break;
-            case CREATE_ORDER_CARD:
+            case CREATE_ORDER:
+                listener.onCreateOrderClicked();
                 break;
         }
     }

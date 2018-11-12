@@ -26,8 +26,8 @@
         android:fontFamily="@font/hp_font_neueeinstellungbold"
         android:letterSpacing="-0.02"
         android:lineSpacingExtra="4sp"
-        android:minLines="2"
         android:maxLines="2"
+        android:minLines="2"
         android:padding="8dp"
         android:textColor="@color/black_44"
         android:textSize="14sp"
@@ -101,6 +101,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_rating_icon"
         app:layout_constraintTop_toBottomOf="@id/tv_price_label"
+        app:layout_goneMarginStart="8dp"
         tools:text="5.0" />
 
     <View
@@ -124,9 +125,9 @@
         style="@style/HpProductDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:minLines="3"
         android:maxLines="3"
+        android:minLines="3"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_price"
@@ -151,7 +152,7 @@
         android:textColor="@color/black_44"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/v_button_separator"
+        app:layout_constraintEnd_toStartOf="@id/v_button_separator"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_product_description" />
 
@@ -178,8 +179,8 @@
         android:layout_height="0dp"
         android:background="@color/grey_ea"
         app:layout_constraintBottom_toBottomOf="@id/tv_button_details"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_button_order"
+        app:layout_constraintStart_toEndOf="@id/tv_button_details"
         app:layout_constraintTop_toTopOf="@id/tv_button_details" />
 
 </android.support.constraint.ConstraintLayout>

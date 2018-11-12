@@ -26,9 +26,11 @@ import com.bumptech.glide.request.target.Target;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.HpRoundedCornerImageView;
 import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
 import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
@@ -285,8 +287,17 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             }
 
             rvProductList.setAdapter(adapter);
-            rvProductList.setHasFixedSize(false);
             rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+            if (rvProductList.getItemDecorationCount() > 0) {
+                rvProductList.removeItemDecorationAt(0);
+            }
+            rvProductList.addItemDecoration(new HpHorizontalDecoration(
+                    0, 0,
+                    HpUtils.getInstance().dpToPx(16),
+                    HpUtils.getInstance().dpToPx(8),
+                    adapter.getItemCount(),
+                    0, 0));
+            OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         }
     }
 

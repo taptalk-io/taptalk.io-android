@@ -9,7 +9,7 @@ public class HpCustomKeyboardModel {
         SEE_PRICE_LIST,
         READ_EXPERT_NOTES,
         SEND_SERVICES,
-        CREATE_ORDER_CARD
+        CREATE_ORDER
     }
 
     private Type type;
@@ -31,7 +31,7 @@ public class HpCustomKeyboardModel {
                 icon = HomingPigeon.appContext.getString(R.string.send_services_icon);
                 label = HomingPigeon.appContext.getString(R.string.send_services);
                 break;
-            case CREATE_ORDER_CARD:
+            case CREATE_ORDER:
                 icon = HomingPigeon.appContext.getString(R.string.create_order_card_icon);
                 label = HomingPigeon.appContext.getString(R.string.create_order_card);
                 break;

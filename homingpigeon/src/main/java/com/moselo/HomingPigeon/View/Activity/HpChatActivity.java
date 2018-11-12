@@ -1,5 +1,6 @@
 package com.moselo.HomingPigeon.View.Activity;
 
+import android.animation.LayoutTransition;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -37,6 +39,7 @@ import com.moselo.HomingPigeon.Helper.HpUtils;
 import com.moselo.HomingPigeon.Helper.HpVerticalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.SwipeBackLayout.SwipeBackLayout;
+import com.moselo.HomingPigeon.Interface.HpCustomKeyboardInterface;
 import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
@@ -47,7 +50,10 @@ import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.HpPairIdNameModel;
+import com.moselo.HomingPigeon.Model.HpProductModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpCustomKeyboardAdapter;
@@ -60,6 +66,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_PRODUCT;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.NUM_OF_ITEM;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
@@ -85,7 +92,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     private HpChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clEmptyChat, clReply, clChatComposer;
+    private ConstraintLayout clContainer, clEmptyChat, clReply, clChatComposer;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
@@ -164,8 +171,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     @Override
     public void onBackPressed() {
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
-            rvCustomKeyboard.setVisibility(View.GONE);
-            ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
+            hideKeyboards();
         } else {
             HpChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
@@ -223,6 +229,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     protected void initView() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
+        clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
         clReply = (ConstraintLayout) findViewById(R.id.cl_reply);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
@@ -281,8 +288,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.SEE_PRICE_LIST));
         customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.READ_EXPERT_NOTES));
         customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.SEND_SERVICES));
-        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.CREATE_ORDER_CARD));
-        hpCustomKeyboardAdapter = new HpCustomKeyboardAdapter(customKeyboardMenus);
+        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.CREATE_ORDER));
+        hpCustomKeyboardAdapter = new HpCustomKeyboardAdapter(customKeyboardMenus, customKeyboardInterface);
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
@@ -313,6 +320,9 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
             });
         }
+
+        LayoutTransition containerTransition = clContainer.getLayoutTransition();
+        containerTransition.addTransitionListener(customKeyboardTransitionListener);
 
         etChat.addTextChangedListener(chatWatcher);
         etChat.setOnFocusChangeListener(chatFocusChangeListener);
@@ -509,6 +519,11 @@ public class HpChatActivity extends HpBaseChatActivity {
         }, 150L);
     }
 
+    private void hideKeyboards() {
+        rvCustomKeyboard.setVisibility(View.GONE);
+        ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
+    }
+
     private void openAttachMenu() {
         HpUtils.getInstance().dismissKeyboard(this);
         HpAttachmentBottomSheet attachBottomSheet = new HpAttachmentBottomSheet(attachmentListener);
@@ -636,7 +651,14 @@ public class HpChatActivity extends HpBaseChatActivity {
     private HpChatListener chatListener = new HpChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(HpMessageModel message) {
-            addNewMessage(message);
+            // TODO: 12 November 2018 ADD OTHER CUSTOM KEYBOARD MESSAGE TYPES
+            if (vm.isContainerAnimating() && message.getUser().getUserID().equals(vm.getMyUserModel().getUserID()) &&
+                    (message.getType() == TYPE_PRODUCT)) {
+                // Delay showing message if message is from custom keyboard
+                vm.setPendingCustomKeyboardMessage(message);
+            } else {
+                addNewMessage(message);
+            }
         }
 
         @Override
@@ -762,6 +784,57 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
+    private HpCustomKeyboardInterface customKeyboardInterface = new HpCustomKeyboardInterface() {
+        @Override
+        public void onSeePriceListClicked() {
+
+        }
+
+        @Override
+        public void onReadExpertNotesClicked() {
+
+        }
+
+        @Override
+        public void onSendServicesClicked() {
+            // TODO: 12 November 2018 DUMMY PRODUCT LIST
+            HpImageURL dummyThumb = new HpImageURL();
+            dummyThumb.setFullsize("https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+            dummyThumb.setThumbnail("https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+            HpProductModel dummyProduct = new HpProductModel(
+                    "Dummy Product",
+                    dummyThumb,
+                    new HpPairIdNameModel("", ""),
+                    "0",
+                    99999999L,
+                    "");
+            dummyProduct.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
+            dummyProduct.setRating(4f);
+            List<HpProductModel> dummyProductList = new ArrayList<>();
+            dummyProductList.add(dummyProduct);
+            dummyProductList.add(dummyProduct);
+            dummyProductList.add(dummyProduct);
+            dummyProductList.add(dummyProduct);
+            String dummyProductListString = HpUtils.getInstance().toJsonString(dummyProductList);
+            HpMessageModel services = HpMessageModel.Builder(
+                    dummyProductListString,
+                    vm.getRoom(),
+                    TYPE_PRODUCT,
+                    System.currentTimeMillis(),
+                    vm.getMyUserModel(),
+                    vm.getOtherUserID());
+
+            hideKeyboards();
+            vm.setPendingCustomKeyboardMessage(services);
+//            new Handler().postDelayed(() -> addNewMessage(services), 500L);
+        }
+
+        @Override
+        public void onCreateOrderClicked() {
+
+        }
+    };
+
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -796,6 +869,22 @@ public class HpChatActivity extends HpBaseChatActivity {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
                 HpUtils.getInstance().showKeyboard(HpChatActivity.this, etChat);
+            }
+        }
+    };
+
+    LayoutTransition.TransitionListener customKeyboardTransitionListener = new LayoutTransition.TransitionListener() {
+        @Override
+        public void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
+            vm.setContainerAnimating(true);
+        }
+
+        @Override
+        public void endTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
+            if (null != vm.getPendingCustomKeyboardMessage()) {
+                addNewMessage(vm.getPendingCustomKeyboardMessage());
+                vm.setContainerAnimating(false);
+                vm.setPendingCustomKeyboardMessage(null);
             }
         }
     };

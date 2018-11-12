@@ -26,14 +26,14 @@ public class HpChatViewModel extends AndroidViewModel {
     private List<HpMessageModel> messageModels;
     private HpUserModel myUserModel;
     private HpRoomModel room;
-    private HpMessageModel replyTo;
+    private HpMessageModel replyTo, pendingCustomKeyboardMessage;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private String otherUserID = "0";
     private long lastTimestamp = 0;
     private long lastActivity;
     private int numUsers;
-    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
+    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished, isContainerAnimating;
 
     public HpChatViewModel(Application application) {
         super(application);
@@ -142,6 +142,14 @@ public class HpChatViewModel extends AndroidViewModel {
         this.replyTo = replyTo;
     }
 
+    public HpMessageModel getPendingCustomKeyboardMessage() {
+        return pendingCustomKeyboardMessage;
+    }
+
+    public void setPendingCustomKeyboardMessage(HpMessageModel pendingCustomKeyboardMessage) {
+        this.pendingCustomKeyboardMessage = pendingCustomKeyboardMessage;
+    }
+
     public Uri getCameraImageUri() {
         return cameraImageUri;
     }
@@ -200,6 +208,14 @@ public class HpChatViewModel extends AndroidViewModel {
 
     public void setOnBottom(boolean onBottom) {
         isOnBottom = onBottom;
+    }
+
+    public boolean isContainerAnimating() {
+        return isContainerAnimating;
+    }
+
+    public void setContainerAnimating(boolean containerAnimating) {
+        isContainerAnimating = containerAnimating;
     }
 
     public int getMessageSize() {
