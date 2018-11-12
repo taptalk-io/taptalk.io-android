@@ -101,3 +101,7 @@ dependencies {
     //HAWK
     implementation "com.orhanobut:hawk:2.0.1"
 }
+
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.moselo.Homing-Pigeon'
