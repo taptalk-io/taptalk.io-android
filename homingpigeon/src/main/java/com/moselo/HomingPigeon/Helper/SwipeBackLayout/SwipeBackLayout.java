@@ -12,10 +12,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPChatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,7 +128,7 @@ public class SwipeBackLayout extends ConstraintLayout {
     /**
      * Add Interface to closeKeyboard when swipe back
      */
-    private HpChatActivity.SwipeBackInterface swipeInterface;
+    private TAPChatActivity.SwipeBackInterface swipeInterface;
 
     public SwipeBackLayout(Context context) {
         this(context, null);
@@ -347,7 +346,7 @@ public class SwipeBackLayout extends ConstraintLayout {
     /**
      * SetSwipe Interface
      */
-    public void setSwipeInterface(HpChatActivity.SwipeBackInterface swipeInterface) {
+    public void setSwipeInterface(TAPChatActivity.SwipeBackInterface swipeInterface) {
         this.swipeInterface = swipeInterface;
     }
 

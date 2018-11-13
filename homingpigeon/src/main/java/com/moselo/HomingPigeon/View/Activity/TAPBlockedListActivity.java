@@ -12,7 +12,7 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
-public class HpBlockedListActivity extends HpBaseActivity {
+public class TAPBlockedListActivity extends TAPBaseActivity {
 
     private ImageView ivButtonBack;
     private RecyclerView rvBlockedList;

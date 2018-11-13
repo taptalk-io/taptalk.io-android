@@ -32,7 +32,7 @@ import com.moselo.HomingPigeon.ViewModel.HpScanResultViewModel;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ADDED_CONTACT;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.SCAN_RESULT;
 
-public class HpScanResultActivity extends HpBaseActivity {
+public class TAPScanResultActivity extends TAPBaseActivity {
 
     private HpScanResultViewModel mViewModel;
 
@@ -113,7 +113,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         tvContactUsername.setText(addedContactUserModel.getUsername());
         animateAddSuccess(addedContactUserModel);
         llButton.setOnClickListener(v -> {
-            TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
+            TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
                 TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
                 addedContactUserModel.getName(),
                 addedContactUserModel.getAvatarURL(), 1, "#2eccad");
@@ -179,7 +179,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             pbAddLoading.setVisibility(View.GONE);
             animateAddSuccess(contactModel);
             llButton.setOnClickListener(v -> {
-                TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
+                TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
                     TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(),
                     1, "#2eccad");
@@ -193,7 +193,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);
-            new TapTalkDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle("OK")
@@ -208,7 +208,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);
             // TODO: 31/10/18 ini textnya masih dummy
-            new TapTalkDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(getString(R.string.api_call_return_error))
                     .setPrimaryButtonTitle("OK")
@@ -226,7 +226,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
-            new TapTalkDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle("OK")
@@ -239,7 +239,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         public void onError(Throwable throwable) {
             super.onError(throwable);
             // TODO: 31/10/18 ini textnya masih dummy
-            new TapTalkDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(getString(R.string.api_call_return_error))
                     .setPrimaryButtonTitle("OK")
@@ -260,7 +260,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         runOnUiThread(() -> {
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
-            llButton.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
+            llButton.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
                     TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad"));
             tvAlreadyContact.setText(Html.fromHtml("<b>"+contactModel.getName()+"</b> "

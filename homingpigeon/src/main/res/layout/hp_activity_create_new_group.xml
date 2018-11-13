@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@color/white_f8"
-    tools:context=".View.Activity.HpCreateNewGroupActivity">
+    tools:context=".View.Activity.TAPCreateNewGroupActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"

@@ -25,9 +25,9 @@ import java.net.URL;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_MY_USERNAME;
 
-public class HpLoginActivity extends HpBaseActivity {
+public class TAPLoginActivity extends TAPBaseActivity {
 
-    private static final String TAG = HpLoginActivity.class.getSimpleName();
+    private static final String TAG = TAPLoginActivity.class.getSimpleName();
     private TextInputEditText etUsername;
     private TextView tvSignIn;
     private ProgressBar progressBar;
@@ -249,7 +249,7 @@ public class HpLoginActivity extends HpBaseActivity {
 
             TAPDataManager.getInstance().saveActiveUser(response.getUser());
             runOnUiThread(() -> {
-                Intent intent = new Intent(HpLoginActivity.this, HpRoomListActivity.class);
+                Intent intent = new Intent(TAPLoginActivity.this, TAPRoomListActivity.class);
                 intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
                 startActivity(intent);
                 TAPConnectionManager.getInstance().connect();

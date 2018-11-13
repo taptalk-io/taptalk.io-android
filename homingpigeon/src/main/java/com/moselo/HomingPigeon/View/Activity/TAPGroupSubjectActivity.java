@@ -41,7 +41,7 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 
-public class HpGroupSubjectActivity extends HpBaseActivity {
+public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
     private ImageView ivButtonBack, ivCamera;
     private CircleImageView civGroupImage;
@@ -85,7 +85,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    TAPUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE);
+                    TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE);
                     break;
             }
         }
@@ -137,7 +137,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        civGroupImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE));
+        civGroupImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE));
         btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
     }
 
@@ -152,7 +152,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 civGroupImage.setImageResource(R.drawable.hp_bg_circle_d9d9d9);
-                Toast.makeText(HpGroupSubjectActivity.this, R.string.failed_to_load_image, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TAPGroupSubjectActivity.this, R.string.failed_to_load_image, Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -169,7 +169,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         String groupName = etGroupName.getText().toString();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
             // TODO: 19 September 2018 CREATE GROUP
-            Intent intent = new Intent(this, HpProfileActivity.class);
+            Intent intent = new Intent(this, TAPProfileActivity.class);
             intent.putExtra(K_ROOM, vm.getGroupData());
             startActivity(intent);
             setResult(RESULT_OK);

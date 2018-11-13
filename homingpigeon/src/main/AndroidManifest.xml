@@ -14,25 +14,25 @@
             android:name=".Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
 
-        <activity android:name=".View.Activity.HpBarcodeScannerActivity" />
+        <activity android:name=".View.Activity.TAPBarcodeScannerActivity" />
         <activity
-            android:name=".View.Activity.HpChatActivity"
+            android:name=".View.Activity.TAPChatActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".View.Activity.HpLoginActivity" />
-        <activity android:name=".View.Activity.HpRoomListActivity" />
-        <activity android:name=".View.Activity.HpNewChatActivity" />
-        <activity android:name=".View.Activity.HpSearchContactActivity" />
-        <activity android:name=".View.Activity.HpNewContactActivity" />
-        <activity android:name=".View.Activity.HpBlockedListActivity" />
-        <activity android:name=".View.Activity.HpScanResultActivity"
+        <activity android:name=".View.Activity.TAPLoginActivity" />
+        <activity android:name=".View.Activity.TAPRoomListActivity" />
+        <activity android:name=".View.Activity.TAPNewChatActivity" />
+        <activity android:name=".View.Activity.TAPSearchContactActivity" />
+        <activity android:name=".View.Activity.TAPNewContactActivity" />
+        <activity android:name=".View.Activity.TAPBlockedListActivity" />
+        <activity android:name=".View.Activity.TAPScanResultActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".View.Activity.HpCreateNewGroupActivity"
+            android:name=".View.Activity.TAPCreateNewGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".View.Activity.HpGroupSubjectActivity"
+            android:name=".View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".View.Activity.HpProfileActivity" />
+        <activity android:name=".View.Activity.TAPProfileActivity" />
     </application>
 
 </manifest>

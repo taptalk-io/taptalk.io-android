@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white_f3"
-    tools:context=".View.Activity.HpProfileActivity">
+    tools:context=".View.Activity.TAPProfileActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"

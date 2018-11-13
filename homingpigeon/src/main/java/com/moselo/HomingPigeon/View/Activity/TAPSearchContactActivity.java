@@ -19,7 +19,7 @@ import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CONTACT_LIST;
 
-public class HpSearchContactActivity extends HpBaseActivity {
+public class TAPSearchContactActivity extends TAPBaseActivity {
 
     private LinearLayout llAddNewContact;
     private ImageView ivButtonBack, ivButtonCancel;
@@ -74,7 +74,7 @@ public class HpSearchContactActivity extends HpBaseActivity {
     }
 
     private void openNewContactActivity() {
-        Intent intent = new Intent(this, HpNewContactActivity.class);
+        Intent intent = new Intent(this, TAPNewContactActivity.class);
         startActivity(intent);
     }
 

@@ -31,8 +31,8 @@ import com.moselo.HomingPigeon.Model.TAPMessageModel;
 import com.moselo.HomingPigeon.Model.TAPRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
-import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPLoginActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
@@ -130,9 +130,9 @@ public class TapTalk {
         if (null != activity) {
             Intent intent;
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
-                intent = new Intent(activity, HpRoomListActivity.class);
+                intent = new Intent(activity, TAPRoomListActivity.class);
             } else {
-                intent = new Intent(activity, HpLoginActivity.class);
+                intent = new Intent(activity, TAPLoginActivity.class);
             }
             activity.startActivity(intent);
             activity.finish();
@@ -147,7 +147,7 @@ public class TapTalk {
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
         TAPDataManager.getInstance().deleteAllPreference();
         TAPDataManager.getInstance().deleteAllFromDatabase();
-        Intent intent = new Intent(appContext, HpLoginActivity.class);
+        Intent intent = new Intent(appContext, TAPLoginActivity.class);
         appContext.startActivity(intent);
     }
 

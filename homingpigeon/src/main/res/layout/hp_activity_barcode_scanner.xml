@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:animateLayoutChanges="true"
-    tools:context=".View.Activity.HpBarcodeScannerActivity">
+    tools:context=".View.Activity.TAPBarcodeScannerActivity">
 
     <FrameLayout
         android:id="@+id/fl_toolbar"

@@ -25,7 +25,7 @@ import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.Model.TAPRoomModel;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPChatActivity;
 
 import org.json.JSONObject;
 
@@ -223,14 +223,14 @@ public class TAPUtils {
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
         TAPChatManager.getInstance().saveUnsentMessage();
-        Intent intent = new Intent(context, HpChatActivity.class);
+        Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(K_ROOM, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor));
         context.startActivity(intent);
     }
 
     public void startChatActivity(Context context, TAPRoomModel roomModel) {
         TAPChatManager.getInstance().saveUnsentMessage();
-        Intent intent = new Intent(context, HpChatActivity.class);
+        Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(K_ROOM, roomModel);
         context.startActivity(intent);
     }

@@ -27,7 +27,7 @@ import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
 
-public class HpProfileActivity extends HpBaseActivity {
+public class TAPProfileActivity extends TAPBaseActivity {
 
     private ConstraintLayout clButtonNotifications;
     private LinearLayout llToolbarCollapsed, llButtonConversationColor, llButtonBlockOrView, llButtonClearChat;

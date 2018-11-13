@@ -40,7 +40,7 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.MY_ID;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 
-public class HpCreateNewGroupActivity extends HpBaseActivity {
+public class TAPCreateNewGroupActivity extends TAPBaseActivity {
 
     private LinearLayout llGroupMembers;
     private ImageView ivButtonBack, ivButtonAction;
@@ -98,12 +98,12 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         listener = new TapTalkContactListInterface() {
             @Override
             public boolean onContactSelected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
-                        new TapTalkDialog.Builder(HpCreateNewGroupActivity.this)
+                        new TapTalkDialog.Builder(TAPCreateNewGroupActivity.this)
                                 .setTitle(getString(R.string.cannot_add_more_people))
                                 .setMessage(getString(R.string.group_limit_reached))
                                 .setPrimaryButtonTitle("OK")
@@ -133,7 +133,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
 
             @Override
             public void onContactDeselected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 contactListAdapter.notifyDataSetChanged();
@@ -206,7 +206,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     }
 
     private void openGroupSubjectActivity() {
-        Intent intent = new Intent(this, HpGroupSubjectActivity.class);
+        Intent intent = new Intent(this, TAPGroupSubjectActivity.class);
         intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
         intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
         if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/hp_bg_purplish_pink_medium_purple"
-    tools:context=".View.Activity.HpScanResultActivity">
+    tools:context=".View.Activity.TAPScanResultActivity">
 
     <ProgressBar
         android:id="@+id/pb_loading"

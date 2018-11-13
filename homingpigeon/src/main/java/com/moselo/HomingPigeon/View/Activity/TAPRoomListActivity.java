@@ -10,9 +10,9 @@ import com.moselo.HomingPigeon.View.Fragment.HpSearchChatFragment;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
 
-public class HpRoomListActivity extends HpBaseActivity {
+public class TAPRoomListActivity extends TAPBaseActivity {
 
-    private static final String TAG = HpRoomListActivity.class.getSimpleName();
+    private static final String TAG = TAPRoomListActivity.class.getSimpleName();
 
     private enum RoomListState {
         STATE_SEARCH_CHAT, STATE_ROOM_LIST

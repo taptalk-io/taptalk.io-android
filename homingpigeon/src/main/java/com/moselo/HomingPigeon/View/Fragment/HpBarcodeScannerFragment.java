@@ -20,8 +20,8 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.moselo.HomingPigeon.Helper.TAPQRDetection;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
-import com.moselo.HomingPigeon.View.Activity.HpScanResultActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPBarcodeScannerActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPScanResultActivity;
 
 import java.io.IOException;
 
@@ -72,7 +72,7 @@ public class HpBarcodeScannerFragment extends Fragment {
                 .build();
 
         ScanListener scanListener = (String textValue) -> {
-            Intent intent = new Intent(getContext(), HpScanResultActivity.class);
+            Intent intent = new Intent(getContext(), TAPScanResultActivity.class);
             intent.putExtra(SCAN_RESULT, textValue);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.hp_fade_in, R.anim.hp_stay);
@@ -111,7 +111,7 @@ public class HpBarcodeScannerFragment extends Fragment {
 
         btnShowQRCode.setOnClickListener(v -> {
             try {
-                ((HpBarcodeScannerActivity) getActivity()).showQR();
+                ((TAPBarcodeScannerActivity) getActivity()).showQR();
             } catch (Exception e) {
                 e.printStackTrace();
             }

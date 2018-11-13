@@ -37,8 +37,8 @@ import com.moselo.HomingPigeon.Model.TAPMessageModel;
 import com.moselo.HomingPigeon.Model.TAPRoomListModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetRoomListResponse;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpNewChatActivity;
-import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPNewChatActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.HpRoomListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
@@ -191,7 +191,7 @@ public class HpRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        clButtonSearch.setOnClickListener(v -> ((HpRoomListActivity) activity).showSearchChat());
+        clButtonSearch.setOnClickListener(v -> ((TAPRoomListActivity) activity).showSearchChat());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
         ivButtonMute.setOnClickListener(v -> {
@@ -208,7 +208,7 @@ public class HpRoomListFragment extends Fragment {
     }
 
     private void openNewChatActivity() {
-        Intent intent = new Intent(getContext(), HpNewChatActivity.class);
+        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
         startActivity(intent);
     }
 

@@ -32,7 +32,7 @@ import java.util.List;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CONTACT_LIST;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
-public class HpNewChatActivity extends HpBaseActivity {
+public class TAPNewChatActivity extends TAPBaseActivity {
 
     private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
     private ImageView ivButtonBack, ivButtonSearch;
@@ -108,32 +108,32 @@ public class HpNewChatActivity extends HpBaseActivity {
     }
 
     private void openQRScanner() {
-        if (TAPUtils.getInstance().hasPermissions(HpNewChatActivity.this, Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(HpNewChatActivity.this, HpBarcodeScannerActivity.class);
+        if (TAPUtils.getInstance().hasPermissions(TAPNewChatActivity.this, Manifest.permission.CAMERA)) {
+            Intent intent = new Intent(TAPNewChatActivity.this, TAPBarcodeScannerActivity.class);
             startActivity(intent);
         } else {
-            ActivityCompat.requestPermissions(HpNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
         }
     }
 
     private void searchContact() {
-        Intent intent = new Intent(this, HpSearchContactActivity.class);
+        Intent intent = new Intent(this, TAPSearchContactActivity.class);
         intent.putExtra(CONTACT_LIST, (ArrayList<TAPUserModel>) vm.getContactList());
         startActivity(intent);
     }
 
     private void addNewContact() {
-        Intent intent = new Intent(HpNewChatActivity.this, HpNewContactActivity.class);
+        Intent intent = new Intent(TAPNewChatActivity.this, TAPNewContactActivity.class);
         startActivity(intent);
     }
 
     private void createNewGroup() {
-        Intent intent = new Intent(this, HpCreateNewGroupActivity.class);
+        Intent intent = new Intent(this, TAPCreateNewGroupActivity.class);
         startActivity(intent);
     }
 
     private void viewBlockedContacts() {
-        Intent intent = new Intent(this, HpBlockedListActivity.class);
+        Intent intent = new Intent(this, TAPBlockedListActivity.class);
         startActivity(intent);
     }
 

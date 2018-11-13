@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.TAPMessageModel;
-import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -178,7 +178,7 @@ public class TAPNotificationManager {
                     .setNotificationMessage(newMessageModel)
                     .setSmallIcon(TapTalk.getClientAppIcon())
                     .setNeedReply(false)
-                    .setOnClickAction(HpRoomListActivity.class)
+                    .setOnClickAction(TAPRoomListActivity.class)
                     .show();
         }
     }
@@ -189,7 +189,7 @@ public class TAPNotificationManager {
                 .setNotificationMessage(newMessageModel)
                 .setSmallIcon(notificationIcon)
                 .setNeedReply(false)
-                .setOnClickAction(HpRoomListActivity.class)
+                .setOnClickAction(TAPRoomListActivity.class)
                 .show();
     }
 

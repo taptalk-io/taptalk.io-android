@@ -76,16 +76,16 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.RequestCode.SEND_
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Sorting.DESCENDING;
 
-public class HpChatActivity extends HpBaseChatActivity {
+public class TAPChatActivity extends TAPBaseChatActivity {
 
-    private String TAG = HpChatActivity.class.getSimpleName();
+    private String TAG = TAPChatActivity.class.getSimpleName();
 
     //interface for swipe back
     public interface SwipeBackInterface {
         void onSwipeBack();
     }
 
-    private SwipeBackInterface swipeInterface = () -> TAPUtils.getInstance().dismissKeyboard(HpChatActivity.this);
+    private SwipeBackInterface swipeInterface = () -> TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
 
     // View
     private SwipeBackLayout sblChat;
@@ -188,11 +188,11 @@ public class HpChatActivity extends HpBaseChatActivity {
                 switch (requestCode) {
                     case SEND_IMAGE_FROM_CAMERA:
                         if (null == vm.getCameraImageUri()) return;
-                        TAPChatManager.getInstance().sendImageMessage(HpChatActivity.this, vm.getCameraImageUri());
+                        TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) return;
-                        TAPChatManager.getInstance().sendImageMessage(HpChatActivity.this, intent.getData());
+                        TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, intent.getData());
                         break;
                 }
         }
@@ -204,10 +204,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             switch (requestCode) {
                 case PERMISSION_CAMERA:
                 case PERMISSION_WRITE_EXTERNAL_STORAGE:
-                    vm.setCameraImageUri(TAPUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA));
+                    vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    TAPUtils.getInstance().pickImageFromGallery(HpChatActivity.this, SEND_IMAGE_FROM_GALLERY);
+                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY);
                     break;
             }
         }
@@ -362,7 +362,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     private void openRoomProfile() {
-        Intent intent = new Intent(this, HpProfileActivity.class);
+        Intent intent = new Intent(this, TAPProfileActivity.class);
         intent.putExtra(K_ROOM, vm.getRoom());
         startActivity(intent);
     }
@@ -757,7 +757,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         @Override
         public void onOutsideClicked() {
-            TAPUtils.getInstance().dismissKeyboard(HpChatActivity.this);
+            TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
         }
 
         @Override
@@ -868,7 +868,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             if (hasFocus) {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
-                TAPUtils.getInstance().showKeyboard(HpChatActivity.this, etChat);
+                TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
             }
         }
     };
@@ -914,14 +914,14 @@ public class HpChatActivity extends HpBaseChatActivity {
                         tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
                         tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
                         if (null != vm.getMyUserModel().getAvatarURL()) {
-                            GlideApp.with(HpChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
+                            GlideApp.with(TAPChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
                         } else {
                             // TODO: 16 October 2018 TEMPORARY
                             Log.e(TAG, "onSelectFinished: avatar null");
                             civMyAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
                         }
                         if (null != vm.getRoom().getRoomImage()) {
-                            GlideApp.with(HpChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
+                            GlideApp.with(TAPChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
                         } else {
                             // TODO: 16 October 2018 TEMPORARY
                             civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
@@ -1013,12 +1013,12 @@ public class HpChatActivity extends HpBaseChatActivity {
     private TAPAttachmentListener attachmentListener = new TAPAttachmentListener() {
         @Override
         public void onCameraSelected() {
-            vm.setCameraImageUri(TAPUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA));
+            vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
         }
 
         @Override
         public void onGallerySelected() {
-            TAPUtils.getInstance().pickImageFromGallery(HpChatActivity.this, SEND_IMAGE_FROM_GALLERY);
+            TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY);
         }
     };
 
@@ -1088,7 +1088,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onError(TAPErrorModel error) {
             if (BuildConfig.DEBUG) {
-                new TapTalkDialog.Builder(HpChatActivity.this)
+                new TapTalkDialog.Builder(TAPChatActivity.this)
                         .setTitle("Error")
                         .setMessage(error.getMessage())
                         .show();
@@ -1102,7 +1102,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onError(String errorMessage) {
             if (BuildConfig.DEBUG) {
-                new TapTalkDialog.Builder(HpChatActivity.this)
+                new TapTalkDialog.Builder(TAPChatActivity.this)
                         .setTitle("Error")
                         .setMessage(errorMessage)
                         .show();
@@ -1237,7 +1237,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         public void run() {
             runOnUiThread(() -> {
                 vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_butterscotch));
-                tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(HpChatActivity.this, vm.getLastActivity()));
+                tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, vm.getLastActivity()));
             });
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);
         }

@@ -30,7 +30,7 @@ import com.moselo.HomingPigeon.Model.TAPRoomModel;
 import com.moselo.HomingPigeon.Model.TAPSearchChatModel;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.HpSearchChatAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
 
@@ -124,7 +124,7 @@ public class HpSearchChatFragment extends Fragment {
         });
 
         ivButtonBack.setOnClickListener(v -> {
-            ((HpRoomListActivity) activity).showRoomList();
+            ((TAPRoomListActivity) activity).showRoomList();
             TAPUtils.getInstance().dismissKeyboard(activity);
         });
         ivButtonAction.setOnClickListener(v -> clearSearch());

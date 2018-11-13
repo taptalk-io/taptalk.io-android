@@ -37,9 +37,9 @@ import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ADDED_CONTACT;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
 
-public class HpNewContactActivity extends HpBaseActivity {
+public class TAPNewContactActivity extends TAPBaseActivity {
 
-    private static final String TAG = HpNewContactActivity.class.getSimpleName();
+    private static final String TAG = TAPNewContactActivity.class.getSimpleName();
 
     private ConstraintLayout clSearchResult, clButtonAction, clConnectionLost;
     private LinearLayout llEmpty;
@@ -359,7 +359,7 @@ public class HpNewContactActivity extends HpBaseActivity {
                 endLoading();
             } else {
                 // Other errors
-                new TapTalkDialog.Builder(HpNewContactActivity.this)
+                new TapTalkDialog.Builder(TAPNewContactActivity.this)
                         .setTitle(getString(R.string.error))
                         .setMessage(error.getMessage())
                         .setPrimaryButtonTitle(getString(R.string.ok))
@@ -370,7 +370,7 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(HpNewContactActivity.this)) {
+            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPNewContactActivity.this)) {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
                 showConnectionLost();
@@ -388,7 +388,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         @Override
         public void onSuccess(TAPCommonResponse response) {
             // Change To Animation Page
-            Intent intent = new Intent(HpNewContactActivity.this, HpScanResultActivity.class);
+            Intent intent = new Intent(TAPNewContactActivity.this, TAPScanResultActivity.class);
             intent.putExtra(ADDED_CONTACT, vm.getSearchResult());
             startActivity(intent);
             finish();
@@ -400,7 +400,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             enableInput();
-            new TapTalkDialog.Builder(HpNewContactActivity.this)
+            new TapTalkDialog.Builder(TAPNewContactActivity.this)
                     .setTitle(getString(R.string.error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.ok))
@@ -411,7 +411,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         @Override
         public void onError(String errorMessage) {
             enableInput();
-            Toast.makeText(HpNewContactActivity.this, getString(R.string.error_message_general), Toast.LENGTH_SHORT).show();
+            Toast.makeText(TAPNewContactActivity.this, getString(R.string.error_message_general), Toast.LENGTH_SHORT).show();
         }
     };
 

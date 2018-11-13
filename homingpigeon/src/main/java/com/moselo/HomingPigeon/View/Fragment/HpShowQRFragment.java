@@ -17,7 +17,7 @@ import com.moselo.HomingPigeon.Helper.QRCode.MultiFormatWriter;
 import com.moselo.HomingPigeon.Helper.QRCode.WriterException;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
+import com.moselo.HomingPigeon.View.Activity.TAPBarcodeScannerActivity;
 
 public class HpShowQRFragment extends Fragment {
 
@@ -64,7 +64,7 @@ public class HpShowQRFragment extends Fragment {
 
         btnScanQRCode.setOnClickListener(v -> {
             try {
-                ((HpBarcodeScannerActivity) getActivity()).showScanner();
+                ((TAPBarcodeScannerActivity) getActivity()).showScanner();
             } catch (Exception e) {
                 e.printStackTrace();
             }
