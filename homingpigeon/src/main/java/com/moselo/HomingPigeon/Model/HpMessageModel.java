@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Manager.HpEncryptorManager;
+import com.moselo.HomingPigeon.Manager.TAPEncryptorManager;
 
 import java.security.GeneralSecurityException;
 
@@ -66,7 +66,7 @@ public class HpMessageModel implements Parcelable {
         return new HpMessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
-                HpEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
+                TAPEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),
@@ -82,7 +82,7 @@ public class HpMessageModel implements Parcelable {
         return new HpMessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
-                HpEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
+                TAPEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
                 messageModel.getCreated(),

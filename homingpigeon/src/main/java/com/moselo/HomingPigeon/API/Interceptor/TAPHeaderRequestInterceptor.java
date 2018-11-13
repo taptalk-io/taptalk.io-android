@@ -6,7 +6,7 @@ import android.util.Base64;
 
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.TapTalk;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 
 import java.io.IOException;
 
@@ -38,12 +38,12 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (HpDataManager.getInstance().checkAccessTokenAvailable() && NOT_USE_REFRESH_TOKEN == headerAuth) {
-            authorization = "Bearer " + HpDataManager.getInstance().getAccessToken();
-        } else if (HpDataManager.getInstance().checkRefreshTokenAvailable() && USE_REFRESH_TOKEN == headerAuth) {
-            authorization = "Bearer " + HpDataManager.getInstance().getRefreshToken();
-        } else if (HpDataManager.getInstance().checkAuthTicketAvailable()) {
-            authorization = "Bearer " + HpDataManager.getInstance().getAuthTicket();
+        if (TAPDataManager.getInstance().checkAccessTokenAvailable() && NOT_USE_REFRESH_TOKEN == headerAuth) {
+            authorization = "Bearer " + TAPDataManager.getInstance().getAccessToken();
+        } else if (TAPDataManager.getInstance().checkRefreshTokenAvailable() && USE_REFRESH_TOKEN == headerAuth) {
+            authorization = "Bearer " + TAPDataManager.getInstance().getRefreshToken();
+        } else if (TAPDataManager.getInstance().checkAuthTicketAvailable()) {
+            authorization = "Bearer " + TAPDataManager.getInstance().getAuthTicket();
         } else
             authorization = "Bearer ";
 

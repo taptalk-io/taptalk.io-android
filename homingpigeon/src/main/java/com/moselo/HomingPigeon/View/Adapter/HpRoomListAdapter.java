@@ -20,7 +20,7 @@ import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Interface.TapTalkRoomListInterface;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -163,7 +163,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
             onRoomSelected(item, position);
         } else {
             // Open chat room on click
-            HpUserModel myUser = HpDataManager.getInstance().getActiveUser();
+            HpUserModel myUser = TAPDataManager.getInstance().getActiveUser();
 
             String myUserID = myUser.getUserID();
             String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?
@@ -178,7 +178,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
                         item.getLastMessage().getRoom().getRoomImage(),
                         item.getLastMessage().getRoom().getRoomType(),
                         item.getLastMessage().getRoom().getRoomColor());
-                HpDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
+                TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
             } else {
                 Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
             }

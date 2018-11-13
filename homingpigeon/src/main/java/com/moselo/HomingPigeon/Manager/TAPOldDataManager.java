@@ -9,29 +9,29 @@ import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpOldDataManager {
-    private static final String TAG = HpOldDataManager.class.getSimpleName();
-    private static HpOldDataManager instance;
+public class TAPOldDataManager {
+    private static final String TAG = TAPOldDataManager.class.getSimpleName();
+    private static TAPOldDataManager instance;
 
-    public static HpOldDataManager getInstance() {
-        return null == instance ? instance = new HpOldDataManager() : instance;
+    public static TAPOldDataManager getInstance() {
+        return null == instance ? instance = new TAPOldDataManager() : instance;
     }
 
     public void startAutoCleanProcess() {
         new Thread(() -> {
             long currentTimestamp = System.currentTimeMillis();
-            if (HpDataManager.getInstance().checkLastDeleteTimestamp()) {
-                boolean isOverOneWeek = TAPTimeFormatter.getInstance().checkOverOneWeekOrNot(HpDataManager.getInstance().getLastDeleteTimestamp());
+            if (TAPDataManager.getInstance().checkLastDeleteTimestamp()) {
+                boolean isOverOneWeek = TAPTimeFormatter.getInstance().checkOverOneWeekOrNot(TAPDataManager.getInstance().getLastDeleteTimestamp());
 
                 if (isOverOneWeek)
-                    HpDataManager.getInstance().getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
+                    TAPDataManager.getInstance().getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
                         @Override
                         public void onSelectFinished(List<TAPMessageEntity> entities) {
                             loopingRoomEntitiesArrayToGetAllMessage(entities);
                         }
                     });
             } else {
-                HpDataManager.getInstance().saveLastDeleteTimestamp(currentTimestamp);
+                TAPDataManager.getInstance().saveLastDeleteTimestamp(currentTimestamp);
                 Log.e(TAG, "startAutoCleanProcess: updated");
             }
         }).start();
@@ -40,7 +40,7 @@ public class HpOldDataManager {
     private void loopingRoomEntitiesArrayToGetAllMessage(List<TAPMessageEntity> entities) {
         new Thread(() -> {
             for (TAPMessageEntity entity : entities) {
-                HpDataManager.getInstance().getMessagesFromDatabaseAsc(entity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
+                TAPDataManager.getInstance().getMessagesFromDatabaseAsc(entity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
                     @Override
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                         int entitiesSize = entities.size();
@@ -62,11 +62,11 @@ public class HpOldDataManager {
             }
 
             if (!deleteMessageTempList.isEmpty()) {
-                HpDataManager.getInstance().deleteMessage(deleteMessageTempList, new TAPDatabaseListener() {
+                TAPDataManager.getInstance().deleteMessage(deleteMessageTempList, new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
                         Log.e(TAG, "loopToCheckMessageAndExecuteDeleteQuery: deleted");
-                        HpDataManager.getInstance().saveLastDeleteTimestamp(System.currentTimeMillis());
+                        TAPDataManager.getInstance().saveLastDeleteTimestamp(System.currentTimeMillis());
                     }
                 });
             }

@@ -8,7 +8,7 @@ import android.os.Handler;
 
 import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
@@ -37,7 +37,7 @@ public class HpChatViewModel extends AndroidViewModel {
 
     public HpChatViewModel(Application application) {
         super(application);
-        allMessages = HpDataManager.getInstance().getMessagesLiveData();
+        allMessages = TAPDataManager.getInstance().getMessagesLiveData();
     }
 
     public LiveData<List<TAPMessageEntity>> getAllMessages() {
@@ -45,7 +45,7 @@ public class HpChatViewModel extends AndroidViewModel {
     }
 
     public void delete(String messageLocalID) {
-        HpDataManager.getInstance().deleteFromDatabase(messageLocalID);
+        TAPDataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
     public Map<String, HpMessageModel> getMessagePointer() {
@@ -98,11 +98,11 @@ public class HpChatViewModel extends AndroidViewModel {
     }
 
     public void getMessageEntities(String roomID, TAPDatabaseListener listener) {
-        HpDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener);
+        TAPDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener);
     }
 
     public void getMessageByTimestamp(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
-        HpDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
+        TAPDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
     }
 
     public List<HpMessageModel> getMessageModels() {

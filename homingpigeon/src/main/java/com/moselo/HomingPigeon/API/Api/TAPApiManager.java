@@ -16,7 +16,7 @@ import com.moselo.HomingPigeon.Exception.TAPApiRefreshTokenRunningException;
 import com.moselo.HomingPigeon.Exception.TAPApiSessionExpiredException;
 import com.moselo.HomingPigeon.Exception.TAPAuthException;
 import com.moselo.HomingPigeon.Helper.TapTalk;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
 import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
@@ -132,12 +132,12 @@ public class TAPApiManager {
     }
 
     private void updateSession(BaseResponse<HpGetAccessTokenResponse> r) {
-        HpDataManager.getInstance().saveAccessToken(r.getData().getAccessToken());
-        HpDataManager.getInstance().saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
-        HpDataManager.getInstance().saveRefreshToken(r.getData().getRefreshToken());
-        HpDataManager.getInstance().saveRefreshTokenExpiry(r.getData().getRefreshTokenExpiry());
+        TAPDataManager.getInstance().saveAccessToken(r.getData().getAccessToken());
+        TAPDataManager.getInstance().saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
+        TAPDataManager.getInstance().saveRefreshToken(r.getData().getRefreshToken());
+        TAPDataManager.getInstance().saveRefreshTokenExpiry(r.getData().getRefreshTokenExpiry());
 
-        HpDataManager.getInstance().saveActiveUser(r.getData().getUser());
+        TAPDataManager.getInstance().saveActiveUser(r.getData().getUser());
     }
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID

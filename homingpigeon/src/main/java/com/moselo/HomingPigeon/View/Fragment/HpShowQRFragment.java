@@ -15,7 +15,7 @@ import com.moselo.HomingPigeon.Helper.QRCode.BarcodeFormat;
 import com.moselo.HomingPigeon.Helper.QRCode.BitMatrix;
 import com.moselo.HomingPigeon.Helper.QRCode.MultiFormatWriter;
 import com.moselo.HomingPigeon.Helper.QRCode.WriterException;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
 
@@ -56,7 +56,7 @@ public class HpShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap(HpDataManager.getInstance().getActiveUser().getUserID());
+            bitmap = encodeAsBitmap(TAPDataManager.getInstance().getActiveUser().getUserID());
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();

@@ -14,7 +14,7 @@ import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Interface.TapTalkContactListInterface;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
 
@@ -37,14 +37,14 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
     public HpContactListAdapter(int viewType, List<HpUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
-        this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
     }
 
     public HpContactListAdapter(int viewType, List<HpUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
-        this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
     }
 
     // Constructor for selectable contacts
@@ -52,7 +52,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
         setItems(contactList, false);
         this.viewType = SELECT;
         this.selectedContacts = selectedContacts;
-        this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
         this.listener = listener;
     }
 

@@ -25,8 +25,8 @@ import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Listener.TAPSocketListener;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
+import com.moselo.HomingPigeon.Manager.TAPNetworkStateManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
@@ -98,8 +98,8 @@ public class HpNewContactActivity extends HpBaseActivity {
     }
 
     private boolean onSearchEditorClicked() {
-        HpDataManager.getInstance().cancelUserSearchApiCall();
-        HpDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
+        TAPDataManager.getInstance().cancelUserSearchApiCall();
+        TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
         return true;
     }
 
@@ -177,7 +177,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvButtonText.setVisibility(View.GONE);
         ivButtonImage.setVisibility(View.GONE);
         pbButton.setVisibility(View.VISIBLE);
-        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+        TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
     }
 
     private void showExpertView() {
@@ -217,7 +217,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         tvButtonText.setVisibility(View.GONE);
         ivButtonImage.setVisibility(View.GONE);
         pbButton.setVisibility(View.VISIBLE);
-        HpDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+        TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
     }
 
     private void showSearchResult() {
@@ -230,14 +230,14 @@ public class HpNewContactActivity extends HpBaseActivity {
     }
 
     private void addToContact() {
-        HpDataManager.getInstance().addContactApi(vm.getSearchResult().getUserID(), addContactView);
+        TAPDataManager.getInstance().addContactApi(vm.getSearchResult().getUserID(), addContactView);
     }
 
     private void openChatRoom() {
         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
         TAPUtils.getInstance().startChatActivity(
                 this,
-                TAPChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
+                TAPChatManager.getInstance().arrangeRoomId(TAPDataManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
                 1,
@@ -272,7 +272,7 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            HpDataManager.getInstance().cancelUserSearchApiCall();
+            TAPDataManager.getInstance().cancelUserSearchApiCall();
             searchTimer.cancel();
             if (s.length() > 0) {
                 searchTimer.start();
@@ -296,7 +296,7 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onFinish() {
-            HpDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
+            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
         }
     };
 
@@ -370,7 +370,7 @@ public class HpNewContactActivity extends HpBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (!HpNetworkStateManager.getInstance().hasNetworkConnection(HpNewContactActivity.this)) {
+            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(HpNewContactActivity.this)) {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
                 showConnectionLost();
@@ -394,7 +394,7 @@ public class HpNewContactActivity extends HpBaseActivity {
             finish();
 
             // Add contact to database
-            HpDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult().hpUserModelForAddToDB());
+            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult().hpUserModelForAddToDB());
         }
 
         @Override
@@ -422,7 +422,7 @@ public class HpNewContactActivity extends HpBaseActivity {
             if (vm.getPendingSearch().isEmpty()) {
                 return;
             }
-            HpDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), getUserView);
+            TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), getUserView);
             vm.setPendingSearch("");
         }
     };

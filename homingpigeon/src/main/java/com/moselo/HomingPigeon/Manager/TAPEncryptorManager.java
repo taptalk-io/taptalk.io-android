@@ -6,15 +6,15 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 
 import java.security.GeneralSecurityException;
 
-public class HpEncryptorManager {
+public class TAPEncryptorManager {
 
-    private static HpEncryptorManager instance;
+    private static TAPEncryptorManager instance;
 
-    public static HpEncryptorManager getInstance() {
-        return instance == null ? (instance = new HpEncryptorManager()) : instance;
+    public static TAPEncryptorManager getInstance() {
+        return instance == null ? (instance = new TAPEncryptorManager()) : instance;
     }
 
-    public HpEncryptorManager() {
+    public TAPEncryptorManager() {
 
     }
 

@@ -13,17 +13,17 @@ import com.moselo.HomingPigeon.Interface.TapTalkNetworkInterface;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
-    private static final String TAG = HpNetworkStateManager.class.getSimpleName();
-    private static HpNetworkStateManager instance;
+public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback {
+    private static final String TAG = TAPNetworkStateManager.class.getSimpleName();
+    private static TAPNetworkStateManager instance;
     private List<TapTalkNetworkInterface> listeners;
     private NetworkRequest networkRequest;
 
-    public static HpNetworkStateManager getInstance() {
-        return instance == null ? (instance = new HpNetworkStateManager()) : instance;
+    public static TAPNetworkStateManager getInstance() {
+        return instance == null ? (instance = new TAPNetworkStateManager()) : instance;
     }
 
-    public HpNetworkStateManager() {
+    public TAPNetworkStateManager() {
         listeners = new ArrayList<>();
         networkRequest = new NetworkRequest.Builder()
                 .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)

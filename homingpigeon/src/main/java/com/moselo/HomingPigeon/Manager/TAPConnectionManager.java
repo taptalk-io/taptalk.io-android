@@ -135,9 +135,9 @@ public class TAPConnectionManager {
 
     private void initNetworkListener() {
         TapTalkNetworkInterface networkListener = () -> {
-            if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
+            if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 Log.e(TAG, "initNetworkListener: " );
-                HpDataManager.getInstance().validateAccessToken(validateAccessView);
+                TAPDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus ||
                         DISCONNECTED == connectionStatus) {
                     reconnect();
@@ -146,7 +146,7 @@ public class TAPConnectionManager {
                 }
             }
         };
-        HpNetworkStateManager.getInstance().addNetworkListener(networkListener);
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
 
     public void addSocketListener(TapTalkSocketInterface listener) {
@@ -173,7 +173,7 @@ public class TAPConnectionManager {
 
     public void connect() {
         if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
-                HpNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
+                TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             try {
                 webSocketUri = new URI(webSocketEndpoint);
                 Map<String, String> websocketHeader = new HashMap<>();
@@ -225,7 +225,7 @@ public class TAPConnectionManager {
                             for (TapTalkSocketInterface listener : socketListeners)
                                 listener.onSocketConnecting();
                         }
-                        HpDataManager.getInstance().validateAccessToken(new TapDefaultDataView<HpErrorModel>() {});
+                        TAPDataManager.getInstance().validateAccessToken(new TapDefaultDataView<HpErrorModel>() {});
                         close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
                     } catch (IllegalStateException e) {
@@ -249,8 +249,8 @@ public class TAPConnectionManager {
         String deviceID = Settings.Secure.getString(appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
 
-        if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
-            websocketHeader.put("Authorization", "Bearer " + HpDataManager.getInstance().getAccessToken());
+        if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
+            websocketHeader.put("Authorization", "Bearer " + TAPDataManager.getInstance().getAccessToken());
             websocketHeader.put("App-Key", appKey);
             websocketHeader.put("Device-Identifier", deviceID);
             websocketHeader.put("Device-Model", android.os.Build.MODEL);

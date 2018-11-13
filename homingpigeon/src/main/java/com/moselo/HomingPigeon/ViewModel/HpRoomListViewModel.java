@@ -4,7 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class HpRoomListViewModel extends AndroidViewModel {
 
     public HpRoomListViewModel(@NonNull Application application) {
         super(application);
-        myUserID = HpDataManager.getInstance().getActiveUser().getUserID();
+        myUserID = TAPDataManager.getInstance().getActiveUser().getUserID();
     }
 
     public List<HpRoomListModel> getRoomList() {

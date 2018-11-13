@@ -30,8 +30,8 @@ import com.moselo.HomingPigeon.Interface.TapTalkRoomListInterface;
 import com.moselo.HomingPigeon.Listener.TAPChatListener;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Manager.HpNotificationManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
+import com.moselo.HomingPigeon.Manager.TAPNotificationManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
@@ -89,20 +89,20 @@ public class HpRoomListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
-        HpNotificationManager.getInstance().setRoomListAppear(true);
+        TAPNotificationManager.getInstance().setRoomListAppear(true);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        HpNotificationManager.getInstance().setRoomListAppear(false);
+        TAPNotificationManager.getInstance().setRoomListAppear(false);
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (hidden)
-            HpNotificationManager.getInstance().setRoomListAppear(false);
-        else HpNotificationManager.getInstance().setRoomListAppear(true);
+            TAPNotificationManager.getInstance().setRoomListAppear(false);
+        else TAPNotificationManager.getInstance().setRoomListAppear(true);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class HpRoomListFragment extends Fragment {
     private void viewLoadedSequence() {
         if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
             //selama di apps (foreground) ga perlu panggil API, ambil local dari database aja
-            HpDataManager.getInstance().getRoomList(true, dbListener);
+            TAPDataManager.getInstance().getRoomList(true, dbListener);
         } else {
             //kalau kita dari background atau pertama kali buka apps, kita baru jalanin full cycle
             runFullRefreshSequence();
@@ -225,17 +225,17 @@ public class HpRoomListFragment extends Fragment {
 
     private void getDatabaseAndAnimateResult() {
         //viewnya pake yang dbAnimatedListener
-        HpDataManager.getInstance().getRoomList(true, dbAnimatedListener);
+        TAPDataManager.getInstance().getRoomList(true, dbAnimatedListener);
     }
 
     //ini fungsi untuk manggil full cycle dari room List
     private void runFullRefreshSequence() {
         if (vm.getRoomList().size() > 0) {
             //kalau ga recyclerView ga kosong, kita check dan update unread dlu baru update tampilan
-            HpDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), true, dbListener);
+            TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), true, dbListener);
         } else {
             //kalau recyclerView masih kosong, kita tampilin room dlu baru update unreadnya
-            HpDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, dbListener);
+            TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, dbListener);
         }
     }
 
@@ -243,9 +243,9 @@ public class HpRoomListFragment extends Fragment {
         //kalau pertama kali kita call api getMessageRoomListAndUnread
         //setelah itu kita panggilnya api pending and update message
         if (vm.isDoneFirstSetup()) {
-            HpDataManager.getInstance().getNewAndUpdatedMessage(roomListView);
+            TAPDataManager.getInstance().getNewAndUpdatedMessage(roomListView);
         } else {
-            HpDataManager.getInstance().getMessageRoomListAndUnread(HpDataManager.getInstance().getActiveUser().getUserID(), roomListView);
+            TAPDataManager.getInstance().getMessageRoomListAndUnread(TAPDataManager.getInstance().getActiveUser().getUserID(), roomListView);
         }
     }
 
@@ -255,7 +255,7 @@ public class HpRoomListFragment extends Fragment {
         activity.runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
-            } else if (null != adapter && (!HpRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && HpNotificationManager.getInstance().isRoomListAppear()) {
+            } else if (null != adapter && (!HpRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
                 //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
                 //isShouldNotLoadFromAPI ini buat load dari database yang pertama
                 //is animate nya itu buat kalau misalnya perlu di animate dari parameter
@@ -305,7 +305,7 @@ public class HpRoomListFragment extends Fragment {
 
                 // Add unread count by 1 if sender is not self
                 if (!roomList.getLastMessage().getUser().getUserID()
-                        .equals(HpDataManager.getInstance().getActiveUser().getUserID())) {
+                        .equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
                     roomList.setUnreadCount(roomList.getUnreadCount() + 1);
                 }
 
@@ -382,7 +382,7 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void startLoading() {
             //ini buat munculin setup dialog pas pertama kali buka apps
-            if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
+            if (!TAPDataManager.getInstance().isRoomListSetupFinished()) {
                 flSetupContainer.setVisibility(View.VISIBLE);
                 hideNewChatButton();
             }
@@ -391,8 +391,8 @@ public class HpRoomListFragment extends Fragment {
         @Override
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
-            if (!HpDataManager.getInstance().isRoomListSetupFinished()) {
-                HpDataManager.getInstance().setRoomListSetupFinished();
+            if (!TAPDataManager.getInstance().isRoomListSetupFinished()) {
+                TAPDataManager.getInstance().setRoomListSetupFinished();
             }
         }
 
@@ -415,7 +415,7 @@ public class HpRoomListFragment extends Fragment {
                 }
 
                 //hasil dari API disimpen ke dalem database
-                HpDataManager.getInstance().insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                TAPDataManager.getInstance().insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                     @Override
                     public void onInsertFinished() {
                         //setelah selesai insert database, kita panggil fungsi buat ambil data terbaru dari
@@ -456,7 +456,7 @@ public class HpRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 //update unread count nya per room
-                HpDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
+                TAPDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
             }
 
             vm.setRoomList(messageModels);

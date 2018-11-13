@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
@@ -26,7 +26,7 @@ public class HpContactListViewModel extends AndroidViewModel {
 
     public HpContactListViewModel(@NonNull Application application) {
         super(application);
-        contactListLive = HpDataManager.getInstance().getMyContactList();
+        contactListLive = TAPDataManager.getInstance().getMyContactList();
     }
 
     public LiveData<List<HpUserModel>> getContactListLive() {

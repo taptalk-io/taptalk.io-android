@@ -24,7 +24,7 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
@@ -206,7 +206,7 @@ public class HpSearchChatFragment extends Fragment {
             if (vm.getSearchKeyword().isEmpty()) {
                 showRecentSearches();
             } else {
-                HpDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
+                TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
                 //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
                 vm.setRecentSearchShown(false);
             }
@@ -244,7 +244,7 @@ public class HpSearchChatFragment extends Fragment {
                 }
                 activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
             }
-            HpDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
+            TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
         }
     };
 
@@ -262,7 +262,7 @@ public class HpSearchChatFragment extends Fragment {
                     // Convert contact to room model
                     // TODO: 18 October 2018 LENGKAPIN DATA
                     HpRoomModel room = new HpRoomModel(
-                            TAPChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
+                            TAPChatManager.getInstance().arrangeRoomId(TAPDataManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
                             /* 1 ON 1 ROOM TYPE */ 1,
                             contact.getAvatarURL(),
@@ -277,7 +277,7 @@ public class HpSearchChatFragment extends Fragment {
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
                 activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
             }
-            HpDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
+            TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
         }
     };
 

@@ -17,7 +17,7 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
@@ -79,7 +79,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
             } else {
                 tvClearHistory.setVisibility(View.VISIBLE);
                 //ini ngecek karena VH ini di pake di section title jga biar ga slalu ke set listenernya
-                tvClearHistory.setOnClickListener(v -> HpDataManager.getInstance().deleteAllRecentSearch());
+                tvClearHistory.setOnClickListener(v -> TAPDataManager.getInstance().deleteAllRecentSearch());
             }
         }
     }
@@ -117,7 +117,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
 
             // Set message body with highlighted text
             String highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.highlighted_string), "$1"));
-            tvLastMessage.setText(HpDataManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
+            tvLastMessage.setText(TAPDataManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
                     Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.you), highlightedText)) : Html.fromHtml(highlightedText));
 
             // Set message timestamp
@@ -234,7 +234,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
                         room.getRoomColor());
 
                 TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
-                HpDataManager.getInstance().insertToDatabase(recentItem);
+                TAPDataManager.getInstance().insertToDatabase(recentItem);
             });
         }
     }

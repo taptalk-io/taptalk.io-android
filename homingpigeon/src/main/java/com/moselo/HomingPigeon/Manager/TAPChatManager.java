@@ -79,7 +79,7 @@ public class TAPChatManager {
 
         @Override
         public void onSocketDisconnected() {
-            if (TapTalk.isForeground && HpNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)
+            if (TapTalk.isForeground && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)
                     && TAPConnectionManager.ConnectionStatus.DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
                 TAPConnectionManager.getInstance().reconnect();
         }
@@ -161,7 +161,7 @@ public class TAPChatManager {
 
     public TAPChatManager() {
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
-        setActiveUser(HpDataManager.getInstance().getActiveUser());
+        setActiveUser(TAPDataManager.getInstance().getActiveUser());
         chatListeners = new ArrayList<>();
         saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
@@ -211,7 +211,7 @@ public class TAPChatManager {
     }
 
     public HpUserModel getActiveUser() {
-        return activeUser == null ? HpDataManager.getInstance().getActiveUser() : activeUser;
+        return activeUser == null ? TAPDataManager.getInstance().getActiveUser() : activeUser;
     }
 
     public void setActiveUser(HpUserModel user) {
@@ -220,7 +220,7 @@ public class TAPChatManager {
 
     public void saveActiveUser(HpUserModel user) {
         this.activeUser = user;
-        HpDataManager.getInstance().saveActiveUser(user);
+        TAPDataManager.getInstance().saveActiveUser(user);
     }
 
     public Map<String, HpMessageModel> getMessageQueueInActiveRoom() {
@@ -341,7 +341,7 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                HpMessageModel messageModel = buildTextMessage(substr, roomModel, HpDataManager.getInstance().getActiveUser());
+                HpMessageModel messageModel = buildTextMessage(substr, roomModel, TAPDataManager.getInstance().getActiveUser());
                 // Add entity to list
                 messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
@@ -354,7 +354,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel);
             }
         } else {
-            HpMessageModel messageModel = buildTextMessage(textMessage, roomModel, HpDataManager.getInstance().getActiveUser());
+            HpMessageModel messageModel = buildTextMessage(textMessage, roomModel, TAPDataManager.getInstance().getActiveUser());
 
             // save LocalID to list of Reply Local IDs
             // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
@@ -613,8 +613,8 @@ public class TAPChatManager {
             }
         }
         // Receive message outside active room (not in room List)
-        else if (null != chatListeners && !HpNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            HpNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
+        else if (null != chatListeners && !TAPNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+            TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             for (TAPChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = newMessage.copyMessageModel();
 
@@ -702,7 +702,7 @@ public class TAPChatManager {
     private void saveMessageToDatabase() {
         if (0 == saveMessages.size()) return;
 
-        HpDataManager.getInstance().insertToDatabase(saveMessages, true);
+        TAPDataManager.getInstance().insertToDatabase(saveMessages, true);
     }
 
     public List<TAPMessageEntity> getSaveMessages() {

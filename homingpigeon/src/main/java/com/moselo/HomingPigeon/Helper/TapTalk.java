@@ -23,10 +23,10 @@ import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Interface.TapTalkTokenInterface;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
-import com.moselo.HomingPigeon.Manager.HpNotificationManager;
-import com.moselo.HomingPigeon.Manager.HpOldDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
+import com.moselo.HomingPigeon.Manager.TAPNetworkStateManager;
+import com.moselo.HomingPigeon.Manager.TAPNotificationManager;
+import com.moselo.HomingPigeon.Manager.TAPOldDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
@@ -73,20 +73,20 @@ public class TapTalk {
         else Hawk.init(appContext).build();
 
         //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
-        HpDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
-        HpDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
-        HpDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
+        TAPDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
+        TAPDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
+        TAPDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
         //ini buat ambil context dr app utama karena library module ga bsa punya app context sndiri
         TapTalk.appContext = appContext;
         clientAppName = appContext.getResources().getString(R.string.app_name);
 
-        if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
+        if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             TAPConnectionManager.getInstance().connect();
-            Log.e("HpOldDataManager", "TapTalk: ");
-            HpOldDataManager.getInstance().startAutoCleanProcess();
+            Log.e("TAPOldDataManager", "TapTalk: ");
+            TAPOldDataManager.getInstance().startAutoCleanProcess();
         }
 
-        HpDataManager.getInstance().updateSendingMessageToFailed();
+        TAPDataManager.getInstance().updateSendingMessageToFailed();
 
         //init stetho tapi hanya untuk DEBUG State
         if (BuildConfig.DEBUG)
@@ -104,7 +104,7 @@ public class TapTalk {
             public void onAppGotoForeground() {
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 appContext.startService(new Intent(TapTalk.appContext, TapTalkEndAppService.class));
-                HpNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+                TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
@@ -114,7 +114,7 @@ public class TapTalk {
             @Override
             public void onAppGotoBackground() {
                 HpRoomListViewModel.setShouldNotLoadFromAPI(false);
-                HpNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+                TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 isForeground = false;
             }
@@ -122,14 +122,14 @@ public class TapTalk {
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<HpGetAccessTokenResponse> view) {
-        HpDataManager.getInstance().saveAuthTicket(authTicket);
-        HpDataManager.getInstance().getAccessTokenFromApi(view);
+        TAPDataManager.getInstance().saveAuthTicket(authTicket);
+        TAPDataManager.getInstance().getAccessTokenFromApi(view);
     }
 
     public static void checkActiveUserToShowPage(Activity activity) {
         if (null != activity) {
             Intent intent;
-            if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
+            if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 intent = new Intent(activity, HpRoomListActivity.class);
             } else {
                 intent = new Intent(activity, HpLoginActivity.class);
@@ -145,15 +145,15 @@ public class TapTalk {
     public static void refreshTokenExpired() {
         TAPApiManager.getInstance().setLogout(true);
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
-        HpDataManager.getInstance().deleteAllPreference();
-        HpDataManager.getInstance().deleteAllFromDatabase();
+        TAPDataManager.getInstance().deleteAllPreference();
+        TAPDataManager.getInstance().deleteAllFromDatabase();
         Intent intent = new Intent(appContext, HpLoginActivity.class);
         appContext.startActivity(intent);
     }
 
     public static void saveFirebaseToken(String newFirebaseToken) {
-        if (!HpDataManager.getInstance().checkFirebaseToken(newFirebaseToken)) {
-            HpDataManager.getInstance().saveFirebaseToken(newFirebaseToken);
+        if (!TAPDataManager.getInstance().checkFirebaseToken(newFirebaseToken)) {
+            TAPDataManager.getInstance().saveFirebaseToken(newFirebaseToken);
         }
     }
 
@@ -187,7 +187,7 @@ public class TapTalk {
 
         public NotificationBuilder setNotificationMessage(HpMessageModel notificationMessage) {
             this.notificationMessage = notificationMessage;
-            HpNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
+            TAPNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
             setChatMessage(notificationMessage.getBody());
             setChatSender(notificationMessage.getUser().getName());
             return this;
@@ -218,7 +218,7 @@ public class TapTalk {
         }
 
         public Notification build() {
-            this.notificationBuilder = HpNotificationManager.getInstance().createNotificationBubble(this);
+            this.notificationBuilder = TAPNotificationManager.getInstance().createNotificationBubble(this);
             addReply();
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
@@ -270,8 +270,8 @@ public class TapTalk {
 
             notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
 
-            if (1 < HpNotificationManager.getInstance().getNotifMessagesMap().size()) {
-                notificationManager.notify(0, HpNotificationManager.getInstance().createSummaryNotificationBubble(context, aClass).build());
+            if (1 < TAPNotificationManager.getInstance().getNotifMessagesMap().size()) {
+                notificationManager.notify(0, TAPNotificationManager.getInstance().createSummaryNotificationBubble(context, aClass).build());
             }
 
         }

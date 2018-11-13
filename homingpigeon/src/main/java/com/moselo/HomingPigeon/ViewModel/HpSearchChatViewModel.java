@@ -6,7 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpSearchChatModel;
 
@@ -73,7 +73,7 @@ public class HpSearchChatViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<TAPRecentSearchEntity>> getRecentSearchList() {
-        return null == recentSearchList ? recentSearchList = HpDataManager.getInstance().getRecentSearchLive() : recentSearchList;
+        return null == recentSearchList ? recentSearchList = TAPDataManager.getInstance().getRecentSearchLive() : recentSearchList;
     }
 
     public List<HpSearchChatModel> getRecentSearches() {

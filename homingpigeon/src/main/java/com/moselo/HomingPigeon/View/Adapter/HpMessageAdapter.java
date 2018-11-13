@@ -30,7 +30,7 @@ import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.TAPChatListener;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
@@ -59,7 +59,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
     private long defaultAnimationTime = 200L;
 
     public HpMessageAdapter(TAPChatListener listener) {
-        myUserModel = HpDataManager.getInstance().getActiveUser();
+        myUserModel = TAPDataManager.getInstance().getActiveUser();
         this.listener = listener;
     }
 

@@ -46,8 +46,8 @@ import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Listener.TAPSocketListener;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Manager.HpNotificationManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
+import com.moselo.HomingPigeon.Manager.TAPNotificationManager;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpImageURL;
@@ -222,7 +222,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
-        vm.setMyUserModel(HpDataManager.getInstance().getActiveUser());
+        vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
     }
 
     @Override
@@ -357,8 +357,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     private void cancelNotificationWhenEnterRoom() {
-        HpNotificationManager.getInstance().cancelNotificationWhenEnterRoom(this, vm.getRoom().getRoomID());
-        HpNotificationManager.getInstance().clearNotifMessagesMap(vm.getRoom().getRoomID());
+        TAPNotificationManager.getInstance().cancelNotificationWhenEnterRoom(this, vm.getRoom().getRoomID());
+        TAPNotificationManager.getInstance().clearNotifMessagesMap(vm.getRoom().getRoomID());
     }
 
     private void openRoomProfile() {
@@ -413,7 +413,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         // Replace pending message with new message
         String newID = newMessage.getLocalID();
         //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
-        boolean ownMessage = newMessage.getUser().getUserID().equals(HpDataManager
+        boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
                 .getInstance().getActiveUser().getUserID());
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
@@ -537,10 +537,10 @@ public class HpChatActivity extends HpBaseChatActivity {
         new Thread(() -> {
             //ini ngecek kalau misalnya isi message modelnya itu kosong manggil api before maxCreated = current TimeStamp
             if (0 < vm.getMessageModels().size())
-                HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+                TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
                         , vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated()
                         , beforeView);
-            else HpDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
+            else TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
                     , System.currentTimeMillis()
                     , beforeView);
         }).start();
@@ -557,14 +557,14 @@ public class HpChatActivity extends HpBaseChatActivity {
 
         ps: di jalanin di new Thread biar ga ganggun main Thread aja*/
         new Thread(() -> {
-            if (vm.getMessageModels().size() > 0 && !HpDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
-                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
+            if (vm.getMessageModels().size() > 0 && !TAPDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
+                TAPDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), messageAfterView);
             } else if (vm.getMessageModels().size() > 0) {
-                HpDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
+                TAPDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
-                        HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()),
+                        TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()),
                         messageAfterView);
             }
         }).start();
@@ -1042,8 +1042,8 @@ public class HpChatActivity extends HpBaseChatActivity {
                         //ini buat update last update timestamp yang ada di preference
                         //ini di taruh di new Thread biar ga bkin scrollingnya lag
                         if (null != temp.getUpdated() &&
-                                HpDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
-                            HpDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
+                                TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < temp.getUpdated()) {
+                            TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), temp.getUpdated());
                         }
                     }).start();
                 } catch (GeneralSecurityException e) {
@@ -1074,7 +1074,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
@@ -1157,7 +1157,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
         }
 
@@ -1215,7 +1215,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
         }
 

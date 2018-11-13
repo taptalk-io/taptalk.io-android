@@ -21,15 +21,15 @@ import java.util.Map;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.HP_NOTIFICATION_CHANNEL;
 
-public class HpNotificationManager {
-    private static final String TAG = HpNotificationManager.class.getSimpleName();
-    private static HpNotificationManager instance;
+public class TAPNotificationManager {
+    private static final String TAG = TAPNotificationManager.class.getSimpleName();
+    private static TAPNotificationManager instance;
     private String notificationGroup = "homing-pigeon";
     private Map<String, List<HpMessageModel>> notifMessagesMap;
     private boolean isRoomListAppear;
 
-    public static HpNotificationManager getInstance() {
-        return null == instance ? (instance = new HpNotificationManager()) : instance;
+    public static TAPNotificationManager getInstance() {
+        return null == instance ? (instance = new TAPNotificationManager()) : instance;
     }
 
     public Map<String, List<HpMessageModel>> getNotifMessagesMap() {
@@ -184,7 +184,7 @@ public class HpNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, HpMessageModel newMessageModel) {
-        HpDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
+        TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
         new TapTalk.NotificationBuilder(context)
                 .setNotificationMessage(newMessageModel)
                 .setSmallIcon(notificationIcon)
@@ -200,18 +200,18 @@ public class HpNotificationManager {
 
     public void saveNotificationMessageMapToPreference() {
         if (0 < getNotifMessagesMap().size()) {
-            HpDataManager.getInstance().saveNotificationMessageMap(TAPUtils.getInstance().toJsonString(getNotifMessagesMap()));
+            TAPDataManager.getInstance().saveNotificationMessageMap(TAPUtils.getInstance().toJsonString(getNotifMessagesMap()));
         }
     }
 
     public void updateNotificationMessageMapWhenAppKilled() {
-        if (HpDataManager.getInstance().checkNotificationMap() && 0 == getNotifMessagesMap().size()) {
+        if (TAPDataManager.getInstance().checkNotificationMap() && 0 == getNotifMessagesMap().size()) {
             Map<String, List<HpMessageModel>> tempNotifMessage = TAPUtils.getInstance().fromJSON(
                     new TypeReference<Map<String, List<HpMessageModel>>>() {
                     },
-                    HpDataManager.getInstance().getNotificationMessageMap());
+                    TAPDataManager.getInstance().getNotificationMessageMap());
             setNotifMessagesMap(tempNotifMessage);
-            HpDataManager.getInstance().clearNotificationMessageMap();
+            TAPDataManager.getInstance().clearNotificationMessageMap();
         }
     }
 

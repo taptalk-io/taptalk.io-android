@@ -38,12 +38,12 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Notification.K_FI
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
 
-public class HpDataManager {
-    private static final String TAG = HpDataManager.class.getSimpleName();
-    private static HpDataManager instance;
+public class TAPDataManager {
+    private static final String TAG = TAPDataManager.class.getSimpleName();
+    private static TAPDataManager instance;
 
-    public static HpDataManager getInstance() {
-        return instance == null ? (instance = new HpDataManager()) : instance;
+    public static TAPDataManager getInstance() {
+        return instance == null ? (instance = new TAPDataManager()) : instance;
     }
 
     /**

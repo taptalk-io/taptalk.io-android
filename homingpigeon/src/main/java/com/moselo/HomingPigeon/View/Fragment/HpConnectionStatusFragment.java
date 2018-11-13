@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Interface.TapTalkSocketInterface;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
-import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
+import com.moselo.HomingPigeon.Manager.TAPNetworkStateManager;
 import com.moselo.HomingPigeon.R;
 
 public class HpConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
@@ -88,7 +88,7 @@ public class HpConnectionStatusFragment extends Fragment implements TapTalkSocke
 
     private void initConnectionStatus() {
         TAPConnectionManager.getInstance().addSocketListener(this);
-        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
+        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
             onSocketDisconnected();
         else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED)
             llConnectionStatus.setVisibility(View.GONE);
@@ -113,7 +113,7 @@ public class HpConnectionStatusFragment extends Fragment implements TapTalkSocke
     }
 
     private void setStatusConnecting() {
-        if (!HpNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connecting);
@@ -125,7 +125,7 @@ public class HpConnectionStatusFragment extends Fragment implements TapTalkSocke
     }
 
     private void setStatusWaitingForNetwork() {
-        if (HpNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_offline);

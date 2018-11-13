@@ -21,7 +21,7 @@ import com.moselo.HomingPigeon.Helper.TapTalkDialog;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
@@ -90,7 +90,7 @@ public class HpScanResultActivity extends HpBaseActivity {
 
         addedContactUserModel = getIntent().getParcelableExtra(ADDED_CONTACT);
         scanResult = getIntent().getStringExtra(SCAN_RESULT);
-        myUserModel = HpDataManager.getInstance().getActiveUser();
+        myUserModel = TAPDataManager.getInstance().getActiveUser();
 
         if (null != addedContactUserModel) setUpFromNewContact();
         else if (null != scanResult) setUpFromScanQR();
@@ -122,7 +122,7 @@ public class HpScanResultActivity extends HpBaseActivity {
     }
 
     private void setUpFromScanQR() {
-        HpDataManager.getInstance().getUserByIdFromApi(scanResult, getUserView);
+        TAPDataManager.getInstance().getUserByIdFromApi(scanResult, getUserView);
     }
 
     private void validateScanResult(HpUserModel userModel) {
@@ -148,7 +148,7 @@ public class HpScanResultActivity extends HpBaseActivity {
     }
 
     private void checkIsInContactAndSetUpAnimation() {
-        HpDataManager.getInstance().checkUserInMyContacts(contactModel.getUserID(), new TAPDatabaseListener<HpUserModel>() {
+        TAPDataManager.getInstance().checkUserInMyContacts(contactModel.getUserID(), new TAPDatabaseListener<HpUserModel>() {
             @Override
             public void onContactCheckFinished(int isContact) {
                 if (isContact != 0) animateAlreadyContact();
@@ -158,7 +158,7 @@ public class HpScanResultActivity extends HpBaseActivity {
     }
 
     private void handleWhenUserNotInContact() {
-        llButton.setOnClickListener(v -> HpDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView));
+        llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView));
     }
 
     TapDefaultDataView<HpCommonResponse> addContactView = new TapDefaultDataView<HpCommonResponse>() {
@@ -173,7 +173,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         @Override
         public void onSuccess(HpCommonResponse response) {
             super.onSuccess(response);
-            HpDataManager.getInstance().insertMyContactToDatabase(contactModel.hpUserModelForAddToDB());
+            TAPDataManager.getInstance().insertMyContactToDatabase(contactModel.hpUserModelForAddToDB());
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);

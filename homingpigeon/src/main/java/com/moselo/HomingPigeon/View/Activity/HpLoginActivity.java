@@ -14,7 +14,7 @@ import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Helper.TapTalkDialog;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
@@ -89,7 +89,7 @@ public class HpLoginActivity extends HpBaseActivity {
         String phone = "08979809026";
         String username = etUsername.getText().toString();
         String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        HpDataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
+        TAPDataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
                 fullname, email, phone, username, authView);
     }
 
@@ -239,15 +239,15 @@ public class HpLoginActivity extends HpBaseActivity {
         @Override
         public void onSuccess(HpGetAccessTokenResponse response) {
             super.onSuccess(response);
-            HpDataManager.getInstance().deleteAuthTicket();
+            TAPDataManager.getInstance().deleteAuthTicket();
 
-            HpDataManager.getInstance().saveAccessToken(response.getAccessToken());
-            HpDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
-            HpDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
-            HpDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
+            TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
+            TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
+            TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
+            TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
             registerFcmToken();
 
-            HpDataManager.getInstance().saveActiveUser(response.getUser());
+            TAPDataManager.getInstance().saveActiveUser(response.getUser());
             runOnUiThread(() -> {
                 Intent intent = new Intent(HpLoginActivity.this, HpRoomListActivity.class);
                 intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
@@ -276,6 +276,6 @@ public class HpLoginActivity extends HpBaseActivity {
     }
 
     private void registerFcmToken(){
-        new Thread(() -> HpDataManager.getInstance().registerFcmTokenToServer(HpDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<HpCommonResponse>() {})).start();
+        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<HpCommonResponse>() {})).start();
     }
 }

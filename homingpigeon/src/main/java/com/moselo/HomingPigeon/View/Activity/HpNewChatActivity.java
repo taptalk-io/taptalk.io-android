@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Manager.HpDataManager;
+import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Model.HpContactModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
@@ -59,7 +59,7 @@ public class HpNewChatActivity extends HpBaseActivity {
     @Override
     protected void initView() {
         //call API
-        HpDataManager.getInstance().getMyContactListFromAPI(getContactView);
+        TAPDataManager.getInstance().getMyContactListFromAPI(getContactView);
 
         //setting up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
@@ -145,7 +145,7 @@ public class HpNewChatActivity extends HpBaseActivity {
             for (HpContactModel contact : response.getContacts()) {
                 users.add(contact.getUser().hpUserModelForAddToDB());
             }
-            HpDataManager.getInstance().insertMyContactToDatabase(users);
+            TAPDataManager.getInstance().insertMyContactToDatabase(users);
         }
     };
 }
