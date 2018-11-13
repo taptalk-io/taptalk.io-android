@@ -19,7 +19,10 @@ allprojects {
         google()
         jcenter()
         maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
-        maven { url "https://jitpack.io" }
+        maven {
+            url "https://jitpack.io"
+            credentials { username authToken }
+        }
     }
 
     ext {
