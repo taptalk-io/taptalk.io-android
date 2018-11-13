@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.moselo.HomingPigeon.Listener.TAPAttachmentListener;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpAttachmentAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPAttachmentAdapter;
 
 public class HpAttachmentBottomSheet extends BottomSheetDialogFragment {
 
@@ -51,7 +51,7 @@ public class HpAttachmentBottomSheet extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        recyclerView.setAdapter(new HpAttachmentAdapter(attachmentListener, onClickListener));
+        recyclerView.setAdapter(new TAPAttachmentAdapter(attachmentListener, onClickListener));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
     }

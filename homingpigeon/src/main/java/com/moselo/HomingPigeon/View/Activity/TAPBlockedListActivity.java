@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
 public class TAPBlockedListActivity extends TAPBaseActivity {
@@ -17,7 +17,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
     private ImageView ivButtonBack;
     private RecyclerView rvBlockedList;
 
-    private HpContactListAdapter adapter;
+    private TAPContactListAdapter adapter;
 
     private HpContactListViewModel vm;
 
@@ -52,7 +52,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
         ivButtonBack = findViewById(R.id.iv_button_back);
         rvBlockedList = findViewById(R.id.rv_blocked_list);
 
-        adapter = new HpContactListAdapter(HpContactListAdapter.NONE, vm.getFilteredContacts());
+        adapter = new TAPContactListAdapter(TAPContactListAdapter.NONE, vm.getFilteredContacts());
         rvBlockedList.setAdapter(adapter);
         rvBlockedList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvBlockedList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);

@@ -14,20 +14,20 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactInitialAdapter.ContactListHolder> {
+public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactInitialAdapter.ContactListHolder> {
 
     private List<List<TAPUserModel>> contactList;
     private List<TAPUserModel> selectedContacts;
     private TapTalkContactListInterface listener;
     private int viewType;
 
-    public HpContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList) {
+    public TAPContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList) {
         this.viewType = viewType;
         this.contactList = contactList;
     }
 
     // Constructor for selectable contacts
-    public HpContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList, List<TAPUserModel> selectedContacts, TapTalkContactListInterface listener) {
+    public TAPContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList, List<TAPUserModel> selectedContacts, TapTalkContactListInterface listener) {
         this.viewType = viewType;
         this.contactList = contactList;
         this.selectedContacts = selectedContacts;
@@ -69,7 +69,7 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
         private RecyclerView rvContactInitial;
         private TextView tvInitial;
         private List<TAPUserModel> item;
-        private HpContactListAdapter adapter;
+        private TAPContactListAdapter adapter;
 
         ContactListHolder(View itemView) {
             super(itemView);
@@ -85,10 +85,10 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
             if (!Character.isAlphabetic(initial)) initial = '#';
             tvInitial.setText(String.valueOf(initial));
 
-            if (viewType == HpContactListAdapter.SELECT && null != selectedContacts) {
-                adapter = new HpContactListAdapter(getItemAt(position), selectedContacts, listener);
+            if (viewType == TAPContactListAdapter.SELECT && null != selectedContacts) {
+                adapter = new TAPContactListAdapter(getItemAt(position), selectedContacts, listener);
             } else {
-                adapter = new HpContactListAdapter(viewType, getItemAt(position), listener);
+                adapter = new TAPContactListAdapter(viewType, getItemAt(position), listener);
             }
             rvContactInitial.setAdapter(adapter);
             rvContactInitial.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.VERTICAL, false));

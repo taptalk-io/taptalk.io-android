@@ -25,11 +25,11 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpSearchChatAdapter extends HpBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
+public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
 
     private String searchKeyword;
 
-    public HpSearchChatAdapter(List<TAPSearchChatModel> items) {
+    public TAPSearchChatAdapter(List<TAPSearchChatModel> items) {
         setItems(items, true);
     }
 

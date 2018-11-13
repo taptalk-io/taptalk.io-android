@@ -56,8 +56,8 @@ import com.moselo.HomingPigeon.Model.TAPPairIdNameModel;
 import com.moselo.HomingPigeon.Model.TAPProductModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpCustomKeyboardAdapter;
-import com.moselo.HomingPigeon.View.Adapter.HpMessageAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPCustomKeyboardAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPMessageAdapter;
 import com.moselo.HomingPigeon.View.BottomSheet.HpAttachmentBottomSheet;
 import com.moselo.HomingPigeon.ViewModel.HpChatViewModel;
 
@@ -100,8 +100,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private View vStatusBadge;
 
     // RecyclerView
-    private HpMessageAdapter hpMessageAdapter;
-    private HpCustomKeyboardAdapter hpCustomKeyboardAdapter;
+    private TAPMessageAdapter hpMessageAdapter;
+    private TAPCustomKeyboardAdapter hpCustomKeyboardAdapter;
     private LinearLayoutManager messageLayoutManager;
 
     // RoomDatabase
@@ -269,7 +269,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         // TODO: 24 September 2018 UPDATE ROOM STATUS
         chatListener.onUserOffline(System.currentTimeMillis());
 
-        hpMessageAdapter = new HpMessageAdapter(chatListener);
+        hpMessageAdapter = new TAPMessageAdapter(chatListener);
         hpMessageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);
@@ -289,7 +289,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         customKeyboardMenus.add(new TAPCustomKeyboardModel(TAPCustomKeyboardModel.Type.READ_EXPERT_NOTES));
         customKeyboardMenus.add(new TAPCustomKeyboardModel(TAPCustomKeyboardModel.Type.SEND_SERVICES));
         customKeyboardMenus.add(new TAPCustomKeyboardModel(TAPCustomKeyboardModel.Type.CREATE_ORDER));
-        hpCustomKeyboardAdapter = new HpCustomKeyboardAdapter(customKeyboardMenus, customKeyboardInterface);
+        hpCustomKeyboardAdapter = new TAPCustomKeyboardAdapter(customKeyboardMenus, customKeyboardInterface);
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 

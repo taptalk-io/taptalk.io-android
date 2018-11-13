@@ -31,7 +31,7 @@ import com.moselo.HomingPigeon.Model.TAPSearchChatModel;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
-import com.moselo.HomingPigeon.View.Adapter.HpSearchChatAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPSearchChatAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public class HpSearchChatFragment extends Fragment {
     private RecyclerView recyclerView;
 
     private HpSearchChatViewModel vm;
-    private HpSearchChatAdapter adapter;
+    private TAPSearchChatAdapter adapter;
 
     public HpSearchChatFragment() {
     }
@@ -109,7 +109,7 @@ public class HpSearchChatFragment extends Fragment {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new HpSearchChatAdapter(vm.getSearchResults());
+        adapter = new TAPSearchChatAdapter(vm.getSearchResults());
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));

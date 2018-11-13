@@ -21,7 +21,7 @@ import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpImageListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPImageListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
@@ -39,7 +39,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private AppBarLayout appBarLayout;
-    private HpImageListAdapter sharedMediaAdapter;
+    private TAPImageListAdapter sharedMediaAdapter;
 
     private HpProfileViewModel vm;
 
@@ -141,7 +141,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
         if (vm.getSharedMedias().size() > 0) {
             // Has shared media
             tvSharedMediaLabel.setText(getString(R.string.shared_media));
-            sharedMediaAdapter = new HpImageListAdapter(vm.getSharedMedias());
+            sharedMediaAdapter = new TAPImageListAdapter(vm.getSharedMedias());
             rvProfile.setAdapter(sharedMediaAdapter);
             rvProfile.setLayoutManager(new GridLayoutManager(this, 3));
         } else {

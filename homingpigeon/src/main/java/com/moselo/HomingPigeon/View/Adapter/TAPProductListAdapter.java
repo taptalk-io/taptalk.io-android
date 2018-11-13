@@ -20,7 +20,7 @@ import com.moselo.HomingPigeon.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpProductListAdapter extends HpBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
+public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 
     private List<TAPProductModel> items = new ArrayList<>();
     private TAPMessageModel messageModel;
@@ -28,7 +28,7 @@ public class HpProductListAdapter extends HpBaseAdapter<TAPProductModel, TAPBase
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
 
-    public HpProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel) {
+    public TAPProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel) {
         setItems(TAPUtils.getInstance().fromJSON(
                 new TypeReference<List<TAPProductModel>>() {
                 },

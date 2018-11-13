@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CONTACT_LIST;
@@ -26,7 +26,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
     private EditText etSearch;
     private RecyclerView rvSearchResults;
 
-    private HpContactListAdapter adapter;
+    private TAPContactListAdapter adapter;
 
     private HpContactListViewModel vm;
 
@@ -58,7 +58,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new HpContactListAdapter(HpContactListAdapter.CHAT, vm.getFilteredContacts());
+        adapter = new TAPContactListAdapter(TAPContactListAdapter.CHAT, vm.getFilteredContacts());
         rvSearchResults.setAdapter(adapter);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 

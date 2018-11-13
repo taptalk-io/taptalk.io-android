@@ -19,12 +19,12 @@ import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_GALLERY;
 import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_LOCATION;
 import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.createAttachMenu;
 
-public class HpAttachmentAdapter extends HpBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
+public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
     private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
 
-    public HpAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
         setItems(createAttachMenu(), false);

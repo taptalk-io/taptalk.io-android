@@ -39,7 +39,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetRoomListResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.TAPNewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
-import com.moselo.HomingPigeon.View.Adapter.HpRoomListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPRoomListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import java.security.GeneralSecurityException;
@@ -60,7 +60,7 @@ public class HpRoomListFragment extends Fragment {
 
     private RecyclerView rvContactList;
     private LinearLayoutManager llm;
-    private HpRoomListAdapter adapter;
+    private TAPRoomListAdapter adapter;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
     private HpRoomListViewModel vm;
 
@@ -182,7 +182,7 @@ public class HpRoomListFragment extends Fragment {
 
         if (vm.isSelecting()) showSelectionActionBar();
 
-        adapter = new HpRoomListAdapter(vm, tapTalkRoomListInterface);
+        adapter = new TAPRoomListAdapter(vm, tapTalkRoomListInterface);
         llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(llm);

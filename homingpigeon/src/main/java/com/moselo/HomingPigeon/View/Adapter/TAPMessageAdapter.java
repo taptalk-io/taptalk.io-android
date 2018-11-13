@@ -47,9 +47,9 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
-public class HpMessageAdapter extends HpBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
+public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
 
-    private static final String TAG = HpMessageAdapter.class.getSimpleName();
+    private static final String TAG = TAPMessageAdapter.class.getSimpleName();
     private TAPChatListener listener;
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
@@ -58,7 +58,7 @@ public class HpMessageAdapter extends HpBaseAdapter<TAPMessageModel, TAPBaseView
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
     private long defaultAnimationTime = 200L;
 
-    public HpMessageAdapter(TAPChatListener listener) {
+    public TAPMessageAdapter(TAPChatListener listener) {
         myUserModel = TAPDataManager.getInstance().getActiveUser();
         this.listener = listener;
     }
@@ -271,7 +271,7 @@ public class HpMessageAdapter extends HpBaseAdapter<TAPMessageModel, TAPBaseView
     public class ProductVH extends TAPBaseViewHolder<TAPMessageModel> {
 
         RecyclerView rvProductList;
-        HpProductListAdapter adapter;
+        TAPProductListAdapter adapter;
 
         ProductVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -281,7 +281,7 @@ public class HpMessageAdapter extends HpBaseAdapter<TAPMessageModel, TAPBaseView
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (null == adapter) {
-                adapter = new HpProductListAdapter(item, myUserModel);
+                adapter = new TAPProductListAdapter(item, myUserModel);
             }
 
             rvProductList.setAdapter(adapter);

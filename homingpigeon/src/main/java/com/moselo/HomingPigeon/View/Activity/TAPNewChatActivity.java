@@ -22,8 +22,8 @@ import com.moselo.HomingPigeon.Model.TAPContactModel;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPContactResponse;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
-import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPContactInitialAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private RecyclerView rvContactList;
     private NestedScrollView nsvNewChat;
 
-    private HpContactInitialAdapter adapter;
+    private TAPContactInitialAdapter adapter;
     private HpContactListViewModel vm;
 
     @Override
@@ -83,7 +83,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
 
-        adapter = new HpContactInitialAdapter(HpContactListAdapter.CHAT, vm.getSeparatedContacts());
+        adapter = new TAPContactInitialAdapter(TAPContactListAdapter.CHAT, vm.getSeparatedContacts());
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);

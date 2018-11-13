@@ -29,12 +29,12 @@ import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import java.util.List;
 
-public class HpRoomListAdapter extends HpBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
+public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
     private HpRoomListViewModel vm;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
 
-    public HpRoomListAdapter(HpRoomListViewModel vm, TapTalkRoomListInterface tapTalkRoomListInterface) {
+    public TAPRoomListAdapter(HpRoomListViewModel vm, TapTalkRoomListInterface tapTalkRoomListInterface) {
         setItems(vm.getRoomList(), false);
         this.vm = vm;
         this.tapTalkRoomListInterface = tapTalkRoomListInterface;

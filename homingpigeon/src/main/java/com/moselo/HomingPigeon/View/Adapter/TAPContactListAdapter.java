@@ -20,7 +20,7 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpContactListAdapter extends HpBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>> {
+public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>> {
 
     private TapTalkContactListInterface listener;
     private ColorStateList avatarTint;
@@ -34,13 +34,13 @@ public class HpContactListAdapter extends HpBaseAdapter<TAPUserModel, TAPBaseVie
     public static final int SELECT = 2;
     public static final int SELECTED_MEMBER = 3;
 
-    public HpContactListAdapter(int viewType, List<TAPUserModel> contactList) {
+    public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
     }
 
-    public HpContactListAdapter(int viewType, List<TAPUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
+    public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
@@ -48,7 +48,7 @@ public class HpContactListAdapter extends HpBaseAdapter<TAPUserModel, TAPBaseVie
     }
 
     // Constructor for selectable contacts
-    public HpContactListAdapter(List<TAPUserModel> contactList, List<TAPUserModel> selectedContacts, @Nullable TapTalkContactListInterface listener) {
+    public TAPContactListAdapter(List<TAPUserModel> contactList, List<TAPUserModel> selectedContacts, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = SELECT;
         this.selectedContacts = selectedContacts;

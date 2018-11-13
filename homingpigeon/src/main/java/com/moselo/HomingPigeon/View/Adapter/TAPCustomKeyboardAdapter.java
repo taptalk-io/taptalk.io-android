@@ -11,11 +11,11 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpCustomKeyboardAdapter extends HpBaseAdapter<TAPCustomKeyboardModel, TAPBaseViewHolder<TAPCustomKeyboardModel>> {
+public class TAPCustomKeyboardAdapter extends TAPBaseAdapter<TAPCustomKeyboardModel, TAPBaseViewHolder<TAPCustomKeyboardModel>> {
 
     private TAPCustomKeyboardInterface listener;
 
-    public HpCustomKeyboardAdapter(List<TAPCustomKeyboardModel> keyboardMenuList, TAPCustomKeyboardInterface listener) {
+    public TAPCustomKeyboardAdapter(List<TAPCustomKeyboardModel> keyboardMenuList, TAPCustomKeyboardInterface listener) {
         setItems(keyboardMenuList);
         this.listener = listener;
     }

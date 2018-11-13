@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @see {https://gist.github.com/aurae/ebf8ec212e4296aebb24}
  */
-public abstract class HpBaseAdapter<T, VH extends TAPBaseViewHolder<T>> extends
+public abstract class TAPBaseAdapter<T, VH extends TAPBaseViewHolder<T>> extends
         RecyclerView.Adapter<VH> {
     private List<T> items;
 

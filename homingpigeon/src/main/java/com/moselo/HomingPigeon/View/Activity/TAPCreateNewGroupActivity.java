@@ -26,8 +26,8 @@ import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.Model.TAPUserRoleModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
-import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPContactInitialAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
 import java.util.ArrayList;
@@ -49,8 +49,8 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
     private Button btnContinue;
     private RecyclerView rvContactList, rvGroupMembers;
 
-    private HpContactInitialAdapter contactListAdapter;
-    private HpContactListAdapter selectedMembersAdapter;
+    private TAPContactInitialAdapter contactListAdapter;
+    private TAPContactListAdapter selectedMembersAdapter;
     private TapTalkContactListInterface listener;
     private HpContactListViewModel vm;
 
@@ -164,14 +164,14 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
 
         // All contacts adapter
-        contactListAdapter = new HpContactInitialAdapter(HpContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
+        contactListAdapter = new TAPContactInitialAdapter(TAPContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
         rvContactList.setAdapter(contactListAdapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // Selected members adapter
-        selectedMembersAdapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
+        selectedMembersAdapter = new TAPContactListAdapter(TAPContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);

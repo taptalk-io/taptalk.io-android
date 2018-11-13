@@ -13,11 +13,11 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpImageListAdapter extends HpBaseAdapter<TAPImageURL, TAPBaseViewHolder<TAPImageURL>> {
+public class TAPImageListAdapter extends TAPBaseAdapter<TAPImageURL, TAPBaseViewHolder<TAPImageURL>> {
 
     private int gridWidth;
 
-    public HpImageListAdapter(List<TAPImageURL> items) {
+    public TAPImageListAdapter(List<TAPImageURL> items) {
         setItems(items, true);
         gridWidth = TAPUtils.getInstance().getScreenWidth() / 3;
     }

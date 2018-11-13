@@ -29,7 +29,7 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
+import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpGroupViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
@@ -50,7 +50,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private Button btnCreateGroup;
     private RecyclerView rvGroupMembers;
 
-    private HpContactListAdapter adapter;
+    private TAPContactListAdapter adapter;
     private HpGroupViewModel vm;
 
     @Override
@@ -123,7 +123,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
         etGroupName.addTextChangedListener(groupNameWatcher);
 
-        adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
+        adapter = new TAPContactListAdapter(TAPContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
