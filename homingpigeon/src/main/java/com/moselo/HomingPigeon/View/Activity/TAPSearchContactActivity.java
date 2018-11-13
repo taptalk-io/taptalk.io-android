@@ -15,7 +15,7 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPContactListViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CONTACT_LIST;
 
@@ -28,7 +28,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
 
     private TAPContactListAdapter adapter;
 
-    private HpContactListViewModel vm;
+    private TAPContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
     }
 
     @Override

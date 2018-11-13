@@ -12,7 +12,7 @@ import com.moselo.HomingPigeon.Model.TAPUserModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpContactListViewModel extends AndroidViewModel {
+public class TAPContactListViewModel extends AndroidViewModel {
 
     // Contact List needs to be sorted ascending by name
     private LiveData<List<TAPUserModel>> contactListLive;
@@ -24,7 +24,7 @@ public class HpContactListViewModel extends AndroidViewModel {
     private String groupName;
     private boolean isSelecting;
 
-    public HpContactListViewModel(@NonNull Application application) {
+    public TAPContactListViewModel(@NonNull Application application) {
         super(application);
         contactListLive = TAPDataManager.getInstance().getMyContactList();
     }

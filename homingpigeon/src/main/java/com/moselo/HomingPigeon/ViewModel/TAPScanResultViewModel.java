@@ -2,6 +2,6 @@ package com.moselo.HomingPigeon.ViewModel;
 
 import android.arch.lifecycle.ViewModel;
 
-public class HpScanResultViewModel extends ViewModel {
+public class TAPScanResultViewModel extends ViewModel {
     // TODO: Implement the ViewModel
 }

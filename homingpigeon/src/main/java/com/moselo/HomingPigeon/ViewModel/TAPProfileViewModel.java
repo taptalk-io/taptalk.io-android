@@ -10,12 +10,12 @@ import com.moselo.HomingPigeon.Model.TAPRoomModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpProfileViewModel extends AndroidViewModel {
+public class TAPProfileViewModel extends AndroidViewModel {
 
     private TAPRoomModel room;
     private List<TAPImageURL> sharedMedias;
 
-    public HpProfileViewModel(@NonNull Application application) {
+    public TAPProfileViewModel(@NonNull Application application) {
         super(application);
     }
 

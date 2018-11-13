@@ -10,7 +10,7 @@ import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPContactListViewModel;
 
 public class TAPBlockedListActivity extends TAPBaseActivity {
 
@@ -19,7 +19,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
 
     private TAPContactListAdapter adapter;
 
-    private HpContactListViewModel vm;
+    private TAPContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
 
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {

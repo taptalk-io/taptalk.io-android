@@ -22,7 +22,7 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPImageListAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPProfileViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
@@ -41,7 +41,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
     private AppBarLayout appBarLayout;
     private TAPImageListAdapter sharedMediaAdapter;
 
-    private HpProfileViewModel vm;
+    private TAPProfileViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpProfileViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPProfileViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
     }
 

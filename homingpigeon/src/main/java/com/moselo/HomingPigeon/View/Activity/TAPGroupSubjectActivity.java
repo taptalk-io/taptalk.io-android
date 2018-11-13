@@ -30,7 +30,7 @@ import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpGroupViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPGroupViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
@@ -51,7 +51,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private RecyclerView rvGroupMembers;
 
     private TAPContactListAdapter adapter;
-    private HpGroupViewModel vm;
+    private TAPGroupViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +103,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpGroupViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPGroupViewModel.class);
         vm.setMyID(getIntent().getStringExtra(MY_ID));
         vm.getGroupData().setGroupParticipants(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
         vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));

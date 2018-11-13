@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HpSearchChatViewModel extends AndroidViewModel {
+public class TAPSearchChatViewModel extends AndroidViewModel {
 
     private LiveData<List<TAPRecentSearchEntity>> recentSearchList;
     private List<TAPSearchChatModel> searchResults;
@@ -24,7 +24,7 @@ public class HpSearchChatViewModel extends AndroidViewModel {
     private String searchKeyword;
     private boolean isRecentSearchShown;
 
-    public HpSearchChatViewModel(@NonNull Application application) {
+    public TAPSearchChatViewModel(@NonNull Application application) {
         super(application);
     }
 

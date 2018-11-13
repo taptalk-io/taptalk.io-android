@@ -24,7 +24,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.TAPContactResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPContactListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private NestedScrollView nsvNewChat;
 
     private TAPContactInitialAdapter adapter;
-    private HpContactListViewModel vm;
+    private TAPContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
     }
 
     @Override

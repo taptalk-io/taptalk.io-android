@@ -40,7 +40,7 @@ import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.TAPNewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.TAPRoomListAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPRoomListViewModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class TAPRoomListFragment extends Fragment {
     private LinearLayoutManager llm;
     private TAPRoomListAdapter adapter;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
-    private HpRoomListViewModel vm;
+    private TAPRoomListViewModel vm;
 
     private TAPChatListener chatListener;
 
@@ -112,7 +112,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpRoomListViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPRoomListViewModel.class);
     }
 
     private void initListener() {
@@ -214,7 +214,7 @@ public class TAPRoomListFragment extends Fragment {
 
     //ini adalah fungsi yang di panggil pertama kali pas onResume
     private void viewLoadedSequence() {
-        if (HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+        if (TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
             //selama di apps (foreground) ga perlu panggil API, ambil local dari database aja
             TAPDataManager.getInstance().getRoomList(true, dbListener);
         } else {
@@ -255,14 +255,14 @@ public class TAPRoomListFragment extends Fragment {
         activity.runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
-            } else if (null != adapter && (!HpRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
+            } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
                 //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
                 //isShouldNotLoadFromAPI ini buat load dari database yang pertama
                 //is animate nya itu buat kalau misalnya perlu di animate dari parameter
                 adapter.addRoomList(vm.getRoomList());
                 rvContactList.scrollToPosition(0);
                 llRoomEmpty.setVisibility(View.GONE);
-            } else if (null != adapter && HpRoomListViewModel.isShouldNotLoadFromAPI()) {
+            } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
                 //ini pas kalau ga perlu untuk di animate changesnya
                 adapter.setItems(vm.getRoomList(), false);
                 llRoomEmpty.setVisibility(View.GONE);
@@ -272,8 +272,8 @@ public class TAPRoomListFragment extends Fragment {
 
             //ini buat ngubah isShouldNotLoadFromAPInya pas get data pertama
             //setelah itu fetch data dari api sesuai dengan cycle yang di butuhin
-            if (!HpRoomListViewModel.isShouldNotLoadFromAPI()) {
-                HpRoomListViewModel.setShouldNotLoadFromAPI(true);
+            if (!TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
+                TAPRoomListViewModel.setShouldNotLoadFromAPI(true);
                 fetchDataFromAPI();
             }
         });

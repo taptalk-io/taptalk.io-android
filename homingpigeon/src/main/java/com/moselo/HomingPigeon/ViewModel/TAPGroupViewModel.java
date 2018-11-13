@@ -6,12 +6,12 @@ import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Model.TAPRoomModel;
 
-public class HpGroupViewModel extends AndroidViewModel {
+public class TAPGroupViewModel extends AndroidViewModel {
 
     private TAPRoomModel groupData;
     private String myID;
 
-    public HpGroupViewModel(@NonNull Application application) {
+    public TAPGroupViewModel(@NonNull Application application) {
         super(application);
     }
 

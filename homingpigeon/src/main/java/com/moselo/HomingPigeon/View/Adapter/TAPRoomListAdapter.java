@@ -25,16 +25,16 @@ import com.moselo.HomingPigeon.Model.TAPRoomListModel;
 import com.moselo.HomingPigeon.Model.TAPRoomModel;
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPRoomListViewModel;
 
 import java.util.List;
 
 public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
-    private HpRoomListViewModel vm;
+    private TAPRoomListViewModel vm;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
 
-    public TAPRoomListAdapter(HpRoomListViewModel vm, TapTalkRoomListInterface tapTalkRoomListInterface) {
+    public TAPRoomListAdapter(TAPRoomListViewModel vm, TapTalkRoomListInterface tapTalkRoomListInterface) {
         setItems(vm.getRoomList(), false);
         this.vm = vm;
         this.tapTalkRoomListInterface = tapTalkRoomListInterface;

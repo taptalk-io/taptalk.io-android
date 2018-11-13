@@ -6,12 +6,12 @@ import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Model.TAPUserModel;
 
-public class HpNewContactViewModel extends AndroidViewModel {
+public class TAPNewContactViewModel extends AndroidViewModel {
 
     private TAPUserModel searchResult;
     private String pendingSearch;
 
-    public HpNewContactViewModel(@NonNull Application application) {
+    public TAPNewContactViewModel(@NonNull Application application) {
         super(application);
     }
 

@@ -32,7 +32,7 @@ import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.TAPSearchChatAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPSearchChatViewModel;
 
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class TAPSearchChatFragment extends Fragment {
     private ImageView ivButtonAction;
     private RecyclerView recyclerView;
 
-    private HpSearchChatViewModel vm;
+    private TAPSearchChatViewModel vm;
     private TAPSearchChatAdapter adapter;
 
     public TAPSearchChatFragment() {
@@ -97,7 +97,7 @@ public class TAPSearchChatFragment extends Fragment {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpSearchChatViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPSearchChatViewModel.class);
     }
 
     private void initView(View view) {

@@ -33,7 +33,7 @@ import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.TAPLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.TAPRoomListActivity;
-import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPRoomListViewModel;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
@@ -113,7 +113,7 @@ public class TapTalk {
 
             @Override
             public void onAppGotoBackground() {
-                HpRoomListViewModel.setShouldNotLoadFromAPI(false);
+                TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 isForeground = false;

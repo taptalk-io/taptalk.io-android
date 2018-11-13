@@ -27,14 +27,14 @@ import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetUserResponse;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.ViewModel.HpScanResultViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPScanResultViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ADDED_CONTACT;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.SCAN_RESULT;
 
 public class TAPScanResultActivity extends TAPBaseActivity {
 
-    private HpScanResultViewModel mViewModel;
+    private TAPScanResultViewModel mViewModel;
 
     private CardView cvResult;
     private ProgressBar pbLoading;
@@ -63,7 +63,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.hp_scan_result_activity);
-        mViewModel = ViewModelProviders.of(this).get(HpScanResultViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(TAPScanResultViewModel.class);
         initView();
     }
 

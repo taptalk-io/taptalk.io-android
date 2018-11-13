@@ -32,7 +32,7 @@ import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPCommonResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetUserResponse;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPNewContactViewModel;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ADDED_CONTACT;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
@@ -49,7 +49,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private EditText etSearch;
     private ProgressBar pbSearch, pbButton;
 
-    private HpNewContactViewModel vm;
+    private TAPNewContactViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpNewContactViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPNewContactViewModel.class);
     }
 
     @Override

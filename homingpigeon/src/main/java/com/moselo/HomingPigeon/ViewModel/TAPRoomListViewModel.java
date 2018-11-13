@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HpRoomListViewModel extends AndroidViewModel {
+public class TAPRoomListViewModel extends AndroidViewModel {
     private List<TAPRoomListModel> roomList;
     private Map<String, TAPRoomListModel> roomPointer;
     private Map<String, TAPRoomListModel> selectedRooms;
@@ -21,7 +21,7 @@ public class HpRoomListViewModel extends AndroidViewModel {
     private boolean isDoneFirstSetup = false;
     private String myUserID;
 
-    public HpRoomListViewModel(@NonNull Application application) {
+    public TAPRoomListViewModel(@NonNull Application application) {
         super(application);
         myUserID = TAPDataManager.getInstance().getActiveUser().getUserID();
     }

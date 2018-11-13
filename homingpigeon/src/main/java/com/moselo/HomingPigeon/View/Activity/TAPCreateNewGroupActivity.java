@@ -28,7 +28,7 @@ import com.moselo.HomingPigeon.Model.TAPUserRoleModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.TAPContactListAdapter;
-import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
+import com.moselo.HomingPigeon.ViewModel.TAPContactListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
     private TAPContactInitialAdapter contactListAdapter;
     private TAPContactListAdapter selectedMembersAdapter;
     private TapTalkContactListInterface listener;
-    private HpContactListViewModel vm;
+    private TAPContactListViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +88,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
-        vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
         vm.getSelectedContacts().add(myUser);
 
         setDummyData();
