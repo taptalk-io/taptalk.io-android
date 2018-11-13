@@ -4,14 +4,14 @@ import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Interface.HpCustomKeyboardInterface;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel, HpBaseViewHolder<HpCustomKeyboardModel>> {
+public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel, TAPBaseViewHolder<HpCustomKeyboardModel>> {
 
     private HpCustomKeyboardInterface listener;
 
@@ -22,11 +22,11 @@ public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpCustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<HpCustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new KeyboardMenuHolder(parent, R.layout.hp_cell_custom_keyboard_menu);
     }
 
-    class KeyboardMenuHolder extends HpBaseViewHolder<HpCustomKeyboardModel> {
+    class KeyboardMenuHolder extends TAPBaseViewHolder<HpCustomKeyboardModel> {
 
         TextView tvMenuIcon, tvMenuLabel;
 

@@ -18,15 +18,15 @@ import android.widget.Button;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.moselo.HomingPigeon.Helper.HpQRDetection;
+import com.moselo.HomingPigeon.Helper.TAPQRDetection;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpBarcodeScannerActivity;
 import com.moselo.HomingPigeon.View.Activity.HpScanResultActivity;
 
 import java.io.IOException;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.SCAN_RESULT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.SCAN_RESULT;
 
 public class HpBarcodeScannerFragment extends Fragment {
 
@@ -79,7 +79,7 @@ public class HpBarcodeScannerFragment extends Fragment {
             getActivity().finish();
         };
 
-        barcodeDetector.setProcessor(new HpQRDetection(getActivity(), scanListener));
+        barcodeDetector.setProcessor(new TAPQRDetection(getActivity(), scanListener));
 
         cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
                 .setAutoFocusEnabled(true)

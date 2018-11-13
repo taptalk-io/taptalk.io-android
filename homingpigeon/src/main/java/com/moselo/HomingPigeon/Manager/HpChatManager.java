@@ -1,17 +1,16 @@
 package com.moselo.HomingPigeon.Manager;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpFileUtils;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
+import com.moselo.HomingPigeon.Helper.TAPFileUtils;
+import com.moselo.HomingPigeon.Helper.TapTalk;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Model.HpEmitModel;
@@ -33,19 +32,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kEventOpenRoom;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketAuthentication;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketCloseRoom;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketNewMessage;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketOpenMessage;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketStartTyping;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketStopTyping;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketUserOffline;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ConnectionEvent.kSocketUserOnline;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_IMAGE;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_TEXT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketDeleteMessage;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketNewMessage;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketOpenMessage;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOffline;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnline;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
 public class HpChatManager {
 
@@ -54,7 +53,7 @@ public class HpChatManager {
     private Map<String, HpMessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
     private List<HpChatListener> chatListeners;
-    private List<HpMessageEntity> saveMessages; //message to be saved
+    private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
     private HpRoomModel activeRoom;
     private HpUserModel activeUser;
@@ -80,7 +79,7 @@ public class HpChatManager {
 
         @Override
         public void onSocketDisconnected() {
-            if (HomingPigeon.isForeground && HpNetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)
+            if (TapTalk.isForeground && HpNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)
                     && HpConnectionManager.ConnectionStatus.DISCONNECTED == HpConnectionManager.getInstance().getConnectionStatus())
                 HpConnectionManager.getInstance().reconnect();
         }
@@ -103,7 +102,7 @@ public class HpChatManager {
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
-                    HpEmitModel<HpMessageModel> messageEmit = HpUtils.getInstance()
+                    HpEmitModel<HpMessageModel> messageEmit = TAPUtils.getInstance()
                             .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
@@ -113,7 +112,7 @@ public class HpChatManager {
                     }
                     break;
                 case kSocketUpdateMessage:
-                    HpEmitModel<HpMessageModel> messageUpdateEmit = HpUtils.getInstance()
+                    HpEmitModel<HpMessageModel> messageUpdateEmit = TAPUtils.getInstance()
                             .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
@@ -123,7 +122,7 @@ public class HpChatManager {
                     }
                     break;
                 case kSocketDeleteMessage:
-                    HpEmitModel<HpMessageModel> messageDeleteEmit = HpUtils.getInstance()
+                    HpEmitModel<HpMessageModel> messageDeleteEmit = TAPUtils.getInstance()
                             .fromJSON(new TypeReference<HpEmitModel<HpMessageModel>>() {
                             }, emitData);
                     try {
@@ -252,9 +251,9 @@ public class HpChatManager {
     }
 
     /**
-     * convert HpMessageEntity to HpMessageModel
+     * convert TAPMessageEntity to HpMessageModel
      */
-    public HpMessageModel convertToModel(HpMessageEntity entity) {
+    public HpMessageModel convertToModel(TAPMessageEntity entity) {
         return new HpMessageModel(
                 entity.getMessageID(),
                 entity.getLocalID(),
@@ -262,17 +261,17 @@ public class HpChatManager {
                 new HpRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
                         // TODO: 18 October 2018 REMOVE CHECK
                         /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                        TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
                         }, entity.getRoomImage())
                         /* TEMPORARY CHECK FOR NULL IMAGE */ : null
                         , entity.getRoomColor()),
                 entity.getType(),
                 entity.getCreated(),
                 new HpUserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
-                        HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                        TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
                         }, entity.getUserImage()),
                         entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
-                        HpUtils.getInstance().fromJSON(new TypeReference<HpUserRoleModel>() {
+                        TAPUtils.getInstance().fromJSON(new TypeReference<HpUserRoleModel>() {
                         }, entity.getUserRole()),
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated()),
@@ -284,20 +283,20 @@ public class HpChatManager {
     }
 
     /**
-     * convert HpMessageModel to HpMessageEntity
+     * convert HpMessageModel to TAPMessageEntity
      */
-    public HpMessageEntity convertToEntity(HpMessageModel model) {
-        return new HpMessageEntity(
+    public TAPMessageEntity convertToEntity(HpMessageModel model) {
+        return new TAPMessageEntity(
                 model.getMessageID(), model.getLocalID(), model.getBody(), model.getRecipientID(),
                 model.getType(), model.getCreated(), model.getUpdated(), model.getIsRead(),
                 model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
                 model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),
                 model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
-                HpUtils.getInstance().toJsonString(model.getRoom().getRoomImage()),
+                TAPUtils.getInstance().toJsonString(model.getRoom().getRoomImage()),
                 model.getUser().getUserID(), model.getUser().getXcUserID(), model.getUser().getName(),
-                model.getUser().getUsername(), HpUtils.getInstance().toJsonString(model.getUser().getAvatarURL()),
+                model.getUser().getUsername(), TAPUtils.getInstance().toJsonString(model.getUser().getAvatarURL()),
                 model.getUser().getEmail(), model.getUser().getPhoneNumber(),
-                HpUtils.getInstance().toJsonString(model.getUser().getUserRole()),
+                TAPUtils.getInstance().toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
                 model.getUser().getCreated(), model.getUser().getUpdated()
@@ -311,10 +310,10 @@ public class HpChatManager {
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
-            List<HpMessageEntity> messageEntities = new ArrayList<>();
+            List<TAPMessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
-                String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 HpMessageModel messageModel = buildTextMessage(substr, activeRoom, getActiveUser());
                 // Add entity to list
                 messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
@@ -332,16 +331,16 @@ public class HpChatManager {
     }
 
     public void sendDirectReplyTextMessage(String textMessage, HpRoomModel roomModel) {
-        if (!HomingPigeon.isForeground)
+        if (!TapTalk.isForeground)
             HpConnectionManager.getInstance().connect();
 
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
-            List<HpMessageEntity> messageEntities = new ArrayList<>();
+            List<TAPMessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
-                String substr = HpUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 HpMessageModel messageModel = buildTextMessage(substr, roomModel, HpDataManager.getInstance().getActiveUser());
                 // Add entity to list
                 messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
@@ -394,12 +393,12 @@ public class HpChatManager {
 
         // TODO: 8 November 2018 CHECK IMAGE WIDTH/HEIGHT AFTER ENCODE
         // Get image width and height
-        String pathName = HpFileUtils.getInstance().getFilePath(HomingPigeon.appContext, imageUri);
+        String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
-        int orientation = HpFileUtils.getInstance().getImageOrientation(imageUri, HomingPigeon.appContext);
+        int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
             messageModel.setImageWidth(options.outHeight);
             messageModel.setImageHeight(options.outWidth);
@@ -414,7 +413,7 @@ public class HpChatManager {
 //        new Thread(() -> {
 //            // Encode image to base 64
 //            // TODO: 1 November 2018 UPDATE ENCODE METHOD
-//            String encodedImage = HpFileUtils.getInstance().encodeToBase64(imageUri, maxImageSize, activity);
+//            String encodedImage = TAPFileUtils.getInstance().encodeToBase64(imageUri, maxImageSize, activity);
 //            messageModel.setBody(encodedImage);
 //            // TODO: 31 October 2018 SEND MESSAGE TO SERVER
 //        }).start();
@@ -514,7 +513,7 @@ public class HpChatManager {
     private void sendEmit(String eventName, HpMessageModel messageModel) {
         HpEmitModel<HpMessageModel> hpEmitModel;
         hpEmitModel = new HpEmitModel<>(eventName, messageModel);
-        HpConnectionManager.getInstance().send(HpUtils.getInstance().toJsonString(hpEmitModel));
+        HpConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(hpEmitModel));
     }
 
     /**
@@ -615,7 +614,7 @@ public class HpChatManager {
         }
         // Receive message outside active room (not in room List)
         else if (null != chatListeners && !HpNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            HpNotificationManager.getInstance().createAndShowInAppNotification(HomingPigeon.appContext, newMessage);
+            HpNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             for (HpChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = newMessage.copyMessageModel();
 
@@ -646,7 +645,7 @@ public class HpChatManager {
             removeReplyMessageLocalID(newMessage.getLocalID());
             if (isReplyMessageLocalIDsEmpty()) {
                 checkPendingBackgroundTask();
-                Toast.makeText(HomingPigeon.appContext, "Reply Success", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TapTalk.appContext, "Reply Success", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -706,7 +705,7 @@ public class HpChatManager {
         HpDataManager.getInstance().insertToDatabase(saveMessages, true);
     }
 
-    public List<HpMessageEntity> getSaveMessages() {
+    public List<TAPMessageEntity> getSaveMessages() {
         return saveMessages;
     }
 
@@ -733,7 +732,7 @@ public class HpChatManager {
     public void addReplyMessageLocalID(String localID) {
         //masukin local ID ke dalem list kalau misalnya appsnya lagi ga di foreground aja,
         //karena kalau di foreground kita ga boleh matiin socketnya cman krna reply
-        if (!HomingPigeon.isForeground)
+        if (!TapTalk.isForeground)
             getReplyMessageLocalIDs().add(localID);
     }
 

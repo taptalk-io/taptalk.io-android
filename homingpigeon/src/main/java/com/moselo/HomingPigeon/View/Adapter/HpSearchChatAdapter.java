@@ -10,13 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
@@ -25,7 +25,7 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBaseViewHolder<HpSearchChatModel>> {
+public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBaseViewHolder<HpSearchChatModel>> {
 
     private String searchKeyword;
 
@@ -35,7 +35,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpSearchChatModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<HpSearchChatModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (HpSearchChatModel.Type.values()[viewType]) {
             case RECENT_TITLE:
                 return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
@@ -60,7 +60,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         return super.getItemCount();
     }
 
-    public class RecentTitleVH extends HpBaseViewHolder<HpSearchChatModel> {
+    public class RecentTitleVH extends TAPBaseViewHolder<HpSearchChatModel> {
 
         private TextView tvClearHistory;
         private TextView tvRecentTitle;
@@ -84,7 +84,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         }
     }
 
-    public class MessageItemVH extends HpBaseViewHolder<HpSearchChatModel> {
+    public class MessageItemVH extends TAPBaseViewHolder<HpSearchChatModel> {
 
         private ConstraintLayout clContainer;
         private View vSeparator;
@@ -109,7 +109,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
                 vSeparator.setVisibility(View.GONE);
             else vSeparator.setVisibility(View.VISIBLE);
 
-            HpMessageEntity message = item.getMessage();
+            TAPMessageEntity message = item.getMessage();
             if (null == message) return;
 
             // Set Room Name
@@ -122,7 +122,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
             // Set message timestamp
             // TODO: 17 October 2018 PROCESS DATE OUTSIDE BIND
-            tvMessageTime.setText(HpTimeFormatter.getInstance().durationString(message.getCreated()));
+            tvMessageTime.setText(TAPTimeFormatter.getInstance().durationString(message.getCreated()));
 
             // Change Status Message Icon
             // Message is read
@@ -148,12 +148,12 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
 
             clContainer.setOnClickListener(v -> {
                 // TODO: 17 October 2018 OPEN CHAT ROOM & SCROLL POSITION TO MESSAGE
-                HpUtils.getInstance().startChatActivity(itemView.getContext(),
+                TAPUtils.getInstance().startChatActivity(itemView.getContext(),
                         message.getRoomID(),
                         message.getRoomName(),
                         // TODO: 18 October 2018 REMOVE CHECK
                         /* TEMPORARY CHECK FOR NULL IMAGE */null != message.getRoomImage() ?
-                                HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                                TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
                                 }, message.getRoomImage())
                                 /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                         message.getRoomType(),
@@ -162,7 +162,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
         }
     }
 
-    public class RoomItemVH extends HpBaseViewHolder<HpSearchChatModel> {
+    public class RoomItemVH extends TAPBaseViewHolder<HpSearchChatModel> {
 
         private View vSeparator;
         private ConstraintLayout clContainer;
@@ -226,20 +226,20 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, HpBase
             }
 
             clContainer.setOnClickListener(v -> {
-                HpUtils.getInstance().startChatActivity(itemView.getContext(),
+                TAPUtils.getInstance().startChatActivity(itemView.getContext(),
                         room.getRoomID(),
                         room.getRoomName(),
                         room.getRoomImage(),
                         room.getRoomType(),
                         room.getRoomColor());
 
-                HpRecentSearchEntity recentItem = HpRecentSearchEntity.Builder(item);
+                TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                 HpDataManager.getInstance().insertToDatabase(recentItem);
             });
         }
     }
 
-    public class EmptyItemVH extends HpBaseViewHolder<HpSearchChatModel> {
+    public class EmptyItemVH extends TAPBaseViewHolder<HpSearchChatModel> {
 
         EmptyItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);

@@ -171,7 +171,7 @@
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
         tools:background="@color/transparent_charcoal">
 
-        <com.moselo.HomingPigeon.Helper.HpChatRecyclerView
+        <com.moselo.HomingPigeon.Helper.TAPChatRecyclerView
             android:id="@+id/rv_message_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

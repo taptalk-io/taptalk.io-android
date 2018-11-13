@@ -14,9 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
-import com.moselo.HomingPigeon.Const.HpDefaultConstant;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpContactModel;
@@ -30,8 +29,8 @@ import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.CONTACT_LIST;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CONTACT_LIST;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 
 public class HpNewChatActivity extends HpBaseActivity {
 
@@ -66,7 +65,7 @@ public class HpNewChatActivity extends HpBaseActivity {
         vm.getContactListLive().observe(this, userModels -> {
             vm.getContactList().clear();
             vm.getContactList().addAll(userModels);
-            vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
             runOnUiThread(() -> adapter.setItems(vm.getSeparatedContacts()));
         });
 
@@ -109,7 +108,7 @@ public class HpNewChatActivity extends HpBaseActivity {
     }
 
     private void openQRScanner() {
-        if (HpUtils.getInstance().hasPermissions(HpNewChatActivity.this, Manifest.permission.CAMERA)) {
+        if (TAPUtils.getInstance().hasPermissions(HpNewChatActivity.this, Manifest.permission.CAMERA)) {
             Intent intent = new Intent(HpNewChatActivity.this, HpBarcodeScannerActivity.class);
             startActivity(intent);
         } else {
@@ -138,7 +137,7 @@ public class HpNewChatActivity extends HpBaseActivity {
         startActivity(intent);
     }
 
-    HpDefaultDataView<HpContactResponse> getContactView = new HpDefaultDataView<HpContactResponse>() {
+    TapDefaultDataView<HpContactResponse> getContactView = new TapDefaultDataView<HpContactResponse>() {
         @Override
         public void onSuccess(HpContactResponse response) {
             // Insert contacts to database

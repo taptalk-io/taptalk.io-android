@@ -6,29 +6,29 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpImageListAdapter extends HpBaseAdapter<HpImageURL, HpBaseViewHolder<HpImageURL>> {
+public class HpImageListAdapter extends HpBaseAdapter<HpImageURL, TAPBaseViewHolder<HpImageURL>> {
 
     private int gridWidth;
 
     public HpImageListAdapter(List<HpImageURL> items) {
         setItems(items, true);
-        gridWidth = HpUtils.getInstance().getScreenWidth() / 3;
+        gridWidth = TAPUtils.getInstance().getScreenWidth() / 3;
     }
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpImageURL> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<HpImageURL> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ThumbnailGridVH(parent, R.layout.cell_thumbnail_grid);
     }
 
-    class ThumbnailGridVH extends HpBaseViewHolder<HpImageURL> {
+    class ThumbnailGridVH extends TAPBaseViewHolder<HpImageURL> {
 
         ConstraintLayout clContainer;
         ImageView ivThumbnail;

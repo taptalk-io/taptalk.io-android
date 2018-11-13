@@ -16,11 +16,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TapTalkDialog;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Listener.HpSocketListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -34,8 +34,8 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ADDED_CONTACT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ADDED_CONTACT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
 
 public class HpNewContactActivity extends HpBaseActivity {
 
@@ -59,7 +59,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         initViewModel();
         initView();
         initListener();
-        HpUtils.getInstance().showKeyboard(this, etSearch);
+        TAPUtils.getInstance().showKeyboard(this, etSearch);
     }
 
     private void initViewModel() {
@@ -105,7 +105,7 @@ public class HpNewContactActivity extends HpBaseActivity {
 
     private void clearSearch() {
         //showEmpty();
-        HpUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.getInstance().dismissKeyboard(this);
         etSearch.setText("");
         etSearch.clearFocus();
     }
@@ -235,13 +235,13 @@ public class HpNewContactActivity extends HpBaseActivity {
 
     private void openChatRoom() {
         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
-        HpUtils.getInstance().startChatActivity(
+        TAPUtils.getInstance().startChatActivity(
                 this,
                 HpChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
                 1,
-                /* TEMPORARY ROOM COLOR */HpUtils.getInstance().getRandomColor(vm.getSearchResult().getName()) + "");
+                /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName()) + "");
     }
 
     private void enableInput() {
@@ -260,7 +260,7 @@ public class HpNewContactActivity extends HpBaseActivity {
             etSearch.setEnabled(false);
             etSearch.removeTextChangedListener(contactSearchWatcher);
             ivButtonCancel.setOnClickListener(null);
-            HpUtils.getInstance().dismissKeyboard(this);
+            TAPUtils.getInstance().dismissKeyboard(this);
         });
     }
 
@@ -332,7 +332,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    HpDefaultDataView<HpGetUserResponse> getUserView = new HpDefaultDataView<HpGetUserResponse>() {
+    TapDefaultDataView<HpGetUserResponse> getUserView = new TapDefaultDataView<HpGetUserResponse>() {
         @Override
         public void startLoading() {
             ivButtonCancel.setVisibility(View.INVISIBLE);
@@ -359,7 +359,7 @@ public class HpNewContactActivity extends HpBaseActivity {
                 endLoading();
             } else {
                 // Other errors
-                new HomingPigeonDialog.Builder(HpNewContactActivity.this)
+                new TapTalkDialog.Builder(HpNewContactActivity.this)
                         .setTitle(getString(R.string.error))
                         .setMessage(error.getMessage())
                         .setPrimaryButtonTitle(getString(R.string.ok))
@@ -378,7 +378,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    HpDefaultDataView<HpCommonResponse> addContactView = new HpDefaultDataView<HpCommonResponse>() {
+    TapDefaultDataView<HpCommonResponse> addContactView = new TapDefaultDataView<HpCommonResponse>() {
         @Override
         public void startLoading() {
             // Disable editing when loading
@@ -400,7 +400,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         @Override
         public void onError(HpErrorModel error) {
             enableInput();
-            new HomingPigeonDialog.Builder(HpNewContactActivity.this)
+            new TapTalkDialog.Builder(HpNewContactActivity.this)
                     .setTitle(getString(R.string.error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.ok))

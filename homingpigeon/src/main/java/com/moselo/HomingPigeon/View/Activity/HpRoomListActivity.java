@@ -2,13 +2,13 @@ package com.moselo.HomingPigeon.View.Activity;
 
 import android.os.Bundle;
 
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Fragment.HpRoomListFragment;
 import com.moselo.HomingPigeon.View.Fragment.HpSearchChatFragment;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
 
 public class HpRoomListActivity extends HpBaseActivity {
 
@@ -40,7 +40,7 @@ public class HpRoomListActivity extends HpBaseActivity {
     private void redirectToChatActivityFromNotification() {
         HpRoomModel roomModel = getIntent().getParcelableExtra(K_ROOM);
         if (null != roomModel) {
-            HpUtils.getInstance().startChatActivity(this, roomModel);
+            TAPUtils.getInstance().startChatActivity(this, roomModel);
         }
     }
 

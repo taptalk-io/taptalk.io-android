@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.moselo.HomingPigeon.Helper.HpRoundedCornerImageView
+        <com.moselo.HomingPigeon.Helper.TAPRoundedCornerImageView
             android:id="@+id/rciv_product_image"
             android:layout_width="match_parent"
             android:layout_height="140dp"

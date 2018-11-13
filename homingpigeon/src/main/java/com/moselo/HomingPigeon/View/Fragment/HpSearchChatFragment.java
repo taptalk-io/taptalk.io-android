@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +18,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -93,7 +92,7 @@ public class HpSearchChatFragment extends Fragment {
         if (hidden) {
             clearSearch();
         } else {
-            HpUtils.getInstance().showKeyboard(activity, etSearch);
+            TAPUtils.getInstance().showKeyboard(activity, etSearch);
         }
     }
 
@@ -120,13 +119,13 @@ public class HpSearchChatFragment extends Fragment {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                HpUtils.getInstance().dismissKeyboard(activity);
+                TAPUtils.getInstance().dismissKeyboard(activity);
             }
         });
 
         ivButtonBack.setOnClickListener(v -> {
             ((HpRoomListActivity) activity).showRoomList();
-            HpUtils.getInstance().dismissKeyboard(activity);
+            TAPUtils.getInstance().dismissKeyboard(activity);
         });
         ivButtonAction.setOnClickListener(v -> clearSearch());
     }
@@ -134,7 +133,7 @@ public class HpSearchChatFragment extends Fragment {
     private void clearSearch() {
         etSearch.setText("");
         etSearch.clearFocus();
-        HpUtils.getInstance().dismissKeyboard(activity);
+        TAPUtils.getInstance().dismissKeyboard(activity);
     }
 
     private void setRecentSearchItemsFromDatabase() {
@@ -148,13 +147,13 @@ public class HpSearchChatFragment extends Fragment {
             }
 
             if (null != hpRecentSearchEntities) {
-                for (HpRecentSearchEntity entity : hpRecentSearchEntities) {
+                for (TAPRecentSearchEntity entity : hpRecentSearchEntities) {
                     HpSearchChatModel recentItem = new HpSearchChatModel(ROOM_ITEM);
                     HpRoomModel roomModel = new HpRoomModel(
                             entity.getRoomID(),
                             entity.getRoomName(),
                             entity.getRoomType(),
-                            HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage()),
+                            TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage()),
                             entity.getRoomColor());
                     recentItem.setRoom(roomModel);
                     vm.addRecentSearches(recentItem);
@@ -219,14 +218,14 @@ public class HpSearchChatFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener<HpMessageEntity> roomSearchListener = new HpDatabaseListener<HpMessageEntity>() {
+    private HpDatabaseListener<TAPMessageEntity> roomSearchListener = new HpDatabaseListener<TAPMessageEntity>() {
         @Override
-        public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
+        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             if (entities.size() > 0) {
                 HpSearchChatModel sectionTitleChatsAndContacts = new HpSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
-                for (HpMessageEntity entity : entities) {
+                for (TAPMessageEntity entity : entities) {
                     HpSearchChatModel result = new HpSearchChatModel(ROOM_ITEM);
                     // Convert message to room model
                     HpRoomModel room = new HpRoomModel(
@@ -235,7 +234,7 @@ public class HpSearchChatFragment extends Fragment {
                             entity.getRoomType(),
                             // TODO: 18 October 2018 REMOVE CHECK
                             /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                            HpUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                            TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
                             }, entity.getRoomImage())
                             /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                             entity.getRoomColor());
@@ -282,14 +281,14 @@ public class HpSearchChatFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener<HpMessageEntity> messageSearchListener = new HpDatabaseListener<HpMessageEntity>() {
+    private HpDatabaseListener<TAPMessageEntity> messageSearchListener = new HpDatabaseListener<TAPMessageEntity>() {
         @Override
-        public void onSelectFinished(List<HpMessageEntity> entities) {
+        public void onSelectFinished(List<TAPMessageEntity> entities) {
             if (entities.size() > 0) {
                 HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
                 sectionTitleMessages.setSectionTitle(getString(R.string.messages));
                 vm.addSearchResult(sectionTitleMessages);
-                for (HpMessageEntity entity : entities) {
+                for (TAPMessageEntity entity : entities) {
                     HpSearchChatModel result = new HpSearchChatModel(MESSAGE_ITEM);
                     result.setMessage(entity);
                     vm.addSearchResult(result);

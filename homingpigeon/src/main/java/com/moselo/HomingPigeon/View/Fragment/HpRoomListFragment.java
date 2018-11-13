@@ -22,9 +22,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
@@ -340,7 +340,7 @@ public class HpRoomListFragment extends Fragment {
 
     private void hideSelectionActionBar() {
         vm.setSelecting(false);
-        clButtonSearch.setElevation(HpUtils.getInstance().dpToPx(2));
+        clButtonSearch.setElevation(TAPUtils.getInstance().dpToPx(2));
         clButtonSearch.setVisibility(View.VISIBLE);
         clSelection.setVisibility(View.INVISIBLE);
     }
@@ -355,7 +355,7 @@ public class HpRoomListFragment extends Fragment {
         if (ivButtonNewChat.getVisibility() == View.VISIBLE) {
             return;
         }
-        ivButtonNewChat.setTranslationY(HpUtils.getInstance().dpToPx(120));
+        ivButtonNewChat.setTranslationY(TAPUtils.getInstance().dpToPx(120));
         ivButtonNewChat.setVisibility(View.VISIBLE);
             ivButtonNewChat.animate()
                     .translationY(0)
@@ -368,7 +368,7 @@ public class HpRoomListFragment extends Fragment {
             return;
         }
         ivButtonNewChat.animate()
-                .translationY(HpUtils.getInstance().dpToPx(120))
+                .translationY(TAPUtils.getInstance().dpToPx(120))
                 .setInterpolator(new AccelerateInterpolator())
                 .withEndAction(() -> ivButtonNewChat.setVisibility(View.GONE))
                 .start();
@@ -378,7 +378,7 @@ public class HpRoomListFragment extends Fragment {
         return vm.isSelecting();
     }
 
-    private HpDefaultDataView<HpGetRoomListResponse> roomListView = new HpDefaultDataView<HpGetRoomListResponse>() {
+    private TapDefaultDataView<HpGetRoomListResponse> roomListView = new TapDefaultDataView<HpGetRoomListResponse>() {
         @Override
         public void startLoading() {
             //ini buat munculin setup dialog pas pertama kali buka apps
@@ -403,7 +403,7 @@ public class HpRoomListFragment extends Fragment {
             vm.setDoneFirstSetup(true);
 
             if (response.getMessages().size() > 0) {
-                List<HpMessageEntity> tempMessage = new ArrayList<>();
+                List<TAPMessageEntity> tempMessage = new ArrayList<>();
                 for (HpMessageModel message : response.getMessages()) {
                     try {
                         HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
@@ -445,12 +445,12 @@ public class HpRoomListFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener<HpMessageEntity> dbListener = new HpDatabaseListener<HpMessageEntity>() {
+    private HpDatabaseListener<TAPMessageEntity> dbListener = new HpDatabaseListener<TAPMessageEntity>() {
         @Override
-        public void onSelectFinished(List<HpMessageEntity> entities) {
+        public void onSelectFinished(List<TAPMessageEntity> entities) {
             List<HpRoomListModel> messageModels = new ArrayList<>();
             //ngubah entity yang dari database jadi model
-            for (HpMessageEntity entity : entities) {
+            for (TAPMessageEntity entity : entities) {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
@@ -473,9 +473,9 @@ public class HpRoomListFragment extends Fragment {
         }
 
         @Override
-        public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
+        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             List<HpRoomListModel> messageModels = new ArrayList<>();
-            for (HpMessageEntity entity : entities) {
+            for (TAPMessageEntity entity : entities) {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
@@ -488,12 +488,12 @@ public class HpRoomListFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener<HpMessageEntity> dbAnimatedListener = new HpDatabaseListener<HpMessageEntity>() {
+    private HpDatabaseListener<TAPMessageEntity> dbAnimatedListener = new HpDatabaseListener<TAPMessageEntity>() {
 
         @Override
-        public void onSelectedRoomList(List<HpMessageEntity> entities, Map<String, Integer> unreadMap) {
+        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             List<HpRoomListModel> messageModels = new ArrayList<>();
-            for (HpMessageEntity entity : entities) {
+            for (TAPMessageEntity entity : entities) {
                 HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
                 HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);

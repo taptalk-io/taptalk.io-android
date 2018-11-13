@@ -16,9 +16,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
-import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TapTalkDialog;
+import com.moselo.HomingPigeon.Helper.TAPHorizontalDecoration;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -33,12 +33,12 @@ import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_IMAGE;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_MEMBERS;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_NAME;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.MY_ID;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.GROUP_MEMBER_LIMIT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.RequestCode.CREATE_GROUP;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_NAME;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.MY_ID;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 
 public class HpCreateNewGroupActivity extends HpBaseActivity {
 
@@ -98,12 +98,12 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         listener = new ContactListInterface() {
             @Override
             public boolean onContactSelected(HpUserModel contact) {
-                HpUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
-                        new HomingPigeonDialog.Builder(HpCreateNewGroupActivity.this)
+                        new TapTalkDialog.Builder(HpCreateNewGroupActivity.this)
                                 .setTitle(getString(R.string.cannot_add_more_people))
                                 .setMessage(getString(R.string.group_limit_reached))
                                 .setPrimaryButtonTitle("OK")
@@ -133,7 +133,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
 
             @Override
             public void onContactDeselected(HpUserModel contact) {
-                HpUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 contactListAdapter.notifyDataSetChanged();
@@ -161,7 +161,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
         getWindow().setBackgroundDrawable(null);
-        vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
 
         // All contacts adapter
         contactListAdapter = new HpContactInitialAdapter(HpContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
@@ -194,14 +194,14 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
             etSearch.setText("");
             etSearch.clearFocus();
             ivButtonAction.setImageResource(R.drawable.hp_ic_search_grey);
-            HpUtils.getInstance().dismissKeyboard(this);
+            TAPUtils.getInstance().dismissKeyboard(this);
         } else {
             // Show Search Bar
             vm.setSelecting(true);
             tvTitle.setVisibility(View.GONE);
             etSearch.setVisibility(View.VISIBLE);
             ivButtonAction.setImageResource(R.drawable.hp_ic_close_grey);
-            HpUtils.getInstance().showKeyboard(this, etSearch);
+            TAPUtils.getInstance().showKeyboard(this, etSearch);
         }
     }
 
@@ -218,8 +218,8 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         if (rvGroupMembers.getItemDecorationCount() > 0) {
             rvGroupMembers.removeItemDecorationAt(0);
         }
-        rvGroupMembers.addItemDecoration(new HpHorizontalDecoration(0, 0,
-                0, HpUtils.getInstance().dpToPx(16), selectedMembersAdapter.getItemCount(),
+        rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
+                0, TAPUtils.getInstance().dpToPx(16), selectedMembersAdapter.getItemCount(),
                 0, 0));
     }
 
@@ -237,7 +237,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
             }
             vm.getFilteredContacts().addAll(filteredContacts);
         }
-        vm.setSeparatedContacts(HpUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
         contactListAdapter.setItems(vm.getSeparatedContacts());
     }
 

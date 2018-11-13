@@ -3,7 +3,7 @@ package com.moselo.HomingPigeon.Helper.SwipeBackLayout;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -23,7 +23,7 @@ public class SwipeBackListenerActivityAdapter implements SwipeBackLayout.SwipeLi
     public void onEdgeTouch(int edgeFlag) {
         Activity activity = mActivity.get();
         if (null != activity) {
-            HpUtils.convertActivityToTranslucent(activity);
+            TAPUtils.convertActivityToTranslucent(activity);
         }
     }
 

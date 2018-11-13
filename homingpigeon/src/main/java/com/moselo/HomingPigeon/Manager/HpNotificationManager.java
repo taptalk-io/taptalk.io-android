@@ -7,11 +7,10 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TapTalk;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 
@@ -20,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.HP_NOTIFICATION_CHANNEL;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.HP_NOTIFICATION_CHANNEL;
 
 public class HpNotificationManager {
     private static final String TAG = HpNotificationManager.class.getSimpleName();
@@ -87,8 +86,8 @@ public class HpNotificationManager {
         String summaryContent = messageSize + " messages from " + chatSize + " chats";
 
         return new NotificationCompat.Builder(context, HP_NOTIFICATION_CHANNEL)
-                .setSmallIcon(HomingPigeon.getClientAppIcon())
-                .setContentTitle(HomingPigeon.getClientAppName())
+                .setSmallIcon(TapTalk.getClientAppIcon())
+                .setContentTitle(TapTalk.getClientAppName())
                 .setContentText(summaryContent)
                 .setStyle(new NotificationCompat.InboxStyle()/*.setSummaryText(summaryContent)*/)
                 .setGroup(notificationGroup)
@@ -106,7 +105,7 @@ public class HpNotificationManager {
     }
 
     //buat create notification when the apps is in background
-    public NotificationCompat.Builder createNotificationBubble(HomingPigeon.NotificationBuilder builder) {
+    public NotificationCompat.Builder createNotificationBubble(TapTalk.NotificationBuilder builder) {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(builder.chatSender);
         String notifMessageRoomID = builder.notificationMessage.getRoom().getRoomID();
@@ -174,10 +173,10 @@ public class HpNotificationManager {
     }
 
     public void createAndShowInAppNotification(Context context, HpMessageModel newMessageModel) {
-        if (HomingPigeon.isForeground) {
-            new HomingPigeon.NotificationBuilder(context)
+        if (TapTalk.isForeground) {
+            new TapTalk.NotificationBuilder(context)
                     .setNotificationMessage(newMessageModel)
-                    .setSmallIcon(HomingPigeon.getClientAppIcon())
+                    .setSmallIcon(TapTalk.getClientAppIcon())
                     .setNeedReply(false)
                     .setOnClickAction(HpRoomListActivity.class)
                     .show();
@@ -186,7 +185,7 @@ public class HpNotificationManager {
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, HpMessageModel newMessageModel) {
         HpDataManager.getInstance().insertToDatabase(HpChatManager.getInstance().convertToEntity(newMessageModel));
-        new HomingPigeon.NotificationBuilder(context)
+        new TapTalk.NotificationBuilder(context)
                 .setNotificationMessage(newMessageModel)
                 .setSmallIcon(notificationIcon)
                 .setNeedReply(false)
@@ -201,13 +200,13 @@ public class HpNotificationManager {
 
     public void saveNotificationMessageMapToPreference() {
         if (0 < getNotifMessagesMap().size()) {
-            HpDataManager.getInstance().saveNotificationMessageMap(HpUtils.getInstance().toJsonString(getNotifMessagesMap()));
+            HpDataManager.getInstance().saveNotificationMessageMap(TAPUtils.getInstance().toJsonString(getNotifMessagesMap()));
         }
     }
 
     public void updateNotificationMessageMapWhenAppKilled() {
         if (HpDataManager.getInstance().checkNotificationMap() && 0 == getNotifMessagesMap().size()) {
-            Map<String, List<HpMessageModel>> tempNotifMessage = HpUtils.getInstance().fromJSON(
+            Map<String, List<HpMessageModel>> tempNotifMessage = TAPUtils.getInstance().fromJSON(
                     new TypeReference<Map<String, List<HpMessageModel>>>() {
                     },
                     HpDataManager.getInstance().getNotificationMessageMap());

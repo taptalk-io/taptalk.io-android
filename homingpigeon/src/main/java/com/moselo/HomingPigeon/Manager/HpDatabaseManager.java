@@ -3,31 +3,31 @@ package com.moselo.HomingPigeon.Manager;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
-import com.moselo.HomingPigeon.Data.Contact.HpMyContactRepository;
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Data.Message.HpMessageRepository;
-import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
-import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchRepository;
+import com.moselo.HomingPigeon.Data.Contact.TAPMyContactRepository;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageRepository;
+import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchRepository;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MESSAGE_DB;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.MY_CONTACT_DB;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DatabaseType.SEARCH_DB;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DatabaseType.MESSAGE_DB;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class HpDatabaseManager {
     private static HpDatabaseManager instance;
 
     //for message Table
-    private HpMessageRepository messageRepository;
+    private TAPMessageRepository messageRepository;
 
     //for Recent Search Table
-    private HpRecentSearchRepository searchRepository;
+    private TAPRecentSearchRepository searchRepository;
 
     //for MyContact Table
-    private HpMyContactRepository myContactRepository;
+    private TAPMyContactRepository myContactRepository;
 
     public static HpDatabaseManager getInstance() {
         return (null == instance) ? (instance = new HpDatabaseManager()) : instance;
@@ -36,13 +36,13 @@ public class HpDatabaseManager {
     public void setRepository(String databaseType, Application application) {
         switch (databaseType) {
             case MESSAGE_DB:
-                messageRepository = new HpMessageRepository(application);
+                messageRepository = new TAPMessageRepository(application);
                 break;
             case SEARCH_DB:
-                searchRepository = new HpRecentSearchRepository(application);
+                searchRepository = new TAPRecentSearchRepository(application);
                 break;
             case MY_CONTACT_DB:
-                myContactRepository = new HpMyContactRepository(application);
+                myContactRepository = new TAPMyContactRepository(application);
         }
     }
 
@@ -52,28 +52,28 @@ public class HpDatabaseManager {
      * ==============================================================
      */
 
-    public void deleteMessage(List<HpMessageEntity> messageEntities, HpDatabaseListener listener) {
+    public void deleteMessage(List<TAPMessageEntity> messageEntities, HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.delete(messageEntities, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(HpMessageEntity messageEntity) {
+    public void insert(TAPMessageEntity messageEntity) {
         if (null != messageRepository)
             messageRepository.insert(messageEntity);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages) {
+    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         if (null != messageRepository)
             messageRepository.insert(messageEntities, isClearSaveMessages);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
+    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.insert(messageEntities, isClearSaveMessages, listener);
         else
@@ -101,7 +101,7 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public LiveData<List<HpMessageEntity>> getMessagesLiveData() {
+    public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         if (null != messageRepository)
             return messageRepository.getAllMessages();
         else
@@ -136,7 +136,7 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(String myID, List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
+    public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, saveMessages, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
@@ -174,21 +174,21 @@ public class HpDatabaseManager {
      * ==============================================================
      */
 
-    public void insert(HpRecentSearchEntity recentSearchEntity) {
+    public void insert(TAPRecentSearchEntity recentSearchEntity) {
         if (null != recentSearchEntity)
             searchRepository.insert(recentSearchEntity);
         else
             throw new IllegalStateException("Recent Search Repository was not initialized");
     }
 
-    public void delete(HpRecentSearchEntity recentSearchEntity) {
+    public void delete(TAPRecentSearchEntity recentSearchEntity) {
         if (null != recentSearchEntity)
             searchRepository.delete(recentSearchEntity);
         else
             throw new IllegalStateException("Recent Search Repository was not initialized");
     }
 
-    public void delete(List<HpRecentSearchEntity> recentSearchEntities) {
+    public void delete(List<TAPRecentSearchEntity> recentSearchEntities) {
         if (null != searchRepository)
             searchRepository.delete(recentSearchEntities);
         else
@@ -202,7 +202,7 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Recent Search Repository was not initialized");
     }
 
-    public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
+    public LiveData<List<TAPRecentSearchEntity>> getRecentSearchLive() {
         if (null != searchRepository)
             return searchRepository.getAllRecentSearch();
         else throw new IllegalStateException("Recent Search Repository was not initialized");

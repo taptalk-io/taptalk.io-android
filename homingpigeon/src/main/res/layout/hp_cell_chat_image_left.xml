@@ -35,7 +35,7 @@
         app:layout_goneMarginBottom="8dp"
         app:layout_goneMarginStart="16dp">
 
-        <com.moselo.HomingPigeon.Helper.HpRoundedCornerImageView
+        <com.moselo.HomingPigeon.Helper.TAPRoundedCornerImageView
             android:id="@+id/rciv_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

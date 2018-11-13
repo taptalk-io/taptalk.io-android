@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -19,17 +18,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
-import com.moselo.HomingPigeon.Helper.HpRoundedCornerImageView;
-import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPHorizontalDecoration;
+import com.moselo.HomingPigeon.Helper.TAPRoundedCornerImageView;
+import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.HpChatListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -39,17 +37,17 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.BubbleType.TYPE_LOG;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_IMAGE;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_PRODUCT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.MessageType.TYPE_TEXT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
-public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHolder<HpMessageModel>> {
+public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewHolder<HpMessageModel>> {
 
     private static final String TAG = HpMessageAdapter.class.getSimpleName();
     private HpChatListener listener;
@@ -57,7 +55,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
     private HpUserModel myUserModel;
 
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
-    private float initialTranslationX = HpUtils.getInstance().dpToPx(-16);
+    private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
     private long defaultAnimationTime = 200L;
 
     public HpMessageAdapter(HpChatListener listener) {
@@ -67,7 +65,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<HpMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
                 return new TextVH(parent, R.layout.hp_cell_chat_text_right, viewType);
@@ -124,7 +122,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
     }
 
-    public class TextVH extends HpBaseViewHolder<HpMessageModel> {
+    public class TextVH extends TAPBaseViewHolder<HpMessageModel> {
 
         private ConstraintLayout clContainer, clReply;
         private FrameLayout flBubble;
@@ -179,12 +177,12 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         }
     }
 
-    public class ImageVH extends HpBaseViewHolder<HpMessageModel> {
+    public class ImageVH extends TAPBaseViewHolder<HpMessageModel> {
 
         private ConstraintLayout clContainer;
         private FrameLayout flBubble, flProgress;
         private CircleImageView civAvatar;
-        private HpRoundedCornerImageView rcivImageBody;
+        private TAPRoundedCornerImageView rcivImageBody;
         private ImageView ivMessageStatus, ivReply, ivSending, ivProgress;
         private TextView tvMessageStatus;
         private ProgressBar pbProgress;
@@ -211,7 +209,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
         @Override
         protected void onBind(HpMessageModel item, int position) {
-            tvMessageStatus.setText(HpTimeFormatter.getInstance().durationString(item.getCreated()));
+            tvMessageStatus.setText(TAPTimeFormatter.getInstance().durationString(item.getCreated()));
 
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivReply, ivSending);
 
@@ -270,7 +268,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         }
     }
 
-    public class ProductVH extends HpBaseViewHolder<HpMessageModel> {
+    public class ProductVH extends TAPBaseViewHolder<HpMessageModel> {
 
         RecyclerView rvProductList;
         HpProductListAdapter adapter;
@@ -291,17 +289,17 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
             if (rvProductList.getItemDecorationCount() > 0) {
                 rvProductList.removeItemDecorationAt(0);
             }
-            rvProductList.addItemDecoration(new HpHorizontalDecoration(
+            rvProductList.addItemDecoration(new TAPHorizontalDecoration(
                     0, 0,
-                    HpUtils.getInstance().dpToPx(16),
-                    HpUtils.getInstance().dpToPx(8),
+                    TAPUtils.getInstance().dpToPx(16),
+                    TAPUtils.getInstance().dpToPx(8),
                     adapter.getItemCount(),
                     0, 0));
             OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         }
     }
 
-    public class LogVH extends HpBaseViewHolder<HpMessageModel> {
+    public class LogVH extends TAPBaseViewHolder<HpMessageModel> {
 
         private ConstraintLayout clContainer;
         private TextView tvLogMessage;
@@ -327,7 +325,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
         if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
             // Set timestamp text on non-text or expanded bubble
             if (item.getType() != TYPE_TEXT || item.isExpanded()) {
-                tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), HpTimeFormatter.getInstance().formatDate(item.getCreated())));
+                tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), TAPTimeFormatter.getInstance().formatDate(item.getCreated())));
             }
             // Message has been read
             if (null != item.getIsRead() && item.getIsRead()) {
@@ -501,7 +499,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                 item.setExpanded(false);
             } else {
                 // Expand clicked bubble
-                tvMessageStatus.setText(HpTimeFormatter.getInstance().durationChatString(itemView.getContext(), item.getCreated()));
+                tvMessageStatus.setText(TAPTimeFormatter.getInstance().durationChatString(itemView.getContext(), item.getCreated()));
                 shrinkExpandedBubble();
                 item.setExpanded(true);
             }
@@ -548,8 +546,8 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
                         .setDuration(160L)
                         .start();
                 ivSending.animate()
-                        .translationX(HpUtils.getInstance().dpToPx(36))
-                        .translationY(HpUtils.getInstance().dpToPx(-23))
+                        .translationX(TAPUtils.getInstance().dpToPx(36))
+                        .translationY(TAPUtils.getInstance().dpToPx(-23))
                         .setDuration(360L)
                         .setInterpolator(new AccelerateInterpolator(0.5f))
                         .withEndAction(() -> ivSending.setAlpha(0f))
@@ -565,7 +563,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateFadeInToTop(View view) {
         view.setVisibility(View.VISIBLE);
-        view.setTranslationY(HpUtils.getInstance().dpToPx(24));
+        view.setTranslationY(TAPUtils.getInstance().dpToPx(24));
         view.setAlpha(0);
         view.animate()
                 .translationY(0)
@@ -577,7 +575,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateFadeInToBottom(View view) {
         view.setVisibility(View.VISIBLE);
-        view.setTranslationY(HpUtils.getInstance().dpToPx(-24));
+        view.setTranslationY(TAPUtils.getInstance().dpToPx(-24));
         view.setAlpha(0);
         view.animate()
                 .translationY(0)
@@ -590,7 +588,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateFadeOutToTop(View view) {
         view.animate()
-                .translationY(HpUtils.getInstance().dpToPx(-24))
+                .translationY(TAPUtils.getInstance().dpToPx(-24))
                 .alpha(0)
                 .setDuration(defaultAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
@@ -604,7 +602,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateFadeOutToBottom(View view) {
         view.animate()
-                .translationY(HpUtils.getInstance().dpToPx(24))
+                .translationY(TAPUtils.getInstance().dpToPx(24))
                 .alpha(0)
                 .setDuration(defaultAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
@@ -618,7 +616,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateShowToLeft(View view) {
         view.setVisibility(View.VISIBLE);
-        view.setTranslationX(HpUtils.getInstance().dpToPx(32));
+        view.setTranslationX(TAPUtils.getInstance().dpToPx(32));
         view.setAlpha(0f);
         view.animate()
                 .translationX(0)
@@ -630,7 +628,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateShowToRight(View view) {
         view.setVisibility(View.VISIBLE);
-        view.setTranslationX(HpUtils.getInstance().dpToPx(-32));
+        view.setTranslationX(TAPUtils.getInstance().dpToPx(-32));
         view.setAlpha(0f);
         view.animate()
                 .translationX(0)
@@ -642,7 +640,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateHideToLeft(View view) {
         view.animate()
-                .translationX(HpUtils.getInstance().dpToPx(-32))
+                .translationX(TAPUtils.getInstance().dpToPx(-32))
                 .alpha(0f)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .setDuration(defaultAnimationTime)
@@ -656,7 +654,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, HpBaseViewHo
 
     private void animateHideToRight(View view) {
         view.animate()
-                .translationX(HpUtils.getInstance().dpToPx(32))
+                .translationX(TAPUtils.getInstance().dpToPx(32))
                 .alpha(0f)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .setDuration(defaultAnimationTime)

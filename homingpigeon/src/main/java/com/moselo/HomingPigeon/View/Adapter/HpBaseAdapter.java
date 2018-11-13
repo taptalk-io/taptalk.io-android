@@ -2,7 +2,7 @@ package com.moselo.HomingPigeon.View.Adapter;
 
 import android.support.v7.widget.RecyclerView;
 
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @see {https://gist.github.com/aurae/ebf8ec212e4296aebb24}
  */
-public abstract class HpBaseAdapter<T, VH extends HpBaseViewHolder<T>> extends
+public abstract class HpBaseAdapter<T, VH extends TAPBaseViewHolder<T>> extends
         RecyclerView.Adapter<VH> {
     private List<T> items;
 

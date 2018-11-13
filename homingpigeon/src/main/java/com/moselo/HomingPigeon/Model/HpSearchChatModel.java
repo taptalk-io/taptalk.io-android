@@ -1,7 +1,6 @@
 package com.moselo.HomingPigeon.Model;
 
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 
 public class HpSearchChatModel {
     public enum Type {
@@ -11,7 +10,7 @@ public class HpSearchChatModel {
     private Type type;
     private String sectionTitle;
     private HpRoomModel room;
-    private HpMessageEntity message;
+    private TAPMessageEntity message;
     private HpUserModel contact;
     private boolean isLastInSection = false;
 
@@ -43,11 +42,11 @@ public class HpSearchChatModel {
         this.room = room;
     }
 
-    public HpMessageEntity getMessage() {
+    public TAPMessageEntity getMessage() {
         return message;
     }
 
-    public void setMessage(HpMessageEntity message) {
+    public void setMessage(TAPMessageEntity message) {
         this.message = message;
     }
 

@@ -8,11 +8,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.API.Api.HpApiManager;
-import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.API.Api.TAPApiManager;
+import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
+import com.moselo.HomingPigeon.Helper.TapTalk;
+import com.moselo.HomingPigeon.Helper.TapTalkDialog;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Manager.HpConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
@@ -23,7 +23,7 @@ import com.moselo.HomingPigeon.R;
 
 import java.net.URL;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_MY_USERNAME;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_MY_USERNAME;
 
 public class HpLoginActivity extends HpBaseActivity {
 
@@ -65,7 +65,7 @@ public class HpLoginActivity extends HpBaseActivity {
         } else if (!checkValidUsername(etUsername.getText().toString().toLowerCase())) {
             etUsername.setError("Please enter valid username.");
         } else {
-            HpUtils.getInstance().dismissKeyboard(this);
+            TAPUtils.getInstance().dismissKeyboard(this);
             progressBar.setVisibility(View.VISIBLE);
             tvSignIn.setVisibility(View.GONE);
 
@@ -80,7 +80,7 @@ public class HpLoginActivity extends HpBaseActivity {
     }
 
     private void setDataAndCallAPI() throws Exception {
-        String ipAddress = HpUtils.getInstance().getStringFromURL(new URL("https://api.ipify.org/"));
+        String ipAddress = TAPUtils.getInstance().getStringFromURL(new URL("https://api.ipify.org/"));
         String userAgent = "android";
         String userPlatform = "android";
         String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
@@ -88,7 +88,7 @@ public class HpLoginActivity extends HpBaseActivity {
         String email = etUsername.getText().toString() + "@moselo.com";
         String phone = "08979809026";
         String username = etUsername.getText().toString();
-        String deviceID = Settings.Secure.getString(HomingPigeon.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         HpDataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
                 fullname, email, phone, username, authView);
     }
@@ -199,7 +199,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
     }
 
-    HpDefaultDataView<HpAuthTicketResponse> authView = new HpDefaultDataView<HpAuthTicketResponse>() {
+    TapDefaultDataView<HpAuthTicketResponse> authView = new TapDefaultDataView<HpAuthTicketResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -213,8 +213,8 @@ public class HpLoginActivity extends HpBaseActivity {
         @Override
         public void onSuccess(HpAuthTicketResponse response) {
             super.onSuccess(response);
-            HpApiManager.getInstance().setLogout(false);
-            HomingPigeon.saveAuthTicketAndGetAccessToken(response.getTicket()
+            TAPApiManager.getInstance().setLogout(false);
+            TapTalk.saveAuthTicketAndGetAccessToken(response.getTicket()
                             , accessTokenView);
         }
 
@@ -225,7 +225,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
     };
 
-    HpDefaultDataView<HpGetAccessTokenResponse> accessTokenView = new HpDefaultDataView<HpGetAccessTokenResponse>() {
+    TapDefaultDataView<HpGetAccessTokenResponse> accessTokenView = new TapDefaultDataView<HpGetAccessTokenResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -265,7 +265,7 @@ public class HpLoginActivity extends HpBaseActivity {
     };
 
     private void showDialog(String title, String message) {
-        new HomingPigeonDialog.Builder(this)
+        new TapTalkDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
                 .setPrimaryButtonTitle("OK")
@@ -276,6 +276,6 @@ public class HpLoginActivity extends HpBaseActivity {
     }
 
     private void registerFcmToken(){
-        new Thread(() -> HpDataManager.getInstance().registerFcmTokenToServer(HpDataManager.getInstance().getFirebaseToken(), new HpDefaultDataView<HpCommonResponse>() {})).start();
+        new Thread(() -> HpDataManager.getInstance().registerFcmTokenToServer(HpDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<HpCommonResponse>() {})).start();
     }
 }

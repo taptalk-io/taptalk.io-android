@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.Model;
 
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.R;
 
 public class HpCustomKeyboardModel {
@@ -20,20 +20,20 @@ public class HpCustomKeyboardModel {
 
         switch (type) {
             case SEE_PRICE_LIST:
-                icon = HomingPigeon.appContext.getString(R.string.see_price_list_icon);
-                label = HomingPigeon.appContext.getString(R.string.see_price_list);
+                icon = TapTalk.appContext.getString(R.string.see_price_list_icon);
+                label = TapTalk.appContext.getString(R.string.see_price_list);
                 break;
             case READ_EXPERT_NOTES:
-                icon = HomingPigeon.appContext.getString(R.string.read_expert_notes_icon);
-                label = HomingPigeon.appContext.getString(R.string.read_expert_notes);
+                icon = TapTalk.appContext.getString(R.string.read_expert_notes_icon);
+                label = TapTalk.appContext.getString(R.string.read_expert_notes);
                 break;
             case SEND_SERVICES:
-                icon = HomingPigeon.appContext.getString(R.string.send_services_icon);
-                label = HomingPigeon.appContext.getString(R.string.send_services);
+                icon = TapTalk.appContext.getString(R.string.send_services_icon);
+                label = TapTalk.appContext.getString(R.string.send_services);
                 break;
             case CREATE_ORDER:
-                icon = HomingPigeon.appContext.getString(R.string.create_order_card_icon);
-                label = HomingPigeon.appContext.getString(R.string.create_order_card);
+                icon = TapTalk.appContext.getString(R.string.create_order_card_icon);
+                label = TapTalk.appContext.getString(R.string.create_order_card);
                 break;
         }
     }

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <receiver android:name="com.moselo.HomingPigeon.BroadcastReceiver.HpReplyBroadcastReceiver"
+        <receiver android:name="com.moselo.HomingPigeon.BroadcastReceiver.TAPReplyBroadcastReceiver"
             android:enabled="true"/>
 
         <service android:name="com.moselo.SampleApps.Firebase.MyFireMsgService">

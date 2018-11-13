@@ -2,8 +2,8 @@ package com.moselo.HomingPigeon.Manager;
 
 import android.util.Log;
 
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
+import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 
 import java.util.ArrayList;
@@ -21,12 +21,12 @@ public class HpOldDataManager {
         new Thread(() -> {
             long currentTimestamp = System.currentTimeMillis();
             if (HpDataManager.getInstance().checkLastDeleteTimestamp()) {
-                boolean isOverOneWeek = HpTimeFormatter.getInstance().checkOverOneWeekOrNot(HpDataManager.getInstance().getLastDeleteTimestamp());
+                boolean isOverOneWeek = TAPTimeFormatter.getInstance().checkOverOneWeekOrNot(HpDataManager.getInstance().getLastDeleteTimestamp());
 
                 if (isOverOneWeek)
-                    HpDataManager.getInstance().getRoomList(false, new HpDatabaseListener<HpMessageEntity>() {
+                    HpDataManager.getInstance().getRoomList(false, new HpDatabaseListener<TAPMessageEntity>() {
                         @Override
-                        public void onSelectFinished(List<HpMessageEntity> entities) {
+                        public void onSelectFinished(List<TAPMessageEntity> entities) {
                             loopingRoomEntitiesArrayToGetAllMessage(entities);
                         }
                     });
@@ -37,12 +37,12 @@ public class HpOldDataManager {
         }).start();
     }
 
-    private void loopingRoomEntitiesArrayToGetAllMessage(List<HpMessageEntity> entities) {
+    private void loopingRoomEntitiesArrayToGetAllMessage(List<TAPMessageEntity> entities) {
         new Thread(() -> {
-            for (HpMessageEntity entity : entities) {
-                HpDataManager.getInstance().getMessagesFromDatabaseAsc(entity.getRoomID(), new HpDatabaseListener<HpMessageEntity>() {
+            for (TAPMessageEntity entity : entities) {
+                HpDataManager.getInstance().getMessagesFromDatabaseAsc(entity.getRoomID(), new HpDatabaseListener<TAPMessageEntity>() {
                     @Override
-                    public void onSelectFinished(List<HpMessageEntity> entities) {
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
                         int entitiesSize = entities.size();
                         if (50 < entitiesSize)
                             loopToCheckMessageAndExecuteDeleteQuery(entities, entitiesSize);
@@ -52,11 +52,11 @@ public class HpOldDataManager {
         }).start();
     }
 
-    private void loopToCheckMessageAndExecuteDeleteQuery(List<HpMessageEntity> entities, int entitiesSize) {
+    private void loopToCheckMessageAndExecuteDeleteQuery(List<TAPMessageEntity> entities, int entitiesSize) {
         new Thread(() -> {
-            List<HpMessageEntity> deleteMessageTempList = new ArrayList<>();
+            List<TAPMessageEntity> deleteMessageTempList = new ArrayList<>();
             for (int index = 0; index < entitiesSize - 50; index++) {
-                if (HpTimeFormatter.getInstance().checkOverOneMonthOrNot(entities.get(index).getCreated())) {
+                if (TAPTimeFormatter.getInstance().checkOverOneMonthOrNot(entities.get(index).getCreated())) {
                     deleteMessageTempList.add(entities.get(index));
                 }
             }

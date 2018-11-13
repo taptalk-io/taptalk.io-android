@@ -11,18 +11,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.moselo.HomingPigeon.Const.HpDefaultConstant;
-import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Model.HpImageURL;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.HpUserModel;
-import com.moselo.HomingPigeon.Model.HpUserRoleModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
 
-import java.util.List;
-
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.CONTACT_LIST;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CONTACT_LIST;
 
 public class HpSearchContactActivity extends HpBaseActivity {
 
@@ -73,7 +68,7 @@ public class HpSearchContactActivity extends HpBaseActivity {
     }
 
     private void clearSearch() {
-        HpUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.getInstance().dismissKeyboard(this);
         etSearch.setText("");
         etSearch.clearFocus();
     }

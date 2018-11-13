@@ -5,9 +5,9 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
+import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
 import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.moselo.HomingPigeon.Helper.HomingPigeon.appContext;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.APP_KEY_ID;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.APP_KEY_SECRET;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
+import static com.moselo.HomingPigeon.Helper.TapTalk.appContext;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.APP_KEY_ID;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.APP_KEY_SECRET;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.CONNECTING;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.DISCONNECTED;
 import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
@@ -173,7 +173,7 @@ public class HpConnectionManager {
 
     public void connect() {
         if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
-                HpNetworkStateManager.getInstance().hasNetworkConnection(HomingPigeon.appContext)) {
+                HpNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             try {
                 webSocketUri = new URI(webSocketEndpoint);
                 Map<String, String> websocketHeader = new HashMap<>();
@@ -225,7 +225,7 @@ public class HpConnectionManager {
                             for (HomingPigeonSocketInterface listener : socketListeners)
                                 listener.onSocketConnecting();
                         }
-                        HpDataManager.getInstance().validateAccessToken(new HpDefaultDataView<HpErrorModel>() {});
+                        HpDataManager.getInstance().validateAccessToken(new TapDefaultDataView<HpErrorModel>() {});
                         close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
                     } catch (IllegalStateException e) {
@@ -263,6 +263,6 @@ public class HpConnectionManager {
         //return websocketHeader;
     }
 
-    private HpDefaultDataView<HpErrorModel> validateAccessView = new HpDefaultDataView<HpErrorModel>() {
+    private TapDefaultDataView<HpErrorModel> validateAccessView = new TapDefaultDataView<HpErrorModel>() {
     };
 }

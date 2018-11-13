@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
 import com.moselo.HomingPigeon.Model.HpAttachmentModel;
 import com.moselo.HomingPigeon.R;
@@ -19,7 +19,7 @@ import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_GALLERY;
 import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_LOCATION;
 import static com.moselo.HomingPigeon.Model.HpAttachmentModel.createAttachMenu;
 
-public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, HpBaseViewHolder<HpAttachmentModel>> {
+public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, TAPBaseViewHolder<HpAttachmentModel>> {
 
     private HpAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
@@ -32,7 +32,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, HpBase
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpAttachmentModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<HpAttachmentModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new AttachmentVH(parent, R.layout.hp_cell_attachment_menu);
     }
 
@@ -46,7 +46,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, HpBase
         return super.getItemCount();
     }
 
-    public class AttachmentVH extends HpBaseViewHolder<HpAttachmentModel> {
+    public class AttachmentVH extends TAPBaseViewHolder<HpAttachmentModel> {
 
         private ImageView ivAttachIcon;
         private TextView tvAttachTitle;

@@ -6,7 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.net.Uri;
 import android.os.Handler;
 
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class HpChatViewModel extends AndroidViewModel {
 
-    private LiveData<List<HpMessageEntity>> allMessages;
+    private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, HpMessageModel> messagePointer, unreadMessages;
     private List<HpMessageModel> messageModels;
     private HpUserModel myUserModel;
@@ -40,7 +40,7 @@ public class HpChatViewModel extends AndroidViewModel {
         allMessages = HpDataManager.getInstance().getMessagesLiveData();
     }
 
-    public LiveData<List<HpMessageEntity>> getAllMessages() {
+    public LiveData<List<TAPMessageEntity>> getAllMessages() {
         return allMessages;
     }
 

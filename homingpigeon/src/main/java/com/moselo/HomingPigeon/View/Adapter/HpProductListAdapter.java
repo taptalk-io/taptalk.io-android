@@ -9,9 +9,9 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpRoundedCornerImageView;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPRoundedCornerImageView;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpProductModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -20,7 +20,7 @@ import com.moselo.HomingPigeon.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseViewHolder<HpProductModel>> {
+public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, TAPBaseViewHolder<HpProductModel>> {
 
     private List<HpProductModel> items = new ArrayList<>();
     private HpMessageModel messageModel;
@@ -29,7 +29,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
     private final int TYPE_SELLER = 2;
 
     public HpProductListAdapter(HpMessageModel messageModel, HpUserModel myUserModel) {
-        setItems(HpUtils.getInstance().fromJSON(
+        setItems(TAPUtils.getInstance().fromJSON(
                 new TypeReference<List<HpProductModel>>() {
                 },
                 messageModel.getBody()), false);
@@ -39,7 +39,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpProductModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public TAPBaseViewHolder<HpProductModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new ProductVH(viewGroup, R.layout.hp_cell_chat_product_item);
     }
 
@@ -52,10 +52,10 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
         }
     }
 
-    public class ProductVH extends HpBaseViewHolder<HpProductModel> {
+    public class ProductVH extends TAPBaseViewHolder<HpProductModel> {
 
         FrameLayout flContainer;
-        HpRoundedCornerImageView rcivProductImage;
+        TAPRoundedCornerImageView rcivProductImage;
         TextView tvProductName, tvPrice, tvRating, tvProductDescription, tvButtonDetails, tvButtonOrder;
         ImageView ivRatingIcon;
         View vButtonSeparator;
@@ -80,19 +80,19 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, HpBaseVi
                 // My products
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonOrder.setVisibility(View.GONE);
-                rcivProductImage.setCornerRadius(HpUtils.getInstance().dpToPx(11), HpUtils.getInstance().dpToPx(2), 0, 0);
+                rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_8dp_1dp_8dp_8dp_stroke_ededed_1dp));
             } else {
                 // Other seller's products
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonOrder.setVisibility(View.VISIBLE);
-                rcivProductImage.setCornerRadius(HpUtils.getInstance().dpToPx(2), HpUtils.getInstance().dpToPx(11), 0, 0);
+                rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_ededed_1dp));
             }
 
             GlideApp.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
             tvProductName.setText(item.getName());
-            tvPrice.setText(HpUtils.getInstance().formatCurrencyRp(item.getPrice()));
+            tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(item.getPrice()));
             tvProductDescription.setText(item.getDescription());
             if (item.getRating() > 0) {
                 // Show rating

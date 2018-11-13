@@ -15,7 +15,7 @@
 
     <attr name="SwipeBackLayoutStyle" format="reference"/>
 
-    <declare-styleable name="HpRoundedCornerImageView">
+    <declare-styleable name="TAPRoundedCornerImageView">
         <attr name="topLeftRadius" format="dimension" />
         <attr name="topRightRadius" format="dimension" />
         <attr name="bottomLeftRadius" format="dimension" />

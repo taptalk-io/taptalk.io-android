@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Interface.ContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -20,7 +20,7 @@ import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewHolder<HpUserModel>> {
+public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseViewHolder<HpUserModel>> {
 
     private ContactListInterface listener;
     private ColorStateList avatarTint;
@@ -58,7 +58,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpUserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<HpUserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case SELECTED_MEMBER:
                 return new SelectedGroupMemberHolder(parent, R.layout.hp_cell_group_member);
@@ -72,7 +72,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
         return viewType;
     }
 
-    class ContactListHolder extends HpBaseViewHolder<HpUserModel> {
+    class ContactListHolder extends TAPBaseViewHolder<HpUserModel> {
 
         private CircleImageView ivAvatar;
         private ImageView ivAvatarIcon, ivSelection;
@@ -91,7 +91,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
 
         @Override
         protected void onBind(HpUserModel item, int position) {
-            final int randomColor = HpUtils.getInstance().getRandomColor(item.getName());
+            final int randomColor = TAPUtils.getInstance().getRandomColor(item.getName());
 
             if (null != item.getAvatarURL()) {
                 GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);
@@ -134,13 +134,13 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
                 case CHAT:
                     if (!myID.equals(item.getUserID())) {
                         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
-                        HpUtils.getInstance().startChatActivity(
+                        TAPUtils.getInstance().startChatActivity(
                                 itemView.getContext(),
                                 HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
                                 item.getName(),
                                 item.getAvatarURL(),
                                 1,
-                                /* TEMPORARY ROOM COLOR */HpUtils.getInstance().getRandomColor(item.getName()) + "");
+                                /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(item.getName()) + "");
                     }
                     break;
                 case SELECT:
@@ -155,7 +155,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
         }
     }
 
-    class SelectedGroupMemberHolder extends HpBaseViewHolder<HpUserModel> {
+    class SelectedGroupMemberHolder extends TAPBaseViewHolder<HpUserModel> {
 
         private CircleImageView ivAvatar;
         private ImageView ivAvatarIcon;
@@ -171,7 +171,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, HpBaseViewH
 
         @Override
         protected void onBind(HpUserModel item, int position) {
-            final int randomColor = HpUtils.getInstance().getRandomColor(item.getName());
+            final int randomColor = TAPUtils.getInstance().getRandomColor(item.getName());
 
             if (null != item.getAvatarURL()) {
                 GlideApp.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).centerCrop().into(ivAvatar);

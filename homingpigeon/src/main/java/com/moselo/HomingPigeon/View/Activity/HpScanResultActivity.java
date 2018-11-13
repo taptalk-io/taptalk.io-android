@@ -14,11 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
+import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HomingPigeonDialog;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TapTalkDialog;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -29,8 +29,8 @@ import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpScanResultViewModel;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.ADDED_CONTACT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.SCAN_RESULT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ADDED_CONTACT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.SCAN_RESULT;
 
 public class HpScanResultActivity extends HpBaseActivity {
 
@@ -113,7 +113,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         tvContactUsername.setText(addedContactUserModel.getUsername());
         animateAddSuccess(addedContactUserModel);
         llButton.setOnClickListener(v -> {
-            HpUtils.getInstance().startChatActivity(HpScanResultActivity.this,
+            TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
                 HpChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
                 addedContactUserModel.getName(),
                 addedContactUserModel.getAvatarURL(), 1, "#2eccad");
@@ -161,7 +161,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         llButton.setOnClickListener(v -> HpDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView));
     }
 
-    HpDefaultDataView<HpCommonResponse> addContactView = new HpDefaultDataView<HpCommonResponse>() {
+    TapDefaultDataView<HpCommonResponse> addContactView = new TapDefaultDataView<HpCommonResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -179,7 +179,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             pbAddLoading.setVisibility(View.GONE);
             animateAddSuccess(contactModel);
             llButton.setOnClickListener(v -> {
-                HpUtils.getInstance().startChatActivity(HpScanResultActivity.this,
+                TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
                     HpChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(),
                     1, "#2eccad");
@@ -193,7 +193,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);
-            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(HpScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle("OK")
@@ -208,7 +208,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);
             // TODO: 31/10/18 ini textnya masih dummy
-            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(HpScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(getString(R.string.api_call_return_error))
                     .setPrimaryButtonTitle("OK")
@@ -216,7 +216,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         }
     };
 
-    HpDefaultDataView<HpGetUserResponse> getUserView = new HpDefaultDataView<HpGetUserResponse>() {
+    TapDefaultDataView<HpGetUserResponse> getUserView = new TapDefaultDataView<HpGetUserResponse>() {
         @Override
         public void onSuccess(HpGetUserResponse response) {
             super.onSuccess(response);
@@ -226,7 +226,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         @Override
         public void onError(HpErrorModel error) {
             super.onError(error);
-            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(HpScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle("OK")
@@ -239,7 +239,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         public void onError(Throwable throwable) {
             super.onError(throwable);
             // TODO: 31/10/18 ini textnya masih dummy
-            new HomingPigeonDialog.Builder(HpScanResultActivity.this)
+            new TapTalkDialog.Builder(HpScanResultActivity.this)
                     .setTitle("Error")
                     .setMessage(getString(R.string.api_call_return_error))
                     .setPrimaryButtonTitle("OK")
@@ -258,9 +258,9 @@ public class HpScanResultActivity extends HpBaseActivity {
 
     public void animateAlreadyContact() {
         runOnUiThread(() -> {
-            civMyUserAvatar.setTranslationX(HpUtils.getInstance().dpToPx(-291));
+            civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
-            llButton.setOnClickListener(v -> HpUtils.getInstance().startChatActivity(HpScanResultActivity.this,
+            llButton.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
                     HpChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad"));
             tvAlreadyContact.setText(Html.fromHtml("<b>"+contactModel.getName()+"</b> "
@@ -276,10 +276,10 @@ public class HpScanResultActivity extends HpBaseActivity {
                             ivButtonIcon.setImageResource(R.drawable.hp_ic_chat_white);
                             tvButtonTitle.setText("Chat Now");
                             llButton.animate().alpha(1f).start();
-                            civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(HpUtils.getInstance().dpToPx(-54)).withEndAction(
+                            civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(TAPUtils.getInstance().dpToPx(-54)).withEndAction(
                                     () -> {
-                                        civMyUserAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(HpUtils.getInstance().dpToPx(-24)).start();
-                                        civTheirContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(HpUtils.getInstance().dpToPx(48)).withEndAction(
+                                        civMyUserAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(TAPUtils.getInstance().dpToPx(-24)).start();
+                                        civTheirContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(TAPUtils.getInstance().dpToPx(48)).withEndAction(
                                                 () -> civTheirContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).setDuration(150).translationX(24).start()).start();
                                     }).start();
                         }).start();
@@ -292,7 +292,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             tvAddSuccess.setText(Html.fromHtml(getResources().getString(R.string.you_have_added)
                     +" <b>"+contactModel.getName()+"</b> "
                     +getResources().getString(R.string.to_your_contacts)));
-            civMyUserAvatar.setTranslationX(HpUtils.getInstance().dpToPx(-291));
+            civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             cvResult.animate()
                 .alpha(1f).withEndAction(
@@ -305,10 +305,10 @@ public class HpScanResultActivity extends HpBaseActivity {
                         ivButtonIcon.setImageResource(R.drawable.hp_ic_chat_white);
                         tvButtonTitle.setText("Chat Now");
                         llButton.animate().alpha(1f).start();
-                        civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(HpUtils.getInstance().dpToPx(-54)).withEndAction(
+                        civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(TAPUtils.getInstance().dpToPx(-54)).withEndAction(
                                 () -> {
-                                    civMyUserAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(HpUtils.getInstance().dpToPx(-24)).start();
-                                    civTheirContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(HpUtils.getInstance().dpToPx(48)).withEndAction(
+                                    civMyUserAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(TAPUtils.getInstance().dpToPx(-24)).start();
+                                    civTheirContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(TAPUtils.getInstance().dpToPx(48)).withEndAction(
                                             () -> civTheirContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).setDuration(150).translationX(24).start()).start();
                                 }).start();
                     }).start();

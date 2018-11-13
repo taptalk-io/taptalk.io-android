@@ -2,16 +2,14 @@ package com.moselo.HomingPigeon.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.util.Log;
 
-import com.moselo.HomingPigeon.API.Api.HpApiManager;
-import com.moselo.HomingPigeon.API.DefaultSubscriber;
-import com.moselo.HomingPigeon.API.View.HpDefaultDataView;
-import com.moselo.HomingPigeon.Data.Message.HpMessageEntity;
-import com.moselo.HomingPigeon.Data.RecentSearch.HpRecentSearchEntity;
+import com.moselo.HomingPigeon.API.Api.TAPApiManager;
+import com.moselo.HomingPigeon.API.TAPDefaultSubscriber;
+import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
+import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
+import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
 import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
@@ -26,20 +24,19 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_AUTH_TICKET;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_LAST_UPDATED;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_RECIPIENT_ID;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_USER;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_FIREBASE_TOKEN;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_LAST_UPDATED;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_RECIPIENT_ID;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_USER;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
 
 public class HpDataManager {
     private static final String TAG = HpDataManager.class.getSimpleName();
@@ -295,19 +292,19 @@ public class HpDataManager {
     }
 
     // Message
-    public void deleteMessage(List<HpMessageEntity> messageEntities, HpDatabaseListener listener) {
+    public void deleteMessage(List<TAPMessageEntity> messageEntities, HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().deleteMessage(messageEntities, listener);
     }
 
-    public void insertToDatabase(HpMessageEntity messageEntity) {
+    public void insertToDatabase(TAPMessageEntity messageEntity) {
         HpDatabaseManager.getInstance().insert(messageEntity);
     }
 
-    public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages) {
+    public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
     }
 
-    public void insertToDatabase(List<HpMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
+    public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
     }
 
@@ -323,7 +320,7 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().updatePendingStatus(localID);
     }
 
-    public LiveData<List<HpMessageEntity>> getMessagesLiveData() {
+    public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         return HpDatabaseManager.getInstance().getMessagesLiveData();
     }
 
@@ -343,7 +340,7 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().searchAllMessages(keyword, listener);
     }
 
-    public void getRoomList(List<HpMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
+    public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
         HpDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
@@ -364,15 +361,15 @@ public class HpDataManager {
     }
 
     // Recent Search
-    public void insertToDatabase(HpRecentSearchEntity recentSearchEntity) {
+    public void insertToDatabase(TAPRecentSearchEntity recentSearchEntity) {
         HpDatabaseManager.getInstance().insert(recentSearchEntity);
     }
 
-    public void deleteFromDatabase(HpRecentSearchEntity recentSearchEntity) {
+    public void deleteFromDatabase(TAPRecentSearchEntity recentSearchEntity) {
         HpDatabaseManager.getInstance().delete(recentSearchEntity);
     }
 
-    public void deleteFromDatabase(List<HpRecentSearchEntity> recentSearchEntities) {
+    public void deleteFromDatabase(List<TAPRecentSearchEntity> recentSearchEntities) {
         HpDatabaseManager.getInstance().delete(recentSearchEntities);
     }
 
@@ -380,7 +377,7 @@ public class HpDataManager {
         HpDatabaseManager.getInstance().deleteAllRecentSearch();
     }
 
-    public LiveData<List<HpRecentSearchEntity>> getRecentSearchLive() {
+    public LiveData<List<TAPRecentSearchEntity>> getRecentSearchLive() {
         return HpDatabaseManager.getInstance().getRecentSearchLive();
     }
 
@@ -448,68 +445,68 @@ public class HpDataManager {
      */
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
-            , String fullname, String email, String phone, String username, HpDefaultDataView<HpAuthTicketResponse> view) {
-        HpApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
-                fullname, email, phone, username, new DefaultSubscriber<>(view));
+            , String fullname, String email, String phone, String username, TapDefaultDataView<HpAuthTicketResponse> view) {
+        TAPApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
+                fullname, email, phone, username, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getAccessTokenFromApi(HpDefaultDataView<HpGetAccessTokenResponse> view) {
-        HpApiManager.getInstance().getAccessToken(new DefaultSubscriber<>(view));
+    public void getAccessTokenFromApi(TapDefaultDataView<HpGetAccessTokenResponse> view) {
+        TAPApiManager.getInstance().getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void refreshAccessToken(HpDefaultDataView<HpGetAccessTokenResponse> view) {
-        HpApiManager.getInstance().refreshAccessToken(new DefaultSubscriber<>(view));
+    public void refreshAccessToken(TapDefaultDataView<HpGetAccessTokenResponse> view) {
+        TAPApiManager.getInstance().refreshAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void validateAccessToken(HpDefaultDataView<HpErrorModel> view) {
-        HpApiManager.getInstance().validateAccessToken(new DefaultSubscriber<>(view));
+    public void validateAccessToken(TapDefaultDataView<HpErrorModel> view) {
+        TAPApiManager.getInstance().validateAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void registerFcmTokenToServer(String fcmToken, HpDefaultDataView<HpCommonResponse> view) {
-        HpApiManager.getInstance().registerFcmTokenToServer(fcmToken, new DefaultSubscriber(view));
+    public void registerFcmTokenToServer(String fcmToken, TapDefaultDataView<HpCommonResponse> view) {
+        TAPApiManager.getInstance().registerFcmTokenToServer(fcmToken, new TAPDefaultSubscriber(view));
     }
 
-    public void getMessageRoomListAndUnread(String userID, HpDefaultDataView<HpGetRoomListResponse> view) {
-        HpApiManager.getInstance().getRoomList(userID, new DefaultSubscriber<>(view));
+    public void getMessageRoomListAndUnread(String userID, TapDefaultDataView<HpGetRoomListResponse> view) {
+        TAPApiManager.getInstance().getRoomList(userID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getNewAndUpdatedMessage(HpDefaultDataView<HpGetRoomListResponse> view) {
-        HpApiManager.getInstance().getPendingAndUpdatedMessage(new DefaultSubscriber<>(view));
+    public void getNewAndUpdatedMessage(TapDefaultDataView<HpGetRoomListResponse> view) {
+        TAPApiManager.getInstance().getPendingAndUpdatedMessage(new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, HpDefaultDataView<HpGetMessageListbyRoomResponse> view) {
-        HpApiManager.getInstance().getMessageListByRoomAfter(roomID, minCreated, lastUpdated, new DefaultSubscriber<>(view));
+    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, TapDefaultDataView<HpGetMessageListbyRoomResponse> view) {
+        TAPApiManager.getInstance().getMessageListByRoomAfter(roomID, minCreated, lastUpdated, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, HpDefaultDataView<HpGetMessageListbyRoomResponse> view) {
-        HpApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, new DefaultSubscriber<>(view));
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, TapDefaultDataView<HpGetMessageListbyRoomResponse> view) {
+        TAPApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMyContactListFromAPI(HpDefaultDataView<HpContactResponse> view) {
-        HpApiManager.getInstance().getMyContactListFromAPI(new DefaultSubscriber<>(view));
+    public void getMyContactListFromAPI(TapDefaultDataView<HpContactResponse> view) {
+        TAPApiManager.getInstance().getMyContactListFromAPI(new TAPDefaultSubscriber<>(view));
     }
 
-    public void addContactApi(String userID, HpDefaultDataView<HpCommonResponse> view) {
-        HpApiManager.getInstance().addContact(userID, new DefaultSubscriber<>(view));
+    public void addContactApi(String userID, TapDefaultDataView<HpCommonResponse> view) {
+        TAPApiManager.getInstance().addContact(userID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void removeContactApi(String userID, HpDefaultDataView<HpCommonResponse> view) {
-        HpApiManager.getInstance().removeContact(userID, new DefaultSubscriber<>(view));
+    public void removeContactApi(String userID, TapDefaultDataView<HpCommonResponse> view) {
+        TAPApiManager.getInstance().removeContact(userID, new TAPDefaultSubscriber<>(view));
     }
 
     // Search User
-    private DefaultSubscriber searchUserSubscriber;
+    private TAPDefaultSubscriber searchUserSubscriber;
 
-    public void getUserByIdFromApi(String id, HpDefaultDataView<HpGetUserResponse> view) {
-        HpApiManager.getInstance().getUserByID(id, searchUserSubscriber = new DefaultSubscriber<>(view));
+    public void getUserByIdFromApi(String id, TapDefaultDataView<HpGetUserResponse> view) {
+        TAPApiManager.getInstance().getUserByID(id, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getUserByXcUserIdFromApi(String xcUserID, HpDefaultDataView<HpGetUserResponse> view) {
-        HpApiManager.getInstance().getUserByXcUserID(xcUserID, searchUserSubscriber = new DefaultSubscriber<>(view));
+    public void getUserByXcUserIdFromApi(String xcUserID, TapDefaultDataView<HpGetUserResponse> view) {
+        TAPApiManager.getInstance().getUserByXcUserID(xcUserID, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getUserByUsernameFromApi(String username, HpDefaultDataView<HpGetUserResponse> view) {
-        HpApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new DefaultSubscriber<>(view));
+    public void getUserByUsernameFromApi(String username, TapDefaultDataView<HpGetUserResponse> view) {
+        TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
     // FIXME: 25 October 2018

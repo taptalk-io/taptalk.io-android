@@ -24,22 +24,22 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpHorizontalDecoration;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPHorizontalDecoration;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpGroupViewModel;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_IMAGE;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_MEMBERS;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.GROUP_NAME;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.Extras.MY_ID;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.GROUP_MEMBER_LIMIT;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.GROUP_NAME;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.Extras.MY_ID;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 
 public class HpGroupSubjectActivity extends HpBaseActivity {
 
@@ -85,7 +85,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    HpUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE);
+                    TAPUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE);
                     break;
             }
         }
@@ -126,8 +126,8 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         adapter = new HpContactListAdapter(HpContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rvGroupMembers.addItemDecoration(new HpHorizontalDecoration(0, 0,
-                0, HpUtils.getInstance().dpToPx(16), adapter.getItemCount(),
+        rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
+                0, TAPUtils.getInstance().dpToPx(16), adapter.getItemCount(),
                 0, 0));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
@@ -137,7 +137,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
         loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        civGroupImage.setOnClickListener(v -> HpUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE));
+        civGroupImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(HpGroupSubjectActivity.this, PICK_GROUP_IMAGE));
         btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
     }
 

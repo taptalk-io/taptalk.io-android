@@ -12,12 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.moselo.HomingPigeon.DiffCallback.RoomListDiffCallback;
+import com.moselo.HomingPigeon.DiffCallback.TAPRoomListDiffCallback;
 import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpBaseViewHolder;
-import com.moselo.HomingPigeon.Helper.HpTimeFormatter;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
+import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Interface.RoomListInterface;
 import com.moselo.HomingPigeon.Manager.HpChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
@@ -29,7 +29,7 @@ import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import java.util.List;
 
-public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseViewHolder<HpRoomListModel>> {
+public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseViewHolder<HpRoomListModel>> {
 
     private HpRoomListViewModel vm;
     private RoomListInterface roomListInterface;
@@ -42,7 +42,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
 
     @NonNull
     @Override
-    public HpBaseViewHolder<HpRoomListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<HpRoomListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RoomListVH(parent, R.layout.hp_cell_user_room);
     }
 
@@ -51,7 +51,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
         return super.getItemCount();
     }
 
-    public class RoomListVH extends HpBaseViewHolder<HpRoomListModel> {
+    public class RoomListVH extends TAPBaseViewHolder<HpRoomListModel> {
 
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
@@ -76,7 +76,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
 
         @Override
         protected void onBind(HpRoomListModel item, int position) {
-            final int randomColor = HpUtils.getInstance().getRandomColor(item.getLastMessage().getUser().getName());
+            final int randomColor = TAPUtils.getInstance().getRandomColor(item.getLastMessage().getUser().getName());
             Resources resource = itemView.getContext().getResources();
 
             if (null != item.getLastMessage().getRoom().getRoomImage()) {
@@ -104,7 +104,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
             tvFullName.setText(item.getLastMessage().getRoom().getRoomName());
             tvLastMessage.setText(item.getLastMessage().getBody());
             // TODO: 17 October 2018 FORMAT TIMESTAMP OUTSIDE BIND
-            tvLastMessageTime.setText(HpTimeFormatter.getInstance().durationString(item.getLastMessage().getCreated()));
+            tvLastMessageTime.setText(TAPTimeFormatter.getInstance().durationString(item.getLastMessage().getCreated()));
 
             // Check if room is muted
             if (item.getLastMessage().getRoom().isMuted()) {
@@ -171,7 +171,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
                     HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
 
             if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                HpUtils.getInstance().startChatActivity(
+                TAPUtils.getInstance().startChatActivity(
                         itemView.getContext(),
                         roomID,
                         item.getLastMessage().getRoom().getRoomName(),
@@ -207,7 +207,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, HpBaseView
     }
 
     public void addRoomList(List<HpRoomListModel> roomList) {
-        RoomListDiffCallback diffCallback = new RoomListDiffCallback(getItems(), roomList);
+        TAPRoomListDiffCallback diffCallback = new TAPRoomListDiffCallback(getItems(), roomList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 
         setItemsWithoutNotify(roomList);

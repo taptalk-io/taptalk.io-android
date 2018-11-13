@@ -18,14 +18,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.GlideApp;
-import com.moselo.HomingPigeon.Helper.HpUtils;
+import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpImageListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
 
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.DEFAULT_ANIMATION_TIME;
-import static com.moselo.HomingPigeon.Const.HpDefaultConstant.K_ROOM;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
+import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
 
 public class HpProfileActivity extends HpBaseActivity {
 
@@ -178,7 +178,7 @@ public class HpProfileActivity extends HpBaseActivity {
 
         private boolean isShowing;
         private int scrollRange = -1;
-        private int nameTranslationY = HpUtils.getInstance().dpToPx(8);
+        private int nameTranslationY = TAPUtils.getInstance().dpToPx(8);
         private int scrimHeight;
 
         private ValueAnimator transitionToGreen, transitionToWhite;
