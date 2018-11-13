@@ -1,19 +1,17 @@
 package com.moselo.HomingPigeon.Helper;
 
 import android.app.Activity;
-import android.util.Log;
 import android.util.SparseArray;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.moselo.HomingPigeon.View.Fragment.HpBarcodeScannerFragment;
+import com.moselo.HomingPigeon.View.Fragment.TAPBarcodeScannerFragment;
 
 public class TAPQRDetection implements Detector.Processor<Barcode> {
     private Activity activity;
-    private HpBarcodeScannerFragment.ScanListener listener;
+    private TAPBarcodeScannerFragment.ScanListener listener;
 
-    public TAPQRDetection(Activity activity, HpBarcodeScannerFragment.ScanListener listener) {
+    public TAPQRDetection(Activity activity, TAPBarcodeScannerFragment.ScanListener listener) {
         this.activity = activity;
         this.listener = listener;
     }

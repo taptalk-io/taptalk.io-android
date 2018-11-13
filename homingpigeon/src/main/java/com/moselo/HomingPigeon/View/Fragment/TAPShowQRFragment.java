@@ -19,7 +19,7 @@ import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.TAPBarcodeScannerActivity;
 
-public class HpShowQRFragment extends Fragment {
+public class TAPShowQRFragment extends Fragment {
 
     public final static int WHITE = 0xFFFFFFFF;
     public final static int BLACK = 0xFF000000;
@@ -28,11 +28,11 @@ public class HpShowQRFragment extends Fragment {
     private ImageView ivQRCode;
     private Button btnScanQRCode;
 
-    public HpShowQRFragment() {
+    public TAPShowQRFragment() {
     }
 
-    public static HpShowQRFragment newInstance() {
-        HpShowQRFragment fragment = new HpShowQRFragment();
+    public static TAPShowQRFragment newInstance() {
+        TAPShowQRFragment fragment = new TAPShowQRFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

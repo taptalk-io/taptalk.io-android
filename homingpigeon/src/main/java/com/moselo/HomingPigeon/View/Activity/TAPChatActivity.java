@@ -58,8 +58,8 @@ import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetMessageListbyRoomRespon
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPCustomKeyboardAdapter;
 import com.moselo.HomingPigeon.View.Adapter.TAPMessageAdapter;
-import com.moselo.HomingPigeon.View.BottomSheet.HpAttachmentBottomSheet;
-import com.moselo.HomingPigeon.ViewModel.HpChatViewModel;
+import com.moselo.HomingPigeon.View.BottomSheet.TAPAttachmentBottomSheet;
+import com.moselo.HomingPigeon.ViewModel.TAPChatViewModel;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private LinearLayoutManager messageLayoutManager;
 
     // RoomDatabase
-    private HpChatViewModel vm;
+    private TAPChatViewModel vm;
 
     private TAPSocketListener socketListener;
 
@@ -220,7 +220,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
      */
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(HpChatViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
     }
@@ -526,7 +526,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void openAttachMenu() {
         TAPUtils.getInstance().dismissKeyboard(this);
-        HpAttachmentBottomSheet attachBottomSheet = new HpAttachmentBottomSheet(attachmentListener);
+        TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 

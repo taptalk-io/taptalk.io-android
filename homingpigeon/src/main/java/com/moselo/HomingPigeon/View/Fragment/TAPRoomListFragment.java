@@ -47,9 +47,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HpRoomListFragment extends Fragment {
+public class TAPRoomListFragment extends Fragment {
 
-    private String TAG = HpRoomListFragment.class.getSimpleName();
+    private String TAG = TAPRoomListFragment.class.getSimpleName();
     private Activity activity;
 
     private ConstraintLayout clButtonSearch, clSelection;
@@ -66,7 +66,7 @@ public class HpRoomListFragment extends Fragment {
 
     private TAPChatListener chatListener;
 
-    public HpRoomListFragment() {
+    public TAPRoomListFragment() {
     }
 
     @Nullable

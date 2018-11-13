@@ -10,12 +10,12 @@
         android:id="@+id/fragment_room_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.moselo.HomingPigeon.View.Fragment.HpRoomListFragment" />
+        class="com.moselo.HomingPigeon.View.Fragment.TAPRoomListFragment" />
 
     <fragment
         android:id="@+id/fragment_search_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.moselo.HomingPigeon.View.Fragment.HpSearchChatFragment" />
+        class="com.moselo.HomingPigeon.View.Fragment.TAPSearchChatFragment" />
 
 </FrameLayout>

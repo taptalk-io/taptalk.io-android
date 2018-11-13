@@ -5,8 +5,8 @@ import android.os.Bundle;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Model.TAPRoomModel;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Fragment.HpRoomListFragment;
-import com.moselo.HomingPigeon.View.Fragment.HpSearchChatFragment;
+import com.moselo.HomingPigeon.View.Fragment.TAPRoomListFragment;
+import com.moselo.HomingPigeon.View.Fragment.TAPSearchChatFragment;
 
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.K_ROOM;
 
@@ -18,8 +18,8 @@ public class TAPRoomListActivity extends TAPBaseActivity {
         STATE_SEARCH_CHAT, STATE_ROOM_LIST
     }
 
-    private HpRoomListFragment fRoomList;
-    private HpSearchChatFragment fSearchFragment;
+    private TAPRoomListFragment fRoomList;
+    private TAPSearchChatFragment fSearchFragment;
     private RoomListState state = RoomListState.STATE_ROOM_LIST;
 
     @Override
@@ -31,8 +31,8 @@ public class TAPRoomListActivity extends TAPBaseActivity {
 
     @Override
     protected void initView() {
-        fRoomList = (HpRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
-        fSearchFragment = (HpSearchChatFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_search_chat);
+        fRoomList = (TAPRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
+        fSearchFragment = (TAPSearchChatFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_search_chat);
         redirectToChatActivityFromNotification();
         showRoomList();
     }

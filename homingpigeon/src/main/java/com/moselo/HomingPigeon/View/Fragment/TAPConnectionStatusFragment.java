@@ -19,9 +19,9 @@ import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.TAPNetworkStateManager;
 import com.moselo.HomingPigeon.R;
 
-public class HpConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
+public class TAPConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
 
-    private String TAG = HpConnectionStatusFragment.class.getSimpleName();
+    private String TAG = TAPConnectionStatusFragment.class.getSimpleName();
     private Activity activity;
 
     private LinearLayout llConnectionStatus;
@@ -29,7 +29,7 @@ public class HpConnectionStatusFragment extends Fragment implements TapTalkSocke
     private ImageView ivConnectionStatus;
     private ProgressBar pbConnecting;
 
-    public HpConnectionStatusFragment() {
+    public TAPConnectionStatusFragment() {
     }
 
     @Nullable

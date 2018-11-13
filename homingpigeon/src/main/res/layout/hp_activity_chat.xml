@@ -183,7 +183,7 @@
 
     <fragment
         android:id="@+id/f_connection_status"
-        class="com.moselo.HomingPigeon.View.Fragment.HpConnectionStatusFragment"
+        class="com.moselo.HomingPigeon.View.Fragment.TAPConnectionStatusFragment"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         app:layout_constraintTop_toBottomOf="@+id/cl_action_bar" />

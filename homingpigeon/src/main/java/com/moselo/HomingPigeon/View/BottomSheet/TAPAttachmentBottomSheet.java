@@ -14,22 +14,22 @@ import com.moselo.HomingPigeon.Listener.TAPAttachmentListener;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.TAPAttachmentAdapter;
 
-public class HpAttachmentBottomSheet extends BottomSheetDialogFragment {
+public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
 
     private RecyclerView recyclerView;
     private TAPAttachmentListener attachmentListener;
     private View.OnClickListener onClickListener = v -> dismiss();
 
-    public HpAttachmentBottomSheet() {
+    public TAPAttachmentBottomSheet() {
         // Required empty public constructor
     }
 
-    public HpAttachmentBottomSheet(TAPAttachmentListener attachmentListener) {
+    public TAPAttachmentBottomSheet(TAPAttachmentListener attachmentListener) {
         this.attachmentListener = attachmentListener;
     }
 
-    public static HpAttachmentBottomSheet newInstance() {
-        HpAttachmentBottomSheet fragment = new HpAttachmentBottomSheet();
+    public static TAPAttachmentBottomSheet newInstance() {
+        TAPAttachmentBottomSheet fragment = new TAPAttachmentBottomSheet();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

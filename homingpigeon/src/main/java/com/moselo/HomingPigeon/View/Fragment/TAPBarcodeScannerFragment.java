@@ -28,9 +28,9 @@ import java.io.IOException;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.SCAN_RESULT;
 
-public class HpBarcodeScannerFragment extends Fragment {
+public class TAPBarcodeScannerFragment extends Fragment {
 
-    private static final String TAG = HpBarcodeScannerFragment.class.getSimpleName();
+    private static final String TAG = TAPBarcodeScannerFragment.class.getSimpleName();
     private SurfaceView svScanner;
     private Button btnShowQRCode;
 
@@ -41,12 +41,12 @@ public class HpBarcodeScannerFragment extends Fragment {
         void onScanSuccess(String textValue);
     }
 
-    public HpBarcodeScannerFragment() {
+    public TAPBarcodeScannerFragment() {
         // Required empty public constructor
     }
 
-    public static HpBarcodeScannerFragment newInstance() {
-        HpBarcodeScannerFragment fragment = new HpBarcodeScannerFragment();
+    public static TAPBarcodeScannerFragment newInstance() {
+        TAPBarcodeScannerFragment fragment = new TAPBarcodeScannerFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

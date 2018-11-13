@@ -43,9 +43,9 @@ import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.RECENT_TITLE
 import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.ROOM_ITEM;
 import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
-public class HpSearchChatFragment extends Fragment {
+public class TAPSearchChatFragment extends Fragment {
 
-    private static final String TAG = HpSearchChatFragment.class.getSimpleName();
+    private static final String TAG = TAPSearchChatFragment.class.getSimpleName();
     private Activity activity;
 
     private ConstraintLayout clActionBar;
@@ -57,11 +57,11 @@ public class HpSearchChatFragment extends Fragment {
     private HpSearchChatViewModel vm;
     private TAPSearchChatAdapter adapter;
 
-    public HpSearchChatFragment() {
+    public TAPSearchChatFragment() {
     }
 
-    public static HpSearchChatFragment newInstance() {
-        HpSearchChatFragment fragment = new HpSearchChatFragment();
+    public static TAPSearchChatFragment newInstance() {
+        TAPSearchChatFragment fragment = new TAPSearchChatFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HpChatViewModel extends AndroidViewModel {
+public class TAPChatViewModel extends AndroidViewModel {
 
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages;
@@ -35,7 +35,7 @@ public class HpChatViewModel extends AndroidViewModel {
     private int numUsers;
     private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished, isContainerAnimating;
 
-    public HpChatViewModel(Application application) {
+    public TAPChatViewModel(Application application) {
         super(application);
         allMessages = TAPDataManager.getInstance().getMessagesLiveData();
     }

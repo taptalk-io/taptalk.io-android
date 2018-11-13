@@ -7,12 +7,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.View.Fragment.HpBarcodeScannerFragment;
-import com.moselo.HomingPigeon.View.Fragment.HpShowQRFragment;
+import com.moselo.HomingPigeon.View.Fragment.TAPBarcodeScannerFragment;
+import com.moselo.HomingPigeon.View.Fragment.TAPShowQRFragment;
 
 public class TAPBarcodeScannerActivity extends TAPBaseActivity {
-    private HpBarcodeScannerFragment fBarcodeScanner;
-    private HpShowQRFragment fShowQR;
+    private TAPBarcodeScannerFragment fBarcodeScanner;
+    private TAPShowQRFragment fShowQR;
     private TextView tvToolbarTitle;
     private ImageView ivBack;
     private FrameLayout flToolbar;
@@ -33,8 +33,8 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
 
     @Override
     protected void initView() {
-        fBarcodeScanner = (HpBarcodeScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scan_qr_code);
-        fShowQR = (HpShowQRFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_show_qr_code);
+        fBarcodeScanner = (TAPBarcodeScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scan_qr_code);
+        fShowQR = (TAPShowQRFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_show_qr_code);
         tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
         ivBack = findViewById(R.id.iv_back);
         flToolbar = findViewById(R.id.fl_toolbar);

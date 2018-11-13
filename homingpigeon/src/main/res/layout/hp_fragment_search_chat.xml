@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.Fragment.HpSearchChatFragment">
+    tools:context=".View.Fragment.TAPSearchChatFragment">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
