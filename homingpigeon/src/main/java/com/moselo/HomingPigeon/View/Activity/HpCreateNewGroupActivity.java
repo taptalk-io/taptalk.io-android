@@ -22,9 +22,9 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Interface.TapTalkContactListInterface;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpImageURL;
-import com.moselo.HomingPigeon.Model.HpUserModel;
-import com.moselo.HomingPigeon.Model.HpUserRoleModel;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserRoleModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
@@ -87,7 +87,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     }
 
     private void initViewModel() {
-        HpUserModel myUser = TAPDataManager.getInstance().getActiveUser();
+        TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(HpContactListViewModel.class);
         vm.getSelectedContacts().add(myUser);
 
@@ -97,7 +97,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     private void initListener() {
         listener = new TapTalkContactListInterface() {
             @Override
-            public boolean onContactSelected(HpUserModel contact) {
+            public boolean onContactSelected(TAPUserModel contact) {
                 TAPUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
@@ -132,7 +132,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
             }
 
             @Override
-            public void onContactDeselected(HpUserModel contact) {
+            public void onContactDeselected(TAPUserModel contact) {
                 TAPUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
@@ -229,8 +229,8 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
         if (searchKeyword.trim().isEmpty()) {
             vm.getFilteredContacts().addAll(vm.getContactList());
         } else {
-            List<HpUserModel> filteredContacts = new ArrayList<>();
-            for (HpUserModel user : vm.getContactList()) {
+            List<TAPUserModel> filteredContacts = new ArrayList<>();
+            for (TAPUserModel user : vm.getContactList()) {
                 if (user.getName().toLowerCase().contains(searchKeyword)) {
                     filteredContacts.add(user);
                 }
@@ -286,84 +286,84 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     private void setDummyData() {
         if (vm.getContactList().size() > 0) return;
 
-        HpUserModel userRitchie = HpUserModel.Builder("1", "1", "Ritchie Nathaniel"
-                , HpImageURL.BuilderDummy(), "ritchie", "ritchie@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115801488")
+        TAPUserModel userRitchie = TAPUserModel.Builder("1", "1", "Ritchie Nathaniel"
+                , TAPImageURL.BuilderDummy(), "ritchie", "ritchie@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115801488")
                 , Long.parseLong("0"));
 
-        HpUserModel userDominic = HpUserModel.Builder("2", "2", "Dominic Vedericho"
-                , HpImageURL.BuilderDummy(), "dominic", "dominic@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115918918")
+        TAPUserModel userDominic = TAPUserModel.Builder("2", "2", "Dominic Vedericho"
+                , TAPImageURL.BuilderDummy(), "dominic", "dominic@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115918918")
                 , Long.parseLong("0"));
 
-        HpUserModel userRionaldo = HpUserModel.Builder("3", "3", "Rionaldo Linggautama"
-                , HpImageURL.BuilderDummy(), "rionaldo", "rionaldo@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116046534")
+        TAPUserModel userRionaldo = TAPUserModel.Builder("3", "3", "Rionaldo Linggautama"
+                , TAPImageURL.BuilderDummy(), "rionaldo", "rionaldo@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116046534")
                 , Long.parseLong("0"));
 
-        HpUserModel userKevin = HpUserModel.Builder("4", "4", "Kevin Reynaldo"
-                , HpImageURL.BuilderDummy(), "kevin", "kevin@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116099655")
+        TAPUserModel userKevin = TAPUserModel.Builder("4", "4", "Kevin Reynaldo"
+                , TAPImageURL.BuilderDummy(), "kevin", "kevin@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116099655")
                 , Long.parseLong("0"));
 
-        HpUserModel userWelly = HpUserModel.Builder("5", "5", "Welly Kencana"
-                , HpImageURL.BuilderDummy(), "welly", "welly@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116147477")
+        TAPUserModel userWelly = TAPUserModel.Builder("5", "5", "Welly Kencana"
+                , TAPImageURL.BuilderDummy(), "welly", "welly@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116147477")
                 , Long.parseLong("0"));
 
-        HpUserModel userJony = HpUserModel.Builder("6", "6", "Jony Lim"
-                , HpImageURL.BuilderDummy(), "jony", "jony@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116249323")
+        TAPUserModel userJony = TAPUserModel.Builder("6", "6", "Jony Lim"
+                , TAPImageURL.BuilderDummy(), "jony", "jony@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116249323")
                 , Long.parseLong("0"));
 
-        HpUserModel userMichael = HpUserModel.Builder("7", "7", "Michael Tansy"
-                , HpImageURL.BuilderDummy(), "michael", "michael@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116355199")
+        TAPUserModel userMichael = TAPUserModel.Builder("7", "7", "Michael Tansy"
+                , TAPImageURL.BuilderDummy(), "michael", "michael@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116355199")
                 , Long.parseLong("0"));
 
-        HpUserModel userRichard = HpUserModel.Builder("8", "8", "Richard Fang"
-                , HpImageURL.BuilderDummy(), "richard", "richard@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116398588")
+        TAPUserModel userRichard = TAPUserModel.Builder("8", "8", "Richard Fang"
+                , TAPImageURL.BuilderDummy(), "richard", "richard@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116398588")
                 , Long.parseLong("0"));
 
-        HpUserModel userErwin = HpUserModel.Builder("9", "9", "Erwin Andreas"
-                , HpImageURL.BuilderDummy(), "erwin", "erwin@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116452636")
+        TAPUserModel userErwin = TAPUserModel.Builder("9", "9", "Erwin Andreas"
+                , TAPImageURL.BuilderDummy(), "erwin", "erwin@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116452636")
                 , Long.parseLong("0"));
 
-        HpUserModel userJefry = HpUserModel.Builder("10", "10", "Jefry Lorentono"
-                , HpImageURL.BuilderDummy(), "jefry", "jefry@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116490366")
+        TAPUserModel userJefry = TAPUserModel.Builder("10", "10", "Jefry Lorentono"
+                , TAPImageURL.BuilderDummy(), "jefry", "jefry@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116490366")
                 , Long.parseLong("0"));
 
-        HpUserModel userCundy = HpUserModel.Builder("11", "11", "Cundy Sunardy"
-                , HpImageURL.BuilderDummy(), "cundy", "cundy@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116531507")
+        TAPUserModel userCundy = TAPUserModel.Builder("11", "11", "Cundy Sunardy"
+                , TAPImageURL.BuilderDummy(), "cundy", "cundy@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116531507")
                 , Long.parseLong("0"));
 
-        HpUserModel userRizka = HpUserModel.Builder("12", "12", "Rizka Fatmawati"
-                , HpImageURL.BuilderDummy(), "rizka", "rizka@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116567527")
+        TAPUserModel userRizka = TAPUserModel.Builder("12", "12", "Rizka Fatmawati"
+                , TAPImageURL.BuilderDummy(), "rizka", "rizka@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116567527")
                 , Long.parseLong("0"));
 
-        HpUserModel userTest1 = HpUserModel.Builder("13", "13", "Test 1"
-                , HpImageURL.BuilderDummy(), "test1", "test1@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116607839")
+        TAPUserModel userTest1 = TAPUserModel.Builder("13", "13", "Test 1"
+                , TAPImageURL.BuilderDummy(), "test1", "test1@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116607839")
                 , Long.parseLong("0"));
 
-        HpUserModel userTest2 = HpUserModel.Builder("14", "14", "Test 2"
-                , HpImageURL.BuilderDummy(), "test2", "test2@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116655845")
+        TAPUserModel userTest2 = TAPUserModel.Builder("14", "14", "Test 2"
+                , TAPImageURL.BuilderDummy(), "test2", "test2@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116655845")
                 , Long.parseLong("0"));
 
-        HpUserModel userTest3 = HpUserModel.Builder("15", "15", "Test 3"
-                , HpImageURL.BuilderDummy(), "test3", "test3@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
+        TAPUserModel userTest3 = TAPUserModel.Builder("15", "15", "Test 3"
+                , TAPImageURL.BuilderDummy(), "test3", "test3@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
                 , Long.parseLong("0"));
 
-        HpUserModel userSanto = HpUserModel.Builder("17", "16", "Santo"
-                , HpImageURL.BuilderDummy(), "santo", "santo@moselo.com", "08979809026"
-                , new HpUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
+        TAPUserModel userSanto = TAPUserModel.Builder("17", "16", "Santo"
+                , TAPImageURL.BuilderDummy(), "santo", "santo@moselo.com", "08979809026"
+                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
                 , Long.parseLong("0"));
 
         vm.getContactList().add(userCundy);

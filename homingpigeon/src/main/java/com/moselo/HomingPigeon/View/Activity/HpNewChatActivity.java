@@ -18,9 +18,9 @@ import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpContactModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
+import com.moselo.HomingPigeon.Model.TAPContactModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPContactResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactInitialAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
@@ -118,7 +118,7 @@ public class HpNewChatActivity extends HpBaseActivity {
 
     private void searchContact() {
         Intent intent = new Intent(this, HpSearchContactActivity.class);
-        intent.putExtra(CONTACT_LIST, (ArrayList<HpUserModel>) vm.getContactList());
+        intent.putExtra(CONTACT_LIST, (ArrayList<TAPUserModel>) vm.getContactList());
         startActivity(intent);
     }
 
@@ -137,12 +137,12 @@ public class HpNewChatActivity extends HpBaseActivity {
         startActivity(intent);
     }
 
-    TapDefaultDataView<HpContactResponse> getContactView = new TapDefaultDataView<HpContactResponse>() {
+    TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
         @Override
-        public void onSuccess(HpContactResponse response) {
+        public void onSuccess(TAPContactResponse response) {
             // Insert contacts to database
-            List<HpUserModel> users = new ArrayList<>();
-            for (HpContactModel contact : response.getContacts()) {
+            List<TAPUserModel> users = new ArrayList<>();
+            for (TAPContactModel contact : response.getContacts()) {
                 users.add(contact.getUser().hpUserModelForAddToDB());
             }
             TAPDataManager.getInstance().insertMyContactToDatabase(users);

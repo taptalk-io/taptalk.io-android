@@ -1,23 +1,23 @@
 package com.moselo.HomingPigeon.API.Service;
 
 import com.moselo.HomingPigeon.BuildConfig;
-import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomBeforeRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpPushNotificationRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpUserIdRequest;
-import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPAuthTicketRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPCommonRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetUserByIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetUserByUsernameRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetUserByXcUserIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPPushNotificationRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPUserIdRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPBaseResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPCommonResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPContactResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetUserResponse;
 
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -28,41 +28,41 @@ public interface TAPTalkApiService {
     //String BASE_URL = "dev.taptalk.io:8080/api/v1/";
 
     @POST("server/auth_ticket/request")
-    Observable<BaseResponse<HpAuthTicketResponse>> getAuthTicket(@Body HpAuthTicketRequest request);
+    Observable<TAPBaseResponse<TAPAuthTicketResponse>> getAuthTicket(@Body TAPAuthTicketRequest request);
 
     @POST("auth/access_token/request")
-    Observable<BaseResponse<HpGetAccessTokenResponse>> getAccessToken();
+    Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> getAccessToken();
 
     @POST("chat/message/room_list_and_unread")
-    Observable<BaseResponse<HpGetRoomListResponse>> getRoomList(@Body HpCommonRequest request);
+    Observable<TAPBaseResponse<TAPGetRoomListResponse>> getRoomList(@Body TAPCommonRequest request);
 
     @POST("chat/message/new_and_updated")
-    Observable<BaseResponse<HpGetRoomListResponse>> getPendingAndUpdatedMessage();
+    Observable<TAPBaseResponse<TAPGetRoomListResponse>> getPendingAndUpdatedMessage();
 
     @POST("chat/message/list_by_room/before")
-    Observable<BaseResponse<HpGetMessageListbyRoomResponse>> getMessageListByRoomBefore(@Body HpGetMessageListbyRoomBeforeRequest request);
+    Observable<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> getMessageListByRoomBefore(@Body TAPGetMessageListbyRoomBeforeRequest request);
 
     @POST("client/contact/list")
-    Observable<BaseResponse<HpContactResponse>> getMyContactListFromAPI();
+    Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();
 
     @POST("client/push_notification/update")
-    Observable<BaseResponse<HpCommonResponse>> registerFcmTokenToServer(@Body HpPushNotificationRequest request);
+    Observable<TAPBaseResponse<TAPCommonResponse>> registerFcmTokenToServer(@Body TAPPushNotificationRequest request);
 
     @POST("chat/message/list_by_room/after")
-    Observable<BaseResponse<HpGetMessageListbyRoomResponse>> getMessageListByRoomAfter(@Body HpGetMessageListbyRoomAfterRequest request);
+    Observable<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> getMessageListByRoomAfter(@Body TAPGetMessageListbyRoomAfterRequest request);
 
     @POST("client/contact/add")
-    Observable<BaseResponse<HpCommonResponse>> addContact(@Body HpUserIdRequest request);
+    Observable<TAPBaseResponse<TAPCommonResponse>> addContact(@Body TAPUserIdRequest request);
 
     @POST("client/contact/remove")
-    Observable<BaseResponse<HpCommonResponse>> removeContact(@Body HpUserIdRequest request);
+    Observable<TAPBaseResponse<TAPCommonResponse>> removeContact(@Body TAPUserIdRequest request);
 
     @POST("client/user/get_by_id")
-    Observable<BaseResponse<HpGetUserResponse>> getUserByID(@Body HpGetUserByIdRequest request);
+    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByID(@Body TAPGetUserByIdRequest request);
 
     @POST("client/user/get_by_xcuserid")
-    Observable<BaseResponse<HpGetUserResponse>> getUserByXcUserID(@Body HpGetUserByXcUserIdRequest request);
+    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
 
     @POST("client/user/get_by_username")
-    Observable<BaseResponse<HpGetUserResponse>> getUserByUsername(@Body HpGetUserByUsernameRequest request);
+    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByUsername(@Body TAPGetUserByUsernameRequest request);
 }

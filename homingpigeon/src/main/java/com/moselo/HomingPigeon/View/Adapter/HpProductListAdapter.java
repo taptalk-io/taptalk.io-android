@@ -12,25 +12,25 @@ import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.TAPRoundedCornerImageView;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
-import com.moselo.HomingPigeon.Model.HpProductModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
+import com.moselo.HomingPigeon.Model.TAPProductModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, TAPBaseViewHolder<HpProductModel>> {
+public class HpProductListAdapter extends HpBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 
-    private List<HpProductModel> items = new ArrayList<>();
-    private HpMessageModel messageModel;
-    private HpUserModel myUserModel;
+    private List<TAPProductModel> items = new ArrayList<>();
+    private TAPMessageModel messageModel;
+    private TAPUserModel myUserModel;
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
 
-    public HpProductListAdapter(HpMessageModel messageModel, HpUserModel myUserModel) {
+    public HpProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel) {
         setItems(TAPUtils.getInstance().fromJSON(
-                new TypeReference<List<HpProductModel>>() {
+                new TypeReference<List<TAPProductModel>>() {
                 },
                 messageModel.getBody()), false);
         this.messageModel = messageModel;
@@ -39,7 +39,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, TAPBaseV
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<HpProductModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public TAPBaseViewHolder<TAPProductModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new ProductVH(viewGroup, R.layout.hp_cell_chat_product_item);
     }
 
@@ -52,7 +52,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, TAPBaseV
         }
     }
 
-    public class ProductVH extends TAPBaseViewHolder<HpProductModel> {
+    public class ProductVH extends TAPBaseViewHolder<TAPProductModel> {
 
         FrameLayout flContainer;
         TAPRoundedCornerImageView rcivProductImage;
@@ -75,7 +75,7 @@ public class HpProductListAdapter extends HpBaseAdapter<HpProductModel, TAPBaseV
         }
 
         @Override
-        protected void onBind(HpProductModel item, int position) {
+        protected void onBind(TAPProductModel item, int position) {
             if (getItemViewType() == TYPE_SELLER) {
                 // My products
                 vButtonSeparator.setVisibility(View.GONE);

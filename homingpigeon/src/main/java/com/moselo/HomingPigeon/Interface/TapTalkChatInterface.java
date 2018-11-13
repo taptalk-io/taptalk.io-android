@@ -1,22 +1,22 @@
 package com.moselo.HomingPigeon.Interface;
 
-import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
 
 public interface TapTalkChatInterface {
 
-    void onReceiveMessageInActiveRoom(HpMessageModel message);
-    void onUpdateMessageInActiveRoom(HpMessageModel message);
-    void onDeleteMessageInActiveRoom(HpMessageModel message);
-    void onReceiveMessageInOtherRoom(HpMessageModel message);
-    void onUpdateMessageInOtherRoom(HpMessageModel message);
-    void onDeleteMessageInOtherRoom(HpMessageModel message);
-    void onSendTextMessage(HpMessageModel message);
-    void onSendImageMessage(HpMessageModel message);
-    void onReplyMessage(HpMessageModel message);
-    void onRetrySendMessage(HpMessageModel message);
-    void onSendFailed(HpMessageModel message);
-    void onMessageRead(HpMessageModel message);
-    void onLayoutLoaded(HpMessageModel message);
+    void onReceiveMessageInActiveRoom(TAPMessageModel message);
+    void onUpdateMessageInActiveRoom(TAPMessageModel message);
+    void onDeleteMessageInActiveRoom(TAPMessageModel message);
+    void onReceiveMessageInOtherRoom(TAPMessageModel message);
+    void onUpdateMessageInOtherRoom(TAPMessageModel message);
+    void onDeleteMessageInOtherRoom(TAPMessageModel message);
+    void onSendTextMessage(TAPMessageModel message);
+    void onSendImageMessage(TAPMessageModel message);
+    void onReplyMessage(TAPMessageModel message);
+    void onRetrySendMessage(TAPMessageModel message);
+    void onSendFailed(TAPMessageModel message);
+    void onMessageRead(TAPMessageModel message);
+    void onLayoutLoaded(TAPMessageModel message);
     void onBubbleExpanded();
     void onOutsideClicked();
     void onUserOnline();

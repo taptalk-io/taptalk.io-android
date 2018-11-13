@@ -4,22 +4,22 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 
 public class HpNewContactViewModel extends AndroidViewModel {
 
-    private HpUserModel searchResult;
+    private TAPUserModel searchResult;
     private String pendingSearch;
 
     public HpNewContactViewModel(@NonNull Application application) {
         super(application);
     }
 
-    public HpUserModel getSearchResult() {
-        return null == searchResult ? searchResult = new HpUserModel() : searchResult;
+    public TAPUserModel getSearchResult() {
+        return null == searchResult ? searchResult = new TAPUserModel() : searchResult;
     }
 
-    public void setSearchResult(HpUserModel searchResult) {
+    public void setSearchResult(TAPUserModel searchResult) {
         this.searchResult = searchResult;
     }
 

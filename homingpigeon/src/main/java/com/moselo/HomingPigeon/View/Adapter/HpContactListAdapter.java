@@ -15,16 +15,16 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Interface.TapTalkContactListInterface;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseViewHolder<HpUserModel>> {
+public class HpContactListAdapter extends HpBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>> {
 
     private TapTalkContactListInterface listener;
     private ColorStateList avatarTint;
-    private List<HpUserModel> selectedContacts;
+    private List<TAPUserModel> selectedContacts;
     private String myID;
     private int viewType;
     private boolean isAnimating = true;
@@ -34,13 +34,13 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
     public static final int SELECT = 2;
     public static final int SELECTED_MEMBER = 3;
 
-    public HpContactListAdapter(int viewType, List<HpUserModel> contactList) {
+    public HpContactListAdapter(int viewType, List<TAPUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
     }
 
-    public HpContactListAdapter(int viewType, List<HpUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
+    public HpContactListAdapter(int viewType, List<TAPUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
@@ -48,7 +48,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
     }
 
     // Constructor for selectable contacts
-    public HpContactListAdapter(List<HpUserModel> contactList, List<HpUserModel> selectedContacts, @Nullable TapTalkContactListInterface listener) {
+    public HpContactListAdapter(List<TAPUserModel> contactList, List<TAPUserModel> selectedContacts, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = SELECT;
         this.selectedContacts = selectedContacts;
@@ -58,7 +58,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<HpUserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<TAPUserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case SELECTED_MEMBER:
                 return new SelectedGroupMemberHolder(parent, R.layout.hp_cell_group_member);
@@ -72,7 +72,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
         return viewType;
     }
 
-    class ContactListHolder extends TAPBaseViewHolder<HpUserModel> {
+    class ContactListHolder extends TAPBaseViewHolder<TAPUserModel> {
 
         private CircleImageView ivAvatar;
         private ImageView ivAvatarIcon, ivSelection;
@@ -90,7 +90,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
         }
 
         @Override
-        protected void onBind(HpUserModel item, int position) {
+        protected void onBind(TAPUserModel item, int position) {
             final int randomColor = TAPUtils.getInstance().getRandomColor(item.getName());
 
             if (null != item.getAvatarURL()) {
@@ -129,7 +129,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
             itemView.setOnClickListener(v -> onContactClicked(item, position));
         }
 
-        private void onContactClicked(HpUserModel item, int position) {
+        private void onContactClicked(TAPUserModel item, int position) {
             switch (viewType) {
                 case CHAT:
                     if (!myID.equals(item.getUserID())) {
@@ -155,7 +155,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
         }
     }
 
-    class SelectedGroupMemberHolder extends TAPBaseViewHolder<HpUserModel> {
+    class SelectedGroupMemberHolder extends TAPBaseViewHolder<TAPUserModel> {
 
         private CircleImageView ivAvatar;
         private ImageView ivAvatarIcon;
@@ -170,7 +170,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
         }
 
         @Override
-        protected void onBind(HpUserModel item, int position) {
+        protected void onBind(TAPUserModel item, int position) {
             final int randomColor = TAPUtils.getInstance().getRandomColor(item.getName());
 
             if (null != item.getAvatarURL()) {
@@ -203,7 +203,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
             itemView.setOnClickListener(v -> deselectContact(item));
         }
 
-        private void deselectContact(HpUserModel item) {
+        private void deselectContact(TAPUserModel item) {
             if (null != listener && !item.getUserID().equals(myID) && !isAnimating) {
                 isAnimating = true;
                 listener.onContactDeselected(item);

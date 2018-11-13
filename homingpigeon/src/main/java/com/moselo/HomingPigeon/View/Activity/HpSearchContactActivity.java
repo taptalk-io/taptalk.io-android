@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
@@ -91,7 +91,7 @@ public class HpSearchContactActivity extends HpBaseActivity {
             if (searchKeyword.isEmpty()) {
                 vm.getFilteredContacts().clear();
             } else {
-                for (HpUserModel user : vm.getContactList()) {
+                for (TAPUserModel user : vm.getContactList()) {
                     if (user.getName().toLowerCase().contains(searchKeyword)) {
                         vm.getFilteredContacts().add(user);
                     }

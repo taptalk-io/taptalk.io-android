@@ -9,15 +9,15 @@ import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
-import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPCommonResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPContactResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetUserResponse;
 import com.orhanobut.hawk.Hawk;
 
 import java.util.Calendar;
@@ -96,11 +96,11 @@ public class TAPDataManager {
         else return true;
     }
 
-    public HpUserModel getActiveUser() {
+    public TAPUserModel getActiveUser() {
         return Hawk.get(K_USER, null);
     }
 
-    public void saveActiveUser(HpUserModel user) {
+    public void saveActiveUser(TAPUserModel user) {
         Hawk.put(K_USER, user);
         TAPChatManager.getInstance().setActiveUser(user);
     }
@@ -382,39 +382,39 @@ public class TAPDataManager {
     }
 
     // My Contact
-    public void getMyContactList(TAPDatabaseListener<HpUserModel> listener) {
+    public void getMyContactList(TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().getMyContactList(listener);
     }
 
-    public LiveData<List<HpUserModel>> getMyContactList() {
+    public LiveData<List<TAPUserModel>> getMyContactList() {
         return TAPDatabaseManager.getInstance().getMyContactList();
     }
 
-    public void searchAllMyContacts(String keyword, TAPDatabaseListener<HpUserModel> listener) {
+    public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
     }
 
-    public void insertMyContactToDatabase(HpUserModel... userModels) {
+    public void insertMyContactToDatabase(TAPUserModel... userModels) {
         TAPDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
-    public void insertMyContactToDatabase(TAPDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+    public void insertMyContactToDatabase(TAPDatabaseListener<TAPUserModel> listener, TAPUserModel... userModels) {
         TAPDatabaseManager.getInstance().insertMyContact(listener, userModels);
     }
 
-    public void insertMyContactToDatabase(List<HpUserModel> userModels) {
+    public void insertMyContactToDatabase(List<TAPUserModel> userModels) {
         TAPDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
-    public void insertAndGetMyContact(List<HpUserModel> userModels, TAPDatabaseListener<HpUserModel> listener) {
+    public void insertAndGetMyContact(List<TAPUserModel> userModels, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().insertAndGetMyContact(userModels, listener);
     }
 
-    public void deleteMyContactFromDatabase(HpUserModel... userModels) {
+    public void deleteMyContactFromDatabase(TAPUserModel... userModels) {
         TAPDatabaseManager.getInstance().deleteMyContact(userModels);
     }
 
-    public void deleteMyContactFromDatabase(List<HpUserModel> userModels) {
+    public void deleteMyContactFromDatabase(List<TAPUserModel> userModels) {
         TAPDatabaseManager.getInstance().deleteMyContact(userModels);
     }
 
@@ -422,12 +422,12 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().deleteAllContact();
     }
 
-    public void updateMyContact(HpUserModel userModels) {
+    public void updateMyContact(TAPUserModel userModels) {
         TAPDatabaseManager.getInstance().updateMyContact(userModels);
     }
 
     // FIXME: 25 October 2018 MAKE FUNCTION RETURN BOOLEAN OR GET FRIEND STATUS FROM API
-    public void checkUserInMyContacts(String userID, TAPDatabaseListener<HpUserModel> listener) {
+    public void checkUserInMyContacts(String userID, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
     }
 
@@ -445,67 +445,67 @@ public class TAPDataManager {
      */
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
-            , String fullname, String email, String phone, String username, TapDefaultDataView<HpAuthTicketResponse> view) {
+            , String fullname, String email, String phone, String username, TapDefaultDataView<TAPAuthTicketResponse> view) {
         TAPApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
                 fullname, email, phone, username, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getAccessTokenFromApi(TapDefaultDataView<HpGetAccessTokenResponse> view) {
+    public void getAccessTokenFromApi(TapDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance().getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void refreshAccessToken(TapDefaultDataView<HpGetAccessTokenResponse> view) {
+    public void refreshAccessToken(TapDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance().refreshAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void validateAccessToken(TapDefaultDataView<HpErrorModel> view) {
+    public void validateAccessToken(TapDefaultDataView<TAPErrorModel> view) {
         TAPApiManager.getInstance().validateAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void registerFcmTokenToServer(String fcmToken, TapDefaultDataView<HpCommonResponse> view) {
+    public void registerFcmTokenToServer(String fcmToken, TapDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().registerFcmTokenToServer(fcmToken, new TAPDefaultSubscriber(view));
     }
 
-    public void getMessageRoomListAndUnread(String userID, TapDefaultDataView<HpGetRoomListResponse> view) {
+    public void getMessageRoomListAndUnread(String userID, TapDefaultDataView<TAPGetRoomListResponse> view) {
         TAPApiManager.getInstance().getRoomList(userID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getNewAndUpdatedMessage(TapDefaultDataView<HpGetRoomListResponse> view) {
+    public void getNewAndUpdatedMessage(TapDefaultDataView<TAPGetRoomListResponse> view) {
         TAPApiManager.getInstance().getPendingAndUpdatedMessage(new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, TapDefaultDataView<HpGetMessageListbyRoomResponse> view) {
+    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, TapDefaultDataView<TAPGetMessageListbyRoomResponse> view) {
         TAPApiManager.getInstance().getMessageListByRoomAfter(roomID, minCreated, lastUpdated, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, TapDefaultDataView<HpGetMessageListbyRoomResponse> view) {
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, TapDefaultDataView<TAPGetMessageListbyRoomResponse> view) {
         TAPApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMyContactListFromAPI(TapDefaultDataView<HpContactResponse> view) {
+    public void getMyContactListFromAPI(TapDefaultDataView<TAPContactResponse> view) {
         TAPApiManager.getInstance().getMyContactListFromAPI(new TAPDefaultSubscriber<>(view));
     }
 
-    public void addContactApi(String userID, TapDefaultDataView<HpCommonResponse> view) {
+    public void addContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().addContact(userID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void removeContactApi(String userID, TapDefaultDataView<HpCommonResponse> view) {
+    public void removeContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().removeContact(userID, new TAPDefaultSubscriber<>(view));
     }
 
     // Search User
     private TAPDefaultSubscriber searchUserSubscriber;
 
-    public void getUserByIdFromApi(String id, TapDefaultDataView<HpGetUserResponse> view) {
+    public void getUserByIdFromApi(String id, TapDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByID(id, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getUserByXcUserIdFromApi(String xcUserID, TapDefaultDataView<HpGetUserResponse> view) {
+    public void getUserByXcUserIdFromApi(String xcUserID, TapDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByXcUserID(xcUserID, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getUserByUsernameFromApi(String username, TapDefaultDataView<HpGetUserResponse> view) {
+    public void getUserByUsernameFromApi(String username, TapDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 

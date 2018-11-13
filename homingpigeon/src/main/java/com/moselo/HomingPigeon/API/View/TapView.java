@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.API.View;
 
-import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
 
 /**
  * Created by Fadhlan on 4/19/17.
@@ -17,7 +17,7 @@ public interface TapView<T> {
 
     void onSuccessMessage(String message);
 
-    void onError(HpErrorModel error);
+    void onError(TAPErrorModel error);
 
     void onError(String errorMessage);
 

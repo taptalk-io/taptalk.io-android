@@ -27,10 +27,10 @@ import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Manager.TAPNetworkStateManager;
-import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPCommonResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetUserResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpNewContactViewModel;
 
@@ -300,7 +300,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    TAPDatabaseListener<HpUserModel> dbListener = new TAPDatabaseListener<HpUserModel>() {
+    TAPDatabaseListener<TAPUserModel> dbListener = new TAPDatabaseListener<TAPUserModel>() {
         @Override
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
@@ -332,7 +332,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    TapDefaultDataView<HpGetUserResponse> getUserView = new TapDefaultDataView<HpGetUserResponse>() {
+    TapDefaultDataView<TAPGetUserResponse> getUserView = new TapDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void startLoading() {
             ivButtonCancel.setVisibility(View.INVISIBLE);
@@ -346,13 +346,13 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onSuccess(HpGetUserResponse response) {
+        public void onSuccess(TAPGetUserResponse response) {
             vm.setSearchResult(response.getUser());
             showSearchResult();
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             if (error.getCode().equals(String.valueOf(API_PARAMETER_VALIDATION_FAILED))) {
                 // User not found
                 showResultNotFound();
@@ -378,7 +378,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    TapDefaultDataView<HpCommonResponse> addContactView = new TapDefaultDataView<HpCommonResponse>() {
+    TapDefaultDataView<TAPCommonResponse> addContactView = new TapDefaultDataView<TAPCommonResponse>() {
         @Override
         public void startLoading() {
             // Disable editing when loading
@@ -386,7 +386,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onSuccess(HpCommonResponse response) {
+        public void onSuccess(TAPCommonResponse response) {
             // Change To Animation Page
             Intent intent = new Intent(HpNewContactActivity.this, HpScanResultActivity.class);
             intent.putExtra(ADDED_CONTACT, vm.getSearchResult());
@@ -398,7 +398,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             enableInput();
             new TapTalkDialog.Builder(HpNewContactActivity.this)
                     .setTitle(getString(R.string.error))

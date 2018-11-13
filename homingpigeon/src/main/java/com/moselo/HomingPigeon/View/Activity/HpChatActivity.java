@@ -48,13 +48,13 @@ import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Manager.TAPNotificationManager;
-import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
-import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.HpImageURL;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
-import com.moselo.HomingPigeon.Model.HpPairIdNameModel;
-import com.moselo.HomingPigeon.Model.HpProductModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
+import com.moselo.HomingPigeon.Model.TAPCustomKeyboardModel;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
+import com.moselo.HomingPigeon.Model.TAPPairIdNameModel;
+import com.moselo.HomingPigeon.Model.TAPProductModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpCustomKeyboardAdapter;
 import com.moselo.HomingPigeon.View.Adapter.HpMessageAdapter;
@@ -284,11 +284,11 @@ public class HpChatActivity extends HpBaseChatActivity {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         // TODO: 25 September 2018 CHANGE MENU ACCORDING TO USER ROLES
-        List<HpCustomKeyboardModel> customKeyboardMenus = new ArrayList<>();
-        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.SEE_PRICE_LIST));
-        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.READ_EXPERT_NOTES));
-        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.SEND_SERVICES));
-        customKeyboardMenus.add(new HpCustomKeyboardModel(HpCustomKeyboardModel.Type.CREATE_ORDER));
+        List<TAPCustomKeyboardModel> customKeyboardMenus = new ArrayList<>();
+        customKeyboardMenus.add(new TAPCustomKeyboardModel(TAPCustomKeyboardModel.Type.SEE_PRICE_LIST));
+        customKeyboardMenus.add(new TAPCustomKeyboardModel(TAPCustomKeyboardModel.Type.READ_EXPERT_NOTES));
+        customKeyboardMenus.add(new TAPCustomKeyboardModel(TAPCustomKeyboardModel.Type.SEND_SERVICES));
+        customKeyboardMenus.add(new TAPCustomKeyboardModel(TAPCustomKeyboardModel.Type.CREATE_ORDER));
         hpCustomKeyboardAdapter = new HpCustomKeyboardAdapter(customKeyboardMenus, customKeyboardInterface);
         rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
         rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -402,7 +402,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     // Previously addNewTextMessage
-    private void addNewMessage(final HpMessageModel newMessage) {
+    private void addNewMessage(final TAPMessageModel newMessage) {
         runOnUiThread(() -> {
             //ini ngecek kalau masih ada logo empty chat ilangin dlu
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -436,7 +436,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
     // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
-    private void addBeforeTextMessage(final HpMessageModel newMessage, List<HpMessageModel> tempBeforeMessages) {
+    private void addBeforeTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempBeforeMessages) {
         String newID = newMessage.getLocalID();
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
@@ -456,7 +456,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
     // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
-    private void addAfterTextMessage(final HpMessageModel newMessage, List<HpMessageModel> tempAfterMessages) {
+    private void addAfterTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempAfterMessages) {
         String newID = newMessage.getLocalID();
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
@@ -474,7 +474,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         });
     }
 
-    private void showReplyLayout(HpMessageModel message) {
+    private void showReplyLayout(TAPMessageModel message) {
         // TODO: 1 November 2018 HANDLE NON-TEXT MESSAGES
         vm.setReplyTo(message);
         clReply.setVisibility(View.VISIBLE);
@@ -531,7 +531,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     //ini Fungsi buat manggil Api Before
-    private void fetchBeforeMessageFromAPIAndUpdateUI(TapDefaultDataView<HpGetMessageListbyRoomResponse> beforeView) {
+    private void fetchBeforeMessageFromAPIAndUpdateUI(TapDefaultDataView<TAPGetMessageListbyRoomResponse> beforeView) {
         /*fetchBeforeMessageFromAPIAndUpdateUI rules:
          * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
         new Thread(() -> {
@@ -570,7 +570,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }).start();
     }
 
-    private void mergeSort(List<HpMessageModel> messages, int sortDirection) {
+    private void mergeSort(List<TAPMessageModel> messages, int sortDirection) {
         int messageListSize = messages.size();
         //merge proses divide
         if (messageListSize < 2) {
@@ -582,9 +582,9 @@ public class HpChatActivity extends HpBaseChatActivity {
         //sisa dari mediannya
         int rightListSize = messageListSize - leftListSize;
         //bkin list kiri sejumlah median sizenya
-        List<HpMessageModel> leftList = new ArrayList<>(leftListSize);
+        List<TAPMessageModel> leftList = new ArrayList<>(leftListSize);
         //bikin list kanan sejumlah sisanya (size - median)
-        List<HpMessageModel> rightList = new ArrayList<>(rightListSize);
+        List<TAPMessageModel> rightList = new ArrayList<>(rightListSize);
 
         for (int index = 0; index < leftListSize; index++)
             leftList.add(index, messages.get(index));
@@ -600,7 +600,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         merge(messages, leftList, rightList, leftListSize, rightListSize, sortDirection);
     }
 
-    private void merge(List<HpMessageModel> messagesAll, List<HpMessageModel> leftList, List<HpMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
+    private void merge(List<TAPMessageModel> messagesAll, List<TAPMessageModel> leftList, List<TAPMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
         //Merge adalah fungsi buat Conquernya
 
         //index left buat nentuin index leftList
@@ -650,7 +650,7 @@ public class HpChatActivity extends HpBaseChatActivity {
 
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
-        public void onReceiveMessageInActiveRoom(HpMessageModel message) {
+        public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 12 November 2018 ADD OTHER CUSTOM KEYBOARD MESSAGE TYPES
             if (vm.isContainerAnimating() && message.getUser().getUserID().equals(vm.getMyUserModel().getUserID()) &&
                     (message.getType() == TYPE_PRODUCT)) {
@@ -662,19 +662,19 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onUpdateMessageInActiveRoom(HpMessageModel message) {
+        public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
             addNewMessage(message);
         }
 
         @Override
-        public void onDeleteMessageInActiveRoom(HpMessageModel message) {
+        public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
             addNewMessage(message);
         }
 
         @Override
-        public void onReceiveMessageInOtherRoom(HpMessageModel message) {
+        public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
             super.onReceiveMessageInOtherRoom(message);
 
             if (null != TAPChatManager.getInstance().getOpenRoom() &&
@@ -683,17 +683,17 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onUpdateMessageInOtherRoom(HpMessageModel message) {
+        public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
             super.onUpdateMessageInOtherRoom(message);
         }
 
         @Override
-        public void onDeleteMessageInOtherRoom(HpMessageModel message) {
+        public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
             super.onDeleteMessageInOtherRoom(message);
         }
 
         @Override
-        public void onSendTextMessage(HpMessageModel message) {
+        public void onSendTextMessage(TAPMessageModel message) {
             // TODO: 1 November 2018 TESTING REPLY LAYOUT
             if (null != vm.getReplyTo()) {
                 message.setReplyTo(vm.getReplyTo());
@@ -707,7 +707,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onSendImageMessage(HpMessageModel message) {
+        public void onSendImageMessage(TAPMessageModel message) {
             // TODO: 5 November 2018 TESTING IMAGE MESSAGE STATUS
             message.setNeedAnimateSend(true);
             message.setSending(false);
@@ -715,12 +715,12 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onReplyMessage(HpMessageModel message) {
+        public void onReplyMessage(TAPMessageModel message) {
             showReplyLayout(message);
         }
 
         @Override
-        public void onRetrySendMessage(HpMessageModel message) {
+        public void onRetrySendMessage(TAPMessageModel message) {
             vm.delete(message.getLocalID());
             switch (message.getType()) {
                 case TAPDefaultConstant.MessageType.TYPE_TEXT:
@@ -733,14 +733,14 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onSendFailed(HpMessageModel message) {
+        public void onSendFailed(TAPMessageModel message) {
             vm.updateMessagePointer(message);
             vm.removeMessagePointer(message.getLocalID());
             runOnUiThread(() -> hpMessageAdapter.notifyItemRangeChanged(0, hpMessageAdapter.getItemCount()));
         }
 
         @Override
-        public void onMessageRead(HpMessageModel message) {
+        public void onMessageRead(TAPMessageModel message) {
             if (vm.getUnreadCount() == 0) return;
 
             message.setIsRead(true);
@@ -761,7 +761,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onLayoutLoaded(HpMessageModel message) {
+        public void onLayoutLoaded(TAPMessageModel message) {
             Log.e(TAG, "onLayoutLoaded: " + message.getBody());
             if (message.getUser().getUserID().equals(vm.getMyUserModel().getUserID())
                     || messageLayoutManager.findFirstVisibleItemPosition() == 0) {
@@ -798,25 +798,25 @@ public class HpChatActivity extends HpBaseChatActivity {
         @Override
         public void onSendServicesClicked() {
             // TODO: 12 November 2018 DUMMY PRODUCT LIST
-            HpImageURL dummyThumb = new HpImageURL();
+            TAPImageURL dummyThumb = new TAPImageURL();
             dummyThumb.setFullsize("https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
             dummyThumb.setThumbnail("https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-            HpProductModel dummyProduct = new HpProductModel(
+            TAPProductModel dummyProduct = new TAPProductModel(
                     "Dummy Product",
                     dummyThumb,
-                    new HpPairIdNameModel("", ""),
+                    new TAPPairIdNameModel("", ""),
                     "0",
                     99999999L,
                     "");
             dummyProduct.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
             dummyProduct.setRating(4f);
-            List<HpProductModel> dummyProductList = new ArrayList<>();
+            List<TAPProductModel> dummyProductList = new ArrayList<>();
             dummyProductList.add(dummyProduct);
             dummyProductList.add(dummyProduct);
             dummyProductList.add(dummyProduct);
             dummyProductList.add(dummyProduct);
             String dummyProductListString = TAPUtils.getInstance().toJsonString(dummyProductList);
-            HpMessageModel services = HpMessageModel.Builder(
+            TAPMessageModel services = TAPMessageModel.Builder(
                     dummyProductListString,
                     vm.getRoom(),
                     TYPE_PRODUCT,
@@ -892,9 +892,9 @@ public class HpChatActivity extends HpBaseChatActivity {
     private TAPDatabaseListener<TAPMessageEntity> dbListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
-            final List<HpMessageModel> models = new ArrayList<>();
+            final List<TAPMessageModel> models = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                HpMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
+                TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
             }
@@ -979,9 +979,9 @@ public class HpChatActivity extends HpBaseChatActivity {
     private TAPDatabaseListener<TAPMessageEntity> dbListenerPaging = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
-            final List<HpMessageModel> models = new ArrayList<>();
+            final List<TAPMessageModel> models = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                HpMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
+                TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
             }
@@ -1022,20 +1022,20 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private TapDefaultDataView<HpGetMessageListbyRoomResponse> messageAfterView = new TapDefaultDataView<HpGetMessageListbyRoomResponse>() {
+    private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageAfterView = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
         public void startLoading() {
         }
 
         @Override
-        public void onSuccess(HpGetMessageListbyRoomResponse response) {
+        public void onSuccess(TAPGetMessageListbyRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageAfterModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
-            List<HpMessageModel> messageAfterModels = new ArrayList<>();
-            for (HpMessageModel message : response.getMessages()) {
+            List<TAPMessageModel> messageAfterModels = new ArrayList<>();
+            for (TAPMessageModel message : response.getMessages()) {
                 try {
-                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                    TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addAfterTextMessage(temp, messageAfterModels);
                     new Thread(() -> {
@@ -1086,7 +1086,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             if (BuildConfig.DEBUG) {
                 new TapTalkDialog.Builder(HpChatActivity.this)
                         .setTitle("Error")
@@ -1115,20 +1115,20 @@ public class HpChatActivity extends HpBaseChatActivity {
     };
 
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
-    private TapDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeView = new TapDefaultDataView<HpGetMessageListbyRoomResponse>() {
+    private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
         public void startLoading() {
         }
 
         @Override
-        public void onSuccess(HpGetMessageListbyRoomResponse response) {
+        public void onSuccess(TAPGetMessageListbyRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
-            List<HpMessageModel> messageBeforeModels = new ArrayList<>();
-            for (HpMessageModel message : response.getMessages()) {
+            List<TAPMessageModel> messageBeforeModels = new ArrayList<>();
+            for (TAPMessageModel message : response.getMessages()) {
                 try {
-                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                    TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addBeforeTextMessage(temp, messageBeforeModels);
                 } catch (GeneralSecurityException e) {
@@ -1162,7 +1162,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             super.onError(error);
         }
 
@@ -1174,20 +1174,20 @@ public class HpChatActivity extends HpBaseChatActivity {
 
 
     //message before yang di panggil pas pagination db balikin data di bawah limit
-    private TapDefaultDataView<HpGetMessageListbyRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<HpGetMessageListbyRoomResponse>() {
+    private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
         public void startLoading() {
         }
 
         @Override
-        public void onSuccess(HpGetMessageListbyRoomResponse response) {
+        public void onSuccess(TAPGetMessageListbyRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
-            List<HpMessageModel> messageBeforeModels = new ArrayList<>();
-            for (HpMessageModel message : response.getMessages()) {
+            List<TAPMessageModel> messageBeforeModels = new ArrayList<>();
+            for (TAPMessageModel message : response.getMessages()) {
                 try {
-                    HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                    TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addBeforeTextMessage(temp, messageBeforeModels);
                 } catch (GeneralSecurityException e) {
@@ -1220,7 +1220,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             super.onError(error);
         }
 

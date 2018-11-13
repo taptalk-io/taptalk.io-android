@@ -31,8 +31,8 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.TAPChatListener;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
@@ -47,12 +47,12 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
-public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewHolder<HpMessageModel>> {
+public class HpMessageAdapter extends HpBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
 
     private static final String TAG = HpMessageAdapter.class.getSimpleName();
     private TAPChatListener listener;
-    private HpMessageModel expandedBubble;
-    private HpUserModel myUserModel;
+    private TAPMessageModel expandedBubble;
+    private TAPUserModel myUserModel;
 
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
@@ -65,7 +65,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<HpMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<TAPMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
                 return new TextVH(parent, R.layout.hp_cell_chat_text_right, viewType);
@@ -90,7 +90,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
     @Override
     public int getItemViewType(int position) {
         try {
-            HpMessageModel messageModel = getItemAt(position);
+            TAPMessageModel messageModel = getItemAt(position);
             int messageType = 0;
             if (null != messageModel)
                 messageType = messageModel.getType();
@@ -118,11 +118,11 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
     }
 
-    private boolean isMessageFromMySelf(HpMessageModel messageModel) {
+    private boolean isMessageFromMySelf(TAPMessageModel messageModel) {
         return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
     }
 
-    public class TextVH extends TAPBaseViewHolder<HpMessageModel> {
+    public class TextVH extends TAPBaseViewHolder<TAPMessageModel> {
 
         private ConstraintLayout clContainer, clReply;
         private FrameLayout flBubble;
@@ -154,7 +154,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
 
         @Override
-        protected void onBind(HpMessageModel item, int position) {
+        protected void onBind(TAPMessageModel item, int position) {
             tvMessageBody.setText(item.getBody());
 
             // TODO: 1 November 2018 TESTING REPLY LAYOUT
@@ -177,7 +177,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
     }
 
-    public class ImageVH extends TAPBaseViewHolder<HpMessageModel> {
+    public class ImageVH extends TAPBaseViewHolder<TAPMessageModel> {
 
         private ConstraintLayout clContainer;
         private FrameLayout flBubble, flProgress;
@@ -208,7 +208,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
 
         @Override
-        protected void onBind(HpMessageModel item, int position) {
+        protected void onBind(TAPMessageModel item, int position) {
             tvMessageStatus.setText(TAPTimeFormatter.getInstance().durationString(item.getCreated()));
 
             checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivReply, ivSending);
@@ -268,7 +268,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
     }
 
-    public class ProductVH extends TAPBaseViewHolder<HpMessageModel> {
+    public class ProductVH extends TAPBaseViewHolder<TAPMessageModel> {
 
         RecyclerView rvProductList;
         HpProductListAdapter adapter;
@@ -279,7 +279,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
 
         @Override
-        protected void onBind(HpMessageModel item, int position) {
+        protected void onBind(TAPMessageModel item, int position) {
             if (null == adapter) {
                 adapter = new HpProductListAdapter(item, myUserModel);
             }
@@ -299,7 +299,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
     }
 
-    public class LogVH extends TAPBaseViewHolder<HpMessageModel> {
+    public class LogVH extends TAPBaseViewHolder<TAPMessageModel> {
 
         private ConstraintLayout clContainer;
         private TextView tvLogMessage;
@@ -312,13 +312,13 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
 
         @Override
-        protected void onBind(HpMessageModel item, int position) {
+        protected void onBind(TAPMessageModel item, int position) {
             tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
         }
     }
 
-    private void checkAndUpdateMessageStatus(HpMessageModel item, View itemView, FrameLayout flBubble,
+    private void checkAndUpdateMessageStatus(TAPMessageModel item, View itemView, FrameLayout flBubble,
                                              TextView tvMessageStatus, @Nullable TextView tvUsername,
                                              @Nullable CircleImageView civAvatar, @Nullable ImageView ivMessageStatus,
                                              @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
@@ -407,7 +407,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
     }
 
-    private void expandOrShrinkBubble(HpMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, @Nullable ImageView ivMessageStatus, ImageView ivReply, boolean animate) {
+    private void expandOrShrinkBubble(TAPMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, @Nullable ImageView ivMessageStatus, ImageView ivReply, boolean animate) {
         if (item.isExpanded()) {
             // Expand bubble
             expandedBubble = item;
@@ -488,7 +488,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
     }
 
-    private void onBubbleClicked(HpMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, ImageView ivMessageStatus, ImageView ivReply) {
+    private void onBubbleClicked(TAPMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, ImageView ivMessageStatus, ImageView ivReply) {
         if (null != item.getFailedSend() && item.getFailedSend()) {
             resendMessage(item);
         } else if ((null != item.getSending() && !item.getSending()) ||
@@ -507,22 +507,22 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         }
     }
 
-    private void onStatusImageClicked(HpMessageModel item) {
+    private void onStatusImageClicked(TAPMessageModel item) {
         if (null != item.getFailedSend() && item.getFailedSend()) {
             resendMessage(item);
         }
     }
 
-    private void onReplyButtonClicked(HpMessageModel item) {
+    private void onReplyButtonClicked(TAPMessageModel item) {
         listener.onReplyMessage(item);
     }
 
-    private void resendMessage(HpMessageModel item) {
+    private void resendMessage(TAPMessageModel item) {
         removeMessage(item);
         listener.onRetrySendMessage(item);
     }
 
-    private void animateSend(HpMessageModel item, FrameLayout flBubble, ImageView ivSending,
+    private void animateSend(TAPMessageModel item, FrameLayout flBubble, ImageView ivSending,
                              ImageView ivMessageStatus, @Nullable ImageView ivReply) {
         if (!item.isNeedAnimateSend()) {
             // Set bubble state to post-animation
@@ -666,28 +666,28 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
                 .start();
     }
 
-    public void setMessages(List<HpMessageModel> messages) {
+    public void setMessages(List<TAPMessageModel> messages) {
         setItems(messages, false);
     }
 
-    public void addMessage(HpMessageModel message) {
+    public void addMessage(TAPMessageModel message) {
         addItem(0, message);
     }
 
-    public void addMessage(HpMessageModel message, int position, boolean isNotify) {
+    public void addMessage(TAPMessageModel message, int position, boolean isNotify) {
         getItems().add(position, message);
         if (isNotify) notifyItemInserted(position);
     }
 
-    public void addMessage(List<HpMessageModel> messages) {
+    public void addMessage(List<TAPMessageModel> messages) {
         addItem(messages, true);
     }
 
-    public void addMessage(int position, List<HpMessageModel> messages) {
+    public void addMessage(int position, List<TAPMessageModel> messages) {
         addItem(position, messages, true);
     }
 
-    public void setMessageAt(int position, HpMessageModel message) {
+    public void setMessageAt(int position, TAPMessageModel message) {
         setItemAt(position, message);
         notifyItemChanged(position);
     }
@@ -696,7 +696,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
         removeItemAt(position);
     }
 
-    public void removeMessage(HpMessageModel message) {
+    public void removeMessage(TAPMessageModel message) {
         removeItem(message);
     }
 

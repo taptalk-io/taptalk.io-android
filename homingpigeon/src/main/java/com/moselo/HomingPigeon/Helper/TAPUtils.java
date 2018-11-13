@@ -21,9 +21,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
-import com.moselo.HomingPigeon.Model.HpImageURL;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpChatActivity;
 
@@ -179,16 +179,16 @@ public class TAPUtils {
     /**
      * separate contact list by initial
      */
-    public List<List<HpUserModel>> separateContactsByInitial(List<HpUserModel> contacts) {
-        List<List<HpUserModel>> separatedContacts = new ArrayList<>();
-        List<HpUserModel> nonAlphabeticContacts = new ArrayList<>();
+    public List<List<TAPUserModel>> separateContactsByInitial(List<TAPUserModel> contacts) {
+        List<List<TAPUserModel>> separatedContacts = new ArrayList<>();
+        List<TAPUserModel> nonAlphabeticContacts = new ArrayList<>();
         int previousInitialIndexStart = 0;
         int size = contacts.size();
         for (int i = 1; i <= size; i++) {
             if (i == size ||
                     contacts.get(i).getName().charAt(0) !=
                             contacts.get(i - 1).getName().charAt(0)) {
-                List<HpUserModel> contactSubList = contacts.subList(previousInitialIndexStart, i);
+                List<TAPUserModel> contactSubList = contacts.subList(previousInitialIndexStart, i);
                 if (Character.isAlphabetic(contactSubList.get(0).getName().charAt(0))) {
                     separatedContacts.add(contactSubList);
                 } else {
@@ -221,14 +221,14 @@ public class TAPUtils {
         return "Rp " + str.replace(",", ".");
     }
 
-    public void startChatActivity(Context context, String roomID, String roomName, HpImageURL roomImage, int roomType, String roomColor) {
+    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, HpChatActivity.class);
-        intent.putExtra(K_ROOM, HpRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor));
+        intent.putExtra(K_ROOM, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor));
         context.startActivity(intent);
     }
 
-    public void startChatActivity(Context context, HpRoomModel roomModel) {
+    public void startChatActivity(Context context, TAPRoomModel roomModel) {
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, HpChatActivity.class);
         intent.putExtra(K_ROOM, roomModel);

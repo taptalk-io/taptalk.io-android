@@ -15,10 +15,10 @@ import com.moselo.HomingPigeon.Helper.TapTalkDialog;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
-import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPCommonResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
 
 import java.net.URL;
@@ -199,7 +199,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
     }
 
-    TapDefaultDataView<HpAuthTicketResponse> authView = new TapDefaultDataView<HpAuthTicketResponse>() {
+    TapDefaultDataView<TAPAuthTicketResponse> authView = new TapDefaultDataView<TAPAuthTicketResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -211,7 +211,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onSuccess(HpAuthTicketResponse response) {
+        public void onSuccess(TAPAuthTicketResponse response) {
             super.onSuccess(response);
             TAPApiManager.getInstance().setLogout(false);
             TapTalk.saveAuthTicketAndGetAccessToken(response.getTicket()
@@ -219,13 +219,13 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             super.onError(error);
             showDialog("ERROR "+error.getCode(), error.getMessage());
         }
     };
 
-    TapDefaultDataView<HpGetAccessTokenResponse> accessTokenView = new TapDefaultDataView<HpGetAccessTokenResponse>() {
+    TapDefaultDataView<TAPGetAccessTokenResponse> accessTokenView = new TapDefaultDataView<TAPGetAccessTokenResponse>() {
         @Override
         public void startLoading() {
             super.startLoading();
@@ -237,7 +237,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onSuccess(HpGetAccessTokenResponse response) {
+        public void onSuccess(TAPGetAccessTokenResponse response) {
             super.onSuccess(response);
             TAPDataManager.getInstance().deleteAuthTicket();
 
@@ -258,7 +258,7 @@ public class HpLoginActivity extends HpBaseActivity {
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             super.onError(error);
             showDialog("ERROR "+error.getCode(), error.getMessage());
         }
@@ -276,6 +276,6 @@ public class HpLoginActivity extends HpBaseActivity {
     }
 
     private void registerFcmToken(){
-        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<HpCommonResponse>() {})).start();
+        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {})).start();
     }
 }

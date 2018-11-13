@@ -18,25 +18,25 @@ import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpImageURL;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.HpSearchChatModel;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.TAPSearchChatModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBaseViewHolder<HpSearchChatModel>> {
+public class HpSearchChatAdapter extends HpBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
 
     private String searchKeyword;
 
-    public HpSearchChatAdapter(List<HpSearchChatModel> items) {
+    public HpSearchChatAdapter(List<TAPSearchChatModel> items) {
         setItems(items, true);
     }
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<HpSearchChatModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        switch (HpSearchChatModel.Type.values()[viewType]) {
+    public TAPBaseViewHolder<TAPSearchChatModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (TAPSearchChatModel.Type.values()[viewType]) {
             case RECENT_TITLE:
                 return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
             case SECTION_TITLE:
@@ -60,7 +60,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
         return super.getItemCount();
     }
 
-    public class RecentTitleVH extends TAPBaseViewHolder<HpSearchChatModel> {
+    public class RecentTitleVH extends TAPBaseViewHolder<TAPSearchChatModel> {
 
         private TextView tvClearHistory;
         private TextView tvRecentTitle;
@@ -72,8 +72,8 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
         }
 
         @Override
-        protected void onBind(HpSearchChatModel item, int position) {
-            if (HpSearchChatModel.Type.SECTION_TITLE == item.getType()) {
+        protected void onBind(TAPSearchChatModel item, int position) {
+            if (TAPSearchChatModel.Type.SECTION_TITLE == item.getType()) {
                 tvClearHistory.setVisibility(View.GONE);
                 tvRecentTitle.setText(item.getSectionTitle());
             } else {
@@ -84,7 +84,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
         }
     }
 
-    public class MessageItemVH extends TAPBaseViewHolder<HpSearchChatModel> {
+    public class MessageItemVH extends TAPBaseViewHolder<TAPSearchChatModel> {
 
         private ConstraintLayout clContainer;
         private View vSeparator;
@@ -104,7 +104,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
         }
 
         @Override
-        protected void onBind(HpSearchChatModel item, int position) {
+        protected void onBind(TAPSearchChatModel item, int position) {
             if (item.isLastInSection())
                 vSeparator.setVisibility(View.GONE);
             else vSeparator.setVisibility(View.VISIBLE);
@@ -153,7 +153,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
                         message.getRoomName(),
                         // TODO: 18 October 2018 REMOVE CHECK
                         /* TEMPORARY CHECK FOR NULL IMAGE */null != message.getRoomImage() ?
-                                TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
                                 }, message.getRoomImage())
                                 /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                         message.getRoomType(),
@@ -162,7 +162,7 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
         }
     }
 
-    public class RoomItemVH extends TAPBaseViewHolder<HpSearchChatModel> {
+    public class RoomItemVH extends TAPBaseViewHolder<TAPSearchChatModel> {
 
         private View vSeparator;
         private ConstraintLayout clContainer;
@@ -181,14 +181,14 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
         }
 
         @Override
-        protected void onBind(HpSearchChatModel item, int position) {
+        protected void onBind(TAPSearchChatModel item, int position) {
             Resources resource = itemView.getContext().getResources();
 
             if (item.isLastInSection())
                 vSeparator.setVisibility(View.GONE);
             else vSeparator.setVisibility(View.VISIBLE);
 
-            HpRoomModel room = item.getRoom();
+            TAPRoomModel room = item.getRoom();
             if (null == room) return;
 
             // Load avatar
@@ -239,14 +239,14 @@ public class HpSearchChatAdapter extends HpBaseAdapter<HpSearchChatModel, TAPBas
         }
     }
 
-    public class EmptyItemVH extends TAPBaseViewHolder<HpSearchChatModel> {
+    public class EmptyItemVH extends TAPBaseViewHolder<TAPSearchChatModel> {
 
         EmptyItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
         }
 
         @Override
-        protected void onBind(HpSearchChatModel item, int position) {
+        protected void onBind(TAPSearchChatModel item, int position) {
 
         }
     }

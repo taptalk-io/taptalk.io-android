@@ -4,34 +4,34 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
-import com.moselo.HomingPigeon.Model.HpImageURL;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HpProfileViewModel extends AndroidViewModel {
 
-    private HpRoomModel room;
-    private List<HpImageURL> sharedMedias;
+    private TAPRoomModel room;
+    private List<TAPImageURL> sharedMedias;
 
     public HpProfileViewModel(@NonNull Application application) {
         super(application);
     }
 
-    public HpRoomModel getRoom() {
-        return null == room ? room = new HpRoomModel() : room;
+    public TAPRoomModel getRoom() {
+        return null == room ? room = new TAPRoomModel() : room;
     }
 
-    public void setRoom(HpRoomModel room) {
+    public void setRoom(TAPRoomModel room) {
         this.room = room;
     }
 
-    public List<HpImageURL> getSharedMedias() {
+    public List<TAPImageURL> getSharedMedias() {
         return null == sharedMedias ? sharedMedias = new ArrayList<>() : sharedMedias;
     }
 
-    public void setSharedMedias(List<HpImageURL> sharedMedias) {
+    public void setSharedMedias(List<TAPImageURL> sharedMedias) {
         this.sharedMedias = sharedMedias;
     }
 }

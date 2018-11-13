@@ -8,18 +8,18 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Listener.TAPAttachmentListener;
-import com.moselo.HomingPigeon.Model.HpAttachmentModel;
+import com.moselo.HomingPigeon.Model.TAPAttachmentModel;
 import com.moselo.HomingPigeon.R;
 
-import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_AUDIO;
-import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_CAMERA;
-import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_CONTACT;
-import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_DOCUMENT;
-import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_GALLERY;
-import static com.moselo.HomingPigeon.Model.HpAttachmentModel.ID_LOCATION;
-import static com.moselo.HomingPigeon.Model.HpAttachmentModel.createAttachMenu;
+import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_AUDIO;
+import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_CAMERA;
+import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_CONTACT;
+import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_DOCUMENT;
+import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_GALLERY;
+import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.ID_LOCATION;
+import static com.moselo.HomingPigeon.Model.TAPAttachmentModel.createAttachMenu;
 
-public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, TAPBaseViewHolder<HpAttachmentModel>> {
+public class HpAttachmentAdapter extends HpBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
     private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
@@ -32,7 +32,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, TAPBas
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<HpAttachmentModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<TAPAttachmentModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new AttachmentVH(parent, R.layout.hp_cell_attachment_menu);
     }
 
@@ -46,7 +46,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, TAPBas
         return super.getItemCount();
     }
 
-    public class AttachmentVH extends TAPBaseViewHolder<HpAttachmentModel> {
+    public class AttachmentVH extends TAPBaseViewHolder<TAPAttachmentModel> {
 
         private ImageView ivAttachIcon;
         private TextView tvAttachTitle;
@@ -60,7 +60,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, TAPBas
         }
 
         @Override
-        protected void onBind(HpAttachmentModel item, int position) {
+        protected void onBind(TAPAttachmentModel item, int position) {
             ivAttachIcon.setImageDrawable(itemView.getResources().getDrawable(item.getIcon()));
             tvAttachTitle.setText(itemView.getResources().getText(item.getTitleIds()));
 
@@ -71,7 +71,7 @@ public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, TAPBas
             itemView.setOnClickListener(v -> onAttachmentClicked(item));
         }
 
-        private void onAttachmentClicked(HpAttachmentModel item) {
+        private void onAttachmentClicked(TAPAttachmentModel item) {
             switch (item.getId()) {
                 case ID_DOCUMENT:
                     attachmentListener.onDocumentSelected();

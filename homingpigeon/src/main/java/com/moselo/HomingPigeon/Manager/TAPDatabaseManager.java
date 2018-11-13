@@ -9,7 +9,7 @@ import com.moselo.HomingPigeon.Data.Message.TAPMessageRepository;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchRepository;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 
 import java.util.List;
 
@@ -214,55 +214,55 @@ public class TAPDatabaseManager {
      * ==============================================================
      */
 
-    public void getMyContactList(TAPDatabaseListener<HpUserModel> listener) {
+    public void getMyContactList(TAPDatabaseListener<TAPUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.getAllMyContactList(listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public LiveData<List<HpUserModel>> getMyContactList() {
+    public LiveData<List<TAPUserModel>> getMyContactList() {
         if (null != myContactRepository)
             return myContactRepository.getMyContactListLive();
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void searchAllMyContacts(String keyword, TAPDatabaseListener<HpUserModel> listener) {
+    public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.searchAllMyContacts(keyword, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void insertMyContact(HpUserModel... userModels) {
+    public void insertMyContact(TAPUserModel... userModels) {
         if (null != myContactRepository)
             myContactRepository.insert(userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void insertMyContact(TAPDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+    public void insertMyContact(TAPDatabaseListener<TAPUserModel> listener, TAPUserModel... userModels) {
         if (null != myContactRepository)
             myContactRepository.insert(listener, userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void insertMyContact(List<HpUserModel> userModels) {
+    public void insertMyContact(List<TAPUserModel> userModels) {
         if (null != myContactRepository)
             myContactRepository.insert(userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void insertAndGetMyContact(List<HpUserModel> userModels, TAPDatabaseListener<HpUserModel> listener) {
+    public void insertAndGetMyContact(List<TAPUserModel> userModels, TAPDatabaseListener<TAPUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.insertAndGetContact(userModels, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void deleteMyContact(HpUserModel... userModels) {
+    public void deleteMyContact(TAPUserModel... userModels) {
         if (null != myContactRepository)
             myContactRepository.delete(userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void deleteMyContact(List<HpUserModel> userModels) {
+    public void deleteMyContact(List<TAPUserModel> userModels) {
         if (null != myContactRepository)
             myContactRepository.delete(userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
@@ -274,13 +274,13 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void updateMyContact(HpUserModel userModels) {
+    public void updateMyContact(TAPUserModel userModels) {
         if (null != myContactRepository)
             myContactRepository.update(userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void checkUserInMyContacts(String userID, TAPDatabaseListener<HpUserModel> listener) {
+    public void checkUserInMyContacts(String userID, TAPDatabaseListener<TAPUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.checkUserInMyContacts(userID, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");

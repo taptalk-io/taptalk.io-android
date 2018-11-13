@@ -7,8 +7,8 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.HpSearchChatModel;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.TAPSearchChatModel;
 
 @Entity(tableName = "Recent_Search")
 public class TAPRecentSearchEntity {
@@ -20,7 +20,7 @@ public class TAPRecentSearchEntity {
     @ColumnInfo(name = "created") private Long created;
 
     @Ignore
-    public TAPRecentSearchEntity(HpRoomModel roomModel, Long created) {
+    public TAPRecentSearchEntity(TAPRoomModel roomModel, Long created) {
         this.roomID = roomModel.getRoomID();
         this.roomName = roomModel.getRoomName();
         this.roomColor = roomModel.getRoomColor();
@@ -32,8 +32,8 @@ public class TAPRecentSearchEntity {
     public TAPRecentSearchEntity() {
     }
 
-    public static TAPRecentSearchEntity Builder(HpSearchChatModel searchChatModel) {
-        HpRoomModel room = searchChatModel.getRoom();
+    public static TAPRecentSearchEntity Builder(TAPSearchChatModel searchChatModel) {
+        TAPRoomModel room = searchChatModel.getRoom();
         if (null == room) return null;
 
         TAPRecentSearchEntity model = new TAPRecentSearchEntity();

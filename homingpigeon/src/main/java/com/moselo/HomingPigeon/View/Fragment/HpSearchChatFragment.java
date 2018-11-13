@@ -25,10 +25,10 @@ import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpImageURL;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.HpSearchChatModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.TAPSearchChatModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 import com.moselo.HomingPigeon.View.Adapter.HpSearchChatAdapter;
@@ -37,11 +37,11 @@ import com.moselo.HomingPigeon.ViewModel.HpSearchChatViewModel;
 import java.util.List;
 import java.util.Map;
 
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.EMPTY_STATE;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.MESSAGE_ITEM;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.RECENT_TITLE;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.ROOM_ITEM;
-import static com.moselo.HomingPigeon.Model.HpSearchChatModel.Type.SECTION_TITLE;
+import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.EMPTY_STATE;
+import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.MESSAGE_ITEM;
+import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.RECENT_TITLE;
+import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.ROOM_ITEM;
+import static com.moselo.HomingPigeon.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
 public class HpSearchChatFragment extends Fragment {
 
@@ -142,18 +142,18 @@ public class HpSearchChatFragment extends Fragment {
             vm.clearRecentSearches();
 
             if (null != hpRecentSearchEntities && hpRecentSearchEntities.size() > 0) {
-                HpSearchChatModel recentTitleItem = new HpSearchChatModel(RECENT_TITLE);
+                TAPSearchChatModel recentTitleItem = new TAPSearchChatModel(RECENT_TITLE);
                 vm.addRecentSearches(recentTitleItem);
             }
 
             if (null != hpRecentSearchEntities) {
                 for (TAPRecentSearchEntity entity : hpRecentSearchEntities) {
-                    HpSearchChatModel recentItem = new HpSearchChatModel(ROOM_ITEM);
-                    HpRoomModel roomModel = new HpRoomModel(
+                    TAPSearchChatModel recentItem = new TAPSearchChatModel(ROOM_ITEM);
+                    TAPRoomModel roomModel = new TAPRoomModel(
                             entity.getRoomID(),
                             entity.getRoomName(),
                             entity.getRoomType(),
-                            TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {}, entity.getRoomImage()),
+                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {}, entity.getRoomImage()),
                             entity.getRoomColor());
                     recentItem.setRoom(roomModel);
                     vm.addRecentSearches(recentItem);
@@ -180,7 +180,7 @@ public class HpSearchChatFragment extends Fragment {
 
     //ini fungsi buat set tampilan kalau lagi empty
     private void setEmptyState() {
-        HpSearchChatModel emptyItem = new HpSearchChatModel(EMPTY_STATE);
+        TAPSearchChatModel emptyItem = new TAPSearchChatModel(EMPTY_STATE);
         vm.clearSearchResults();
         vm.addSearchResult(emptyItem);
         activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
@@ -222,19 +222,19 @@ public class HpSearchChatFragment extends Fragment {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             if (entities.size() > 0) {
-                HpSearchChatModel sectionTitleChatsAndContacts = new HpSearchChatModel(SECTION_TITLE);
+                TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 for (TAPMessageEntity entity : entities) {
-                    HpSearchChatModel result = new HpSearchChatModel(ROOM_ITEM);
+                    TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                     // Convert message to room model
-                    HpRoomModel room = new HpRoomModel(
+                    TAPRoomModel room = new TAPRoomModel(
                             entity.getRoomID(),
                             entity.getRoomName(),
                             entity.getRoomType(),
                             // TODO: 18 October 2018 REMOVE CHECK
                             /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                            TAPUtils.getInstance().fromJSON(new TypeReference<HpImageURL>() {
+                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
                             }, entity.getRoomImage())
                             /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                             entity.getRoomColor());
@@ -248,20 +248,20 @@ public class HpSearchChatFragment extends Fragment {
         }
     };
 
-    private TAPDatabaseListener<HpUserModel> contactSearchListener = new TAPDatabaseListener<HpUserModel>() {
+    private TAPDatabaseListener<TAPUserModel> contactSearchListener = new TAPDatabaseListener<TAPUserModel>() {
         @Override
-        public void onSelectFinished(List<HpUserModel> entities) {
+        public void onSelectFinished(List<TAPUserModel> entities) {
             if (entities.size() > 0) {
                 if (vm.getSearchResults().size() == 0) {
-                    HpSearchChatModel sectionTitleChatsAndContacts = new HpSearchChatModel(SECTION_TITLE);
+                    TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                     sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.chats_and_contacts));
                     vm.addSearchResult(sectionTitleChatsAndContacts);
                 }
-                for (HpUserModel contact : entities) {
-                    HpSearchChatModel result = new HpSearchChatModel(ROOM_ITEM);
+                for (TAPUserModel contact : entities) {
+                    TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                     // Convert contact to room model
                     // TODO: 18 October 2018 LENGKAPIN DATA
-                    HpRoomModel room = new HpRoomModel(
+                    TAPRoomModel room = new TAPRoomModel(
                             TAPChatManager.getInstance().arrangeRoomId(TAPDataManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
                             /* 1 ON 1 ROOM TYPE */ 1,
@@ -285,11 +285,11 @@ public class HpSearchChatFragment extends Fragment {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             if (entities.size() > 0) {
-                HpSearchChatModel sectionTitleMessages = new HpSearchChatModel(SECTION_TITLE);
+                TAPSearchChatModel sectionTitleMessages = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleMessages.setSectionTitle(getString(R.string.messages));
                 vm.addSearchResult(sectionTitleMessages);
                 for (TAPMessageEntity entity : entities) {
-                    HpSearchChatModel result = new HpSearchChatModel(MESSAGE_ITEM);
+                    TAPSearchChatModel result = new TAPSearchChatModel(MESSAGE_ITEM);
                     result.setMessage(entity);
                     vm.addSearchResult(result);
                 }

@@ -1,10 +1,10 @@
 package com.moselo.HomingPigeon.Interface;
 
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 
 public interface TapTalkContactListInterface {
 
-    boolean onContactSelected(HpUserModel contact);
+    boolean onContactSelected(TAPUserModel contact);
 
-    void onContactDeselected(HpUserModel contact);
+    void onContactDeselected(TAPUserModel contact);
 }

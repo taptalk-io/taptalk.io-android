@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Model.HpImageURL;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpImageListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpProfileViewModel;
@@ -112,7 +112,7 @@ public class HpProfileActivity extends HpBaseActivity {
         // TODO: 23 October 2018 GET SHARED MEDIA
 
         // Dummy media
-        HpImageURL dummyImage = vm.getRoom().getRoomImage();
+        TAPImageURL dummyImage = vm.getRoom().getRoomImage();
         vm.getSharedMedias().add(dummyImage);
         vm.getSharedMedias().add(dummyImage);
         vm.getSharedMedias().add(dummyImage);

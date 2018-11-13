@@ -21,15 +21,15 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Interface.TapTalkRoomListInterface;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpRoomListModel;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPRoomListModel;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
 import java.util.List;
 
-public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseViewHolder<HpRoomListModel>> {
+public class HpRoomListAdapter extends HpBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
     private HpRoomListViewModel vm;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
@@ -42,7 +42,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<HpRoomListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<TAPRoomListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RoomListVH(parent, R.layout.hp_cell_user_room);
     }
 
@@ -51,7 +51,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
         return super.getItemCount();
     }
 
-    public class RoomListVH extends TAPBaseViewHolder<HpRoomListModel> {
+    public class RoomListVH extends TAPBaseViewHolder<TAPRoomListModel> {
 
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
@@ -75,7 +75,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
         }
 
         @Override
-        protected void onBind(HpRoomListModel item, int position) {
+        protected void onBind(TAPRoomListModel item, int position) {
             final int randomColor = TAPUtils.getInstance().getRandomColor(item.getLastMessage().getUser().getName());
             Resources resource = itemView.getContext().getResources();
 
@@ -157,13 +157,13 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
         }
     }
 
-    private void onRoomClicked(View itemView, HpRoomListModel item, int position) {
+    private void onRoomClicked(View itemView, TAPRoomListModel item, int position) {
         if (vm.isSelecting()) {
             // Select room when other room is already selected
             onRoomSelected(item, position);
         } else {
             // Open chat room on click
-            HpUserModel myUser = TAPDataManager.getInstance().getActiveUser();
+            TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
 
             String myUserID = myUser.getUserID();
             String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?
@@ -185,15 +185,15 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
         }
     }
 
-    private boolean onRoomLongClicked(View v, HpRoomListModel item, int position) {
+    private boolean onRoomLongClicked(View v, TAPRoomListModel item, int position) {
         // Select room on long click
         v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
         onRoomSelected(item, position);
         return true;
     }
 
-    private void onRoomSelected(HpRoomListModel item, int position) {
-        HpRoomModel room = item.getLastMessage().getRoom();
+    private void onRoomSelected(TAPRoomListModel item, int position) {
+        TAPRoomModel room = item.getLastMessage().getRoom();
 
         if (!vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
             // Room selected
@@ -206,7 +206,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
         notifyItemChanged(position);
     }
 
-    public void addRoomList(List<HpRoomListModel> roomList) {
+    public void addRoomList(List<TAPRoomListModel> roomList) {
         TAPRoomListDiffCallback diffCallback = new TAPRoomListDiffCallback(getItems(), roomList);
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
 

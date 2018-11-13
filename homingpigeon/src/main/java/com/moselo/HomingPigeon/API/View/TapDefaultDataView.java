@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.API.View;
 
-import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
 
 /**
  * Created by Fadhlan on 6/15/17.
@@ -33,7 +33,7 @@ public abstract class TapDefaultDataView<T> implements TapView<T> {
     }
 
     @Override
-    public void onError(HpErrorModel error) {
+    public void onError(TAPErrorModel error) {
 
     }
 

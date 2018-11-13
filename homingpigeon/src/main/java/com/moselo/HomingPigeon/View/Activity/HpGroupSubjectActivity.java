@@ -27,7 +27,7 @@ import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Model.HpImageURL;
+import com.moselo.HomingPigeon.Model.TAPImageURL;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpGroupViewModel;
@@ -70,7 +70,7 @@ public class HpGroupSubjectActivity extends HpBaseActivity {
                 switch (requestCode) {
                     case PICK_GROUP_IMAGE:
                         if (null == data.getData()) return;
-                        HpImageURL groupImage = new HpImageURL();
+                        TAPImageURL groupImage = new TAPImageURL();
                         groupImage.setThumbnail(data.getData().toString());
                         groupImage.setFullsize(data.getData().toString());
                         vm.getGroupData().setRoomImage(groupImage);

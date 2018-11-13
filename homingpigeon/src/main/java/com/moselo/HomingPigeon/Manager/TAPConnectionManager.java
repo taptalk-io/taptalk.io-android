@@ -10,7 +10,7 @@ import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Interface.TapTalkNetworkInterface;
 import com.moselo.HomingPigeon.Interface.TapTalkSocketInterface;
-import com.moselo.HomingPigeon.Model.HpErrorModel;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -225,7 +225,7 @@ public class TAPConnectionManager {
                             for (TapTalkSocketInterface listener : socketListeners)
                                 listener.onSocketConnecting();
                         }
-                        TAPDataManager.getInstance().validateAccessToken(new TapDefaultDataView<HpErrorModel>() {});
+                        TAPDataManager.getInstance().validateAccessToken(new TapDefaultDataView<TAPErrorModel>() {});
                         close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
                     } catch (IllegalStateException e) {
@@ -263,6 +263,6 @@ public class TAPConnectionManager {
         //return websocketHeader;
     }
 
-    private TapDefaultDataView<HpErrorModel> validateAccessView = new TapDefaultDataView<HpErrorModel>() {
+    private TapDefaultDataView<TAPErrorModel> validateAccessView = new TapDefaultDataView<TAPErrorModel>() {
     };
 }

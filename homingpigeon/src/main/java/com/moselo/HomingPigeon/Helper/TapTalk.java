@@ -27,9 +27,9 @@ import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Manager.TAPNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.TAPNotificationManager;
 import com.moselo.HomingPigeon.Manager.TAPOldDataManager;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetAccessTokenResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpLoginActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -121,7 +121,7 @@ public class TapTalk {
         });
     }
 
-    public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<HpGetAccessTokenResponse> view) {
+    public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPDataManager.getInstance().saveAuthTicket(authTicket);
         TAPDataManager.getInstance().getAccessTokenFromApi(view);
     }
@@ -174,10 +174,10 @@ public class TapTalk {
     public static class NotificationBuilder {
         public Context context;
         public String chatSender = "", chatMessage = "";
-        public HpMessageModel notificationMessage;
+        public TAPMessageModel notificationMessage;
         public int smallIcon;
         boolean isNeedReply;
-        HpRoomModel roomModel;
+        TAPRoomModel roomModel;
         NotificationCompat.Builder notificationBuilder;
         private Class aClass;
 
@@ -185,7 +185,7 @@ public class TapTalk {
             this.context = context;
         }
 
-        public NotificationBuilder setNotificationMessage(HpMessageModel notificationMessage) {
+        public NotificationBuilder setNotificationMessage(TAPMessageModel notificationMessage) {
             this.notificationMessage = notificationMessage;
             TAPNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
             setChatMessage(notificationMessage.getBody());

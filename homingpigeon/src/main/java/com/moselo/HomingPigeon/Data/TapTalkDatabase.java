@@ -11,9 +11,9 @@ import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchDao;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
 import com.moselo.HomingPigeon.Const.TAPDefaultConstant;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 
-@Database(entities = {TAPMessageEntity.class, TAPRecentSearchEntity.class, HpUserModel.class}, version = TAPDefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
+@Database(entities = {TAPMessageEntity.class, TAPRecentSearchEntity.class, TAPUserModel.class}, version = TAPDefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
 public abstract class TapTalkDatabase extends RoomDatabase{
 
     private static TapTalkDatabase database;

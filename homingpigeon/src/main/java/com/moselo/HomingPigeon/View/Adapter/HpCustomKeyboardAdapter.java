@@ -6,27 +6,27 @@ import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Interface.TAPCustomKeyboardInterface;
-import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
+import com.moselo.HomingPigeon.Model.TAPCustomKeyboardModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
-public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel, TAPBaseViewHolder<HpCustomKeyboardModel>> {
+public class HpCustomKeyboardAdapter extends HpBaseAdapter<TAPCustomKeyboardModel, TAPBaseViewHolder<TAPCustomKeyboardModel>> {
 
     private TAPCustomKeyboardInterface listener;
 
-    public HpCustomKeyboardAdapter(List<HpCustomKeyboardModel> keyboardMenuList, TAPCustomKeyboardInterface listener) {
+    public HpCustomKeyboardAdapter(List<TAPCustomKeyboardModel> keyboardMenuList, TAPCustomKeyboardInterface listener) {
         setItems(keyboardMenuList);
         this.listener = listener;
     }
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<HpCustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<TAPCustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new KeyboardMenuHolder(parent, R.layout.hp_cell_custom_keyboard_menu);
     }
 
-    class KeyboardMenuHolder extends TAPBaseViewHolder<HpCustomKeyboardModel> {
+    class KeyboardMenuHolder extends TAPBaseViewHolder<TAPCustomKeyboardModel> {
 
         TextView tvMenuIcon, tvMenuLabel;
 
@@ -37,7 +37,7 @@ public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel
         }
 
         @Override
-        protected void onBind(HpCustomKeyboardModel item, int position) {
+        protected void onBind(TAPCustomKeyboardModel item, int position) {
             tvMenuIcon.setText(item.getIcon());
             tvMenuLabel.setText(item.getLabel());
 
@@ -45,7 +45,7 @@ public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel
         }
     }
 
-    private void onMenuClicked(HpCustomKeyboardModel.Type type) {
+    private void onMenuClicked(TAPCustomKeyboardModel.Type type) {
         switch (type) {
             case SEE_PRICE_LIST:
                 listener.onSeePriceListClicked();

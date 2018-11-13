@@ -9,25 +9,25 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Interface.TapTalkContactListInterface;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 
 import java.util.List;
 
 public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactInitialAdapter.ContactListHolder> {
 
-    private List<List<HpUserModel>> contactList;
-    private List<HpUserModel> selectedContacts;
+    private List<List<TAPUserModel>> contactList;
+    private List<TAPUserModel> selectedContacts;
     private TapTalkContactListInterface listener;
     private int viewType;
 
-    public HpContactInitialAdapter(int viewType, List<List<HpUserModel>> contactList) {
+    public HpContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList) {
         this.viewType = viewType;
         this.contactList = contactList;
     }
 
     // Constructor for selectable contacts
-    public HpContactInitialAdapter(int viewType, List<List<HpUserModel>> contactList, List<HpUserModel> selectedContacts, TapTalkContactListInterface listener) {
+    public HpContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList, List<TAPUserModel> selectedContacts, TapTalkContactListInterface listener) {
         this.viewType = viewType;
         this.contactList = contactList;
         this.selectedContacts = selectedContacts;
@@ -51,15 +51,15 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
         return 0;
     }
 
-    public List<List<HpUserModel>> getItems() {
+    public List<List<TAPUserModel>> getItems() {
         return contactList;
     }
 
-    public List<HpUserModel> getItemAt(int position) {
+    public List<TAPUserModel> getItemAt(int position) {
         return contactList.get(position);
     }
 
-    public void setItems(List<List<HpUserModel>> contactList) {
+    public void setItems(List<List<TAPUserModel>> contactList) {
         this.contactList = contactList;
         notifyDataSetChanged();
     }
@@ -68,7 +68,7 @@ public class HpContactInitialAdapter extends RecyclerView.Adapter<HpContactIniti
 
         private RecyclerView rvContactInitial;
         private TextView tvInitial;
-        private List<HpUserModel> item;
+        private List<TAPUserModel> item;
         private HpContactListAdapter adapter;
 
         ContactListHolder(View itemView) {

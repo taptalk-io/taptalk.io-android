@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpContactListAdapter;
 import com.moselo.HomingPigeon.ViewModel.HpContactListViewModel;
@@ -35,9 +35,9 @@ public class HpBlockedListActivity extends HpBaseActivity {
 
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {
-            HpUserModel u1 = new HpUserModel("u1", "Dummy Spam 1");
-            HpUserModel u2 = new HpUserModel("u2", "Dummy Spam 2");
-            HpUserModel u3 = new HpUserModel("u3", "Dummy Spam 3");
+            TAPUserModel u1 = new TAPUserModel("u1", "Dummy Spam 1");
+            TAPUserModel u2 = new TAPUserModel("u2", "Dummy Spam 2");
+            TAPUserModel u3 = new TAPUserModel("u3", "Dummy Spam 3");
             vm.getFilteredContacts().add(u1);
             vm.getFilteredContacts().add(u2);
             vm.getFilteredContacts().add(u3);

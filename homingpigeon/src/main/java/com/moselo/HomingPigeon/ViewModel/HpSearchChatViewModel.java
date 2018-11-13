@@ -7,8 +7,8 @@ import android.support.annotation.NonNull;
 
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.HpSearchChatModel;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.TAPSearchChatModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,9 +18,9 @@ import java.util.Map;
 public class HpSearchChatViewModel extends AndroidViewModel {
 
     private LiveData<List<TAPRecentSearchEntity>> recentSearchList;
-    private List<HpSearchChatModel> searchResults;
-    private List<HpSearchChatModel> recentSearches;
-    private Map<String, HpRoomModel> roomPointer;
+    private List<TAPSearchChatModel> searchResults;
+    private List<TAPSearchChatModel> recentSearches;
+    private Map<String, TAPRoomModel> roomPointer;
     private String searchKeyword;
     private boolean isRecentSearchShown;
 
@@ -28,28 +28,28 @@ public class HpSearchChatViewModel extends AndroidViewModel {
         super(application);
     }
 
-    private Map<String, HpRoomModel> getRoomPointer() {
+    private Map<String, TAPRoomModel> getRoomPointer() {
         return null == roomPointer ? roomPointer = new LinkedHashMap<>() : roomPointer;
     }
 
-    public List<HpSearchChatModel> getSearchResults() {
+    public List<TAPSearchChatModel> getSearchResults() {
         return null == searchResults ? searchResults = new ArrayList<>() : searchResults;
     }
 
-    public void setSearchResults(List<HpSearchChatModel> searchResults) {
+    public void setSearchResults(List<TAPSearchChatModel> searchResults) {
         this.searchResults = searchResults;
         getRoomPointer().clear();
-        for (HpSearchChatModel result : searchResults) {
-            HpRoomModel room = result.getRoom();
+        for (TAPSearchChatModel result : searchResults) {
+            TAPRoomModel room = result.getRoom();
             if (null != room) {
                 getRoomPointer().put(room.getRoomID(), room);
             }
         }
     }
 
-    public void addSearchResult(HpSearchChatModel model) {
+    public void addSearchResult(TAPSearchChatModel model) {
         getSearchResults().add(model);
-        HpRoomModel room = model.getRoom();
+        TAPRoomModel room = model.getRoom();
         if (null != room) {
             getRoomPointer().put(room.getRoomID(), room);
         }
@@ -76,7 +76,7 @@ public class HpSearchChatViewModel extends AndroidViewModel {
         return null == recentSearchList ? recentSearchList = TAPDataManager.getInstance().getRecentSearchLive() : recentSearchList;
     }
 
-    public List<HpSearchChatModel> getRecentSearches() {
+    public List<TAPSearchChatModel> getRecentSearches() {
         return null == recentSearches ? recentSearches = new ArrayList<>() : recentSearches;
     }
 
@@ -84,11 +84,11 @@ public class HpSearchChatViewModel extends AndroidViewModel {
         getRecentSearches().clear();
     }
 
-    public void addRecentSearches(HpSearchChatModel item) {
+    public void addRecentSearches(TAPSearchChatModel item) {
         getRecentSearches().add(item);
     }
 
-    public void setRecentSearches(List<HpSearchChatModel> recentSearches) {
+    public void setRecentSearches(List<TAPSearchChatModel> recentSearches) {
         this.recentSearches = recentSearches;
     }
 

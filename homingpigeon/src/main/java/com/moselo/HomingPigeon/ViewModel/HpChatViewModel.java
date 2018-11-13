@@ -10,9 +10,9 @@ import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
-import com.moselo.HomingPigeon.Model.HpRoomModel;
-import com.moselo.HomingPigeon.Model.HpUserModel;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
+import com.moselo.HomingPigeon.Model.TAPRoomModel;
+import com.moselo.HomingPigeon.Model.TAPUserModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -22,11 +22,11 @@ import java.util.Map;
 public class HpChatViewModel extends AndroidViewModel {
 
     private LiveData<List<TAPMessageEntity>> allMessages;
-    private Map<String, HpMessageModel> messagePointer, unreadMessages;
-    private List<HpMessageModel> messageModels;
-    private HpUserModel myUserModel;
-    private HpRoomModel room;
-    private HpMessageModel replyTo, pendingCustomKeyboardMessage;
+    private Map<String, TAPMessageModel> messagePointer, unreadMessages;
+    private List<TAPMessageModel> messageModels;
+    private TAPUserModel myUserModel;
+    private TAPRoomModel room;
+    private TAPMessageModel replyTo, pendingCustomKeyboardMessage;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private String otherUserID = "0";
@@ -48,15 +48,15 @@ public class HpChatViewModel extends AndroidViewModel {
         TAPDataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
-    public Map<String, HpMessageModel> getMessagePointer() {
+    public Map<String, TAPMessageModel> getMessagePointer() {
         return messagePointer == null ? messagePointer = new LinkedHashMap<>() : messagePointer;
     }
 
-    public void setMessagePointer(Map<String, HpMessageModel> messagePointer) {
+    public void setMessagePointer(Map<String, TAPMessageModel> messagePointer) {
         this.messagePointer = messagePointer;
     }
 
-    public void addMessagePointer(HpMessageModel pendingMessage) {
+    public void addMessagePointer(TAPMessageModel pendingMessage) {
         getMessagePointer().put(pendingMessage.getLocalID(), pendingMessage);
     }
 
@@ -64,15 +64,15 @@ public class HpChatViewModel extends AndroidViewModel {
         getMessagePointer().remove(localID);
     }
 
-    public void updateMessagePointer(HpMessageModel newMessage) {
+    public void updateMessagePointer(TAPMessageModel newMessage) {
         getMessagePointer().get(newMessage.getLocalID()).updateValue(newMessage);
     }
 
-    public Map<String, HpMessageModel> getUnreadMessages() {
+    public Map<String, TAPMessageModel> getUnreadMessages() {
         return unreadMessages == null ? unreadMessages = new LinkedHashMap<>() : unreadMessages;
     }
 
-    public void setUnreadMessages(Map<String, HpMessageModel> unreadMessages) {
+    public void setUnreadMessages(Map<String, TAPMessageModel> unreadMessages) {
         this.unreadMessages = unreadMessages;
     }
 
@@ -80,7 +80,7 @@ public class HpChatViewModel extends AndroidViewModel {
         return getUnreadMessages().size();
     }
 
-    public void addUnreadMessage(HpMessageModel unreadMessage) {
+    public void addUnreadMessage(TAPMessageModel unreadMessage) {
         getUnreadMessages().put(unreadMessage.getLocalID(), unreadMessage);
     }
 
@@ -91,7 +91,7 @@ public class HpChatViewModel extends AndroidViewModel {
     public void clearUnreadMessages() {
         if (getUnreadCount() == 0) return;
 
-        for (Map.Entry<String, HpMessageModel> unreadMessage : getUnreadMessages().entrySet()) {
+        for (Map.Entry<String, TAPMessageModel> unreadMessage : getUnreadMessages().entrySet()) {
             unreadMessage.getValue().setIsRead(true);
         }
         getUnreadMessages().clear();
@@ -105,48 +105,48 @@ public class HpChatViewModel extends AndroidViewModel {
         TAPDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
     }
 
-    public List<HpMessageModel> getMessageModels() {
+    public List<TAPMessageModel> getMessageModels() {
         return messageModels == null ? messageModels = new ArrayList<>() : messageModels;
     }
 
-    public void setMessageModels(List<HpMessageModel> messageModels) {
+    public void setMessageModels(List<TAPMessageModel> messageModels) {
         this.messageModels = messageModels;
     }
 
-    public void addMessageModels(List<HpMessageModel> messageModels) {
+    public void addMessageModels(List<TAPMessageModel> messageModels) {
         getMessageModels().addAll(messageModels);
     }
 
-    public HpUserModel getMyUserModel() {
+    public TAPUserModel getMyUserModel() {
         return myUserModel;
     }
 
-    public void setMyUserModel(HpUserModel myUserModel) {
+    public void setMyUserModel(TAPUserModel myUserModel) {
         this.myUserModel = myUserModel;
     }
 
-    public HpRoomModel getRoom() {
+    public TAPRoomModel getRoom() {
         return room;
     }
 
-    public void setRoom(HpRoomModel room) {
+    public void setRoom(TAPRoomModel room) {
         this.room = room;
         TAPChatManager.getInstance().setActiveRoom(room);
     }
 
-    public HpMessageModel getReplyTo() {
+    public TAPMessageModel getReplyTo() {
         return replyTo;
     }
 
-    public void setReplyTo(HpMessageModel replyTo) {
+    public void setReplyTo(TAPMessageModel replyTo) {
         this.replyTo = replyTo;
     }
 
-    public HpMessageModel getPendingCustomKeyboardMessage() {
+    public TAPMessageModel getPendingCustomKeyboardMessage() {
         return pendingCustomKeyboardMessage;
     }
 
-    public void setPendingCustomKeyboardMessage(HpMessageModel pendingCustomKeyboardMessage) {
+    public void setPendingCustomKeyboardMessage(TAPMessageModel pendingCustomKeyboardMessage) {
         this.pendingCustomKeyboardMessage = pendingCustomKeyboardMessage;
     }
 

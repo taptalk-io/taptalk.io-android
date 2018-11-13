@@ -2,15 +2,15 @@ package com.moselo.HomingPigeon.DiffCallback;
 
 import android.support.v7.util.DiffUtil;
 
-import com.moselo.HomingPigeon.Model.HpRoomListModel;
+import com.moselo.HomingPigeon.Model.TAPRoomListModel;
 
 import java.util.List;
 
 public class TAPRoomListDiffCallback extends DiffUtil.Callback {
-    private final List<HpRoomListModel> oldRoomList;
-    private final List<HpRoomListModel> newRoomList;
+    private final List<TAPRoomListModel> oldRoomList;
+    private final List<TAPRoomListModel> newRoomList;
 
-    public TAPRoomListDiffCallback(List<HpRoomListModel> oldRoomList, List<HpRoomListModel> newRoomList) {
+    public TAPRoomListDiffCallback(List<TAPRoomListModel> oldRoomList, List<TAPRoomListModel> newRoomList) {
         this.oldRoomList = oldRoomList;
         this.newRoomList = newRoomList;
     }

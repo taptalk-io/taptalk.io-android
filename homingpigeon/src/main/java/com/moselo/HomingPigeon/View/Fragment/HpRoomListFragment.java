@@ -32,10 +32,10 @@ import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
 import com.moselo.HomingPigeon.Manager.TAPNotificationManager;
-import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
-import com.moselo.HomingPigeon.Model.HpRoomListModel;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
+import com.moselo.HomingPigeon.Model.TAPRoomListModel;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetRoomListResponse;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Activity.HpNewChatActivity;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
@@ -118,37 +118,37 @@ public class HpRoomListFragment extends Fragment {
     private void initListener() {
         chatListener = new TAPChatListener() {
             @Override
-            public void onReceiveMessageInOtherRoom(HpMessageModel message) {
+            public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 
             @Override
-            public void onReceiveMessageInActiveRoom(HpMessageModel message) {
+            public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 
             @Override
-            public void onUpdateMessageInOtherRoom(HpMessageModel message) {
+            public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 
             @Override
-            public void onUpdateMessageInActiveRoom(HpMessageModel message) {
+            public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 
             @Override
-            public void onDeleteMessageInOtherRoom(HpMessageModel message) {
+            public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 
             @Override
-            public void onDeleteMessageInActiveRoom(HpMessageModel message) {
+            public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 
             @Override
-            public void onSendTextMessage(HpMessageModel message) {
+            public void onSendTextMessage(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
         };
@@ -279,13 +279,13 @@ public class HpRoomListFragment extends Fragment {
         });
     }
 
-    private void processMessageFromSocket(HpMessageModel message) {
+    private void processMessageFromSocket(TAPMessageModel message) {
         String messageRoomID = message.getRoom().getRoomID();
-        HpRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
+        TAPRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
 
         if (null != roomList) {
             //room nya ada di listnya
-            HpMessageModel roomLastMessage = roomList.getLastMessage();
+            TAPMessageModel roomLastMessage = roomList.getLastMessage();
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID())) {
                 //last messagenya sama cuma update datanya aja
@@ -323,7 +323,7 @@ public class HpRoomListFragment extends Fragment {
             }
         } else {
             //kalau room yang masuk baru
-            HpRoomListModel newRoomList = new HpRoomListModel(message, 1);
+            TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
             activity.runOnUiThread(() -> adapter.notifyItemInserted(0));
@@ -378,7 +378,7 @@ public class HpRoomListFragment extends Fragment {
         return vm.isSelecting();
     }
 
-    private TapDefaultDataView<HpGetRoomListResponse> roomListView = new TapDefaultDataView<HpGetRoomListResponse>() {
+    private TapDefaultDataView<TAPGetRoomListResponse> roomListView = new TapDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
             //ini buat munculin setup dialog pas pertama kali buka apps
@@ -397,16 +397,16 @@ public class HpRoomListFragment extends Fragment {
         }
 
         @Override
-        public void onSuccess(HpGetRoomListResponse response) {
+        public void onSuccess(TAPGetRoomListResponse response) {
             super.onSuccess(response);
             //sebagai tanda kalau udah manggil api (Get message from API)
             vm.setDoneFirstSetup(true);
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
-                for (HpMessageModel message : response.getMessages()) {
+                for (TAPMessageModel message : response.getMessages()) {
                     try {
-                        HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
+                        TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                         tempMessage.add(TAPChatManager.getInstance().convertToEntity(temp));
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
@@ -429,7 +429,7 @@ public class HpRoomListFragment extends Fragment {
         }
 
         @Override
-        public void onError(HpErrorModel error) {
+        public void onError(TAPErrorModel error) {
             super.onError(error);
             Log.e(TAG, "onError: " + error.getMessage());
             flSetupContainer.setVisibility(View.GONE);
@@ -448,11 +448,11 @@ public class HpRoomListFragment extends Fragment {
     private TAPDatabaseListener<TAPMessageEntity> dbListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
-            List<HpRoomListModel> messageModels = new ArrayList<>();
+            List<TAPRoomListModel> messageModels = new ArrayList<>();
             //ngubah entity yang dari database jadi model
             for (TAPMessageEntity entity : entities) {
-                HpMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
-                HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
+                TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
+                TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 //update unread count nya per room
@@ -474,10 +474,10 @@ public class HpRoomListFragment extends Fragment {
 
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
-            List<HpRoomListModel> messageModels = new ArrayList<>();
+            List<TAPRoomListModel> messageModels = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                HpMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
-                HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
+                TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
+                TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
@@ -492,10 +492,10 @@ public class HpRoomListFragment extends Fragment {
 
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
-            List<HpRoomListModel> messageModels = new ArrayList<>();
+            List<TAPRoomListModel> messageModels = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                HpMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
-                HpRoomListModel roomModel = HpRoomListModel.buildWithLastMessage(model);
+                TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
+                TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));

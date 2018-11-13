@@ -2,12 +2,12 @@ package com.moselo.HomingPigeon.API.Api;
 
 import android.util.Log;
 
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByIdRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByUsernameRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetUserByXcUserIdRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpPushNotificationRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpUserIdRequest;
-import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetUserByIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetUserByUsernameRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetUserByXcUserIdRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPPushNotificationRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPUserIdRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPBaseResponse;
 import com.moselo.HomingPigeon.API.Service.TAPTalkApiService;
 import com.moselo.HomingPigeon.API.Service.TAPTalkRefreshTokenService;
 import com.moselo.HomingPigeon.API.Service.TAPTalkSocketService;
@@ -17,18 +17,18 @@ import com.moselo.HomingPigeon.Exception.TAPApiSessionExpiredException;
 import com.moselo.HomingPigeon.Exception.TAPAuthException;
 import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Manager.TAPDataManager;
-import com.moselo.HomingPigeon.Model.HpErrorModel;
-import com.moselo.HomingPigeon.Model.RequestModel.HpAuthTicketRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpCommonRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomAfterRequest;
-import com.moselo.HomingPigeon.Model.RequestModel.HpGetMessageListbyRoomBeforeRequest;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpCommonResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpContactResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetAccessTokenResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetMessageListbyRoomResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetRoomListResponse;
-import com.moselo.HomingPigeon.Model.ResponseModel.HpGetUserResponse;
+import com.moselo.HomingPigeon.Model.TAPErrorModel;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPAuthTicketRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPCommonRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
+import com.moselo.HomingPigeon.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPAuthTicketResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPCommonResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPContactResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetAccessTokenResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetRoomListResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPGetUserResponse;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -99,7 +99,7 @@ public class TAPApiManager {
     }
 
     private <T> Observable validateResponse(T t) {
-        BaseResponse br = (BaseResponse) t;
+        TAPBaseResponse br = (TAPBaseResponse) t;
 
         int code = br.getStatus();
         if (BuildConfig.DEBUG)
@@ -123,7 +123,7 @@ public class TAPApiManager {
                        Observable.just(Boolean.TRUE) : Observable.error(t);
     }
 
-    private Observable<Throwable> raiseApiSessionExpiredException(BaseResponse br) {
+    private Observable<Throwable> raiseApiSessionExpiredException(TAPBaseResponse br) {
         return Observable.error(new TAPApiSessionExpiredException(br.getError().getMessage()));
     }
 
@@ -131,7 +131,7 @@ public class TAPApiManager {
         return Observable.error(new TAPApiRefreshTokenRunningException());
     }
 
-    private void updateSession(BaseResponse<HpGetAccessTokenResponse> r) {
+    private void updateSession(TAPBaseResponse<TAPGetAccessTokenResponse> r) {
         TAPDataManager.getInstance().saveAccessToken(r.getData().getAccessToken());
         TAPDataManager.getInstance().saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
         TAPDataManager.getInstance().saveRefreshToken(r.getData().getRefreshToken());
@@ -141,17 +141,17 @@ public class TAPApiManager {
     }
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
-            , String fullname, String email, String phone, String username, Subscriber<BaseResponse<HpAuthTicketResponse>> subscriber) {
-        HpAuthTicketRequest request = HpAuthTicketRequest.toBuilder(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
+            , String fullname, String email, String phone, String username, Subscriber<TAPBaseResponse<TAPAuthTicketResponse>> subscriber) {
+        TAPAuthTicketRequest request = TAPAuthTicketRequest.toBuilder(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
                 fullname, email, phone, username);
         execute(homingPigeon.getAuthTicket(request), subscriber);
     }
 
-    public void getAccessToken(Subscriber<BaseResponse<HpGetAccessTokenResponse>> subscriber) {
+    public void getAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
         execute(homingPigeon.getAccessToken(), subscriber);
     }
 
-    public Observable<BaseResponse<HpGetAccessTokenResponse>> refreshToken() {
+    public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
         return hpRefresh.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
@@ -165,64 +165,64 @@ public class TAPApiManager {
                 });
     }
 
-    public void refreshAccessToken(Subscriber<BaseResponse<HpGetAccessTokenResponse>> subscriber) {
+    public void refreshAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
         execute(hpRefresh.refreshAccessToken(), subscriber);
     }
 
-    public void validateAccessToken(Subscriber<BaseResponse<HpErrorModel>> subscriber) {
+    public void validateAccessToken(Subscriber<TAPBaseResponse<TAPErrorModel>> subscriber) {
         execute(hpSocket.validateAccessToken(), subscriber);
     }
 
-    public void registerFcmTokenToServer(String fcmToken, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
-        HpPushNotificationRequest request = HpPushNotificationRequest.Builder(fcmToken);
+    public void registerFcmTokenToServer(String fcmToken, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPPushNotificationRequest request = TAPPushNotificationRequest.Builder(fcmToken);
         execute(homingPigeon.registerFcmTokenToServer(request), subscriber);
     }
 
-    public void getRoomList(String userID, Subscriber<BaseResponse<HpGetRoomListResponse>> subscriber) {
-        HpCommonRequest request = HpCommonRequest.builderWithUserID(userID);
+    public void getRoomList(String userID, Subscriber<TAPBaseResponse<TAPGetRoomListResponse>> subscriber) {
+        TAPCommonRequest request = TAPCommonRequest.builderWithUserID(userID);
         execute(homingPigeon.getRoomList(request), subscriber);
     }
 
-    public void getPendingAndUpdatedMessage(Subscriber<BaseResponse<HpGetRoomListResponse>> subscriber) {
+    public void getPendingAndUpdatedMessage(Subscriber<TAPBaseResponse<TAPGetRoomListResponse>> subscriber) {
         execute(homingPigeon.getPendingAndUpdatedMessage(), subscriber);
     }
 
-    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<BaseResponse<HpGetMessageListbyRoomResponse>> subscriber) {
-        HpGetMessageListbyRoomAfterRequest request = new HpGetMessageListbyRoomAfterRequest(roomID, minCreated, lastUpdated);
+    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> subscriber) {
+        TAPGetMessageListbyRoomAfterRequest request = new TAPGetMessageListbyRoomAfterRequest(roomID, minCreated, lastUpdated);
         execute(homingPigeon.getMessageListByRoomAfter(request), subscriber);
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<BaseResponse<HpGetMessageListbyRoomResponse>> subscriber) {
-        HpGetMessageListbyRoomBeforeRequest request = new HpGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> subscriber) {
+        TAPGetMessageListbyRoomBeforeRequest request = new TAPGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
         execute(homingPigeon.getMessageListByRoomBefore(request), subscriber);
     }
 
-    public void getMyContactListFromAPI(Subscriber<BaseResponse<HpContactResponse>> subscriber) {
+    public void getMyContactListFromAPI(Subscriber<TAPBaseResponse<TAPContactResponse>> subscriber) {
         execute(homingPigeon.getMyContactListFromAPI(), subscriber);
     }
 
-    public void addContact(String userID, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
-        HpUserIdRequest request = new HpUserIdRequest(userID);
+    public void addContact(String userID, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userID);
         execute(homingPigeon.addContact(request), subscriber);
     }
 
-    public void removeContact(String userID, Subscriber<BaseResponse<HpCommonResponse>> subscriber) {
-        HpUserIdRequest request = new HpUserIdRequest(userID);
+    public void removeContact(String userID, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUserIdRequest request = new TAPUserIdRequest(userID);
         execute(homingPigeon.removeContact(request), subscriber);
     }
 
-    public void getUserByID(String id, Subscriber<BaseResponse<HpGetUserResponse>> subscriber) {
-        HpGetUserByIdRequest request = new HpGetUserByIdRequest(id);
+    public void getUserByID(String id, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        TAPGetUserByIdRequest request = new TAPGetUserByIdRequest(id);
         execute(homingPigeon.getUserByID(request), subscriber);
     }
 
-    public void getUserByXcUserID(String xcUserID, Subscriber<BaseResponse<HpGetUserResponse>> subscriber) {
-        HpGetUserByXcUserIdRequest request = new HpGetUserByXcUserIdRequest(xcUserID);
+    public void getUserByXcUserID(String xcUserID, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        TAPGetUserByXcUserIdRequest request = new TAPGetUserByXcUserIdRequest(xcUserID);
         execute(homingPigeon.getUserByXcUserID(request), subscriber);
     }
 
-    public void getUserByUsername(String username, Subscriber<BaseResponse<HpGetUserResponse>> subscriber) {
-        HpGetUserByUsernameRequest request = new HpGetUserByUsernameRequest(username);
+    public void getUserByUsername(String username, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
         execute(homingPigeon.getUserByUsername(request), subscriber);
     }
 }

@@ -2,7 +2,7 @@ package com.moselo.HomingPigeon.API;
 
 import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.API.View.TapView;
-import com.moselo.HomingPigeon.Model.ResponseModel.BaseResponse;
+import com.moselo.HomingPigeon.Model.ResponseModel.TAPBaseResponse;
 
 import rx.Subscriber;
 
@@ -10,7 +10,7 @@ import rx.Subscriber;
  * MoseloUser by Fadhlan on 3/3/17.
  */
 
-public class TAPDefaultSubscriber<T extends BaseResponse<D>, V extends TapDefaultDataView<D> &
+public class TAPDefaultSubscriber<T extends TAPBaseResponse<D>, V extends TapDefaultDataView<D> &
         TapView<D>, D>
         extends Subscriber<T> {
     private static final String LOG_TAG = TAPDefaultSubscriber.class.getSimpleName();

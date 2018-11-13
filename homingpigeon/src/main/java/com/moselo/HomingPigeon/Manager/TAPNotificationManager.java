@@ -11,7 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Model.TAPMessageModel;
 import com.moselo.HomingPigeon.View.Activity.HpRoomListActivity;
 
 import java.util.ArrayList;
@@ -25,18 +25,18 @@ public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
     private static TAPNotificationManager instance;
     private String notificationGroup = "homing-pigeon";
-    private Map<String, List<HpMessageModel>> notifMessagesMap;
+    private Map<String, List<TAPMessageModel>> notifMessagesMap;
     private boolean isRoomListAppear;
 
     public static TAPNotificationManager getInstance() {
         return null == instance ? (instance = new TAPNotificationManager()) : instance;
     }
 
-    public Map<String, List<HpMessageModel>> getNotifMessagesMap() {
+    public Map<String, List<TAPMessageModel>> getNotifMessagesMap() {
         return null == notifMessagesMap ? notifMessagesMap = new LinkedHashMap<>() : notifMessagesMap;
     }
 
-    public void setNotifMessagesMap(Map<String, List<HpMessageModel>> notifMessagesMap) {
+    public void setNotifMessagesMap(Map<String, List<TAPMessageModel>> notifMessagesMap) {
         this.notifMessagesMap = notifMessagesMap;
     }
 
@@ -48,12 +48,12 @@ public class TAPNotificationManager {
         isRoomListAppear = roomListAppear;
     }
 
-    public void addNotifMessageToMap(HpMessageModel notifMessage) {
+    public void addNotifMessageToMap(TAPMessageModel notifMessage) {
         String messageRoomID = notifMessage.getRoom().getRoomID();
         if (checkMapContainsRoomID(messageRoomID)) {
             getNotifMessagesMap().get(messageRoomID).add(notifMessage);
         } else {
-            List<HpMessageModel> listNotifMessagePerRoomID = new ArrayList<>();
+            List<TAPMessageModel> listNotifMessagePerRoomID = new ArrayList<>();
             listNotifMessagePerRoomID.add(notifMessage);
             getNotifMessagesMap().put(messageRoomID, listNotifMessagePerRoomID);
         }
@@ -69,7 +69,7 @@ public class TAPNotificationManager {
         return getNotifMessagesMap().containsKey(roomID);
     }
 
-    public List<HpMessageModel> getListOfMessageFromMap(String roomID) {
+    public List<TAPMessageModel> getListOfMessageFromMap(String roomID) {
         if (checkMapContainsRoomID(roomID)) {
             return getNotifMessagesMap().get(roomID);
         } else {
@@ -79,7 +79,7 @@ public class TAPNotificationManager {
 
     public NotificationCompat.Builder createSummaryNotificationBubble(Context context, Class aClass) {
         int chatSize = 0, messageSize = 0;
-        for (Map.Entry<String, List<HpMessageModel>> item : notifMessagesMap.entrySet()) {
+        for (Map.Entry<String, List<TAPMessageModel>> item : notifMessagesMap.entrySet()) {
             chatSize++;
             messageSize += item.getValue().size();
         }
@@ -110,7 +110,7 @@ public class TAPNotificationManager {
         NotificationCompat.MessagingStyle messageStyle = new NotificationCompat.MessagingStyle(builder.chatSender);
         String notifMessageRoomID = builder.notificationMessage.getRoom().getRoomID();
         String chatSender = builder.chatSender;
-        List<HpMessageModel> tempNotifListMessage = getListOfMessageFromMap(notifMessageRoomID);
+        List<TAPMessageModel> tempNotifListMessage = getListOfMessageFromMap(notifMessageRoomID);
         int tempNotifListMessageSize = tempNotifListMessage.size();
 
         if (checkMapContainsRoomID(notifMessageRoomID)) {
@@ -172,7 +172,7 @@ public class TAPNotificationManager {
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE);
     }
 
-    public void createAndShowInAppNotification(Context context, HpMessageModel newMessageModel) {
+    public void createAndShowInAppNotification(Context context, TAPMessageModel newMessageModel) {
         if (TapTalk.isForeground) {
             new TapTalk.NotificationBuilder(context)
                     .setNotificationMessage(newMessageModel)
@@ -183,7 +183,7 @@ public class TAPNotificationManager {
         }
     }
 
-    public void createAndShowBackgroundNotification(Context context, int notificationIcon, HpMessageModel newMessageModel) {
+    public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
         TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
         new TapTalk.NotificationBuilder(context)
                 .setNotificationMessage(newMessageModel)
@@ -206,8 +206,8 @@ public class TAPNotificationManager {
 
     public void updateNotificationMessageMapWhenAppKilled() {
         if (TAPDataManager.getInstance().checkNotificationMap() && 0 == getNotifMessagesMap().size()) {
-            Map<String, List<HpMessageModel>> tempNotifMessage = TAPUtils.getInstance().fromJSON(
-                    new TypeReference<Map<String, List<HpMessageModel>>>() {
+            Map<String, List<TAPMessageModel>> tempNotifMessage = TAPUtils.getInstance().fromJSON(
+                    new TypeReference<Map<String, List<TAPMessageModel>>>() {
                     },
                     TAPDataManager.getInstance().getNotificationMessageMap());
             setNotifMessagesMap(tempNotifMessage);
