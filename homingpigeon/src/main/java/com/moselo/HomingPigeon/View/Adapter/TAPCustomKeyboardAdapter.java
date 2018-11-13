@@ -23,7 +23,7 @@ public class TAPCustomKeyboardAdapter extends TAPBaseAdapter<TAPCustomKeyboardMo
     @NonNull
     @Override
     public TAPBaseViewHolder<TAPCustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new KeyboardMenuHolder(parent, R.layout.hp_cell_custom_keyboard_menu);
+        return new KeyboardMenuHolder(parent, R.layout.tap_cell_custom_keyboard_menu);
     }
 
     class KeyboardMenuHolder extends TAPBaseViewHolder<TAPCustomKeyboardModel> {

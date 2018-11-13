@@ -25,7 +25,7 @@ public class TAPRoomListActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_room_list);
+        setContentView(R.layout.tap_activity_room_list);
         initView();
     }
 

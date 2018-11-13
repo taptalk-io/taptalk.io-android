@@ -46,7 +46,7 @@ public class TAPShowQRFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.hp_fragment_show_qr, container, false);
+        return inflater.inflate(R.layout.tap_fragment_show_qr, container, false);
     }
 
     @Override

@@ -38,15 +38,15 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
     public TAPBaseViewHolder<TAPSearchChatModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (TAPSearchChatModel.Type.values()[viewType]) {
             case RECENT_TITLE:
-                return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
+                return new RecentTitleVH(parent, R.layout.tap_cell_section_title);
             case SECTION_TITLE:
-                return new RecentTitleVH(parent, R.layout.hp_cell_section_title);
+                return new RecentTitleVH(parent, R.layout.tap_cell_section_title);
             case ROOM_ITEM:
-                return new RoomItemVH(parent, R.layout.hp_cell_search_room_item);
+                return new RoomItemVH(parent, R.layout.tap_cell_search_room_item);
             case MESSAGE_ITEM:
-                return new MessageItemVH(parent, R.layout.hp_cell_search_message_item);
+                return new MessageItemVH(parent, R.layout.tap_cell_search_message_item);
             default:
-                return new EmptyItemVH(parent, R.layout.hp_cell_search_empty);
+                return new EmptyItemVH(parent, R.layout.tap_cell_search_empty);
         }
     }
 
@@ -127,23 +127,23 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Change Status Message Icon
             // Message is read
             if (null != message.getIsRead() && message.getIsRead()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_read_green);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
             }
             // Message is delivered
             else if (null != message.getDelivered() && message.getDelivered()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
             }
             // Message failed to send
             else if (null != message.getFailedSend() && message.getFailedSend()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_failed_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
             }
             // Message sent
             else if (null != message.getSending() && !message.getSending()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_sent_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
             }
             // Message is sending
             else if (null != message.getSending() && message.getSending()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_sending_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_sending_grey);
             }
 
             clContainer.setOnClickListener(v -> {
@@ -202,7 +202,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Change avatar icon
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-            ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_verified));
+            ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
 
             // TODO: 18 October 2018 UPDATE ONLINE STATUS
 
@@ -220,9 +220,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Check if room is muted
             if (room.isMuted()) {
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_9b9b9b_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
             } else {
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_10dp));
             }
 
             clContainer.setOnClickListener(v -> {

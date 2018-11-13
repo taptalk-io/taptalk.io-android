@@ -60,7 +60,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.hp_fragment_barcode_scanner, container, false);
+        return inflater.inflate(R.layout.tap_fragment_barcode_scanner, container, false);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
             Intent intent = new Intent(getContext(), TAPScanResultActivity.class);
             intent.putExtra(SCAN_RESULT, textValue);
             startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.hp_fade_in, R.anim.hp_stay);
+            getActivity().overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
             getActivity().finish();
         };
 

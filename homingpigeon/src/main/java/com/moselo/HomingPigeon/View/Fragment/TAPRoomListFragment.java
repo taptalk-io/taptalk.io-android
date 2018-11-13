@@ -73,7 +73,7 @@ public class TAPRoomListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         activity = getActivity();
-        return inflater.inflate(R.layout.hp_fragment_room_list, container, false);
+        return inflater.inflate(R.layout.tap_fragment_room_list, container, false);
     }
 
     @Override

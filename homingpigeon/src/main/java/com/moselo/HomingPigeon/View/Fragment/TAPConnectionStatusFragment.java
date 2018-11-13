@@ -36,7 +36,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         activity = getActivity();
-        return inflater.inflate(R.layout.hp_fragment_connection_status, container, false);
+        return inflater.inflate(R.layout.tap_fragment_connection_status, container, false);
     }
 
     @Override
@@ -101,9 +101,9 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
 
     private void setStatusConnected() {
         activity.runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connected);
+            llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
             tvConnectionStatus.setText(getString(R.string.connected));
-            ivConnectionStatus.setImageResource(R.drawable.hp_ic_connected_white);
+            ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
             ivConnectionStatus.setVisibility(View.VISIBLE);
             pbConnecting.setVisibility(View.GONE);
             llConnectionStatus.setVisibility(View.VISIBLE);
@@ -116,7 +116,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
         if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
 
         activity.runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_connecting);
+            llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
             tvConnectionStatus.setText(R.string.connecting);
             ivConnectionStatus.setVisibility(View.GONE);
             pbConnecting.setVisibility(View.VISIBLE);
@@ -128,7 +128,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
         if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
 
         activity.runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.hp_bg_status_offline);
+            llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_offline);
             tvConnectionStatus.setText(R.string.waiting_for_network);
             ivConnectionStatus.setVisibility(View.GONE);
             pbConnecting.setVisibility(View.VISIBLE);

@@ -68,17 +68,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
     public TAPBaseViewHolder<TAPMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
-                return new TextVH(parent, R.layout.hp_cell_chat_text_right, viewType);
+                return new TextVH(parent, R.layout.tap_cell_chat_text_right, viewType);
             case TYPE_BUBBLE_TEXT_LEFT:
-                return new TextVH(parent, R.layout.hp_cell_chat_text_left, viewType);
+                return new TextVH(parent, R.layout.tap_cell_chat_text_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
-                return new ProductVH(parent, R.layout.hp_cell_chat_product_list);
+                return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
             case TYPE_BUBBLE_IMAGE_RIGHT:
-                return new ImageVH(parent, R.layout.hp_cell_chat_image_right, viewType);
+                return new ImageVH(parent, R.layout.tap_cell_chat_image_right, viewType);
             case TYPE_BUBBLE_IMAGE_LEFT:
-                return new ImageVH(parent, R.layout.hp_cell_chat_image_left, viewType);
+                return new ImageVH(parent, R.layout.tap_cell_chat_image_left, viewType);
             default:
-                return new LogVH(parent, R.layout.hp_cell_chat_log);
+                return new LogVH(parent, R.layout.tap_cell_chat_log);
         }
     }
 
@@ -219,7 +219,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
 
             if (!item.getBody().isEmpty()) {
                 rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
-                int placeholder = isMessageFromMySelf(item) ? R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.hp_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
+                int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
                 GlideApp.with(itemView.getContext()).load(item.getBody()).placeholder(placeholder).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -329,7 +329,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             }
             // Message has been read
             if (null != item.getIsRead() && item.getIsRead()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
                 flBubble.setTranslationX(0);
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 ivSending.setAlpha(0f);
@@ -343,7 +343,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             }
             // Message is delivered
             else if (null != item.getDelivered() && item.getDelivered()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
                 flBubble.setTranslationX(0);
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvMessageStatus.setVisibility(View.GONE);
@@ -359,7 +359,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             // Message failed to send
             else if (null != item.getFailedSend() && item.getFailedSend()) {
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_purple);
 
                 flBubble.setTranslationX(0);
                 ivMessageStatus.setVisibility(View.VISIBLE);
@@ -371,7 +371,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             }
             // Message sent
             else if (null != item.getSending() && !item.getSending()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
                 tvMessageStatus.setVisibility(View.GONE);
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
@@ -423,7 +423,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     ivReply.setVisibility(View.VISIBLE);
                 }
                 if (null == bubbleOverlayRight) {
-                    bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.hp_bg_transparent_black_8dp_1dp_8dp_8dp);
+                    bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.tap_bg_transparent_black_8dp_1dp_8dp_8dp);
                 }
                 flBubble.setForeground(bubbleOverlayRight);
             } else {
@@ -435,7 +435,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     ivReply.setVisibility(View.VISIBLE);
                 }
                 if (null == bubbleOverlayRight) {
-                    bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.hp_bg_transparent_black_1dp_8dp_8dp_8dp);
+                    bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.tap_bg_transparent_black_1dp_8dp_8dp_8dp);
                 }
                 flBubble.setForeground(bubbleOverlayLeft);
             }
@@ -448,18 +448,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     // Message failed to send
                     ivReply.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
-                    ivMessageStatus.setImageResource(R.drawable.hp_ic_retry_circle_purple);
+                    ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_purple);
                     tvMessageStatus.setVisibility(View.VISIBLE);
                 } else if (null != item.getSending() && !item.getSending()) {
                     if (null != item.getIsRead() && item.getIsRead()) {
                         // Message has been read
-                        ivMessageStatus.setImageResource(R.drawable.hp_ic_message_read_green);
+                        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
                     } else if (null != item.getDelivered() && item.getDelivered()) {
                         // Message is delivered
-                        ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+                        ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
                     } else if (null != item.getSending() && !item.getSending()) {
                         // Message sent
-                        ivMessageStatus.setImageResource(R.drawable.hp_ic_message_sent_grey);
+                        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
                     }
                     if (animate) {
                         // Animate shrink

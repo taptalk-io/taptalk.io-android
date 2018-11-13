@@ -33,7 +33,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
     @NonNull
     @Override
     public TAPBaseViewHolder<TAPAttachmentModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new AttachmentVH(parent, R.layout.hp_cell_attachment_menu);
+        return new AttachmentVH(parent, R.layout.tap_cell_attachment_menu);
     }
 
     @Override

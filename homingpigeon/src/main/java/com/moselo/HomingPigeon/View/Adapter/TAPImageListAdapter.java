@@ -25,7 +25,7 @@ public class TAPImageListAdapter extends TAPBaseAdapter<TAPImageURL, TAPBaseView
     @NonNull
     @Override
     public TAPBaseViewHolder<TAPImageURL> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ThumbnailGridVH(parent, R.layout.cell_thumbnail_grid);
+        return new ThumbnailGridVH(parent, R.layout.tap_cell_thumbnail_grid);
     }
 
     class ThumbnailGridVH extends TAPBaseViewHolder<TAPImageURL> {

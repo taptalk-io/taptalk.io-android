@@ -61,9 +61,9 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
     public TAPBaseViewHolder<TAPUserModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case SELECTED_MEMBER:
-                return new SelectedGroupMemberHolder(parent, R.layout.hp_cell_group_member);
+                return new SelectedGroupMemberHolder(parent, R.layout.tap_cell_group_member);
             default:
-                return new ContactListHolder(parent, R.layout.hp_cell_user_contact);
+                return new ContactListHolder(parent, R.layout.tap_cell_user_contact);
         }
     }
 
@@ -118,10 +118,10 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             // Show/hide selection
             if (viewType == SELECT && selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
-                ivSelection.setImageResource(R.drawable.hp_ic_circle_active);
+                ivSelection.setImageResource(R.drawable.tap_ic_circle_active);
             } else if (viewType == SELECT && !selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
-                ivSelection.setImageResource(R.drawable.hp_ic_circle_inactive);
+                ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive);
             } else {
                 ivSelection.setVisibility(View.GONE);
             }
@@ -194,10 +194,10 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 ivAvatarIcon.setVisibility(View.GONE);
             } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                ivAvatarIcon.setImageResource(R.drawable.hp_ic_verified);
+                ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
             } else {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                ivAvatarIcon.setImageResource(R.drawable.hp_ic_close_red_circle);
+                ivAvatarIcon.setImageResource(R.drawable.tap_ic_close_red_circle);
             }
 
             itemView.setOnClickListener(v -> deselectContact(item));

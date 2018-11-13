@@ -33,7 +33,7 @@ public class TapTalkDialog extends Dialog {
         } catch (Exception e) {
         }
 
-        setContentView(R.layout.hp_dialog);
+        setContentView(R.layout.tap_dialog);
         title = findViewById(R.id.tv_dialog_title);
         message = findViewById(R.id.tv_dialog_message);
         primary = findViewById(R.id.tv_primary_btn);

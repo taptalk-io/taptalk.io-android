@@ -43,7 +43,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
     @NonNull
     @Override
     public TAPBaseViewHolder<TAPRoomListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new RoomListVH(parent, R.layout.hp_cell_user_room);
+        return new RoomListVH(parent, R.layout.tap_cell_user_room);
     }
 
     @Override
@@ -89,13 +89,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Change avatar icon and background
             if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
                 // Item is selected
-                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_select));
+                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_select));
                 clContainer.setBackgroundColor(resource.getColor(R.color.transparent_black_18));
                 vSeparator.setVisibility(View.GONE);
             } else {
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.hp_ic_verified));
+                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
                 clContainer.setBackgroundColor(resource.getColor(R.color.transparent_white));
                 vSeparator.setVisibility(View.VISIBLE);
             }
@@ -109,32 +109,32 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Check if room is muted
             if (item.getLastMessage().getRoom().isMuted()) {
                 ivMute.setVisibility(View.VISIBLE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_9b9b9b_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_10dp));
             }
 
             // Change Status Message Icon
             // Message is read
             if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_read_green);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
             }
             // Message is delivered
             else if (null != item.getLastMessage().getDelivered() && item.getLastMessage().getDelivered()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_delivered_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
             }
             // Message failed to send
             else if (null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_failed_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
             }
             // Message sent
             else if (null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_sent_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
             }
             // Message is sending
             else if (null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
-                ivMessageStatus.setImageResource(R.drawable.hp_ic_sending_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_sending_grey);
             }
 
             // Show unread count

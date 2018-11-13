@@ -128,7 +128,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_chat);
+        setContentView(R.layout.tap_activity_chat);
 
         initViewModel();
         initView();
@@ -506,7 +506,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showNormalKeyboard() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
+        ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
         etChat.requestFocus();
     }
 
@@ -515,13 +515,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat.clearFocus();
         new Handler().postDelayed(() -> {
             rvCustomKeyboard.setVisibility(View.VISIBLE);
-            ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_keyboard);
+            ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_keyboard);
         }, 150L);
     }
 
     private void hideKeyboards() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
+        ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
     }
 
     private void openAttachMenu() {
@@ -772,7 +772,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onUserOnline() {
-            vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_vibrantgreen));
+            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
             tvRoomStatus.setText(getString(R.string.active_now));
             vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         }
@@ -846,13 +846,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (s.length() > 0) {
                 ivButtonChatMenu.setVisibility(View.GONE);
                 if (s.toString().trim().length() > 0) {
-                    ivButtonSend.setImageResource(R.drawable.hp_ic_send_active);
+                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
                 } else {
-                    ivButtonSend.setImageResource(R.drawable.hp_ic_send_inactive);
+                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
                 }
             } else {
                 ivButtonChatMenu.setVisibility(View.VISIBLE);
-                ivButtonSend.setImageResource(R.drawable.hp_ic_send_inactive);
+                ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
             }
         }
 
@@ -867,7 +867,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus) {
                 rvCustomKeyboard.setVisibility(View.GONE);
-                ivButtonChatMenu.setImageResource(R.drawable.hp_ic_chatmenu_hamburger);
+                ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
             }
         }
@@ -1236,7 +1236,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void run() {
             runOnUiThread(() -> {
-                vStatusBadge.setBackground(getDrawable(R.drawable.hp_bg_circle_butterscotch));
+                vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
                 tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, vm.getLastActivity()));
             });
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);

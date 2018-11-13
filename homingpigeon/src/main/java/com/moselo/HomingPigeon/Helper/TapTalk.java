@@ -50,7 +50,7 @@ public class TapTalk {
     public static boolean isForeground = true;
     private Thread.UncaughtExceptionHandler defaultUEH;
     private TapTalkTokenInterface hpTokenInterface;
-    private static int clientAppIcon = R.drawable.hp_ic_launcher_background;
+    private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
     private static String clientAppName = "";
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {

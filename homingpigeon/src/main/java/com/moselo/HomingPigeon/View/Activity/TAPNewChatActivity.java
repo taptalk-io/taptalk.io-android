@@ -46,7 +46,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_new_chat);
+        setContentView(R.layout.tap_activity_new_chat);
 
         initViewModel();
         initView();

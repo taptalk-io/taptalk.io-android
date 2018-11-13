@@ -56,7 +56,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_group_subject);
+        setContentView(R.layout.tap_activity_group_subject);
 
         initViewModel();
         initView();
@@ -132,7 +132,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
         tvMemberCount.setText(String.format(getString(R.string.group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
-        btnCreateGroup.setBackgroundResource(R.drawable.hp_bg_d9d9d9_rounded_6dp);
+        btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp);
         loadGroupName();
         loadGroupImage();
 
@@ -151,7 +151,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         GlideApp.with(this).load(vm.getGroupData().getRoomImage().getThumbnail()).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                civGroupImage.setImageResource(R.drawable.hp_bg_circle_d9d9d9);
+                civGroupImage.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
                 Toast.makeText(TAPGroupSubjectActivity.this, R.string.failed_to_load_image, Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -188,10 +188,10 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
-                btnCreateGroup.setBackgroundResource(R.drawable.hp_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp);
+                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp);
                 vm.getGroupData().setRoomName(s.toString());
             } else {
-                btnCreateGroup.setBackgroundResource(R.drawable.hp_bg_d9d9d9_rounded_6dp);
+                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp);
                 vm.getGroupData().setRoomName("");
             }
         }

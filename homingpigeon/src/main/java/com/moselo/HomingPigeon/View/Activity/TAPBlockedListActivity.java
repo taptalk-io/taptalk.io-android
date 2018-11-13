@@ -24,7 +24,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_blocked_list);
+        setContentView(R.layout.tap_activity_blocked_list);
 
         initViewModel();
         initView();

@@ -57,7 +57,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_create_new_group);
+        setContentView(R.layout.tap_activity_create_new_group);
 
         initViewModel();
         initListener();
@@ -193,14 +193,14 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             etSearch.setVisibility(View.GONE);
             etSearch.setText("");
             etSearch.clearFocus();
-            ivButtonAction.setImageResource(R.drawable.hp_ic_search_grey);
+            ivButtonAction.setImageResource(R.drawable.tap_ic_search_grey);
             TAPUtils.getInstance().dismissKeyboard(this);
         } else {
             // Show Search Bar
             vm.setSelecting(true);
             tvTitle.setVisibility(View.GONE);
             etSearch.setVisibility(View.VISIBLE);
-            ivButtonAction.setImageResource(R.drawable.hp_ic_close_grey);
+            ivButtonAction.setImageResource(R.drawable.tap_ic_close_grey);
             TAPUtils.getInstance().showKeyboard(this, etSearch);
         }
     }

@@ -37,7 +37,7 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
     @NonNull
     @Override
     public ContactListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ContactListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.hp_cell_contact_list_initial, parent, false));
+        return new ContactListHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.tap_cell_contact_list_initial, parent, false));
     }
 
     @Override

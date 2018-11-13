@@ -49,12 +49,12 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createAttachMenu() {
         int[] imageResIds = {
-                R.drawable.hp_ic_documents_green_blue,
-                R.drawable.hp_ic_camera_green_blue,
-                R.drawable.hp_ic_gallery_green_blue,
-                R.drawable.hp_ic_audio_green_blue,
-                R.drawable.hp_ic_location_green_blue,
-                R.drawable.hp_ic_contact_green_blue
+                R.drawable.tap_ic_documents_green_blue,
+                R.drawable.tap_ic_camera_green_blue,
+                R.drawable.tap_ic_gallery_green_blue,
+                R.drawable.tap_ic_audio_green_blue,
+                R.drawable.tap_ic_location_green_blue,
+                R.drawable.tap_ic_contact_green_blue
         };
 
         int[] titleResIds = {

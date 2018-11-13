@@ -54,7 +54,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_new_contact);
+        setContentView(R.layout.tap_activity_new_contact);
 
         initViewModel();
         initView();
@@ -169,7 +169,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
         }
         // TODO: 25 October 2018 TESTING
-        civAvatar.setImageResource(R.drawable.hp_bg_circle_vibrantgreen);
+        civAvatar.setImageResource(R.drawable.tap_bg_circle_vibrantgreen);
 
         tvUserName.setText(vm.getSearchResult().getName());
 
@@ -203,8 +203,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
         }
         // TODO: 25 October 2018 TESTING
-        civAvatar.setImageResource(R.drawable.hp_bg_circle_vibrantgreen);
-        ivExpertCover.setImageResource(R.drawable.hp_bg_amethyst_mediumpurple_270_rounded_10dp);
+        civAvatar.setImageResource(R.drawable.tap_bg_circle_vibrantgreen);
+        ivExpertCover.setImageResource(R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_10dp);
 
         tvUserName.setText(vm.getSearchResult().getName());
 

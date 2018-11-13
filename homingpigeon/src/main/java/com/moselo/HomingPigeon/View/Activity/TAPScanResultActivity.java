@@ -62,7 +62,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_scan_result_activity);
+        setContentView(R.layout.tap_scan_result_activity);
         mViewModel = ViewModelProviders.of(this).get(TAPScanResultViewModel.class);
         initView();
     }
@@ -273,7 +273,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                             llTextUsername.setVisibility(View.GONE);
                             tvAlreadyContact.setVisibility(View.VISIBLE);
                             llButton.setVisibility(View.VISIBLE);
-                            ivButtonIcon.setImageResource(R.drawable.hp_ic_chat_white);
+                            ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
                             tvButtonTitle.setText("Chat Now");
                             llButton.animate().alpha(1f).start();
                             civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(TAPUtils.getInstance().dpToPx(-54)).withEndAction(
@@ -302,7 +302,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                         llTextUsername.setVisibility(View.GONE);
                         llAddSuccess.setVisibility(View.VISIBLE);
                         llButton.setVisibility(View.VISIBLE);
-                        ivButtonIcon.setImageResource(R.drawable.hp_ic_chat_white);
+                        ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
                         tvButtonTitle.setText("Chat Now");
                         llButton.animate().alpha(1f).start();
                         civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(TAPUtils.getInstance().dpToPx(-54)).withEndAction(

@@ -75,7 +75,7 @@ public class TAPSearchChatFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = getActivity();
-        return inflater.inflate(R.layout.hp_fragment_search_chat, container, false);
+        return inflater.inflate(R.layout.tap_fragment_search_chat, container, false);
     }
 
     @Override

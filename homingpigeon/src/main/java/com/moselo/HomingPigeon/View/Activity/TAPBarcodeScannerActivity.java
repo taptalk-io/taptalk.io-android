@@ -25,7 +25,7 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_barcode_scanner);
+        setContentView(R.layout.tap_activity_barcode_scanner);
 
         initView();
         showScanner();

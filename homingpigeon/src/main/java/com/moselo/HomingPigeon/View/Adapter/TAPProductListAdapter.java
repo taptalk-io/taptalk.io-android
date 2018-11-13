@@ -40,7 +40,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
     @NonNull
     @Override
     public TAPBaseViewHolder<TAPProductModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ProductVH(viewGroup, R.layout.hp_cell_chat_product_item);
+        return new ProductVH(viewGroup, R.layout.tap_cell_chat_product_item);
     }
 
     @Override
@@ -81,13 +81,13 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonOrder.setVisibility(View.GONE);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_8dp_1dp_8dp_8dp_stroke_ededed_1dp));
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_ededed_1dp));
             } else {
                 // Other seller's products
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonOrder.setVisibility(View.VISIBLE);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.hp_bg_rounded_1dp_8dp_8dp_8dp_stroke_ededed_1dp));
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_ededed_1dp));
             }
 
             GlideApp.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);

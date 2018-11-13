@@ -11,7 +11,7 @@
 
     <style name="HomingPigeonToolbarTitle">
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/hp_font_neueeinstellungbold</item>
+        <item name="android:fontFamily">@font/tap_font_neueeinstellungbold</item>
         <item name="android:gravity">center</item>
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:maxLines">1</item>
@@ -21,7 +21,7 @@
 
     <style name="HomingPigeonRoomName">
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/hp_font_neueeinstellungbold</item>
+        <item name="android:fontFamily">@font/tap_font_neueeinstellungbold</item>
         <item name="android:gravity">center</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:maxLines">1</item>
@@ -30,11 +30,11 @@
     </style>
 
     <style name="HomingPigeonButton">
-        <item name="android:background">@drawable/hp_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp</item>
+        <item name="android:background">@drawable/tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/white</item>
@@ -42,7 +42,7 @@
     </style>
 
     <style name="HomingPigeonButtonText">
-        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">17sp</item>
@@ -50,7 +50,7 @@
 
     <style name="HomingPigeonSearchBar">
         <item name="android:background">@color/transparent_white</item>
-        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
         <item name="android:imeOptions">actionSearch</item>
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
@@ -60,7 +60,7 @@
     </style>
 
     <style name="HomingPigeonSectionLabel">
-        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
         <item name="android:letterSpacing">0.09</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/mediumPurple</item>
@@ -69,7 +69,7 @@
 
     <style name="HomingPigeonContactName">
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/hp_font_neueeinstellungbold</item>
+        <item name="android:fontFamily">@font/tap_font_neueeinstellungbold</item>
         <item name="android:gravity">start</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/black_44</item>
@@ -78,54 +78,54 @@
 
     <style name="HomingPigeonRoomMessage">
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
         <item name="android:gravity">start</item>
         <item name="android:textColor">@color/grey_9b</item>
         <item name="android:textSize">13sp</item>
     </style>
 
     <style name="HomingPigeonMessageStatus">
-        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/grey_9b</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="HomingPigeonMenuLabel">
-        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:textColor">@color/black_44</item>
         <item name="android:textSize">15sp</item>
     </style>
 
     <style name="HomingPigeonMessageBody">
-        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textSize">15sp</item>
     </style>
 
     <style name="HomingPigeonMessageUserName">
-        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textSize">13sp</item>
     </style>
 
     <style name="HomingPigeonMessageLog">
-        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/grey_9b</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="HomingPigeonReplySenderName">
-        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/black_44</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="HomingPigeonReplyBody">
-        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/black_44</item>
         <item name="android:textSize">12sp</item>
@@ -133,8 +133,8 @@
     </style>
 
     <style name="HomingPigeonUnreadBadge">
-        <item name="android:background">@drawable/hp_bg_amethyst_mediumpurple_270_rounded_10dp</item>
-        <item name="android:fontFamily">@font/hp_font_latobold</item>
+        <item name="android:background">@drawable/tap_bg_amethyst_mediumpurple_270_rounded_10dp</item>
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
         <item name="android:paddingStart">7dp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingEnd">7dp</item>
@@ -145,7 +145,7 @@
     </style>
 
     <style name="HpProductDetailsLabel">
-        <item name="android:fontFamily">@font/hp_font_neueeinstellungbold</item>
+        <item name="android:fontFamily">@font/tap_font_neueeinstellungbold</item>
         <item name="android:textColor">@color/black_44</item>
         <item name="android:textSize">12sp</item>
         <item name="android:letterSpacing">-0.02</item>
@@ -153,14 +153,14 @@
 
     <style name="HpProductDetail">
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/hp_font_neueeinstellungsemibold</item>
+        <item name="android:fontFamily">@font/tap_font_neueeinstellungsemibold</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/purply</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="HpProductDescription">
-        <item name="android:fontFamily">@font/hp_font_latoregular</item>
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
         <item name="android:ellipsize">end</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/black_44</item>
@@ -170,9 +170,9 @@
 
     <style name="SwipeBackLayout">
         <item name="edge_size">50dip</item>
-        <!--<item name="shadow_left">@drawable/shadow_left</item>-->
-        <!--<item name="shadow_right">@drawable/shadow_right</item>-->
-        <!--<item name="shadow_bottom">@drawable/shadow_bottom</item>-->
+        <!--<item name="tap_shadow_left">@drawable/tap_shadow_left</item>-->
+        <!--<item name="tap_shadow_right">@drawable/tap_shadow_right</item>-->
+        <!--<item name="tap_shadow_bottom">@drawable/tap_shadow_bottom</item>-->
     </style>
 
 </resources>

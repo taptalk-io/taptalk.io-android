@@ -43,7 +43,7 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.hp_bottom_sheet_recycler, container, false);
+        return inflater.inflate(R.layout.tap_bottom_sheet_recycler, container, false);
     }
 
     @Override

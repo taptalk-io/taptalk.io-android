@@ -46,7 +46,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.hp_activity_profile);
+        setContentView(R.layout.tap_activity_profile);
 
         initViewModel();
         initView();
@@ -89,8 +89,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
         // TODO: 24 October 2018 CHECK IF ROOM TYPE IS GROUP
         if (vm.getRoom().getRoomType() != 1) {
-            ivBlockOrView.setImageResource(R.drawable.hp_ic_members_grey);
-            ivDelete.setImageResource(R.drawable.hp_ic_exit_red);
+            ivBlockOrView.setImageResource(R.drawable.tap_ic_members_grey);
+            ivDelete.setImageResource(R.drawable.tap_ic_exit_red);
             tvBlockOrView.setText(getString(R.string.view_members));
             tvDelete.setText(getString(R.string.exit_group));
         }
