@@ -29,7 +29,7 @@ import com.moselo.HomingPigeon.Helper.TAPRoundedCornerImageView;
 import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Listener.HpChatListener;
+import com.moselo.HomingPigeon.Listener.TAPChatListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -50,7 +50,7 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_
 public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewHolder<HpMessageModel>> {
 
     private static final String TAG = HpMessageAdapter.class.getSimpleName();
-    private HpChatListener listener;
+    private TAPChatListener listener;
     private HpMessageModel expandedBubble;
     private HpUserModel myUserModel;
 
@@ -58,7 +58,7 @@ public class HpMessageAdapter extends HpBaseAdapter<HpMessageModel, TAPBaseViewH
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
     private long defaultAnimationTime = 200L;
 
-    public HpMessageAdapter(HpChatListener listener) {
+    public HpMessageAdapter(TAPChatListener listener) {
         myUserModel = HpDataManager.getInstance().getActiveUser();
         this.listener = listener;
     }

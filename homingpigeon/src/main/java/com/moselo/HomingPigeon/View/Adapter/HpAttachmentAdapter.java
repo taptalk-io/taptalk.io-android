@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
-import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
+import com.moselo.HomingPigeon.Listener.TAPAttachmentListener;
 import com.moselo.HomingPigeon.Model.HpAttachmentModel;
 import com.moselo.HomingPigeon.R;
 
@@ -21,10 +21,10 @@ import static com.moselo.HomingPigeon.Model.HpAttachmentModel.createAttachMenu;
 
 public class HpAttachmentAdapter extends HpBaseAdapter<HpAttachmentModel, TAPBaseViewHolder<HpAttachmentModel>> {
 
-    private HpAttachmentListener attachmentListener;
+    private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
 
-    public HpAttachmentAdapter(HpAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public HpAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
         setItems(createAttachMenu(), false);

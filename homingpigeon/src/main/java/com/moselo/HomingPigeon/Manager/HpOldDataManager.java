@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class HpOldDataManager {
                 boolean isOverOneWeek = TAPTimeFormatter.getInstance().checkOverOneWeekOrNot(HpDataManager.getInstance().getLastDeleteTimestamp());
 
                 if (isOverOneWeek)
-                    HpDataManager.getInstance().getRoomList(false, new HpDatabaseListener<TAPMessageEntity>() {
+                    HpDataManager.getInstance().getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
                         @Override
                         public void onSelectFinished(List<TAPMessageEntity> entities) {
                             loopingRoomEntitiesArrayToGetAllMessage(entities);
@@ -40,7 +40,7 @@ public class HpOldDataManager {
     private void loopingRoomEntitiesArrayToGetAllMessage(List<TAPMessageEntity> entities) {
         new Thread(() -> {
             for (TAPMessageEntity entity : entities) {
-                HpDataManager.getInstance().getMessagesFromDatabaseAsc(entity.getRoomID(), new HpDatabaseListener<TAPMessageEntity>() {
+                HpDataManager.getInstance().getMessagesFromDatabaseAsc(entity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
                     @Override
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                         int entitiesSize = entities.size();
@@ -62,7 +62,7 @@ public class HpOldDataManager {
             }
 
             if (!deleteMessageTempList.isEmpty()) {
-                HpDataManager.getInstance().deleteMessage(deleteMessageTempList, new HpDatabaseListener() {
+                HpDataManager.getInstance().deleteMessage(deleteMessageTempList, new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
                         Log.e(TAG, "loopToCheckMessageAndExecuteDeleteQuery: deleted");

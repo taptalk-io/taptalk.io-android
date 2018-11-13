@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class HpRoomModel implements Parcelable {
     }
 
     public static HpRoomModel BuilderDummy(){
-        return new HpRoomModel(HpChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), "4"), "Kevin Reynaldo", 1, HpImageURL.BuilderDummy(), "#2eccad");
+        return new HpRoomModel(TAPChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), "4"), "Kevin Reynaldo", 1, HpImageURL.BuilderDummy(), "#2eccad");
     }
 
     public String getRoomID() {

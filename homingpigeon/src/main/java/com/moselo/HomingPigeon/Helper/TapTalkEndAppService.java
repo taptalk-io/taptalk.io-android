@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 
 public class TapTalkEndAppService extends Service {
@@ -19,8 +19,8 @@ public class TapTalkEndAppService extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
         HpNotificationManager.getInstance().saveNotificationMessageMapToPreference();
-        HpChatManager.getInstance().saveIncomingMessageAndDisconnect();
-        HpChatManager.getInstance().deleteActiveRoom();
+        TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+        TAPChatManager.getInstance().deleteActiveRoom();
         stopSelf();
     }
 }

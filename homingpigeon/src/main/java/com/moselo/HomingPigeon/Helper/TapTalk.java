@@ -20,9 +20,9 @@ import com.moselo.HomingPigeon.API.Api.TAPApiManager;
 import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import com.moselo.HomingPigeon.BuildConfig;
-import com.moselo.HomingPigeon.Interface.HomingPigeonTokenInterface;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
-import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Interface.TapTalkTokenInterface;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
+import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
@@ -49,23 +49,23 @@ public class TapTalk {
     public static TapTalk tapTalk;
     public static boolean isForeground = true;
     private Thread.UncaughtExceptionHandler defaultUEH;
-    private HomingPigeonTokenInterface hpTokenInterface;
+    private TapTalkTokenInterface hpTokenInterface;
     private static int clientAppIcon = R.drawable.hp_ic_launcher_background;
     private static String clientAppName = "";
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread thread, Throwable throwable) {
-            HpChatManager.getInstance().saveIncomingMessageAndDisconnect();
+            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
             defaultUEH.uncaughtException(thread, throwable);
         }
     };
 
-    public static TapTalk init(Context context, HomingPigeonTokenInterface hpTokenInterface) {
+    public static TapTalk init(Context context, TapTalkTokenInterface hpTokenInterface) {
         return tapTalk == null ? (tapTalk = new TapTalk(context, hpTokenInterface)) : tapTalk;
     }
 
-    public TapTalk(final Context appContext, HomingPigeonTokenInterface hpTokenInterface) {
+    public TapTalk(final Context appContext, TapTalkTokenInterface hpTokenInterface) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -81,7 +81,7 @@ public class TapTalk {
         clientAppName = appContext.getResources().getString(R.string.app_name);
 
         if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
-            HpConnectionManager.getInstance().connect();
+            TAPConnectionManager.getInstance().connect();
             Log.e("HpOldDataManager", "TapTalk: ");
             HpOldDataManager.getInstance().startAutoCleanProcess();
         }
@@ -102,10 +102,10 @@ public class TapTalk {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-                HpChatManager.getInstance().setFinishChatFlow(false);
+                TAPChatManager.getInstance().setFinishChatFlow(false);
                 appContext.startService(new Intent(TapTalk.appContext, TapTalkEndAppService.class));
                 HpNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
-                HpChatManager.getInstance().triggerSaveNewMessage();
+                TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
                 isForeground = true;
@@ -115,7 +115,7 @@ public class TapTalk {
             public void onAppGotoBackground() {
                 HpRoomListViewModel.setShouldNotLoadFromAPI(false);
                 HpNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
-                HpChatManager.getInstance().updateMessageWhenEnterBackground();
+                TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 isForeground = false;
             }
         });
@@ -144,7 +144,7 @@ public class TapTalk {
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
         TAPApiManager.getInstance().setLogout(true);
-        HpChatManager.getInstance().disconnectAfterRefreshTokenExpired();
+        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
         HpDataManager.getInstance().deleteAllPreference();
         HpDataManager.getInstance().deleteAllFromDatabase();
         Intent intent = new Intent(appContext, HpLoginActivity.class);

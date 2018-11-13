@@ -1,10 +1,8 @@
 package com.moselo.HomingPigeon.Listener;
 
-import com.moselo.HomingPigeon.Interface.AttachmentInterface;
-import com.moselo.HomingPigeon.Interface.HomingPigeonChatInterface;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
+import com.moselo.HomingPigeon.Interface.TapTalkAttachmentInterface;
 
-public abstract class HpAttachmentListener implements AttachmentInterface {
+public abstract class TAPAttachmentListener implements TapTalkAttachmentInterface {
     @Override public void onDocumentSelected() {}
     @Override public void onCameraSelected() {}
     @Override public void onGallerySelected() {}

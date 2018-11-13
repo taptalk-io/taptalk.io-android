@@ -2,7 +2,7 @@ package com.moselo.HomingPigeon.Interface;
 
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 
-public interface HomingPigeonChatInterface {
+public interface TapTalkChatInterface {
 
     void onReceiveMessageInActiveRoom(HpMessageModel message);
     void onUpdateMessageInActiveRoom(HpMessageModel message);

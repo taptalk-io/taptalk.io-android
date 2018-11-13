@@ -1,7 +1,6 @@
 package com.moselo.HomingPigeon.View.Fragment;
 
 import android.app.Activity;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -15,14 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
-import com.moselo.HomingPigeon.Interface.RoomListInterface;
-import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Interface.TapTalkSocketInterface;
+import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.R;
-import com.moselo.HomingPigeon.ViewModel.HpRoomListViewModel;
 
-public class HpConnectionStatusFragment extends Fragment implements HomingPigeonSocketInterface {
+public class HpConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
 
     private String TAG = HpConnectionStatusFragment.class.getSimpleName();
     private Activity activity;
@@ -52,7 +49,7 @@ public class HpConnectionStatusFragment extends Fragment implements HomingPigeon
     @Override
     public void onDestroy() {
         super.onDestroy();
-        HpConnectionManager.getInstance().removeSocketListener(this);
+        TAPConnectionManager.getInstance().removeSocketListener(this);
     }
 
     @Override
@@ -90,15 +87,15 @@ public class HpConnectionStatusFragment extends Fragment implements HomingPigeon
     }
 
     private void initConnectionStatus() {
-        HpConnectionManager.getInstance().addSocketListener(this);
+        TAPConnectionManager.getInstance().addSocketListener(this);
         if (!HpNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
             onSocketDisconnected();
-        else if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.CONNECTED)
+        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED)
             llConnectionStatus.setVisibility(View.GONE);
-        else if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.CONNECTING)
+        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTING)
             onSocketConnecting();
-        else if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.DISCONNECTED ||
-                 HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.NOT_CONNECTED)
+        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED ||
+                 TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED)
             onSocketDisconnected();
     }
 

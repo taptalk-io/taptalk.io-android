@@ -8,7 +8,7 @@ import com.moselo.HomingPigeon.API.TAPDefaultSubscriber;
 import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
@@ -102,7 +102,7 @@ public class HpDataManager {
 
     public void saveActiveUser(HpUserModel user) {
         Hawk.put(K_USER, user);
-        HpChatManager.getInstance().setActiveUser(user);
+        TAPChatManager.getInstance().setActiveUser(user);
     }
 
     /**
@@ -288,147 +288,147 @@ public class HpDataManager {
 
     // initialized Database Managernya yang di panggil di class Homing Pigeon
     public void initDatabaseManager(String databaseType, Application application) {
-        HpDatabaseManager.getInstance().setRepository(databaseType, application);
+        TAPDatabaseManager.getInstance().setRepository(databaseType, application);
     }
 
     // Message
-    public void deleteMessage(List<TAPMessageEntity> messageEntities, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().deleteMessage(messageEntities, listener);
+    public void deleteMessage(List<TAPMessageEntity> messageEntities, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().deleteMessage(messageEntities, listener);
     }
 
     public void insertToDatabase(TAPMessageEntity messageEntity) {
-        HpDatabaseManager.getInstance().insert(messageEntity);
+        TAPDatabaseManager.getInstance().insert(messageEntity);
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
-        HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
+        TAPDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
     }
 
-    public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
+    public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
     }
 
     public void deleteFromDatabase(String messageLocalID) {
-        HpDatabaseManager.getInstance().delete(messageLocalID);
+        TAPDatabaseManager.getInstance().delete(messageLocalID);
     }
 
     public void updateSendingMessageToFailed() {
-        HpDatabaseManager.getInstance().updatePendingStatus();
+        TAPDatabaseManager.getInstance().updatePendingStatus();
     }
 
     public void updateSendingMessageToFailed(String localID) {
-        HpDatabaseManager.getInstance().updatePendingStatus(localID);
+        TAPDatabaseManager.getInstance().updatePendingStatus(localID);
     }
 
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
-        return HpDatabaseManager.getInstance().getMessagesLiveData();
+        return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabaseDesc(String roomID, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
+    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
     }
 
-    public void getMessagesFromDatabaseDesc(String roomID, HpDatabaseListener listener, long lastTimestamp) {
-        HpDatabaseManager.getInstance().getMessagesDesc(roomID, listener, lastTimestamp);
+    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
+        TAPDatabaseManager.getInstance().getMessagesDesc(roomID, listener, lastTimestamp);
     }
 
-    public void getMessagesFromDatabaseAsc(String roomID, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getMessagesAsc(roomID, listener);
+    public void getMessagesFromDatabaseAsc(String roomID, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().getMessagesAsc(roomID, listener);
     }
 
-    public void searchAllMessagesFromDatabase(String keyword, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().searchAllMessages(keyword, listener);
+    public void searchAllMessagesFromDatabase(String keyword, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().searchAllMessages(keyword, listener);
     }
 
-    public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
+    public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
-    public void getRoomList(boolean isCheckUnreadFirst, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), isCheckUnreadFirst, listener);
+    public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), isCheckUnreadFirst, listener);
     }
 
-    public void searchAllRoomsFromDatabase(String keyword, HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().searchAllRooms(getActiveUser().getUserID(), keyword, listener);
+    public void searchAllRoomsFromDatabase(String keyword, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().searchAllRooms(getActiveUser().getUserID(), keyword, listener);
     }
 
-    public void getUnreadCountPerRoom(String roomID, final HpDatabaseListener listener) {
-        HpDatabaseManager.getInstance().getUnreadCountPerRoom(getActiveUser().getUserID(), roomID, listener);
+    public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().getUnreadCountPerRoom(getActiveUser().getUserID(), roomID, listener);
     }
 
     public void deleteAllMessage() {
-        HpDatabaseManager.getInstance().deleteAllMessage();
+        TAPDatabaseManager.getInstance().deleteAllMessage();
     }
 
     // Recent Search
     public void insertToDatabase(TAPRecentSearchEntity recentSearchEntity) {
-        HpDatabaseManager.getInstance().insert(recentSearchEntity);
+        TAPDatabaseManager.getInstance().insert(recentSearchEntity);
     }
 
     public void deleteFromDatabase(TAPRecentSearchEntity recentSearchEntity) {
-        HpDatabaseManager.getInstance().delete(recentSearchEntity);
+        TAPDatabaseManager.getInstance().delete(recentSearchEntity);
     }
 
     public void deleteFromDatabase(List<TAPRecentSearchEntity> recentSearchEntities) {
-        HpDatabaseManager.getInstance().delete(recentSearchEntities);
+        TAPDatabaseManager.getInstance().delete(recentSearchEntities);
     }
 
     public void deleteAllRecentSearch() {
-        HpDatabaseManager.getInstance().deleteAllRecentSearch();
+        TAPDatabaseManager.getInstance().deleteAllRecentSearch();
     }
 
     public LiveData<List<TAPRecentSearchEntity>> getRecentSearchLive() {
-        return HpDatabaseManager.getInstance().getRecentSearchLive();
+        return TAPDatabaseManager.getInstance().getRecentSearchLive();
     }
 
     // My Contact
-    public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
-        HpDatabaseManager.getInstance().getMyContactList(listener);
+    public void getMyContactList(TAPDatabaseListener<HpUserModel> listener) {
+        TAPDatabaseManager.getInstance().getMyContactList(listener);
     }
 
     public LiveData<List<HpUserModel>> getMyContactList() {
-        return HpDatabaseManager.getInstance().getMyContactList();
+        return TAPDatabaseManager.getInstance().getMyContactList();
     }
 
-    public void searchAllMyContacts(String keyword, HpDatabaseListener<HpUserModel> listener) {
-        HpDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
+    public void searchAllMyContacts(String keyword, TAPDatabaseListener<HpUserModel> listener) {
+        TAPDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
     }
 
     public void insertMyContactToDatabase(HpUserModel... userModels) {
-        HpDatabaseManager.getInstance().insertMyContact(userModels);
+        TAPDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
-    public void insertMyContactToDatabase(HpDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
-        HpDatabaseManager.getInstance().insertMyContact(listener, userModels);
+    public void insertMyContactToDatabase(TAPDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+        TAPDatabaseManager.getInstance().insertMyContact(listener, userModels);
     }
 
     public void insertMyContactToDatabase(List<HpUserModel> userModels) {
-        HpDatabaseManager.getInstance().insertMyContact(userModels);
+        TAPDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
-    public void insertAndGetMyContact(List<HpUserModel> userModels, HpDatabaseListener<HpUserModel> listener) {
-        HpDatabaseManager.getInstance().insertAndGetMyContact(userModels, listener);
+    public void insertAndGetMyContact(List<HpUserModel> userModels, TAPDatabaseListener<HpUserModel> listener) {
+        TAPDatabaseManager.getInstance().insertAndGetMyContact(userModels, listener);
     }
 
     public void deleteMyContactFromDatabase(HpUserModel... userModels) {
-        HpDatabaseManager.getInstance().deleteMyContact(userModels);
+        TAPDatabaseManager.getInstance().deleteMyContact(userModels);
     }
 
     public void deleteMyContactFromDatabase(List<HpUserModel> userModels) {
-        HpDatabaseManager.getInstance().deleteMyContact(userModels);
+        TAPDatabaseManager.getInstance().deleteMyContact(userModels);
     }
 
     public void deleteAllContact() {
-        HpDatabaseManager.getInstance().deleteAllContact();
+        TAPDatabaseManager.getInstance().deleteAllContact();
     }
 
     public void updateMyContact(HpUserModel userModels) {
-        HpDatabaseManager.getInstance().updateMyContact(userModels);
+        TAPDatabaseManager.getInstance().updateMyContact(userModels);
     }
 
     // FIXME: 25 October 2018 MAKE FUNCTION RETURN BOOLEAN OR GET FRIEND STATUS FROM API
-    public void checkUserInMyContacts(String userID, HpDatabaseListener<HpUserModel> listener) {
-        HpDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
+    public void checkUserInMyContacts(String userID, TAPDatabaseListener<HpUserModel> listener) {
+        TAPDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
     }
 
     //General

@@ -19,8 +19,8 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TapTalkDialog;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -114,7 +114,7 @@ public class HpScanResultActivity extends HpBaseActivity {
         animateAddSuccess(addedContactUserModel);
         llButton.setOnClickListener(v -> {
             TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
-                HpChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
+                TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
                 addedContactUserModel.getName(),
                 addedContactUserModel.getAvatarURL(), 1, "#2eccad");
             finish();
@@ -148,7 +148,7 @@ public class HpScanResultActivity extends HpBaseActivity {
     }
 
     private void checkIsInContactAndSetUpAnimation() {
-        HpDataManager.getInstance().checkUserInMyContacts(contactModel.getUserID(), new HpDatabaseListener<HpUserModel>() {
+        HpDataManager.getInstance().checkUserInMyContacts(contactModel.getUserID(), new TAPDatabaseListener<HpUserModel>() {
             @Override
             public void onContactCheckFinished(int isContact) {
                 if (isContact != 0) animateAlreadyContact();
@@ -180,7 +180,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             animateAddSuccess(contactModel);
             llButton.setOnClickListener(v -> {
                 TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
-                    HpChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
+                    TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(),
                     1, "#2eccad");
                 finish();
@@ -261,7 +261,7 @@ public class HpScanResultActivity extends HpBaseActivity {
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             llButton.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(HpScanResultActivity.this,
-                    HpChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
+                    TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad"));
             tvAlreadyContact.setText(Html.fromHtml("<b>"+contactModel.getName()+"</b> "
                     +getResources().getString(R.string.is_already_in_your_contacts)));

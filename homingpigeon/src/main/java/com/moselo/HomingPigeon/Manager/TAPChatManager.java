@@ -11,8 +11,8 @@ import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Helper.TAPFileUtils;
 import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
-import com.moselo.HomingPigeon.Listener.HpChatListener;
+import com.moselo.HomingPigeon.Interface.TapTalkSocketInterface;
+import com.moselo.HomingPigeon.Listener.TAPChatListener;
 import com.moselo.HomingPigeon.Model.HpEmitModel;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
@@ -46,13 +46,13 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.ConnectionEvent.k
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
-public class HpChatManager {
+public class TAPChatManager {
 
-    private final String TAG = HpChatManager.class.getSimpleName();
-    private static HpChatManager instance;
+    private final String TAG = TAPChatManager.class.getSimpleName();
+    private static TAPChatManager instance;
     private Map<String, HpMessageModel> pendingMessages, waitingResponses, incomingMessages;
     private Map<String, String> messageDrafts;
-    private List<HpChatListener> chatListeners;
+    private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
     private HpRoomModel activeRoom;
@@ -69,7 +69,7 @@ public class HpChatManager {
     private final int maxImageSize = 2000;
     private final Integer CHARACTER_LIMIT = 1000;
 
-    private HomingPigeonSocketInterface socketListener = new HomingPigeonSocketInterface() {
+    private TapTalkSocketInterface socketListener = new TapTalkSocketInterface() {
         @Override
         public void onSocketConnected() {
 
@@ -80,8 +80,8 @@ public class HpChatManager {
         @Override
         public void onSocketDisconnected() {
             if (TapTalk.isForeground && HpNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)
-                    && HpConnectionManager.ConnectionStatus.DISCONNECTED == HpConnectionManager.getInstance().getConnectionStatus())
-                HpConnectionManager.getInstance().reconnect();
+                    && TAPConnectionManager.ConnectionStatus.DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
+                TAPConnectionManager.getInstance().reconnect();
         }
 
         @Override
@@ -91,7 +91,7 @@ public class HpChatManager {
 
         @Override
         public void onSocketError() {
-            HpConnectionManager.getInstance().reconnect();
+            TAPConnectionManager.getInstance().reconnect();
         }
 
         @Override
@@ -141,13 +141,13 @@ public class HpChatManager {
                     break;
                 case kSocketUserOnline:
                     // TODO: 2 November 2018 GET EMIT DATA
-                    for (HpChatListener listener : chatListeners) {
+                    for (TAPChatListener listener : chatListeners) {
                         listener.onUserOnline();
                     }
                     break;
                 case kSocketUserOffline:
                     // TODO: 2 November 2018 GET EMIT DATA
-                    for (HpChatListener listener : chatListeners) {
+                    for (TAPChatListener listener : chatListeners) {
                         listener.onUserOffline(System.currentTimeMillis());
                     }
                     break;
@@ -155,12 +155,12 @@ public class HpChatManager {
         }
     };
 
-    public static HpChatManager getInstance() {
-        return instance == null ? (instance = new HpChatManager()) : instance;
+    public static TAPChatManager getInstance() {
+        return instance == null ? (instance = new TAPChatManager()) : instance;
     }
 
-    public HpChatManager() {
-        HpConnectionManager.getInstance().addSocketListener(socketListener);
+    public TAPChatManager() {
+        TAPConnectionManager.getInstance().addSocketListener(socketListener);
         setActiveUser(HpDataManager.getInstance().getActiveUser());
         chatListeners = new ArrayList<>();
         saveMessages = new ArrayList<>();
@@ -170,11 +170,11 @@ public class HpChatManager {
         messageDrafts = new HashMap<>();
     }
 
-    public void addChatListener(HpChatListener chatListener) {
+    public void addChatListener(TAPChatListener chatListener) {
         chatListeners.add(chatListener);
     }
 
-    public void removeChatListener(HpChatListener chatListener) {
+    public void removeChatListener(TAPChatListener chatListener) {
         chatListeners.remove(chatListener);
     }
 
@@ -316,7 +316,7 @@ public class HpChatManager {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 HpMessageModel messageModel = buildTextMessage(substr, activeRoom, getActiveUser());
                 // Add entity to list
-                messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
+                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel);
@@ -332,7 +332,7 @@ public class HpChatManager {
 
     public void sendDirectReplyTextMessage(String textMessage, HpRoomModel roomModel) {
         if (!TapTalk.isForeground)
-            HpConnectionManager.getInstance().connect();
+            TAPConnectionManager.getInstance().connect();
 
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
@@ -343,7 +343,7 @@ public class HpChatManager {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 HpMessageModel messageModel = buildTextMessage(substr, roomModel, HpDataManager.getInstance().getActiveUser());
                 // Add entity to list
-                messageEntities.add(HpChatManager.getInstance().convertToEntity(messageModel));
+                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
                 // save LocalID to list of Reply Local IDs
                 // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
@@ -434,7 +434,7 @@ public class HpChatManager {
 
     private void triggerSendMessageListener(HpMessageModel messageModel) {
         if (null != chatListeners && !chatListeners.isEmpty()) {
-            for (HpChatListener chatListener : chatListeners) {
+            for (TAPChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = messageModel.copyMessageModel();
                 // TODO: 8 November 2018 TESTING
                 tempNewMessage.setImageWidth(messageModel.getImageWidth());
@@ -448,7 +448,7 @@ public class HpChatManager {
     private void triggerListenerAndSendMessage(HpMessageModel messageModel) {
         // Call listener
         if (null != chatListeners && !chatListeners.isEmpty()) {
-            for (HpChatListener chatListener : chatListeners) {
+            for (TAPChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = messageModel.copyMessageModel();
                 chatListener.onSendTextMessage(tempNewMessage);
             }
@@ -492,7 +492,7 @@ public class HpChatManager {
      * Send message to server
      */
     private void runSendMessageSequence(HpMessageModel messageModel) {
-        if (HpConnectionManager.getInstance().getConnectionStatus() == HpConnectionManager.ConnectionStatus.CONNECTED) {
+        if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(messageModel.getLocalID(), messageModel);
 
             // Send message if socket is connected
@@ -513,7 +513,7 @@ public class HpChatManager {
     private void sendEmit(String eventName, HpMessageModel messageModel) {
         HpEmitModel<HpMessageModel> hpEmitModel;
         hpEmitModel = new HpEmitModel<>(eventName, messageModel);
-        HpConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(hpEmitModel));
+        TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(hpEmitModel));
     }
 
     /**
@@ -563,7 +563,7 @@ public class HpChatManager {
 
     public void saveIncomingMessageAndDisconnect() {
 
-        HpConnectionManager.getInstance().close();
+        TAPConnectionManager.getInstance().close();
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
             scheduler.shutdown();
@@ -571,7 +571,7 @@ public class HpChatManager {
     }
 
     public void disconnectAfterRefreshTokenExpired() {
-        HpConnectionManager.getInstance().close();
+        TAPConnectionManager.getInstance().close();
         if (null != scheduler && !scheduler.isShutdown())
             scheduler.shutdown();
         isFinishChatFlow = true;
@@ -602,7 +602,7 @@ public class HpChatManager {
 
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() && null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
-            for (HpChatListener chatListener : chatListeners) {
+            for (TAPChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = newMessage.copyMessageModel();
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
@@ -615,7 +615,7 @@ public class HpChatManager {
         // Receive message outside active room (not in room List)
         else if (null != chatListeners && !HpNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
             HpNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
-            for (HpChatListener chatListener : chatListeners) {
+            for (TAPChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = newMessage.copyMessageModel();
 
                 if (kSocketNewMessage.equals(eventName))
@@ -628,7 +628,7 @@ public class HpChatManager {
         }
         // Receive message outside active room (in room List)
         else if (null != chatListeners && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            for (HpChatListener chatListener : chatListeners) {
+            for (TAPChatListener chatListener : chatListeners) {
                 HpMessageModel tempNewMessage = newMessage.copyMessageModel();
 
                 if (kSocketNewMessage.equals(eventName))

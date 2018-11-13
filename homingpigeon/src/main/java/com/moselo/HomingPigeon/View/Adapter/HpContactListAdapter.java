@@ -12,8 +12,8 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Interface.ContactListInterface;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Interface.TapTalkContactListInterface;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 import com.moselo.HomingPigeon.R;
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseViewHolder<HpUserModel>> {
 
-    private ContactListInterface listener;
+    private TapTalkContactListInterface listener;
     private ColorStateList avatarTint;
     private List<HpUserModel> selectedContacts;
     private String myID;
@@ -40,7 +40,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
         this.myID = HpDataManager.getInstance().getActiveUser().getUserID();
     }
 
-    public HpContactListAdapter(int viewType, List<HpUserModel> contactList, @Nullable ContactListInterface listener) {
+    public HpContactListAdapter(int viewType, List<HpUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
@@ -48,7 +48,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
     }
 
     // Constructor for selectable contacts
-    public HpContactListAdapter(List<HpUserModel> contactList, List<HpUserModel> selectedContacts, @Nullable ContactListInterface listener) {
+    public HpContactListAdapter(List<HpUserModel> contactList, List<HpUserModel> selectedContacts, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = SELECT;
         this.selectedContacts = selectedContacts;
@@ -136,7 +136,7 @@ public class HpContactListAdapter extends HpBaseAdapter<HpUserModel, TAPBaseView
                         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
                         TAPUtils.getInstance().startChatActivity(
                                 itemView.getContext(),
-                                HpChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
+                                TAPChatManager.getInstance().arrangeRoomId(myID, item.getUserID()),
                                 item.getName(),
                                 item.getAvatarURL(),
                                 1,

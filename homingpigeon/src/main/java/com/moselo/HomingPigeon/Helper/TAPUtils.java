@@ -20,7 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -222,14 +222,14 @@ public class TAPUtils {
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, HpImageURL roomImage, int roomType, String roomColor) {
-        HpChatManager.getInstance().saveUnsentMessage();
+        TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, HpChatActivity.class);
         intent.putExtra(K_ROOM, HpRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor));
         context.startActivity(intent);
     }
 
     public void startChatActivity(Context context, HpRoomModel roomModel) {
-        HpChatManager.getInstance().saveUnsentMessage();
+        TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, HpChatActivity.class);
         intent.putExtra(K_ROOM, roomModel);
         context.startActivity(intent);

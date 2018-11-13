@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.Interface;
 
-public interface HomingPigeonSocketInterface {
+public interface TapTalkSocketInterface {
 
     void onReceiveNewEmit(String eventName, String emitData);
 

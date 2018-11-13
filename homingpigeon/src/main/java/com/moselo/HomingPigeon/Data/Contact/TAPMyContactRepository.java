@@ -4,7 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 
 import com.moselo.HomingPigeon.Data.TapTalkDatabase;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class TAPMyContactRepository {
         new Thread(() -> myContactDao.insert(userModels)).start();
     }
 
-    public void insert(HpDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+    public void insert(TAPDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
         new Thread(() -> {
             myContactDao.insert(userModels);
             listener.onInsertFinished();
@@ -34,7 +34,7 @@ public class TAPMyContactRepository {
         new Thread(() -> myContactDao.insert(userModels)).start();
     }
 
-    public void insertAndGetContact(List<HpUserModel> userModels, HpDatabaseListener<HpUserModel> listener) {
+    public void insertAndGetContact(List<HpUserModel> userModels, TAPDatabaseListener<HpUserModel> listener) {
         new Thread(() ->{
             myContactDao.insert(userModels);
             List<HpUserModel> myContactList = myContactDao.getAllMyContact();
@@ -58,7 +58,7 @@ public class TAPMyContactRepository {
         new Thread(() -> myContactDao.update(userModel)).start();
     }
 
-    public void getAllMyContactList(HpDatabaseListener<HpUserModel> listener) {
+    public void getAllMyContactList(TAPDatabaseListener<HpUserModel> listener) {
         new Thread(() -> {
             List<HpUserModel> myContactList = myContactDao.getAllMyContact();
             listener.onSelectFinished(myContactList);
@@ -69,7 +69,7 @@ public class TAPMyContactRepository {
         return myContactListLive;
     }
 
-    public void searchAllMyContacts(String keyword, HpDatabaseListener<HpUserModel> listener) {
+    public void searchAllMyContacts(String keyword, TAPDatabaseListener<HpUserModel> listener) {
         new Thread(() -> {
             String queryKeyword = "%" + keyword + '%';
             List<HpUserModel> myContactList = myContactDao.searchAllMyContacts(queryKeyword);
@@ -77,7 +77,7 @@ public class TAPMyContactRepository {
         }).start();
     }
 
-    public void checkUserInMyContacts(String userID, HpDatabaseListener<HpUserModel> listener) {
+    public void checkUserInMyContacts(String userID, TAPDatabaseListener<HpUserModel> listener) {
         new Thread(() -> listener.onContactCheckFinished(myContactDao.checkUserInMyContacts(userID))).start();
     }
 }

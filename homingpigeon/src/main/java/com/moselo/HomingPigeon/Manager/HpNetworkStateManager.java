@@ -8,7 +8,7 @@ import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.util.Log;
 
-import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
+import com.moselo.HomingPigeon.Interface.TapTalkNetworkInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
     private static final String TAG = HpNetworkStateManager.class.getSimpleName();
     private static HpNetworkStateManager instance;
-    private List<HomingPigeonNetworkInterface> listeners;
+    private List<TapTalkNetworkInterface> listeners;
     private NetworkRequest networkRequest;
 
     public static HpNetworkStateManager getInstance() {
@@ -57,11 +57,11 @@ public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE) : null;
     }
 
-    public void addNetworkListener(HomingPigeonNetworkInterface listener) {
+    public void addNetworkListener(TapTalkNetworkInterface listener) {
         listeners.add(listener);
     }
 
-    public void removeNetworkListener(HomingPigeonNetworkInterface listener) {
+    public void removeNetworkListener(TapTalkNetworkInterface listener) {
         listeners.remove(listener);
     }
 
@@ -78,7 +78,7 @@ public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
         super.onAvailable(network);
         Log.e("><<><", "onAvailable: " );
         if (!listeners.isEmpty()) {
-            for (HomingPigeonNetworkInterface listener : listeners) {
+            for (TapTalkNetworkInterface listener : listeners) {
                 listener.onNetworkAvailable();
             }
         }
@@ -88,6 +88,6 @@ public class HpNetworkStateManager extends ConnectivityManager.NetworkCallback {
     public void onLost(Network network) {
         super.onLost(network);
         Log.e(TAG, "onLost: " );
-        HpConnectionManager.getInstance().close();
+        TAPConnectionManager.getInstance().close();
     }
 }

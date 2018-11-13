@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.BuildConfig;
 import com.moselo.HomingPigeon.Helper.TapTalk;
-import com.moselo.HomingPigeon.Interface.HomingPigeonNetworkInterface;
-import com.moselo.HomingPigeon.Interface.HomingPigeonSocketInterface;
+import com.moselo.HomingPigeon.Interface.TapTalkNetworkInterface;
+import com.moselo.HomingPigeon.Interface.TapTalkSocketInterface;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
 
 import org.java_websocket.client.WebSocketClient;
@@ -30,20 +30,20 @@ import static com.moselo.HomingPigeon.Helper.TapTalk.appContext;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.APP_KEY_ID;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.APP_KEY_SECRET;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
-import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.CONNECTING;
-import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.DISCONNECTED;
-import static com.moselo.HomingPigeon.Manager.HpConnectionManager.ConnectionStatus.NOT_CONNECTED;
+import static com.moselo.HomingPigeon.Manager.TAPConnectionManager.ConnectionStatus.CONNECTING;
+import static com.moselo.HomingPigeon.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
+import static com.moselo.HomingPigeon.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
-public class HpConnectionManager {
+public class TAPConnectionManager {
 
-    private String TAG = HpConnectionManager.class.getSimpleName();
-    private static HpConnectionManager instance;
+    private String TAG = TAPConnectionManager.class.getSimpleName();
+    private static TAPConnectionManager instance;
     private WebSocketClient webSocketClient;
     private String webSocketEndpoint = BuildConfig.BASE_WSS;
     //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
-    private List<HomingPigeonSocketInterface> socketListeners;
+    private List<TapTalkSocketInterface> socketListeners;
 
     private int reconnectAttempt;
     private final long RECONNECT_DELAY = 500;
@@ -52,11 +52,11 @@ public class HpConnectionManager {
         CONNECTING, CONNECTED, DISCONNECTED, NOT_CONNECTED
     }
 
-    public static HpConnectionManager getInstance() {
-        return instance == null ? (instance = new HpConnectionManager()) : instance;
+    public static TAPConnectionManager getInstance() {
+        return instance == null ? (instance = new TAPConnectionManager()) : instance;
     }
 
-    public HpConnectionManager() {
+    public TAPConnectionManager() {
         try {
 //            webSocketUri = new URI(webSocketEndpoint);
 //            initWebSocketClient(webSocketUri);
@@ -76,7 +76,7 @@ public class HpConnectionManager {
                 connectionStatus = ConnectionStatus.CONNECTED;
                 reconnectAttempt = 0;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (HomingPigeonSocketInterface listener : socketListeners)
+                    for (TapTalkSocketInterface listener : socketListeners)
                         listener.onSocketConnected();
                 }
             }
@@ -91,7 +91,7 @@ public class HpConnectionManager {
                 try {
                     HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
                     if (null != socketListeners && !socketListeners.isEmpty()) {
-                        for (HomingPigeonSocketInterface listener : socketListeners)
+                        for (TapTalkSocketInterface listener : socketListeners)
                             listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);
                     }
                 } catch (IOException e) {
@@ -105,7 +105,7 @@ public class HpConnectionManager {
                 Log.e(TAG, "onClose: " + reason);
                 connectionStatus = DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
-                    for (HomingPigeonSocketInterface listener : socketListeners)
+                    for (TapTalkSocketInterface listener : socketListeners)
                         listener.onSocketDisconnected();
                 }
             }
@@ -115,7 +115,7 @@ public class HpConnectionManager {
                 Log.e(TAG, "onError: ", ex);
                 connectionStatus = DISCONNECTED;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (HomingPigeonSocketInterface listener : socketListeners)
+                    for (TapTalkSocketInterface listener : socketListeners)
                         listener.onSocketError();
                 }
             }
@@ -126,7 +126,7 @@ public class HpConnectionManager {
                 Log.e(TAG, "reconnect: ");
                 connectionStatus = CONNECTING;
                 if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (HomingPigeonSocketInterface listener : socketListeners)
+                    for (TapTalkSocketInterface listener : socketListeners)
                         listener.onSocketConnecting();
                 }
             }
@@ -134,7 +134,7 @@ public class HpConnectionManager {
     }
 
     private void initNetworkListener() {
-        HomingPigeonNetworkInterface networkListener = () -> {
+        TapTalkNetworkInterface networkListener = () -> {
             if (HpDataManager.getInstance().checkAccessTokenAvailable()) {
                 Log.e(TAG, "initNetworkListener: " );
                 HpDataManager.getInstance().validateAccessToken(validateAccessView);
@@ -149,11 +149,11 @@ public class HpConnectionManager {
         HpNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
 
-    public void addSocketListener(HomingPigeonSocketInterface listener) {
+    public void addSocketListener(TapTalkSocketInterface listener) {
         socketListeners.add(listener);
     }
 
-    public void removeSocketListener(HomingPigeonSocketInterface listener) {
+    public void removeSocketListener(TapTalkSocketInterface listener) {
         socketListeners.remove(listener);
     }
 
@@ -218,11 +218,11 @@ public class HpConnectionManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (DISCONNECTED == connectionStatus && !HpChatManager.getInstance().isFinishChatFlow()) {
+                if (DISCONNECTED == connectionStatus && !TAPChatManager.getInstance().isFinishChatFlow()) {
                     connectionStatus = CONNECTING;
                     try {
                         if (null != socketListeners && !socketListeners.isEmpty()) {
-                            for (HomingPigeonSocketInterface listener : socketListeners)
+                            for (TapTalkSocketInterface listener : socketListeners)
                                 listener.onSocketConnecting();
                         }
                         HpDataManager.getInstance().validateAccessToken(new TapDefaultDataView<HpErrorModel>() {});

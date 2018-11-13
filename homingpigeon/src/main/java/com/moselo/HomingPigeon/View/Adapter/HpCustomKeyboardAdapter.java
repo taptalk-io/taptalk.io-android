@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
-import com.moselo.HomingPigeon.Interface.HpCustomKeyboardInterface;
+import com.moselo.HomingPigeon.Interface.TAPCustomKeyboardInterface;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
 import com.moselo.HomingPigeon.R;
 
@@ -13,9 +13,9 @@ import java.util.List;
 
 public class HpCustomKeyboardAdapter extends HpBaseAdapter<HpCustomKeyboardModel, TAPBaseViewHolder<HpCustomKeyboardModel>> {
 
-    private HpCustomKeyboardInterface listener;
+    private TAPCustomKeyboardInterface listener;
 
-    public HpCustomKeyboardAdapter(List<HpCustomKeyboardModel> keyboardMenuList, HpCustomKeyboardInterface listener) {
+    public HpCustomKeyboardAdapter(List<HpCustomKeyboardModel> keyboardMenuList, TAPCustomKeyboardInterface listener) {
         setItems(keyboardMenuList);
         this.listener = listener;
     }

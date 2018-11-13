@@ -22,8 +22,8 @@ import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
@@ -218,7 +218,7 @@ public class HpSearchChatFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener<TAPMessageEntity> roomSearchListener = new HpDatabaseListener<TAPMessageEntity>() {
+    private TAPDatabaseListener<TAPMessageEntity> roomSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             if (entities.size() > 0) {
@@ -248,7 +248,7 @@ public class HpSearchChatFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener<HpUserModel> contactSearchListener = new HpDatabaseListener<HpUserModel>() {
+    private TAPDatabaseListener<HpUserModel> contactSearchListener = new TAPDatabaseListener<HpUserModel>() {
         @Override
         public void onSelectFinished(List<HpUserModel> entities) {
             if (entities.size() > 0) {
@@ -262,7 +262,7 @@ public class HpSearchChatFragment extends Fragment {
                     // Convert contact to room model
                     // TODO: 18 October 2018 LENGKAPIN DATA
                     HpRoomModel room = new HpRoomModel(
-                            HpChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
+                            TAPChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
                             /* 1 ON 1 ROOM TYPE */ 1,
                             contact.getAvatarURL(),
@@ -281,7 +281,7 @@ public class HpSearchChatFragment extends Fragment {
         }
     };
 
-    private HpDatabaseListener<TAPMessageEntity> messageSearchListener = new HpDatabaseListener<TAPMessageEntity>() {
+    private TAPDatabaseListener<TAPMessageEntity> messageSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             if (entities.size() > 0) {

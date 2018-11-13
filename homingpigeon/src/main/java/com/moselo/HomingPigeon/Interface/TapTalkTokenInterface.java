@@ -1,5 +1,5 @@
 package com.moselo.HomingPigeon.Interface;
 
-public interface HomingPigeonTokenInterface {
+public interface TapTalkTokenInterface {
     void onRefreshTokenExpiredOrInvalid();
 }

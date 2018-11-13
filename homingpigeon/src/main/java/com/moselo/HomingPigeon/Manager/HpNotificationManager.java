@@ -184,7 +184,7 @@ public class HpNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, HpMessageModel newMessageModel) {
-        HpDataManager.getInstance().insertToDatabase(HpChatManager.getInstance().convertToEntity(newMessageModel));
+        HpDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
         new TapTalk.NotificationBuilder(context)
                 .setNotificationMessage(newMessageModel)
                 .setSmallIcon(notificationIcon)

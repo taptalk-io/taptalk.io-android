@@ -1,5 +1,5 @@
 package com.moselo.HomingPigeon.Interface;
 
-public interface RoomListInterface {
+public interface TapTalkRoomListInterface {
     void onRoomSelected();
 }

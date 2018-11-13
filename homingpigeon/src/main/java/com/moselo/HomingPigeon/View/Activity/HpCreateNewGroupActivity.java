@@ -20,7 +20,7 @@ import com.moselo.HomingPigeon.Helper.TapTalkDialog;
 import com.moselo.HomingPigeon.Helper.TAPHorizontalDecoration;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
-import com.moselo.HomingPigeon.Interface.ContactListInterface;
+import com.moselo.HomingPigeon.Interface.TapTalkContactListInterface;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpImageURL;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -51,7 +51,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
 
     private HpContactInitialAdapter contactListAdapter;
     private HpContactListAdapter selectedMembersAdapter;
-    private ContactListInterface listener;
+    private TapTalkContactListInterface listener;
     private HpContactListViewModel vm;
 
     @Override
@@ -95,7 +95,7 @@ public class HpCreateNewGroupActivity extends HpBaseActivity {
     }
 
     private void initListener() {
-        listener = new ContactListInterface() {
+        listener = new TapTalkContactListInterface() {
             @Override
             public boolean onContactSelected(HpUserModel contact) {
                 TAPUtils.getInstance().dismissKeyboard(HpCreateNewGroupActivity.this);

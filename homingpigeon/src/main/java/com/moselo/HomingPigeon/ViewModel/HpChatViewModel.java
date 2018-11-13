@@ -7,9 +7,9 @@ import android.net.Uri;
 import android.os.Handler;
 
 import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
 import com.moselo.HomingPigeon.Model.HpUserModel;
@@ -97,11 +97,11 @@ public class HpChatViewModel extends AndroidViewModel {
         getUnreadMessages().clear();
     }
 
-    public void getMessageEntities(String roomID, HpDatabaseListener listener) {
+    public void getMessageEntities(String roomID, TAPDatabaseListener listener) {
         HpDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener);
     }
 
-    public void getMessageByTimestamp(String roomID, HpDatabaseListener listener, long lastTimestamp) {
+    public void getMessageByTimestamp(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
         HpDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
     }
 
@@ -131,7 +131,7 @@ public class HpChatViewModel extends AndroidViewModel {
 
     public void setRoom(HpRoomModel room) {
         this.room = room;
-        HpChatManager.getInstance().setActiveRoom(room);
+        TAPChatManager.getInstance().setActiveRoom(room);
     }
 
     public HpMessageModel getReplyTo() {

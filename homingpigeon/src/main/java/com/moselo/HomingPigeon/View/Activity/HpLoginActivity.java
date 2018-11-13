@@ -13,7 +13,7 @@ import com.moselo.HomingPigeon.API.View.TapDefaultDataView;
 import com.moselo.HomingPigeon.Helper.TapTalk;
 import com.moselo.HomingPigeon.Helper.TapTalkDialog;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.ResponseModel.HpAuthTicketResponse;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
@@ -252,7 +252,7 @@ public class HpLoginActivity extends HpBaseActivity {
                 Intent intent = new Intent(HpLoginActivity.this, HpRoomListActivity.class);
                 intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
                 startActivity(intent);
-                HpConnectionManager.getInstance().connect();
+                TAPConnectionManager.getInstance().connect();
                 finish();
             });
         }

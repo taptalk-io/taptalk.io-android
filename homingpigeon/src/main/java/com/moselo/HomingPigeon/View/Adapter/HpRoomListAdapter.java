@@ -18,8 +18,8 @@ import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TAPBaseViewHolder;
 import com.moselo.HomingPigeon.Helper.TAPTimeFormatter;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Interface.RoomListInterface;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Interface.TapTalkRoomListInterface;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Model.HpRoomListModel;
 import com.moselo.HomingPigeon.Model.HpRoomModel;
@@ -32,12 +32,12 @@ import java.util.List;
 public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseViewHolder<HpRoomListModel>> {
 
     private HpRoomListViewModel vm;
-    private RoomListInterface roomListInterface;
+    private TapTalkRoomListInterface tapTalkRoomListInterface;
 
-    public HpRoomListAdapter(HpRoomListViewModel vm, RoomListInterface roomListInterface) {
+    public HpRoomListAdapter(HpRoomListViewModel vm, TapTalkRoomListInterface tapTalkRoomListInterface) {
         setItems(vm.getRoomList(), false);
         this.vm = vm;
-        this.roomListInterface = roomListInterface;
+        this.tapTalkRoomListInterface = tapTalkRoomListInterface;
     }
 
     @NonNull
@@ -167,8 +167,8 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
 
             String myUserID = myUser.getUserID();
             String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?
-                    HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getUser().getUserID()) :
-                    HpChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
+                    TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getUser().getUserID()) :
+                    TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
 
             if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
                 TAPUtils.getInstance().startChatActivity(
@@ -202,7 +202,7 @@ public class HpRoomListAdapter extends HpBaseAdapter<HpRoomListModel, TAPBaseVie
             // Room deselected
             vm.getSelectedRooms().remove(item.getLastMessage().getRoom().getRoomID());
         }
-        roomListInterface.onRoomSelected();
+        tapTalkRoomListInterface.onRoomSelected();
         notifyItemChanged(position);
     }
 

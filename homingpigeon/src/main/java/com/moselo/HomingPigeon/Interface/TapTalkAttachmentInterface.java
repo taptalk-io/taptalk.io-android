@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.Interface;
 
-public interface AttachmentInterface {
+public interface TapTalkAttachmentInterface {
     void onDocumentSelected();
     void onCameraSelected();
     void onGallerySelected();

@@ -8,7 +8,7 @@ import com.moselo.HomingPigeon.Data.Message.TAPMessageEntity;
 import com.moselo.HomingPigeon.Data.Message.TAPMessageRepository;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchEntity;
 import com.moselo.HomingPigeon.Data.RecentSearch.TAPRecentSearchRepository;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
 import com.moselo.HomingPigeon.Model.HpUserModel;
 
 import java.util.List;
@@ -17,8 +17,8 @@ import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DatabaseType.MESS
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static com.moselo.HomingPigeon.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
 
-public class HpDatabaseManager {
-    private static HpDatabaseManager instance;
+public class TAPDatabaseManager {
+    private static TAPDatabaseManager instance;
 
     //for message Table
     private TAPMessageRepository messageRepository;
@@ -29,8 +29,8 @@ public class HpDatabaseManager {
     //for MyContact Table
     private TAPMyContactRepository myContactRepository;
 
-    public static HpDatabaseManager getInstance() {
-        return (null == instance) ? (instance = new HpDatabaseManager()) : instance;
+    public static TAPDatabaseManager getInstance() {
+        return (null == instance) ? (instance = new TAPDatabaseManager()) : instance;
     }
 
     public void setRepository(String databaseType, Application application) {
@@ -52,7 +52,7 @@ public class HpDatabaseManager {
      * ==============================================================
      */
 
-    public void deleteMessage(List<TAPMessageEntity> messageEntities, HpDatabaseListener listener) {
+    public void deleteMessage(List<TAPMessageEntity> messageEntities, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.delete(messageEntities, listener);
         else
@@ -73,7 +73,7 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
+    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.insert(messageEntities, isClearSaveMessages, listener);
         else
@@ -108,54 +108,54 @@ public class HpDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessagesDesc(String roomID, HpDatabaseListener listener) {
+    public void getMessagesDesc(String roomID, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getMessageListDesc(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessagesDesc(String roomID, HpDatabaseListener listener, long lastTimestamp) {
+    public void getMessagesDesc(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
         if (null != messageRepository)
             messageRepository.getMessageListDesc(roomID, listener, lastTimestamp);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessagesAsc(String roomID, HpDatabaseListener listener) {
+    public void getMessagesAsc(String roomID, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getMessageListAsc(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void searchAllMessages(String keyword, HpDatabaseListener listener) {
+    public void searchAllMessages(String keyword, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.searchAllMessages(keyword, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
+    public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, saveMessages, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(String myID, boolean isCheckUnreadFirst, HpDatabaseListener listener) {
+    public void getRoomList(String myID, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void searchAllRooms(String myID, String keyword, HpDatabaseListener listener) {
+    public void searchAllRooms(String myID, String keyword, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.searchAllChatRooms(myID, keyword, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getUnreadCountPerRoom(String myID, String roomID, final HpDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String myID, String roomID, final TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getUnreadCountPerRoom(myID, roomID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
@@ -214,7 +214,7 @@ public class HpDatabaseManager {
      * ==============================================================
      */
 
-    public void getMyContactList(HpDatabaseListener<HpUserModel> listener) {
+    public void getMyContactList(TAPDatabaseListener<HpUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.getAllMyContactList(listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
@@ -226,7 +226,7 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void searchAllMyContacts(String keyword, HpDatabaseListener<HpUserModel> listener) {
+    public void searchAllMyContacts(String keyword, TAPDatabaseListener<HpUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.searchAllMyContacts(keyword, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
@@ -238,7 +238,7 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void insertMyContact(HpDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
+    public void insertMyContact(TAPDatabaseListener<HpUserModel> listener, HpUserModel... userModels) {
         if (null != myContactRepository)
             myContactRepository.insert(listener, userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
@@ -250,7 +250,7 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void insertAndGetMyContact(List<HpUserModel> userModels, HpDatabaseListener<HpUserModel> listener) {
+    public void insertAndGetMyContact(List<HpUserModel> userModels, TAPDatabaseListener<HpUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.insertAndGetContact(userModels, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
@@ -280,7 +280,7 @@ public class HpDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void checkUserInMyContacts(String userID, HpDatabaseListener<HpUserModel> listener) {
+    public void checkUserInMyContacts(String userID, TAPDatabaseListener<HpUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.checkUserInMyContacts(userID, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");

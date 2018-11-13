@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.Interface;
 
-public interface HomingPigeonEncryptorInterface {
+public interface TapTalkEncryptorInterface {
 
     void onEncryptResult(String encryptedMessage);
 

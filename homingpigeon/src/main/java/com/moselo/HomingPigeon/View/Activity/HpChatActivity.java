@@ -39,13 +39,13 @@ import com.moselo.HomingPigeon.Helper.TAPUtils;
 import com.moselo.HomingPigeon.Helper.TAPVerticalDecoration;
 import com.moselo.HomingPigeon.Helper.OverScrolled.OverScrollDecoratorHelper;
 import com.moselo.HomingPigeon.Helper.SwipeBackLayout.SwipeBackLayout;
-import com.moselo.HomingPigeon.Interface.HpCustomKeyboardInterface;
-import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
-import com.moselo.HomingPigeon.Listener.HpChatListener;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Listener.HpSocketListener;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
-import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Interface.TAPCustomKeyboardInterface;
+import com.moselo.HomingPigeon.Listener.TAPAttachmentListener;
+import com.moselo.HomingPigeon.Listener.TAPChatListener;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
+import com.moselo.HomingPigeon.Listener.TAPSocketListener;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
+import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNotificationManager;
 import com.moselo.HomingPigeon.Model.HpCustomKeyboardModel;
@@ -107,7 +107,7 @@ public class HpChatActivity extends HpBaseChatActivity {
     // RoomDatabase
     private HpChatViewModel vm;
 
-    private HpSocketListener socketListener;
+    private TAPSocketListener socketListener;
 
     //enum Scrolling
     private enum STATE {
@@ -141,8 +141,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //ini buat reset openRoom
-        HpChatManager.getInstance().setOpenRoom(null);
-        HpChatManager.getInstance().removeChatListener(chatListener);
+        TAPChatManager.getInstance().setOpenRoom(null);
+        TAPChatManager.getInstance().removeChatListener(chatListener);
         // Stop offline timer
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
     }
@@ -150,8 +150,8 @@ public class HpChatActivity extends HpBaseChatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        HpChatManager.getInstance().setActiveRoom(vm.getRoom());
-        etChat.setText(HpChatManager.getInstance().getMessageFromDraft());
+        TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
+        etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
 
         if (vm.isInitialAPICallFinished())
             callApiAfter();
@@ -162,10 +162,10 @@ public class HpChatActivity extends HpBaseChatActivity {
         super.onPause();
 
         String draft = etChat.getText().toString();
-        if (!draft.isEmpty()) HpChatManager.getInstance().saveMessageToDraft(draft);
-        else HpChatManager.getInstance().removeDraft();
+        if (!draft.isEmpty()) TAPChatManager.getInstance().saveMessageToDraft(draft);
+        else TAPChatManager.getInstance().removeDraft();
 
-        HpChatManager.getInstance().deleteActiveRoom();
+        TAPChatManager.getInstance().deleteActiveRoom();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
-            HpChatManager.getInstance().putUnsentMessageToList();
+            TAPChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
         }
     }
@@ -184,15 +184,15 @@ public class HpChatActivity extends HpBaseChatActivity {
         switch (resultCode) {
             case RESULT_OK:
                 // Set active room to prevent null pointer when returning to chat
-                HpChatManager.getInstance().setActiveRoom(vm.getRoom());
+                TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
                 switch (requestCode) {
                     case SEND_IMAGE_FROM_CAMERA:
                         if (null == vm.getCameraImageUri()) return;
-                        HpChatManager.getInstance().sendImageMessage(HpChatActivity.this, vm.getCameraImageUri());
+                        TAPChatManager.getInstance().sendImageMessage(HpChatActivity.this, vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) return;
-                        HpChatManager.getInstance().sendImageMessage(HpChatActivity.this, intent.getData());
+                        TAPChatManager.getInstance().sendImageMessage(HpChatActivity.this, intent.getData());
                         break;
                 }
         }
@@ -340,11 +340,11 @@ public class HpChatActivity extends HpBaseChatActivity {
     }
 
     private void initHelper() {
-        HpChatManager.getInstance().addChatListener(chatListener);
+        TAPChatManager.getInstance().addChatListener(chatListener);
     }
 
     private void initListener() {
-        socketListener = new HpSocketListener() {
+        socketListener = new TAPSocketListener() {
             @Override
             public void onSocketConnected() {
                 if (!vm.isInitialAPICallFinished()) {
@@ -353,7 +353,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 }
             }
         };
-        HpConnectionManager.getInstance().addSocketListener(socketListener);
+        TAPConnectionManager.getInstance().addSocketListener(socketListener);
     }
 
     private void cancelNotificationWhenEnterRoom() {
@@ -395,7 +395,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             etChat.setText("");
             //tutup bubble yang lagi expand
             hpMessageAdapter.shrinkExpandedBubble();
-            HpChatManager.getInstance().sendTextMessage(message);
+            TAPChatManager.getInstance().sendTextMessage(message);
             //scroll to Bottom
             rvMessageList.scrollToPosition(0);
         }
@@ -648,7 +648,7 @@ public class HpChatActivity extends HpBaseChatActivity {
      * =========================================================================================== *
      */
 
-    private HpChatListener chatListener = new HpChatListener() {
+    private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(HpMessageModel message) {
             // TODO: 12 November 2018 ADD OTHER CUSTOM KEYBOARD MESSAGE TYPES
@@ -677,8 +677,8 @@ public class HpChatActivity extends HpBaseChatActivity {
         public void onReceiveMessageInOtherRoom(HpMessageModel message) {
             super.onReceiveMessageInOtherRoom(message);
 
-            if (null != HpChatManager.getInstance().getOpenRoom() &&
-                    HpChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
+            if (null != TAPChatManager.getInstance().getOpenRoom() &&
+                    TAPChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
                 addNewMessage(message);
         }
 
@@ -724,10 +724,10 @@ public class HpChatActivity extends HpBaseChatActivity {
             vm.delete(message.getLocalID());
             switch (message.getType()) {
                 case TAPDefaultConstant.MessageType.TYPE_TEXT:
-                    HpChatManager.getInstance().sendTextMessage(message.getBody());
+                    TAPChatManager.getInstance().sendTextMessage(message.getBody());
                     break;
                 case TAPDefaultConstant.MessageType.TYPE_IMAGE:
-                    HpChatManager.getInstance().sendImageMessage(message.getBody());
+                    TAPChatManager.getInstance().sendImageMessage(message.getBody());
                     break;
             }
         }
@@ -784,7 +784,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private HpCustomKeyboardInterface customKeyboardInterface = new HpCustomKeyboardInterface() {
+    private TAPCustomKeyboardInterface customKeyboardInterface = new TAPCustomKeyboardInterface() {
         @Override
         public void onSeePriceListClicked() {
 
@@ -889,12 +889,12 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private HpDatabaseListener<TAPMessageEntity> dbListener = new HpDatabaseListener<TAPMessageEntity>() {
+    private TAPDatabaseListener<TAPMessageEntity> dbListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             final List<HpMessageModel> models = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                HpMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
             }
@@ -976,12 +976,12 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private HpDatabaseListener<TAPMessageEntity> dbListenerPaging = new HpDatabaseListener<TAPMessageEntity>() {
+    private TAPDatabaseListener<TAPMessageEntity> dbListenerPaging = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             final List<HpMessageModel> models = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                HpMessageModel model = HpChatManager.getInstance().convertToModel(entity);
+                HpMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
             }
@@ -1010,7 +1010,7 @@ public class HpChatActivity extends HpBaseChatActivity {
         }
     };
 
-    private HpAttachmentListener attachmentListener = new HpAttachmentListener() {
+    private TAPAttachmentListener attachmentListener = new TAPAttachmentListener() {
         @Override
         public void onCameraSelected() {
             vm.setCameraImageUri(TAPUtils.getInstance().takePicture(HpChatActivity.this, SEND_IMAGE_FROM_CAMERA));
@@ -1036,7 +1036,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
-                    responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addAfterTextMessage(temp, messageAfterModels);
                     new Thread(() -> {
                         //ini buat update last update timestamp yang ada di preference
@@ -1074,7 +1074,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
@@ -1129,7 +1129,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
-                    responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addBeforeTextMessage(temp, messageBeforeModels);
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
@@ -1157,7 +1157,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
         }
 
@@ -1188,7 +1188,7 @@ public class HpChatActivity extends HpBaseChatActivity {
             for (HpMessageModel message : response.getMessages()) {
                 try {
                     HpMessageModel temp = HpMessageModel.BuilderDecrypt(message);
-                    responseMessages.add(HpChatManager.getInstance().convertToEntity(temp));
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addBeforeTextMessage(temp, messageBeforeModels);
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
@@ -1215,7 +1215,7 @@ public class HpChatActivity extends HpBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new HpDatabaseListener() {
+            HpDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
         }
 

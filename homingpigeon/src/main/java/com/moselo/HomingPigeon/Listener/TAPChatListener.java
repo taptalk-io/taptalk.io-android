@@ -1,9 +1,9 @@
 package com.moselo.HomingPigeon.Listener;
 
-import com.moselo.HomingPigeon.Interface.HomingPigeonChatInterface;
+import com.moselo.HomingPigeon.Interface.TapTalkChatInterface;
 import com.moselo.HomingPigeon.Model.HpMessageModel;
 
-public abstract class HpChatListener implements HomingPigeonChatInterface {
+public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override public void onReceiveMessageInActiveRoom(HpMessageModel message) {}
     @Override public void onUpdateMessageInActiveRoom(HpMessageModel message) {}
     @Override public void onDeleteMessageInActiveRoom(HpMessageModel message) {}

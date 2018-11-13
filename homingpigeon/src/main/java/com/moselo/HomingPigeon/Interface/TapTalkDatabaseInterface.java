@@ -3,7 +3,7 @@ package com.moselo.HomingPigeon.Interface;
 import java.util.List;
 import java.util.Map;
 
-public interface HomingPigeonDatabaseInterface<T> {
+public interface TapTalkDatabaseInterface<T> {
     void onSelectFinished(List<T> entities);
     void onInsertFinished();
     void onDeleteFinished();

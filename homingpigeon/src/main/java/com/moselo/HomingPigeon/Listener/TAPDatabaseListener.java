@@ -1,11 +1,11 @@
 package com.moselo.HomingPigeon.Listener;
 
-import com.moselo.HomingPigeon.Interface.HomingPigeonDatabaseInterface;
+import com.moselo.HomingPigeon.Interface.TapTalkDatabaseInterface;
 
 import java.util.List;
 import java.util.Map;
 
-public abstract class HpDatabaseListener<T> implements HomingPigeonDatabaseInterface<T> {
+public abstract class TAPDatabaseListener<T> implements TapTalkDatabaseInterface<T> {
     @Override public void onSelectFinished(List<T> entities) {}
     @Override public void onInsertFinished() {}
     @Override public void onDeleteFinished() {}

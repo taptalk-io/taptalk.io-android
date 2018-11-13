@@ -5,8 +5,8 @@ import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import com.moselo.HomingPigeon.Data.TapTalkDatabase;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,7 +25,7 @@ public class TAPMessageRepository {
         allMessages = messageDao.getAllMessage();
     }
 
-    public void delete(List<TAPMessageEntity> messageEntities, HpDatabaseListener listener) {
+    public void delete(List<TAPMessageEntity> messageEntities, TAPDatabaseListener listener) {
         new Thread(() -> {
             messageDao.delete(messageEntities);
             listener.onDeleteFinished();
@@ -54,18 +54,18 @@ public class TAPMessageRepository {
         new Thread(() -> {
             messageDao.insert(messageEntities);
 
-            if (0 < HpChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
-                HpChatManager.getInstance().clearSaveMessages();
+            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
+                TAPChatManager.getInstance().clearSaveMessages();
 
         }).start();
     }
 
-    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, HpDatabaseListener listener) {
+    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
         new Thread(() -> {
             messageDao.insert(messageEntities);
 
-            if (0 < HpChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
-                HpChatManager.getInstance().clearSaveMessages();
+            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
+                TAPChatManager.getInstance().clearSaveMessages();
 
             listener.onInsertFinished();
 
@@ -76,28 +76,28 @@ public class TAPMessageRepository {
         return allMessages;
     }
 
-    public void getMessageListDesc(final String roomID, final HpDatabaseListener listener) {
+    public void getMessageListDesc(final String roomID, final TAPDatabaseListener listener) {
         new Thread(() -> {
             allMessageList = messageDao.getAllMessageListDesc(roomID);
             listener.onSelectFinished(allMessageList);
         }).start();
     }
 
-    public void getMessageListDesc(final String roomID, final HpDatabaseListener listener, final long lastTimestamp) {
+    public void getMessageListDesc(final String roomID, final TAPDatabaseListener listener, final long lastTimestamp) {
         new Thread(() -> {
             List<TAPMessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
             listener.onSelectFinished(entities);
         }).start();
     }
 
-    public void getMessageListAsc(final String roomID, final HpDatabaseListener listener) {
+    public void getMessageListAsc(final String roomID, final TAPDatabaseListener listener) {
         new Thread(() -> {
             allMessageList = messageDao.getAllMessageListAsc(roomID);
             listener.onSelectFinished(allMessageList);
         }).start();
     }
 
-    public void searchAllMessages(String keyword, final HpDatabaseListener listener) {
+    public void searchAllMessages(String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String queryKeyword = "%" + keyword + '%';
             List<TAPMessageEntity> entities = messageDao.searchAllMessages(queryKeyword);
@@ -105,11 +105,11 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, final HpDatabaseListener listener) {
+    public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
             if (0 < saveMessages.size()) {
                 messageDao.insert(saveMessages);
-                HpChatManager.getInstance().clearSaveMessages();
+                TAPChatManager.getInstance().clearSaveMessages();
             }
             List<TAPMessageEntity> entities = messageDao.getAllRoomList();
 
@@ -122,7 +122,7 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void searchAllChatRooms(String myID, String keyword, final HpDatabaseListener listener) {
+    public void searchAllChatRooms(String myID, String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String queryKeyword = "%" + keyword + '%';
             List<TAPMessageEntity> entities = messageDao.searchAllChatRooms(queryKeyword);
@@ -133,7 +133,7 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void getRoomList(String myID, boolean isCheckUnreadFirst, final HpDatabaseListener listener) {
+    public void getRoomList(String myID, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
             List<TAPMessageEntity> entities = messageDao.getAllRoomList();
 
@@ -148,7 +148,7 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void getUnreadCountPerRoom(String myID, String roomID, final HpDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String myID, String roomID, final TAPDatabaseListener listener) {
         new Thread(() -> {
             int unreadCount = messageDao.getUnreadCount(myID, roomID);
             listener.onCountedUnreadCount(roomID, unreadCount);

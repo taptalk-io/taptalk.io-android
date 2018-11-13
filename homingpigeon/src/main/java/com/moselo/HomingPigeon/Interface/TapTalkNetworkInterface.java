@@ -1,6 +1,6 @@
 package com.moselo.HomingPigeon.Interface;
 
-public interface HomingPigeonNetworkInterface {
+public interface TapTalkNetworkInterface {
 
     void onNetworkAvailable();
 }

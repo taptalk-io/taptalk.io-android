@@ -21,10 +21,10 @@ import com.moselo.HomingPigeon.Helper.CircleImageView;
 import com.moselo.HomingPigeon.Helper.GlideApp;
 import com.moselo.HomingPigeon.Helper.TapTalkDialog;
 import com.moselo.HomingPigeon.Helper.TAPUtils;
-import com.moselo.HomingPigeon.Listener.HpDatabaseListener;
-import com.moselo.HomingPigeon.Listener.HpSocketListener;
-import com.moselo.HomingPigeon.Manager.HpChatManager;
-import com.moselo.HomingPigeon.Manager.HpConnectionManager;
+import com.moselo.HomingPigeon.Listener.TAPDatabaseListener;
+import com.moselo.HomingPigeon.Listener.TAPSocketListener;
+import com.moselo.HomingPigeon.Manager.TAPChatManager;
+import com.moselo.HomingPigeon.Manager.TAPConnectionManager;
 import com.moselo.HomingPigeon.Manager.HpDataManager;
 import com.moselo.HomingPigeon.Manager.HpNetworkStateManager;
 import com.moselo.HomingPigeon.Model.HpErrorModel;
@@ -94,7 +94,7 @@ public class HpNewContactActivity extends HpBaseActivity {
     }
 
     private void initListener() {
-        HpConnectionManager.getInstance().addSocketListener(socketListener);
+        TAPConnectionManager.getInstance().addSocketListener(socketListener);
     }
 
     private boolean onSearchEditorClicked() {
@@ -237,7 +237,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
         TAPUtils.getInstance().startChatActivity(
                 this,
-                HpChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
+                TAPChatManager.getInstance().arrangeRoomId(HpDataManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
                 1,
@@ -300,7 +300,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    HpDatabaseListener<HpUserModel> dbListener = new HpDatabaseListener<HpUserModel>() {
+    TAPDatabaseListener<HpUserModel> dbListener = new TAPDatabaseListener<HpUserModel>() {
         @Override
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
@@ -415,7 +415,7 @@ public class HpNewContactActivity extends HpBaseActivity {
         }
     };
 
-    private HpSocketListener socketListener = new HpSocketListener() {
+    private TAPSocketListener socketListener = new TAPSocketListener() {
         @Override
         public void onSocketConnected() {
             // Resume pending search on connect

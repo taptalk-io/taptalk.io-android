@@ -10,21 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.moselo.HomingPigeon.Listener.HpAttachmentListener;
+import com.moselo.HomingPigeon.Listener.TAPAttachmentListener;
 import com.moselo.HomingPigeon.R;
 import com.moselo.HomingPigeon.View.Adapter.HpAttachmentAdapter;
 
 public class HpAttachmentBottomSheet extends BottomSheetDialogFragment {
 
     private RecyclerView recyclerView;
-    private HpAttachmentListener attachmentListener;
+    private TAPAttachmentListener attachmentListener;
     private View.OnClickListener onClickListener = v -> dismiss();
 
     public HpAttachmentBottomSheet() {
         // Required empty public constructor
     }
 
-    public HpAttachmentBottomSheet(HpAttachmentListener attachmentListener) {
+    public HpAttachmentBottomSheet(TAPAttachmentListener attachmentListener) {
         this.attachmentListener = attachmentListener;
     }
 
