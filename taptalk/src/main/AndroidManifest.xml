@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.taptalk.Taptalk">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application android:theme="@style/AppTheme">
+        <service
+            android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
+            android:stopWithTask="false" />
+
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"/>
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPProfileActivity" />
+    </application>
+
+</manifest>
