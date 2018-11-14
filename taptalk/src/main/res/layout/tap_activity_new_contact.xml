@@ -119,7 +119,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.moselo.HomingPigeon.Helper.CircleImageView
+            <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_avatar"
                 android:layout_width="64dp"
                 android:layout_height="64dp"

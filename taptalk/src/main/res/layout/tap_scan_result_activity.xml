@@ -66,7 +66,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.moselo.HomingPigeon.Helper.CircleImageView
+                <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_my_avatar"
                     android:layout_width="72dp"
                     android:layout_height="72dp"
@@ -76,7 +76,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     tools:background="@color/brightBlue" />
 
-                <com.moselo.HomingPigeon.Helper.CircleImageView
+                <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_contact_avatar"
                     android:layout_width="72dp"
                     android:layout_height="72dp"

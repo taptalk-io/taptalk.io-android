@@ -3,19 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".View.Activity.TAPRoomListActivity"
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity"
     android:background="@color/white_f3">
 
     <fragment
         android:id="@+id/fragment_room_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.moselo.HomingPigeon.View.Fragment.TAPRoomListFragment" />
+        class="io.taptalk.TapTalk.View.Fragment.TAPRoomListFragment" />
 
     <fragment
         android:id="@+id/fragment_search_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.moselo.HomingPigeon.View.Fragment.TAPSearchChatFragment" />
+        class="io.taptalk.TapTalk.View.Fragment.TAPSearchChatFragment" />
 
 </FrameLayout>

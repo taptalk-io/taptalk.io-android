@@ -115,7 +115,7 @@
 
     <fragment
         android:id="@+id/f_connection_status"
-        class="com.moselo.HomingPigeon.View.Fragment.TAPConnectionStatusFragment"
+        class="io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         app:layout_constraintBottom_toTopOf="@id/rv_contact_list"

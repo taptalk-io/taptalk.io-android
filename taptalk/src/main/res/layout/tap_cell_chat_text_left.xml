@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.moselo.HomingPigeon.Helper.CircleImageView
+    <io.taptalk.TapTalk.Helper.CircleImageView
         android:id="@+id/civ_avatar"
         android:layout_width="28dp"
         android:layout_height="28dp"
