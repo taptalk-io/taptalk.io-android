@@ -20,7 +20,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HP_NOTIFICATION_CHANNEL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
 
 public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
@@ -86,7 +86,7 @@ public class TAPNotificationManager {
         }
         String summaryContent = messageSize + " messages from " + chatSize + " chats";
 
-        return new NotificationCompat.Builder(context, HP_NOTIFICATION_CHANNEL)
+        return new NotificationCompat.Builder(context, TAP_NOTIFICATION_CHANNEL)
                 .setSmallIcon(TapTalk.getClientAppIcon())
                 .setContentTitle(TapTalk.getClientAppName())
                 .setContentText(summaryContent)
@@ -160,7 +160,7 @@ public class TAPNotificationManager {
             }
         }
 
-        return new NotificationCompat.Builder(builder.context, HP_NOTIFICATION_CHANNEL)
+        return new NotificationCompat.Builder(builder.context, TAP_NOTIFICATION_CHANNEL)
                 .setContentTitle(builder.chatSender)
                 .setContentText(builder.chatMessage)
                 .setSmallIcon(builder.smallIcon)

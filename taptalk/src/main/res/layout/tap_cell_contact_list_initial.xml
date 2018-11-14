@@ -10,9 +10,10 @@
         style="@style/HomingPigeonSectionLabel"
         android:layout_width="match_parent"
         android:layout_height="34dp"
+        android:background="@color/white_f8"
         android:gravity="start|center_vertical"
-        android:paddingEnd="16dp"
         android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         tools:text="A" />
 
     <android.support.v7.widget.RecyclerView
