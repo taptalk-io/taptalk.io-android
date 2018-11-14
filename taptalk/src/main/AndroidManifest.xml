@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.moselo.HomingPigeon">
+    package="io.taptalk.Taptalk">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,28 +11,28 @@
 
     <application android:theme="@style/AppTheme">
         <service
-            android:name=".Helper.TapTalkEndAppService"
+            android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
 
-        <activity android:name=".View.Activity.TAPBarcodeScannerActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"/>
         <activity
-            android:name=".View.Activity.TAPChatActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".View.Activity.TAPLoginActivity" />
-        <activity android:name=".View.Activity.TAPRoomListActivity" />
-        <activity android:name=".View.Activity.TAPNewChatActivity" />
-        <activity android:name=".View.Activity.TAPSearchContactActivity" />
-        <activity android:name=".View.Activity.TAPNewContactActivity" />
-        <activity android:name=".View.Activity.TAPBlockedListActivity" />
-        <activity android:name=".View.Activity.TAPScanResultActivity"
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
             android:launchMode="singleTask"/>
         <activity
-            android:name=".View.Activity.TAPCreateNewGroupActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".View.Activity.TAPGroupSubjectActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".View.Activity.TAPProfileActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPProfileActivity" />
     </application>
 
 </manifest>

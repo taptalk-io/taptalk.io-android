@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:476210333801:android:27a363211a35f469",
         "android_client_info": {
-          "package_name": "com.moselo.HomingPigeon"
+          "package_name": "io.taptalk.TapTalk"
         }
       },
       "oauth_client": [
@@ -41,7 +41,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:476210333801:android:a59138a5ea2a7928",
         "android_client_info": {
-          "package_name": "com.moselo.HomingPigeon.Sample"
+          "package_name": "io.taptalk.TapTalk.Sample"
         }
       },
       "oauth_client": [
@@ -72,7 +72,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:476210333801:android:ac88961eda840e3c",
         "android_client_info": {
-          "package_name": "com.moselo.HomingPigeon.Sample.dev"
+          "package_name": "io.taptalk.TapTalk.Sample.dev"
         }
       },
       "oauth_client": [
