@@ -42,9 +42,18 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DE
 public class TAPDataManager {
     private static final String TAG = TAPDataManager.class.getSimpleName();
     private static TAPDataManager instance;
+    private boolean isNeedToQueryUpdateRoomList;
 
     public static TAPDataManager getInstance() {
         return instance == null ? (instance = new TAPDataManager()) : instance;
+    }
+
+    public boolean isNeedToQueryUpdateRoomList() {
+        return isNeedToQueryUpdateRoomList;
+    }
+
+    public void setNeedToQueryUpdateRoomList(boolean needToQueryUpdateRoomList) {
+        isNeedToQueryUpdateRoomList = needToQueryUpdateRoomList;
     }
 
     /**

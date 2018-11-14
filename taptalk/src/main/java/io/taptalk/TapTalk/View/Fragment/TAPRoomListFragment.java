@@ -90,6 +90,7 @@ public class TAPRoomListFragment extends Fragment {
         super.onResume();
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
+        updateQueryRoomListFromBackground();
     }
 
     @Override
@@ -102,7 +103,10 @@ public class TAPRoomListFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         if (hidden)
             TAPNotificationManager.getInstance().setRoomListAppear(false);
-        else TAPNotificationManager.getInstance().setRoomListAppear(true);
+        else {
+            TAPNotificationManager.getInstance().setRoomListAppear(true);
+            updateQueryRoomListFromBackground();
+        }
     }
 
     @Override
@@ -505,4 +509,11 @@ public class TAPRoomListFragment extends Fragment {
             reloadLocalDataAndUpdateUILogic(true);
         }
     };
+
+    private void updateQueryRoomListFromBackground() {
+        if (TAPDataManager.getInstance().isNeedToQueryUpdateRoomList()) {
+            TAPDataManager.getInstance().getRoomList(true, dbListener);
+            TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(false);
+        }
+    }
 }
