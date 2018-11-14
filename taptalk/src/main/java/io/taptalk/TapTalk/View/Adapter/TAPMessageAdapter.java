@@ -14,18 +14,22 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
@@ -34,7 +38,11 @@ import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOrderModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPRecipientModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
@@ -47,6 +55,18 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACCEPTED_BY_SELLER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACTIVE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CANCELLED_BY_CUSTOMER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CUSTOMER_CONFIRMED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CUSTOMER_DISAGREED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.DECLINED_BY_SELLER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.NOT_CONFIRMED_BY_CUSTOMER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.OVERPAID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.PAYMENT_INCOMPLETE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.REVIEW_COMPLETED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_PAYMENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_REVIEW;
 
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
 
@@ -54,7 +74,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
     private TAPChatListener listener;
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
-
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
     private long defaultAnimationTime = 200L;
@@ -221,7 +240,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             if (!item.getBody().isEmpty()) {
                 rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
                 int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                GlideApp.with(itemView.getContext()).load(item.getBody()).placeholder(placeholder).listener(new RequestListener<Drawable>() {
+                Glide.with(itemView.getContext()).load(item.getBody()).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         return false;
@@ -282,7 +301,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (null == adapter) {
-                adapter = new TAPProductListAdapter(item, myUserModel);
+                adapter = new TAPProductListAdapter(item, myUserModel, listener);
             }
 
             rvProductList.setAdapter(adapter);
@@ -297,6 +316,166 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     adapter.getItemCount(),
                     0, 0));
             OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        }
+    }
+
+    public class OrderVH extends TAPBaseViewHolder<TAPMessageModel> {
+
+        private ConstraintLayout clContainer, clCard, clButtonDetail, clCourier, clAdditionalCost, clDiscount;
+        private FrameLayout flButtonMoreItems;
+        private LinearLayout llNotes, llOrderStatusGuide, llButtonOrderStatus;
+        private TextView tvOrderID, tvProductName, tvProductPrice, tvProductQty, tvButtonMoreItems;
+        private TextView tvDate, tvTime, tvRecipientDetails, tvCourierType, tvCourierCost, tvNotes;
+        private TextView tvAdditionalCost, tvDiscount, tvTotalPrice, tvOrderStatus, tvReportOrder, tvButtonOrderAction;
+        private ImageView ivProductThumbnail, ivCourierLogo;
+        private View vBadgeAdditional, vBadgeDiscount;
+
+        OrderVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+            clContainer = itemView.findViewById(R.id.cl_container);
+            clCard = itemView.findViewById(R.id.cl_card);
+            clButtonDetail = itemView.findViewById(R.id.cl_button_detail);
+            clCourier = itemView.findViewById(R.id.cl_courier);
+            clAdditionalCost = itemView.findViewById(R.id.cl_additional_cost);
+            clDiscount = itemView.findViewById(R.id.cl_discount);
+            flButtonMoreItems = itemView.findViewById(R.id.fl_button_more_items);
+            llNotes = itemView.findViewById(R.id.ll_notes);
+            llOrderStatusGuide = itemView.findViewById(R.id.ll_order_status_guide);
+            llButtonOrderStatus = itemView.findViewById(R.id.ll_button_order_status);
+            tvOrderID = itemView.findViewById(R.id.tv_order_id);
+            tvProductName = itemView.findViewById(R.id.tv_product_name);
+            tvProductPrice = itemView.findViewById(R.id.tv_product_price);
+            tvProductQty = itemView.findViewById(R.id.tv_product_qty);
+            tvButtonMoreItems = itemView.findViewById(R.id.tv_button_more_items);
+            tvDate = itemView.findViewById(R.id.tv_date);
+            tvTime = itemView.findViewById(R.id.tv_time);
+            tvRecipientDetails = itemView.findViewById(R.id.tv_recipient_details);
+            tvCourierType = itemView.findViewById(R.id.tv_courier_type);
+            tvCourierCost = itemView.findViewById(R.id.tv_courier_cost);
+            tvNotes = itemView.findViewById(R.id.tv_notes);
+            tvAdditionalCost = itemView.findViewById(R.id.tv_additional_cost);
+            tvDiscount = itemView.findViewById(R.id.tv_discount);
+            tvTotalPrice = itemView.findViewById(R.id.tv_total_price);
+            tvOrderStatus = itemView.findViewById(R.id.tv_order_status);
+            tvReportOrder = itemView.findViewById(R.id.tv_report_order);
+            tvButtonOrderAction = itemView.findViewById(R.id.tv_button_order_action);
+            ivProductThumbnail = itemView.findViewById(R.id.iv_product_thumbnail);
+            ivCourierLogo = itemView.findViewById(R.id.iv_courier_logo);
+            vBadgeAdditional = itemView.findViewById(R.id.v_badge_additional_updated);
+            vBadgeDiscount = itemView.findViewById(R.id.v_badge_discount_updated);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {}, item.getBody());
+            TAPRecipientModel recipient = order.getRecipient();
+
+            // Set initial data
+            tvOrderID.setText(order.getOrderID());
+            tvDate.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "E dd MMM yyyy"));
+            tvTime.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "HH:mm"));
+            tvRecipientDetails.setText(new StringBuilder()
+                    .append(recipient.getRecipientName()).append("\n")
+                    .append(recipient.getPhoneNumber()).append("\n")
+                    .append(recipient.getAddress()).append(", ")
+                    .append(recipient.getRegion()).append(", ")
+                    .append(recipient.getCity()).append(", ")
+                    .append(recipient.getProvince()).append(" ")
+                    .append(recipient.getPostalCode()).append("\n")
+            );
+            tvTotalPrice.setText(TAPUtils.getInstance().formatCurrencyRp(order.getTotalPrice()));
+
+            // Set product preview
+            if (!order.getProducts().isEmpty()) {
+                TAPProductModel product = order.getProducts().get(0);
+                Glide.with(itemView.getContext()).load(product.getThumbnail()).into(ivProductThumbnail);
+                tvProductName.setText(product.getName());
+                tvProductPrice.setText(TAPUtils.getInstance().formatCurrencyRp(product.getPrice()));
+                tvProductQty.setText(String.format(Locale.getDefault(), "%s%d",
+                        itemView.getContext().getString(R.string.order_quantity), product.getQuantity()));
+                int size = order.getProducts().size();
+                if (1 < size) {
+                    // Show more items layout if there are more than 1 product
+                    tvButtonMoreItems.setText(String.format(Locale.getDefault(), itemView.getContext().getString(R.string.order_more_items), size));
+                    flButtonMoreItems.setVisibility(View.VISIBLE);
+                } else {
+                    flButtonMoreItems.setVisibility(View.GONE);
+                }
+            }
+
+            // Set notes
+            if (!order.getNotes().isEmpty()) {
+                tvNotes.setText(order.getNotes());
+                llNotes.setVisibility(View.VISIBLE);
+            } else {
+                llNotes.setVisibility(View.GONE);
+            }
+
+            // Set courier
+            if (null != order.getCourier()) {
+                TAPCourierModel courier = order.getCourier();
+                clCourier.setVisibility(View.VISIBLE);
+                tvCourierType.setText(courier.getCourierType());
+                tvCourierCost.setText(TAPUtils.getInstance().formatCurrencyRp(courier.getCourierCost()));
+                Glide.with(itemView.getContext()).load(courier.getCourierLogo().getThumbnail()).into(ivCourierLogo);
+            } else {
+                clCourier.setVisibility(View.GONE);
+            }
+
+            // Set additional cost
+            if (0 < order.getAdditionalCost()) {
+                tvAdditionalCost.setText(TAPUtils.getInstance().formatCurrencyRp(order.getAdditionalCost()));
+                clAdditionalCost.setVisibility(View.VISIBLE);
+                // TODO: 13 November 2018 CHECK IF ADDITIONAL WAS UPDATED
+                vBadgeAdditional.setVisibility(View.VISIBLE);
+            } else {
+                clAdditionalCost.setVisibility(View.GONE);
+            }
+
+            // Set discount
+            if (0 < order.getDiscount()) {
+                tvDiscount.setText(TAPUtils.getInstance().formatCurrencyRp(order.getDiscount()));
+                clDiscount.setVisibility(View.VISIBLE);
+                // TODO: 13 November 2018 CHECK IF DISCOUNT WAS UPDATED
+                vBadgeDiscount.setVisibility(View.VISIBLE);
+            } else {
+                clDiscount.setVisibility(View.GONE);
+            }
+
+            switch (order.getOrderStatus()) {
+                case NOT_CONFIRMED_BY_CUSTOMER:
+                    break;
+                case CANCELLED_BY_CUSTOMER:
+                    break;
+                case CUSTOMER_CONFIRMED:
+                    break;
+                case DECLINED_BY_SELLER:
+                    break;
+                case ACCEPTED_BY_SELLER:
+                    break;
+                case CUSTOMER_DISAGREED:
+                    break;
+                case WAITING_PAYMENT:
+                    break;
+                case PAYMENT_INCOMPLETE:
+                    break;
+                case ACTIVE:
+                    break;
+                case OVERPAID:
+                    break;
+                case WAITING_REVIEW:
+                    break;
+                case REVIEW_COMPLETED:
+                    break;
+            }
+
+            clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+            clCard.setOnClickListener(v -> viewOrderDetail());
+            clButtonDetail.setOnClickListener(v -> viewOrderDetail());
+        }
+
+        private void viewOrderDetail() {
+            // TODO: 13 November 2018 viewOrderDetail
         }
     }
 
@@ -397,7 +576,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             // Message from others
             // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
             if (null != civAvatar && null != item.getUser().getAvatarURL()) {
-                GlideApp.with(itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                Glide.with(itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
                 //civAvatar.setVisibility(View.VISIBLE);
             }
             if (null != tvUsername) {

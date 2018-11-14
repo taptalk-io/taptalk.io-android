@@ -165,7 +165,20 @@
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/black_44</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:lineSpacingExtra">3sp</item>
+    </style>
+
+    <style name="HpOrderStatusGuide">
+        <item name="android:fontFamily">@font/tap_font_latoregular</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:textColor">@color/black_44</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="HpOrderGrandTotal">
+        <item name="android:fontFamily">@font/tap_font_latobold</item>
+        <item name="android:textColor">@color/black_44</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="SwipeBackLayout">

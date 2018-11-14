@@ -17,7 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import io.taptalk.TapTalk.Helper.GlideApp;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.View.Adapter.TAPImageListAdapter;
@@ -85,7 +87,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         if (null != vm.getRoom().getRoomImage()) {
-            GlideApp.with(this).load(vm.getRoom().getRoomImage().getFullsize()).into(ivProfile);
+            Glide.with(this).load(vm.getRoom().getRoomImage().getFullsize()).apply(new RequestOptions().centerCrop()).into(ivProfile);
         }
 
         // TODO: 24 October 2018 CHECK IF ROOM TYPE IS GROUP

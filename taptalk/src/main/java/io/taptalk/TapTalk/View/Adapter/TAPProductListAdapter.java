@@ -7,15 +7,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -26,16 +27,16 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
     private List<TAPProductModel> items = new ArrayList<>();
     private TAPMessageModel messageModel;
     private TAPUserModel myUserModel;
+    private TAPChatListener chatListener;
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
 
-    public TAPProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel) {
+    public TAPProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
         setItems(TAPUtils.getInstance().fromJSON(
-                new TypeReference<List<TAPProductModel>>() {
-                },
-                messageModel.getBody()), false);
+                new TypeReference<List<TAPProductModel>>() {}, messageModel.getBody()), false);
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
+        this.chatListener = chatListener;
     }
 
     @NonNull
@@ -82,16 +83,16 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonOrder.setVisibility(View.GONE);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_ededed_1dp));
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
             } else {
                 // Other seller's products
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonOrder.setVisibility(View.VISIBLE);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_ededed_1dp));
+                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
-            GlideApp.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
+            Glide.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
             tvProductName.setText(item.getName());
             tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(item.getPrice()));
             tvProductDescription.setText(item.getDescription());
@@ -108,6 +109,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
             }
 
+            flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             tvButtonDetails.setOnClickListener(v -> viewProductDetail());
             tvButtonOrder.setOnClickListener(v -> orderProduct());
         }
