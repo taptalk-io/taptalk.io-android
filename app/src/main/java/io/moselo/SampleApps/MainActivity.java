@@ -4,8 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.Taptalk.Sample.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -14,7 +13,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        HomingPigeon.checkActiveUserToShowPage(this);
+        TapTalk.checkActiveUserToShowPage(this);
     }
 
     @Override

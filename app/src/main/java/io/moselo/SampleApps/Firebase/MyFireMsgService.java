@@ -5,13 +5,13 @@ import android.util.Log;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Helper.HpUtils;
-import com.moselo.HomingPigeon.Manager.HpNotificationManager;
-import com.moselo.HomingPigeon.Model.HpMessageModel;
 
 import java.security.GeneralSecurityException;
 
+import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.Sample.R;
 
 public class MyFireMsgService extends FirebaseMessagingService {
@@ -20,11 +20,11 @@ public class MyFireMsgService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        HpNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
-        HpMessageModel notifModel = HpUtils.getInstance().fromJSON(new TypeReference<HpMessageModel>() {
+        TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
+        TAPMessageModel notifModel = TAPUtils.getInstance().fromJSON(new TypeReference<TAPMessageModel>() {
         }, remoteMessage.getData().get("body"));
         try {
-            HpNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher, HpMessageModel.BuilderDecrypt(notifModel));
+            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher, TAPMessageModel.BuilderDecrypt(notifModel));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
@@ -34,6 +34,6 @@ public class MyFireMsgService extends FirebaseMessagingService {
     public void onNewToken(String s) {
         super.onNewToken(s);
         Log.e(TAG, "onNewToken: " + s);
-        HomingPigeon.saveFirebaseToken(s);
+        TapTalk.saveFirebaseToken(s);
     }
 }

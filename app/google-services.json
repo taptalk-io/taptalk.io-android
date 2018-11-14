@@ -41,7 +41,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:476210333801:android:a59138a5ea2a7928",
         "android_client_info": {
-          "package_name": "io.taptalk.TapTalk.Sample"
+          "package_name": "io.taptalk.TapTalkSample"
         }
       },
       "oauth_client": [
@@ -72,7 +72,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:476210333801:android:ac88961eda840e3c",
         "android_client_info": {
-          "package_name": "io.taptalk.TapTalk.Sample.dev"
+          "package_name": "io.taptalk.TapTalkSample.dev"
         }
       },
       "oauth_client": [

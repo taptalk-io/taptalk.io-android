@@ -3,20 +3,20 @@ package io.moselo.SampleApps;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
-import com.moselo.HomingPigeon.Helper.HomingPigeon;
-import com.moselo.HomingPigeon.Interface.HomingPigeonTokenInterface;
 
+import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Interface.TapTalkTokenInterface;
 import io.taptalk.Taptalk.Sample.R;
 
 public class SampleApplication extends Application {
 
-    HomingPigeonTokenInterface hpTokenInterface = HomingPigeon::refreshTokenExpired;
+    TapTalkTokenInterface hpTokenInterface = TapTalk::refreshTokenExpired;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        HomingPigeon.init(this, hpTokenInterface);
-        HomingPigeon.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
+        TapTalk.init(this, hpTokenInterface);
+        TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
