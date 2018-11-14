@@ -14,8 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <!--<receiver android:name="io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver"-->
-            <!--android:enabled="true"/>-->
+        <receiver android:name="io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver"
+            android:enabled="true"/>
 
         <service android:name="io.moselo.SampleApps.Firebase.MyFireMsgService">
             <intent-filter>
