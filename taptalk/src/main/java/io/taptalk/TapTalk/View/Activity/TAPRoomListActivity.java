@@ -6,7 +6,6 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Fragment.TAPRoomListFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPSearchChatFragment;
-import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 

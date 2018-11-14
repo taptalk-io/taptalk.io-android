@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.Taptalk.Sample.R;
+import io.taptalk.TaptalkSample.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

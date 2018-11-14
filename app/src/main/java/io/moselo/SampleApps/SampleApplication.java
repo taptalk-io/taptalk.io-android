@@ -6,7 +6,7 @@ import com.facebook.stetho.Stetho;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkTokenInterface;
-import io.taptalk.Taptalk.Sample.R;
+import io.taptalk.TaptalkSample.R;
 
 public class SampleApplication extends Application {
 

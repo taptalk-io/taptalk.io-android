@@ -12,7 +12,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.Taptalk.Sample.R;
+import io.taptalk.TaptalkSample.R;
 
 public class MyFireMsgService extends FirebaseMessagingService {
     private static final String TAG = MyFireMsgService.class.getSimpleName();
