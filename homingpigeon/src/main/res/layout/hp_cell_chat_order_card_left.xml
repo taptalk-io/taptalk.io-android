@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/grey_ea"
-            app:layout_constraintTop_toTopOf="@+id/tv_button_more_items" />
+            app:layout_constraintTop_toTopOf="@+id/fl_button_more_items" />
 
         <ImageView
             android:id="@+id/iv_product_thumbnail"
@@ -128,22 +128,40 @@
             app:layout_constraintTop_toBottomOf="@id/tv_product_name"
             tools:text="Quantity: 1" />
 
-        <TextView
-            android:id="@+id/tv_button_more_items"
+        <FrameLayout
+            android:id="@+id/fl_button_more_items"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/butterscotch"
-            android:fontFamily="@font/hp_font_latobold"
-            android:foreground="?attr/selectableItemBackground"
-            android:gravity="center_horizontal"
-            android:paddingStart="8dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="6dp"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            app:layout_constraintTop_toBottomOf="@id/iv_product_thumbnail"
-            tools:text="And 2 More Items" />
+            app:layout_constraintTop_toBottomOf="@id/iv_product_thumbnail">
+
+            <TextView
+                android:id="@+id/tv_button_more_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/paleCyan"
+                android:fontFamily="@font/hp_font_latobold"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_horizontal"
+                android:paddingStart="8dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/darkGreenBlue"
+                android:textSize="11sp"
+                tools:text="And 2 More Items" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/lightBlueGrey" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/lightBlueGrey"
+                android:layout_gravity="bottom"/>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tv_date_label"
@@ -156,7 +174,7 @@
             android:text="@string/date"
             app:layout_constraintEnd_toStartOf="@id/v_description_separator"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_button_more_items" />
+            app:layout_constraintTop_toBottomOf="@+id/fl_button_more_items" />
 
         <TextView
             android:id="@+id/tv_time_label"
@@ -169,7 +187,7 @@
             android:text="@string/time"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/v_description_separator"
-            app:layout_constraintTop_toBottomOf="@id/tv_button_more_items" />
+            app:layout_constraintTop_toBottomOf="@id/fl_button_more_items" />
 
         <TextView
             android:id="@+id/tv_date"
@@ -207,7 +225,7 @@
             app:layout_constraintBottom_toBottomOf="@id/tv_date"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_button_more_items" />
+            app:layout_constraintTop_toBottomOf="@id/fl_button_more_items" />
 
         <View
             android:layout_width="match_parent"
@@ -539,6 +557,7 @@
                 android:text="@string/order_status_guide_2" />
 
             <TextView
+                android:id="@+id/tv_report_order"
                 style="@style/HpOrderStatusGuide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -566,6 +585,7 @@
     </android.support.constraint.ConstraintLayout>
 
     <LinearLayout
+        android:id="@+id/ll_button_order_status"
         android:layout_width="match_parent"
         android:layout_height="28dp"
         android:layout_marginStart="16dp"

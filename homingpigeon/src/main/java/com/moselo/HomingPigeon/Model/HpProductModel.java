@@ -17,6 +17,7 @@ public class HpProductModel {
     @JsonProperty("type") private String type;
     private String description;
     private float rating;
+    private int quantity;
 
     @Ignore
     public HpProductModel(String name, HpImageURL thumbnail, HpPairIdNameModel subcategory, String productID, Long price, String type) {
@@ -92,5 +93,13 @@ public class HpProductModel {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

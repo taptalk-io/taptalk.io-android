@@ -144,6 +144,11 @@ public class HpTimeFormatter {
         }
     }
 
+    public String formatTime(long timestamp, String pattern) {
+        SimpleDateFormat timeSdf = new SimpleDateFormat(pattern, Locale.getDefault());
+        return timeSdf.format(timestamp);
+    }
+
     public String formatClock(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return timeSdf.format(timestamp);

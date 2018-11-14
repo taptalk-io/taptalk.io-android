@@ -113,6 +113,8 @@
     <string name="total_price">Total Price</string>
     <string name="order_now">Order Now</string>
     <string name="no_review_yet">No review yet</string>
+    <string name="order_quantity">Quantity: </string>
+    <string name="order_more_items">And %d More Items</string>
     <string name="view_your_order_status">View your order status</string>
     <string name="order_status_guide_1">The Expert has marked this order as finished.</string>
     <string name="order_status_guide_2">Please continue to review.\nIf the status is not suitable, you can</string>

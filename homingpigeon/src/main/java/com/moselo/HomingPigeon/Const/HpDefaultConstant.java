@@ -59,6 +59,21 @@ public class HpDefaultConstant {
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 3001;
     }
 
+    public static final class OrderStatus {
+        public static final int NOT_CONFIRMED_BY_CUSTOMER = 1;
+        public static final int CANCELLED_BY_CUSTOMER = 2;
+        public static final int CUSTOMER_CONFIRMED = 3;
+        public static final int DECLINED_BY_SELLER = 4;
+        public static final int ACCEPTED_BY_SELLER = 5;
+        public static final int CUSTOMER_DISAGREED = 6;
+        public static final int WAITING_PAYMENT = 7;
+        public static final int PAYMENT_INCOMPLETE = 8;
+        public static final int ACTIVE = 9;
+        public static final int OVERPAID = 10;
+        public static final int WAITING_REVIEW = 11;
+        public static final int REVIEW_COMPLETED = 12;
+    }
+
     public static final class Extras {
         public static final String ROOM_NAME = "roomName";
         public static final String MY_ID = "myID";
