@@ -8,44 +8,21 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:476210333801:android:27a363211a35f469",
-        "android_client_info": {
-          "package_name": "io.taptalk.TapTalk"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:476210333801:android:a59138a5ea2a7928",
+        "mobilesdk_app_id": "1:476210333801:android:8752f8db829fe881",
         "android_client_info": {
           "package_name": "io.taptalk.TapTalkSample"
         }
       },
       "oauth_client": [
         {
+          "client_id": "476210333801-nmggruqjs5vtjgnqe2our0havepd81kp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.taptalk.TapTalkSample",
+            "certificate_hash": "6c6b1bd22dd31348b2c6011c6295b57d2f9abfc0"
+          }
+        },
+        {
           "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -60,8 +37,20 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "476210333801-j9bk6tajut0mr12ph12m8ache02shth6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.taptalk.TapTalk"
+              }
+            }
+          ]
         },
         "ads_service": {
           "status": 2
@@ -70,12 +59,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:476210333801:android:ac88961eda840e3c",
+        "mobilesdk_app_id": "1:476210333801:android:32eeb9b64049b8c3",
         "android_client_info": {
           "package_name": "io.taptalk.TapTalkSample.dev"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "476210333801-bopo00gema48fukb9s65nherbk7btdim.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.taptalk.TapTalkSample.dev",
+            "certificate_hash": "6c6b1bd22dd31348b2c6011c6295b57d2f9abfc0"
+          }
+        },
         {
           "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
           "client_type": 3
@@ -91,8 +88,71 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "476210333801-j9bk6tajut0mr12ph12m8ache02shth6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.taptalk.TapTalk"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476210333801:android:a553125e6d9826ef",
+        "android_client_info": {
+          "package_name": "io.taptalk.TapTalkSample.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476210333801-3h3tabvnn4js03gt03nfuilp401r02hk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.taptalk.TapTalkSample.staging",
+            "certificate_hash": "6c6b1bd22dd31348b2c6011c6295b57d2f9abfc0"
+          }
+        },
+        {
+          "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476210333801-ffenpi1fqibc3o42c1m0c88tboj4oeib.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "476210333801-j9bk6tajut0mr12ph12m8ache02shth6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.taptalk.TapTalk"
+              }
+            }
+          ]
         },
         "ads_service": {
           "status": 2
