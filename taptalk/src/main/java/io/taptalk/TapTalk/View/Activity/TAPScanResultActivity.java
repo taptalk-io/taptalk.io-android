@@ -14,9 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -101,14 +103,14 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         cvResult.setVisibility(View.VISIBLE);
         civMyUserAvatar.setFillColor(getResources().getColor(R.color.vibrantGreen));
         civTheirContactAvatar.setFillColor(getResources().getColor(R.color.brightBlue));
-        GlideApp.with(this).load("https://img.uefa.com/imgml/uefacom/ucl/social/og-default.jpg")
-                .centerCrop().into(civTheirContactAvatar);
-        GlideApp.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
-                .centerCrop().into(civMyUserAvatar);
-        //GlideApp.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail())
-        //      .centerCrop().into(civTheirContactAvatar);
-        //GlideApp.with(this).load(myUserModel.getAvatarURL().getThumbnail())
-        //        .centerCrop().into(civMyUserAvatar);
+        Glide.with(this).load("https://img.uefa.com/imgml/uefacom/ucl/social/og-default.jpg")
+                .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
+        Glide.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
+                .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
+        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail())
+        //    .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
+        //Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail())
+        //        .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
         tvContactFullname.setText(addedContactUserModel.getName());
         tvContactUsername.setText(addedContactUserModel.getUsername());
         animateAddSuccess(addedContactUserModel);
@@ -129,14 +131,14 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         cvResult.setVisibility(View.VISIBLE);
         pbLoading.setVisibility(View.GONE);
         contactModel = userModel;
-        GlideApp.with(this).load("https://img.uefa.com/imgml/uefacom/ucl/social/og-default.jpg")
-                .centerCrop().into(civTheirContactAvatar);
-        GlideApp.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
-                .centerCrop().into(civMyUserAvatar);
-        //GlideApp.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail())
-        //      .centerCrop().into(civTheirContactAvatar);
-        //GlideApp.with(this).load(myUserModel.getAvatarURL().getThumbnail())
-        //        .centerCrop().into(civMyUserAvatar);
+        Glide.with(this).load("https://img.uefa.com/imgml/uefacom/ucl/social/og-default.jpg")
+                .apply(new RequestOptions()).into(civTheirContactAvatar);
+        Glide.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
+                .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
+        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail())
+        //      .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
+        //Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail())
+        //        .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
         tvContactFullname.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());
 

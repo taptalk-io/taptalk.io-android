@@ -16,9 +16,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -166,7 +167,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         constraintSet.applyTo(clSearchResult);
 
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
-            GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
+            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
         }
         // TODO: 25 October 2018 TESTING
         civAvatar.setImageResource(R.drawable.tap_bg_circle_vibrantgreen);
@@ -198,9 +199,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         constraintSet.applyTo(clSearchResult);
 
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
-            GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
+            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
             // TODO: 25 October 2018 LOAD COVER IMAGE
-            GlideApp.with(this).load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
+            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
         }
         // TODO: 25 October 2018 TESTING
         civAvatar.setImageResource(R.drawable.tap_bg_circle_vibrantgreen);

@@ -18,9 +18,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -28,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
@@ -239,7 +240,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             if (!item.getBody().isEmpty()) {
                 rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
                 int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                GlideApp.with(itemView.getContext()).load(item.getBody()).placeholder(placeholder).listener(new RequestListener<Drawable>() {
+                Glide.with(itemView.getContext()).load(item.getBody()).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         return false;
@@ -387,7 +388,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             // Set product preview
             if (!order.getProducts().isEmpty()) {
                 TAPProductModel product = order.getProducts().get(0);
-                GlideApp.with(itemView.getContext()).load(product.getThumbnail()).into(ivProductThumbnail);
+                Glide.with(itemView.getContext()).load(product.getThumbnail()).into(ivProductThumbnail);
                 tvProductName.setText(product.getName());
                 tvProductPrice.setText(TAPUtils.getInstance().formatCurrencyRp(product.getPrice()));
                 tvProductQty.setText(String.format(Locale.getDefault(), "%s%d",
@@ -416,7 +417,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                 clCourier.setVisibility(View.VISIBLE);
                 tvCourierType.setText(courier.getCourierType());
                 tvCourierCost.setText(TAPUtils.getInstance().formatCurrencyRp(courier.getCourierCost()));
-                GlideApp.with(itemView.getContext()).load(courier.getCourierLogo().getThumbnail()).into(ivCourierLogo);
+                Glide.with(itemView.getContext()).load(courier.getCourierLogo().getThumbnail()).into(ivCourierLogo);
             } else {
                 clCourier.setVisibility(View.GONE);
             }
@@ -575,7 +576,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             // Message from others
             // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
             if (null != civAvatar && null != item.getUser().getAvatarURL()) {
-                GlideApp.with(itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                Glide.with(itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
                 //civAvatar.setVisibility(View.VISIBLE);
             }
             if (null != tvUsername) {

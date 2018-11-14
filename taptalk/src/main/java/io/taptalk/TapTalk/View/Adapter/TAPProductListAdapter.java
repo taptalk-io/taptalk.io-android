@@ -7,12 +7,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -92,7 +92,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
-            GlideApp.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
+            Glide.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
             tvProductName.setText(item.getName());
             tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(item.getPrice()));
             tvProductDescription.setText(item.getDescription());
