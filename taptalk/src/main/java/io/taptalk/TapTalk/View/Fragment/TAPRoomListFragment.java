@@ -512,7 +512,7 @@ public class TAPRoomListFragment extends Fragment {
 
     private void updateQueryRoomListFromBackground() {
         if (TAPDataManager.getInstance().isNeedToQueryUpdateRoomList()) {
-            TAPDataManager.getInstance().getRoomList(true, dbListener);
+            runFullRefreshSequence();
             TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(false);
         }
     }
