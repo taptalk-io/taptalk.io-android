@@ -54,13 +54,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
-    }
-
-    @Override
-    protected void initView() {
-        //call API
-        TAPDataManager.getInstance().getMyContactListFromAPI(getContactView);
-
         //setting up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
             vm.getContactList().clear();
@@ -68,9 +61,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
             runOnUiThread(() -> adapter.setItems(vm.getSeparatedContacts()));
         });
+    }
 
-        getWindow().setBackgroundDrawable(null);
-
+    @Override
+    protected void initView() {
         llButtonNewContact = findViewById(R.id.ll_button_new_contact);
         llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
         llButtonNewGroup = findViewById(R.id.ll_button_new_group);
@@ -80,6 +74,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         tvTitle = findViewById(R.id.tv_title);
         rvContactList = findViewById(R.id.rv_contact_list);
         nsvNewChat = findViewById(R.id.nsv_new_chat);
+
+        getWindow().setBackgroundDrawable(null);
 
         OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
 
@@ -136,16 +132,4 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         Intent intent = new Intent(this, TAPBlockedListActivity.class);
         startActivity(intent);
     }
-
-    TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
-        @Override
-        public void onSuccess(TAPContactResponse response) {
-            // Insert contacts to database
-            List<TAPUserModel> users = new ArrayList<>();
-            for (TAPContactModel contact : response.getContacts()) {
-                users.add(contact.getUser().hpUserModelForAddToDB());
-            }
-            TAPDataManager.getInstance().insertMyContactToDatabase(users);
-        }
-    };
 }
