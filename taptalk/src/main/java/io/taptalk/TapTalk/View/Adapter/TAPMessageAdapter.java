@@ -466,6 +466,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     tvButtonOrderAction.setVisibility(View.GONE);
                     break;
                 case PAYMENT_INCOMPLETE:
+                    // User is required to complete payment before proceeding
+                    // Seller waits for user to complete payment
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    showOrderPrice(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showActionButton(c.getString(R.string.pay_now));
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderStatus(c.getString(R.string.payment_incomplete), c.getResources().getColor(R.color.orangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    }
                     break;
                 case ACTIVE:
                     // User waits for seller to complete the service
@@ -517,6 +531,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     clNotes.setVisibility(View.GONE);
                     clCourier.setVisibility(View.GONE);
                     llOrderStatusGuide.setVisibility(View.GONE);
+                    break;
+                default:
+                    // Undefined status
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvOrderStatus.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
                     break;
             }
 

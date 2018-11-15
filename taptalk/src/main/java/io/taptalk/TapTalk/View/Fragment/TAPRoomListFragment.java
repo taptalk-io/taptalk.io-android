@@ -37,10 +37,13 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
@@ -91,6 +94,7 @@ public class TAPRoomListFragment extends Fragment {
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
         updateQueryRoomListFromBackground();
+        new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
     }
 
     @Override
@@ -446,6 +450,19 @@ public class TAPRoomListFragment extends Fragment {
             Log.e(TAG, "onError: " + errorMessage);
             flSetupContainer.setVisibility(View.GONE);
             showNewChatButton();
+        }
+    };
+
+    private TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
+        @Override
+        public void onSuccess(TAPContactResponse response) {
+            // Insert contacts to database
+            List<TAPUserModel> users = new ArrayList<>();
+            for (TAPContactModel contact : response.getContacts()) {
+                users.add(contact.getUser().hpUserModelForAddToDB());
+            }
+            Log.e(TAG, "getContactView: " + users.size());
+            TAPDataManager.getInstance().insertMyContactToDatabase(users);
         }
     };
 

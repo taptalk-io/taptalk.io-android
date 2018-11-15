@@ -122,6 +122,7 @@
     <string name="waiting_confirmation">Waiting Confirmation</string>
     <string name="waiting_user_confirmation">Waiting User Confirmation</string>
     <string name="waiting_payment">Waiting Payment</string>
+    <string name="payment_incomplete">Payment Incomplete</string>
     <string name="order_canceled">Order Canceled</string>
     <string name="user_disagreed">User Disagreed</string>
     <string name="order_declined">Order Declined</string>
