@@ -103,7 +103,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
             case TYPE_BUBBLE_ORDER_CARD:
-                return new OrderVH(parent, R.layout.tap_cell_chat_order_card_left);
+                return new OrderVH(parent, R.layout.tap_cell_chat_order_card);
             default:
                 return new LogVH(parent, R.layout.tap_cell_chat_log);
         }
@@ -337,7 +337,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         private TextView tvDate, tvTime, tvRecipientDetails, tvCourierType, tvCourierCost, tvNotes;
         private TextView tvAdditionalCost, tvDiscount, tvTotalPrice, tvOrderStatus, tvReportOrder, tvButtonOrderAction;
         private ImageView ivProductThumbnail, ivCourierLogo;
-        private View vBadgeAdditional, vBadgeDiscount, vTotalPriceSeparator;
+        private View vCardMarginLeft, vCardMarginRight, vBadgeAdditional, vBadgeDiscount, vTotalPriceSeparator;
 
         OrderVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -374,6 +374,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             tvButtonOrderAction = itemView.findViewById(R.id.tv_button_order_action);
             ivProductThumbnail = itemView.findViewById(R.id.iv_product_thumbnail);
             ivCourierLogo = itemView.findViewById(R.id.iv_courier_logo);
+            vCardMarginLeft = itemView.findViewById(R.id.v_card_margin_left);
+            vCardMarginRight = itemView.findViewById(R.id.v_card_margin_right);
             vBadgeAdditional = itemView.findViewById(R.id.v_badge_additional_updated);
             vBadgeDiscount = itemView.findViewById(R.id.v_badge_discount_updated);
             vTotalPriceSeparator = itemView.findViewById(R.id.v_total_price_separator);
@@ -388,6 +390,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             tvDate.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "E dd MMM yyyy"));
             tvTime.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "HH:mm"));
             showProductPreview(order);
+
+            if (isMessageFromMySelf(item)) {
+                // Show bubble on right side
+                vCardMarginLeft.setVisibility(View.VISIBLE);
+                vCardMarginRight.setVisibility(View.GONE);
+                clButtonDetail.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purple_header_right_ripple));
+            } else {
+                // Show bubble on left side
+                vCardMarginLeft.setVisibility(View.GONE);
+                vCardMarginRight.setVisibility(View.VISIBLE);
+                clButtonDetail.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purple_header_left_ripple));
+            }
 
             // Update layout according to order status
             Context c = itemView.getContext();
@@ -544,7 +558,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     break;
                 default:
                     // Undefined status
-                    hideOrderPrice();
+                    showOrderStatus("", 0);
                     clRecipient.setVisibility(View.GONE);
                     clNotes.setVisibility(View.GONE);
                     clCourier.setVisibility(View.GONE);
@@ -570,43 +584,43 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                 }
                 switch (order.getOrderStatus()) {
                     case NOT_CONFIRMED_BY_CUSTOMER:
-                        Toast.makeText(c, order.getOrderStatus() + " - NOT_CONFIRMED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - NOT_CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                         break;
                     case CANCELLED_BY_CUSTOMER:
-                        Toast.makeText(c, order.getOrderStatus() + " - CANCELLED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - CANCELLED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                         break;
                     case CONFIRMED_BY_CUSTOMER:
-                        Toast.makeText(c, order.getOrderStatus() + " - CONFIRMED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                         break;
                     case DECLINED_BY_SELLER:
-                        Toast.makeText(c, order.getOrderStatus() + " - DECLINED_BY_SELLER", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - DECLINED_BY_SELLER", Toast.LENGTH_LONG).show();
                         break;
                     case ACCEPTED_BY_SELLER:
-                        Toast.makeText(c, order.getOrderStatus() + " - ACCEPTED_BY_SELLER", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - ACCEPTED_BY_SELLER", Toast.LENGTH_LONG).show();
                         break;
                     case DISAGREED_BY_CUSTOMER:
-                        Toast.makeText(c, order.getOrderStatus() + " - DISAGREED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - DISAGREED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                         break;
                     case WAITING_PAYMENT:
-                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_PAYMENT", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_PAYMENT", Toast.LENGTH_LONG).show();
                         break;
                     case PAYMENT_INCOMPLETE:
-                        Toast.makeText(c, order.getOrderStatus() + " - PAYMENT_INCOMPLETE", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - PAYMENT_INCOMPLETE", Toast.LENGTH_LONG).show();
                         break;
                     case ACTIVE:
-                        Toast.makeText(c, order.getOrderStatus() + " - ACTIVE", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - ACTIVE", Toast.LENGTH_LONG).show();
                         break;
                     case OVERPAID:
-                        Toast.makeText(c, order.getOrderStatus() + " - OVERPAID", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - OVERPAID", Toast.LENGTH_LONG).show();
                         break;
                     case WAITING_REVIEW:
-                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_REVIEW", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_REVIEW", Toast.LENGTH_LONG).show();
                         break;
                     case REVIEW_COMPLETED:
-                        Toast.makeText(c, order.getOrderStatus() + " - REVIEW_COMPLETED", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - REVIEW_COMPLETED", Toast.LENGTH_LONG).show();
                         break;
                     default:
-                        Toast.makeText(c, order.getOrderStatus() + " - UNDEFINED", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(c, order.getOrderStatus() + " - UNDEFINED", Toast.LENGTH_LONG).show();
                         break;
                 }
                 TAPMessageModel orderCard = TAPMessageModel.Builder(

@@ -6,14 +6,31 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/v_card_margin_left"
+        android:layout_width="48dp"
+        android:layout_height="1dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/cl_card"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/v_card_margin_right"
+        android:layout_width="48dp"
+        android:layout_height="1dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cl_card" />
+
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_card"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="64dp"
-        android:background="@drawable/tap_bg_white_rounded_10dp"
-        android:foreground="@drawable/tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp">
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/tap_bg_white_rounded_10dp_stroke_eaeaea_1dp"
+        app:layout_constraintEnd_toStartOf="@id/v_card_margin_right"
+        app:layout_constraintStart_toEndOf="@id/v_card_margin_left">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/cl_button_detail"
@@ -453,6 +470,22 @@
                 android:background="@color/grey_ea"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/grey_ea"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/grey_ea"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -509,6 +542,22 @@
                 android:background="@color/grey_ea"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/grey_ea"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/grey_ea"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -537,7 +586,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
                 android:gravity="end"
                 android:paddingBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -550,6 +598,22 @@
                 android:layout_height="1dp"
                 android:background="@color/grey_ea"
                 app:layout_constraintBottom_toBottomOf="parent" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/grey_ea"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/grey_ea"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -597,7 +661,7 @@
                 style="@style/HpOrderStatusGuide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="?attr/selectableItemBackground"
                 android:padding="3sp"
                 android:text="@string/order_status_guide_3"
                 android:textColor="@color/tomatoTwo" />
@@ -623,16 +687,16 @@
 
     <LinearLayout
         android:id="@+id/ll_button_order_status"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="28dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="64dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/tap_bg_cyan_button_ripple"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/cl_card"
+        app:layout_constraintStart_toStartOf="@id/cl_card"
         app:layout_constraintTop_toBottomOf="@id/cl_card">
 
         <ImageView

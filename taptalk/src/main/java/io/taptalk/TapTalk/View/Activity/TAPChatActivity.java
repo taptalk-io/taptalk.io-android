@@ -799,7 +799,58 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReadExpertNotesClicked() {
-
+            // TODO: 15 November 2018 DUMMY ORDER CARD FROM OTHER USER
+            TAPUserModel expert = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
+            TAPOrderModel order = new TAPOrderModel();
+            TAPImageURL dummyThumb = new TAPImageURL(
+                    "https://images.pexels.com/photos/722421/pexels-photo-722421.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                    "https://images.pexels.com/photos/722421/pexels-photo-722421.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
+            TAPProductModel dummyProduct = new TAPProductModel(
+                    "Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product",
+                    dummyThumb,
+                    new TAPPairIdNameModel("", ""),
+                    "0",
+                    6175927328506457372L,
+                    "");
+            dummyProduct.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
+            dummyProduct.setRating(4f);
+            List<TAPProductModel> dummyProductList = new ArrayList<>();
+            dummyProductList.add(dummyProduct);
+            TAPRecipientModel recipient = new TAPRecipientModel();
+            recipient.setRecipientID(Integer.valueOf(vm.getMyUserModel().getUserID()));
+            recipient.setRecipientName(vm.getMyUserModel().getName());
+            recipient.setPhoneNumber(vm.getMyUserModel().getPhoneNumber());
+            recipient.setAddress("Jl. Dempo 1 no. 51");
+            recipient.setPostalCode("12120");
+            recipient.setRegion("Kebayoran Baru");
+            recipient.setCity("Jakarta Selatan");
+            recipient.setProvince("DKI Jakarta");
+            TAPCourierModel courier = new TAPCourierModel();
+            courier.setCourierType("Same Day");
+            courier.setCourierCost(20000L);
+            courier.setCourierLogo(dummyThumb);
+            order.setCustomer(vm.getMyUserModel());
+            order.setSeller(expert);
+            order.setProducts(dummyProductList);
+            order.setRecipient(recipient);
+            order.setCourier(courier);
+            order.setOrderID("MD-987654321");
+            order.setOrderName("Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order");
+            order.setNotes("Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien.");
+            order.setOrderStatus(0);
+            order.setOrderTime(System.currentTimeMillis());
+            order.setAdditionalCost(55555L);
+            order.setDiscount(333333L);
+            order.setTotalPrice(7777777L);
+            String dummyOrderString = TAPUtils.getInstance().toJsonString(order);
+            TAPMessageModel orderCard = TAPMessageModel.Builder(
+                    dummyOrderString,
+                    vm.getRoom(),
+                    TYPE_ORDER_CARD,
+                    System.currentTimeMillis(),
+                    expert,
+                    vm.getMyUserModel().getUserID());
+            sendCustomKeyboardMessage(orderCard);
         }
 
         @Override
@@ -887,7 +938,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.getMyUserModel(),
                     vm.getOtherUserID());
             sendCustomKeyboardMessage(orderCard);
-
         }
 
         private void sendCustomKeyboardMessage(TAPMessageModel message) {
