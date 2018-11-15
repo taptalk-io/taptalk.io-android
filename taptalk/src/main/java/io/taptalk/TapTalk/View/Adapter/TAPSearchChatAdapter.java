@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.List;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -194,7 +194,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Load avatar
             if (null != room.getRoomImage() && null != room.getRoomImage().getThumbnail()) {
-                GlideApp.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
+                Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
             }
 
             // Set room name with highlighted text

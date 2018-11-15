@@ -25,6 +25,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +36,6 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
@@ -260,7 +262,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         tvRoomName.setText(vm.getRoom().getRoomName());
 
         if (null != vm.getRoom().getRoomImage()) {
-            GlideApp.with(this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civRoomImage);
+            Glide.with(this).load(vm.getRoom().getRoomImage().getThumbnail()).apply(new RequestOptions().centerCrop()).into(civRoomImage);
         } else {
             // TODO: 16 October 2018 TEMPORARY
             civRoomImage.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
@@ -914,14 +916,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
                         tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
                         if (null != vm.getMyUserModel().getAvatarURL()) {
-                            GlideApp.with(TAPChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
+                            Glide.with(TAPChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail())
+                                    .apply(new RequestOptions().centerCrop()).into(civMyAvatar);
                         } else {
                             // TODO: 16 October 2018 TEMPORARY
                             Log.e(TAG, "onSelectFinished: avatar null");
                             civMyAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
                         }
                         if (null != vm.getRoom().getRoomImage()) {
-                            GlideApp.with(TAPChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
+                            Glide.with(TAPChatActivity.this).load(vm.getRoom().getRoomImage()
+                                    .getThumbnail()).apply(new RequestOptions().centerCrop())
+                                    .into(civOtherUserAvatar);
                         } else {
                             // TODO: 16 October 2018 TEMPORARY
                             civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));

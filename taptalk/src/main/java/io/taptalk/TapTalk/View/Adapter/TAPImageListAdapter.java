@@ -5,9 +5,10 @@ import android.support.constraint.ConstraintLayout;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
-import io.taptalk.TapTalk.Helper.GlideApp;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPImageURL;
@@ -42,7 +43,7 @@ public class TAPImageListAdapter extends TAPBaseAdapter<TAPImageURL, TAPBaseView
         @Override
         protected void onBind(TAPImageURL item, int position) {
             clContainer.getLayoutParams().width = gridWidth;
-            GlideApp.with(itemView.getContext()).load(item.getThumbnail()).into(ivThumbnail);
+            Glide.with(itemView.getContext()).load(item.getThumbnail()).into(ivThumbnail);
 
             clContainer.setOnClickListener(v -> {
                 // TODO: 23 October 2018 VIEW FULL IMAGE

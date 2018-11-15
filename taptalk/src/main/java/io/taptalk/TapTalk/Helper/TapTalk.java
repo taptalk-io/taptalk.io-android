@@ -118,6 +118,7 @@ public class TapTalk {
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 isForeground = false;
+                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
             }
         });
     }
