@@ -45,7 +45,7 @@
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/tap_font_latobold"
                 android:letterSpacing="0.15"
-                android:text="@string/details"
+                android:text="@string/view_details"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="10sp"
@@ -86,7 +86,7 @@
 
             <TextView
                 android:id="@+id/tv_product_name"
-                style="HpProductDetailsLabel"
+                style="@style/HpProductDetailsLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
@@ -439,7 +439,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="8dp"
                 android:gravity="end"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -494,7 +494,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="8dp"
                 android:gravity="end"
                 android:textColor="@color/tomato"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -545,6 +545,7 @@
                 tools:text="Rp 3.890.000" />
 
             <View
+                android:id="@+id/v_total_price_separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/grey_ea"

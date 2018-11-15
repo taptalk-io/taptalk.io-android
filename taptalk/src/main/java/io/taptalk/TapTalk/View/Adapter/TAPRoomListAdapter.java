@@ -128,7 +128,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
             // Message failed to send
             else if (null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
+                ivMessageStatus.setImageResource(R.drawable.ic_tap_ic_failed_grey);
             }
             // Message sent
             else if (null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {

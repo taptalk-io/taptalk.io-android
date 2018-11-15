@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -49,6 +51,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
@@ -99,7 +102,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                 return new ImageVH(parent, R.layout.tap_cell_chat_image_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
-            case TYPE_ORDER_CARD:
+            case TYPE_BUBBLE_ORDER_CARD:
                 return new OrderVH(parent, R.layout.tap_cell_chat_order_card_left);
             default:
                 return new LogVH(parent, R.layout.tap_cell_chat_log);
@@ -126,14 +129,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     } else {
                         return TYPE_BUBBLE_TEXT_LEFT;
                     }
-                case TYPE_PRODUCT:
-                    return TYPE_BUBBLE_PRODUCT_LIST;
                 case TYPE_IMAGE:
                     if (isMessageFromMySelf(messageModel)) {
                         return TYPE_BUBBLE_IMAGE_RIGHT;
                     } else {
                         return TYPE_BUBBLE_IMAGE_LEFT;
                     }
+                case TYPE_PRODUCT:
+                    return TYPE_BUBBLE_PRODUCT_LIST;
+                case TYPE_ORDER_CARD:
+                    return TYPE_BUBBLE_ORDER_CARD;
                 default:
                     return TYPE_LOG;
             }
@@ -332,7 +337,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         private TextView tvDate, tvTime, tvRecipientDetails, tvCourierType, tvCourierCost, tvNotes;
         private TextView tvAdditionalCost, tvDiscount, tvTotalPrice, tvOrderStatus, tvReportOrder, tvButtonOrderAction;
         private ImageView ivProductThumbnail, ivCourierLogo;
-        private View vBadgeAdditional, vBadgeDiscount;
+        private View vBadgeAdditional, vBadgeDiscount, vTotalPriceSeparator;
 
         OrderVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -371,6 +376,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             ivCourierLogo = itemView.findViewById(R.id.iv_courier_logo);
             vBadgeAdditional = itemView.findViewById(R.id.v_badge_additional_updated);
             vBadgeDiscount = itemView.findViewById(R.id.v_badge_discount_updated);
+            vTotalPriceSeparator = itemView.findViewById(R.id.v_total_price_separator);
         }
 
         @Override
@@ -392,12 +398,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     showRecipient(order);
                     showNotes(order);
                     showCourier(order);
-                    showOrderPrice(order);
                     llOrderStatusGuide.setVisibility(View.GONE);
                     if (isCustomer(order)) {
+                        showOrderPrice(order, false);
                         showActionButton(c.getString(R.string.review_and_confirm));
                         tvOrderStatus.setVisibility(View.GONE);
                     } else {
+                        showOrderPrice(order, true);
                         showOrderStatus(c.getString(R.string.waiting_user_confirmation), c.getResources().getColor(R.color.orangeish));
                         tvButtonOrderAction.setVisibility(View.GONE);
                     }
@@ -418,12 +425,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     showRecipient(order);
                     showNotes(order);
                     showCourier(order);
-                    showOrderPrice(order);
                     llOrderStatusGuide.setVisibility(View.GONE);
                     if (isCustomer(order)) {
+                        showOrderPrice(order, true);
                         showOrderStatus(c.getString(R.string.waiting_confirmation), c.getResources().getColor(R.color.orangeish));
                         tvButtonOrderAction.setVisibility(View.GONE);
                     } else {
+                        showOrderPrice(order, false);
                         showActionButton(c.getString(R.string.review_and_confirm));
                         tvOrderStatus.setVisibility(View.GONE);
                     }
@@ -445,12 +453,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     showRecipient(order);
                     showNotes(order);
                     showCourier(order);
-                    showOrderPrice(order);
                     llOrderStatusGuide.setVisibility(View.GONE);
                     if (isCustomer(order)) {
+                        showOrderPrice(order, false);
                         showActionButton(c.getString(R.string.pay_now));
                         tvOrderStatus.setVisibility(View.GONE);
                     } else {
+                        showOrderPrice(order, true);
                         showOrderStatus(c.getString(R.string.waiting_payment), c.getResources().getColor(R.color.orangeish));
                         tvButtonOrderAction.setVisibility(View.GONE);
                     }
@@ -471,12 +480,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     showRecipient(order);
                     showNotes(order);
                     showCourier(order);
-                    showOrderPrice(order);
                     llOrderStatusGuide.setVisibility(View.GONE);
                     if (isCustomer(order)) {
+                        showOrderPrice(order, false);
                         showActionButton(c.getString(R.string.pay_now));
                         tvOrderStatus.setVisibility(View.GONE);
                     } else {
+                        showOrderPrice(order, true);
                         showOrderStatus(c.getString(R.string.payment_incomplete), c.getResources().getColor(R.color.orangeish));
                         tvButtonOrderAction.setVisibility(View.GONE);
                     }
@@ -550,6 +560,66 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             clButtonDetail.setOnClickListener(v -> viewOrderDetail());
             tvReportOrder.setOnClickListener(v -> reportOrder());
             llButtonOrderStatus.setOnClickListener(v -> viewOrderStatus());
+
+            // TODO: 15 November 2018 TESTING ORDER STATUS
+            clButtonDetail.setOnClickListener(v -> {
+                if (order.getOrderStatus() < 12) {
+                    order.setOrderStatus(order.getOrderStatus() + 1);
+                } else {
+                    order.setOrderStatus(0);
+                }
+                switch (order.getOrderStatus()) {
+                    case NOT_CONFIRMED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - NOT_CONFIRMED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        break;
+                    case CANCELLED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - CANCELLED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        break;
+                    case CONFIRMED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - CONFIRMED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DECLINED_BY_SELLER:
+                        Toast.makeText(c, order.getOrderStatus() + " - DECLINED_BY_SELLER", Toast.LENGTH_SHORT).show();
+                        break;
+                    case ACCEPTED_BY_SELLER:
+                        Toast.makeText(c, order.getOrderStatus() + " - ACCEPTED_BY_SELLER", Toast.LENGTH_SHORT).show();
+                        break;
+                    case DISAGREED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - DISAGREED_BY_CUSTOMER", Toast.LENGTH_SHORT).show();
+                        break;
+                    case WAITING_PAYMENT:
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_PAYMENT", Toast.LENGTH_SHORT).show();
+                        break;
+                    case PAYMENT_INCOMPLETE:
+                        Toast.makeText(c, order.getOrderStatus() + " - PAYMENT_INCOMPLETE", Toast.LENGTH_SHORT).show();
+                        break;
+                    case ACTIVE:
+                        Toast.makeText(c, order.getOrderStatus() + " - ACTIVE", Toast.LENGTH_SHORT).show();
+                        break;
+                    case OVERPAID:
+                        Toast.makeText(c, order.getOrderStatus() + " - OVERPAID", Toast.LENGTH_SHORT).show();
+                        break;
+                    case WAITING_REVIEW:
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_REVIEW", Toast.LENGTH_SHORT).show();
+                        break;
+                    case REVIEW_COMPLETED:
+                        Toast.makeText(c, order.getOrderStatus() + " - REVIEW_COMPLETED", Toast.LENGTH_SHORT).show();
+                        break;
+                    default:
+                        Toast.makeText(c, order.getOrderStatus() + " - UNDEFINED", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                TAPMessageModel orderCard = TAPMessageModel.Builder(
+                        TAPUtils.getInstance().toJsonString(order),
+                        item.getRoom(),
+                        TYPE_ORDER_CARD,
+                        System.currentTimeMillis(),
+                        item.getUser(),
+                        item.getRecipientID());
+                setItemAt(position, orderCard);
+                notifyItemChanged(position);
+                listener.onBubbleExpanded();
+            });
         }
 
         private boolean isCustomer(TAPOrderModel order) {
@@ -560,10 +630,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             if (!order.getProducts().isEmpty()) {
                 // Show product preview
                 TAPProductModel product = order.getProducts().get(0);
-                Glide.with(itemView.getContext()).load(product.getThumbnail()).into(ivProductThumbnail);
+                Log.e(TAG, "showProductPreview: " + product.getProductImage());
+                Glide.with(itemView.getContext()).load(product.getProductImage().getThumbnail()).into(ivProductThumbnail);
                 tvProductName.setText(product.getName());
                 tvProductPrice.setText(TAPUtils.getInstance().formatCurrencyRp(product.getPrice()));
-                tvProductQty.setText(String.format(Locale.getDefault(), "%s%d",
+                tvProductQty.setText(String.format(Locale.getDefault(), "%s %d",
                         itemView.getContext().getString(R.string.order_quantity), product.getQuantity()));
                 int size = order.getProducts().size();
                 if (1 < size) {
@@ -591,13 +662,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                         .append(recipient.getRegion()).append(", ")
                         .append(recipient.getCity()).append(", ")
                         .append(recipient.getProvince()).append(" ")
-                        .append(recipient.getPostalCode()).append("\n"));
+                        .append(recipient.getPostalCode()));
                 clRecipient.setVisibility(View.VISIBLE);
             } else {
                 // Hide recipient
                 clRecipient.setVisibility(View.GONE);
             }
-
         }
 
         private void showNotes(TAPOrderModel order) {
@@ -641,7 +711,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         private void showDiscount(TAPOrderModel order) {
             if (0 < order.getDiscount()) {
                 // Show discount
-                tvDiscount.setText(TAPUtils.getInstance().formatCurrencyRp(order.getDiscount()));
+                tvDiscount.setText(String.format("(%s)", TAPUtils.getInstance().formatCurrencyRp(order.getDiscount())));
                 clDiscount.setVisibility(View.VISIBLE);
                 // TODO: 13 November 2018 CHECK IF DISCOUNT WAS UPDATED
                 vBadgeDiscount.setVisibility(View.VISIBLE);
@@ -651,9 +721,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             }
         }
 
-        private void showOrderPrice(TAPOrderModel order) {
+        private void showOrderPrice(TAPOrderModel order, boolean showSeparator) {
             tvTotalPrice.setText(TAPUtils.getInstance().formatCurrencyRp(order.getTotalPrice()));
             clTotalPrice.setVisibility(View.VISIBLE);
+            if (showSeparator) {
+                vTotalPriceSeparator.setVisibility(View.VISIBLE);
+            } else {
+                vTotalPriceSeparator.setVisibility(View.GONE);
+            }
             showAdditionalCost(order);
             showDiscount(order);
         }
