@@ -569,11 +569,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                 default:
                     // Undefined status
                     showOrderStatus("", 0);
+                    hideOrderPrice();
                     clRecipient.setVisibility(View.GONE);
                     clNotes.setVisibility(View.GONE);
                     clCourier.setVisibility(View.GONE);
                     llOrderStatusGuide.setVisibility(View.GONE);
-                    tvOrderStatus.setVisibility(View.GONE);
                     tvButtonOrderAction.setVisibility(View.GONE);
                     break;
             }
