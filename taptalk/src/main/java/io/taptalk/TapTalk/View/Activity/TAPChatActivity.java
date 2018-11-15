@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardModel;
@@ -89,6 +90,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private SwipeBackInterface swipeInterface = () -> TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
 
+    //interface for message status
+    public interface MessageStatusInterface {
+        void onReadStatus(List<TAPMessageModel> messageModels);
+    }
+
     // View
     private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
@@ -110,6 +116,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatViewModel vm;
 
     private TAPSocketListener socketListener;
+    private MessageStatusInterface messageStatusInterface;
 
     //enum Scrolling
     private enum STATE {
@@ -155,6 +162,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
 
+        messageStatusInterface = messageModels -> new Thread(() -> {
+            Log.e(TAG, "initView: "+messageModels.size() );
+            for (TAPMessageModel model : messageModels) {
+                vm.updateMessagePointerRead(model);
+                Log.e(TAG, "onReadStatus: "+model.getIsRead()+" "+model.getBody() );
+            }
+            //hpMessageAdapter.notifyDataSetChanged();
+        }).start();
+
+        TAPMessageStatusManager.getInstance().triggerCallReadMessageApiScheduler(messageStatusInterface);
+
         if (vm.isInitialAPICallFinished())
             callApiAfter();
     }
@@ -166,6 +184,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) TAPChatManager.getInstance().saveMessageToDraft(draft);
         else TAPChatManager.getInstance().removeDraft();
+
+        // Stop Message Status Scheduler
+        TAPMessageStatusManager.getInstance().updateMessageStatusWhenCloseRoom(messageStatusInterface);
 
         TAPChatManager.getInstance().deleteActiveRoom();
     }

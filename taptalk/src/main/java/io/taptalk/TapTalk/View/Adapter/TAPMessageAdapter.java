@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -38,6 +39,7 @@ import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOrderModel;
@@ -176,6 +178,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             tvMessageBody.setText(item.getBody());
+
+            new Thread(() -> {
+                if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)) {
+                    Log.e(TAG, "onBind: "+item.getBody()+" "+item.getIsRead() );
+                    TAPMessageStatusManager.getInstance().addReadMessageQueue(item);
+                }
+            }).start();
 
             // TODO: 1 November 2018 TESTING REPLY LAYOUT
             if (null != item.getReplyTo() && !item.getReplyTo().getBody().isEmpty()) {
@@ -367,7 +376,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {}, item.getBody());
+            TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
+            }, item.getBody());
             TAPRecipientModel recipient = order.getRecipient();
 
             // Set initial data
