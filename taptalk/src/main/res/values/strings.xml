@@ -103,8 +103,8 @@
     <!--Product/Order-->
     <string name="price">Price</string>
     <string name="rating">Rating</string>
-    <string name="date">Date</string>
-    <string name="time">Time</string>
+    <string name="order_date">Due Date</string>
+    <string name="order_time">Due Time</string>
     <string name="recipient">Recipient</string>
     <string name="courier">Courier</string>
     <string name="notes">Notes</string>
@@ -119,6 +119,22 @@
     <string name="order_status_guide_1">The Expert has marked this order as finished.</string>
     <string name="order_status_guide_2">Please continue to review.\nIf the status is not suitable, you can</string>
     <string name="order_status_guide_3">report this order.</string>
+    <string name="waiting_confirmation">Waiting Confirmation</string>
+    <string name="waiting_user_confirmation">Waiting User Confirmation</string>
+    <string name="waiting_payment">Waiting Payment</string>
+    <string name="order_canceled">Order Canceled</string>
+    <string name="user_disagreed">User Disagreed</string>
+    <string name="order_declined">Order Declined</string>
+    <string name="order_overpaid">Order Overpaid</string>
+    <string name="order_expired">Order Expired</string>
+    <string name="order_reported">Order Reported</string>
+    <string name="active_order">Active Order</string>
+    <string name="payment_confirmed">Payment Confirmed</string>
+    <string name="order_completed">Order Completed</string>
+    <string name="pay_now">Pay Now</string>
+    <string name="review_and_confirm">Review and Confirm</string>
+    <string name="mark_as_finished">Mark as Finished</string>
+    <string name="write_review">Write Review</string>
 
     <!--Intent-->
     <string name="intent_pick_image">image/*</string>

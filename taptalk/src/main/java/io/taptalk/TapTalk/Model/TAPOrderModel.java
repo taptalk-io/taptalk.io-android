@@ -4,6 +4,8 @@ import java.util.List;
 
 public class TAPOrderModel {
 
+    private TAPUserModel customer;
+    private TAPUserModel seller;
     private List<TAPProductModel> products;
     private TAPRecipientModel recipient;
     private TAPCourierModel courier;
@@ -17,6 +19,22 @@ public class TAPOrderModel {
     private Long totalPrice;
 
     public TAPOrderModel() {}
+
+    public TAPUserModel getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(TAPUserModel customer) {
+        this.customer = customer;
+    }
+
+    public TAPUserModel getSeller() {
+        return seller;
+    }
+
+    public void setSeller(TAPUserModel seller) {
+        this.seller = seller;
+    }
 
     public List<TAPProductModel> getProducts() {
         return products;
