@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.moselo.HomingPigeon.Sample">
+    package="io.taptalk.TaptalkSample">
 
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name="com.moselo.SampleApps.SampleApplication"
+        android:name="io.moselo.SampleApps.SampleApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,16 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <receiver android:name="com.moselo.HomingPigeon.BroadcastReceiver.HpReplyBroadcastReceiver"
+        <receiver android:name="io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver"
             android:enabled="true"/>
 
-        <service android:name="com.moselo.SampleApps.Firebase.MyFireMsgService">
+        <service android:name="io.moselo.SampleApps.Firebase.MyFireMsgService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <activity android:name="com.moselo.SampleApps.MainActivity">
+        <activity android:name="io.moselo.SampleApps.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />

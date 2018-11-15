@@ -1,1 +1,1 @@
-include ':app', ':homingpigeon'
+include ':app', ':taptalk'
