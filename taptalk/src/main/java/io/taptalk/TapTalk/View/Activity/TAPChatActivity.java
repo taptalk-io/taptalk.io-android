@@ -365,6 +365,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
         ivToBottom.setOnClickListener(v -> scrollToBottom());
+        flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked());
     }
 
     private void initHelper() {
@@ -550,6 +551,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void hideKeyboards() {
         rvCustomKeyboard.setVisibility(View.GONE);
         ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
+        TAPUtils.getInstance().dismissKeyboard(this);
     }
 
     private void openAttachMenu() {
@@ -785,7 +787,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onOutsideClicked() {
-            TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+//            TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+            hideKeyboards();
         }
 
         @Override
