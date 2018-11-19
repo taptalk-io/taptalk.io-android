@@ -443,7 +443,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener
             vm.addPendingRecyclerMessage(newMessage);
-            Log.e(TAG, "addPendingRecyclerMessage: " + newMessage.getLocalID());
         } else {
             checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
@@ -482,20 +481,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (newMessage.getType() != TYPE_ORDER_CARD) {
             return;
         }
-        Log.e(TAG, "addNewMessage TYPE_ORDER_CARD: " + vm.getOrderModel(newMessage).getOrderID());
-        Log.e(TAG, "addNewMessage ongoingOrders: " + vm.getOngoingOrders().size());
         // Only the latest card of the same order ID may be shown
         TAPMessageModel oldOrderCard = vm.getPreviousOrderWithSameID(newMessage);
-        if (null == oldOrderCard) {
-            Log.e(TAG, "addNewMessage: oldOrderCard null");
-        } else {
-            Log.e(TAG, "addNewMessage: oldOrderCard " + vm.getOrderModel(oldOrderCard).getOrderID());
-        }
 
         // Hide newMessage if it is older than ongoing card
         if (null != oldOrderCard && oldOrderCard.getCreated() > newMessage.getCreated()) {
             newMessage.setHidden(true);
-            Log.e(TAG, "newMessage is older: ");
             return;
         }
 
@@ -506,7 +497,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             // TODO: 19 November 2018 UPDATE MESSAGE IN DATABASE, UNCOMMENT BELOW
             //TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(oldOrderCard));
             runOnUiThread(() -> hpMessageAdapter.notifyItemRemoved(hpMessageAdapter.getItems().indexOf(oldOrderCard)));
-            Log.e(TAG, "notifyItemRemoved: " + hpMessageAdapter.getItems().indexOf(oldOrderCard));
         }
 
         int orderStatus = vm.getOrderModel(newMessage).getOrderStatus();
@@ -521,7 +511,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             case WAITING_REVIEW:
             default:
                 vm.addOngoingOrderCard(newMessage);
-                Log.e(TAG, "addOngoingOrderCard: " + vm.getOrderModel(newMessage).getOrderID());
                 break;
         }
     }
@@ -878,7 +867,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReadExpertNotesClicked() {
-            Log.e(TAG, "onReadExpertNotesClicked: ");
             // TODO: 15 November 2018 DUMMY ORDER CARD FROM OTHER USER
             TAPUserModel expert = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
             TAPOrderModel order = new TAPOrderModel();
@@ -935,7 +923,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onSendServicesClicked() {
-            Log.e(TAG, "onSendServicesClicked: ");
             // TODO: 12 November 2018 DUMMY PRODUCT LIST
             TAPImageURL dummyThumb = new TAPImageURL(
                     "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
@@ -967,7 +954,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onCreateOrderClicked() {
-            Log.e(TAG, "onCreateOrderClicked: ");
             // TODO: 15 November 2018 DUMMY ORDER CARD
             TAPUserModel customer = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
             TAPOrderModel order = new TAPOrderModel();
@@ -1086,7 +1072,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     addNewMessage(pendingMessage);
                     vm.addMessagePointer(pendingMessage);
                     vm.removePendingRecyclerMessage(pendingMessage);
-                    Log.e(TAG, "endTransition add message: " + pendingMessage.getLocalID());
                 }
             }
         }
@@ -1121,7 +1106,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                                     .apply(new RequestOptions().centerCrop()).into(civMyAvatar);
                         } else {
                             // TODO: 16 October 2018 TEMPORARY
-                            Log.e(TAG, "onSelectFinished: avatar null");
                             civMyAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
                         }
                         if (null != vm.getRoom().getRoomImage()) {
@@ -1299,7 +1283,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         .setMessage(error.getMessage())
                         .show();
             }
-            Log.e(TAG, "onError: " + error.getMessage());
 
             if (0 < vm.getMessageModels().size())
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
@@ -1313,7 +1296,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         .setMessage(errorMessage)
                         .show();
             }
-            Log.e(TAG, "onError: " + errorMessage);
 
             if (0 < vm.getMessageModels().size())
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
