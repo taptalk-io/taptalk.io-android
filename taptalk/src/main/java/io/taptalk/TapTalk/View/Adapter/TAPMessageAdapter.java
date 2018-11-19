@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -38,6 +41,7 @@ import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOrderModel;
@@ -48,19 +52,22 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACCEPTED_BY_SELLER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACTIVE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CANCELLED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CUSTOMER_CONFIRMED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CUSTOMER_DISAGREED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CONFIRMED_BY_CUSTOMER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.DECLINED_BY_SELLER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.DISAGREED_BY_CUSTOMER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.NOT_CONFIRMED_BY_CUSTOMER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.OVERPAID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.PAYMENT_INCOMPLETE;
@@ -91,12 +98,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                 return new TextVH(parent, R.layout.tap_cell_chat_text_right, viewType);
             case TYPE_BUBBLE_TEXT_LEFT:
                 return new TextVH(parent, R.layout.tap_cell_chat_text_left, viewType);
-            case TYPE_BUBBLE_PRODUCT_LIST:
-                return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
             case TYPE_BUBBLE_IMAGE_RIGHT:
                 return new ImageVH(parent, R.layout.tap_cell_chat_image_right, viewType);
             case TYPE_BUBBLE_IMAGE_LEFT:
                 return new ImageVH(parent, R.layout.tap_cell_chat_image_left, viewType);
+            case TYPE_BUBBLE_PRODUCT_LIST:
+                return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
+            case TYPE_BUBBLE_ORDER_CARD:
+                return new OrderVH(parent, R.layout.tap_cell_chat_order_card);
+            case TYPE_EMPTY:
+                return new EmptyVH(parent, R.layout.tap_cell_empty);
             default:
                 return new LogVH(parent, R.layout.tap_cell_chat_log);
         }
@@ -112,8 +123,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         try {
             TAPMessageModel messageModel = getItemAt(position);
             int messageType = 0;
-            if (null != messageModel)
+            if (null != messageModel && null != messageModel.getHidden() && messageModel.getHidden()) {
+                // Return empty layout if item is hidden
+                return TYPE_EMPTY;
+            } else if (null != messageModel) {
                 messageType = messageModel.getType();
+            }
 
             switch (messageType) {
                 case TYPE_TEXT:
@@ -122,14 +137,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     } else {
                         return TYPE_BUBBLE_TEXT_LEFT;
                     }
-                case TYPE_PRODUCT:
-                    return TYPE_BUBBLE_PRODUCT_LIST;
                 case TYPE_IMAGE:
                     if (isMessageFromMySelf(messageModel)) {
                         return TYPE_BUBBLE_IMAGE_RIGHT;
                     } else {
                         return TYPE_BUBBLE_IMAGE_LEFT;
                     }
+                case TYPE_PRODUCT:
+                    return TYPE_BUBBLE_PRODUCT_LIST;
+                case TYPE_ORDER_CARD:
+                    return TYPE_BUBBLE_ORDER_CARD;
                 default:
                     return TYPE_LOG;
             }
@@ -176,6 +193,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             tvMessageBody.setText(item.getBody());
+
+            new Thread(() -> {
+                if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)) {
+                    Log.e(TAG, "onBind: " + item.getBody() + " " + item.getIsRead());
+                    TAPMessageStatusManager.getInstance().addReadMessageQueue(item);
+                }
+            }).start();
 
             // TODO: 1 November 2018 TESTING REPLY LAYOUT
             if (null != item.getReplyTo() && !item.getReplyTo().getBody().isEmpty()) {
@@ -321,25 +345,29 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
 
     public class OrderVH extends TAPBaseViewHolder<TAPMessageModel> {
 
-        private ConstraintLayout clContainer, clCard, clButtonDetail, clCourier, clAdditionalCost, clDiscount;
-        private FrameLayout flButtonMoreItems;
-        private LinearLayout llNotes, llOrderStatusGuide, llButtonOrderStatus;
+        private ConstraintLayout clContainer, clCard, clButtonDetail, clProductPreview, clButtonMoreItems, clDateTime;
+        private ConstraintLayout clRecipient, clNotes, clCourier, clAdditionalCost, clDiscount, clTotalPrice;
+        private LinearLayout llOrderStatusGuide, llButtonOrderStatus;
         private TextView tvOrderID, tvProductName, tvProductPrice, tvProductQty, tvButtonMoreItems;
         private TextView tvDate, tvTime, tvRecipientDetails, tvCourierType, tvCourierCost, tvNotes;
         private TextView tvAdditionalCost, tvDiscount, tvTotalPrice, tvOrderStatus, tvReportOrder, tvButtonOrderAction;
         private ImageView ivProductThumbnail, ivCourierLogo;
-        private View vBadgeAdditional, vBadgeDiscount;
+        private View vCardMarginLeft, vCardMarginRight, vBadgeAdditional, vBadgeDiscount, vTotalPriceSeparator;
 
         OrderVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             clContainer = itemView.findViewById(R.id.cl_container);
             clCard = itemView.findViewById(R.id.cl_card);
             clButtonDetail = itemView.findViewById(R.id.cl_button_detail);
+            clProductPreview = itemView.findViewById(R.id.cl_product_preview);
+            clButtonMoreItems = itemView.findViewById(R.id.cl_button_more_items);
+            clDateTime = itemView.findViewById(R.id.cl_date_time);
+            clRecipient = itemView.findViewById(R.id.cl_recipient);
+            clNotes = itemView.findViewById(R.id.cl_notes);
             clCourier = itemView.findViewById(R.id.cl_courier);
             clAdditionalCost = itemView.findViewById(R.id.cl_additional_cost);
             clDiscount = itemView.findViewById(R.id.cl_discount);
-            flButtonMoreItems = itemView.findViewById(R.id.fl_button_more_items);
-            llNotes = itemView.findViewById(R.id.ll_notes);
+            clTotalPrice = itemView.findViewById(R.id.cl_total_price);
             llOrderStatusGuide = itemView.findViewById(R.id.ll_order_status_guide);
             llButtonOrderStatus = itemView.findViewById(R.id.ll_button_order_status);
             tvOrderID = itemView.findViewById(R.id.tv_order_id);
@@ -361,121 +389,414 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             tvButtonOrderAction = itemView.findViewById(R.id.tv_button_order_action);
             ivProductThumbnail = itemView.findViewById(R.id.iv_product_thumbnail);
             ivCourierLogo = itemView.findViewById(R.id.iv_courier_logo);
+            vCardMarginLeft = itemView.findViewById(R.id.v_card_margin_left);
+            vCardMarginRight = itemView.findViewById(R.id.v_card_margin_right);
             vBadgeAdditional = itemView.findViewById(R.id.v_badge_additional_updated);
             vBadgeDiscount = itemView.findViewById(R.id.v_badge_discount_updated);
+            vTotalPriceSeparator = itemView.findViewById(R.id.v_total_price_separator);
         }
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {}, item.getBody());
-            TAPRecipientModel recipient = order.getRecipient();
+//            if (null != item.getHidden() && item.getHidden()) {
+//                Log.e(TAG, "onBind item hidden :" + item.getBody());
+//                clContainer.setVisibility(View.GONE);
+//                clContainer.setLayoutParams(new ConstraintLayout.LayoutParams(0, 0));
+//                return;
+//            }
+            TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
+            }, item.getBody());
 
             // Set initial data
             tvOrderID.setText(order.getOrderID());
             tvDate.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "E dd MMM yyyy"));
             tvTime.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "HH:mm"));
-            tvRecipientDetails.setText(new StringBuilder()
-                    .append(recipient.getRecipientName()).append("\n")
-                    .append(recipient.getPhoneNumber()).append("\n")
-                    .append(recipient.getAddress()).append(", ")
-                    .append(recipient.getRegion()).append(", ")
-                    .append(recipient.getCity()).append(", ")
-                    .append(recipient.getProvince()).append(" ")
-                    .append(recipient.getPostalCode()).append("\n")
-            );
-            tvTotalPrice.setText(TAPUtils.getInstance().formatCurrencyRp(order.getTotalPrice()));
+//            clContainer.setVisibility(View.VISIBLE);
+//            clContainer.setLayoutParams(clContainer.getLayoutParams());
+            showProductPreview(order);
 
-            // Set product preview
+            if (isMessageFromMySelf(item)) {
+                // Show bubble on right side
+                vCardMarginLeft.setVisibility(View.VISIBLE);
+                vCardMarginRight.setVisibility(View.GONE);
+                clButtonDetail.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purple_header_right_ripple));
+            } else {
+                // Show bubble on left side
+                vCardMarginLeft.setVisibility(View.GONE);
+                vCardMarginRight.setVisibility(View.VISIBLE);
+                clButtonDetail.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purple_header_left_ripple));
+            }
+
+            // Update layout according to order status
+            Context c = itemView.getContext();
+            switch (order.getOrderStatus()) {
+                case NOT_CONFIRMED_BY_CUSTOMER:
+                    // Customer can confirm order
+                    // Seller waits for user confirmation
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, false);
+                        showActionButton(c.getString(R.string.review_and_confirm));
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, true);
+                        showOrderStatus(c.getString(R.string.waiting_user_confirmation), c.getResources().getColor(R.color.orangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    }
+                    break;
+                case CANCELLED_BY_CUSTOMER:
+                    // Order is canceled
+                    showOrderStatus(c.getString(R.string.order_canceled), c.getResources().getColor(R.color.tomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
+                    break;
+                case CONFIRMED_BY_CUSTOMER:
+                    // Customer waits for seller confirmation
+                    // Seller can confirm order
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, true);
+                        showOrderStatus(c.getString(R.string.waiting_confirmation), c.getResources().getColor(R.color.orangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, false);
+                        showActionButton(c.getString(R.string.review_and_confirm));
+                        tvOrderStatus.setVisibility(View.GONE);
+                    }
+                    break;
+                case DECLINED_BY_SELLER:
+                    // Order is canceled
+                    showOrderStatus(c.getString(R.string.order_declined), c.getResources().getColor(R.color.tomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
+                    break;
+                case ACCEPTED_BY_SELLER:
+                case WAITING_PAYMENT:
+                    // User can proceed to payment
+                    // Seller waits for user to complete payment
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, false);
+                        showActionButton(c.getString(R.string.pay_now));
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, true);
+                        showOrderStatus(c.getString(R.string.waiting_payment), c.getResources().getColor(R.color.orangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    }
+                    break;
+                case DISAGREED_BY_CUSTOMER:
+                    // Order is canceled
+                    showOrderStatus(c.getString(R.string.user_disagreed), c.getResources().getColor(R.color.tomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
+                    break;
+                case PAYMENT_INCOMPLETE:
+                    // User is required to complete payment before proceeding
+                    // Seller waits for user to complete payment
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, false);
+                        showActionButton(c.getString(R.string.pay_now));
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, true);
+                        showOrderStatus(c.getString(R.string.payment_incomplete), c.getResources().getColor(R.color.orangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    }
+                    break;
+                case ACTIVE:
+                    // User waits for seller to complete the service
+                    // Seller can mark order as finished
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderStatus(c.getString(R.string.payment_confirmed), c.getResources().getColor(R.color.tealish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    } else {
+                        showOrderStatus(c.getString(R.string.active_order), c.getResources().getColor(R.color.tealish));
+                        showActionButton(c.getString(R.string.mark_as_finished));
+                    }
+                    break;
+                case OVERPAID:
+                    // Order is canceled
+                    showOrderStatus(c.getString(R.string.order_overpaid), c.getResources().getColor(R.color.tomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
+                    break;
+                case WAITING_REVIEW:
+                    // User can write a review on the product
+                    // Seller has completed the order
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showActionButton(c.getString(R.string.write_review));
+                        llOrderStatusGuide.setVisibility(View.VISIBLE);
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderStatus(c.getString(R.string.order_completed), c.getResources().getColor(R.color.tealish));
+                        llOrderStatusGuide.setVisibility(View.GONE);
+                    }
+                    break;
+                case REVIEW_COMPLETED:
+                    // Order is completed for both sides
+                    showOrderStatus(c.getString(R.string.order_completed), c.getResources().getColor(R.color.tealish));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    break;
+                default:
+                    // Undefined status
+                    showOrderStatus("", 0);
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
+                    break;
+            }
+
+            // Set listeners
+            clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+            clCard.setOnClickListener(v -> viewOrderDetail());
+            clButtonDetail.setOnClickListener(v -> viewOrderDetail());
+            tvReportOrder.setOnClickListener(v -> reportOrder());
+            llButtonOrderStatus.setOnClickListener(v -> viewOrderStatus());
+
+            // TODO: 15 November 2018 TESTING ORDER STATUS
+            clButtonDetail.setOnClickListener(v -> {
+                if (order.getOrderStatus() < 12) {
+                    order.setOrderStatus(order.getOrderStatus() + 1);
+                } else {
+                    order.setOrderStatus(0);
+                }
+                switch (order.getOrderStatus()) {
+                    case NOT_CONFIRMED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - NOT_CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case CANCELLED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - CANCELLED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case CONFIRMED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case DECLINED_BY_SELLER:
+                        Toast.makeText(c, order.getOrderStatus() + " - DECLINED_BY_SELLER", Toast.LENGTH_LONG).show();
+                        break;
+                    case ACCEPTED_BY_SELLER:
+                        Toast.makeText(c, order.getOrderStatus() + " - ACCEPTED_BY_SELLER", Toast.LENGTH_LONG).show();
+                        break;
+                    case DISAGREED_BY_CUSTOMER:
+                        Toast.makeText(c, order.getOrderStatus() + " - DISAGREED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case WAITING_PAYMENT:
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_PAYMENT", Toast.LENGTH_LONG).show();
+                        break;
+                    case PAYMENT_INCOMPLETE:
+                        Toast.makeText(c, order.getOrderStatus() + " - PAYMENT_INCOMPLETE", Toast.LENGTH_LONG).show();
+                        break;
+                    case ACTIVE:
+                        Toast.makeText(c, order.getOrderStatus() + " - ACTIVE", Toast.LENGTH_LONG).show();
+                        break;
+                    case OVERPAID:
+                        Toast.makeText(c, order.getOrderStatus() + " - OVERPAID", Toast.LENGTH_LONG).show();
+                        break;
+                    case WAITING_REVIEW:
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_REVIEW", Toast.LENGTH_LONG).show();
+                        break;
+                    case REVIEW_COMPLETED:
+                        Toast.makeText(c, order.getOrderStatus() + " - REVIEW_COMPLETED", Toast.LENGTH_LONG).show();
+                        break;
+                    default:
+                        Toast.makeText(c, order.getOrderStatus() + " - UNDEFINED", Toast.LENGTH_LONG).show();
+                        break;
+                }
+                TAPMessageModel orderCard = TAPMessageModel.Builder(
+                        TAPUtils.getInstance().toJsonString(order),
+                        item.getRoom(),
+                        TYPE_ORDER_CARD,
+                        System.currentTimeMillis(),
+                        item.getUser(),
+                        item.getRecipientID());
+                setItemAt(position, orderCard);
+                notifyItemChanged(position);
+                listener.onBubbleExpanded();
+            });
+        }
+
+        private boolean isCustomer(TAPOrderModel order) {
+            return order.getCustomer().getUserID().equals(myUserModel.getUserID());
+        }
+
+        private void showProductPreview(TAPOrderModel order) {
             if (!order.getProducts().isEmpty()) {
+                // Show product preview
                 TAPProductModel product = order.getProducts().get(0);
-                Glide.with(itemView.getContext()).load(product.getThumbnail()).into(ivProductThumbnail);
+                Glide.with(itemView.getContext()).load(product.getProductImage().getThumbnail()).into(ivProductThumbnail);
                 tvProductName.setText(product.getName());
                 tvProductPrice.setText(TAPUtils.getInstance().formatCurrencyRp(product.getPrice()));
-                tvProductQty.setText(String.format(Locale.getDefault(), "%s%d",
+                tvProductQty.setText(String.format(Locale.getDefault(), "%s %d",
                         itemView.getContext().getString(R.string.order_quantity), product.getQuantity()));
                 int size = order.getProducts().size();
                 if (1 < size) {
                     // Show more items layout if there are more than 1 product
                     tvButtonMoreItems.setText(String.format(Locale.getDefault(), itemView.getContext().getString(R.string.order_more_items), size));
-                    flButtonMoreItems.setVisibility(View.VISIBLE);
+                    clButtonMoreItems.setVisibility(View.VISIBLE);
                 } else {
-                    flButtonMoreItems.setVisibility(View.GONE);
+                    clButtonMoreItems.setVisibility(View.GONE);
                 }
-            }
-
-            // Set notes
-            if (!order.getNotes().isEmpty()) {
-                tvNotes.setText(order.getNotes());
-                llNotes.setVisibility(View.VISIBLE);
+                clProductPreview.setVisibility(View.VISIBLE);
             } else {
-                llNotes.setVisibility(View.GONE);
+                // Hide product preview
+                clProductPreview.setVisibility(View.GONE);
             }
+        }
 
-            // Set courier
+        private void showRecipient(TAPOrderModel order) {
+            TAPRecipientModel recipient = order.getRecipient();
+            if (null != recipient) {
+                // Show recipient
+                tvRecipientDetails.setText(new StringBuilder()
+                        .append(recipient.getRecipientName()).append("\n")
+                        .append(recipient.getPhoneNumber()).append("\n")
+                        .append(recipient.getAddress()).append(", ")
+                        .append(recipient.getRegion()).append(", ")
+                        .append(recipient.getCity()).append(", ")
+                        .append(recipient.getProvince()).append(" ")
+                        .append(recipient.getPostalCode()));
+                clRecipient.setVisibility(View.VISIBLE);
+            } else {
+                // Hide recipient
+                clRecipient.setVisibility(View.GONE);
+            }
+        }
+
+        private void showNotes(TAPOrderModel order) {
+            if (!order.getNotes().isEmpty()) {
+                // Show notes
+                tvNotes.setText(order.getNotes());
+                clNotes.setVisibility(View.VISIBLE);
+            } else {
+                // Hide notes
+                clNotes.setVisibility(View.GONE);
+            }
+        }
+
+        private void showCourier(TAPOrderModel order) {
             if (null != order.getCourier()) {
+                // Show courier
                 TAPCourierModel courier = order.getCourier();
                 clCourier.setVisibility(View.VISIBLE);
                 tvCourierType.setText(courier.getCourierType());
                 tvCourierCost.setText(TAPUtils.getInstance().formatCurrencyRp(courier.getCourierCost()));
                 Glide.with(itemView.getContext()).load(courier.getCourierLogo().getThumbnail()).into(ivCourierLogo);
             } else {
+                // Hide courier
                 clCourier.setVisibility(View.GONE);
             }
+        }
 
-            // Set additional cost
+        private void showAdditionalCost(TAPOrderModel order) {
             if (0 < order.getAdditionalCost()) {
+                // Show additional cost
                 tvAdditionalCost.setText(TAPUtils.getInstance().formatCurrencyRp(order.getAdditionalCost()));
                 clAdditionalCost.setVisibility(View.VISIBLE);
                 // TODO: 13 November 2018 CHECK IF ADDITIONAL WAS UPDATED
                 vBadgeAdditional.setVisibility(View.VISIBLE);
             } else {
+                // Hide additional cost
                 clAdditionalCost.setVisibility(View.GONE);
             }
+        }
 
-            // Set discount
+        private void showDiscount(TAPOrderModel order) {
             if (0 < order.getDiscount()) {
-                tvDiscount.setText(TAPUtils.getInstance().formatCurrencyRp(order.getDiscount()));
+                // Show discount
+                tvDiscount.setText(String.format("(%s)", TAPUtils.getInstance().formatCurrencyRp(order.getDiscount())));
                 clDiscount.setVisibility(View.VISIBLE);
                 // TODO: 13 November 2018 CHECK IF DISCOUNT WAS UPDATED
                 vBadgeDiscount.setVisibility(View.VISIBLE);
             } else {
+                // Hide discount
                 clDiscount.setVisibility(View.GONE);
             }
+        }
 
-            switch (order.getOrderStatus()) {
-                case NOT_CONFIRMED_BY_CUSTOMER:
-                    break;
-                case CANCELLED_BY_CUSTOMER:
-                    break;
-                case CUSTOMER_CONFIRMED:
-                    break;
-                case DECLINED_BY_SELLER:
-                    break;
-                case ACCEPTED_BY_SELLER:
-                    break;
-                case CUSTOMER_DISAGREED:
-                    break;
-                case WAITING_PAYMENT:
-                    break;
-                case PAYMENT_INCOMPLETE:
-                    break;
-                case ACTIVE:
-                    break;
-                case OVERPAID:
-                    break;
-                case WAITING_REVIEW:
-                    break;
-                case REVIEW_COMPLETED:
-                    break;
+        private void showOrderPrice(TAPOrderModel order, boolean showSeparator) {
+            tvTotalPrice.setText(TAPUtils.getInstance().formatCurrencyRp(order.getTotalPrice()));
+            clTotalPrice.setVisibility(View.VISIBLE);
+            if (showSeparator) {
+                vTotalPriceSeparator.setVisibility(View.VISIBLE);
+            } else {
+                vTotalPriceSeparator.setVisibility(View.GONE);
             }
+            showAdditionalCost(order);
+            showDiscount(order);
+        }
 
-            clContainer.setOnClickListener(v -> listener.onOutsideClicked());
-            clCard.setOnClickListener(v -> viewOrderDetail());
-            clButtonDetail.setOnClickListener(v -> viewOrderDetail());
+        private void hideOrderPrice() {
+            clAdditionalCost.setVisibility(View.GONE);
+            clDiscount.setVisibility(View.GONE);
+            clTotalPrice.setVisibility(View.GONE);
+        }
+
+        private void showOrderStatus(String statusText, int textColor) {
+            tvOrderStatus.setText(statusText);
+            tvOrderStatus.setTextColor(textColor);
+            tvOrderStatus.setVisibility(View.VISIBLE);
+        }
+
+        private void showActionButton(String buttonText) {
+            tvButtonOrderAction.setText(buttonText);
+            tvButtonOrderAction.setVisibility(View.VISIBLE);
         }
 
         private void viewOrderDetail() {
             // TODO: 13 November 2018 viewOrderDetail
+        }
+
+        private void reportOrder() {
+            // TODO: 14 November 2018 reportOrder
+        }
+
+        private void viewOrderStatus() {
+            // TODO: 15 November 2018 viewOrderStatus
         }
     }
 
@@ -495,6 +816,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         protected void onBind(TAPMessageModel item, int position) {
             tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+        }
+    }
+
+    public class EmptyVH extends TAPBaseViewHolder<TAPMessageModel> {
+
+        EmptyVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+
         }
     }
 

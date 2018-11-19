@@ -6,23 +6,27 @@ import android.arch.lifecycle.LiveData;
 import android.net.Uri;
 import android.os.Handler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPChatViewModel extends AndroidViewModel {
 
     private LiveData<List<TAPMessageEntity>> allMessages;
-    private Map<String, TAPMessageModel> messagePointer, unreadMessages;
+    private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
     private List<TAPMessageModel> messageModels;
     private TAPUserModel myUserModel;
     private TAPRoomModel room;
@@ -65,7 +69,21 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void updateMessagePointer(TAPMessageModel newMessage) {
-        getMessagePointer().get(newMessage.getLocalID()).updateValue(newMessage);
+//        getMessagePointer().get(newMessage.getLocalID()).updateValue(newMessage);
+        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
+        TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
+        if (null != message) {
+            message.updateValue(newMessage);
+        }
+    }
+
+    public void updateMessagePointerRead(TAPMessageModel newMessage) {
+//        getMessagePointer().get(newMessage.getLocalID()).updateReadMessage();
+        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
+        TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
+        if (null != message) {
+            message.updateReadMessage();
+        }
     }
 
     public Map<String, TAPMessageModel> getUnreadMessages() {
@@ -74,6 +92,35 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setUnreadMessages(Map<String, TAPMessageModel> unreadMessages) {
         this.unreadMessages = unreadMessages;
+    }
+
+    public Map<String, TAPMessageModel> getOngoingOrders() {
+        return ongoingOrders == null ? ongoingOrders = new LinkedHashMap<>() : ongoingOrders;
+    }
+
+    public void setOngoingOrders(Map<String, TAPMessageModel> ongoingOrders) {
+        this.ongoingOrders = ongoingOrders;
+    }
+
+    public TAPOrderModel getOrderModel(TAPMessageModel message) {
+        return TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {}, message.getBody());
+    }
+
+    public TAPMessageModel getPreviousOrderWithSameID(TAPMessageModel message) {
+        String orderID = getOrderModel(message).getOrderID();
+        if (getOngoingOrders().containsKey(orderID)) {
+            return getOngoingOrders().get(orderID);
+        } else {
+            return null;
+        }
+    }
+
+    public void addOngoingOrderCard(TAPMessageModel message) {
+        getOngoingOrders().put(getOrderModel(message).getOrderID(), message);
+    }
+
+    public void removeOngoingOrderCard(TAPMessageModel message) {
+        getOngoingOrders().remove(getOrderModel(message).getOrderID());
     }
 
     public int getUnreadCount() {

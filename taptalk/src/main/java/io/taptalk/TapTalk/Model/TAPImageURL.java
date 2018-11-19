@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Model;
 
+import android.arch.persistence.room.Ignore;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,6 +11,12 @@ public class TAPImageURL implements Parcelable {
     @JsonProperty("thumbnail") private String thumbnail;
 
     public TAPImageURL() { }
+
+    @Ignore
+    public TAPImageURL(String fullsize, String thumbnail) {
+        this.fullsize = fullsize;
+        this.thumbnail = thumbnail;
+    }
 
     // TODO: 28/09/18 diilangin nnti setelah fix
     public static TAPImageURL BuilderDummy() {

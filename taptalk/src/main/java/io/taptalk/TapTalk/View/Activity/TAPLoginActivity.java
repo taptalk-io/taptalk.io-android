@@ -112,6 +112,27 @@ public class TAPLoginActivity extends TAPBaseActivity {
             case "test2":
             case "test3":
             case "santo":
+            case "veronica":
+            case "poppy":
+            case "axel":
+            case "ovita":
+            case "amalia":
+            case "ronal":
+            case "ardanti":
+            case "anita":
+            case "kevinfianto":
+            case "dessy":
+            case "neni":
+            case "bernama":
+            case "william":
+            case "sarah":
+            case "retyan":
+            case "sekar":
+            case "putri":
+            case "mei":
+            case "yuendry":
+            case "ervin":
+            case "fauzi":
                 return true;
 
             default:
@@ -154,6 +175,48 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 return 15;
             case "santo":
                 return 16;
+            case "veronica":
+                return 17;
+            case "poppy":
+                return 18;
+            case "axel":
+                return 19;
+            case "ovita":
+                return 20;
+            case "putri":
+                return 21;
+            case "amalia":
+                return 22;
+            case "ronal":
+                return 23;
+            case "ardanti":
+                return 24;
+            case "anita":
+                return 25;
+            case "kevinfianto":
+                return 26;
+            case "dessy":
+                return 27;
+            case "neni":
+                return 28;
+            case "bernama":
+                return 29;
+            case "william":
+                return 30;
+            case "sarah":
+                return 31;
+            case "retyan":
+                return 32;
+            case "sekar":
+                return 33;
+            case "mei":
+                return 34;
+            case "yuendry":
+                return 35;
+            case "ervin":
+                return 36;
+            case "fauzi":
+                return 37;
             default:
                 return 0;
         }
@@ -194,6 +257,48 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 return "Test 3";
             case "16":
                 return "Santo";
+            case "17":
+                return "veronica";
+            case "18":
+                return "poppy";
+            case "19":
+                return "axel";
+            case "20":
+                return "ovita";
+            case "21":
+                return "putri";
+            case "22":
+                return "amalia";
+            case "23":
+                return "ronal";
+            case "24":
+                return "ardanti";
+            case "25":
+                return "anita";
+            case "26":
+                return "kevinfianto";
+            case "27":
+                return "dessy";
+            case "28":
+                return "neni";
+            case "29":
+                return "bernama";
+            case "30":
+                return "william";
+            case "31":
+                return "sarah";
+            case "32":
+                return "retyan";
+            case "33":
+                return "sekar";
+            case "34":
+                return "mei";
+            case "35":
+                return "yuendry";
+            case "36":
+                return "ervin";
+            case "37":
+                return "fauzi";
             default:
                 return "User Ga Tau Dari Mana ini";
         }

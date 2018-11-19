@@ -37,9 +37,12 @@ public class TAPMessageModel implements Parcelable {
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
     @JsonIgnore private int imageWidth, imageHeight;
 
-    public TAPMessageModel(@Nullable String messageID, @NonNull String localID, String body, TAPRoomModel room,
-                           Integer type, Long created, TAPUserModel user, String recipientID, @Nullable Boolean isDeleted,
-                           @Nullable Boolean isSending, @Nullable Boolean isFailedSend, @Nullable Long updated) {
+    public TAPMessageModel(@Nullable String messageID, @NonNull String localID, String body,
+                           TAPRoomModel room, Integer type, Long created, TAPUserModel user,
+                           String recipientID, @Nullable Boolean isDeleted,
+                           @Nullable Boolean isSending, @Nullable Boolean isFailedSend,
+                           @Nullable Boolean isDelivered, @Nullable Boolean isRead,
+                           @Nullable Boolean isHidden, @Nullable Long updated) {
         this.messageID = messageID;
         this.localID = localID;
         this.body = body;
@@ -51,6 +54,9 @@ public class TAPMessageModel implements Parcelable {
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
+        this.isDelivered = isDelivered;
+        this.isRead = isRead;
+        this.isHidden = isHidden;
         this.updated = updated;
         // Update when adding fields to model
     }
@@ -60,7 +66,7 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel Builder(String message, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        return new TAPMessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false, created);
+        return new TAPMessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false, false, false, false, created);
     }
 
     public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
@@ -76,6 +82,9 @@ public class TAPMessageModel implements Parcelable {
                 messageModel.getDeleted(),
                 messageModel.getSending(),
                 messageModel.getFailedSend(),
+                messageModel.getDelivered(),
+                messageModel.getIsRead(),
+                messageModel.getHidden(),
                 messageModel.getUpdated());
     }
 
@@ -92,6 +101,9 @@ public class TAPMessageModel implements Parcelable {
                 messageModel.getDeleted(),
                 messageModel.getSending(),
                 messageModel.getFailedSend(),
+                messageModel.getDelivered(),
+                messageModel.getIsRead(),
+                messageModel.getHidden(),
                 messageModel.getUpdated());
     }
 
@@ -287,6 +299,11 @@ public class TAPMessageModel implements Parcelable {
         // Update when adding fields to model
     }
 
+    public void updateReadMessage() {
+        this.isRead = true;
+        // Update when adding fields to model
+    }
+
     public TAPMessageModel copyMessageModel() {
         return new TAPMessageModel(
                 getMessageID(),
@@ -300,6 +317,9 @@ public class TAPMessageModel implements Parcelable {
                 getDeleted(),
                 getSending(),
                 getFailedSend(),
+                getDelivered(),
+                getIsRead(),
+                getHidden(),
                 getUpdated());
     }
 

@@ -92,7 +92,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
-            Glide.with(itemView.getContext()).load(item.getThumbnail().getThumbnail()).into(rcivProductImage);
+            Glide.with(itemView.getContext()).load(item.getProductImage().getThumbnail()).into(rcivProductImage);
             tvProductName.setText(item.getName());
             tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(item.getPrice()));
             tvProductDescription.setText(item.getDescription());

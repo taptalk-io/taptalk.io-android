@@ -280,6 +280,9 @@ public class TAPChatManager {
                 entity.getDeleted(),
                 entity.getSending(),
                 entity.getFailedSend(),
+                entity.getDelivered(),
+                entity.getIsRead(),
+                entity.getHidden(),
                 entity.getUpdated());
     }
 

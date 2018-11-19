@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TAPProductModel {
 
     @JsonProperty("productName") private String name;
-    @JsonProperty("thumbnailURL") private TAPImageURL thumbnail;
+    @JsonProperty("thumbnailURL") private TAPImageURL productImage;
     @JsonProperty("subcategory") private TAPPairIdNameModel subcategory;
     @JsonProperty("productID") private String productID;
     @JsonProperty("price") private Long price;
@@ -20,9 +20,9 @@ public class TAPProductModel {
     private int quantity;
 
     @Ignore
-    public TAPProductModel(String name, TAPImageURL thumbnail, TAPPairIdNameModel subcategory, String productID, Long price, String type) {
+    public TAPProductModel(String name, TAPImageURL productImage, TAPPairIdNameModel subcategory, String productID, Long price, String type) {
         this.name = name;
-        this.thumbnail = thumbnail;
+        this.productImage = productImage;
         this.subcategory = subcategory;
         this.productID = productID;
         this.price = price;
@@ -39,12 +39,12 @@ public class TAPProductModel {
         this.name = name;
     }
 
-    public TAPImageURL getThumbnail() {
-        return thumbnail;
+    public TAPImageURL getProductImage() {
+        return productImage;
     }
 
-    public void setThumbnail(TAPImageURL thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setProductImage(TAPImageURL productImage) {
+        this.productImage = productImage;
     }
 
     public TAPPairIdNameModel getSubcategory() {

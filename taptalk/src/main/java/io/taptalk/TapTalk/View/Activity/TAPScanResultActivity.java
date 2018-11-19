@@ -107,9 +107,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                 .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
         Glide.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
                 .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
-        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail())
+        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getProductImage())
         //    .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
-        //Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail())
+        //Glide.with(this).load(myUserModel.getAvatarURL().getProductImage())
         //        .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
         tvContactFullname.setText(addedContactUserModel.getName());
         tvContactUsername.setText(addedContactUserModel.getUsername());
@@ -135,9 +135,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                 .apply(new RequestOptions()).into(civTheirContactAvatar);
         Glide.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
                 .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
-        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail())
+        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getProductImage())
         //      .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
-        //Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail())
+        //Glide.with(this).load(myUserModel.getAvatarURL().getProductImage())
         //        .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
         tvContactFullname.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());
