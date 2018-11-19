@@ -357,7 +357,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         LayoutTransition containerTransition = clContainer.getLayoutTransition();
-        containerTransition.addTransitionListener(customKeyboardTransitionListener);
+        containerTransition.addTransitionListener(containerTransitionListener);
 
         etChat.addTextChangedListener(chatWatcher);
         etChat.setOnFocusChangeListener(chatFocusChangeListener);
@@ -439,36 +439,43 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     // Previously addNewTextMessage
     private void addNewMessage(final TAPMessageModel newMessage) {
-        checkAndUpdateOrderCard(newMessage);
-        runOnUiThread(() -> {
-            //ini ngecek kalau masih ada logo empty chat ilangin dlu
-            if (clEmptyChat.getVisibility() == View.VISIBLE) {
-                clEmptyChat.setVisibility(View.GONE);
-                flMessageList.setVisibility(View.VISIBLE);
-            }
-        });
-        // Replace pending message with new message
-        String newID = newMessage.getLocalID();
-        //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
-        boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
-                .getInstance().getActiveUser().getUserID());
-        runOnUiThread(() -> {
-            if (vm.getMessagePointer().containsKey(newID)) {
-                // Update message instead of adding when message pointer already contains the same local ID
-                vm.updateMessagePointer(newMessage);
-                hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            } else if (vm.isOnBottom() || ownMessage) {
-                // Scroll recycler to bottom if own message or recycler is already on bottom
-                hpMessageAdapter.addMessage(newMessage);
-                rvMessageList.scrollToPosition(0);
-            } else {
-                // Message from other people is received when recycler is scrolled up
-                hpMessageAdapter.addMessage(newMessage);
-                vm.addUnreadMessage(newMessage);
-                updateUnreadCount();
-            }
-            updateMessageDecoration();
-        });
+        if (vm.isContainerAnimating()) {
+            // Hold message if layout is animating
+            // Message is added after transition finishes in containerTransitionListener
+            vm.addPendingRecyclerMessage(newMessage);
+            Log.e(TAG, "addPendingRecyclerMessage: " + newMessage.getLocalID());
+        } else {
+            checkAndUpdateOrderCard(newMessage);
+            runOnUiThread(() -> {
+                //ini ngecek kalau masih ada logo empty chat ilangin dlu
+                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                    clEmptyChat.setVisibility(View.GONE);
+                    flMessageList.setVisibility(View.VISIBLE);
+                }
+            });
+            // Replace pending message with new message
+            String newID = newMessage.getLocalID();
+            //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
+            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
+                    .getInstance().getActiveUser().getUserID());
+            runOnUiThread(() -> {
+                if (vm.getMessagePointer().containsKey(newID)) {
+                    // Update message instead of adding when message pointer already contains the same local ID
+                    vm.updateMessagePointer(newMessage);
+                    hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                } else if (vm.isOnBottom() || ownMessage) {
+                    // Scroll recycler to bottom if own message or recycler is already on bottom
+                    hpMessageAdapter.addMessage(newMessage);
+                    rvMessageList.scrollToPosition(0);
+                } else {
+                    // Message from other people is received when recycler is scrolled up
+                    hpMessageAdapter.addMessage(newMessage);
+                    vm.addUnreadMessage(newMessage);
+                    updateUnreadCount();
+                }
+                updateMessageDecoration();
+            });
+        }
     }
 
     private void checkAndUpdateOrderCard(TAPMessageModel newMessage) {
@@ -482,11 +489,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null == oldOrderCard) {
             Log.e(TAG, "addNewMessage: oldOrderCard null");
         } else {
-            Log.e(TAG, "addNewMessage: oldOrderCard" + vm.getOrderModel(oldOrderCard).getOrderID());
+            Log.e(TAG, "addNewMessage: oldOrderCard " + vm.getOrderModel(oldOrderCard).getOrderID());
         }
 
-        // Return if card is older
+        // Hide newMessage if it is older than ongoing card
         if (null != oldOrderCard && oldOrderCard.getCreated() > newMessage.getCreated()) {
+            newMessage.setHidden(true);
+            Log.e(TAG, "newMessage is older: ");
             return;
         }
 
@@ -735,14 +744,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-            // TODO: 12 November 2018 ADD OTHER CUSTOM KEYBOARD MESSAGE TYPES
-            if (vm.isContainerAnimating() && message.getUser().getUserID().equals(vm.getMyUserModel().getUserID()) &&
-                    (message.getType() == TYPE_PRODUCT)) {
-                // Delay showing message if message is from custom keyboard
-                vm.setPendingCustomKeyboardMessage(message);
-            } else {
-                addNewMessage(message);
-            }
+            addNewMessage(message);
         }
 
         @Override
@@ -876,6 +878,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReadExpertNotesClicked() {
+            Log.e(TAG, "onReadExpertNotesClicked: ");
             // TODO: 15 November 2018 DUMMY ORDER CARD FROM OTHER USER
             TAPUserModel expert = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
             TAPOrderModel order = new TAPOrderModel();
@@ -932,6 +935,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onSendServicesClicked() {
+            Log.e(TAG, "onSendServicesClicked: ");
             // TODO: 12 November 2018 DUMMY PRODUCT LIST
             TAPImageURL dummyThumb = new TAPImageURL(
                     "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
@@ -963,6 +967,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onCreateOrderClicked() {
+            Log.e(TAG, "onCreateOrderClicked: ");
             // TODO: 15 November 2018 DUMMY ORDER CARD
             TAPUserModel customer = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
             TAPOrderModel order = new TAPOrderModel();
@@ -1019,8 +1024,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         private void sendCustomKeyboardMessage(TAPMessageModel message) {
             hideKeyboards();
-            vm.setPendingCustomKeyboardMessage(message);
-            // Message is added after transition finishes in customKeyboardTransitionListener
+            addNewMessage(message);
         }
     };
 
@@ -1062,7 +1066,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    LayoutTransition.TransitionListener customKeyboardTransitionListener = new LayoutTransition.TransitionListener() {
+    LayoutTransition.TransitionListener containerTransitionListener = new LayoutTransition.TransitionListener() {
         @Override
         public void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
             vm.setContainerAnimating(true);
@@ -1070,10 +1074,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void endTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
-            if (null != vm.getPendingCustomKeyboardMessage()) {
-                addNewMessage(vm.getPendingCustomKeyboardMessage());
-                vm.setContainerAnimating(false);
-                vm.setPendingCustomKeyboardMessage(null);
+            if (!vm.isContainerAnimating()) {
+                return;
+            }
+            vm.setContainerAnimating(false);
+            if (vm.getPendingRecyclerMessages().size() > 0) {
+                for (TAPMessageModel pendingMessage : vm.getPendingRecyclerMessages()) {
+                    if (vm.isContainerAnimating()) {
+                        return;
+                    }
+                    addNewMessage(pendingMessage);
+                    vm.addMessagePointer(pendingMessage);
+                    vm.removePendingRecyclerMessage(pendingMessage);
+                    Log.e(TAG, "endTransition add message: " + pendingMessage.getLocalID());
+                }
             }
         }
     };
