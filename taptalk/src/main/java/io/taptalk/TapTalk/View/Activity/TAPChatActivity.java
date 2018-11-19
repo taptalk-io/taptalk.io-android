@@ -76,6 +76,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACCEPTED_BY_SELLER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACTIVE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CONFIRMED_BY_CUSTOMER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.NOT_CONFIRMED_BY_CUSTOMER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.PAYMENT_INCOMPLETE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_PAYMENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_REVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
@@ -168,7 +175,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
 
         messageStatusInterface = messageModels -> new Thread(() -> {
-            Log.e(TAG, "initView: "+messageModels.size() );
+//            Log.e(TAG, "initView: "+messageModels.size() );
             for (TAPMessageModel model : messageModels) {
                 vm.updateMessagePointerRead(model);
                 Log.e(TAG, "onReadStatus: "+model.getIsRead()+" "+model.getBody() );
@@ -432,6 +439,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     // Previously addNewTextMessage
     private void addNewMessage(final TAPMessageModel newMessage) {
+        checkAndUpdateOrderCard(newMessage);
         runOnUiThread(() -> {
             //ini ngecek kalau masih ada logo empty chat ilangin dlu
             if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -461,6 +469,52 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
             updateMessageDecoration();
         });
+    }
+
+    private void checkAndUpdateOrderCard(TAPMessageModel newMessage) {
+        if (newMessage.getType() != TYPE_ORDER_CARD) {
+            return;
+        }
+        Log.e(TAG, "addNewMessage TYPE_ORDER_CARD: " + vm.getOrderModel(newMessage).getOrderID());
+        Log.e(TAG, "addNewMessage ongoingOrders: " + vm.getOngoingOrders().size());
+        // Only the latest card of the same order ID may be shown
+        TAPMessageModel oldOrderCard = vm.getPreviousOrderWithSameID(newMessage);
+        if (null == oldOrderCard) {
+            Log.e(TAG, "addNewMessage: oldOrderCard null");
+        } else {
+            Log.e(TAG, "addNewMessage: oldOrderCard" + vm.getOrderModel(oldOrderCard).getOrderID());
+        }
+
+        // Return if card is older
+        if (null != oldOrderCard && oldOrderCard.getCreated() > newMessage.getCreated()) {
+            return;
+        }
+
+        // Hide previous card with the same order ID
+        if (null != oldOrderCard) {
+            oldOrderCard.setHidden(true);
+            vm.removeOngoingOrderCard(oldOrderCard);
+            // TODO: 19 November 2018 UPDATE MESSAGE IN DATABASE, UNCOMMENT BELOW
+            //TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(oldOrderCard));
+            runOnUiThread(() -> hpMessageAdapter.notifyItemRemoved(hpMessageAdapter.getItems().indexOf(oldOrderCard)));
+            Log.e(TAG, "notifyItemRemoved: " + hpMessageAdapter.getItems().indexOf(oldOrderCard));
+        }
+
+        int orderStatus = vm.getOrderModel(newMessage).getOrderStatus();
+        switch (orderStatus) {
+            // Add order card to pointer if status is not canceled/completed
+            case NOT_CONFIRMED_BY_CUSTOMER:
+            case CONFIRMED_BY_CUSTOMER:
+            case ACCEPTED_BY_SELLER:
+            case WAITING_PAYMENT:
+            case PAYMENT_INCOMPLETE:
+            case ACTIVE:
+            case WAITING_REVIEW:
+            default:
+                vm.addOngoingOrderCard(newMessage);
+                Log.e(TAG, "addOngoingOrderCard: " + vm.getOrderModel(newMessage).getOrderID());
+                break;
+        }
     }
 
     //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
@@ -793,7 +847,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onLayoutLoaded(TAPMessageModel message) {
-            Log.e(TAG, "onLayoutLoaded: " + message.getBody());
             if (message.getUser().getUserID().equals(vm.getMyUserModel().getUserID())
                     || messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                 // Scroll recycler to bottom when image finished loading if message is sent by user or recycler is on bottom

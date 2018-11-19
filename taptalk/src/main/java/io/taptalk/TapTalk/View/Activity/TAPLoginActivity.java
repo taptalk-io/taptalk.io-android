@@ -131,6 +131,8 @@ public class TAPLoginActivity extends TAPBaseActivity {
             case "putri":
             case "mei":
             case "yuendry":
+            case "ervin":
+            case "fauzi":
                 return true;
 
             default:
@@ -211,6 +213,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 return 34;
             case "yuendry":
                 return 35;
+            case "ervin":
+                return 36;
+            case "fauzi":
+                return 37;
             default:
                 return 0;
         }
@@ -289,6 +295,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 return "mei";
             case "35":
                 return "yuendry";
+            case "36":
+                return "ervin";
+            case "37":
+                return "fauzi";
             default:
                 return "User Ga Tau Dari Mana ini";
         }

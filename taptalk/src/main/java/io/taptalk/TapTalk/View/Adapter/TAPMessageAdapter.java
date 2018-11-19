@@ -56,6 +56,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
@@ -105,6 +106,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                 return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
             case TYPE_BUBBLE_ORDER_CARD:
                 return new OrderVH(parent, R.layout.tap_cell_chat_order_card);
+            case TYPE_EMPTY:
+                return new EmptyVH(parent, R.layout.tap_cell_empty);
             default:
                 return new LogVH(parent, R.layout.tap_cell_chat_log);
         }
@@ -120,8 +123,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         try {
             TAPMessageModel messageModel = getItemAt(position);
             int messageType = 0;
-            if (null != messageModel)
+            if (null != messageModel && null != messageModel.getHidden() && messageModel.getHidden()) {
+                // Return empty layout if item is hidden
+                return TYPE_EMPTY;
+            } else if (null != messageModel) {
                 messageType = messageModel.getType();
+            }
 
             switch (messageType) {
                 case TYPE_TEXT:
@@ -391,14 +398,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+//            if (null != item.getHidden() && item.getHidden()) {
+//                Log.e(TAG, "onBind item hidden :" + item.getBody());
+//                clContainer.setVisibility(View.GONE);
+//                clContainer.setLayoutParams(new ConstraintLayout.LayoutParams(0, 0));
+//                return;
+//            }
             TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
             }, item.getBody());
-            TAPRecipientModel recipient = order.getRecipient();
 
             // Set initial data
             tvOrderID.setText(order.getOrderID());
             tvDate.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "E dd MMM yyyy"));
             tvTime.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "HH:mm"));
+//            clContainer.setVisibility(View.VISIBLE);
+//            clContainer.setLayoutParams(clContainer.getLayoutParams());
             showProductPreview(order);
 
             if (isMessageFromMySelf(item)) {
@@ -654,7 +668,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             if (!order.getProducts().isEmpty()) {
                 // Show product preview
                 TAPProductModel product = order.getProducts().get(0);
-                Log.e(TAG, "showProductPreview: " + product.getProductImage());
                 Glide.with(itemView.getContext()).load(product.getProductImage().getThumbnail()).into(ivProductThumbnail);
                 tvProductName.setText(product.getName());
                 tvProductPrice.setText(TAPUtils.getInstance().formatCurrencyRp(product.getPrice()));
@@ -803,6 +816,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         protected void onBind(TAPMessageModel item, int position) {
             tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+        }
+    }
+
+    public class EmptyVH extends TAPBaseViewHolder<TAPMessageModel> {
+
+        EmptyVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+
         }
     }
 

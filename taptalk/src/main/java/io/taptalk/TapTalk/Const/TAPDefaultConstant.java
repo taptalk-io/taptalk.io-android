@@ -59,6 +59,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
 
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
+
+        public static final int TYPE_EMPTY = 9999;
     }
 
     public static final class OrderStatus {
@@ -145,16 +147,16 @@ public class TAPDefaultConstant {
         public static final String K_LAST_DELETE_TIMESTAMP = "kLastDeleteTimestamp";
     }
 
-    public static final String K_REFRESH_TOKEN = "kRefreshToken";
-    public static final String K_REFRESH_TOKEN_EXPIRY = "kRefreshTokenExpiry";
-    public static final String K_ACCESS_TOKEN = "kAccessToken";
-    public static final String K_ACCESS_TOKEN_EXPIRY = "kAccessTokenExpiry";
-    public static final String K_AUTH_TICKET = "kAuthTicket";
-    public static final String K_MY_USERNAME = "kMyUsername";
-    public static final String K_USER = "kUser";
-    public static final String K_RECIPIENT_ID = "kRecipientID";
-    public static final String K_ROOM = "kRoom";
-    public static final String K_LAST_UPDATED = "kLastUpdated";
+    public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
+    public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";
+    public static final String K_ACCESS_TOKEN = "kTAPAccessToken";
+    public static final String K_ACCESS_TOKEN_EXPIRY = "kTAPAccessTokenExpiry";
+    public static final String K_AUTH_TICKET = "kTAPAuthTicket";
+    public static final String K_MY_USERNAME = "kTAPMyUsername";
+    public static final String K_USER = "kTAPUser";
+    public static final String K_RECIPIENT_ID = "kTAPRecipientID";
+    public static final String K_ROOM = "kTAPRoom";
+    public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kIsRoomListSetupFinished";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
