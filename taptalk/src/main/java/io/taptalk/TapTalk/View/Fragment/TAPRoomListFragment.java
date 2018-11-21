@@ -197,7 +197,10 @@ public class TAPRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        clButtonSearch.setOnClickListener(v -> fragment.showSearchChat());
+        clButtonSearch.setOnClickListener(v -> {
+            if (null != fragment)
+                fragment.showSearchChat();
+        });
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
         ivButtonMute.setOnClickListener(v -> {
@@ -258,31 +261,33 @@ public class TAPRoomListFragment extends Fragment {
     /*ini adalah fungsi yang update tampilan setelah dapet data dari database
      * parameter isAnimated itu gunanya buat nentuin datanya kalau berubah perlu di animate atau nggak*/
     private void reloadLocalDataAndUpdateUILogic(boolean isAnimated) {
-        getActivity().runOnUiThread(() -> {
-            if (null != adapter && 0 == vm.getRoomList().size()) {
-                llRoomEmpty.setVisibility(View.VISIBLE);
-            } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
-                //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
-                //isShouldNotLoadFromAPI ini buat load dari database yang pertama
-                //is animate nya itu buat kalau misalnya perlu di animate dari parameter
-                adapter.addRoomList(vm.getRoomList());
-                rvContactList.scrollToPosition(0);
-                llRoomEmpty.setVisibility(View.GONE);
-            } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
-                //ini pas kalau ga perlu untuk di animate changesnya
-                adapter.setItems(vm.getRoomList(), false);
-                llRoomEmpty.setVisibility(View.GONE);
-            }
-            flSetupContainer.setVisibility(View.GONE);
-            showNewChatButton();
+        if (null != getActivity()) {
+            getActivity().runOnUiThread(() -> {
+                if (null != adapter && 0 == vm.getRoomList().size()) {
+                    llRoomEmpty.setVisibility(View.VISIBLE);
+                } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
+                    //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
+                    //isShouldNotLoadFromAPI ini buat load dari database yang pertama
+                    //is animate nya itu buat kalau misalnya perlu di animate dari parameter
+                    adapter.addRoomList(vm.getRoomList());
+                    rvContactList.scrollToPosition(0);
+                    llRoomEmpty.setVisibility(View.GONE);
+                } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
+                    //ini pas kalau ga perlu untuk di animate changesnya
+                    adapter.setItems(vm.getRoomList(), false);
+                    llRoomEmpty.setVisibility(View.GONE);
+                }
+                flSetupContainer.setVisibility(View.GONE);
+                showNewChatButton();
 
-            //ini buat ngubah isShouldNotLoadFromAPInya pas get data pertama
-            //setelah itu fetch data dari api sesuai dengan cycle yang di butuhin
-            if (!TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
-                TAPRoomListViewModel.setShouldNotLoadFromAPI(true);
-                fetchDataFromAPI();
-            }
-        });
+                //ini buat ngubah isShouldNotLoadFromAPInya pas get data pertama
+                //setelah itu fetch data dari api sesuai dengan cycle yang di butuhin
+                if (!TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
+                    TAPRoomListViewModel.setShouldNotLoadFromAPI(true);
+                    fetchDataFromAPI();
+                }
+            });
+        }
     }
 
     private void processMessageFromSocket(TAPMessageModel message) {
@@ -293,7 +298,7 @@ public class TAPRoomListFragment extends Fragment {
             //room nya ada di listnya
             TAPMessageModel roomLastMessage = roomList.getLastMessage();
 
-            if (roomLastMessage.getLocalID().equals(message.getLocalID())) {
+            if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
                 //last messagenya sama cuma update datanya aja
                 roomLastMessage.setUpdated(message.getUpdated());
                 roomLastMessage.setDeleted(message.getDeleted());
@@ -324,10 +329,11 @@ public class TAPRoomListFragment extends Fragment {
                     adapter.notifyItemChanged(oldPos);
                     adapter.notifyItemMoved(oldPos, 0);
                     // Scroll to top
-                    if (llm.findFirstCompletelyVisibleItemPosition() == 0) rvContactList.scrollToPosition(0);
+                    if (llm.findFirstCompletelyVisibleItemPosition() == 0)
+                        rvContactList.scrollToPosition(0);
                 });
             }
-        } else {
+        } else if (null != getActivity()){
             //kalau room yang masuk baru
             TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
@@ -363,10 +369,10 @@ public class TAPRoomListFragment extends Fragment {
         }
         ivButtonNewChat.setTranslationY(TAPUtils.getInstance().dpToPx(120));
         ivButtonNewChat.setVisibility(View.VISIBLE);
-            ivButtonNewChat.animate()
-                    .translationY(0)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .start();
+        ivButtonNewChat.animate()
+                .translationY(0)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
     }
 
     private void hideNewChatButton() {
@@ -485,10 +491,12 @@ public class TAPRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            getActivity().runOnUiThread(() -> {
-                vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
-                adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
-            });
+            if (null != getActivity()) {
+                getActivity().runOnUiThread(() -> {
+                    vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
+                });
+            }
         }
 
         @Override
