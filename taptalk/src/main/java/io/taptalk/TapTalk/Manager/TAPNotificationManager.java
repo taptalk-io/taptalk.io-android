@@ -204,7 +204,7 @@ public class TAPNotificationManager {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(roomID, 0);
         TAPNotificationManager.getInstance().removeNotifMessagesMap(roomID);
-        
+
         if (0 == TAPNotificationManager.getInstance().getNotifMessagesMap().size()) {
             notificationManager.cancel(0);
         }

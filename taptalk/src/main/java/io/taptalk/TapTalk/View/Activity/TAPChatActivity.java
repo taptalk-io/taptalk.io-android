@@ -45,6 +45,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TAPCustomKeyboardInterface;
+import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -53,6 +54,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
@@ -140,6 +142,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     //endless scroll Listener
     TAPEndlessScrollListener endlessScrollListener;
 
+    private TapTalkNetworkInterface networkListener = () -> {
+        if (vm.isInitialAPICallFinished()) {
+            callApiAfter();
+        }
+    };
+
     /**
      * =========================================================================================== *
      * OVERRIDE METHODS
@@ -185,6 +193,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         TAPMessageStatusManager.getInstance().triggerCallReadMessageApiScheduler(messageStatusInterface);
 
+        addNetworkListener();
+
         if (vm.isInitialAPICallFinished())
             callApiAfter();
     }
@@ -199,6 +209,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // Stop Message Status Scheduler
         TAPMessageStatusManager.getInstance().updateMessageStatusWhenCloseRoom(messageStatusInterface);
+
+        removeNetworkListener();
 
         TAPChatManager.getInstance().deleteActiveRoom();
     }
@@ -1430,4 +1442,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);
         }
     };
+
+    private void addNetworkListener() {
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+    }
+
+    private void removeNetworkListener() {
+        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
+    }
 }
