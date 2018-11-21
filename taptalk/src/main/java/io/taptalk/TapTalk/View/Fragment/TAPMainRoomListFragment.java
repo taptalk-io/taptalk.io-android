@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +48,6 @@ public class TAPMainRoomListFragment extends Fragment {
     }
 
     private void initView() {
-        Log.e(TAG, "initView: "+getActivity() );
         fRoomList = (TAPRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
         fSearchFragment = (TAPSearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
         showRoomList();
@@ -71,5 +69,20 @@ public class TAPMainRoomListFragment extends Fragment {
                 .show(fSearchFragment)
                 .hide(fRoomList)
                 .commit();
+    }
+
+    public void onBackPressed() {
+        switch (state) {
+            case STATE_ROOM_LIST:
+                if (fRoomList.isSelecting()) {
+                    fRoomList.cancelSelection();
+                } else if (null != getActivity()) {
+                    getActivity().finish();
+                }
+                break;
+            case STATE_SEARCH_CHAT:
+                showRoomList();
+                break;
+        }
     }
 }

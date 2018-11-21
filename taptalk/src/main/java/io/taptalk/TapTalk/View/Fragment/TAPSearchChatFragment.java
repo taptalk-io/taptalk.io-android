@@ -33,7 +33,6 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPSearchChatViewModel;
 import io.taptalk.Taptalk.R;
@@ -125,7 +124,7 @@ public class TAPSearchChatFragment extends Fragment {
         });
 
         ivButtonBack.setOnClickListener(v -> {
-            ((TAPRoomListActivity) activity).showRoomList();
+            ((TAPMainRoomListFragment)this.getParentFragment()).showRoomList();
             TAPUtils.getInstance().dismissKeyboard(activity);
         });
         ivButtonAction.setOnClickListener(v -> clearSearch());

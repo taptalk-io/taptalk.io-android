@@ -12,6 +12,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 public class TAPRoomListActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPRoomListActivity.class.getSimpleName();
+    private TAPMainRoomListFragment fRoomList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +35,15 @@ public class TAPRoomListActivity extends TAPBaseActivity {
     }
 
     public void showRoomList() {
+        fRoomList = TAPMainRoomListFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_room_list, TAPMainRoomListFragment.newInstance())
+                .replace(R.id.fragment_room_list, fRoomList)
                 .commit();
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        fRoomList.onBackPressed();
     }
 }
