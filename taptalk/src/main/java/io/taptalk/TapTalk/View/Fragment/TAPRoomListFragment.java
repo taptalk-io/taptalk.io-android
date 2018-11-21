@@ -30,11 +30,13 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
@@ -67,6 +69,12 @@ public class TAPRoomListFragment extends Fragment {
 
     private TAPChatListener chatListener;
 
+    private TapTalkNetworkInterface networkListener = () -> {
+       if (vm.isDoneFirstSetup()) {
+           updateQueryRoomListFromBackground();
+       }
+    };
+
     public TAPRoomListFragment() {
     }
 
@@ -92,6 +100,7 @@ public class TAPRoomListFragment extends Fragment {
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
         updateQueryRoomListFromBackground();
+        addNetworkListener();
         new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
     }
 
@@ -99,6 +108,7 @@ public class TAPRoomListFragment extends Fragment {
     public void onPause() {
         super.onPause();
         TAPNotificationManager.getInstance().setRoomListAppear(false);
+        removeNetworkListener();
     }
 
     @Override
@@ -538,5 +548,13 @@ public class TAPRoomListFragment extends Fragment {
             runFullRefreshSequence();
             TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(false);
         }
+    }
+
+    private void addNetworkListener() {
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+    }
+
+    private void removeNetworkListener() {
+        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 }

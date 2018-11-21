@@ -112,10 +112,10 @@ public class TapTalk {
             @Override
             public void onAppGotoBackground() {
                 TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 isForeground = false;
-                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
             }
         });
     }

@@ -20,6 +20,7 @@ import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
     @NonNull @JsonProperty("localID") private String localID;
+    @Nullable @JsonProperty("filterID") private String filterID;
     @JsonProperty("room") private TAPRoomModel room;
     @JsonProperty("type") private int type;
     @JsonProperty("body") private String body;
@@ -37,7 +38,7 @@ public class TAPMessageModel implements Parcelable {
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
     @JsonIgnore private int imageWidth, imageHeight;
 
-    public TAPMessageModel(@Nullable String messageID, @NonNull String localID, String body,
+    public TAPMessageModel(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                            TAPRoomModel room, Integer type, Long created, TAPUserModel user,
                            String recipientID, @Nullable Boolean isDeleted,
                            @Nullable Boolean isSending, @Nullable Boolean isFailedSend,
@@ -45,6 +46,7 @@ public class TAPMessageModel implements Parcelable {
                            @Nullable Boolean isHidden, @Nullable Long updated) {
         this.messageID = messageID;
         this.localID = localID;
+        this.filterID = filterID;
         this.body = body;
         this.room = room;
         this.type = type;
@@ -66,13 +68,14 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel Builder(String message, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        return new TAPMessageModel("0", localID, message, room, type, created, user, recipientID, false, true, false, false, false, false, created);
+        return new TAPMessageModel("0", localID,"", message, room, type, created, user, recipientID, false, true, false, false, false, false, created);
     }
 
     public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
         return new TAPMessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
+                messageModel.getFilterID(),
                 TAPEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
@@ -92,6 +95,7 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel(
                 messageModel.getMessageID(),
                 messageModel.getLocalID(),
+                messageModel.getFilterID(),
                 TAPEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
                 messageModel.getRoom(),
                 messageModel.getType(),
@@ -123,6 +127,15 @@ public class TAPMessageModel implements Parcelable {
 
     public void setLocalID(@NonNull String localID) {
         this.localID = localID;
+    }
+
+    @Nullable
+    public String getFilterID() {
+        return filterID;
+    }
+
+    public void setFilterID(@Nullable String filterID) {
+        this.filterID = filterID;
     }
 
     public TAPRoomModel getRoom() {
@@ -307,6 +320,7 @@ public class TAPMessageModel implements Parcelable {
     public TAPMessageModel copyMessageModel() {
         return new TAPMessageModel(
                 getMessageID(),
+                getLocalID(),
                 getLocalID(),
                 getBody(),
                 getRoom(),
