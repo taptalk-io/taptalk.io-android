@@ -60,6 +60,12 @@ public class TAPNotificationManager {
         }
     }
 
+    public void removeNotifMessagesMap(String roomID) {
+        if (checkMapContainsRoomID(roomID)) {
+            getNotifMessagesMap().remove(roomID);
+        }
+    }
+
     public void clearNotifMessagesMap(String roomID) {
         if (checkMapContainsRoomID(roomID)) {
             getNotifMessagesMap().get(roomID).clear();
@@ -197,6 +203,11 @@ public class TAPNotificationManager {
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(roomID, 0);
+        TAPNotificationManager.getInstance().removeNotifMessagesMap(roomID);
+        
+        if (0 == TAPNotificationManager.getInstance().getNotifMessagesMap().size()) {
+            notificationManager.cancel(0);
+        }
     }
 
     public void saveNotificationMessageMapToPreference() {
