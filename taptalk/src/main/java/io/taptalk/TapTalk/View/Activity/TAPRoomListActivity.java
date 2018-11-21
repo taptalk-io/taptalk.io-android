@@ -23,6 +23,7 @@ public class TAPRoomListActivity extends TAPBaseActivity {
 
     @Override
     protected void initView() {
+        fRoomList = (TAPMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
         showRoomList();
         redirectToChatActivityFromNotification();
     }
@@ -35,10 +36,9 @@ public class TAPRoomListActivity extends TAPBaseActivity {
     }
 
     public void showRoomList() {
-        fRoomList = TAPMainRoomListFragment.newInstance();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_room_list, fRoomList)
+                .show(fRoomList)
                 .commit();
     }
 
