@@ -191,13 +191,16 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
-        TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
-        new TapTalk.NotificationBuilder(context)
-                .setNotificationMessage(newMessageModel)
-                .setSmallIcon(notificationIcon)
-                .setNeedReply(false)
-                .setOnClickAction(TAPRoomListActivity.class)
-                .show();
+        if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
+                && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
+            TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
+            new TapTalk.NotificationBuilder(context)
+                    .setNotificationMessage(newMessageModel)
+                    .setSmallIcon(notificationIcon)
+                    .setNeedReply(false)
+                    .setOnClickAction(TAPRoomListActivity.class)
+                    .show();
+        }
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
