@@ -2,6 +2,8 @@ package io.taptalk.TapTalk.API.Api;
 
 import android.util.Log;
 
+import java.util.List;
+
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
@@ -18,6 +20,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
@@ -27,6 +30,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
 import rx.Observable;
@@ -194,6 +198,11 @@ public class TAPApiManager {
     public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> subscriber) {
         TAPGetMessageListbyRoomBeforeRequest request = new TAPGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
         execute(homingPigeon.getMessageListByRoomBefore(request), subscriber);
+    }
+
+    public void updateMessageStatusAsDelivered(List<String> messageIDs, Subscriber<TAPBaseResponse<TAPUpdateMessageStatusResponse>> subscriber) {
+        TAPUpdateMessageStatusRequest request = new TAPUpdateMessageStatusRequest(messageIDs);
+        execute(homingPigeon.updateMessageStatusAsDelivered(request), subscriber);
     }
 
     public void getMyContactListFromAPI(Subscriber<TAPBaseResponse<TAPContactResponse>> subscriber) {

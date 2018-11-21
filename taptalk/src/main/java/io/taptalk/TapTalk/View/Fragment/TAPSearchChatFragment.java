@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.View.Fragment;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,7 +32,6 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPSearchChatViewModel;
 import io.taptalk.Taptalk.R;
@@ -47,7 +45,6 @@ import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 public class TAPSearchChatFragment extends Fragment {
 
     private static final String TAG = TAPSearchChatFragment.class.getSimpleName();
-    private Activity activity;
 
     private ConstraintLayout clActionBar;
     private ImageView ivButtonBack;
@@ -75,7 +72,6 @@ public class TAPSearchChatFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        activity = getActivity();
         return inflater.inflate(R.layout.tap_fragment_search_chat, container, false);
     }
 
@@ -93,7 +89,7 @@ public class TAPSearchChatFragment extends Fragment {
         if (hidden) {
             clearSearch();
         } else {
-            TAPUtils.getInstance().showKeyboard(activity, etSearch);
+            TAPUtils.getInstance().showKeyboard(getActivity(), etSearch);
         }
     }
 
@@ -120,13 +116,15 @@ public class TAPSearchChatFragment extends Fragment {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(activity);
+                TAPUtils.getInstance().dismissKeyboard(getActivity());
             }
         });
 
         ivButtonBack.setOnClickListener(v -> {
-            ((TAPRoomListActivity) activity).showRoomList();
-            TAPUtils.getInstance().dismissKeyboard(activity);
+            TAPMainRoomListFragment fragment = (TAPMainRoomListFragment) this.getParentFragment();
+            if (null != fragment)
+                fragment.showRoomList();
+            TAPUtils.getInstance().dismissKeyboard(getActivity());
         });
         ivButtonAction.setOnClickListener(v -> clearSearch());
     }
@@ -134,7 +132,7 @@ public class TAPSearchChatFragment extends Fragment {
     private void clearSearch() {
         etSearch.setText("");
         etSearch.clearFocus();
-        TAPUtils.getInstance().dismissKeyboard(activity);
+        TAPUtils.getInstance().dismissKeyboard(getActivity());
     }
 
     private void setRecentSearchItemsFromDatabase() {
@@ -154,7 +152,8 @@ public class TAPSearchChatFragment extends Fragment {
                             entity.getRoomID(),
                             entity.getRoomName(),
                             entity.getRoomType(),
-                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {}, entity.getRoomImage()),
+                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                            }, entity.getRoomImage()),
                             entity.getRoomColor());
                     recentItem.setRoom(roomModel);
                     vm.addRecentSearches(recentItem);
@@ -164,8 +163,8 @@ public class TAPSearchChatFragment extends Fragment {
             //kalau ada perubahan sama databasenya ga lgsg diubah karena nnti bakal ngilangin hasil search yang muncul
             //kalau lagi muncul hasil search updatenya tunggu fungsi showRecentSearch dipanggil
             //kalau lagi muncul halaman recent search baru set items
-            if (vm.isRecentSearchShown())
-                activity.runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
+            if (vm.isRecentSearchShown() && null != getActivity())
+                getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
         });
 
         showRecentSearches();
@@ -174,9 +173,11 @@ public class TAPSearchChatFragment extends Fragment {
     //ini function buat munculin recent search nya lagi
     //jadi dy gantiin isi recyclerView nya sama list yang diisi di setRecentSearchItemsFromDatabase (dari LiveData)
     private void showRecentSearches() {
-        activity.runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
-        //flag untuk nandain kalau skrg lagi munculin halaman recent Search
-        vm.setRecentSearchShown(true);
+        if (null != getActivity()) {
+            getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
+            //flag untuk nandain kalau skrg lagi munculin halaman recent Search
+            vm.setRecentSearchShown(true);
+        }
     }
 
     //ini fungsi buat set tampilan kalau lagi empty
@@ -184,7 +185,8 @@ public class TAPSearchChatFragment extends Fragment {
         TAPSearchChatModel emptyItem = new TAPSearchChatModel(EMPTY_STATE);
         vm.clearSearchResults();
         vm.addSearchResult(emptyItem);
-        activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+        if (null != getActivity())
+            getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {
@@ -222,7 +224,7 @@ public class TAPSearchChatFragment extends Fragment {
     private TAPDatabaseListener<TAPMessageEntity> roomSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
-            if (entities.size() > 0) {
+            if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
@@ -243,7 +245,7 @@ public class TAPSearchChatFragment extends Fragment {
                     result.setRoom(room);
                     vm.addSearchResult(result);
                 }
-                activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+                getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
             }
             TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
         }
@@ -276,7 +278,8 @@ public class TAPSearchChatFragment extends Fragment {
                     }
                 }
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
-                activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+                if (null != getActivity())
+                    getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
             }
             TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
         }
@@ -285,7 +288,7 @@ public class TAPSearchChatFragment extends Fragment {
     private TAPDatabaseListener<TAPMessageEntity> messageSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
-            if (entities.size() > 0) {
+            if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleMessages = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleMessages.setSectionTitle(getString(R.string.messages));
                 vm.addSearchResult(sectionTitleMessages);
@@ -295,7 +298,7 @@ public class TAPSearchChatFragment extends Fragment {
                     vm.addSearchResult(result);
                 }
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
-                activity.runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+                getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
             } else if (vm.getSearchResults().size() == 0) {
                 setEmptyState();
             }

@@ -3,7 +3,9 @@ package io.taptalk.TapTalk.Manager;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +18,8 @@ public class TAPMessageStatusManager {
     private static TAPMessageStatusManager instance;
     private ScheduledExecutorService messageStatusScheduler;
     private List<TAPMessageModel> readMessageQueue;
+    private int requestID = 0;
+    private Map<Integer, List<TAPMessageModel>> apiRequestMap;
 
     public static TAPMessageStatusManager getInstance() {
         return null == instance ? instance = new TAPMessageStatusManager() : instance;
@@ -41,6 +45,18 @@ public class TAPMessageStatusManager {
         getReadMessageQueue().clear();
     }
 
+    public Map<Integer, List<TAPMessageModel>> getApiRequestMap() {
+        return null == apiRequestMap ? apiRequestMap = new LinkedHashMap<>() : apiRequestMap;
+    }
+
+    public void addApiRequestMapItem(int requestID, List<TAPMessageModel> apiRequestMapItem) {
+        getApiRequestMap().put(requestID, apiRequestMapItem);
+    }
+
+    public void removeApiRequestMapItem(int requestID) {
+        getApiRequestMap().remove(requestID);
+    }
+
     public void triggerCallReadMessageApiScheduler(TAPChatActivity.MessageStatusInterface msgStatusInterface) {
         if (null == messageStatusScheduler || messageStatusScheduler.isShutdown()) {
             messageStatusScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -51,8 +67,10 @@ public class TAPMessageStatusManager {
 
         messageStatusScheduler.scheduleAtFixedRate(() -> {
             // TODO: 15/11/18 call API read Message ID
+            addApiRequestMapItem(requestID, new ArrayList<>(getReadMessageQueue()));
             updateMessageStatusInView(msgStatusInterface);
-//            Log.e(TAG, "triggerCallReadMessageApiScheduler: " );
+            requestID++;
+            //Log.e(TAG, "triggerCallReadMessageApiScheduler: " );
         }, 0, 500, TimeUnit.MILLISECONDS);
     }
 

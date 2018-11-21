@@ -27,10 +27,10 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
-    private List<TAPMessageModel> messageModels;
+    private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private TAPUserModel myUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel replyTo, pendingCustomKeyboardMessage;
+    private TAPMessageModel replyTo;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private String otherUserID = "0";
@@ -164,6 +164,22 @@ public class TAPChatViewModel extends AndroidViewModel {
         getMessageModels().addAll(messageModels);
     }
 
+    public List<TAPMessageModel> getPendingRecyclerMessages() {
+        return null == pendingRecyclerMessages ? pendingRecyclerMessages = new ArrayList<>() : pendingRecyclerMessages;
+    }
+
+    public void setPendingRecyclerMessages(List<TAPMessageModel> pendingRecyclerMessages) {
+        this.pendingRecyclerMessages = pendingRecyclerMessages;
+    }
+
+    public void addPendingRecyclerMessage(TAPMessageModel message) {
+        getPendingRecyclerMessages().add(message);
+    }
+
+    public void removePendingRecyclerMessage(TAPMessageModel message) {
+        getPendingRecyclerMessages().remove(message);
+    }
+
     public TAPUserModel getMyUserModel() {
         return myUserModel;
     }
@@ -187,14 +203,6 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setReplyTo(TAPMessageModel replyTo) {
         this.replyTo = replyTo;
-    }
-
-    public TAPMessageModel getPendingCustomKeyboardMessage() {
-        return pendingCustomKeyboardMessage;
-    }
-
-    public void setPendingCustomKeyboardMessage(TAPMessageModel pendingCustomKeyboardMessage) {
-        this.pendingCustomKeyboardMessage = pendingCustomKeyboardMessage;
     }
 
     public Uri getCameraImageUri() {

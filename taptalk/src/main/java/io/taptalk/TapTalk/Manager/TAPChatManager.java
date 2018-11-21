@@ -258,6 +258,7 @@ public class TAPChatManager {
         return new TAPMessageModel(
                 entity.getMessageID(),
                 entity.getLocalID(),
+                entity.getFilterID(),
                 entity.getBody(),
                 new TAPRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
                         // TODO: 18 October 2018 REMOVE CHECK
@@ -291,7 +292,7 @@ public class TAPChatManager {
      */
     public TAPMessageEntity convertToEntity(TAPMessageModel model) {
         return new TAPMessageEntity(
-                model.getMessageID(), model.getLocalID(), model.getBody(), model.getRecipientID(),
+                model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(), model.getRecipientID(),
                 model.getType(), model.getCreated(), model.getUpdated(), model.getIsRead(),
                 model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
                 model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),

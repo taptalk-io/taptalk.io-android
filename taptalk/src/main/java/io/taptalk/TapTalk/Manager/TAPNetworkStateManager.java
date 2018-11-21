@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
+import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback {
     private static final String TAG = TAPNetworkStateManager.class.getSimpleName();
@@ -88,6 +89,8 @@ public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback 
     public void onLost(Network network) {
         super.onLost(network);
         Log.e(TAG, "onLost: " );
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+        TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
         TAPConnectionManager.getInstance().close();
     }
 }
