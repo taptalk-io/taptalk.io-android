@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.View.Fragment;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,7 +44,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
@@ -53,7 +51,7 @@ import io.taptalk.Taptalk.R;
 public class TAPRoomListFragment extends Fragment {
 
     private String TAG = TAPRoomListFragment.class.getSimpleName();
-    private Activity activity;
+    private TAPMainRoomListFragment fragment;
 
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
@@ -75,7 +73,7 @@ public class TAPRoomListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = getActivity();
+        fragment = (TAPMainRoomListFragment) this.getParentFragment();
         return inflater.inflate(R.layout.tap_fragment_room_list, container, false);
     }
 
@@ -172,7 +170,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void initView(View view) {
-        activity.getWindow().setBackgroundDrawable(null);
+        getActivity().getWindow().setBackgroundDrawable(null);
 
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
@@ -199,7 +197,7 @@ public class TAPRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        clButtonSearch.setOnClickListener(v -> ((TAPRoomListActivity) activity).showSearchChat());
+        clButtonSearch.setOnClickListener(v -> fragment.showSearchChat());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
         ivButtonMute.setOnClickListener(v -> {
@@ -260,7 +258,7 @@ public class TAPRoomListFragment extends Fragment {
     /*ini adalah fungsi yang update tampilan setelah dapet data dari database
      * parameter isAnimated itu gunanya buat nentuin datanya kalau berubah perlu di animate atau nggak*/
     private void reloadLocalDataAndUpdateUILogic(boolean isAnimated) {
-        activity.runOnUiThread(() -> {
+        getActivity().runOnUiThread(() -> {
             if (null != adapter && 0 == vm.getRoomList().size()) {
                 llRoomEmpty.setVisibility(View.VISIBLE);
             } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
@@ -306,7 +304,7 @@ public class TAPRoomListFragment extends Fragment {
                 roomLastMessage.setHidden(message.getHidden());
 
                 Integer roomPos = vm.getRoomList().indexOf(roomList);
-                activity.runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
+                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
             } else {
                 //last message nya beda sama yang ada di tampilan
                 roomList.setLastMessage(message);
@@ -322,7 +320,7 @@ public class TAPRoomListFragment extends Fragment {
                 vm.getRoomList().remove(roomList);
                 vm.getRoomList().add(0, roomList);
 
-                activity.runOnUiThread(() -> {
+                getActivity().runOnUiThread(() -> {
                     adapter.notifyItemChanged(oldPos);
                     adapter.notifyItemMoved(oldPos, 0);
                     // Scroll to top
@@ -334,7 +332,7 @@ public class TAPRoomListFragment extends Fragment {
             TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
-            activity.runOnUiThread(() -> adapter.notifyItemInserted(0));
+            getActivity().runOnUiThread(() -> adapter.notifyItemInserted(0));
         }
     }
 
@@ -487,7 +485,7 @@ public class TAPRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            activity.runOnUiThread(() -> {
+            getActivity().runOnUiThread(() -> {
                 vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
                 adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
             });
