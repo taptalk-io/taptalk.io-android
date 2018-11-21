@@ -70,7 +70,7 @@ public class TAPMessageStatusManager {
             addApiRequestMapItem(requestID, new ArrayList<>(getReadMessageQueue()));
             updateMessageStatusInView(msgStatusInterface);
             requestID++;
-            Log.e(TAG, "triggerCallReadMessageApiScheduler: " );
+            //Log.e(TAG, "triggerCallReadMessageApiScheduler: " );
         }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
@@ -85,7 +85,7 @@ public class TAPMessageStatusManager {
     }
 
     private void updateMessageStatusInView(TAPChatActivity.MessageStatusInterface msgStatusInterface) {
-        Log.e(TAG, "updateMessageStatusInView: " );
+//        Log.e(TAG, "updateMessageStatusInView: " );
         msgStatusInterface.onReadStatus(new ArrayList<>(getReadMessageQueue()));
         clearReadMessageQueue();
     }
