@@ -337,6 +337,7 @@ public class TAPRoomListFragment extends Fragment {
                 vm.getRoomList().add(0, roomList);
 
                 getActivity().runOnUiThread(() -> {
+                    llRoomEmpty.setVisibility(View.GONE);
                     adapter.notifyItemChanged(oldPos);
                     adapter.notifyItemMoved(oldPos, 0);
                     // Scroll to top
@@ -349,7 +350,12 @@ public class TAPRoomListFragment extends Fragment {
             TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
-            getActivity().runOnUiThread(() -> adapter.notifyItemInserted(0));
+            getActivity().runOnUiThread(() -> {
+                llRoomEmpty.setVisibility(View.GONE);
+                if (0 == adapter.getItems().size())
+                    adapter.addItem(newRoomList);
+                adapter.notifyItemInserted(0);
+            });
         }
     }
 

@@ -619,7 +619,8 @@ public class TAPChatManager {
         }
         // Receive message outside active room (not in room List)
         else if (null != chatListeners && !TAPNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
+            if (newMessage.getUser().getUserID().equals(activeUser.getUserID()))
+                TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 

@@ -186,7 +186,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 //            Log.e(TAG, "initView: "+messageModels.size() );
             for (TAPMessageModel model : messageModels) {
                 vm.updateMessagePointerRead(model);
-                Log.e(TAG, "onReadStatus: "+model.getIsRead()+" "+model.getBody() );
+                Log.e(TAG, "onReadStatus: " + model.getIsRead() + " " + model.getBody());
             }
             //hpMessageAdapter.notifyDataSetChanged();
         }).start();
@@ -751,13 +751,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewMessage(message);
         }
 
         @Override
         public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewMessage(message);
         }
 
         @Override
@@ -1255,7 +1253,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             //sorting message balikan dari api after
             //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
-            mergeSort(messageAfterModels, ASCENDING);
+            if (0 < messageAfterModels.size()) {
+                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(messageAfterModels);
+                mergeSort(messageAfterModels, ASCENDING);
+            }
+
             runOnUiThread(() -> {
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
                     clEmptyChat.setVisibility(View.GONE);
@@ -1276,8 +1278,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
-            });
+            if (0 < responseMessages.size())
+                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+                });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
