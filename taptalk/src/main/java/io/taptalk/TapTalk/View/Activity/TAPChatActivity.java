@@ -535,6 +535,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.updateMessagePointer(message);
         runOnUiThread(() -> {
             int position = hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+            //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
             hpMessageAdapter.getItemAt(position).updateValue(message);
             hpMessageAdapter.notifyItemChanged(position);
         });

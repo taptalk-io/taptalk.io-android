@@ -485,7 +485,6 @@ public class TAPRoomListFragment extends Fragment {
             for (TAPContactModel contact : response.getContacts()) {
                 users.add(contact.getUser().hpUserModelForAddToDB());
             }
-            Log.e(TAG, "getContactView: " + users.size());
             TAPDataManager.getInstance().insertMyContactToDatabase(users);
         }
     };

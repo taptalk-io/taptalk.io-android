@@ -310,6 +310,7 @@ public class TAPMessageModel implements Parcelable {
         this.isFailedSend = model.getFailedSend();
         this.updated = model.getUpdated();
         this.isDelivered = model.getDelivered();
+        this.isRead = model.getIsRead();
         // Update when adding fields to model
     }
 

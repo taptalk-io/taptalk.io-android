@@ -88,7 +88,6 @@ public class TAPConnectionManager {
             @Override
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
-                Log.e(TAG, "onMessage: "+tempMessage );
                 String messages[] = tempMessage.split("\\r?\\n");
                 // TODO: 23/11/18 NANTI HARUS DIUBAH KARENA COMPLEXITYNYA JELEK
                 for (String message  : messages) {
