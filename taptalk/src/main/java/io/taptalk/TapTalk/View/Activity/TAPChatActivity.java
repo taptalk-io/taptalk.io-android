@@ -49,6 +49,7 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPMessageStatusListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -104,11 +105,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private SwipeBackInterface swipeInterface = () -> TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
 
-    //interface for message status
-    public interface MessageStatusInterface {
-        void onReadStatus(List<TAPMessageModel> messageModels);
-    }
-
     // View
     private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
@@ -130,7 +126,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatViewModel vm;
 
     private TAPSocketListener socketListener;
-    private MessageStatusInterface messageStatusInterface;
+    private TAPMessageStatusListener messageStatusListener;
 
     //enum Scrolling
     private enum STATE {
@@ -182,16 +178,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
 
-        messageStatusInterface = messageModels -> new Thread(() -> {
-//            Log.e(TAG, "initView: "+messageModels.size() );
-            for (TAPMessageModel model : messageModels) {
-                vm.updateMessagePointerRead(model);
-                Log.e(TAG, "onReadStatus: " + model.getIsRead() + " " + model.getBody());
+        messageStatusListener = new TAPMessageStatusListener() {
+            @Override
+            public void onReadStatus(List<TAPMessageModel> messageModels) {
+                new Thread(() -> {
+                    for (TAPMessageModel model : messageModels) {
+                        vm.updateMessagePointerRead(model);
+                    }
+                }).start();
             }
-            //hpMessageAdapter.notifyDataSetChanged();
-        }).start();
 
-        TAPMessageStatusManager.getInstance().triggerCallReadMessageApiScheduler(messageStatusInterface);
+            @Override
+            public void onDeliveredStatus(List<TAPMessageModel> messageModels) {
+                new Thread(() -> {
+                    for (TAPMessageModel model : messageModels) {
+                        vm.updateMessagePointerDelivered(model);
+                    }
+                }).start();
+            }
+        };
+
+        TAPMessageStatusManager.getInstance().addMessageStatusListener(messageStatusListener);
 
         addNetworkListener();
 
@@ -207,10 +214,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (!draft.isEmpty()) TAPChatManager.getInstance().saveMessageToDraft(draft);
         else TAPChatManager.getInstance().removeDraft();
 
-        // Stop Message Status Scheduler
-        TAPMessageStatusManager.getInstance().updateMessageStatusWhenCloseRoom(messageStatusInterface);
-
         removeNetworkListener();
+        TAPMessageStatusManager.getInstance().removeMessageStatusListener(messageStatusListener);
 
         TAPChatManager.getInstance().deleteActiveRoom();
     }
@@ -751,6 +756,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+            Log.e(TAG, "onUpdateMessageInActiveRoom: "+message.getBody() );
+            hpMessageAdapter.notifyDataSetChanged();
         }
 
         @Override

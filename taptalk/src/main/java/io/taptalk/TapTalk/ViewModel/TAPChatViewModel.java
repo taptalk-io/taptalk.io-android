@@ -86,6 +86,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
     }
 
+    public void updateMessagePointerDelivered(TAPMessageModel newMessage) {
+        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
+        TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
+        if (null != message) {
+            message.updateDeliveredMessage();
+        }
+    }
+
     public Map<String, TAPMessageModel> getUnreadMessages() {
         return unreadMessages == null ? unreadMessages = new LinkedHashMap<>() : unreadMessages;
     }

@@ -88,6 +88,7 @@ public class TAPConnectionManager {
             @Override
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
+                Log.e(TAG, "onMessage: "+tempMessage );
                 try {
                     HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
                     if (null != socketListeners && !socketListeners.isEmpty()) {

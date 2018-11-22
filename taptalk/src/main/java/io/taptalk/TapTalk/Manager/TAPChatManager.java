@@ -646,6 +646,11 @@ public class TAPChatManager {
             }
         }
 
+        //add to list delivered message
+        if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
+            TAPMessageStatusManager.getInstance().addDeliveredMessageQueue(newMessage);
+        }
+
         //check the message is from our direct reply or not (in background)
         if (!isReplyMessageLocalIDsEmpty()) {
             removeReplyMessageLocalID(newMessage.getLocalID());
