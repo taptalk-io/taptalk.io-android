@@ -13,7 +13,7 @@
                       <PersistentState>
                         <option name="values">
                           <map>
-                            <entry key="resourceDirectory" value="dev" />
+                            <entry key="resourceDirectory" value="staging" />
                           </map>
                         </option>
                       </PersistentState>
