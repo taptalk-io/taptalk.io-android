@@ -36,8 +36,12 @@ public class TAPChatViewModel extends AndroidViewModel {
     private String otherUserID = "0";
     private long lastTimestamp = 0;
     private long lastActivity;
-    private int numUsers;
-    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished, isContainerAnimating;
+    private int numUsers, containerAnimationState;
+    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
+
+    public final int IDLE = 0;
+    public final int ANIMATING = 1;
+    public final int PROCESSING = 2;
 
     public TAPChatViewModel(Application application) {
         super(application);
@@ -241,7 +245,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.numUsers = numUsers;
     }
 
-//    public boolean isTyping() {
+    public int getContainerAnimationState() {
+        return containerAnimationState;
+    }
+
+    public void setContainerAnimationState(int containerAnimationState) {
+        this.containerAnimationState = containerAnimationState;
+    }
+    //    public boolean isTyping() {
 //        return isTyping;
 //    }
 //
@@ -263,14 +274,6 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setOnBottom(boolean onBottom) {
         isOnBottom = onBottom;
-    }
-
-    public boolean isContainerAnimating() {
-        return isContainerAnimating;
-    }
-
-    public void setContainerAnimating(boolean containerAnimating) {
-        isContainerAnimating = containerAnimating;
     }
 
     public int getMessageSize() {

@@ -451,11 +451,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     // Previously addNewTextMessage
     private void addNewMessage(final TAPMessageModel newMessage) {
-        if (vm.isContainerAnimating()) {
+        if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener
+            Log.e(TAG, "addNewMessage: ANIMATING");
             vm.addPendingRecyclerMessage(newMessage);
         } else {
+            // Message is added after transition finishes in containerTransitionListener
+            Log.e(TAG, "addNewMessage: " + vm.getContainerAnimationState());
             checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
@@ -478,10 +481,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     hpMessageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
+                    vm.addMessagePointer(newMessage);
                 } else {
                     // Message from other people is received when recycler is scrolled up
                     hpMessageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
+                    vm.addMessagePointer(newMessage);
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -787,7 +792,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setReplyTo(null);
             }
             addNewMessage(message);
-            vm.addMessagePointer(message);
             if (clReply.getVisibility() == View.VISIBLE) {
                 clReply.setVisibility(View.GONE);
             }
@@ -1067,25 +1071,41 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     LayoutTransition.TransitionListener containerTransitionListener = new LayoutTransition.TransitionListener() {
         @Override
         public void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
-            vm.setContainerAnimating(true);
+            // Change animation state
+            if (vm.getContainerAnimationState() != vm.PROCESSING) {
+                vm.setContainerAnimationState(vm.ANIMATING);
+            }
         }
 
         @Override
         public void endTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
-            if (!vm.isContainerAnimating()) {
-                return;
+            if (vm.getContainerAnimationState() == vm.ANIMATING) {
+                processPendingMessages();
             }
-            vm.setContainerAnimating(false);
+        }
+
+        private void processPendingMessages() {
+            vm.setContainerAnimationState(vm.PROCESSING);
             if (vm.getPendingRecyclerMessages().size() > 0) {
-                for (TAPMessageModel pendingMessage : vm.getPendingRecyclerMessages()) {
-                    if (vm.isContainerAnimating()) {
+                // Copy list to prevent concurrent exception
+                List<TAPMessageModel> pendingMessages = new ArrayList<>(vm.getPendingRecyclerMessages());
+                for (TAPMessageModel pendingMessage : pendingMessages) {
+                    // Loop the copied list to add messages
+                    if (vm.getContainerAnimationState() != vm.PROCESSING) {
                         return;
                     }
                     addNewMessage(pendingMessage);
-                    vm.addMessagePointer(pendingMessage);
-                    vm.removePendingRecyclerMessage(pendingMessage);
+                }
+                // Remove added messages from pending message list
+                vm.getPendingRecyclerMessages().removeAll(pendingMessages);
+                if (vm.getPendingRecyclerMessages().size() > 0) {
+                    // Redo process if pending message is not empty
+                    processPendingMessages();
+                    return;
                 }
             }
+            // Change state to idle when processing finished
+            vm.setContainerAnimationState(vm.IDLE);
         }
     };
 
