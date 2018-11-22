@@ -100,6 +100,9 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusConnected() {
+        if (TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTED) {
+            return;
+        }
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
             tvConnectionStatus.setText(getString(R.string.connected));
@@ -113,7 +116,10 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusConnecting() {
-        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()) ||
+                TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTING) {
+            return;
+        }
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
