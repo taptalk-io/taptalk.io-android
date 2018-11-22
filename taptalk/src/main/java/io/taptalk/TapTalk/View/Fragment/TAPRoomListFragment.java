@@ -36,6 +36,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
@@ -445,6 +446,9 @@ public class TAPRoomListFragment extends Fragment {
                         getDatabaseAndAnimateResult();
                     }
                 });
+
+                //ini untuk get API ngasih tau kalau message yang dikirim udah berhasil d terima
+                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(response.getMessages());
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }

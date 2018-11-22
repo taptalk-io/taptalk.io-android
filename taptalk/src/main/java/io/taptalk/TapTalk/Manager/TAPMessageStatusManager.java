@@ -8,7 +8,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 
 public class TAPMessageStatusManager {
@@ -86,5 +89,28 @@ public class TAPMessageStatusManager {
         clearReadMessageQueue();
     }
 
+    public void updateMessageStatusToDeliveredFromNotification(TAPMessageModel newMessageModel) {
+        new Thread(() -> {
+            List<String> messageIds = new ArrayList<>();
+            messageIds.add(newMessageModel.getMessageID());
+            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            });
+        }).start();
+    }
 
+    public void updateMessageStatusToDeliveredFromNotification(List<TAPMessageModel> newMessageModels) {
+        new Thread(() -> {
+            TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
+            List<String> messageIds = new ArrayList<>();
+            for (TAPMessageModel model : newMessageModels) {
+                if (!model.getUser().getUserID().equals(myUser.getUserID())
+                        && null != model.getSending() && !model.getSending()
+                        && null != model.getDelivered() && !model.getDelivered()
+                        && null != model.getIsRead() && !model.getIsRead())
+                    messageIds.add(model.getMessageID());
+            }
+            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            });
+        }).start();
+    }
 }
