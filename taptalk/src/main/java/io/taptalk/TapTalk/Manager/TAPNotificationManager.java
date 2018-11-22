@@ -61,6 +61,12 @@ public class TAPNotificationManager {
         }
     }
 
+    public void removeNotifMessagesMap(String roomID) {
+        if (checkMapContainsRoomID(roomID)) {
+            getNotifMessagesMap().remove(roomID);
+        }
+    }
+
     public void clearNotifMessagesMap(String roomID) {
         if (checkMapContainsRoomID(roomID)) {
             getNotifMessagesMap().get(roomID).clear();
@@ -188,18 +194,26 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
-        TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
-        new TapTalk.NotificationBuilder(context)
-                .setNotificationMessage(newMessageModel)
-                .setSmallIcon(notificationIcon)
-                .setNeedReply(false)
-                .setOnClickAction(TAPRoomListActivity.class)
-                .show();
+        if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
+                && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
+            TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
+            new TapTalk.NotificationBuilder(context)
+                    .setNotificationMessage(newMessageModel)
+                    .setSmallIcon(notificationIcon)
+                    .setNeedReply(false)
+                    .setOnClickAction(TAPRoomListActivity.class)
+                    .show();
+        }
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(roomID, 0);
+        TAPNotificationManager.getInstance().removeNotifMessagesMap(roomID);
+
+        if (0 == TAPNotificationManager.getInstance().getNotifMessagesMap().size()) {
+            notificationManager.cancel(0);
+        }
     }
 
     public void saveNotificationMessageMapToPreference() {

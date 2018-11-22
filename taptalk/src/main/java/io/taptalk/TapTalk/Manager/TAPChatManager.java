@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,16 +20,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
-import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -262,6 +258,7 @@ public class TAPChatManager {
         return new TAPMessageModel(
                 entity.getMessageID(),
                 entity.getLocalID(),
+                entity.getFilterID(),
                 entity.getBody(),
                 new TAPRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
                         // TODO: 18 October 2018 REMOVE CHECK
@@ -295,7 +292,7 @@ public class TAPChatManager {
      */
     public TAPMessageEntity convertToEntity(TAPMessageModel model) {
         return new TAPMessageEntity(
-                model.getMessageID(), model.getLocalID(), model.getBody(), model.getRecipientID(),
+                model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(), model.getRecipientID(),
                 model.getType(), model.getCreated(), model.getUpdated(), model.getIsRead(),
                 model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
                 model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),

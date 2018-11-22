@@ -46,7 +46,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANN
 
 public class TapTalk {
     public static TapTalk tapTalk;
-    public static boolean isForeground = true;
+    public static boolean isForeground;
     private Thread.UncaughtExceptionHandler defaultUEH;
     private TapTalkTokenInterface hpTokenInterface;
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
@@ -100,22 +100,22 @@ public class TapTalk {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
+                isForeground = true;
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 appContext.startService(new Intent(TapTalk.appContext, TapTalkEndAppService.class));
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-                isForeground = true;
             }
 
             @Override
             public void onAppGotoBackground() {
+                isForeground = false;
                 TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
-                isForeground = false;
-                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
             }
         });
     }

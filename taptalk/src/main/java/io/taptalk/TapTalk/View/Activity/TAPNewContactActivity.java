@@ -420,7 +420,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onSocketConnected() {
             // Resume pending search on connect
-            if (vm.getPendingSearch().isEmpty()) {
+            if (null == vm.getPendingSearch() || vm.getPendingSearch().isEmpty()) {
                 return;
             }
             TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), getUserView);
