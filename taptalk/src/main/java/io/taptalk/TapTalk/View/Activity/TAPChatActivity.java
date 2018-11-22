@@ -17,7 +17,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -532,6 +531,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
+    private void updateMessageFromSocket(TAPMessageModel message) {
+        vm.updateMessagePointer(message);
+        runOnUiThread(() -> {
+            int position = hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+            hpMessageAdapter.getItemAt(position).updateValue(message);
+            hpMessageAdapter.notifyItemChanged(position);
+        });
+    }
+
     //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
     // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
     private void addBeforeTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempBeforeMessages) {
@@ -755,9 +763,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            Log.e(TAG, "onUpdateMessageInActiveRoom: "+message.getBody() );
-            hpMessageAdapter.notifyDataSetChanged();
+            updateMessageFromSocket(message);
         }
 
         @Override
