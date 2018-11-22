@@ -31,7 +31,7 @@ public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
     @Nullable @JsonProperty("isHidden") private Boolean isHidden;
     @Nullable @JsonProperty("isDeleted") private Boolean isDeleted;
-    @JsonIgnore @Nullable @JsonProperty("isSending") private Boolean isSending;
+    @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
     @JsonIgnore private TAPMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
