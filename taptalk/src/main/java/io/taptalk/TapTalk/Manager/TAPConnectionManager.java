@@ -123,17 +123,6 @@ public class TAPConnectionManager {
                         listener.onSocketError();
                 }
             }
-
-            @Override
-            public void reconnect() {
-                super.reconnect();
-                Log.e(TAG, "reconnect: ");
-                connectionStatus = CONNECTING;
-                if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (TapTalkSocketInterface listener : socketListeners)
-                        listener.onSocketConnecting();
-                }
-            }
         };
     }
 
@@ -189,7 +178,6 @@ public class TAPConnectionManager {
                 e.printStackTrace();
             }
         }
-
     }
 
     public void close() {
@@ -239,7 +227,6 @@ public class TAPConnectionManager {
                 }
             }
         }, delay);
-
     }
 
     public ConnectionStatus getConnectionStatus() {
@@ -263,7 +250,6 @@ public class TAPConnectionManager {
             websocketHeader.put("App-Version", BuildConfig.VERSION_NAME);
             websocketHeader.put("User-Agent", "android");
         }
-
         //return websocketHeader;
     }
 
