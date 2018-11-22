@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,7 +68,6 @@ public class TAPMessageStatusManager {
             addApiRequestMapItem(requestID, new ArrayList<>(getReadMessageQueue()));
             updateMessageStatusInView(msgStatusInterface);
             requestID++;
-            //Log.e(TAG, "triggerCallReadMessageApiScheduler: " );
         }, 0, 500, TimeUnit.MILLISECONDS);
     }
 
@@ -85,8 +82,9 @@ public class TAPMessageStatusManager {
     }
 
     private void updateMessageStatusInView(TAPChatActivity.MessageStatusInterface msgStatusInterface) {
-//        Log.e(TAG, "updateMessageStatusInView: " );
         msgStatusInterface.onReadStatus(new ArrayList<>(getReadMessageQueue()));
         clearReadMessageQueue();
     }
+
+
 }

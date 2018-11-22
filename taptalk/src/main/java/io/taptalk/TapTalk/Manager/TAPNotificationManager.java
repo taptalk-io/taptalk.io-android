@@ -15,8 +15,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 
@@ -191,9 +193,11 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
+        TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
+        updateMessageStatusToDeliveredFromNotification(newMessageModel);
+
         if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
                 && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
-            TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
             new TapTalk.NotificationBuilder(context)
                     .setNotificationMessage(newMessageModel)
                     .setSmallIcon(notificationIcon)
@@ -228,6 +232,14 @@ public class TAPNotificationManager {
             setNotifMessagesMap(tempNotifMessage);
             TAPDataManager.getInstance().clearNotificationMessageMap();
         }
+    }
+
+    public void updateMessageStatusToDeliveredFromNotification(TAPMessageModel newMessageModel) {
+        new Thread(() -> {
+            List<String> messageIds = new ArrayList<>();
+            messageIds.add(newMessageModel.getMessageID());
+            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {});
+        }).start();
     }
 
 }
