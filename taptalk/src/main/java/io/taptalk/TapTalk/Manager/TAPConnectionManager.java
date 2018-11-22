@@ -89,14 +89,18 @@ public class TAPConnectionManager {
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
                 Log.e(TAG, "onMessage: "+tempMessage );
-                try {
-                    HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
-                    if (null != socketListeners && !socketListeners.isEmpty()) {
-                        for (TapTalkSocketInterface listener : socketListeners)
-                            listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);
+                String messages[] = tempMessage.split("\\r?\\n");
+                // TODO: 23/11/18 NANTI HARUS DIUBAH KARENA COMPLEXITYNYA JELEK
+                for (String message  : messages) {
+                    try {
+                        HashMap response = new ObjectMapper().readValue(message, HashMap.class);
+                        if (null != socketListeners && !socketListeners.isEmpty()) {
+                            for (TapTalkSocketInterface listener : socketListeners)
+                                listener.onReceiveNewEmit(response.get("eventName").toString(), message);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
 
