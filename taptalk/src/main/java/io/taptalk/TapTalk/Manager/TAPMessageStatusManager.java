@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
-import io.taptalk.TapTalk.Listener.TAPMessageStatusListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -22,7 +21,6 @@ public class TAPMessageStatusManager {
     private ScheduledExecutorService messageStatusScheduler;
     private List<TAPMessageModel> readMessageQueue;
     private List<TAPMessageModel> deliveredMessageQueue;
-    private List<TAPMessageStatusListener> messageStatusListeners;
     private int readRequestID = 0;
     private int deliveredRequestID = 0;
     private Map<Integer, List<TAPMessageModel>> apiReadRequestMap;
@@ -30,22 +28,6 @@ public class TAPMessageStatusManager {
 
     public static TAPMessageStatusManager getInstance() {
         return null == instance ? instance = new TAPMessageStatusManager() : instance;
-    }
-
-    public List<TAPMessageStatusListener> getMessageStatusListeners() {
-        return null == messageStatusListeners ? messageStatusListeners = new ArrayList<>() : messageStatusListeners;
-    }
-
-    public void addMessageStatusListener(TAPMessageStatusListener messageStatusListener) {
-        getMessageStatusListeners().add(messageStatusListener);
-    }
-
-    public void removeMessageStatusListener(TAPMessageStatusListener messageStatusListener) {
-        getMessageStatusListeners().remove(messageStatusListener);
-    }
-
-    public void clearMessageStatusListeners() {
-        getMessageStatusListeners().clear();
     }
 
     public List<TAPMessageModel> getReadMessageQueue() {
@@ -126,7 +108,6 @@ public class TAPMessageStatusManager {
                     List<TAPMessageModel> tempMessageReadModel = new ArrayList<>(getReadMessageQueue());
                     addApiReadRequestMapItem(readRequestID, tempMessageReadModel);
                     readApiCallProcedure(tempMessageReadModel);
-                    updateMessageReadStatusInView(tempMessageReadModel);
                     clearReadMessageQueue();
                     readRequestID++;
                 }
@@ -138,7 +119,6 @@ public class TAPMessageStatusManager {
                     List<TAPMessageModel> tempMessageDeliveredModel = new ArrayList<>(getDeliveredMessageQueue());
                     addApiDeliveredRequestMapItem(deliveredRequestID, tempMessageDeliveredModel);
                     deliveredApiCallProcedure(tempMessageDeliveredModel);
-                    updateMessageDeliveredStatusInView(tempMessageDeliveredModel);
                     clearDeliveredMessageQueue();
                     deliveredRequestID++;
                 }
@@ -184,18 +164,6 @@ public class TAPMessageStatusManager {
             }
             TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
         }).start();
-    }
-
-    private void updateMessageReadStatusInView(List<TAPMessageModel> tempMessageReadModel) {
-        for (TAPMessageStatusListener listener : getMessageStatusListeners()) {
-            listener.onReadStatus(tempMessageReadModel);
-        }
-    }
-
-    private void updateMessageDeliveredStatusInView(List<TAPMessageModel> tempMessageDeliveredModel) {
-        for (TAPMessageStatusListener listener : getMessageStatusListeners()) {
-            listener.onDeliveredStatus(tempMessageDeliveredModel);
-        }
     }
 
     public void updateMessageStatusToDeliveredFromNotification(TAPMessageModel newMessageModel) {

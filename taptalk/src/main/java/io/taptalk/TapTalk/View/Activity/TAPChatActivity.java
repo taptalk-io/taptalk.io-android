@@ -178,28 +178,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
 
-        messageStatusListener = new TAPMessageStatusListener() {
-            @Override
-            public void onReadStatus(List<TAPMessageModel> messageModels) {
-                new Thread(() -> {
-                    for (TAPMessageModel model : messageModels) {
-                        vm.updateMessagePointerRead(model);
-                    }
-                }).start();
-            }
-
-            @Override
-            public void onDeliveredStatus(List<TAPMessageModel> messageModels) {
-                new Thread(() -> {
-                    for (TAPMessageModel model : messageModels) {
-                        vm.updateMessagePointerDelivered(model);
-                    }
-                }).start();
-            }
-        };
-
-        TAPMessageStatusManager.getInstance().addMessageStatusListener(messageStatusListener);
-
         addNetworkListener();
 
         if (vm.isInitialAPICallFinished())
@@ -215,7 +193,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         else TAPChatManager.getInstance().removeDraft();
 
         removeNetworkListener();
-        TAPMessageStatusManager.getInstance().removeMessageStatusListener(messageStatusListener);
 
         TAPChatManager.getInstance().deleteActiveRoom();
     }
