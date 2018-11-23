@@ -11,6 +11,9 @@ public class TAPUpdateMessageStatusResponse {
         this.updatedMessageIDs = updatedMessageIDs;
     }
 
+    public TAPUpdateMessageStatusResponse() {
+    }
+
     public List<String> getUpdatedMessageIDs() {
         return updatedMessageIDs;
     }

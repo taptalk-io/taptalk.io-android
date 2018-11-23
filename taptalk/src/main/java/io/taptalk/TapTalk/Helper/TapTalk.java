@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TapTalkTokenInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
@@ -107,6 +108,7 @@ public class TapTalk {
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+                TAPMessageStatusManager.getInstance().triggerCallMessageApiScheduler();
             }
 
             @Override
@@ -116,6 +118,7 @@ public class TapTalk {
                 TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
+                TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
             }
         });
     }

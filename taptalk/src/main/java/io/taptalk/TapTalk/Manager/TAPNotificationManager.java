@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -166,6 +167,8 @@ public class TAPNotificationManager {
             }
         }
 
+        Log.e(TAG, "createNotificationBubble: " + builder.chatSender);
+
         return new NotificationCompat.Builder(builder.context, TAP_NOTIFICATION_CHANNEL)
                 .setContentTitle(builder.chatSender)
                 .setContentText(builder.chatMessage)
@@ -191,9 +194,11 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
+        TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
+        TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
+
         if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
                 && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
-            TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
             new TapTalk.NotificationBuilder(context)
                     .setNotificationMessage(newMessageModel)
                     .setSmallIcon(notificationIcon)
@@ -229,5 +234,4 @@ public class TAPNotificationManager {
             TAPDataManager.getInstance().clearNotificationMessageMap();
         }
     }
-
 }

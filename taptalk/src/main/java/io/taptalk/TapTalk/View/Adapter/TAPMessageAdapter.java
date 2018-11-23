@@ -194,12 +194,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         protected void onBind(TAPMessageModel item, int position) {
             tvMessageBody.setText(item.getBody());
 
-            new Thread(() -> {
-                if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)) {
-                    Log.e(TAG, "onBind: " + item.getBody() + " " + item.getIsRead());
-                    TAPMessageStatusManager.getInstance().addReadMessageQueue(item);
-                }
-            }).start();
+            Log.e(TAG, "onBind2: " + item.getBody() + " " + item.getMessageID() + " " + item.getIsRead());
+            if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)
+                    && (null != item.getSending() && !item.getSending())) {
+                Log.e(TAG, "onBind: " + item.getBody() + " " + item.getMessageID());
+                item.updateReadMessage();
+                new Thread(() -> TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel())).start();
+            }
 
             // TODO: 1 November 2018 TESTING REPLY LAYOUT
             if (null != item.getReplyTo() && !item.getReplyTo().getBody().isEmpty()) {
@@ -856,7 +857,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             }
             // Message is delivered
             else if (null != item.getDelivered() && item.getDelivered()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
                 flBubble.setTranslationX(0);
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvMessageStatus.setVisibility(View.GONE);
@@ -969,7 +970,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
                     } else if (null != item.getDelivered() && item.getDelivered()) {
                         // Message is delivered
-                        ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
+                        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
                     } else if (null != item.getSending() && !item.getSending()) {
                         // Message sent
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);

@@ -133,6 +133,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
             case "yuendry":
             case "ervin":
             case "fauzi":
+            case "lucas":
                 return true;
 
             default:
@@ -217,6 +218,8 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 return 36;
             case "fauzi":
                 return 37;
+            case "lucas":
+                return 38;
             default:
                 return 0;
         }
@@ -258,49 +261,51 @@ public class TAPLoginActivity extends TAPBaseActivity {
             case "16":
                 return "Santo";
             case "17":
-                return "veronica";
+                return "Veronica Dian";
             case "18":
-                return "poppy";
+                return "Poppy Sibarani";
             case "19":
-                return "axel";
+                return "Axel Soedarsono";
             case "20":
-                return "ovita";
+                return "Ovita";
             case "21":
-                return "putri";
+                return "Putri Prima";
             case "22":
-                return "amalia";
+                return "Amalia Nanda";
             case "23":
-                return "ronal";
+                return "Ronal Gorba";
             case "24":
-                return "ardanti";
+                return "Ardanti Wulandari";
             case "25":
-                return "anita";
+                return "Anita";
             case "26":
-                return "kevinfianto";
+                return "Kevin Fianto";
             case "27":
-                return "dessy";
+                return "Dessy Silitonga";
             case "28":
-                return "neni";
+                return "Neni Nurhasanah";
             case "29":
-                return "bernama";
+                return "Bernama Sabur";
             case "30":
-                return "william";
+                return "William Raymond";
             case "31":
-                return "sarah";
+                return "Sarah Febrina";
             case "32":
-                return "retyan";
+                return "Retyan Arthasani";
             case "33":
-                return "sekar";
+                return "Sekar Sari";
             case "34":
-                return "mei";
+                return "Meilika";
             case "35":
-                return "yuendry";
+                return "Yuendry";
             case "36":
-                return "ervin";
+                return "Ervin";
             case "37":
-                return "fauzi";
+                return "Fauzi";
+            case "38":
+                return "Lucas";
             default:
-                return "User Ga Tau Dari Mana ini";
+                return "";
         }
     }
 
@@ -320,13 +325,13 @@ public class TAPLoginActivity extends TAPBaseActivity {
             super.onSuccess(response);
             TAPApiManager.getInstance().setLogout(false);
             TapTalk.saveAuthTicketAndGetAccessToken(response.getTicket()
-                            , accessTokenView);
+                    , accessTokenView);
         }
 
         @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
-            showDialog("ERROR "+error.getCode(), error.getMessage());
+            showDialog("ERROR " + error.getCode(), error.getMessage());
         }
     };
 
@@ -365,7 +370,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
-            showDialog("ERROR "+error.getCode(), error.getMessage());
+            showDialog("ERROR " + error.getCode(), error.getMessage());
         }
     };
 
@@ -380,7 +385,8 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 }).show();
     }
 
-    private void registerFcmToken(){
-        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {})).start();
+    private void registerFcmToken() {
+        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
+        })).start();
     }
 }

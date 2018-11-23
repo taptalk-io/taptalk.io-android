@@ -205,6 +205,11 @@ public class TAPApiManager {
         execute(homingPigeon.updateMessageStatusAsDelivered(request), subscriber);
     }
 
+    public void updateMessageStatusAsRead(List<String> messageIDs, Subscriber<TAPBaseResponse<TAPUpdateMessageStatusResponse>> subscriber) {
+        TAPUpdateMessageStatusRequest request = new TAPUpdateMessageStatusRequest(messageIDs);
+        execute(homingPigeon.updateMessageStatusAsRead(request), subscriber);
+    }
+
     public void getMyContactListFromAPI(Subscriber<TAPBaseResponse<TAPContactResponse>> subscriber) {
         execute(homingPigeon.getMyContactListFromAPI(), subscriber);
     }

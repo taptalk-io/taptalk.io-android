@@ -46,6 +46,9 @@ public interface TAPTalkApiService {
     @POST("chat/message/feedback/delivered")
     Observable<TAPBaseResponse<TAPUpdateMessageStatusResponse>> updateMessageStatusAsDelivered(@Body TAPUpdateMessageStatusRequest request);
 
+    @POST("chat/message/feedback/read")
+    Observable<TAPBaseResponse<TAPUpdateMessageStatusResponse>> updateMessageStatusAsRead(@Body TAPUpdateMessageStatusRequest request);
+
     @POST("client/contact/list")
     Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();
 
@@ -54,6 +57,9 @@ public interface TAPTalkApiService {
 
     @POST("chat/message/list_by_room/after")
     Observable<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> getMessageListByRoomAfter(@Body TAPGetMessageListbyRoomAfterRequest request);
+
+    @POST("client/user/get_by_username")
+    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByUsername(@Body TAPGetUserByUsernameRequest request);
 
     @POST("client/contact/add")
     Observable<TAPBaseResponse<TAPCommonResponse>> addContact(@Body TAPUserIdRequest request);
@@ -67,6 +73,4 @@ public interface TAPTalkApiService {
     @POST("client/user/get_by_xcuserid")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
 
-    @POST("client/user/get_by_username")
-    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByUsername(@Body TAPGetUserByUsernameRequest request);
 }

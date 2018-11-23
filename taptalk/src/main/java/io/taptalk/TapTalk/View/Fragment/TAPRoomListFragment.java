@@ -36,6 +36,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
@@ -336,6 +337,7 @@ public class TAPRoomListFragment extends Fragment {
                 vm.getRoomList().add(0, roomList);
 
                 getActivity().runOnUiThread(() -> {
+                    llRoomEmpty.setVisibility(View.GONE);
                     adapter.notifyItemChanged(oldPos);
                     adapter.notifyItemMoved(oldPos, 0);
                     // Scroll to top
@@ -348,7 +350,12 @@ public class TAPRoomListFragment extends Fragment {
             TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
-            getActivity().runOnUiThread(() -> adapter.notifyItemInserted(0));
+            getActivity().runOnUiThread(() -> {
+                llRoomEmpty.setVisibility(View.GONE);
+                if (0 == adapter.getItems().size())
+                    adapter.addItem(newRoomList);
+                adapter.notifyItemInserted(0);
+            });
         }
     }
 
@@ -445,6 +452,9 @@ public class TAPRoomListFragment extends Fragment {
                         getDatabaseAndAnimateResult();
                     }
                 });
+
+                //ini untuk get API ngasih tau kalau message yang dikirim udah berhasil d terima
+                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(response.getMessages());
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }
@@ -475,7 +485,6 @@ public class TAPRoomListFragment extends Fragment {
             for (TAPContactModel contact : response.getContacts()) {
                 users.add(contact.getUser().hpUserModelForAddToDB());
             }
-            Log.e(TAG, "getContactView: " + users.size());
             TAPDataManager.getInstance().insertMyContactToDatabase(users);
         }
     };

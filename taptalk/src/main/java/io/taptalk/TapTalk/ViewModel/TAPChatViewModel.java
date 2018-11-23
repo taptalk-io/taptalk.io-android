@@ -25,6 +25,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPChatViewModel extends AndroidViewModel {
 
+    private static final String TAG = TAPChatViewModel.class.getSimpleName();
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
@@ -36,8 +37,12 @@ public class TAPChatViewModel extends AndroidViewModel {
     private String otherUserID = "0";
     private long lastTimestamp = 0;
     private long lastActivity;
-    private int numUsers;
-    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished, isContainerAnimating;
+    private int numUsers, containerAnimationState;
+    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
+
+    public final int IDLE = 0;
+    public final int ANIMATING = 1;
+    public final int PROCESSING = 2;
 
     public TAPChatViewModel(Application application) {
         super(application);
@@ -77,14 +82,6 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
     }
 
-    public void updateMessagePointerRead(TAPMessageModel newMessage) {
-//        getMessagePointer().get(newMessage.getLocalID()).updateReadMessage();
-        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
-        TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
-        if (null != message) {
-            message.updateReadMessage();
-        }
-    }
 
     public Map<String, TAPMessageModel> getUnreadMessages() {
         return unreadMessages == null ? unreadMessages = new LinkedHashMap<>() : unreadMessages;
@@ -138,9 +135,6 @@ public class TAPChatViewModel extends AndroidViewModel {
     public void clearUnreadMessages() {
         if (getUnreadCount() == 0) return;
 
-        for (Map.Entry<String, TAPMessageModel> unreadMessage : getUnreadMessages().entrySet()) {
-            unreadMessage.getValue().setIsRead(true);
-        }
         getUnreadMessages().clear();
     }
 
@@ -241,7 +235,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.numUsers = numUsers;
     }
 
-//    public boolean isTyping() {
+    public int getContainerAnimationState() {
+        return containerAnimationState;
+    }
+
+    public void setContainerAnimationState(int containerAnimationState) {
+        this.containerAnimationState = containerAnimationState;
+    }
+    //    public boolean isTyping() {
 //        return isTyping;
 //    }
 //
@@ -263,14 +264,6 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setOnBottom(boolean onBottom) {
         isOnBottom = onBottom;
-    }
-
-    public boolean isContainerAnimating() {
-        return isContainerAnimating;
-    }
-
-    public void setContainerAnimating(boolean containerAnimating) {
-        isContainerAnimating = containerAnimating;
     }
 
     public int getMessageSize() {

@@ -49,6 +49,7 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPMessageStatusListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -104,11 +105,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private SwipeBackInterface swipeInterface = () -> TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
 
-    //interface for message status
-    public interface MessageStatusInterface {
-        void onReadStatus(List<TAPMessageModel> messageModels);
-    }
-
     // View
     private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
@@ -130,7 +126,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatViewModel vm;
 
     private TAPSocketListener socketListener;
-    private MessageStatusInterface messageStatusInterface;
+    private TAPMessageStatusListener messageStatusListener;
 
     //enum Scrolling
     private enum STATE {
@@ -182,17 +178,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
 
-        messageStatusInterface = messageModels -> new Thread(() -> {
-//            Log.e(TAG, "initView: "+messageModels.size() );
-            for (TAPMessageModel model : messageModels) {
-                vm.updateMessagePointerRead(model);
-                Log.e(TAG, "onReadStatus: "+model.getIsRead()+" "+model.getBody() );
-            }
-            //hpMessageAdapter.notifyDataSetChanged();
-        }).start();
-
-        TAPMessageStatusManager.getInstance().triggerCallReadMessageApiScheduler(messageStatusInterface);
-
         addNetworkListener();
 
         if (vm.isInitialAPICallFinished())
@@ -206,9 +191,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) TAPChatManager.getInstance().saveMessageToDraft(draft);
         else TAPChatManager.getInstance().removeDraft();
-
-        // Stop Message Status Scheduler
-        TAPMessageStatusManager.getInstance().updateMessageStatusWhenCloseRoom(messageStatusInterface);
 
         removeNetworkListener();
 
@@ -451,11 +433,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     // Previously addNewTextMessage
     private void addNewMessage(final TAPMessageModel newMessage) {
-        if (vm.isContainerAnimating()) {
+        if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener
+            Log.e(TAG, "addNewMessage: ANIMATING");
             vm.addPendingRecyclerMessage(newMessage);
         } else {
+            // Message is added after transition finishes in containerTransitionListener
+            Log.e(TAG, "addNewMessage: " + vm.getContainerAnimationState());
             checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
@@ -478,10 +463,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     hpMessageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
+                    vm.addMessagePointer(newMessage);
                 } else {
                     // Message from other people is received when recycler is scrolled up
                     hpMessageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
+                    vm.addMessagePointer(newMessage);
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -525,6 +512,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.addOngoingOrderCard(newMessage);
                 break;
         }
+    }
+
+    private void updateMessageFromSocket(TAPMessageModel message) {
+        vm.updateMessagePointer(message);
+        runOnUiThread(() -> {
+            int position = hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+            //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
+            hpMessageAdapter.getItemAt(position).updateValue(message);
+            hpMessageAdapter.notifyItemChanged(position);
+        });
     }
 
     //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
@@ -750,14 +747,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewMessage(message);
+            updateMessageFromSocket(message);
         }
 
         @Override
         public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            addNewMessage(message);
         }
 
         @Override
@@ -787,7 +782,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setReplyTo(null);
             }
             addNewMessage(message);
-            vm.addMessagePointer(message);
             if (clReply.getVisibility() == View.VISIBLE) {
                 clReply.setVisibility(View.GONE);
             }
@@ -1067,25 +1061,41 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     LayoutTransition.TransitionListener containerTransitionListener = new LayoutTransition.TransitionListener() {
         @Override
         public void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
-            vm.setContainerAnimating(true);
+            // Change animation state
+            if (vm.getContainerAnimationState() != vm.PROCESSING) {
+                vm.setContainerAnimationState(vm.ANIMATING);
+            }
         }
 
         @Override
         public void endTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
-            if (!vm.isContainerAnimating()) {
-                return;
+            if (vm.getContainerAnimationState() == vm.ANIMATING) {
+                processPendingMessages();
             }
-            vm.setContainerAnimating(false);
+        }
+
+        private void processPendingMessages() {
+            vm.setContainerAnimationState(vm.PROCESSING);
             if (vm.getPendingRecyclerMessages().size() > 0) {
-                for (TAPMessageModel pendingMessage : vm.getPendingRecyclerMessages()) {
-                    if (vm.isContainerAnimating()) {
+                // Copy list to prevent concurrent exception
+                List<TAPMessageModel> pendingMessages = new ArrayList<>(vm.getPendingRecyclerMessages());
+                for (TAPMessageModel pendingMessage : pendingMessages) {
+                    // Loop the copied list to add messages
+                    if (vm.getContainerAnimationState() != vm.PROCESSING) {
                         return;
                     }
                     addNewMessage(pendingMessage);
-                    vm.addMessagePointer(pendingMessage);
-                    vm.removePendingRecyclerMessage(pendingMessage);
+                }
+                // Remove added messages from pending message list
+                vm.getPendingRecyclerMessages().removeAll(pendingMessages);
+                if (vm.getPendingRecyclerMessages().size() > 0) {
+                    // Redo process if pending message is not empty
+                    processPendingMessages();
+                    return;
                 }
             }
+            // Change state to idle when processing finished
+            vm.setContainerAnimationState(vm.IDLE);
         }
     };
 
@@ -1255,7 +1265,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             //sorting message balikan dari api after
             //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
-            mergeSort(messageAfterModels, ASCENDING);
+            if (0 < messageAfterModels.size()) {
+                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(messageAfterModels);
+                mergeSort(messageAfterModels, ASCENDING);
+            }
+
             runOnUiThread(() -> {
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
                     clEmptyChat.setVisibility(View.GONE);
@@ -1276,8 +1290,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
-            });
+            if (0 < responseMessages.size())
+                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+                });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
