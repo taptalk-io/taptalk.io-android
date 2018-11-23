@@ -26,6 +26,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -94,7 +95,9 @@ public class TAPChatManager {
         public void onSocketError() {
             TAPConnectionManager.getInstance().reconnect();
         }
+    };
 
+    private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
             switch (eventName) {
@@ -162,6 +165,7 @@ public class TAPChatManager {
 
     public TAPChatManager() {
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
+        TAPConnectionManager.getInstance().setSocketMessageListener(socketMessageListener);
         setActiveUser(TAPDataManager.getInstance().getActiveUser());
         chatListeners = new ArrayList<>();
         saveMessages = new ArrayList<>();

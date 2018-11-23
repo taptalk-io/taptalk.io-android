@@ -53,9 +53,6 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     @Override
-    public void onReceiveNewEmit(String eventName, String emitData) {}
-
-    @Override
     public void onSocketConnected() {
         setStatusConnected();
     }
