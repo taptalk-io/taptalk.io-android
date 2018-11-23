@@ -82,22 +82,6 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
     }
 
-    public void updateMessagePointerRead(TAPMessageModel newMessage) {
-//        getMessagePointer().get(newMessage.getLocalID()).updateReadMessage();
-        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
-        TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
-        if (null != message) {
-            message.updateReadMessage();
-        }
-    }
-
-    public void updateMessagePointerDelivered(TAPMessageModel newMessage) {
-        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
-        TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
-        if (null != message) {
-            message.updateDeliveredMessage();
-        }
-    }
 
     public Map<String, TAPMessageModel> getUnreadMessages() {
         return unreadMessages == null ? unreadMessages = new LinkedHashMap<>() : unreadMessages;
@@ -151,9 +135,6 @@ public class TAPChatViewModel extends AndroidViewModel {
     public void clearUnreadMessages() {
         if (getUnreadCount() == 0) return;
 
-        for (Map.Entry<String, TAPMessageModel> unreadMessage : getUnreadMessages().entrySet()) {
-            unreadMessage.getValue().setIsRead(true);
-        }
         getUnreadMessages().clear();
     }
 
