@@ -316,6 +316,7 @@ public class TAPMessageModel implements Parcelable {
 
     public void updateReadMessage() {
         this.isRead = true;
+        this.isDelivered = true;
     }
 
     public void updateDeliveredMessage() {
