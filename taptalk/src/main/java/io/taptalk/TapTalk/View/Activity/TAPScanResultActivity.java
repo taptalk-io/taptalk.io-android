@@ -116,9 +116,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         animateAddSuccess(addedContactUserModel);
         llButton.setOnClickListener(v -> {
             TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
-                TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
-                addedContactUserModel.getName(),
-                addedContactUserModel.getAvatarURL(), 1, "#2eccad");
+                    TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
+                    addedContactUserModel.getName(),
+                    addedContactUserModel.getAvatarURL(), 1, "#2eccad");
             finish();
         });
     }
@@ -182,9 +182,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             animateAddSuccess(contactModel);
             llButton.setOnClickListener(v -> {
                 TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
-                    TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
-                    contactModel.getName(), contactModel.getAvatarURL(),
-                    1, "#2eccad");
+                        TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
+                        contactModel.getName(), contactModel.getAvatarURL(),
+                        1, "#2eccad");
                 finish();
             });
         }
@@ -214,7 +214,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     .setTitle("Error")
                     .setMessage(getString(R.string.api_call_return_error))
                     .setPrimaryButtonTitle("OK")
-                    .setPrimaryButtonListener(v -> {}).show();
+                    .setPrimaryButtonListener(v -> {
+                    }).show();
         }
     };
 
@@ -265,56 +266,82 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             llButton.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
                     TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad"));
-            tvAlreadyContact.setText(Html.fromHtml("<b>"+contactModel.getName()+"</b> "
-                    +getResources().getString(R.string.is_already_in_your_contacts)));
-            cvResult.animate()
-                    .alpha(1f).withEndAction(
-                    () -> {
-                        llButton.animate().alpha(0f).start();
-                        llTextUsername.animate().alpha(0f).withEndAction(() -> {
-                            llTextUsername.setVisibility(View.GONE);
-                            tvAlreadyContact.setVisibility(View.VISIBLE);
-                            llButton.setVisibility(View.VISIBLE);
-                            ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
-                            tvButtonTitle.setText("Chat Now");
-                            llButton.animate().alpha(1f).start();
-                            civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(TAPUtils.getInstance().dpToPx(-54)).withEndAction(
-                                    () -> {
-                                        civMyUserAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(TAPUtils.getInstance().dpToPx(-24)).start();
-                                        civTheirContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(TAPUtils.getInstance().dpToPx(48)).withEndAction(
-                                                () -> civTheirContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).setDuration(150).translationX(24).start()).start();
-                                    }).start();
-                        }).start();
-                    }).start();
+            tvAlreadyContact.setText(Html.fromHtml("<b>" + contactModel.getName() + "</b> "
+                    + getResources().getString(R.string.is_already_in_your_contacts)));
+            cvResult.animate().alpha(1f).withEndAction(() -> {
+                llButton.animate().alpha(0f).start();
+                llTextUsername.animate().alpha(0f).withEndAction(() -> {
+                    llTextUsername.setVisibility(View.GONE);
+                    tvAlreadyContact.setVisibility(View.VISIBLE);
+                    llButton.setVisibility(View.VISIBLE);
+                    ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
+                    tvButtonTitle.setText("Chat Now");
+                    llButton.animate().alpha(1f).start();
+                    civMyUserAvatar.animate()
+                            .setInterpolator(new AccelerateInterpolator())
+                            .translationX(TAPUtils.getInstance().dpToPx(-54))
+                            .withEndAction(() -> {
+                                civMyUserAvatar.animate()
+                                        .setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(100)
+                                        .translationX(TAPUtils.getInstance().dpToPx(-24))
+                                        .start();
+                                civTheirContactAvatar.animate()
+                                        .setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(150)
+                                        .translationX(TAPUtils.getInstance().dpToPx(48))
+                                        .withEndAction(() ->
+                                                civTheirContactAvatar.animate()
+                                                        .setInterpolator(new AccelerateInterpolator())
+                                                        .setDuration(150)
+                                                        .translationX(TAPUtils.getInstance().dpToPx(24))
+                                                        .start())
+                                        .start();
+                            }).start();
+                }).start();
+            }).start();
         });
     }
 
     public void animateAddSuccess(TAPUserModel contactModel) {
         runOnUiThread(() -> {
             tvAddSuccess.setText(Html.fromHtml(getResources().getString(R.string.you_have_added)
-                    +" <b>"+contactModel.getName()+"</b> "
-                    +getResources().getString(R.string.to_your_contacts)));
+                    + " <b>" + contactModel.getName() + "</b> "
+                    + getResources().getString(R.string.to_your_contacts)));
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
-            cvResult.animate()
-                .alpha(1f).withEndAction(
-                () -> {
-                    llButton.animate().alpha(0f).start();
-                    llTextUsername.animate().alpha(0f).withEndAction(() -> {
-                        llTextUsername.setVisibility(View.GONE);
-                        llAddSuccess.setVisibility(View.VISIBLE);
-                        llButton.setVisibility(View.VISIBLE);
-                        ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
-                        tvButtonTitle.setText("Chat Now");
-                        llButton.animate().alpha(1f).start();
-                        civMyUserAvatar.animate().setInterpolator(new AccelerateInterpolator()).translationX(TAPUtils.getInstance().dpToPx(-54)).withEndAction(
-                                () -> {
-                                    civMyUserAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(100).translationX(TAPUtils.getInstance().dpToPx(-24)).start();
-                                    civTheirContactAvatar.animate().setInterpolator(new DecelerateInterpolator()).setDuration(150).translationX(TAPUtils.getInstance().dpToPx(48)).withEndAction(
-                                            () -> civTheirContactAvatar.animate().setInterpolator(new AccelerateInterpolator()).setDuration(150).translationX(24).start()).start();
-                                }).start();
-                    }).start();
+            cvResult.animate().alpha(1f).withEndAction(() -> {
+                llButton.animate().alpha(0f).start();
+                llTextUsername.animate().alpha(0f).withEndAction(() -> {
+                    llTextUsername.setVisibility(View.GONE);
+                    llAddSuccess.setVisibility(View.VISIBLE);
+                    llButton.setVisibility(View.VISIBLE);
+                    ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
+                    tvButtonTitle.setText("Chat Now");
+                    llButton.animate().alpha(1f).start();
+                    civMyUserAvatar.animate()
+                            .setInterpolator(new AccelerateInterpolator())
+                            .translationX(TAPUtils.getInstance().dpToPx(-54))
+                            .withEndAction(() -> {
+                                civMyUserAvatar.animate().
+                                        setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(100)
+                                        .translationX(TAPUtils.getInstance().dpToPx(-24))
+                                        .start();
+                                civTheirContactAvatar.animate()
+                                        .setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(150)
+                                        .translationX(TAPUtils.getInstance().dpToPx(48))
+                                        .withEndAction(() ->
+                                                civTheirContactAvatar.animate()
+                                                        .setInterpolator(new AccelerateInterpolator())
+                                                        .setDuration(150)
+                                                        .translationX(TAPUtils.getInstance().dpToPx(24))
+                                                        .start())
+                                        .start();
+                            }).start();
                 }).start();
+            }).start();
         });
 
     }

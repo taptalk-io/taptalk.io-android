@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -57,6 +58,12 @@ public class TAPNotificationManager {
             List<TAPMessageModel> listNotifMessagePerRoomID = new ArrayList<>();
             listNotifMessagePerRoomID.add(notifMessage);
             getNotifMessagesMap().put(messageRoomID, listNotifMessagePerRoomID);
+        }
+    }
+
+    public void removeNotifMessagesMap(String roomID) {
+        if (checkMapContainsRoomID(roomID)) {
+            getNotifMessagesMap().remove(roomID);
         }
     }
 
@@ -160,6 +167,8 @@ public class TAPNotificationManager {
             }
         }
 
+        Log.e(TAG, "createNotificationBubble: " + builder.chatSender);
+
         return new NotificationCompat.Builder(builder.context, TAP_NOTIFICATION_CHANNEL)
                 .setContentTitle(builder.chatSender)
                 .setContentText(builder.chatMessage)
@@ -186,17 +195,27 @@ public class TAPNotificationManager {
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
         TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
-        new TapTalk.NotificationBuilder(context)
-                .setNotificationMessage(newMessageModel)
-                .setSmallIcon(notificationIcon)
-                .setNeedReply(false)
-                .setOnClickAction(TAPRoomListActivity.class)
-                .show();
+        TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
+
+        if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
+                && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
+            new TapTalk.NotificationBuilder(context)
+                    .setNotificationMessage(newMessageModel)
+                    .setSmallIcon(notificationIcon)
+                    .setNeedReply(false)
+                    .setOnClickAction(TAPRoomListActivity.class)
+                    .show();
+        }
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(roomID, 0);
+        TAPNotificationManager.getInstance().removeNotifMessagesMap(roomID);
+
+        if (0 == TAPNotificationManager.getInstance().getNotifMessagesMap().size()) {
+            notificationManager.cancel(0);
+        }
     }
 
     public void saveNotificationMessageMapToPreference() {
@@ -215,5 +234,4 @@ public class TAPNotificationManager {
             TAPDataManager.getInstance().clearNotificationMessageMap();
         }
     }
-
 }

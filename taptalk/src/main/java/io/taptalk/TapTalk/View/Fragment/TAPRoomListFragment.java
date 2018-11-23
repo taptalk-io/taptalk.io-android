@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.View.Fragment;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,11 +30,14 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
@@ -45,7 +47,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
@@ -53,7 +54,7 @@ import io.taptalk.Taptalk.R;
 public class TAPRoomListFragment extends Fragment {
 
     private String TAG = TAPRoomListFragment.class.getSimpleName();
-    private Activity activity;
+    private TAPMainRoomListFragment fragment;
 
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
@@ -69,13 +70,19 @@ public class TAPRoomListFragment extends Fragment {
 
     private TAPChatListener chatListener;
 
+    private TapTalkNetworkInterface networkListener = () -> {
+       if (vm.isDoneFirstSetup()) {
+           updateQueryRoomListFromBackground();
+       }
+    };
+
     public TAPRoomListFragment() {
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = getActivity();
+        fragment = (TAPMainRoomListFragment) this.getParentFragment();
         return inflater.inflate(R.layout.tap_fragment_room_list, container, false);
     }
 
@@ -94,6 +101,7 @@ public class TAPRoomListFragment extends Fragment {
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
         updateQueryRoomListFromBackground();
+        addNetworkListener();
         new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
     }
 
@@ -101,6 +109,7 @@ public class TAPRoomListFragment extends Fragment {
     public void onPause() {
         super.onPause();
         TAPNotificationManager.getInstance().setRoomListAppear(false);
+        removeNetworkListener();
     }
 
     @Override
@@ -172,7 +181,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void initView(View view) {
-        activity.getWindow().setBackgroundDrawable(null);
+        getActivity().getWindow().setBackgroundDrawable(null);
 
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
@@ -189,6 +198,7 @@ public class TAPRoomListFragment extends Fragment {
         flSetupContainer.setVisibility(View.GONE);
 
         if (vm.isSelecting()) showSelectionActionBar();
+        vm.setDoneFirstApiSetup(TAPDataManager.getInstance().isRoomListSetupFinished());
 
         adapter = new TAPRoomListAdapter(vm, tapTalkRoomListInterface);
         llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -199,7 +209,10 @@ public class TAPRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        clButtonSearch.setOnClickListener(v -> ((TAPRoomListActivity) activity).showSearchChat());
+        clButtonSearch.setOnClickListener(v -> {
+            if (null != fragment)
+                fragment.showSearchChat();
+        });
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
         ivButtonMute.setOnClickListener(v -> {
@@ -250,7 +263,7 @@ public class TAPRoomListFragment extends Fragment {
     private void fetchDataFromAPI() {
         //kalau pertama kali kita call api getMessageRoomListAndUnread
         //setelah itu kita panggilnya api pending and update message
-        if (vm.isDoneFirstSetup()) {
+        if (vm.isDoneFirstApiSetup()) {
             TAPDataManager.getInstance().getNewAndUpdatedMessage(roomListView);
         } else {
             TAPDataManager.getInstance().getMessageRoomListAndUnread(TAPDataManager.getInstance().getActiveUser().getUserID(), roomListView);
@@ -260,31 +273,33 @@ public class TAPRoomListFragment extends Fragment {
     /*ini adalah fungsi yang update tampilan setelah dapet data dari database
      * parameter isAnimated itu gunanya buat nentuin datanya kalau berubah perlu di animate atau nggak*/
     private void reloadLocalDataAndUpdateUILogic(boolean isAnimated) {
-        activity.runOnUiThread(() -> {
-            if (null != adapter && 0 == vm.getRoomList().size()) {
-                llRoomEmpty.setVisibility(View.VISIBLE);
-            } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
-                //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
-                //isShouldNotLoadFromAPI ini buat load dari database yang pertama
-                //is animate nya itu buat kalau misalnya perlu di animate dari parameter
-                adapter.addRoomList(vm.getRoomList());
-                rvContactList.scrollToPosition(0);
-                llRoomEmpty.setVisibility(View.GONE);
-            } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
-                //ini pas kalau ga perlu untuk di animate changesnya
-                adapter.setItems(vm.getRoomList(), false);
-                llRoomEmpty.setVisibility(View.GONE);
-            }
-            flSetupContainer.setVisibility(View.GONE);
-            showNewChatButton();
+        if (null != getActivity()) {
+            getActivity().runOnUiThread(() -> {
+                if (null != adapter && 0 == vm.getRoomList().size()) {
+                    llRoomEmpty.setVisibility(View.VISIBLE);
+                } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
+                    //ini ngecek isShouldNotLoadFromAPI, kalau false brati dy pertama kali buka apps atau dari background
+                    //isShouldNotLoadFromAPI ini buat load dari database yang pertama
+                    //is animate nya itu buat kalau misalnya perlu di animate dari parameter
+                    adapter.addRoomList(vm.getRoomList());
+                    rvContactList.scrollToPosition(0);
+                    llRoomEmpty.setVisibility(View.GONE);
+                } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
+                    //ini pas kalau ga perlu untuk di animate changesnya
+                    adapter.setItems(vm.getRoomList(), false);
+                    llRoomEmpty.setVisibility(View.GONE);
+                }
+                flSetupContainer.setVisibility(View.GONE);
+                showNewChatButton();
 
-            //ini buat ngubah isShouldNotLoadFromAPInya pas get data pertama
-            //setelah itu fetch data dari api sesuai dengan cycle yang di butuhin
-            if (!TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
-                TAPRoomListViewModel.setShouldNotLoadFromAPI(true);
-                fetchDataFromAPI();
-            }
-        });
+                //ini buat ngubah isShouldNotLoadFromAPInya pas get data pertama
+                //setelah itu fetch data dari api sesuai dengan cycle yang di butuhin
+                if (!TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
+                    TAPRoomListViewModel.setShouldNotLoadFromAPI(true);
+                    fetchDataFromAPI();
+                }
+            });
+        }
     }
 
     private void processMessageFromSocket(TAPMessageModel message) {
@@ -295,7 +310,7 @@ public class TAPRoomListFragment extends Fragment {
             //room nya ada di listnya
             TAPMessageModel roomLastMessage = roomList.getLastMessage();
 
-            if (roomLastMessage.getLocalID().equals(message.getLocalID())) {
+            if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
                 //last messagenya sama cuma update datanya aja
                 roomLastMessage.setUpdated(message.getUpdated());
                 roomLastMessage.setDeleted(message.getDeleted());
@@ -306,7 +321,7 @@ public class TAPRoomListFragment extends Fragment {
                 roomLastMessage.setHidden(message.getHidden());
 
                 Integer roomPos = vm.getRoomList().indexOf(roomList);
-                activity.runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
+                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
             } else {
                 //last message nya beda sama yang ada di tampilan
                 roomList.setLastMessage(message);
@@ -322,19 +337,26 @@ public class TAPRoomListFragment extends Fragment {
                 vm.getRoomList().remove(roomList);
                 vm.getRoomList().add(0, roomList);
 
-                activity.runOnUiThread(() -> {
+                getActivity().runOnUiThread(() -> {
+                    llRoomEmpty.setVisibility(View.GONE);
                     adapter.notifyItemChanged(oldPos);
                     adapter.notifyItemMoved(oldPos, 0);
                     // Scroll to top
-                    if (llm.findFirstCompletelyVisibleItemPosition() == 0) rvContactList.scrollToPosition(0);
+                    if (llm.findFirstCompletelyVisibleItemPosition() == 0)
+                        rvContactList.scrollToPosition(0);
                 });
             }
-        } else {
+        } else if (null != getActivity()){
             //kalau room yang masuk baru
             TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
-            activity.runOnUiThread(() -> adapter.notifyItemInserted(0));
+            getActivity().runOnUiThread(() -> {
+                llRoomEmpty.setVisibility(View.GONE);
+                if (0 == adapter.getItems().size())
+                    adapter.addItem(newRoomList);
+                adapter.notifyItemInserted(0);
+            });
         }
     }
 
@@ -365,10 +387,10 @@ public class TAPRoomListFragment extends Fragment {
         }
         ivButtonNewChat.setTranslationY(TAPUtils.getInstance().dpToPx(120));
         ivButtonNewChat.setVisibility(View.VISIBLE);
-            ivButtonNewChat.animate()
-                    .translationY(0)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .start();
+        ivButtonNewChat.animate()
+                .translationY(0)
+                .setInterpolator(new DecelerateInterpolator())
+                .start();
     }
 
     private void hideNewChatButton() {
@@ -390,7 +412,7 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void startLoading() {
             //ini buat munculin setup dialog pas pertama kali buka apps
-            if (!TAPDataManager.getInstance().isRoomListSetupFinished()) {
+            if (!vm.isDoneFirstApiSetup()) {
                 flSetupContainer.setVisibility(View.VISIBLE);
                 hideNewChatButton();
             }
@@ -399,7 +421,7 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
-            if (!TAPDataManager.getInstance().isRoomListSetupFinished()) {
+            if (!vm.isDoneFirstApiSetup()) {
                 TAPDataManager.getInstance().setRoomListSetupFinished();
             }
         }
@@ -431,6 +453,9 @@ public class TAPRoomListFragment extends Fragment {
                         getDatabaseAndAnimateResult();
                     }
                 });
+
+                //ini untuk get API ngasih tau kalau message yang dikirim udah berhasil d terima
+                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(response.getMessages());
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }
@@ -461,7 +486,6 @@ public class TAPRoomListFragment extends Fragment {
             for (TAPContactModel contact : response.getContacts()) {
                 users.add(contact.getUser().hpUserModelForAddToDB());
             }
-            Log.e(TAG, "getContactView: " + users.size());
             TAPDataManager.getInstance().insertMyContactToDatabase(users);
         }
     };
@@ -487,10 +511,12 @@ public class TAPRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            activity.runOnUiThread(() -> {
-                vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
-                adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
-            });
+            if (null != getActivity()) {
+                getActivity().runOnUiThread(() -> {
+                    vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
+                });
+            }
         }
 
         @Override
@@ -532,5 +558,13 @@ public class TAPRoomListFragment extends Fragment {
             runFullRefreshSequence();
             TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(false);
         }
+    }
+
+    private void addNetworkListener() {
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+    }
+
+    private void removeNetworkListener() {
+        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 }

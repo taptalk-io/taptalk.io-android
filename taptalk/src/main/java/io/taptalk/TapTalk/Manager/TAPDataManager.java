@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 
 import com.orhanobut.hawk.Hawk;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,6 +22,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -220,7 +220,7 @@ public class TAPDataManager {
     }
 
     public void setRoomListSetupFinished() {
-        saveLongTimestampPreference(Calendar.getInstance().getTimeInMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
+        saveLongTimestampPreference(System.currentTimeMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
     }
 
     // TODO: 14/09/18 TEMP
@@ -490,6 +490,14 @@ public class TAPDataManager {
 
     public void getMessageListByRoomBefore(String roomID, Long maxCreated, TapDefaultDataView<TAPGetMessageListbyRoomResponse> view) {
         TAPApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void updateMessageStatusAsDelivered(List<String> messageIDs, TapDefaultDataView<TAPUpdateMessageStatusResponse> view) {
+        TAPApiManager.getInstance().updateMessageStatusAsDelivered(messageIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void updateMessageStatusAsRead(List<String> messageIDs, TapDefaultDataView<TAPUpdateMessageStatusResponse> view) {
+        TAPApiManager.getInstance().updateMessageStatusAsRead(messageIDs, new TAPDefaultSubscriber<>(view));
     }
 
     public void getMyContactListFromAPI(TapDefaultDataView<TAPContactResponse> view) {

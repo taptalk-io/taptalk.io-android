@@ -12,6 +12,7 @@ public class TAPMessageEntity {
 
     @Nullable @ColumnInfo(name = "messageID") private String messageID;
     @PrimaryKey() @NonNull @ColumnInfo(name = "localID") private String localID;
+    @Nullable @ColumnInfo(name = "filterID") private String filterID;
     @ColumnInfo(name = "body") private String body;
     @ColumnInfo(name = "recipientID") private String recipientID;
     @ColumnInfo(name = "type") private Integer type;
@@ -42,7 +43,7 @@ public class TAPMessageEntity {
     @Nullable @ColumnInfo(name = "userCreated") private Long userCreated;
     @Nullable @ColumnInfo(name = "userUpdated") private Long userUpdated;
 
-    public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, String body,
+    public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                             String recipientID, Integer type, Long created,
                             @Nullable Long updated,
                             @Nullable Boolean isRead, @Nullable Boolean isDelivered,
@@ -56,6 +57,7 @@ public class TAPMessageEntity {
                             @Nullable Long userCreated, @Nullable Long userUpdated) {
         this.messageID = messageID;
         this.localID = localID;
+        this.filterID = filterID;
         this.body = body;
         this.recipientID = recipientID;
         this.type = type;
@@ -103,6 +105,15 @@ public class TAPMessageEntity {
 
     public void setLocalID(@NonNull String localID) {
         this.localID = localID;
+    }
+
+    @Nullable
+    public String getFilterID() {
+        return filterID;
+    }
+
+    public void setFilterID(@Nullable String filterID) {
+        this.filterID = filterID;
     }
 
     public String getBody() {

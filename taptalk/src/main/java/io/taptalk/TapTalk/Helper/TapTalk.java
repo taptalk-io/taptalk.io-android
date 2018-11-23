@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TapTalkTokenInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
@@ -46,7 +47,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANN
 
 public class TapTalk {
     public static TapTalk tapTalk;
-    public static boolean isForeground = true;
+    public static boolean isForeground;
     private Thread.UncaughtExceptionHandler defaultUEH;
     private TapTalkTokenInterface hpTokenInterface;
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
@@ -100,22 +101,24 @@ public class TapTalk {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
+                isForeground = true;
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 appContext.startService(new Intent(TapTalk.appContext, TapTalkEndAppService.class));
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-                isForeground = true;
+                TAPMessageStatusManager.getInstance().triggerCallMessageApiScheduler();
             }
 
             @Override
             public void onAppGotoBackground() {
+                isForeground = false;
                 TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
-                isForeground = false;
-                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
+                TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
             }
         });
     }

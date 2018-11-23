@@ -35,7 +35,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 public class TAPNewChatActivity extends TAPBaseActivity {
 
     private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
-    private ImageView ivButtonBack, ivButtonSearch;
+    private ImageView ivButtonClose, ivButtonSearch;
     private TextView tvTitle;
     private RecyclerView rvContactList;
     private NestedScrollView nsvNewChat;
@@ -69,7 +69,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
         llButtonNewGroup = findViewById(R.id.ll_button_new_group);
         llBlockedContacts = findViewById(R.id.ll_blocked_contacts);
-        ivButtonBack = findViewById(R.id.iv_button_back);
+        ivButtonClose = findViewById(R.id.iv_button_close);
         ivButtonSearch = findViewById(R.id.iv_button_search);
         tvTitle = findViewById(R.id.tv_title);
         rvContactList = findViewById(R.id.rv_contact_list);
@@ -84,7 +84,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
 
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> searchContact());
         llButtonNewContact.setOnClickListener(v -> addNewContact());
         llButtonScanQR.setOnClickListener(v -> openQRScanner());

@@ -26,6 +26,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -94,7 +95,9 @@ public class TAPChatManager {
         public void onSocketError() {
             TAPConnectionManager.getInstance().reconnect();
         }
+    };
 
+    private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
             switch (eventName) {
@@ -162,6 +165,7 @@ public class TAPChatManager {
 
     public TAPChatManager() {
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
+        TAPConnectionManager.getInstance().setSocketMessageListener(socketMessageListener);
         setActiveUser(TAPDataManager.getInstance().getActiveUser());
         chatListeners = new ArrayList<>();
         saveMessages = new ArrayList<>();
@@ -258,6 +262,7 @@ public class TAPChatManager {
         return new TAPMessageModel(
                 entity.getMessageID(),
                 entity.getLocalID(),
+                entity.getFilterID(),
                 entity.getBody(),
                 new TAPRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
                         // TODO: 18 October 2018 REMOVE CHECK
@@ -291,7 +296,7 @@ public class TAPChatManager {
      */
     public TAPMessageEntity convertToEntity(TAPMessageModel model) {
         return new TAPMessageEntity(
-                model.getMessageID(), model.getLocalID(), model.getBody(), model.getRecipientID(),
+                model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(), model.getRecipientID(),
                 model.getType(), model.getCreated(), model.getUpdated(), model.getIsRead(),
                 model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
                 model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),
@@ -618,7 +623,8 @@ public class TAPChatManager {
         }
         // Receive message outside active room (not in room List)
         else if (null != chatListeners && !TAPNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
+            if (newMessage.getUser().getUserID().equals(activeUser.getUserID()))
+                TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 
@@ -642,6 +648,14 @@ public class TAPChatManager {
                 else if (kSocketDeleteMessage.equals(eventName))
                     chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
             }
+        }
+
+        //add to list delivered message
+        if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
+                && null != newMessage.getSending() && !newMessage.getSending()
+                && null != newMessage.getDelivered() && !newMessage.getDelivered()
+                && null != newMessage.getIsRead() && !newMessage.getIsRead()) {
+            TAPMessageStatusManager.getInstance().addDeliveredMessageQueue(newMessage);
         }
 
         //check the message is from our direct reply or not (in background)

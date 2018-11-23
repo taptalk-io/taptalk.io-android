@@ -19,6 +19,7 @@ public class TAPRoomListViewModel extends AndroidViewModel {
     private boolean isSelecting;
     private static boolean isShouldNotLoadFromAPI = false;
     private boolean isDoneFirstSetup = false;
+    private boolean isDoneFirstApiSetup = false;
     private String myUserID;
 
     public TAPRoomListViewModel(@NonNull Application application) {
@@ -96,5 +97,13 @@ public class TAPRoomListViewModel extends AndroidViewModel {
 
     public void setDoneFirstSetup(boolean doneFirstSetup) {
         isDoneFirstSetup = doneFirstSetup;
+    }
+
+    public boolean isDoneFirstApiSetup() {
+        return isDoneFirstApiSetup;
+    }
+
+    public void setDoneFirstApiSetup(boolean doneFirstApiSetup) {
+        isDoneFirstApiSetup = doneFirstApiSetup;
     }
 }

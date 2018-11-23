@@ -23,6 +23,7 @@ import java.util.TimerTask;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
+import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
 
@@ -44,6 +45,7 @@ public class TAPConnectionManager {
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
     private List<TapTalkSocketInterface> socketListeners;
+    private TAPSocketMessageListener socketMessageListener;
 
     private int reconnectAttempt;
     private final long RECONNECT_DELAY = 500;
@@ -88,14 +90,17 @@ public class TAPConnectionManager {
             @Override
             public void onMessage(ByteBuffer bytes) {
                 String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
-                try {
-                    HashMap response = new ObjectMapper().readValue(tempMessage, HashMap.class);
-                    if (null != socketListeners && !socketListeners.isEmpty()) {
-                        for (TapTalkSocketInterface listener : socketListeners)
-                            listener.onReceiveNewEmit(response.get("eventName").toString(), tempMessage);
+                String messages[] = tempMessage.split("\\r?\\n");
+                // TODO: 23/11/18 NANTI HARUS DIUBAH KARENA COMPLEXITYNYA JELEK
+                for (String message : messages) {
+                    try {
+                        HashMap response = new ObjectMapper().readValue(message, HashMap.class);
+                        if (null != socketMessageListener) {
+                            socketMessageListener.onReceiveNewEmit(response.get("eventName").toString(), message);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -119,24 +124,13 @@ public class TAPConnectionManager {
                         listener.onSocketError();
                 }
             }
-
-            @Override
-            public void reconnect() {
-                super.reconnect();
-                Log.e(TAG, "reconnect: ");
-                connectionStatus = CONNECTING;
-                if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (TapTalkSocketInterface listener : socketListeners)
-                        listener.onSocketConnecting();
-                }
-            }
         };
     }
 
     private void initNetworkListener() {
         TapTalkNetworkInterface networkListener = () -> {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
-                Log.e(TAG, "initNetworkListener: " );
+                Log.e(TAG, "initNetworkListener: ");
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus ||
                         DISCONNECTED == connectionStatus) {
@@ -165,6 +159,10 @@ public class TAPConnectionManager {
         socketListeners.clear();
     }
 
+    public void setSocketMessageListener(TAPSocketMessageListener socketMessageListener) {
+        this.socketMessageListener = socketMessageListener;
+    }
+
     public void send(String messageString) {
         if (webSocketClient.isOpen()) {
             webSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
@@ -185,7 +183,6 @@ public class TAPConnectionManager {
                 e.printStackTrace();
             }
         }
-
     }
 
     public void close() {
@@ -225,7 +222,8 @@ public class TAPConnectionManager {
                             for (TapTalkSocketInterface listener : socketListeners)
                                 listener.onSocketConnecting();
                         }
-                        TAPDataManager.getInstance().validateAccessToken(new TapDefaultDataView<TAPErrorModel>() {});
+                        TAPDataManager.getInstance().validateAccessToken(new TapDefaultDataView<TAPErrorModel>() {
+                        });
                         close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
                     } catch (IllegalStateException e) {
@@ -235,7 +233,6 @@ public class TAPConnectionManager {
                 }
             }
         }, delay);
-
     }
 
     public ConnectionStatus getConnectionStatus() {
@@ -259,7 +256,6 @@ public class TAPConnectionManager {
             websocketHeader.put("App-Version", BuildConfig.VERSION_NAME);
             websocketHeader.put("User-Agent", "android");
         }
-
         //return websocketHeader;
     }
 
