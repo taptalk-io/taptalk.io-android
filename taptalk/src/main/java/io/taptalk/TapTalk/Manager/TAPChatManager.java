@@ -651,7 +651,10 @@ public class TAPChatManager {
         }
 
         //add to list delivered message
-        if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
+        if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
+                && null != newMessage.getSending() && !newMessage.getSending()
+                && null != newMessage.getDelivered() && !newMessage.getDelivered()
+                && null != newMessage.getIsRead() && !newMessage.getIsRead()) {
             TAPMessageStatusManager.getInstance().addDeliveredMessageQueue(newMessage);
         }
 

@@ -25,6 +25,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPChatViewModel extends AndroidViewModel {
 
+    private static final String TAG = TAPChatViewModel.class.getSimpleName();
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;

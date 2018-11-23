@@ -316,7 +316,6 @@ public class TAPMessageModel implements Parcelable {
 
     public void updateReadMessage() {
         this.isRead = true;
-        // Update when adding fields to model
     }
 
     public void updateDeliveredMessage() {

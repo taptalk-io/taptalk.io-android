@@ -24,7 +24,7 @@ public class MyFireMsgService extends FirebaseMessagingService {
         TAPMessageModel notifModel = TAPUtils.getInstance().fromJSON(new TypeReference<TAPMessageModel>() {
         }, remoteMessage.getData().get("body"));
         try {
-            Log.e(TAG, "onMessageReceived: " + notifModel.getUser().getName());
+            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
             TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher, TAPMessageModel.BuilderDecrypt(notifModel));
         } catch (GeneralSecurityException e) {
             e.printStackTrace();

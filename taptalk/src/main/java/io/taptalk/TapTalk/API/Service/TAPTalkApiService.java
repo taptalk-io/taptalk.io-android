@@ -46,6 +46,9 @@ public interface TAPTalkApiService {
     @POST("chat/message/feedback/delivered")
     Observable<TAPBaseResponse<TAPUpdateMessageStatusResponse>> updateMessageStatusAsDelivered(@Body TAPUpdateMessageStatusRequest request);
 
+    @POST("chat/message/feedback/read")
+    Observable<TAPBaseResponse<TAPUpdateMessageStatusResponse>> updateMessageStatusAsRead(@Body TAPUpdateMessageStatusRequest request);
+
     @POST("client/contact/list")
     Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();
 

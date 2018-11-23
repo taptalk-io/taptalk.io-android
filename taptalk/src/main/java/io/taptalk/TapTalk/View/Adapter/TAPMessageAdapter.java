@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -194,8 +195,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             tvMessageBody.setText(item.getBody());
 
             new Thread(() -> {
+                Log.e(TAG, "onBind2: "+item.getBody()+" "+item.getMessageID() );
                 if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)) {
-                    TAPMessageStatusManager.getInstance().addReadMessageQueue(item);
+                    Log.e(TAG, "onBind: "+item.getBody()+" "+item.getMessageID() );
+                    TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
                 }
             }).start();
 
