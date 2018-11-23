@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 
 import com.orhanobut.hawk.Hawk;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -221,7 +220,7 @@ public class TAPDataManager {
     }
 
     public void setRoomListSetupFinished() {
-        saveLongTimestampPreference(Calendar.getInstance().getTimeInMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
+        saveLongTimestampPreference(System.currentTimeMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
     }
 
     // TODO: 14/09/18 TEMP

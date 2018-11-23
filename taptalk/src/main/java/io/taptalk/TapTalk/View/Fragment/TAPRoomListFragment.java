@@ -198,6 +198,7 @@ public class TAPRoomListFragment extends Fragment {
         flSetupContainer.setVisibility(View.GONE);
 
         if (vm.isSelecting()) showSelectionActionBar();
+        vm.setDoneFirstApiSetup(TAPDataManager.getInstance().isRoomListSetupFinished());
 
         adapter = new TAPRoomListAdapter(vm, tapTalkRoomListInterface);
         llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -262,7 +263,7 @@ public class TAPRoomListFragment extends Fragment {
     private void fetchDataFromAPI() {
         //kalau pertama kali kita call api getMessageRoomListAndUnread
         //setelah itu kita panggilnya api pending and update message
-        if (vm.isDoneFirstSetup()) {
+        if (vm.isDoneFirstApiSetup()) {
             TAPDataManager.getInstance().getNewAndUpdatedMessage(roomListView);
         } else {
             TAPDataManager.getInstance().getMessageRoomListAndUnread(TAPDataManager.getInstance().getActiveUser().getUserID(), roomListView);
@@ -411,7 +412,7 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void startLoading() {
             //ini buat munculin setup dialog pas pertama kali buka apps
-            if (!TAPDataManager.getInstance().isRoomListSetupFinished()) {
+            if (!vm.isDoneFirstApiSetup()) {
                 flSetupContainer.setVisibility(View.VISIBLE);
                 hideNewChatButton();
             }
@@ -420,7 +421,7 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
-            if (!TAPDataManager.getInstance().isRoomListSetupFinished()) {
+            if (!vm.isDoneFirstApiSetup()) {
                 TAPDataManager.getInstance().setRoomListSetupFinished();
             }
         }
