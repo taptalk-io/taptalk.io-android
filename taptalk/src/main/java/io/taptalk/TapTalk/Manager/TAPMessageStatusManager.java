@@ -12,6 +12,7 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Listener.TAPMessageStatusListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -96,7 +97,10 @@ public class TAPMessageStatusManager {
     }
 
     public void addApiDeliveredRequestMapItem(int deliveredRequestID, List<TAPMessageModel> apiDeliveredRequestMapItem) {
-        getApiDeliveredRequestMap().put(deliveredRequestID, apiDeliveredRequestMapItem);
+        if (getApiDeliveredRequestMap().containsKey(deliveredRequestID))
+            getApiDeliveredRequestMap().get(deliveredRequestID).addAll(apiDeliveredRequestMapItem);
+        else
+            getApiDeliveredRequestMap().put(deliveredRequestID, apiDeliveredRequestMapItem);
     }
 
     public void removeApiDeliveredRequestMapItem(int deliveredRequestID) {
@@ -200,7 +204,7 @@ public class TAPMessageStatusManager {
         }).start();
     }
 
-    public void updateMessageStatusToDelivered(int deliveredRequestID, List<TAPMessageModel> newMessageModels) {
+    public void updateMessageStatusToDelivered(int tempDeliveredRequestID, List<TAPMessageModel> newMessageModels) {
         new Thread(() -> {
             TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
             List<String> messageIds = new ArrayList<>();
@@ -216,10 +220,30 @@ public class TAPMessageStatusManager {
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
                     super.onSuccess(response);
                     new Thread(() -> {
-                        if (getApiDeliveredRequestMap().containsKey(deliveredRequestID))
-                            removeApiDeliveredRequestMapItem(deliveredRequestID);
+                        if (getApiDeliveredRequestMap().containsKey(tempDeliveredRequestID))
+                            removeApiDeliveredRequestMapItem(tempDeliveredRequestID);
                     }).start();
+                }
 
+                @Override
+                public void onError(String errorMessage) {
+                    super.onError(errorMessage);
+                    onApiError();
+                }
+
+                @Override
+                public void onError(TAPErrorModel error) {
+                    super.onError(error);
+                    onApiError();
+                }
+
+                private void onApiError() {
+                    new Thread(() -> {
+                        if (getApiDeliveredRequestMap().containsKey(tempDeliveredRequestID)) {
+                            addApiDeliveredRequestMapItem(deliveredRequestID, getApiDeliveredRequestMap().get(tempDeliveredRequestID));
+                            removeApiDeliveredRequestMapItem(tempDeliveredRequestID);
+                        }
+                    }).start();
                 }
             });
         }).start();
