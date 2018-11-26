@@ -549,11 +549,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void addAfterTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempAfterMessages) {
         String newID = newMessage.getLocalID();
         runOnUiThread(() -> {
-            if (vm.getMessagePointer().containsKey(newID)) {
+            // TODO: 26/11/18 ini caranya harus diomongin lagi sama ko Ritchie (ini cara sementara)
+            if (vm.getMessagePointer().containsKey(newID) && !hpMessageAdapter.getItemAt(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID))).getIsRead()) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            } else {
+            } else if (!vm.getMessagePointer().containsKey(newID)){
                 new Thread(() -> {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
@@ -1150,7 +1151,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
-
 
                     //ini buat ngecek kalau room nya kosong manggil api before aja
                     //sebaliknya kalau roomnya ada isinya manggil after baru before*
