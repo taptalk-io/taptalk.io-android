@@ -196,6 +196,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
 
             if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)
                     && (null != item.getSending() && !item.getSending())) {
+                Log.e(TAG, "onBind: "+item.getBody() );
                 item.updateReadMessage();
                 new Thread(() -> TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel())).start();
             }

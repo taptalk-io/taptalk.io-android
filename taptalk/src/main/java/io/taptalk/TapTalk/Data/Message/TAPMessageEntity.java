@@ -42,6 +42,7 @@ public class TAPMessageEntity {
     @Nullable @ColumnInfo(name = "requireChangePassword") private Boolean requireChangePassword;
     @Nullable @ColumnInfo(name = "userCreated") private Long userCreated;
     @Nullable @ColumnInfo(name = "userUpdated") private Long userUpdated;
+    @Nullable @ColumnInfo(name = "userDeleted") private Long userDeleted;
 
     public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                             String recipientID, Integer type, Long created,
@@ -54,7 +55,7 @@ public class TAPMessageEntity {
                             @Nullable String username, String userImage, @Nullable String userEmail,
                             @Nullable String userPhone, @Nullable String userRole, @Nullable Long lastLogin,
                             @Nullable Long lastActivity, @Nullable Boolean requireChangePassword,
-                            @Nullable Long userCreated, @Nullable Long userUpdated) {
+                            @Nullable Long userCreated, @Nullable Long userUpdated, @Nullable Long userDeleted) {
         this.messageID = messageID;
         this.localID = localID;
         this.filterID = filterID;
@@ -87,6 +88,7 @@ public class TAPMessageEntity {
         this.requireChangePassword = requireChangePassword;
         this.userCreated = userCreated;
         this.userUpdated = userUpdated;
+        this.userDeleted = userDeleted;
     }
 
     @Nullable
@@ -366,5 +368,14 @@ public class TAPMessageEntity {
 
     public void setUserUpdated(@Nullable Long userUpdated) {
         this.userUpdated = userUpdated;
+    }
+
+    @Nullable
+    public Long getUserDeleted() {
+        return userDeleted;
+    }
+
+    public void setUserDeleted(@Nullable Long userDeleted) {
+        this.userDeleted = userDeleted;
     }
 }

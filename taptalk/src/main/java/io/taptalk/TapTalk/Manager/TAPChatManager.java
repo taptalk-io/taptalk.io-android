@@ -288,7 +288,8 @@ public class TAPChatManager {
                 entity.getDelivered(),
                 entity.getIsRead(),
                 entity.getHidden(),
-                entity.getUpdated());
+                entity.getUpdated(),
+                entity.getUserDeleted());
     }
 
     /**
@@ -298,7 +299,7 @@ public class TAPChatManager {
         return new TAPMessageEntity(
                 model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(), model.getRecipientID(),
                 model.getType(), model.getCreated(), model.getUpdated(), model.getIsRead(),
-                model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
+                model.getDelivered(), model.getHidden(), model.getIsDeleted(), model.getSending(),
                 model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),
                 model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
                 TAPUtils.getInstance().toJsonString(model.getRoom().getRoomImage()),
@@ -308,7 +309,7 @@ public class TAPChatManager {
                 TAPUtils.getInstance().toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated()
+                model.getUser().getCreated(), model.getUser().getUpdated(), model.getDeleted()
         );
     }
 
