@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -101,16 +102,20 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private void setUpFromNewContact() {
         pbLoading.setVisibility(View.GONE);
         cvResult.setVisibility(View.VISIBLE);
-        civMyUserAvatar.setFillColor(getResources().getColor(R.color.vibrantGreen));
-        civTheirContactAvatar.setFillColor(getResources().getColor(R.color.brightBlue));
-        Glide.with(this).load("https://img.uefa.com/imgml/uefacom/ucl/social/og-default.jpg")
-                .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
-        Glide.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
-                .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
-        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getProductImage())
-        //    .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
-        //Glide.with(this).load(myUserModel.getAvatarURL().getProductImage())
-        //        .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
+        if (null != addedContactUserModel.getAvatarURL() && !addedContactUserModel.getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
+            civTheirContactAvatar.setBackground(null);
+        } else {
+            civTheirContactAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(addedContactUserModel.getName())));
+        }
+        if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
+            civMyUserAvatar.setBackground(null);
+        } else {
+            civMyUserAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(myUserModel.getName())));
+        }
         tvContactFullname.setText(addedContactUserModel.getName());
         tvContactUsername.setText(addedContactUserModel.getUsername());
         animateAddSuccess(addedContactUserModel);
@@ -131,14 +136,20 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         cvResult.setVisibility(View.VISIBLE);
         pbLoading.setVisibility(View.GONE);
         contactModel = userModel;
-        Glide.with(this).load("https://img.uefa.com/imgml/uefacom/ucl/social/og-default.jpg")
-                .apply(new RequestOptions()).into(civTheirContactAvatar);
-        Glide.with(this).load("https://images.performgroup.com/di/library/GOAL/d5/f8/champions-league-2017-18-ball-adidas-finale_124lp0wu9rvqf1suvrvzmya9m8.jpg?t=1630593109")
-                .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
-        //Glide.with(this).load(addedContactUserModel.getAvatarURL().getProductImage())
-        //      .apply(new RequestOptions().centerCrop()).into(civTheirContactAvatar);
-        //Glide.with(this).load(myUserModel.getAvatarURL().getProductImage())
-        //        .apply(new RequestOptions().centerCrop()).into(civMyUserAvatar);
+        if (null != addedContactUserModel.getAvatarURL() && !addedContactUserModel.getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
+            civTheirContactAvatar.setBackground(null);
+        } else {
+            civTheirContactAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(addedContactUserModel.getName())));
+        }
+        if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
+            civMyUserAvatar.setBackground(null);
+        } else {
+            civMyUserAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(myUserModel.getName())));
+        }
         tvContactFullname.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());
 
@@ -343,6 +354,5 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                 }).start();
             }).start();
         });
-
     }
 }

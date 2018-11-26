@@ -18,7 +18,8 @@ public class TAPReplyBroadcastReceiver extends BroadcastReceiver {
         String text = getMessageText(intent).toString();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
-        TAPChatManager.getInstance().sendDirectReplyTextMessage(text, TAPRoomModel.BuilderDummy());
+        // TODO: 26 November 2018 SEND DIRECT REPLY
+//        TAPChatManager.getInstance().sendDirectReplyTextMessage(text, TAPRoomModel.BuilderDummy());
     }
 
     private CharSequence getMessageText(Intent intent) {

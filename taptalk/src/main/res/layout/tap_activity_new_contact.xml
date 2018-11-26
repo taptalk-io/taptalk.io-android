@@ -111,8 +111,8 @@
                 android:id="@+id/iv_expert_cover"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:background="@color/mediumPurple"
                 android:scaleType="centerCrop"
-                android:src="@color/mediumPurple"
                 android:visibility="gone"
                 app:layout_constraintDimensionRatio="W, 7:25"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -123,6 +123,8 @@
                 android:id="@+id/civ_avatar"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
+                android:background="@drawable/tap_bg_circle_9b9b9b"
+                android:scaleType="centerCrop"
                 android:visibility="gone"
                 app:civ_border_color="@color/white"
                 app:civ_border_width="4dp"
@@ -130,8 +132,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_expert_cover"
-                app:layout_goneMarginTop="4dp"
-                tools:src="@drawable/tap_bg_circle_vibrantgreen" />
+                app:layout_goneMarginTop="4dp" />
 
             <ImageView
                 android:id="@+id/iv_avatar_icon"

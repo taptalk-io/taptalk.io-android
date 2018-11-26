@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
@@ -166,11 +167,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         constraintSet.clear(civAvatar.getId(), ConstraintSet.BOTTOM);
         constraintSet.applyTo(clSearchResult);
 
+        // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
             Glide.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
+            civAvatar.setBackground(null);
+        } else {
+            civAvatar.setImageDrawable(null);
+            civAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+            civAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
         }
-        // TODO: 25 October 2018 TESTING
-        civAvatar.setImageResource(R.drawable.tap_bg_circle_vibrantgreen);
 
         tvUserName.setText(vm.getSearchResult().getName());
 
@@ -198,14 +203,25 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         constraintSet.connect(civAvatar.getId(), ConstraintSet.BOTTOM, ivExpertCover.getId(), ConstraintSet.BOTTOM);
         constraintSet.applyTo(clSearchResult);
 
+        // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
             Glide.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
-            // TODO: 25 October 2018 LOAD COVER IMAGE
-            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
+            civAvatar.setBackground(null);
+        } else {
+            civAvatar.setImageDrawable(null);
+            civAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+            civAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
         }
-        // TODO: 25 October 2018 TESTING
-        civAvatar.setImageResource(R.drawable.tap_bg_circle_vibrantgreen);
-        ivExpertCover.setImageResource(R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_10dp);
+
+        // Set cover image
+        // TODO: 25 October 2018 CHECK AND LOAD COVER IMAGE
+        if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getFullsize().isEmpty()) {
+            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
+            ivExpertCover.setBackground(null);
+        } else {
+            ivExpertCover.setImageDrawable(null);
+            ivExpertCover.setBackgroundColor(getResources().getColor(R.color.mediumPurple));
+        }
 
         tvUserName.setText(vm.getSearchResult().getName());
 
