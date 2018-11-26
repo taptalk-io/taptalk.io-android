@@ -89,9 +89,18 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
     private void initViewModel() {
         TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+
+        // Add self as selected group member
         vm.getSelectedContacts().add(myUser);
 
-        setDummyData();
+        // Show users from contact list
+        vm.getContactListLive().observe(this, userModels -> {
+            vm.getContactList().clear();
+            vm.getContactList().addAll(userModels);
+            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+            runOnUiThread(() -> contactListAdapter.setItems(vm.getSeparatedContacts()));
+        });
+        vm.getFilteredContacts().addAll(vm.getContactList());
     }
 
     private void initListener() {
@@ -281,117 +290,4 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             }
         }
     };
-
-    // TODO: 28/09/18 Harus dihapus setelah fix
-    private void setDummyData() {
-        if (vm.getContactList().size() > 0) return;
-
-        TAPUserModel userRitchie = TAPUserModel.Builder("1", "1", "Ritchie Nathaniel"
-                , TAPImageURL.BuilderDummy(), "ritchie", "ritchie@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115801488")
-                , Long.parseLong("0"));
-
-        TAPUserModel userDominic = TAPUserModel.Builder("2", "2", "Dominic Vedericho"
-                , TAPImageURL.BuilderDummy(), "dominic", "dominic@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538115918918")
-                , Long.parseLong("0"));
-
-        TAPUserModel userRionaldo = TAPUserModel.Builder("3", "3", "Rionaldo Linggautama"
-                , TAPImageURL.BuilderDummy(), "rionaldo", "rionaldo@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116046534")
-                , Long.parseLong("0"));
-
-        TAPUserModel userKevin = TAPUserModel.Builder("4", "4", "Kevin Reynaldo"
-                , TAPImageURL.BuilderDummy(), "kevin", "kevin@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116099655")
-                , Long.parseLong("0"));
-
-        TAPUserModel userWelly = TAPUserModel.Builder("5", "5", "Welly Kencana"
-                , TAPImageURL.BuilderDummy(), "welly", "welly@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116147477")
-                , Long.parseLong("0"));
-
-        TAPUserModel userJony = TAPUserModel.Builder("6", "6", "Jony Lim"
-                , TAPImageURL.BuilderDummy(), "jony", "jony@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116249323")
-                , Long.parseLong("0"));
-
-        TAPUserModel userMichael = TAPUserModel.Builder("7", "7", "Michael Tansy"
-                , TAPImageURL.BuilderDummy(), "michael", "michael@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116355199")
-                , Long.parseLong("0"));
-
-        TAPUserModel userRichard = TAPUserModel.Builder("8", "8", "Richard Fang"
-                , TAPImageURL.BuilderDummy(), "richard", "richard@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116398588")
-                , Long.parseLong("0"));
-
-        TAPUserModel userErwin = TAPUserModel.Builder("9", "9", "Erwin Andreas"
-                , TAPImageURL.BuilderDummy(), "erwin", "erwin@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116452636")
-                , Long.parseLong("0"));
-
-        TAPUserModel userJefry = TAPUserModel.Builder("10", "10", "Jefry Lorentono"
-                , TAPImageURL.BuilderDummy(), "jefry", "jefry@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116490366")
-                , Long.parseLong("0"));
-
-        TAPUserModel userCundy = TAPUserModel.Builder("11", "11", "Cundy Sunardy"
-                , TAPImageURL.BuilderDummy(), "cundy", "cundy@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116531507")
-                , Long.parseLong("0"));
-
-        TAPUserModel userRizka = TAPUserModel.Builder("12", "12", "Rizka Fatmawati"
-                , TAPImageURL.BuilderDummy(), "rizka", "rizka@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116567527")
-                , Long.parseLong("0"));
-
-        TAPUserModel userTest1 = TAPUserModel.Builder("13", "13", "Test 1"
-                , TAPImageURL.BuilderDummy(), "test1", "test1@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116607839")
-                , Long.parseLong("0"));
-
-        TAPUserModel userTest2 = TAPUserModel.Builder("14", "14", "Test 2"
-                , TAPImageURL.BuilderDummy(), "test2", "test2@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116655845")
-                , Long.parseLong("0"));
-
-        TAPUserModel userTest3 = TAPUserModel.Builder("15", "15", "Test 3"
-                , TAPImageURL.BuilderDummy(), "test3", "test3@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
-                , Long.parseLong("0"));
-
-        TAPUserModel userSanto = TAPUserModel.Builder("17", "16", "Santo"
-                , TAPImageURL.BuilderDummy(), "santo", "santo@moselo.com", "08979809026"
-                , new TAPUserRoleModel(), Long.parseLong("0"), Long.parseLong("0"), false, Long.parseLong("1538116733822")
-                , Long.parseLong("0"));
-
-        vm.getContactList().add(userCundy);
-
-        vm.getContactList().add(userDominic);
-
-        vm.getContactList().add(userErwin);
-
-        vm.getContactList().add(userJony);
-        vm.getContactList().add(userJefry);
-
-        vm.getContactList().add(userKevin);
-
-        vm.getContactList().add(userMichael);
-
-        vm.getContactList().add(userRitchie);
-        vm.getContactList().add(userRionaldo);
-        vm.getContactList().add(userRichard);
-        vm.getContactList().add(userRizka);
-
-        vm.getContactList().add(userSanto);
-
-        vm.getContactList().add(userWelly);
-
-        vm.getContactList().add(userTest1);
-        vm.getContactList().add(userTest2);
-        vm.getContactList().add(userTest3);
-
-        vm.getFilteredContacts().addAll(vm.getContactList());
-    }
 }

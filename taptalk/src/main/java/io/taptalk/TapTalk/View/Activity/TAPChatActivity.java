@@ -5,6 +5,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -288,11 +290,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         tvRoomName.setText(vm.getRoom().getRoomName());
 
-        if (null != vm.getRoom().getRoomImage()) {
-            Glide.with(this).load(vm.getRoom().getRoomImage().getThumbnail()).apply(new RequestOptions().centerCrop()).into(civRoomImage);
+        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+            // Load room image
+            Glide.with(this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civRoomImage);
         } else {
-            // TODO: 16 October 2018 TEMPORARY
-            civRoomImage.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
+            // Use random color if image is empty
+            civRoomImage.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
         }
 
         // TODO: 24 September 2018 UPDATE ROOM STATUS
@@ -1124,20 +1127,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         clEmptyChat.setVisibility(View.VISIBLE);
                         tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
                         tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
-                        if (null != vm.getMyUserModel().getAvatarURL()) {
-                            Glide.with(TAPChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail())
-                                    .apply(new RequestOptions().centerCrop()).into(civMyAvatar);
+                        if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+                            Glide.with(TAPChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
                         } else {
-                            // TODO: 16 October 2018 TEMPORARY
-                            civMyAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
+                            civMyAvatar.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getMyUserModel().getName()), PorterDuff.Mode.SRC_IN));
                         }
-                        if (null != vm.getRoom().getRoomImage()) {
-                            Glide.with(TAPChatActivity.this).load(vm.getRoom().getRoomImage()
-                                    .getThumbnail()).apply(new RequestOptions().centerCrop())
-                                    .into(civOtherUserAvatar);
+                        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+                            Glide.with(TAPChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
                         } else {
-                            // TODO: 16 October 2018 TEMPORARY
-                            civOtherUserAvatar.setImageTintList(ColorStateList.valueOf(Integer.parseInt(vm.getRoom().getRoomColor())));
+                            civOtherUserAvatar.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
                         }
                         // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
                         showCustomKeyboard();

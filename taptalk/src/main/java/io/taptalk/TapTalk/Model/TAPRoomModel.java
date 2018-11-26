@@ -5,12 +5,10 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
-
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
 
 public class TAPRoomModel implements Parcelable {
 
@@ -22,14 +20,13 @@ public class TAPRoomModel implements Parcelable {
     @Nullable @JsonProperty("imageURL") private TAPImageURL roomImage;
     @Nullable @JsonProperty("groupParticipants") private List<TAPUserModel> groupParticipants;
     @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
-    private boolean isMuted;
+    @JsonIgnore private boolean isMuted;
 
     public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor) {
         this.roomID = roomID;
         this.roomName = roomName;
         this.roomType = roomType;
-        // TODO: 11/10/18 INI NNTI DI ILANGIN 
-        this.roomImage = TAPImageURL.BuilderDummy();
+        this.roomImage = roomImage;
         this.roomColor = roomColor;
     }
 
@@ -38,10 +35,6 @@ public class TAPRoomModel implements Parcelable {
 
     public static TAPRoomModel Builder(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor){
         return new TAPRoomModel(roomID, roomName, roomType, roomImage, roomColor);
-    }
-
-    public static TAPRoomModel BuilderDummy(){
-        return new TAPRoomModel(TAPChatManager.getInstance().arrangeRoomId(TAPDataManager.getInstance().getActiveUser().getUserID(), "4"), "Kevin Reynaldo", 1, TAPImageURL.BuilderDummy(), "#2eccad");
     }
 
     public String getRoomID() {
