@@ -572,6 +572,12 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void updateUnreadCountPerRoom(String roomID) {
-        new Thread(() -> TAPDataManager.getInstance().getUnreadCountPerRoom(roomID, dbListener)).start();
+        new Thread(() ->{
+            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) && TAPMessageStatusManager.getInstance().getUnreadList().containsKey(roomID)) {
+                vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance().getUnreadList().get(roomID));
+                TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
+                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+            }
+        }).start();
     }
 }

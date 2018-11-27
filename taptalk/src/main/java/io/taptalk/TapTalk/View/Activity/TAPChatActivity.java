@@ -163,6 +163,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
         //ini buat reset openRoom
         TAPChatManager.getInstance().setOpenRoom(null);
         TAPChatManager.getInstance().removeChatListener(chatListener);

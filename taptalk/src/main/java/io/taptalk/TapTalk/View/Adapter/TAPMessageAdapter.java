@@ -198,7 +198,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                     && (null != item.getSending() && !item.getSending())) {
                 Log.e(TAG, "onBind: "+item.getBody() );
                 item.updateReadMessage();
-                new Thread(() -> TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel())).start();
+                new Thread(() -> {
+                    TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
+                    TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
+                }).start();
             }
 
             // TODO: 1 November 2018 TESTING REPLY LAYOUT

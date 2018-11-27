@@ -21,6 +21,7 @@ public class TAPMessageStatusManager {
     private int deliveredRequestID = 0;
     private Map<Integer, List<TAPMessageModel>> apiReadRequestMap;
     private Map<Integer, List<TAPMessageModel>> apiDeliveredRequestMap;
+    private Map<String, Integer> unreadList;
 
     public static TAPMessageStatusManager getInstance() {
         return null == instance ? instance = new TAPMessageStatusManager() : instance;
@@ -86,6 +87,31 @@ public class TAPMessageStatusManager {
 
     private void removeApiDeliveredRequestMapItem(int deliveredRequestID) {
         getApiDeliveredRequestMap().remove(deliveredRequestID);
+    }
+
+    public Map<String, Integer> getUnreadList() {
+        return null == unreadList ? unreadList = new LinkedHashMap<>() : unreadList;
+    }
+
+    private void addUnreadList(String roomID, int unread) {
+        if (getUnreadList().containsKey(roomID)) {
+            int tempUnread = getUnreadList().get(roomID) + unread;
+            getUnreadList().put(roomID, tempUnread);
+        } else {
+            getUnreadList().put(roomID, unread);
+        }
+    }
+
+    public void addUnreadListByOne(String roomID) {
+        addUnreadList(roomID, 1);
+    }
+
+    public void clearUnreadListPerRoomID(String roomID) {
+        getUnreadList().remove(roomID);
+    }
+
+    public void clearUnreadList() {
+        getUnreadList().clear();
     }
 
     public void triggerCallMessageStatusApi() {
