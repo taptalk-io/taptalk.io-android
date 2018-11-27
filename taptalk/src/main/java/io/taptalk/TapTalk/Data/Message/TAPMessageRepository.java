@@ -66,7 +66,6 @@ public class TAPMessageRepository {
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
         new Thread(() -> {
             messageDao.insert(messageEntities);
-
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
 

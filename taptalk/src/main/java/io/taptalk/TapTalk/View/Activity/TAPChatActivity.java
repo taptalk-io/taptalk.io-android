@@ -549,8 +549,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void addAfterTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempAfterMessages) {
         String newID = newMessage.getLocalID();
         runOnUiThread(() -> {
-            // TODO: 26/11/18 ini caranya harus diomongin lagi sama ko Ritchie (ini cara sementara)
-            if (vm.getMessagePointer().containsKey(newID) && !hpMessageAdapter.getItemAt(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID))).getIsRead()) {
+            if (vm.getMessagePointer().containsKey(newID)) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
                 hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
@@ -1243,9 +1242,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (TAPMessageModel message : response.getMessages()) {
                 try {
                     TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
-                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addAfterTextMessage(temp, messageAfterModels);
                     new Thread(() -> {
+
+                        //ini buat ngecek dy udah ada atau nggak sebelumnya, kalau udah ada update
+                        // valuenya aja kalau nggak baru lgsg di masukin
+                        String responseLocalID = temp.getLocalID();
+                        if (vm.getMessagePointer().containsKey(responseLocalID)) {
+                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(vm.getMessagePointer().get(responseLocalID).updateValueToReturnModel(temp)));
+                        } else {
+                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
+                        }
+
                         //ini buat update last update timestamp yang ada di preference
                         //ini di taruh di new Thread biar ga bkin scrollingnya lag
                         if (null != temp.getUpdated() &&
@@ -1286,8 +1294,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             });
 
             if (0 < responseMessages.size())
-                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
-                });
+                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {});
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
@@ -1339,8 +1346,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (TAPMessageModel message : response.getMessages()) {
                 try {
                     TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
-                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addBeforeTextMessage(temp, messageBeforeModels);
+
+                    new Thread(() -> {
+                        String responseLocalID = temp.getLocalID();
+                        if (vm.getMessagePointer().containsKey(responseLocalID)) {
+                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(vm.getMessagePointer().get(responseLocalID).updateValueToReturnModel(temp)));
+                        } else {
+                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
+                        }
+                    }).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
@@ -1367,8 +1382,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
-            });
+            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {});
         }
 
         @Override
@@ -1398,8 +1412,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (TAPMessageModel message : response.getMessages()) {
                 try {
                     TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
-                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
                     addBeforeTextMessage(temp, messageBeforeModels);
+
+                    new Thread(() -> {
+                        String responseLocalID = temp.getLocalID();
+                        if (vm.getMessagePointer().containsKey(responseLocalID)) {
+                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(vm.getMessagePointer().get(responseLocalID).updateValueToReturnModel(temp)));
+                        } else {
+                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
+                        }
+                    }).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
