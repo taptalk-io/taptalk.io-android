@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,6 +12,7 @@ import java.util.Map;
 import io.taptalk.TapTalk.Data.TapTalkDatabase;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 
 public class TAPMessageRepository {
 
@@ -54,11 +54,11 @@ public class TAPMessageRepository {
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         new Thread(() -> {
             messageDao.insert(messageEntities);
-            for (TAPMessageEntity entity : messageEntities)
-                Log.e("><><><", "insert: " + entity.getBody()+" "+entity.getIsRead()+" "+entity.getDelivered()+" "+entity.getLocalID());
 
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
+
+            TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
 
         }).start();
     }
@@ -68,6 +68,8 @@ public class TAPMessageRepository {
             messageDao.insert(messageEntities);
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
+
+            TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
 
             listener.onInsertFinished();
 

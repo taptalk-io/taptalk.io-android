@@ -164,11 +164,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //ini buat reset openRoom
-        TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
         TAPChatManager.getInstance().setOpenRoom(null);
         TAPChatManager.getInstance().removeChatListener(chatListener);
         // Stop offline timer
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+
     }
 
     @Override
@@ -515,12 +515,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void updateMessageFromSocket(TAPMessageModel message) {
-        vm.updateMessagePointer(message);
         runOnUiThread(() -> {
             int position = hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
-            hpMessageAdapter.getItemAt(position).updateValue(message);
-            hpMessageAdapter.notifyItemChanged(position);
+            if (-1 != position) {
+                new Thread(() -> vm.updateMessagePointer(message)).start();
+                //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
+                hpMessageAdapter.getItemAt(position).updateValue(message);
+                hpMessageAdapter.notifyItemChanged(position);
+            } else {
+                new Thread(() -> addNewMessage(message)).start();
+            }
         });
     }
 

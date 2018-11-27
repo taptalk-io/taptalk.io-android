@@ -601,12 +601,6 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
-        // TODO: 29 October 2018 TEMPORARY
-        // Change isRead to false when received message is from others
-        if (!activeUser.getUserID().equals(newMessage.getUser().getUserID())) {
-            newMessage.setIsRead(false);
-        }
-
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
@@ -718,7 +712,7 @@ public class TAPChatManager {
         saveWaitingMessageToList();
     }
 
-    private void saveMessageToDatabase() {
+    public void saveMessageToDatabase() {
         if (0 == saveMessages.size()) return;
 
         TAPDataManager.getInstance().insertToDatabase(saveMessages, true);
