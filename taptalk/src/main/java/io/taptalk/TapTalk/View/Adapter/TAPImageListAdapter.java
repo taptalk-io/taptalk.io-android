@@ -43,7 +43,13 @@ public class TAPImageListAdapter extends TAPBaseAdapter<TAPImageURL, TAPBaseView
         @Override
         protected void onBind(TAPImageURL item, int position) {
             clContainer.getLayoutParams().width = gridWidth;
-            Glide.with(itemView.getContext()).load(item.getThumbnail()).into(ivThumbnail);
+            if (!item.getThumbnail().isEmpty()) {
+                Glide.with(itemView.getContext()).load(item.getThumbnail()).into(ivThumbnail);
+                ivThumbnail.setBackground(null);
+            } else {
+                ivThumbnail.setImageDrawable(null);
+                ivThumbnail.setBackgroundColor(TAPUtils.getInstance().getRandomColor(String.valueOf(TAPUtils.getInstance().generateRandomNumber(9999999))));
+            }
 
             clContainer.setOnClickListener(v -> {
                 // TODO: 23 October 2018 VIEW FULL IMAGE

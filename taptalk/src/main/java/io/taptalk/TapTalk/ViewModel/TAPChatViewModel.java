@@ -38,7 +38,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     private long lastTimestamp = 0;
     private long lastActivity;
     private int numUsers, containerAnimationState;
-    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
+    private boolean isOnBottom, /*isTyping,*/
+            isInitialAPICallFinished;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -74,7 +75,6 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void updateMessagePointer(TAPMessageModel newMessage) {
-//        getMessagePointer().get(newMessage.getLocalID()).updateValue(newMessage);
         // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
         TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
         if (null != message) {
@@ -100,7 +100,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public TAPOrderModel getOrderModel(TAPMessageModel message) {
-        return TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {}, message.getBody());
+        return TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
+        }, message.getBody());
     }
 
     public TAPMessageModel getPreviousOrderWithSameID(TAPMessageModel message) {
@@ -278,7 +279,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         try {
             String[] tempUserID = room.getRoomID().split("-");
             return otherUserID = tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
-        }catch (Exception e){
+        } catch (Exception e) {
             return "0";
         }
     }

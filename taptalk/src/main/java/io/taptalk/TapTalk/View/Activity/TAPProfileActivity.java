@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.animation.ValueAnimator;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -86,8 +87,10 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
         getWindow().setBackgroundDrawable(null);
 
-        if (null != vm.getRoom().getRoomImage()) {
-            Glide.with(this).load(vm.getRoom().getRoomImage().getFullsize()).apply(new RequestOptions().centerCrop()).into(ivProfile);
+        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
+            Glide.with(this).load(vm.getRoom().getRoomImage().getFullsize()).into(ivProfile);
+        } else {
+            ivProfile.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
         }
 
         // TODO: 24 October 2018 CHECK IF ROOM TYPE IS GROUP
@@ -116,6 +119,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
         // Dummy media
         TAPImageURL dummyImage = vm.getRoom().getRoomImage();
+        dummyImage = null == dummyImage ? new TAPImageURL() : dummyImage;
         vm.getSharedMedias().add(dummyImage);
         vm.getSharedMedias().add(dummyImage);
         vm.getSharedMedias().add(dummyImage);

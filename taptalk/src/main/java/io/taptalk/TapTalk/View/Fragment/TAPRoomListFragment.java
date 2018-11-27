@@ -313,7 +313,7 @@ public class TAPRoomListFragment extends Fragment {
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
                 //last messagenya sama cuma update datanya aja
                 roomLastMessage.setUpdated(message.getUpdated());
-                roomLastMessage.setDeleted(message.getDeleted());
+                roomLastMessage.setIsDeleted(message.getIsDeleted());
                 roomLastMessage.setSending(message.getSending());
                 roomLastMessage.setFailedSend(message.getFailedSend());
                 roomLastMessage.setIsRead(message.getIsRead());

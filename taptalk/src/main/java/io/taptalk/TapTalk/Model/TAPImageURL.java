@@ -10,20 +10,15 @@ public class TAPImageURL implements Parcelable {
     @JsonProperty("fullsize") private String fullsize;
     @JsonProperty("thumbnail") private String thumbnail;
 
-    public TAPImageURL() { }
+    public TAPImageURL() {
+        this.fullsize = "";
+        this.thumbnail = "";
+    }
 
     @Ignore
     public TAPImageURL(String fullsize, String thumbnail) {
         this.fullsize = fullsize;
         this.thumbnail = thumbnail;
-    }
-
-    // TODO: 28/09/18 diilangin nnti setelah fix
-    public static TAPImageURL BuilderDummy() {
-        TAPImageURL dummy = new TAPImageURL();
-        dummy.setFullsize("https://instagram.fcgk6-1.fna.fbcdn.net/vp/a957263ad8322a1661f604e2942f1acc/5C5B8666/t51.2885-15/e35/41659851_331857600921431_1280889939227049984_n.jpg");
-        dummy.setThumbnail("https://instagram.fcgk6-1.fna.fbcdn.net/vp/a957263ad8322a1661f604e2942f1acc/5C5B8666/t51.2885-15/e35/41659851_331857600921431_1280889939227049984_n.jpg");
-        return dummy;
     }
 
     public String getFullsize() {
