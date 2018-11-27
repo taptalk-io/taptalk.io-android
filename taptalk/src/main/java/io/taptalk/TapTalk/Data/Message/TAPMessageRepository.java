@@ -12,6 +12,7 @@ import java.util.Map;
 import io.taptalk.TapTalk.Data.TapTalkDatabase;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 
 public class TAPMessageRepository {
 
@@ -57,15 +58,18 @@ public class TAPMessageRepository {
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
 
+            TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
+
         }).start();
     }
 
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
         new Thread(() -> {
-            messageDao.insert(messageEntities);
-
+            messageDao.insert(new ArrayList<>(messageEntities));
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
+
+            TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
 
             listener.onInsertFinished();
 
@@ -142,7 +146,7 @@ public class TAPMessageRepository {
                 for (TAPMessageEntity entity : entities)
                     unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                 listener.onSelectedRoomList(entities, unreadMap);
-            } else{
+            } else {
                 listener.onSelectFinished(entities);
             }
         }).start();

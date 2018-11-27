@@ -601,12 +601,6 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
-        // TODO: 29 October 2018 TEMPORARY
-        // Change isRead to false when received message is from others
-        if (!activeUser.getUserID().equals(newMessage.getUser().getUserID())) {
-            newMessage.setIsRead(false);
-        }
-
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
@@ -624,7 +618,8 @@ public class TAPChatManager {
         }
         // Receive message outside active room (not in room List)
         else if (null != chatListeners && !TAPNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            if (newMessage.getUser().getUserID().equals(activeUser.getUserID()))
+            if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()))
+                // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
@@ -718,7 +713,7 @@ public class TAPChatManager {
         saveWaitingMessageToList();
     }
 
-    private void saveMessageToDatabase() {
+    public void saveMessageToDatabase() {
         if (0 == saveMessages.size()) return;
 
         TAPDataManager.getInstance().insertToDatabase(saveMessages, true);
@@ -732,11 +727,11 @@ public class TAPChatManager {
         saveMessages.clear();
     }
 
-    public void setPendingRetryAttempt(int counter) {
+    private void setPendingRetryAttempt(int counter) {
         pendingRetryAttempt = counter;
     }
 
-    public boolean isFinishChatFlow() {
+    boolean isFinishChatFlow() {
         return isFinishChatFlow;
     }
 
@@ -744,22 +739,30 @@ public class TAPChatManager {
         isFinishChatFlow = finishChatFlow;
     }
 
-    public List<String> getReplyMessageLocalIDs() {
+    private List<String> getReplyMessageLocalIDs() {
         return null == replyMessageLocalIDs ? replyMessageLocalIDs = new ArrayList<>() : replyMessageLocalIDs;
     }
 
-    public void addReplyMessageLocalID(String localID) {
+    private void addReplyMessageLocalID(String localID) {
         //masukin local ID ke dalem list kalau misalnya appsnya lagi ga di foreground aja,
         //karena kalau di foreground kita ga boleh matiin socketnya cman krna reply
         if (!TapTalk.isForeground)
             getReplyMessageLocalIDs().add(localID);
     }
 
-    public void removeReplyMessageLocalID(String localID) {
+    private void removeReplyMessageLocalID(String localID) {
         getReplyMessageLocalIDs().remove(localID);
     }
 
-    public boolean isReplyMessageLocalIDsEmpty() {
+    private boolean isReplyMessageLocalIDsEmpty() {
         return getReplyMessageLocalIDs().isEmpty();
+    }
+
+    public void updateUnreadCountInRoomList(String roomID) {
+        new Thread(() -> {
+            for (TAPChatListener chatListener : chatListeners) {
+                chatListener.onReadMessage(roomID);
+            }
+        }).start();
     }
 }

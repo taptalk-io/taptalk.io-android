@@ -183,6 +183,7 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowInAppNotification(Context context, TAPMessageModel newMessageModel) {
+        Log.e(TAG, "createAndShowInAppNotification: " + newMessageModel.getBody());
         if (TapTalk.isForeground) {
             new TapTalk.NotificationBuilder(context)
                     .setNotificationMessage(newMessageModel)

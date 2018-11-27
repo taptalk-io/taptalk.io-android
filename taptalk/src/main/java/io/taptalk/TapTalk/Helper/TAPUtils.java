@@ -138,7 +138,7 @@ public class TAPUtils {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
-    public int getScreeHeight() {
+    public int getScreenHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 

@@ -21,4 +21,5 @@ public interface TapTalkChatInterface {
     void onOutsideClicked();
     void onUserOnline();
     void onUserOffline(Long lastActivity);
+    void onReadMessage(String roomID);
 }

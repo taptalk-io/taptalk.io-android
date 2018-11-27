@@ -108,7 +108,6 @@ public class TapTalk {
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-                TAPMessageStatusManager.getInstance().triggerCallMessageApiScheduler();
             }
 
             @Override
