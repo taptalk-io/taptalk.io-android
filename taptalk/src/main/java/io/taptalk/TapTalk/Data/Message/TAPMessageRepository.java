@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -53,6 +54,8 @@ public class TAPMessageRepository {
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         new Thread(() -> {
             messageDao.insert(messageEntities);
+            for (TAPMessageEntity entity : messageEntities)
+                Log.e("><><><", "insert: " + entity.getBody()+" "+entity.getIsRead()+" "+entity.getDelivered()+" "+entity.getLocalID());
 
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
@@ -142,7 +145,7 @@ public class TAPMessageRepository {
                 for (TAPMessageEntity entity : entities)
                     unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                 listener.onSelectedRoomList(entities, unreadMap);
-            } else{
+            } else {
                 listener.onSelectFinished(entities);
             }
         }).start();

@@ -49,7 +49,6 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPMessageStatusListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -126,7 +125,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatViewModel vm;
 
     private TAPSocketListener socketListener;
-    private TAPMessageStatusListener messageStatusListener;
 
     //enum Scrolling
     private enum STATE {

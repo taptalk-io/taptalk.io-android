@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
@@ -119,8 +118,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Change Status Message Icon
+            // Message Sender is not the active User
+            if (null != item.getLastMessage() && !item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                ivMessageStatus.setImageDrawable(null);
+            }
             // Message is read
-            if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
+            else if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
             }
             // Message is delivered

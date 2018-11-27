@@ -55,7 +55,8 @@ public class TAPMessageModel implements Parcelable {
     @Nullable
     @JsonProperty("updated")
     private Long updated;
-    @Nullable @JsonProperty("deleted")
+    @Nullable
+    @JsonProperty("deleted")
     private Long deleted;
     @JsonIgnore private TAPMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
@@ -352,12 +353,15 @@ public class TAPMessageModel implements Parcelable {
     }
 
     public void updateReadMessage() {
-        this.isRead = true;
-        this.isDelivered = true;
+        if (null != this.isRead && !this.isRead)
+            this.isRead = true;
+        if (null != this.isDelivered && !this.isDelivered)
+            this.isDelivered = true;
     }
 
     public void updateDeliveredMessage() {
-        this.setDelivered(true);
+        if (null != this.isDelivered && !this.isDelivered)
+            this.setDelivered(true);
     }
 
     public TAPMessageModel copyMessageModel() {
