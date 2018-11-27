@@ -4,7 +4,6 @@ import android.animation.LayoutTransition;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
@@ -28,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -168,6 +166,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //ini buat reset openRoom
+        TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
         TAPChatManager.getInstance().setOpenRoom(null);
         TAPChatManager.getInstance().removeChatListener(chatListener);
         // Stop offline timer

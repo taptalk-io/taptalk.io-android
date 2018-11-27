@@ -732,11 +732,11 @@ public class TAPChatManager {
         saveMessages.clear();
     }
 
-    public void setPendingRetryAttempt(int counter) {
+    private void setPendingRetryAttempt(int counter) {
         pendingRetryAttempt = counter;
     }
 
-    public boolean isFinishChatFlow() {
+    boolean isFinishChatFlow() {
         return isFinishChatFlow;
     }
 
@@ -744,22 +744,30 @@ public class TAPChatManager {
         isFinishChatFlow = finishChatFlow;
     }
 
-    public List<String> getReplyMessageLocalIDs() {
+    private List<String> getReplyMessageLocalIDs() {
         return null == replyMessageLocalIDs ? replyMessageLocalIDs = new ArrayList<>() : replyMessageLocalIDs;
     }
 
-    public void addReplyMessageLocalID(String localID) {
+    private void addReplyMessageLocalID(String localID) {
         //masukin local ID ke dalem list kalau misalnya appsnya lagi ga di foreground aja,
         //karena kalau di foreground kita ga boleh matiin socketnya cman krna reply
         if (!TapTalk.isForeground)
             getReplyMessageLocalIDs().add(localID);
     }
 
-    public void removeReplyMessageLocalID(String localID) {
+    private void removeReplyMessageLocalID(String localID) {
         getReplyMessageLocalIDs().remove(localID);
     }
 
-    public boolean isReplyMessageLocalIDsEmpty() {
+    private boolean isReplyMessageLocalIDsEmpty() {
         return getReplyMessageLocalIDs().isEmpty();
+    }
+
+    public void updateUnreadCountInRoomList(String roomID) {
+        new Thread(() -> {
+            for (TAPChatListener chatListener : chatListeners) {
+                chatListener.onReadMessage(roomID);
+            }
+        }).start();
     }
 }
