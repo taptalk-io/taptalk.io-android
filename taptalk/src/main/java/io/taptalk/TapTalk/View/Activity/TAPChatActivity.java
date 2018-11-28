@@ -1249,15 +1249,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                     addAfterTextMessage(temp, messageAfterModels);
                     new Thread(() -> {
-
-                        //ini buat ngecek dy udah ada atau nggak sebelumnya, kalau udah ada update
-                        // valuenya aja kalau nggak baru lgsg di masukin
-                        String responseLocalID = temp.getLocalID();
-                        if (vm.getMessagePointer().containsKey(responseLocalID)) {
-                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(vm.getMessagePointer().get(responseLocalID).updateValueToReturnModel(temp)));
-                        } else {
-                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
-                        }
+                        responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
 
                         //ini buat update last update timestamp yang ada di preference
                         //ini di taruh di new Thread biar ga bkin scrollingnya lag
@@ -1353,14 +1345,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                     addBeforeTextMessage(temp, messageBeforeModels);
 
-                    new Thread(() -> {
-                        String responseLocalID = temp.getLocalID();
-                        if (vm.getMessagePointer().containsKey(responseLocalID)) {
-                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(vm.getMessagePointer().get(responseLocalID).updateValueToReturnModel(temp)));
-                        } else {
-                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
-                        }
-                    }).start();
+                    new Thread(() -> responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp))).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }
@@ -1419,14 +1404,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                     addBeforeTextMessage(temp, messageBeforeModels);
 
-                    new Thread(() -> {
-                        String responseLocalID = temp.getLocalID();
-                        if (vm.getMessagePointer().containsKey(responseLocalID)) {
-                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(vm.getMessagePointer().get(responseLocalID).updateValueToReturnModel(temp)));
-                        } else {
-                            responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp));
-                        }
-                    }).start();
+                    new Thread(() -> responseMessages.add(TAPChatManager.getInstance().convertToEntity(temp))).start();
                 } catch (GeneralSecurityException e) {
                     e.printStackTrace();
                 }

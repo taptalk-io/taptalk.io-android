@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -167,8 +166,6 @@ public class TAPNotificationManager {
             }
         }
 
-        Log.e(TAG, "createNotificationBubble: " + builder.chatSender);
-
         return new NotificationCompat.Builder(builder.context, TAP_NOTIFICATION_CHANNEL)
                 .setContentTitle(builder.chatSender)
                 .setContentText(builder.chatMessage)
@@ -183,7 +180,6 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowInAppNotification(Context context, TAPMessageModel newMessageModel) {
-        Log.e(TAG, "createAndShowInAppNotification: " + newMessageModel.getBody());
         if (TapTalk.isForeground) {
             new TapTalk.NotificationBuilder(context)
                     .setNotificationMessage(newMessageModel)

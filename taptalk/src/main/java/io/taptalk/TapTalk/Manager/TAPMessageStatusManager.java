@@ -115,17 +115,6 @@ public class TAPMessageStatusManager {
     }
 
     public void triggerCallMessageStatusApi() {
-        new Thread(() -> {
-            //ini buat read
-            // TODO: 15/11/18 call API read Message ID
-            if (0 < getReadMessageQueue().size()) {
-                List<TAPMessageModel> tempMessageReadModel = new ArrayList<>(getReadMessageQueue());
-                addApiReadRequestMapItem(readRequestID, tempMessageReadModel);
-                readApiCallProcedure(tempMessageReadModel);
-                clearReadMessageQueue();
-                readRequestID++;
-            }
-        }).start();
 
         new Thread(() -> {
             //ini buat delivered
@@ -135,6 +124,15 @@ public class TAPMessageStatusManager {
                 deliveredApiCallProcedure(tempMessageDeliveredModel);
                 clearDeliveredMessageQueue();
                 deliveredRequestID++;
+            }
+
+            //ini buat read
+            if (0 < getReadMessageQueue().size()) {
+                List<TAPMessageModel> tempMessageReadModel = new ArrayList<>(getReadMessageQueue());
+                addApiReadRequestMapItem(readRequestID, tempMessageReadModel);
+                readApiCallProcedure(tempMessageReadModel);
+                clearReadMessageQueue();
+                readRequestID++;
             }
         }).start();
     }
