@@ -34,7 +34,6 @@ import java.util.Locale;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
-import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
@@ -75,7 +74,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.REVIEW_COM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_PAYMENT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_REVIEW;
 
-public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
+public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
 
     private static final String TAG = TAPMessageAdapter.class.getSimpleName();
     private TAPChatListener listener;
@@ -92,7 +91,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<TAPMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
                 return new TextVH(parent, R.layout.tap_cell_chat_text_right, viewType);
@@ -159,7 +158,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
     }
 
-    public class TextVH extends TAPBaseViewHolder<TAPMessageModel> {
+    public class TextVH extends TAPBaseChatViewHolder {
 
         private ConstraintLayout clContainer, clReply;
         private FrameLayout flBubble;
@@ -196,7 +195,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
 
             if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)
                     && (null != item.getSending() && !item.getSending())) {
-                Log.e(TAG, "onBind: "+item.getBody() );
                 item.updateReadMessage();
                 new Thread(() -> {
                     TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
@@ -224,7 +222,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         }
     }
 
-    public class ImageVH extends TAPBaseViewHolder<TAPMessageModel> {
+    public class ImageVH extends TAPBaseChatViewHolder {
 
         private ConstraintLayout clContainer;
         private FrameLayout flBubble, flProgress;
@@ -315,7 +313,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         }
     }
 
-    public class ProductVH extends TAPBaseViewHolder<TAPMessageModel> {
+    public class ProductVH extends TAPBaseChatViewHolder {
 
         RecyclerView rvProductList;
         TAPProductListAdapter adapter;
@@ -346,7 +344,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         }
     }
 
-    public class OrderVH extends TAPBaseViewHolder<TAPMessageModel> {
+    public class OrderVH extends TAPBaseChatViewHolder {
 
         private ConstraintLayout clContainer, clCard, clButtonDetail, clProductPreview, clButtonMoreItems, clDateTime;
         private ConstraintLayout clRecipient, clNotes, clCourier, clAdditionalCost, clDiscount, clTotalPrice;
@@ -803,7 +801,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         }
     }
 
-    public class LogVH extends TAPBaseViewHolder<TAPMessageModel> {
+    public class LogVH extends TAPBaseChatViewHolder {
 
         private ConstraintLayout clContainer;
         private TextView tvLogMessage;
@@ -822,7 +820,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         }
     }
 
-    public class EmptyVH extends TAPBaseViewHolder<TAPMessageModel> {
+    public class EmptyVH extends TAPBaseChatViewHolder {
 
         EmptyVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
