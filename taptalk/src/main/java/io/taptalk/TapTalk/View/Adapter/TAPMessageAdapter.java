@@ -845,67 +845,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
             }
             // Message has been read
             if (null != item.getIsRead() && item.getIsRead()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
-                flBubble.setTranslationX(0);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                ivSending.setAlpha(0f);
-                // Show status text and reply button for non-text bubbles
-                if (item.getType() == TYPE_TEXT) {
-                    tvMessageStatus.setVisibility(View.GONE);
-                } else if (null != ivReply) {
-                    tvMessageStatus.setVisibility(View.VISIBLE);
-                    ivReply.setVisibility(View.VISIBLE);
-                }
+                receiveReadEmit(item, flBubble, tvMessageStatus,
+                        ivMessageStatus, ivReply, ivSending);
             }
             // Message is delivered
             else if (null != item.getDelivered() && item.getDelivered()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
-                flBubble.setTranslationX(0);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                tvMessageStatus.setVisibility(View.GONE);
-                ivSending.setAlpha(0f);
-                // Show status text and reply button for non-text bubbles
-                if (item.getType() == TYPE_TEXT) {
-                    tvMessageStatus.setVisibility(View.GONE);
-                } else if (null != ivReply) {
-                    tvMessageStatus.setVisibility(View.VISIBLE);
-                    ivReply.setVisibility(View.VISIBLE);
-                }
-            }
-            // Message failed to send
-            else if (null != item.getFailedSend() && item.getFailedSend()) {
-                tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_purple);
-
-                flBubble.setTranslationX(0);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                tvMessageStatus.setVisibility(View.VISIBLE);
-                ivSending.setAlpha(0f);
-                if (null != ivReply) {
-                    ivReply.setVisibility(View.GONE);
-                }
+                receiveDeliveredEmit(item, flBubble, tvMessageStatus,
+                        ivMessageStatus, ivReply, ivSending);
             }
             // Message sent
             else if (null != item.getSending() && !item.getSending()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
-                tvMessageStatus.setVisibility(View.GONE);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-                animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
-            }
-            // Message is sending
-            else if (null != item.getSending() && item.getSending()) {
-                item.setNeedAnimateSend(true);
-                tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
-
-                flBubble.setTranslationX(initialTranslationX);
-                ivSending.setTranslationX(0);
-                ivSending.setTranslationY(0);
-                tvMessageStatus.setVisibility(View.GONE);
-                ivMessageStatus.setVisibility(View.GONE);
-                ivSending.setAlpha(1f);
-                if (null != ivReply) {
-                    ivReply.setVisibility(View.GONE);
-                }
+                receiveSentEmit(item, flBubble, tvMessageStatus,
+                        ivMessageStatus, ivReply, ivSending);
+            } else {
+                setMessage(item, itemView, flBubble, tvMessageStatus,
+                        ivMessageStatus, ivReply, ivSending);
             }
             ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
         } else {
@@ -920,6 +874,81 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
                 //tvUsername.setVisibility(View.VISIBLE);
             }
             listener.onMessageRead(item);
+        }
+    }
+
+    private void setMessage(TAPMessageModel item, View itemView, FrameLayout flBubble,
+                            TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                            @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+        // Message failed to send
+        if (null != item.getFailedSend() && item.getFailedSend()) {
+            tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
+            ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_purple);
+
+            flBubble.setTranslationX(0);
+            ivMessageStatus.setVisibility(View.VISIBLE);
+            tvMessageStatus.setVisibility(View.VISIBLE);
+            ivSending.setAlpha(0f);
+            if (null != ivReply) {
+                ivReply.setVisibility(View.GONE);
+            }
+        }
+        // Message is sending
+        else if (null != item.getSending() && item.getSending()) {
+            item.setNeedAnimateSend(true);
+            tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
+
+            flBubble.setTranslationX(initialTranslationX);
+            ivSending.setTranslationX(0);
+            ivSending.setTranslationY(0);
+            tvMessageStatus.setVisibility(View.GONE);
+            ivMessageStatus.setVisibility(View.GONE);
+            ivSending.setAlpha(1f);
+            if (null != ivReply) {
+                ivReply.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void receiveSentEmit(TAPMessageModel item, FrameLayout flBubble,
+                                 TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                                 @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
+        tvMessageStatus.setVisibility(View.GONE);
+        ivMessageStatus.setVisibility(View.VISIBLE);
+        animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
+    }
+
+    private void receiveReadEmit(TAPMessageModel item, FrameLayout flBubble,
+                                 TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                                 @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
+        flBubble.setTranslationX(0);
+        ivMessageStatus.setVisibility(View.VISIBLE);
+        ivSending.setAlpha(0f);
+        // Show status text and reply button for non-text bubbles
+        if (item.getType() == TYPE_TEXT) {
+            tvMessageStatus.setVisibility(View.GONE);
+        } else if (null != ivReply) {
+            tvMessageStatus.setVisibility(View.VISIBLE);
+            ivReply.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void receiveDeliveredEmit(TAPMessageModel item, FrameLayout flBubble,
+                                      TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                                      @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
+        flBubble.setTranslationX(0);
+        ivMessageStatus.setVisibility(View.VISIBLE);
+        tvMessageStatus.setVisibility(View.GONE);
+        ivSending.setAlpha(0f);
+        // Show status text and reply button for non-text bubbles
+        if (item.getType() == TYPE_TEXT) {
+            tvMessageStatus.setVisibility(View.GONE);
+        } else if (null != ivReply) {
+            tvMessageStatus.setVisibility(View.VISIBLE);
+            ivReply.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1048,15 +1077,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseVi
         } else {
             // Animate bubble
             item.setNeedAnimateSend(false);
-            //ivMessageStatus.setTranslationX(initialTranslationX);
             flBubble.setTranslationX(initialTranslationX);
             ivSending.setTranslationX(0);
             ivSending.setTranslationY(0);
             new Handler().postDelayed(() -> {
-//                ivMessageStatus.animate()
-//                        .translationX(0)
-//                        .setDuration(160L)
-//                        .start();
                 flBubble.animate()
                         .translationX(0)
                         .setDuration(160L)
