@@ -26,7 +26,7 @@ public class TAPCustomKeyboardManager {
         return getCustomKeyboardGroups().size() > 0 && null != getCustomKeyboardGroup(senderRoleID, recipientRoleID);
     }
 
-    public void addCustomKeyboardGroup(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
+    public void addCustomKeyboardItemGroup(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
         getCustomKeyboardGroups().put(getMasterItemKey(senderRoleID, recipientRoleID), new TAPCustomKeyboardGroupModel(senderRoleID, recipientRoleID, customKeyboardItems));
     }
 

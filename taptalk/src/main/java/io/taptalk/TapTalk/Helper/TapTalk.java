@@ -152,9 +152,9 @@ public class TapTalk {
         expertToExpert.add(readExpertNotes);
         expertToExpert.add(sendServices);
         expertToExpert.add(createOrderCard);
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardGroup("1", "2", userToExpert);
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardGroup("2", "1", expertToUser);
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardGroup("2", "2", expertToExpert);
+        addCustomKeyboardItemGroup("1", "2", userToExpert);
+        addCustomKeyboardItemGroup("2", "1", expertToUser);
+        addCustomKeyboardItemGroup("2", "2", expertToExpert);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -204,6 +204,10 @@ public class TapTalk {
 
     public static String getClientAppName() {
         return clientAppName;
+    }
+
+    public static void addCustomKeyboardItemGroup(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardItemGroup(senderRoleID, recipientRoleID, customKeyboardItems);
     }
 
     //Builder buat setting isi dari Notification chat

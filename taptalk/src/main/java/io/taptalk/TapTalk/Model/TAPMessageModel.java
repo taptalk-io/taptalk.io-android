@@ -18,46 +18,23 @@ import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
  * If this class has more attribute, don't forget to add it to copyMessageModel function
  */
 public class TAPMessageModel implements Parcelable {
-    @Nullable
-    @JsonProperty("messageID")
-    @JsonAlias("id")
-    private String messageID;
-    @NonNull
-    @JsonProperty("localID")
-    private String localID;
-    @Nullable
-    @JsonProperty("filterID")
-    private String filterID;
+    @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
+    @NonNull @JsonProperty("localID") private String localID;
+    @Nullable @JsonProperty("filterID") private String filterID;
     @JsonProperty("room") private TAPRoomModel room;
     @JsonProperty("type") private int type;
     @JsonProperty("body") private String body;
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private TAPUserModel user;
     @JsonProperty("recipientID") private String recipientID;
-    @Nullable
-    @JsonProperty("isRead")
-    private Boolean isRead;
-    @Nullable
-    @JsonProperty("isDelivered")
-    private Boolean isDelivered;
-    @Nullable
-    @JsonProperty("isHidden")
-    private Boolean isHidden;
-    @Nullable
-    @JsonProperty("isDeleted")
-    private Boolean isDeleted;
-    @Nullable
-    @JsonProperty("isSending")
-    private Boolean isSending;
-    @Nullable
-    @JsonProperty("isFailedSend")
-    private Boolean isFailedSend;
-    @Nullable
-    @JsonProperty("updated")
-    private Long updated;
-    @Nullable
-    @JsonProperty("deleted")
-    private Long deleted;
+    @Nullable @JsonProperty("isRead") private Boolean isRead;
+    @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
+    @Nullable @JsonProperty("isHidden") private Boolean isHidden;
+    @Nullable @JsonProperty("isDeleted") private Boolean isDeleted;
+    @Nullable @JsonProperty("isSending") private Boolean isSending;
+    @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
+    @Nullable @JsonProperty("updated") private Long updated;
+    @Nullable @JsonProperty("deleted") private Long deleted;
     @JsonIgnore private TAPMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
     @JsonIgnore private int imageWidth, imageHeight;

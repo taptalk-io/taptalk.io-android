@@ -315,11 +315,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         // TODO: 25 September 2018 CHANGE CUSTOM KEYBOARD MENU ACCORDING TO USER ROLES
-        vm.setCustomKeyboardEnabled(TAPCustomKeyboardManager.getInstance().isCustomKeyboardEnabled("1", "1"));
+        vm.setCustomKeyboardEnabled(TAPCustomKeyboardManager.getInstance().isCustomKeyboardEnabled("2", "2"));
         if (vm.isCustomKeyboardEnabled()) {
             // Get custom keyboard items from manager
-            vm.setCustomKeyboardItems(TAPCustomKeyboardManager.getInstance().getCustomKeyboardGroup("1", "1").getCustomKeyboardItems());
-            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), "1", "1");
+            vm.setCustomKeyboardItems(TAPCustomKeyboardManager.getInstance().getCustomKeyboardGroup("2", "2").getCustomKeyboardItems());
+            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), "2", "2");
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
             rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
