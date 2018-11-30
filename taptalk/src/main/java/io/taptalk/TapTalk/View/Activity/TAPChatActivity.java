@@ -366,7 +366,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         sblChat.setSwipeInterface(swipeInterface);
 
         civRoomImage.setOnClickListener(v -> openRoomProfile());
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonBack.setOnClickListener(v -> closeActivity());
         ivButtonCancelReply.setOnClickListener(v -> hideReplyLayout());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
@@ -392,6 +392,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // TODO: 30 November 2018 TESTING LISTENER, REMOVE THIS LATER
         TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(customKeyboardListener);
+    }
+
+    private void closeActivity() {
+        rvCustomKeyboard.setVisibility(View.GONE);
+        onBackPressed();
     }
 
     private void cancelNotificationWhenEnterRoom() {
