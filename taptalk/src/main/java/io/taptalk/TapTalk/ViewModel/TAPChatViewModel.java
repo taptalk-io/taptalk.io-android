@@ -40,7 +40,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private long lastTimestamp = 0;
     private long lastActivity;
     private int numUsers, containerAnimationState;
-    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
+    private boolean isOnBottom, /*isTyping,*/ isCustomKeyboardEnabled, isInitialAPICallFinished;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -259,6 +259,15 @@ public class TAPChatViewModel extends AndroidViewModel {
 //    public void setTyping(boolean typing) {
 //        isTyping = typing;
 //    }
+
+
+    public boolean isCustomKeyboardEnabled() {
+        return isCustomKeyboardEnabled;
+    }
+
+    public void setCustomKeyboardEnabled(boolean customKeyboardEnabled) {
+        isCustomKeyboardEnabled = customKeyboardEnabled;
+    }
 
     public boolean isInitialAPICallFinished() {
         return isInitialAPICallFinished;

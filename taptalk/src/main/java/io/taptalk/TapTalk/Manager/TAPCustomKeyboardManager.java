@@ -12,7 +12,7 @@ import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 public class TAPCustomKeyboardManager {
 
     private static TAPCustomKeyboardManager instance;
-    private Map<String, TAPCustomKeyboardGroupModel> masterCustomKeyboardItems;
+    private Map<String, TAPCustomKeyboardGroupModel> customKeyboardGroups;
     private List<TapTalkInterface> customKeyboardListeners;
 
     public TAPCustomKeyboardManager() {
@@ -22,12 +22,16 @@ public class TAPCustomKeyboardManager {
         return null == instance ? (instance = new TAPCustomKeyboardManager()) : instance;
     }
 
-    public void addCustomKeyboardItem(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
-        getMasterCustomKeyboardItems().put(getMasterItemKey(senderRoleID, recipientRoleID), new TAPCustomKeyboardGroupModel(senderRoleID, recipientRoleID, customKeyboardItems));
+    public boolean isCustomKeyboardEnabled(String senderRoleID, String recipientRoleID) {
+        return getCustomKeyboardGroups().size() > 0 && null != getCustomKeyboardGroup(senderRoleID, recipientRoleID);
     }
 
-    public TAPCustomKeyboardGroupModel getCustomKeyboardItems(String senderRoleID, String recipientRoleID) {
-        return getMasterCustomKeyboardItems().get(getMasterItemKey(senderRoleID, recipientRoleID));
+    public void addCustomKeyboardGroup(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
+        getCustomKeyboardGroups().put(getMasterItemKey(senderRoleID, recipientRoleID), new TAPCustomKeyboardGroupModel(senderRoleID, recipientRoleID, customKeyboardItems));
+    }
+
+    public TAPCustomKeyboardGroupModel getCustomKeyboardGroup(String senderRoleID, String recipientRoleID) {
+        return getCustomKeyboardGroups().get(getMasterItemKey(senderRoleID, recipientRoleID));
     }
 
     public void addCustomKeyboardListener(TapTalkInterface listener) {
@@ -50,8 +54,8 @@ public class TAPCustomKeyboardManager {
         }
     }
 
-    private Map<String, TAPCustomKeyboardGroupModel> getMasterCustomKeyboardItems() {
-        return null == masterCustomKeyboardItems ? masterCustomKeyboardItems = new LinkedHashMap<>() : masterCustomKeyboardItems;
+    private Map<String, TAPCustomKeyboardGroupModel> getCustomKeyboardGroups() {
+        return null == customKeyboardGroups ? customKeyboardGroups = new LinkedHashMap<>() : customKeyboardGroups;
     }
 
     private String getMasterItemKey(String senderRoleID, String recipientRoleID) {

@@ -118,8 +118,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private View vStatusBadge;
 
     // RecyclerView
-    private TAPMessageAdapter hpMessageAdapter;
-    private TAPCustomKeyboardAdapter hpCustomKeyboardAdapter;
+    private TAPMessageAdapter messageAdapter;
+    private TAPCustomKeyboardAdapter customKeyboardAdapter;
     private LinearLayoutManager messageLayoutManager;
 
     // RoomDatabase
@@ -300,11 +300,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         // TODO: 24 September 2018 UPDATE ROOM STATUS
         chatListener.onUserOffline(System.currentTimeMillis());
 
-        hpMessageAdapter = new TAPMessageAdapter(chatListener);
-        hpMessageAdapter.setMessages(vm.getMessageModels());
+        messageAdapter = new TAPMessageAdapter(chatListener);
+        messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);
-        rvMessageList.setAdapter(hpMessageAdapter);
+        rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
         // FIXME: 9 November 2018 IMAGES CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
@@ -315,16 +315,24 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         // TODO: 25 September 2018 CHANGE CUSTOM KEYBOARD MENU ACCORDING TO USER ROLES
-        vm.setCustomKeyboardItems(TAPCustomKeyboardManager.getInstance().getCustomKeyboardItems("2", "2").getCustomKeyboardItems());
-        hpCustomKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), "2", "2");
-        rvCustomKeyboard.setAdapter(hpCustomKeyboardAdapter);
-        rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        vm.setCustomKeyboardEnabled(TAPCustomKeyboardManager.getInstance().isCustomKeyboardEnabled("1", "1"));
+        if (vm.isCustomKeyboardEnabled()) {
+            // Get custom keyboard items from manager
+            vm.setCustomKeyboardItems(TAPCustomKeyboardManager.getInstance().getCustomKeyboardGroup("1", "1").getCustomKeyboardItems());
+            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), "1", "1");
+            rvCustomKeyboard.setAdapter(customKeyboardAdapter);
+            rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
+        } else {
+            // Disable custom keyboard
+            ivButtonChatMenu.setVisibility(View.GONE);
+        }
 
         //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (state == STATE.LOADED && 0 < hpMessageAdapter.getItems().size()) {
+                if (state == STATE.LOADED && 0 < messageAdapter.getItems().size()) {
                     new Thread(() -> {
                         vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
                         state = STATE.WORKING;
@@ -360,7 +368,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         civRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonCancelReply.setOnClickListener(v -> hideReplyLayout());
-        ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
         ivToBottom.setOnClickListener(v -> scrollToBottom());
@@ -414,7 +421,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (rvMessageList.getItemDecorationCount() > 0) {
             rvMessageList.removeItemDecorationAt(0);
         }
-        rvMessageList.addItemDecoration(new TAPVerticalDecoration(TAPUtils.getInstance().dpToPx(10), 0, hpMessageAdapter.getItemCount() - 1));
+        rvMessageList.addItemDecoration(new TAPVerticalDecoration(TAPUtils.getInstance().dpToPx(10), 0, messageAdapter.getItemCount() - 1));
     }
 
     // Previously attemptSend
@@ -425,7 +432,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //ngereset isi edit text yang buat kirim chat
             etChat.setText("");
             //tutup bubble yang lagi expand
-            hpMessageAdapter.shrinkExpandedBubble();
+            messageAdapter.shrinkExpandedBubble();
             TAPChatManager.getInstance().sendTextMessage(message);
             //scroll to Bottom
             rvMessageList.scrollToPosition(0);
@@ -459,15 +466,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
-                    hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
-                    hpMessageAdapter.addMessage(newMessage);
+                    messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
                 } else {
                     // Message from other people is received when recycler is scrolled up
-                    hpMessageAdapter.addMessage(newMessage);
+                    messageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
                     updateUnreadCount();
@@ -496,7 +503,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.removeOngoingOrderCard(oldOrderCard);
             // TODO: 19 November 2018 UPDATE MESSAGE IN DATABASE, UNCOMMENT BELOW
             //TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(oldOrderCard));
-            runOnUiThread(() -> hpMessageAdapter.notifyItemRemoved(hpMessageAdapter.getItems().indexOf(oldOrderCard)));
+            runOnUiThread(() -> messageAdapter.notifyItemRemoved(messageAdapter.getItems().indexOf(oldOrderCard)));
         }
 
         int orderStatus = vm.getOrderModel(newMessage).getOrderStatus();
@@ -517,12 +524,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
-            int position = hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+            int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
             if (-1 != position) {
                 new Thread(() -> vm.updateMessagePointer(message)).start();
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
-                hpMessageAdapter.getItemAt(position).updateValue(message);
-                hpMessageAdapter.notifyItemChanged(position);
+                messageAdapter.getItemAt(position).updateValue(message);
+                messageAdapter.notifyItemChanged(position);
             } else {
                 new Thread(() -> addNewMessage(message)).start();
             }
@@ -537,7 +544,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (vm.getMessagePointer().containsKey(newID)) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
-                hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
                 new Thread(() -> {
                     //kalau belom ada masukin kedalam list dan hash map
@@ -557,7 +564,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (vm.getMessagePointer().containsKey(newID)) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
-                hpMessageAdapter.notifyItemChanged(hpMessageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (!vm.getMessagePointer().containsKey(newID)){
                 new Thread(() -> {
                     //kalau belom ada masukin kedalam list dan hash map
@@ -822,7 +829,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onSendFailed(TAPMessageModel message) {
             vm.updateMessagePointer(message);
             vm.removeMessagePointer(message.getLocalID());
-            runOnUiThread(() -> hpMessageAdapter.notifyItemRangeChanged(0, hpMessageAdapter.getItemCount()));
+            runOnUiThread(() -> messageAdapter.notifyItemRangeChanged(0, messageAdapter.getItemCount()));
         }
 
         @Override
@@ -1037,7 +1044,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
                 }
             } else {
-                ivButtonChatMenu.setVisibility(View.VISIBLE);
+                if (vm.isCustomKeyboardEnabled()) {
+                    ivButtonChatMenu.setVisibility(View.VISIBLE);
+                }
                 ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
             }
         }
@@ -1051,9 +1060,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private View.OnFocusChangeListener chatFocusChangeListener = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
-            if (hasFocus) {
+            if (hasFocus && vm.isCustomKeyboardEnabled()) {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
+                TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
+            } else if (hasFocus) {
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
             }
         }
@@ -1114,10 +1125,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
-            if (null != hpMessageAdapter && 0 == hpMessageAdapter.getItems().size()) {
+            if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
                 runOnUiThread(() -> {
                     // First load
-                    hpMessageAdapter.setMessages(models);
+                    messageAdapter.setMessages(models);
                     if (models.size() == 0) {
                         // Chat is empty
                         // TODO: 24 September 2018 CHECK ROOM TYPE, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
@@ -1161,14 +1172,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                 });
 
-            } else if (null != hpMessageAdapter) {
+            } else if (null != messageAdapter) {
                 runOnUiThread(() -> {
                     if (clEmptyChat.getVisibility() == View.VISIBLE) {
                         clEmptyChat.setVisibility(View.GONE);
                     }
                     flMessageList.setVisibility(View.VISIBLE);
-                    hpMessageAdapter.setMessages(models);
-                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
+                    messageAdapter.setMessages(models);
+                    new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
                     if (state == STATE.DONE) updateMessageDecoration();
@@ -1197,7 +1208,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
-            if (null != hpMessageAdapter) {
+            if (null != messageAdapter) {
                 if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
                 } else if (STATE.WORKING == state) {
@@ -1206,8 +1217,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
-                    hpMessageAdapter.addMessage(models);
-                    new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
+                    messageAdapter.addMessage(models);
+                    new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
 
                     if (rvMessageList.getVisibility() != View.VISIBLE)
                         rvMessageList.setVisibility(View.VISIBLE);
@@ -1273,13 +1284,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 flMessageList.setVisibility(View.VISIBLE);
                 //masukin datanya ke dalem recyclerView
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
-                hpMessageAdapter.addMessage(0, messageAfterModels);
+                messageAdapter.addMessage(0, messageAfterModels);
                 updateMessageDecoration();
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
                 if (vm.isOnBottom()) rvMessageList.scrollToPosition(0);
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
-                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
+                new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
@@ -1358,10 +1369,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 flMessageList.setVisibility(View.VISIBLE);
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                hpMessageAdapter.addMessage(messageBeforeModels);
+                messageAdapter.addMessage(messageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
-                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
+                new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
@@ -1416,10 +1427,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             mergeSort(messageBeforeModels, DESCENDING);
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                hpMessageAdapter.addMessage(messageBeforeModels);
+                messageAdapter.addMessage(messageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
-                new Thread(() -> vm.setMessageModels(hpMessageAdapter.getItems())).start();
+                new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);

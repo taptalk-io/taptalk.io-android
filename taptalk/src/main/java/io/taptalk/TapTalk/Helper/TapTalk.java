@@ -152,9 +152,9 @@ public class TapTalk {
         expertToExpert.add(readExpertNotes);
         expertToExpert.add(sendServices);
         expertToExpert.add(createOrderCard);
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardItem("1", "2", userToExpert);
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardItem("2", "1", expertToUser);
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardItem("2", "2", expertToExpert);
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardGroup("1", "2", userToExpert);
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardGroup("2", "1", expertToUser);
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardGroup("2", "2", expertToExpert);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
