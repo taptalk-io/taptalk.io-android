@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -213,12 +212,72 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 vReplyBackground.setVisibility(View.GONE);
             }
 
-            checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, tvUsername, civAvatar, ivMessageStatus, ivReply, ivSending);
+            checkAndUpdateMessageStatus(item);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
 
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+        }
+
+        private void checkAndUpdateMessageStatus(TAPMessageModel item) {
+            if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
+                // Set timestamp text on non-text or expanded bubble
+                if (item.getType() != TYPE_TEXT || item.isExpanded()) {
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), TAPTimeFormatter.getInstance().formatDate(item.getCreated())));
+                }
+                // Message has been read
+                if (null != item.getIsRead() && item.getIsRead()) {
+                    receiveReadEvent(item);
+                }
+                // Message is delivered
+                else if (null != item.getDelivered() && item.getDelivered()) {
+                    receiveDeliveredEvent(item);
+                }
+                // Message sent
+                else if (null != item.getSending() && !item.getSending()) {
+                    receiveSentEvent(item);
+                } else {
+                    setMessage(item);
+                }
+                ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
+            } else {
+                // Message from others
+                // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
+                if (null != civAvatar && null != item.getUser().getAvatarURL()) {
+                    Glide.with(itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                    //civAvatar.setVisibility(View.VISIBLE);
+                }
+                if (null != tvUsername) {
+                    tvUsername.setText(item.getUser().getUsername());
+                    //tvUsername.setVisibility(View.VISIBLE);
+                }
+                listener.onMessageRead(item);
+            }
+        }
+
+        @Override
+        protected void receiveReadEvent(TAPMessageModel message) {
+            receiveReadEmit(message, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveDeliveredEvent(TAPMessageModel message) {
+            receiveDeliveredEmit(message, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveSentEvent(TAPMessageModel message) {
+            receiveSentEmit(message, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void setMessage(TAPMessageModel message) {
+            setMessageItem(message, itemView, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
         }
     }
 
@@ -256,7 +315,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         protected void onBind(TAPMessageModel item, int position) {
             tvMessageStatus.setText(TAPTimeFormatter.getInstance().durationString(item.getCreated()));
 
-            checkAndUpdateMessageStatus(item, itemView, flBubble, tvMessageStatus, null, civAvatar, ivMessageStatus, ivReply, ivSending);
+            checkAndUpdateMessageStatus(item);
 
             if (item.isFirstLoadFinished()) {
                 flProgress.setVisibility(View.GONE);
@@ -310,6 +369,62 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // TODO: 5 November 2018 VIEW IMAGE
             });
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+        }
+
+        private void checkAndUpdateMessageStatus(TAPMessageModel item) {
+            if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
+                // Set timestamp text on non-text or expanded bubble
+                if (item.getType() != TYPE_TEXT || item.isExpanded()) {
+                    tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), TAPTimeFormatter.getInstance().formatDate(item.getCreated())));
+                }
+                // Message has been read
+                if (null != item.getIsRead() && item.getIsRead()) {
+                    receiveReadEvent(item);
+                }
+                // Message is delivered
+                else if (null != item.getDelivered() && item.getDelivered()) {
+                    receiveDeliveredEvent(item);
+                }
+                // Message sent
+                else if (null != item.getSending() && !item.getSending()) {
+                    receiveSentEvent(item);
+                } else {
+                    setMessage(item);
+                }
+                ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
+            } else {
+                // Message from others
+                // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
+                if (null != civAvatar && null != item.getUser().getAvatarURL()) {
+                    Glide.with(itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                    //civAvatar.setVisibility(View.VISIBLE);
+                }
+                listener.onMessageRead(item);
+            }
+        }
+
+        @Override
+        protected void receiveSentEvent(TAPMessageModel message) {
+            receiveSentEmit(message, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveDeliveredEvent(TAPMessageModel message) {
+            receiveDeliveredEmit(message, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveReadEvent(TAPMessageModel message) {
+            receiveReadEmit(message, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void setMessage(TAPMessageModel message) {
+            setMessageItem(message, itemView, flBubble, tvMessageStatus,
+                    ivMessageStatus, ivReply, ivSending);
         }
     }
 
@@ -832,50 +947,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void checkAndUpdateMessageStatus(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                             TextView tvMessageStatus, @Nullable TextView tvUsername,
-                                             @Nullable CircleImageView civAvatar, @Nullable ImageView ivMessageStatus,
-                                             @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
-        if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
-            // Set timestamp text on non-text or expanded bubble
-            if (item.getType() != TYPE_TEXT || item.isExpanded()) {
-                tvMessageStatus.setText(String.format("%s %s", itemView.getContext().getString(R.string.sent_at), TAPTimeFormatter.getInstance().formatDate(item.getCreated())));
-            }
-            // Message has been read
-            if (null != item.getIsRead() && item.getIsRead()) {
-                receiveReadEmit(item, flBubble, tvMessageStatus,
-                        ivMessageStatus, ivReply, ivSending);
-            }
-            // Message is delivered
-            else if (null != item.getDelivered() && item.getDelivered()) {
-                receiveDeliveredEmit(item, flBubble, tvMessageStatus,
-                        ivMessageStatus, ivReply, ivSending);
-            }
-            // Message sent
-            else if (null != item.getSending() && !item.getSending()) {
-                receiveSentEmit(item, flBubble, tvMessageStatus,
-                        ivMessageStatus, ivReply, ivSending);
-            } else {
-                setMessage(item, itemView, flBubble, tvMessageStatus,
-                        ivMessageStatus, ivReply, ivSending);
-            }
-            ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
-        } else {
-            // Message from others
-            // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
-            if (null != civAvatar && null != item.getUser().getAvatarURL()) {
-                Glide.with(itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
-                //civAvatar.setVisibility(View.VISIBLE);
-            }
-            if (null != tvUsername) {
-                tvUsername.setText(item.getUser().getUsername());
-                //tvUsername.setVisibility(View.VISIBLE);
-            }
-            listener.onMessageRead(item);
-        }
-    }
-
-    private void setMessage(TAPMessageModel item, View itemView, FrameLayout flBubble,
+    private void setMessageItem(TAPMessageModel item, View itemView, FrameLayout flBubble,
                             TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                             @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         // Message failed to send

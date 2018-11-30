@@ -20,15 +20,15 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
     }
 
-    protected void receiveSentEvent() {
+    protected void receiveSentEvent(TAPMessageModel message) {
 
     }
 
-    protected void receiveDeliveredEvent() {
+    protected void receiveDeliveredEvent(TAPMessageModel message) {
 
     }
 
-    protected void receiveReadEvent() {
+    protected void receiveReadEvent(TAPMessageModel message) {
 
     }
 }
