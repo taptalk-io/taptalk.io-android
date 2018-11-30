@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -29,6 +30,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
+    private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel;
     private TAPRoomModel room;
     private TAPMessageModel replyTo;
@@ -38,8 +40,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private long lastTimestamp = 0;
     private long lastActivity;
     private int numUsers, containerAnimationState;
-    private boolean isOnBottom, /*isTyping,*/
-            isInitialAPICallFinished;
+    private boolean isOnBottom, /*isTyping,*/ isInitialAPICallFinished;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -173,6 +174,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void removePendingRecyclerMessage(TAPMessageModel message) {
         getPendingRecyclerMessages().remove(message);
+    }
+
+    public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems() {
+        return null == customKeyboardItems ? customKeyboardItems = new ArrayList<>() : customKeyboardItems;
+    }
+
+    public void setCustomKeyboardItems(List<TAPCustomKeyboardItemModel> customKeyboardItems) {
+        this.customKeyboardItems = customKeyboardItems;
     }
 
     public TAPUserModel getMyUserModel() {
