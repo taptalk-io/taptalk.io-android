@@ -2,63 +2,55 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
-import io.taptalk.TapTalk.Interface.TAPCustomKeyboardInterface;
-import io.taptalk.TapTalk.Model.TAPCustomKeyboardModel;
+import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.Taptalk.R;
 
-public class TAPCustomKeyboardAdapter extends TAPBaseAdapter<TAPCustomKeyboardModel, TAPBaseViewHolder<TAPCustomKeyboardModel>> {
+public class TAPCustomKeyboardAdapter extends TAPBaseAdapter<TAPCustomKeyboardItemModel, TAPBaseViewHolder<TAPCustomKeyboardItemModel>> {
 
-    private TAPCustomKeyboardInterface listener;
+    private String senderRoleID, recipientRoleID;
 
-    public TAPCustomKeyboardAdapter(List<TAPCustomKeyboardModel> keyboardMenuList, TAPCustomKeyboardInterface listener) {
+    public TAPCustomKeyboardAdapter(List<TAPCustomKeyboardItemModel> keyboardMenuList, String senderRoleID, String recipientRoleID) {
         setItems(keyboardMenuList);
-        this.listener = listener;
+        this.senderRoleID = senderRoleID;
+        this.recipientRoleID = recipientRoleID;
     }
 
     @NonNull
     @Override
-    public TAPBaseViewHolder<TAPCustomKeyboardModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public TAPBaseViewHolder<TAPCustomKeyboardItemModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new KeyboardMenuHolder(parent, R.layout.tap_cell_custom_keyboard_menu);
     }
 
-    class KeyboardMenuHolder extends TAPBaseViewHolder<TAPCustomKeyboardModel> {
+    class KeyboardMenuHolder extends TAPBaseViewHolder<TAPCustomKeyboardItemModel> {
 
-        TextView tvMenuIcon, tvMenuLabel;
+        ImageView ivMenuIcon;
+        TextView tvMenuLabel;
 
-        protected KeyboardMenuHolder(ViewGroup parent, int itemLayoutId) {
+        KeyboardMenuHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
-            tvMenuIcon = itemView.findViewById(R.id.tv_menu_icon);
+            ivMenuIcon = itemView.findViewById(R.id.iv_menu_icon);
             tvMenuLabel = itemView.findViewById(R.id.tv_menu_label);
         }
 
         @Override
-        protected void onBind(TAPCustomKeyboardModel item, int position) {
-            tvMenuIcon.setText(item.getIcon());
-            tvMenuLabel.setText(item.getLabel());
+        protected void onBind(TAPCustomKeyboardItemModel item, int position) {
+            if (null != item.getIconImage()) {
+                Glide.with(itemView.getContext()).load(item.getIconImage()).into(ivMenuIcon);
+            } else {
+                Glide.with(itemView.getContext()).load(item.getIconURL()).into(ivMenuIcon);
+            }
+            tvMenuLabel.setText(item.getItemName());
 
-            itemView.setOnClickListener(v -> onMenuClicked(item.getType()));
-        }
-    }
-
-    private void onMenuClicked(TAPCustomKeyboardModel.Type type) {
-        switch (type) {
-            case SEE_PRICE_LIST:
-                listener.onSeePriceListClicked();
-                break;
-            case READ_EXPERT_NOTES:
-                listener.onReadExpertNotesClicked();
-                break;
-            case SEND_SERVICES:
-                listener.onSendServicesClicked();
-                break;
-            case CREATE_ORDER:
-                listener.onCreateOrderClicked();
-                break;
+            itemView.setOnClickListener(v -> TAPCustomKeyboardManager.getInstance().onCustomKeyboardItemClicked(senderRoleID, recipientRoleID, item));
         }
     }
 }

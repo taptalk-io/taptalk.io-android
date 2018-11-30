@@ -5,17 +5,22 @@ import android.app.Application;
 import com.facebook.stetho.Stetho;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Interface.TapTalkTokenInterface;
+import io.taptalk.TapTalk.Listener.TapTalkListener;
 import io.taptalk.TaptalkSample.R;
 
 public class SampleApplication extends Application {
 
-    TapTalkTokenInterface hpTokenInterface = TapTalk::refreshTokenExpired;
+    TapTalkListener tapTalkListener = new TapTalkListener() {
+        @Override
+        public void onRefreshTokenExpiredOrInvalid() {
+            TapTalk.refreshTokenExpired();
+        }
+    };
 
     @Override
     public void onCreate() {
         super.onCreate();
-        TapTalk.init(this, hpTokenInterface);
+        TapTalk.init(this, tapTalkListener);
         TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
