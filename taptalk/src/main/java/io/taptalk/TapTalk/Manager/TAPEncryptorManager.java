@@ -26,9 +26,9 @@ public class TAPEncryptorManager {
         int randomNumber = TAPUtils.getInstance().generateRandomNumber(9);
 
         try {
-            salt = id.charAt(textToEncrypt.length() % 32);
+            salt = id.charAt(textToEncrypt.length() % id.length());
             localKey = new StringBuilder(TAPUtils.getInstance().mySubString(id, 8, 16)).reverse().toString();
-            encrypted = AESCrypt.encrypt(String.format("%s%s", ENCRYPTION_KEY, localKey), textToEncrypt);
+            encrypted = AESCrypt.encrypt(String.format("%s%s", TAPUtils.getInstance().mySubString(ENCRYPTION_KEY, 0, 16), localKey), textToEncrypt);
             encryptedLength = encrypted.length();
             saltIndex = ((encryptedLength + randomNumber) * randomNumber) % encryptedLength;
             encryptedWithSalt = new StringBuilder(encrypted).insert(saltIndex, salt).insert(0, randomNumber).toString();
@@ -48,7 +48,7 @@ public class TAPEncryptorManager {
             encryptedLength = textToDecrypt.length() - 2;
             saltIndex = ((encryptedLength + randomNumber) * randomNumber) % encryptedLength;
             encrypted = new StringBuilder(textToDecrypt).deleteCharAt(0).deleteCharAt(saltIndex).toString();
-            decrypted = AESCrypt.decrypt(String.format("%s%s", ENCRYPTION_KEY, localKey), encrypted);
+            decrypted = AESCrypt.decrypt(String.format("%s%s", TAPUtils.getInstance().mySubString(ENCRYPTION_KEY, 0, 16), localKey), encrypted);
         } catch (Exception ex) {
             ex.printStackTrace();
             return "";
