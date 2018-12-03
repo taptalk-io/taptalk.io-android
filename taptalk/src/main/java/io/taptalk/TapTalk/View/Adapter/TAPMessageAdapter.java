@@ -38,6 +38,7 @@ import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
@@ -103,7 +104,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
             case TYPE_BUBBLE_ORDER_CARD:
-                return new OrderVH(parent, R.layout.tap_cell_chat_order_card);
+                //return new OrderVH(parent, R.layout.tap_cell_chat_order_card);
+                return TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD).createCustomViewHolder(parent, this, myUserModel);
             case TYPE_EMPTY:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
             default:

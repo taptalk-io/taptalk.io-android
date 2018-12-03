@@ -26,6 +26,7 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TapTalkInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
@@ -311,5 +312,9 @@ public class TapTalk {
             }
 
         }
+    }
+
+    public static void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
+        TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 }
