@@ -97,6 +97,7 @@ public class TAPConnectionManager {
                         HashMap response = new ObjectMapper().readValue(message, HashMap.class);
                         if (null != socketMessageListener) {
                             socketMessageListener.onReceiveNewEmit(response.get("eventName").toString(), message);
+                            Log.e(TAG, "onMessage: " + response.get("eventName").toString() + ", " + message);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
