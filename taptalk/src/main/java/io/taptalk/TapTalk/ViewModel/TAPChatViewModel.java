@@ -37,7 +37,6 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private long lastTimestamp = 0;
-    private long lastActivity;
     private int numUsers, containerAnimationState;
     private boolean isOnBottom, /*isTyping,*/ isCustomKeyboardEnabled, isInitialAPICallFinished;
 
@@ -234,14 +233,6 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setLastTimestamp(long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
-    }
-
-    public long getLastActivity() {
-        return lastActivity;
-    }
-
-    public void setLastActivity(long lastActivity) {
-        this.lastActivity = lastActivity;
     }
 
     public int getNumUsers() {

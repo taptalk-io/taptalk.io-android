@@ -57,12 +57,14 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TAPUserOnlineStatusManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPPairIdNameModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
@@ -287,6 +289,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         getWindow().setBackgroundDrawable(null);
 
+        // Set room name
         tvRoomName.setText(vm.getRoom().getRoomName());
 
         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
@@ -297,8 +300,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             civRoomImage.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
         }
 
-        // TODO: 24 September 2018 UPDATE ROOM STATUS
-        chatListener.onUserOffline(System.currentTimeMillis());
+        // Set room status
+        // TODO: 24 September 2018 CALL ONLINE STATUS API
+        showUserOffline();
 
         messageAdapter = new TAPMessageAdapter(chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
@@ -638,6 +642,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
+    private void showUserOnline() {
+        runOnUiThread(() -> {
+            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
+            tvRoomStatus.setText(getString(R.string.active_now));
+        });
+        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+    }
+
+    private void showUserOffline() {
+        lastActivityRunnable.run();
+    }
+
     //ini Fungsi buat manggil Api Before
     private void fetchBeforeMessageFromAPIAndUpdateUI(TapDefaultDataView<TAPGetMessageListbyRoomResponse> beforeView) {
         /*fetchBeforeMessageFromAPIAndUpdateUI rules:
@@ -869,16 +885,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onUserOnline() {
-            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
-            tvRoomStatus.setText(getString(R.string.active_now));
-            vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+        public void onUserOnline(TAPOnlineStatusModel onlineStatus) {
+            if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
+                showUserOnline();
+            } else if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && !onlineStatus.getOnline()) {
+                showUserOffline();
+            }
         }
 
         @Override
         public void onUserOffline(Long lastActivity) {
-            vm.setLastActivity(lastActivity);
-            lastActivityRunnable.run();
+
         }
     };
 
@@ -1462,10 +1479,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void run() {
-            runOnUiThread(() -> {
-                vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
-                tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, vm.getLastActivity()));
-            });
+            Long lastActive = TAPUserOnlineStatusManager.getInstance().getUserLastActivity(vm.getOtherUserID());
+            Log.e(TAG, "lastActivityRunnable: " + lastActive);
+            if (lastActive == 0) {
+                runOnUiThread(() -> {
+                    vStatusBadge.setBackground(null);
+                    tvRoomStatus.setText("");
+                });
+            } else {
+                runOnUiThread(() -> {
+                    vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
+                    tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, lastActive));
+                });
+            }
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);
         }
     };

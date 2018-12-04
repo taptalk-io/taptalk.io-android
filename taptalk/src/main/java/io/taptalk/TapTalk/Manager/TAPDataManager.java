@@ -35,6 +35,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
@@ -209,6 +210,18 @@ public class TAPDataManager {
 
         tempLastUpdated.put(roomID, lastUpdated);
         Hawk.put(K_LAST_UPDATED, tempLastUpdated);
+    }
+
+    /**
+     * USER LAST ACTIVITY
+     */
+
+    public HashMap<String, Long> getUserLastActivityMap() {
+        return Hawk.get(K_USER_LAST_ACTIVITY);
+    }
+
+    public void saveUserLastActivityMap(HashMap<String, Long> userLastActivityMap) {
+        Hawk.put(K_USER_LAST_ACTIVITY, userLastActivityMap);
     }
 
     /**

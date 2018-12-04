@@ -16,7 +16,8 @@ public class TAPDefaultConstant {
         public static final String kSocketStartTyping = "chat/startTyping";
         public static final String kSocketStopTyping = "chat/stopTyping";
         public static final String kSocketAuthentication = "user/authentication";
-        public static final String kSocketUserOnline = "user/online";
+        public static final String kSocketUserOnline = "chat/status/online";
+//        public static final String kSocketUserOnline = "user/online";
         public static final String kSocketUserOffline = "user/offline";
     }
 
@@ -157,7 +158,8 @@ public class TAPDefaultConstant {
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
     public static final String K_ROOM = "kTAPRoom";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
-    public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kIsRoomListSetupFinished";
+    public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
+    public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 

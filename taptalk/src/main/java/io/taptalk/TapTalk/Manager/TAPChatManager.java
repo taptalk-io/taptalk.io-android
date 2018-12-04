@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
@@ -100,15 +101,15 @@ public class TAPChatManager {
     private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
+            TAPEmitModel<TAPMessageModel> messageEmit = TAPUtils.getInstance()
+                    .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                    }, emitData);
             switch (eventName) {
                 case kEventOpenRoom:
                     break;
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
-                    TAPEmitModel<TAPMessageModel> messageEmit = TAPUtils.getInstance()
-                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                            }, emitData);
                     try {
                         receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
@@ -116,21 +117,15 @@ public class TAPChatManager {
                     }
                     break;
                 case kSocketUpdateMessage:
-                    TAPEmitModel<TAPMessageModel> messageUpdateEmit = TAPUtils.getInstance()
-                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageUpdateEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketDeleteMessage:
-                    TAPEmitModel<TAPMessageModel> messageDeleteEmit = TAPUtils.getInstance()
-                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageDeleteEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -144,13 +139,14 @@ public class TAPChatManager {
                 case kSocketAuthentication:
                     break;
                 case kSocketUserOnline:
-                    // TODO: 2 November 2018 GET EMIT DATA
+                    TAPOnlineStatusModel onlineStatus = messageEmit.getStatus();
                     for (TAPChatListener listener : chatListeners) {
-                        listener.onUserOnline();
+                        listener.onUserOnline(onlineStatus);
                     }
+                    TAPUserOnlineStatusManager.getInstance().updateUserLastActivity(onlineStatus.getUser().getUserID(), onlineStatus.getLastActive());
                     break;
                 case kSocketUserOffline:
-                    // TODO: 2 November 2018 GET EMIT DATA
+                    // TODO: 2 November 2018 GET EMIT DATA, SAVE LAST ACTIVE TIME TO PREFERENCE
                     for (TAPChatListener listener : chatListeners) {
                         listener.onUserOffline(System.currentTimeMillis());
                     }
