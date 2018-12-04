@@ -18,7 +18,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -304,6 +303,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         // TODO: 24 September 2018 CALL ONLINE STATUS API
         showUserOffline();
 
+        // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
@@ -318,6 +318,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
+        // Initialize custom keyboard
         // TODO: 25 September 2018 CHANGE CUSTOM KEYBOARD MENU ACCORDING TO USER ROLES
         vm.setCustomKeyboardEnabled(TAPCustomKeyboardManager.getInstance().isCustomKeyboardEnabled("2", "2"));
         if (vm.isCustomKeyboardEnabled()) {
@@ -349,6 +350,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Show/hide ivToBottom
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
@@ -453,11 +455,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener
-            Log.e(TAG, "addNewMessage: ANIMATING");
             vm.addPendingRecyclerMessage(newMessage);
         } else {
             // Message is added after transition finishes in containerTransitionListener
-            Log.e(TAG, "addNewMessage: " + vm.getContainerAnimationState());
             checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
@@ -887,8 +887,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onUserOnline(TAPOnlineStatusModel onlineStatus) {
             if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
+                // User is online
                 showUserOnline();
             } else if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && !onlineStatus.getOnline()) {
+                // User is offline
                 showUserOffline();
             }
         }
@@ -1480,7 +1482,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void run() {
             Long lastActive = TAPUserOnlineStatusManager.getInstance().getUserLastActivity(vm.getOtherUserID());
-            Log.e(TAG, "lastActivityRunnable: " + lastActive);
             if (lastActive == 0) {
                 runOnUiThread(() -> {
                     vStatusBadge.setBackground(null);
