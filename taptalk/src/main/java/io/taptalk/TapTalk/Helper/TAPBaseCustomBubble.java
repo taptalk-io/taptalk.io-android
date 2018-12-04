@@ -1,18 +1,22 @@
 package io.taptalk.TapTalk.Helper;
 
+import android.support.annotation.Nullable;
 import android.view.ViewGroup;
 
+import io.taptalk.TapTalk.Interface.TapTalkBaseCustomInterface;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 
-public abstract class TAPBaseCustomBubble<T extends TAPBaseChatViewHolder> {
+public abstract class TAPBaseCustomBubble<T extends TAPBaseChatViewHolder, E extends TapTalkBaseCustomInterface> {
     private int customBubbleLayoutRes;
     private int messageType;
+    private E customBubbleListener;
 
-    public TAPBaseCustomBubble(int customBubbleLayoutRes, int messageType) {
+    public TAPBaseCustomBubble(int customBubbleLayoutRes, int messageType, @Nullable E customBubbleListener) {
         this.customBubbleLayoutRes = customBubbleLayoutRes;
         this.messageType = messageType;
+        this.customBubbleListener = customBubbleListener;
     }
 
     public int getCustomBubbleLayoutRes() {
@@ -31,5 +35,13 @@ public abstract class TAPBaseCustomBubble<T extends TAPBaseChatViewHolder> {
         this.messageType = messageType;
     }
 
-    public abstract T createCustomViewHolder(ViewGroup parent, TAPMessageAdapter adapter, TAPUserModel activeUser);
+    public E getCustomBubbleListener() {
+        return customBubbleListener;
+    }
+
+    public void setCustomBubbleListener(E customBubbleListener) {
+        this.customBubbleListener = customBubbleListener;
+    }
+
+    public abstract T createCustomViewHolder(ViewGroup parent, TAPMessageAdapter adapter, TAPUserModel activeUser, E customBubbleListener);
 }

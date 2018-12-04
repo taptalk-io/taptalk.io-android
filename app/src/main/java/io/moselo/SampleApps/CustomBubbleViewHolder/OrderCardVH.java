@@ -2,7 +2,6 @@ package io.moselo.SampleApps.CustomBubbleViewHolder;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.Locale;
 
+import io.moselo.SampleApps.CustomBubbleListener.OrderCardBubbleListener;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
@@ -51,12 +51,13 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
     private View vCardMarginLeft, vCardMarginRight, vBadgeAdditional, vBadgeDiscount, vTotalPriceSeparator;
     private TAPMessageAdapter adapter;
     private TAPUserModel myUserModel;
+    private OrderCardBubbleListener listener;
 
-    public OrderCardVH(ViewGroup parent, int itemLayoutId, TAPMessageAdapter adapter, TAPUserModel myUserModel) {
+    public OrderCardVH(ViewGroup parent, int itemLayoutId, TAPMessageAdapter adapter, TAPUserModel myUserModel, OrderCardBubbleListener listener) {
         super(parent, itemLayoutId);
-        Log.e("rioriorio", "OrderCardVH: "+itemLayoutId );
         this.adapter = adapter;
         this.myUserModel = myUserModel;
+        this.listener = listener;
         clContainer = itemView.findViewById(io.taptalk.Taptalk.R.id.cl_container);
         clCard = itemView.findViewById(io.taptalk.Taptalk.R.id.cl_card);
         clButtonDetail = itemView.findViewById(io.taptalk.Taptalk.R.id.cl_button_detail);
@@ -99,7 +100,6 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
 
     @Override
     protected void onBind(TAPMessageModel item, int position) {
-        Log.e("rioriorio", "onBind: ");
         TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
         }, item.getBody());
 
@@ -290,7 +290,8 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
 
         // Set listeners
         //clContainer.setOnClickListener(v -> listener.onOutsideClicked());
-        clCard.setOnClickListener(v -> viewOrderDetail());
+        //clCard.setOnClickListener(v -> viewOrderDetail());
+        clCard.setOnClickListener(v -> listener.onOrderDetail());
         clButtonDetail.setOnClickListener(v -> viewOrderDetail());
         tvReportOrder.setOnClickListener(v -> reportOrder());
         llButtonOrderStatus.setOnClickListener(v -> viewOrderStatus());
