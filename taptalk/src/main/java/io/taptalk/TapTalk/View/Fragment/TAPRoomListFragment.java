@@ -427,6 +427,7 @@ public class TAPRoomListFragment extends Fragment {
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
             if (!vm.isDoneFirstApiSetup()) {
+                vm.setDoneFirstApiSetup(true);
                 TAPDataManager.getInstance().setRoomListSetupFinished();
             }
         }

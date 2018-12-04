@@ -31,12 +31,11 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
-    private TAPUserModel myUserModel;
+    private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
     private TAPMessageModel replyTo;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
-    private String otherUserID = "0";
     private long lastTimestamp = 0;
     private long lastActivity;
     private int numUsers, containerAnimationState;
@@ -192,6 +191,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.myUserModel = myUserModel;
     }
 
+    public TAPUserModel getOtherUserModel() {
+        return otherUserModel;
+    }
+
+    public void setOtherUserModel(TAPUserModel otherUserModel) {
+        this.otherUserModel = otherUserModel;
+    }
+
     public TAPRoomModel getRoom() {
         return room;
     }
@@ -296,7 +303,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public String getOtherUserID() {
         try {
             String[] tempUserID = room.getRoomID().split("-");
-            return otherUserID = tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
+            return tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
         } catch (Exception e) {
             return "0";
         }

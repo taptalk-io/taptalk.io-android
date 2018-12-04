@@ -89,7 +89,7 @@
         android:id="@+id/iv_button_back"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:elevation="4dp"
         android:padding="16dp"
         android:src="@drawable/tap_ic_back_white" />
