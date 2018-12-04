@@ -1,25 +1,26 @@
 package io.taptalk.TapTalk.Model;
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "eventName",
-        "data"
-})
 public class TAPEmitModel<T> {
 
     @JsonProperty("eventName")
     private String eventName;
     @JsonProperty("data")
     private T data;
+    @JsonProperty("status")
+    private TAPOnlineStatusModel status;
 
     public TAPEmitModel(String eventName, T data) {
         this.eventName = eventName;
         this.data = data;
+    }
+
+    public TAPEmitModel(String eventName, T data, TAPOnlineStatusModel status) {
+        this.eventName = eventName;
+        this.data = data;
+        this.status = status;
     }
 
     public TAPEmitModel() {
@@ -43,5 +44,13 @@ public class TAPEmitModel<T> {
     @JsonProperty("data")
     public void setData(T data) {
         this.data = data;
+    }
+
+    public TAPOnlineStatusModel getStatus() {
+        return status;
+    }
+
+    public void setStatus(TAPOnlineStatusModel status) {
+        this.status = status;
     }
 }
