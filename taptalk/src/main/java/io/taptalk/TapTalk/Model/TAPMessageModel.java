@@ -34,6 +34,7 @@ public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("isSending") private Boolean isSending;
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
+    @Nullable @JsonProperty("deleted") private Long deleted;
     @JsonIgnore private TAPMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
     @JsonIgnore private int imageWidth, imageHeight;
@@ -43,7 +44,7 @@ public class TAPMessageModel implements Parcelable {
                            String recipientID, @Nullable Boolean isDeleted,
                            @Nullable Boolean isSending, @Nullable Boolean isFailedSend,
                            @Nullable Boolean isDelivered, @Nullable Boolean isRead,
-                           @Nullable Boolean isHidden, @Nullable Long updated) {
+                           @Nullable Boolean isHidden, @Nullable Long updated, @Nullable Long deleted) {
         this.messageID = messageID;
         this.localID = localID;
         this.filterID = filterID;
@@ -60,6 +61,7 @@ public class TAPMessageModel implements Parcelable {
         this.isRead = isRead;
         this.isHidden = isHidden;
         this.updated = updated;
+        this.deleted = deleted;
         // Update when adding fields to model
     }
 
@@ -68,7 +70,7 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel Builder(String message, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        return new TAPMessageModel("0", localID,"", message, room, type, created, user, recipientID, false, true, false, false, false, false, created);
+        return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, false, true, false, false, false, false, created, null);
     }
 
     public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
@@ -82,13 +84,14 @@ public class TAPMessageModel implements Parcelable {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.getDeleted(),
+                messageModel.getIsDeleted(),
                 messageModel.getSending(),
                 messageModel.getFailedSend(),
                 messageModel.getDelivered(),
                 messageModel.getIsRead(),
                 messageModel.getHidden(),
-                messageModel.getUpdated());
+                messageModel.getUpdated(),
+                messageModel.getDeleted());
     }
 
     public static TAPMessageModel BuilderDecrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
@@ -102,13 +105,14 @@ public class TAPMessageModel implements Parcelable {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
-                messageModel.getDeleted(),
+                messageModel.getIsDeleted(),
                 messageModel.getSending(),
                 messageModel.getFailedSend(),
                 messageModel.getDelivered(),
                 messageModel.getIsRead(),
                 messageModel.getHidden(),
-                messageModel.getUpdated());
+                messageModel.getUpdated(),
+                messageModel.getDeleted());
     }
 
     @Nullable
@@ -214,11 +218,11 @@ public class TAPMessageModel implements Parcelable {
     }
 
     @Nullable
-    public Boolean getDeleted() {
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(@Nullable Boolean deleted) {
+    public void setIsDeleted(@Nullable Boolean deleted) {
         isDeleted = deleted;
     }
 
@@ -247,6 +251,15 @@ public class TAPMessageModel implements Parcelable {
 
     public void setUpdated(@Nullable Long updated) {
         this.updated = updated;
+    }
+
+    public void setDeleted(@Nullable Long deleted) {
+        this.deleted = deleted;
+    }
+
+    @Nullable
+    public Long getDeleted() {
+        return deleted;
     }
 
     public boolean isExpanded() {
@@ -305,22 +318,27 @@ public class TAPMessageModel implements Parcelable {
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
-        this.isDeleted = model.getDeleted();
+        this.isDeleted = model.getIsDeleted();
         this.isSending = model.getSending();
         this.isFailedSend = model.getFailedSend();
         this.updated = model.getUpdated();
-        this.isDelivered = model.getDelivered();
-        this.isRead = model.getIsRead();
+        if (null != this.isDelivered && !this.isDelivered)
+            this.isDelivered = model.getDelivered();
+        if (null != this.isRead && !this.isRead)
+            this.isRead = model.getIsRead();
         // Update when adding fields to model
     }
 
     public void updateReadMessage() {
-        this.isRead = true;
-        this.isDelivered = true;
+        if (null != this.isRead && !this.isRead)
+            this.isRead = true;
+        if (null != this.isDelivered && !this.isDelivered)
+            this.isDelivered = true;
     }
 
     public void updateDeliveredMessage() {
-        this.setDelivered(true);
+        if (null != this.isDelivered && !this.isDelivered)
+            this.setDelivered(true);
     }
 
     public TAPMessageModel copyMessageModel() {
@@ -334,13 +352,14 @@ public class TAPMessageModel implements Parcelable {
                 getCreated(),
                 getUser(),
                 getRecipientID(),
-                getDeleted(),
+                getIsDeleted(),
                 getSending(),
                 getFailedSend(),
                 getDelivered(),
                 getIsRead(),
                 getHidden(),
-                getUpdated());
+                getUpdated(),
+                getDeleted());
     }
 
 
@@ -353,6 +372,7 @@ public class TAPMessageModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.messageID);
         dest.writeString(this.localID);
+        dest.writeString(this.filterID);
         dest.writeParcelable(this.room, flags);
         dest.writeInt(this.type);
         dest.writeString(this.body);
@@ -366,6 +386,7 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.isSending);
         dest.writeValue(this.isFailedSend);
         dest.writeValue(this.updated);
+        dest.writeValue(this.deleted);
         dest.writeParcelable(this.replyTo, flags);
         dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isFirstLoadFinished ? (byte) 1 : (byte) 0);
@@ -377,6 +398,7 @@ public class TAPMessageModel implements Parcelable {
     protected TAPMessageModel(Parcel in) {
         this.messageID = in.readString();
         this.localID = in.readString();
+        this.filterID = in.readString();
         this.room = in.readParcelable(TAPRoomModel.class.getClassLoader());
         this.type = in.readInt();
         this.body = in.readString();
@@ -390,6 +412,7 @@ public class TAPMessageModel implements Parcelable {
         this.isSending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isFailedSend = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
+        this.deleted = (Long) in.readValue(Long.class.getClassLoader());
         this.replyTo = in.readParcelable(TAPMessageModel.class.getClassLoader());
         this.isExpanded = in.readByte() != 0;
         this.isFirstLoadFinished = in.readByte() != 0;
@@ -398,7 +421,7 @@ public class TAPMessageModel implements Parcelable {
         this.imageHeight = in.readInt();
     }
 
-    public static final Parcelable.Creator<TAPMessageModel> CREATOR = new Parcelable.Creator<TAPMessageModel>() {
+    public static final Creator<TAPMessageModel> CREATOR = new Creator<TAPMessageModel>() {
         @Override
         public TAPMessageModel createFromParcel(Parcel source) {
             return new TAPMessageModel(source);

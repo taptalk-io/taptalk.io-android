@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
@@ -100,15 +101,15 @@ public class TAPChatManager {
     private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
+            TAPEmitModel<TAPMessageModel> messageEmit = TAPUtils.getInstance()
+                    .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                    }, emitData);
             switch (eventName) {
                 case kEventOpenRoom:
                     break;
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
-                    TAPEmitModel<TAPMessageModel> messageEmit = TAPUtils.getInstance()
-                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                            }, emitData);
                     try {
                         receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
@@ -116,21 +117,15 @@ public class TAPChatManager {
                     }
                     break;
                 case kSocketUpdateMessage:
-                    TAPEmitModel<TAPMessageModel> messageUpdateEmit = TAPUtils.getInstance()
-                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageUpdateEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketDeleteMessage:
-                    TAPEmitModel<TAPMessageModel> messageDeleteEmit = TAPUtils.getInstance()
-                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageDeleteEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -144,13 +139,14 @@ public class TAPChatManager {
                 case kSocketAuthentication:
                     break;
                 case kSocketUserOnline:
-                    // TODO: 2 November 2018 GET EMIT DATA
+                    TAPOnlineStatusModel onlineStatus = messageEmit.getStatus();
                     for (TAPChatListener listener : chatListeners) {
-                        listener.onUserOnline();
+                        listener.onUserOnline(onlineStatus);
                     }
+                    //TAPUserOnlineStatusManager.getInstance().updateUserLastActivity(onlineStatus.getUser().getUserID(), onlineStatus.getLastActive());
                     break;
                 case kSocketUserOffline:
-                    // TODO: 2 November 2018 GET EMIT DATA
+                    // TODO: 2 November 2018 GET EMIT DATA, SAVE LAST ACTIVE TIME TO PREFERENCE
                     for (TAPChatListener listener : chatListeners) {
                         listener.onUserOffline(System.currentTimeMillis());
                     }
@@ -288,7 +284,8 @@ public class TAPChatManager {
                 entity.getDelivered(),
                 entity.getIsRead(),
                 entity.getHidden(),
-                entity.getUpdated());
+                entity.getUpdated(),
+                entity.getUserDeleted());
     }
 
     /**
@@ -298,7 +295,7 @@ public class TAPChatManager {
         return new TAPMessageEntity(
                 model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(), model.getRecipientID(),
                 model.getType(), model.getCreated(), model.getUpdated(), model.getIsRead(),
-                model.getDelivered(), model.getHidden(), model.getDeleted(), model.getSending(),
+                model.getDelivered(), model.getHidden(), model.getIsDeleted(), model.getSending(),
                 model.getFailedSend(), model.getRoom().getRoomID(), model.getRoom().getRoomName(),
                 model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
                 TAPUtils.getInstance().toJsonString(model.getRoom().getRoomImage()),
@@ -308,7 +305,7 @@ public class TAPChatManager {
                 TAPUtils.getInstance().toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated()
+                model.getUser().getCreated(), model.getUser().getUpdated(), model.getDeleted()
         );
     }
 
@@ -600,12 +597,6 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
-        // TODO: 29 October 2018 TEMPORARY
-        // Change isRead to false when received message is from others
-        if (!activeUser.getUserID().equals(newMessage.getUser().getUserID())) {
-            newMessage.setIsRead(false);
-        }
-
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
@@ -623,7 +614,8 @@ public class TAPChatManager {
         }
         // Receive message outside active room (not in room List)
         else if (null != chatListeners && !TAPNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            if (newMessage.getUser().getUserID().equals(activeUser.getUserID()))
+            if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()))
+                // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
@@ -717,7 +709,7 @@ public class TAPChatManager {
         saveWaitingMessageToList();
     }
 
-    private void saveMessageToDatabase() {
+    public void saveMessageToDatabase() {
         if (0 == saveMessages.size()) return;
 
         TAPDataManager.getInstance().insertToDatabase(saveMessages, true);
@@ -731,11 +723,11 @@ public class TAPChatManager {
         saveMessages.clear();
     }
 
-    public void setPendingRetryAttempt(int counter) {
+    private void setPendingRetryAttempt(int counter) {
         pendingRetryAttempt = counter;
     }
 
-    public boolean isFinishChatFlow() {
+    boolean isFinishChatFlow() {
         return isFinishChatFlow;
     }
 
@@ -743,22 +735,30 @@ public class TAPChatManager {
         isFinishChatFlow = finishChatFlow;
     }
 
-    public List<String> getReplyMessageLocalIDs() {
+    private List<String> getReplyMessageLocalIDs() {
         return null == replyMessageLocalIDs ? replyMessageLocalIDs = new ArrayList<>() : replyMessageLocalIDs;
     }
 
-    public void addReplyMessageLocalID(String localID) {
+    private void addReplyMessageLocalID(String localID) {
         //masukin local ID ke dalem list kalau misalnya appsnya lagi ga di foreground aja,
         //karena kalau di foreground kita ga boleh matiin socketnya cman krna reply
         if (!TapTalk.isForeground)
             getReplyMessageLocalIDs().add(localID);
     }
 
-    public void removeReplyMessageLocalID(String localID) {
+    private void removeReplyMessageLocalID(String localID) {
         getReplyMessageLocalIDs().remove(localID);
     }
 
-    public boolean isReplyMessageLocalIDsEmpty() {
+    private boolean isReplyMessageLocalIDsEmpty() {
         return getReplyMessageLocalIDs().isEmpty();
+    }
+
+    public void updateUnreadCountInRoomList(String roomID) {
+        new Thread(() -> {
+            for (TAPChatListener chatListener : chatListeners) {
+                chatListener.onReadMessage(roomID);
+            }
+        }).start();
     }
 }

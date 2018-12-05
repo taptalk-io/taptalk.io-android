@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
@@ -78,14 +77,15 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
-            final int randomColor = TAPUtils.getInstance().getRandomColor(item.getLastMessage().getUser().getName());
             Resources resource = itemView.getContext().getResources();
 
-            if (null != item.getLastMessage().getRoom().getRoomImage()) {
-                Glide.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).apply(new RequestOptions().centerCrop()).into(civAvatar);
+            if (null != item.getLastMessage().getRoom().getRoomImage() && !item.getLastMessage().getRoom().getRoomImage().getThumbnail().isEmpty()) {
+                Glide.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).into(civAvatar);
+                civAvatar.setBackground(null);
             } else {
-                ColorStateList avatarTint = ColorStateList.valueOf(randomColor);
-                civAvatar.setBackgroundTintList(avatarTint);
+                civAvatar.setImageDrawable(null);
+                civAvatar.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+                civAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getLastMessage().getUser().getName())));
             }
 
             // Change avatar icon and background
@@ -118,8 +118,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Change Status Message Icon
+            // Message Sender is not the active User
+            if (null != item.getLastMessage() && !item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                ivMessageStatus.setImageDrawable(null);
+            }
             // Message is read
-            if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
+            else if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
             }
             // Message is delivered

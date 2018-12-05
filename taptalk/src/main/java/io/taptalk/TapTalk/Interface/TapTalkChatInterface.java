@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 
 public interface TapTalkChatInterface {
 
@@ -19,6 +20,7 @@ public interface TapTalkChatInterface {
     void onLayoutLoaded(TAPMessageModel message);
     void onBubbleExpanded();
     void onOutsideClicked();
-    void onUserOnline();
+    void onUserOnline(TAPOnlineStatusModel onlineStatus);
     void onUserOffline(Long lastActivity);
+    void onReadMessage(String roomID);
 }

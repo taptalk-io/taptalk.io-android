@@ -25,7 +25,6 @@ import io.taptalk.Taptalk.R;
 public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>> {
 
     private TapTalkContactListInterface listener;
-    private ColorStateList avatarTint;
     private List<TAPUserModel> selectedContacts;
     private String myID;
     private int viewType;
@@ -93,13 +92,13 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
         @Override
         protected void onBind(TAPUserModel item, int position) {
-            final int randomColor = TAPUtils.getInstance().getRandomColor(item.getName());
-
-            if (null != item.getAvatarURL()) {
-                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).apply(new RequestOptions().centerCrop()).into(ivAvatar);
+            if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty()) {
+                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).into(ivAvatar);
+                ivAvatar.setBackground(null);
             } else {
-                avatarTint = ColorStateList.valueOf(randomColor);
-                ivAvatar.setBackgroundTintList(avatarTint);
+                ivAvatar.setImageDrawable(null);
+                ivAvatar.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+                ivAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
             }
 
             // Change avatar icon and background
@@ -173,13 +172,13 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
         @Override
         protected void onBind(TAPUserModel item, int position) {
-            final int randomColor = TAPUtils.getInstance().getRandomColor(item.getName());
-
-            if (null != item.getAvatarURL()) {
-                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).apply(new RequestOptions().centerCrop()).into(ivAvatar);
+            if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty()) {
+                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).into(ivAvatar);
+                ivAvatar.setBackground(null);
             } else {
-                avatarTint = ColorStateList.valueOf(randomColor);
-                ivAvatar.setBackgroundTintList(avatarTint);
+                ivAvatar.setImageDrawable(null);
+                ivAvatar.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_9b9b9b));
+                ivAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
             }
 
             // Set name

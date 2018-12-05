@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
@@ -18,17 +19,28 @@ import com.facebook.stetho.Stetho;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Interface.TapTalkTokenInterface;
+import io.taptalk.TapTalk.Interface.TapTalkInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
+import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
@@ -47,11 +59,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANN
 
 public class TapTalk {
     public static TapTalk tapTalk;
+    public static Context appContext;
     public static boolean isForeground;
-    private Thread.UncaughtExceptionHandler defaultUEH;
-    private TapTalkTokenInterface hpTokenInterface;
-    private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
     private static String clientAppName = "";
+    private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
+
+    private Thread.UncaughtExceptionHandler defaultUEH;
+    private TapTalkInterface tapTalkInterface;
+
+    private List<TAPCustomKeyboardItemModel> customKeyboardItemModels;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -61,11 +77,11 @@ public class TapTalk {
         }
     };
 
-    public static TapTalk init(Context context, TapTalkTokenInterface hpTokenInterface) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, hpTokenInterface)) : tapTalk;
+    public static TapTalk init(Context context, TapTalkInterface tapTalkInterface) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, tapTalkInterface)) : tapTalk;
     }
 
-    public TapTalk(final Context appContext, TapTalkTokenInterface hpTokenInterface) {
+    public TapTalk(final Context appContext, TapTalkInterface tapTalkInterface) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -96,7 +112,7 @@ public class TapTalk {
                             .build()
             );
 
-        this.hpTokenInterface = hpTokenInterface;
+        this.tapTalkInterface = tapTalkInterface;
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -108,7 +124,6 @@ public class TapTalk {
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-                TAPMessageStatusManager.getInstance().triggerCallMessageApiScheduler();
             }
 
             @Override
@@ -121,6 +136,32 @@ public class TapTalk {
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
             }
         });
+
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapTalkInterface);
+
+        // TODO: 30 November 2018 DUMMY CUSTOM KEYBOARD ITEMS
+        TAPCustomKeyboardItemModel seePriceList = new TAPCustomKeyboardItemModel("1", appContext.getDrawable(R.drawable.tap_ic_star_yellow), "See price list");
+        TAPCustomKeyboardItemModel readExpertNotes = new TAPCustomKeyboardItemModel("2", appContext.getDrawable(R.drawable.tap_ic_search_grey), "Read expert's notes");
+        TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", appContext.getDrawable(R.drawable.tap_ic_gallery_green_blue), "Send services");
+        TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", appContext.getDrawable(R.drawable.tap_ic_documents_green_blue), "Create order card");
+        List<TAPCustomKeyboardItemModel> userToExpert = new ArrayList<>();
+        List<TAPCustomKeyboardItemModel> expertToUser = new ArrayList<>();
+        List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
+        userToExpert.add(seePriceList);
+        userToExpert.add(readExpertNotes);
+        expertToUser.add(sendServices);
+        expertToUser.add(createOrderCard);
+        expertToExpert.add(seePriceList);
+        expertToExpert.add(readExpertNotes);
+        expertToExpert.add(sendServices);
+        expertToExpert.add(createOrderCard);
+        expertToExpert.add(seePriceList);
+        expertToExpert.add(readExpertNotes);
+        expertToExpert.add(sendServices);
+        expertToExpert.add(createOrderCard);
+        addCustomKeyboardItemGroup("1", "2", userToExpert);
+        addCustomKeyboardItemGroup("2", "1", expertToUser);
+        addCustomKeyboardItemGroup("2", "2", expertToExpert);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -170,6 +211,10 @@ public class TapTalk {
 
     public static String getClientAppName() {
         return clientAppName;
+    }
+
+    public static void addCustomKeyboardItemGroup(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardItemGroup(senderRoleID, recipientRoleID, customKeyboardItems);
     }
 
     //Builder buat setting isi dari Notification chat
@@ -279,5 +324,108 @@ public class TapTalk {
         }
     }
 
-    public static Context appContext;
+    public static void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
+        TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
+    }
+
+    // TODO: 05/12/18 harus diilangin pas diintegrasi
+
+    public static void login() {
+        if (null == tapTalk) {
+            throw new IllegalStateException("You Need To Init Taptalk library first, Read Documentation for detailed information.");
+        } else {
+            try {
+                tapTalk.tempForceLogin();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void tempForceLogin() throws Exception {
+        String ipAddress = TAPUtils.getInstance().getStringFromURL(new URL("https://api.ipify.org/"));
+        String userAgent = "android";
+        String userPlatform = "android";
+        String xcUserID = "10";
+        String fullname = "Jefry Lorentono";
+        String email =  "jefry@moselo.com";
+        String phone = "08979809026";
+        String username = "jefry";
+        String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+        TAPDataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
+                fullname, email, phone, username, authView);
+    }
+
+    private TapDefaultDataView<TAPAuthTicketResponse> authView = new TapDefaultDataView<TAPAuthTicketResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPAuthTicketResponse response) {
+            super.onSuccess(response);
+            TAPApiManager.getInstance().setLogout(false);
+            TapTalk.saveAuthTicketAndGetAccessToken(response.getTicket()
+                    , accessTokenView);
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+            new TapTalkDialog.Builder(appContext)
+                    .setTitle("ERROR " + error.getCode())
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle("OK")
+                    .show();
+        }
+    };
+
+    private TapDefaultDataView<TAPGetAccessTokenResponse> accessTokenView = new TapDefaultDataView<TAPGetAccessTokenResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPGetAccessTokenResponse response) {
+            super.onSuccess(response);
+            TAPDataManager.getInstance().deleteAuthTicket();
+
+            TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
+            TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
+            TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
+            TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
+            registerFcmToken();
+
+            TAPDataManager.getInstance().saveActiveUser(response.getUser());
+            TAPConnectionManager.getInstance().connect();
+            tapTalkInterface.onLoginSuccess(response.getUser());
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+            new TapTalkDialog.Builder(appContext)
+                    .setTitle("ERROR " + error.getCode())
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle("OK")
+                    .show();
+        }
+    };
+
+    private void registerFcmToken() {
+        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
+        })).start();
+    }
 }

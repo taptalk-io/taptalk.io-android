@@ -6,16 +6,16 @@
     android:layout_height="54dp"
     android:background="?attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/iv_menu_icon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+    <TextView
+        android:id="@+id/tv_menu_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:padding="2dp"
+        android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_ic_search_grey" />
+        tools:text="👀" />
 
     <TextView
         android:id="@+id/tv_menu_label"
