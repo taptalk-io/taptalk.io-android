@@ -1045,6 +1045,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
         }
 
+        @Override
+        public void onLoginSuccess(TAPUserModel myUserModel) {
+
+        }
+
         private void sendCustomKeyboardMessage(TAPMessageModel message) {
             hideKeyboards();
             addNewMessage(message);
