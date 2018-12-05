@@ -259,6 +259,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public void setContainerAnimationState(int containerAnimationState) {
         this.containerAnimationState = containerAnimationState;
     }
+
     //    public boolean isTyping() {
 //        return isTyping;
 //    }
@@ -266,7 +267,6 @@ public class TAPChatViewModel extends AndroidViewModel {
 //    public void setTyping(boolean typing) {
 //        isTyping = typing;
 //    }
-
 
     public boolean isCustomKeyboardEnabled() {
         return isCustomKeyboardEnabled;

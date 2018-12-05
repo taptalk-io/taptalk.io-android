@@ -18,7 +18,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -57,12 +56,14 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TAPUserOnlineStatusManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPPairIdNameModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
@@ -287,6 +288,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         getWindow().setBackgroundDrawable(null);
 
+        // Set room name
         tvRoomName.setText(vm.getRoom().getRoomName());
 
         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
@@ -297,9 +299,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             civRoomImage.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
         }
 
-        // TODO: 24 September 2018 UPDATE ROOM STATUS
-        chatListener.onUserOffline(System.currentTimeMillis());
+        // Set room status
+        // TODO: 24 September 2018 CALL ONLINE STATUS API
+        showUserOffline();
 
+        // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
@@ -314,6 +318,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
+        // Initialize custom keyboard
         // TODO: 25 September 2018 CHANGE CUSTOM KEYBOARD MENU ACCORDING TO USER ROLES
         vm.setCustomKeyboardEnabled(TAPCustomKeyboardManager.getInstance().isCustomKeyboardEnabled("2", "2"));
         if (vm.isCustomKeyboardEnabled()) {
@@ -345,6 +350,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Show/hide ivToBottom
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
@@ -449,11 +455,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener
-            Log.e(TAG, "addNewMessage: ANIMATING");
             vm.addPendingRecyclerMessage(newMessage);
         } else {
             // Message is added after transition finishes in containerTransitionListener
-            Log.e(TAG, "addNewMessage: " + vm.getContainerAnimationState());
             checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
@@ -636,6 +640,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPUtils.getInstance().dismissKeyboard(this);
         TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
+    }
+
+    private void showUserOnline() {
+        runOnUiThread(() -> {
+            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
+            tvRoomStatus.setText(getString(R.string.active_now));
+        });
+        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+    }
+
+    private void showUserOffline() {
+        lastActivityRunnable.run();
     }
 
     //ini Fungsi buat manggil Api Before
@@ -869,16 +885,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onUserOnline() {
-            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
-            tvRoomStatus.setText(getString(R.string.active_now));
-            vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+        public void onUserOnline(TAPOnlineStatusModel onlineStatus) {
+            vm.setLastActivity(onlineStatus.getLastActive());
+            if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
+                // User is online
+                showUserOnline();
+            } else if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && !onlineStatus.getOnline()) {
+                // User is offline
+                showUserOffline();
+            }
         }
 
         @Override
         public void onUserOffline(Long lastActivity) {
-            vm.setLastActivity(lastActivity);
-            lastActivityRunnable.run();
+
         }
     };
 
@@ -1398,7 +1418,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-
     //message before yang di panggil pas pagination db balikin data di bawah limit
     private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
@@ -1462,10 +1481,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void run() {
-            runOnUiThread(() -> {
-                vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
-                tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, vm.getLastActivity()));
-            });
+            Long lastActive = vm.getLastActivity();
+            if (lastActive == 0) {
+                runOnUiThread(() -> {
+                    vStatusBadge.setBackground(null);
+                    tvRoomStatus.setText("");
+                });
+            } else {
+                runOnUiThread(() -> {
+                    vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
+                    tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, lastActive));
+                });
+            }
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);
         }
     };
