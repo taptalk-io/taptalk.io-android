@@ -8,6 +8,7 @@ import com.facebook.stetho.Stetho;
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapTalkListener;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TaptalkSample.R;
 
 public class SampleApplication extends Application {
@@ -16,6 +17,11 @@ public class SampleApplication extends Application {
         @Override
         public void onRefreshTokenExpiredOrInvalid() {
             TapTalk.refreshTokenExpired();
+        }
+
+        @Override
+        public void onLoginSuccess(TAPUserModel myUserModel) {
+            Toast.makeText(getApplicationContext(), "LOGIN SUCCESS", Toast.LENGTH_SHORT).show();
         }
     };
 
