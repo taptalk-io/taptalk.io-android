@@ -886,6 +886,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onUserOnline(TAPOnlineStatusModel onlineStatus) {
+            vm.setLastActivity(onlineStatus.getLastActive());
             if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
                 // User is online
                 showUserOnline();
@@ -1417,7 +1418,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-
     //message before yang di panggil pas pagination db balikin data di bawah limit
     private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
@@ -1481,7 +1481,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void run() {
-            Long lastActive = TAPUserOnlineStatusManager.getInstance().getUserLastActivity(vm.getOtherUserID());
+            Long lastActive = vm.getLastActivity();
             if (lastActive == 0) {
                 runOnUiThread(() -> {
                     vStatusBadge.setBackground(null);

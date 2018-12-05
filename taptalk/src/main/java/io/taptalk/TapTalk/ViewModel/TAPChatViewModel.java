@@ -37,6 +37,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private long lastTimestamp = 0;
+    private long lastActivity;
     private int numUsers, containerAnimationState;
     private boolean isOnBottom, /*isTyping,*/ isCustomKeyboardEnabled, isInitialAPICallFinished;
 
@@ -235,6 +236,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.lastTimestamp = lastTimestamp;
     }
 
+    public long getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(long lastActivity) {
+        this.lastActivity = lastActivity;
+    }
+
     public int getNumUsers() {
         return numUsers;
     }
@@ -250,6 +259,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public void setContainerAnimationState(int containerAnimationState) {
         this.containerAnimationState = containerAnimationState;
     }
+
     //    public boolean isTyping() {
 //        return isTyping;
 //    }
@@ -257,7 +267,6 @@ public class TAPChatViewModel extends AndroidViewModel {
 //    public void setTyping(boolean typing) {
 //        isTyping = typing;
 //    }
-
 
     public boolean isCustomKeyboardEnabled() {
         return isCustomKeyboardEnabled;

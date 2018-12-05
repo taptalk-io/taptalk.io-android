@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Manager;
 
 import java.util.HashMap;
 
+@Deprecated
 public class TAPUserOnlineStatusManager {
 
     private static TAPUserOnlineStatusManager instance;

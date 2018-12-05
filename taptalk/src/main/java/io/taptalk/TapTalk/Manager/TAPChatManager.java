@@ -143,7 +143,7 @@ public class TAPChatManager {
                     for (TAPChatListener listener : chatListeners) {
                         listener.onUserOnline(onlineStatus);
                     }
-                    TAPUserOnlineStatusManager.getInstance().updateUserLastActivity(onlineStatus.getUser().getUserID(), onlineStatus.getLastActive());
+                    //TAPUserOnlineStatusManager.getInstance().updateUserLastActivity(onlineStatus.getUser().getUserID(), onlineStatus.getLastActive());
                     break;
                 case kSocketUserOffline:
                     // TODO: 2 November 2018 GET EMIT DATA, SAVE LAST ACTIVE TIME TO PREFERENCE
