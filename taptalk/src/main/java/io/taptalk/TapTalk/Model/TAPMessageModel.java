@@ -329,26 +329,6 @@ public class TAPMessageModel implements Parcelable {
         // Update when adding fields to model
     }
 
-    public TAPMessageModel updateValueToReturnModel(TAPMessageModel model) {
-        this.messageID = model.getMessageID();
-        this.localID = model.getLocalID();
-        this.body = model.getBody();
-        this.room = model.getRoom();
-        this.type = model.getType();
-        this.created = model.getCreated();
-        this.user = model.getUser();
-        this.isDeleted = model.getIsDeleted();
-        this.isSending = model.getSending();
-        this.isFailedSend = model.getFailedSend();
-        this.updated = model.getUpdated();
-        if (null != this.isDelivered && !this.isDelivered)
-            this.isDelivered = model.getDelivered();
-        if (null != this.isRead && !this.isRead)
-            this.isRead = model.getIsRead();
-        return this;
-        // Update when adding fields to model
-    }
-
     public void updateReadMessage() {
         if (null != this.isRead && !this.isRead)
             this.isRead = true;
