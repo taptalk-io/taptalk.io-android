@@ -884,7 +884,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onUserOnline(TAPOnlineStatusModel onlineStatus) {
-            vm.setLastActivity(onlineStatus.getLastActive());
+            vm.setOnlineStatus(onlineStatus);
             if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
                 // User is online
                 showUserOnline();
@@ -1479,7 +1479,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void run() {
-            Long lastActive = vm.getLastActivity();
+            Long lastActive = vm.getOnlineStatus().getLastActive();
             if (lastActive == 0) {
                 runOnUiThread(() -> {
                     vStatusBadge.setBackground(null);
