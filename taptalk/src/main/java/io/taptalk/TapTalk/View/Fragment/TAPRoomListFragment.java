@@ -427,6 +427,7 @@ public class TAPRoomListFragment extends Fragment {
         public void endLoading() {
             //save preference kalau kita udah munculin setup dialog
             if (!vm.isDoneFirstApiSetup()) {
+                vm.setDoneFirstApiSetup(true);
                 TAPDataManager.getInstance().setRoomListSetupFinished();
             }
         }
@@ -460,7 +461,9 @@ public class TAPRoomListFragment extends Fragment {
                 });
 
                 //ini untuk get API ngasih tau kalau message yang dikirim udah berhasil d terima
-                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(response.getMessages());
+                if (null != response.getMessages() && 0 < response.getMessages().size()) {
+                    TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(response.getMessages());
+                }
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }

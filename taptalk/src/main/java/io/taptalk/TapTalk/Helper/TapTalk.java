@@ -18,17 +18,23 @@ import com.facebook.stetho.Stetho;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Interface.TapTalkTokenInterface;
+import io.taptalk.TapTalk.Interface.TapTalkInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
+import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
@@ -47,11 +53,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANN
 
 public class TapTalk {
     public static TapTalk tapTalk;
+    public static Context appContext;
     public static boolean isForeground;
-    private Thread.UncaughtExceptionHandler defaultUEH;
-    private TapTalkTokenInterface hpTokenInterface;
-    private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
     private static String clientAppName = "";
+    private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
+
+    private Thread.UncaughtExceptionHandler defaultUEH;
+    private TapTalkInterface tapTalkInterface;
+
+    private List<TAPCustomKeyboardItemModel> customKeyboardItemModels;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -61,11 +71,11 @@ public class TapTalk {
         }
     };
 
-    public static TapTalk init(Context context, TapTalkTokenInterface hpTokenInterface) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, hpTokenInterface)) : tapTalk;
+    public static TapTalk init(Context context, TapTalkInterface tapTalkInterface) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, tapTalkInterface)) : tapTalk;
     }
 
-    public TapTalk(final Context appContext, TapTalkTokenInterface hpTokenInterface) {
+    public TapTalk(final Context appContext, TapTalkInterface tapTalkInterface) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -96,7 +106,7 @@ public class TapTalk {
                             .build()
             );
 
-        this.hpTokenInterface = hpTokenInterface;
+        this.tapTalkInterface = tapTalkInterface;
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -120,6 +130,32 @@ public class TapTalk {
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
             }
         });
+
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapTalkInterface);
+
+        // TODO: 30 November 2018 DUMMY CUSTOM KEYBOARD ITEMS
+        TAPCustomKeyboardItemModel seePriceList = new TAPCustomKeyboardItemModel("1", appContext.getDrawable(R.drawable.tap_ic_star_yellow), "See price list");
+        TAPCustomKeyboardItemModel readExpertNotes = new TAPCustomKeyboardItemModel("2", appContext.getDrawable(R.drawable.tap_ic_search_grey), "Read expert's notes");
+        TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", appContext.getDrawable(R.drawable.tap_ic_gallery_green_blue), "Send services");
+        TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", appContext.getDrawable(R.drawable.tap_ic_documents_green_blue), "Create order card");
+        List<TAPCustomKeyboardItemModel> userToExpert = new ArrayList<>();
+        List<TAPCustomKeyboardItemModel> expertToUser = new ArrayList<>();
+        List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
+        userToExpert.add(seePriceList);
+        userToExpert.add(readExpertNotes);
+        expertToUser.add(sendServices);
+        expertToUser.add(createOrderCard);
+        expertToExpert.add(seePriceList);
+        expertToExpert.add(readExpertNotes);
+        expertToExpert.add(sendServices);
+        expertToExpert.add(createOrderCard);
+        expertToExpert.add(seePriceList);
+        expertToExpert.add(readExpertNotes);
+        expertToExpert.add(sendServices);
+        expertToExpert.add(createOrderCard);
+        addCustomKeyboardItemGroup("1", "2", userToExpert);
+        addCustomKeyboardItemGroup("2", "1", expertToUser);
+        addCustomKeyboardItemGroup("2", "2", expertToExpert);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -169,6 +205,10 @@ public class TapTalk {
 
     public static String getClientAppName() {
         return clientAppName;
+    }
+
+    public static void addCustomKeyboardItemGroup(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardItemGroup(senderRoleID, recipientRoleID, customKeyboardItems);
     }
 
     //Builder buat setting isi dari Notification chat
@@ -278,5 +318,7 @@ public class TapTalk {
         }
     }
 
-    public static Context appContext;
+    public static void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
+        TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
+    }
 }

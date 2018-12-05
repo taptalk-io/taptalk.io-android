@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -29,17 +30,16 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
-    private TAPUserModel myUserModel;
+    private List<TAPCustomKeyboardItemModel> customKeyboardItems;
+    private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
     private TAPMessageModel replyTo;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
-    private String otherUserID = "0";
     private long lastTimestamp = 0;
     private long lastActivity;
     private int numUsers, containerAnimationState;
-    private boolean isOnBottom, /*isTyping,*/
-            isInitialAPICallFinished;
+    private boolean isOnBottom, /*isTyping,*/ isCustomKeyboardEnabled, isInitialAPICallFinished;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -175,12 +175,28 @@ public class TAPChatViewModel extends AndroidViewModel {
         getPendingRecyclerMessages().remove(message);
     }
 
+    public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems() {
+        return null == customKeyboardItems ? customKeyboardItems = new ArrayList<>() : customKeyboardItems;
+    }
+
+    public void setCustomKeyboardItems(List<TAPCustomKeyboardItemModel> customKeyboardItems) {
+        this.customKeyboardItems = customKeyboardItems;
+    }
+
     public TAPUserModel getMyUserModel() {
         return myUserModel;
     }
 
     public void setMyUserModel(TAPUserModel myUserModel) {
         this.myUserModel = myUserModel;
+    }
+
+    public TAPUserModel getOtherUserModel() {
+        return otherUserModel;
+    }
+
+    public void setOtherUserModel(TAPUserModel otherUserModel) {
+        this.otherUserModel = otherUserModel;
     }
 
     public TAPRoomModel getRoom() {
@@ -243,6 +259,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public void setContainerAnimationState(int containerAnimationState) {
         this.containerAnimationState = containerAnimationState;
     }
+
     //    public boolean isTyping() {
 //        return isTyping;
 //    }
@@ -250,6 +267,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 //    public void setTyping(boolean typing) {
 //        isTyping = typing;
 //    }
+
+    public boolean isCustomKeyboardEnabled() {
+        return isCustomKeyboardEnabled;
+    }
+
+    public void setCustomKeyboardEnabled(boolean customKeyboardEnabled) {
+        isCustomKeyboardEnabled = customKeyboardEnabled;
+    }
 
     public boolean isInitialAPICallFinished() {
         return isInitialAPICallFinished;
@@ -278,7 +303,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public String getOtherUserID() {
         try {
             String[] tempUserID = room.getRoomID().split("-");
-            return otherUserID = tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
+            return tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
         } catch (Exception e) {
             return "0";
         }

@@ -1,7 +1,7 @@
 package io.moselo.SampleApps;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
