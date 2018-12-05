@@ -218,7 +218,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {
-        return onlineStatus;
+        return null == onlineStatus ? onlineStatus = new TAPOnlineStatusModel(false, 0L) : onlineStatus;
     }
 
     public void setOnlineStatus(TAPOnlineStatusModel onlineStatus) {

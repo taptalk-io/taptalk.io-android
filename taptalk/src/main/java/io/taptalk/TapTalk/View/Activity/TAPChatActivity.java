@@ -883,7 +883,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onUserOnline(TAPOnlineStatusModel onlineStatus) {
+        public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
             vm.setOnlineStatus(onlineStatus);
             if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
                 // User is online
@@ -892,11 +892,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // User is offline
                 showUserOffline();
             }
-        }
-
-        @Override
-        public void onUserOffline(Long lastActivity) {
-
         }
     };
 

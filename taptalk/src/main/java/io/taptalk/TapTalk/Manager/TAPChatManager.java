@@ -44,8 +44,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOffline;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnline;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
@@ -101,31 +100,37 @@ public class TAPChatManager {
     private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
-            TAPEmitModel<TAPMessageModel> messageEmit = TAPUtils.getInstance()
-                    .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                    }, emitData);
             switch (eventName) {
                 case kEventOpenRoom:
                     break;
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
+                    TAPEmitModel<TAPMessageModel> newMessageEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(newMessageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketUpdateMessage:
+                    TAPEmitModel<TAPMessageModel> updateMessageEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(updateMessageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketDeleteMessage:
+                    TAPEmitModel<TAPMessageModel> deleteMessageEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(deleteMessageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -138,17 +143,13 @@ public class TAPChatManager {
                     break;
                 case kSocketAuthentication:
                     break;
-                case kSocketUserOnline:
-                    TAPOnlineStatusModel onlineStatus = messageEmit.getStatus();
+                case kSocketUserOnlineStatus:
+                    TAPEmitModel<TAPOnlineStatusModel> onlineStatusEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPOnlineStatusModel>>() {
+                            }, emitData);
+                    TAPOnlineStatusModel onlineStatus = onlineStatusEmit.getData();
                     for (TAPChatListener listener : chatListeners) {
-                        listener.onUserOnline(onlineStatus);
-                    }
-                    //TAPUserOnlineStatusManager.getInstance().updateUserLastActivity(onlineStatus.getUser().getUserID(), onlineStatus.getLastActive());
-                    break;
-                case kSocketUserOffline:
-                    // TODO: 2 November 2018 GET EMIT DATA, SAVE LAST ACTIVE TIME TO PREFERENCE
-                    for (TAPChatListener listener : chatListeners) {
-                        listener.onUserOffline(System.currentTimeMillis());
+                        listener.onUserOnlineStatusUpdate(onlineStatus);
                     }
                     break;
             }
