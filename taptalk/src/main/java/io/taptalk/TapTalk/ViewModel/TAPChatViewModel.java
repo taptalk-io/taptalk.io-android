@@ -20,6 +20,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -34,10 +35,10 @@ public class TAPChatViewModel extends AndroidViewModel {
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
     private TAPMessageModel replyTo;
+    private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private long lastTimestamp = 0;
-    private long lastActivity;
     private int numUsers, containerAnimationState;
     private boolean isOnBottom, /*isTyping,*/ isCustomKeyboardEnabled, isInitialAPICallFinished;
 
@@ -216,6 +217,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.replyTo = replyTo;
     }
 
+    public TAPOnlineStatusModel getOnlineStatus() {
+        return null == onlineStatus ? onlineStatus = new TAPOnlineStatusModel(false, 0L) : onlineStatus;
+    }
+
+    public void setOnlineStatus(TAPOnlineStatusModel onlineStatus) {
+        this.onlineStatus = onlineStatus;
+    }
+
     public Uri getCameraImageUri() {
         return cameraImageUri;
     }
@@ -234,14 +243,6 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setLastTimestamp(long lastTimestamp) {
         this.lastTimestamp = lastTimestamp;
-    }
-
-    public long getLastActivity() {
-        return lastActivity;
-    }
-
-    public void setLastActivity(long lastActivity) {
-        this.lastActivity = lastActivity;
     }
 
     public int getNumUsers() {

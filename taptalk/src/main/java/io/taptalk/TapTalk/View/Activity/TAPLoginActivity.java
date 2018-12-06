@@ -23,8 +23,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MY_USERNAME;
-
 public class TAPLoginActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPLoginActivity.class.getSimpleName();
@@ -360,7 +358,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
             TAPDataManager.getInstance().saveActiveUser(response.getUser());
             runOnUiThread(() -> {
                 Intent intent = new Intent(TAPLoginActivity.this, TAPRoomListActivity.class);
-                intent.putExtra(K_MY_USERNAME, etUsername.getText().toString());
                 startActivity(intent);
                 TAPConnectionManager.getInstance().connect();
                 finish();

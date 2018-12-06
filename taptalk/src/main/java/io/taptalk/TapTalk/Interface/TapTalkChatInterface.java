@@ -20,7 +20,6 @@ public interface TapTalkChatInterface {
     void onLayoutLoaded(TAPMessageModel message);
     void onBubbleExpanded();
     void onOutsideClicked();
-    void onUserOnline(TAPOnlineStatusModel onlineStatus);
-    void onUserOffline(Long lastActivity);
+    void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
     void onReadMessage(String roomID);
 }
