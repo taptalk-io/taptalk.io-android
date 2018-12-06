@@ -10,18 +10,17 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
-import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
+import io.taptalk.TapTalk.Interface.TapTalkCustomKeyboardInterface;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.Taptalk.R;
 
 public class TAPCustomKeyboardAdapter extends TAPBaseAdapter<TAPCustomKeyboardItemModel, TAPBaseViewHolder<TAPCustomKeyboardItemModel>> {
 
-    private String senderRoleID, recipientRoleID;
+    private TapTalkCustomKeyboardInterface customKeyboardInterface;
 
-    public TAPCustomKeyboardAdapter(List<TAPCustomKeyboardItemModel> keyboardMenuList, String senderRoleID, String recipientRoleID) {
+    public TAPCustomKeyboardAdapter(List<TAPCustomKeyboardItemModel> keyboardMenuList, TapTalkCustomKeyboardInterface customKeyboardInterface) {
         setItems(keyboardMenuList);
-        this.senderRoleID = senderRoleID;
-        this.recipientRoleID = recipientRoleID;
+        this.customKeyboardInterface = customKeyboardInterface;
     }
 
     @NonNull
@@ -50,7 +49,7 @@ public class TAPCustomKeyboardAdapter extends TAPBaseAdapter<TAPCustomKeyboardIt
             }
             tvMenuLabel.setText(item.getItemName());
 
-            itemView.setOnClickListener(v -> TAPCustomKeyboardManager.getInstance().onCustomKeyboardItemClicked(senderRoleID, recipientRoleID, item));
+            itemView.setOnClickListener(v -> customKeyboardInterface.onCustomKeyboardClicked(item));
         }
     }
 }

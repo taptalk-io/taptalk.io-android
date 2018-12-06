@@ -42,7 +42,9 @@ import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Interface.TapTalkCustomKeyboardInterface;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -51,6 +53,7 @@ import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapTalkListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
@@ -68,6 +71,7 @@ import io.taptalk.TapTalk.Model.TAPPairIdNameModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRecipientModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
@@ -253,6 +257,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
+        vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
     }
 
     @Override
@@ -318,17 +323,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         // Initialize custom keyboard
-        // TODO: 25 September 2018 CHANGE CUSTOM KEYBOARD MENU ACCORDING TO USER ROLES
-        vm.setCustomKeyboardEnabled(TAPCustomKeyboardManager.getInstance().isCustomKeyboardEnabled("2", "2"));
-        if (vm.isCustomKeyboardEnabled()) {
-            // Get custom keyboard items from manager
-            vm.setCustomKeyboardItems(TAPCustomKeyboardManager.getInstance().getCustomKeyboardGroup("2", "2").getCustomKeyboardItems());
-            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), "2", "2");
+        vm.setCustomKeyboardItems(TapTalk.requestCustomKeyboardItems(vm.getMyUserModel(), vm.getOtherUserModel()));
+        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
+            // Enable custom keyboard
+            vm.setCustomKeyboardEnabled(true);
+            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(),
+                    customKeyboardItemModel -> TAPCustomKeyboardManager.getInstance()
+                            .onCustomKeyboardItemClicked(customKeyboardItemModel,
+                                    vm.getMyUserModel(), vm.getOtherUserModel()));
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
             rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         } else {
             // Disable custom keyboard
+            vm.setCustomKeyboardEnabled(false);
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
@@ -898,7 +906,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     // TODO: 29 November 2018 TESTING CUSTOM KEYBOARD MENU
     private TapTalkListener customKeyboardListener = new TapTalkListener() {
         @Override
-        public void onCustomKeyboardItemClicked(String senderRoleID, String recipientRoleID, TAPCustomKeyboardItemModel customKeyboardItemModel) {
+        public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             switch (customKeyboardItemModel.getItemID()) {
                 case "2":
                     // TODO: 15 November 2018 DUMMY ORDER CARD FROM OTHER USER
@@ -1038,11 +1046,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     sendCustomKeyboardMessage(orderCard4);
                     break;
             }
-        }
-
-        @Override
-        public void onLoginSuccess(TAPUserModel myUserModel) {
-
         }
 
         private void sendCustomKeyboardMessage(TAPMessageModel message) {
