@@ -34,7 +34,7 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
     @Nullable @JsonProperty("isRequestAccepted") private Boolean isRequestAccepted;
-    @JsonIgnore private int isContact;
+    @JsonIgnore private Integer isContact;
 
     @Ignore
     public TAPUserModel(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
@@ -77,9 +77,11 @@ public class TAPUserModel implements Parcelable {
         return new TAPUserModel(userID, name);
     }
 
-    public TAPUserModel hpUserModelForAddToDB() {
+    // Previously hpUserModelForAddToDB
+    public TAPUserModel setUserAsContact() {
         this.setRequestAccepted(true);
         this.setRequestPending(false);
+        this.isContact = 1;
         return this;
     }
 
@@ -230,11 +232,11 @@ public class TAPUserModel implements Parcelable {
         isRequestAccepted = requestAccepted;
     }
 
-    public int getIsContact() {
+    public Integer getIsContact() {
         return isContact;
     }
 
-    public void setIsContact(int isContact) {
+    public void setIsContact(Integer isContact) {
         this.isContact = isContact;
     }
 
@@ -311,7 +313,7 @@ public class TAPUserModel implements Parcelable {
         this.updated = userModel.getUpdated();
         this.isRequestPending = userModel.getRequestPending();
         this.isRequestAccepted = userModel.getRequestAccepted();
-        if (this.isContact != 1) {
+        if (null != this.isContact && this.isContact != 1) {
             this.isContact = userModel.isContact;
         }
     }
