@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Listener;
 import io.taptalk.TapTalk.Interface.TapTalkChatInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 
 public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override public void onReceiveMessageInActiveRoom(TAPMessageModel message) {}
@@ -18,6 +19,8 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override public void onSendFailed(TAPMessageModel message) {}
     @Override public void onMessageRead(TAPMessageModel message) {}
     @Override public void onLayoutLoaded(TAPMessageModel message) {}
+    @Override public void onReceiveStartTyping(TAPTypingModel typingModel) {}
+    @Override public void onReceiveStopTyping(TAPTypingModel typingModel) {}
     @Override public void onBubbleExpanded() {}
     @Override public void onOutsideClicked() {}
     @Override public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {}

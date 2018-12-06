@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -143,13 +142,17 @@ public class TAPChatManager {
                     TAPEmitModel<TAPTypingModel> startTypingEmit = TAPUtils.getInstance()
                             .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
                             }, emitData);
-                    Log.e(TAG, "socketStartTyping: "+TAPUtils.getInstance().toJsonString(startTypingEmit.getData()) );
+                    for (TAPChatListener listener : chatListeners) {
+                        listener.onReceiveStartTyping(startTypingEmit.getData());
+                    }
                     break;
                 case kSocketStopTyping:
                     TAPEmitModel<TAPTypingModel> stopTypingEmit = TAPUtils.getInstance()
                             .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
                             }, emitData);
-                    Log.e(TAG, "socketStopTyping: "+TAPUtils.getInstance().toJsonString(stopTypingEmit.getData()) );
+                    for (TAPChatListener listener : chatListeners) {
+                        listener.onReceiveStopTyping(stopTypingEmit.getData());
+                    }
                     break;
                 case kSocketAuthentication:
                     break;

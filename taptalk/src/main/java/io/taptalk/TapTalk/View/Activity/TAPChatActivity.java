@@ -18,6 +18,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -67,6 +68,7 @@ import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPPairIdNameModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRecipientModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
@@ -892,6 +894,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // User is offline
                 showUserOffline();
             }
+        }
+
+        @Override
+        public void onReceiveStartTyping(TAPTypingModel typingModel) {
+            Log.e(TAG, "onReceiveStartTyping: " );
+        }
+
+        @Override
+        public void onReceiveStopTyping(TAPTypingModel typingModel) {
+            Log.e(TAG, "onReceiveStopTyping: " );
         }
     };
 
