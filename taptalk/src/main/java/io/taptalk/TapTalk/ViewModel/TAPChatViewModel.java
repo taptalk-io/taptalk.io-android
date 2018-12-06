@@ -46,9 +46,22 @@ public class TAPChatViewModel extends AndroidViewModel {
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
 
+    public enum TypingType {
+        TYPING, BLANK
+    }
+    private TypingType typingType = TypingType.BLANK;
+
     public TAPChatViewModel(Application application) {
         super(application);
         allMessages = TAPDataManager.getInstance().getMessagesLiveData();
+    }
+
+    public TypingType getTypingType() {
+        return typingType;
+    }
+
+    public void setTypingType(TypingType typingType) {
+        this.typingType = typingType;
     }
 
     public LiveData<List<TAPMessageEntity>> getAllMessages() {

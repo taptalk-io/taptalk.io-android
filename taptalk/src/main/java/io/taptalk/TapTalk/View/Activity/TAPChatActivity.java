@@ -573,7 +573,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            } else if (!vm.getMessagePointer().containsKey(newID)){
+            } else if (!vm.getMessagePointer().containsKey(newID)) {
                 new Thread(() -> {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
@@ -1059,13 +1059,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0) {
+            if (s.length() > 0 && s.toString().trim().length() > 0) {
                 ivButtonChatMenu.setVisibility(View.GONE);
-                if (s.toString().trim().length() > 0) {
-                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
-                } else {
-                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
-                }
+                ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
+            } else if (s.length() > 0) {
+                ivButtonChatMenu.setVisibility(View.GONE);
+                ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
             } else {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
@@ -1076,9 +1075,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-
+            sendTypingEmit(s);
         }
     };
+
+    private void sendTypingEmit(Editable text) {
+        String currentRoomID = vm.getRoom().getRoomID();
+        if (0 < text.length() && TAPChatViewModel.TypingType.BLANK == vm.getTypingType()) {
+            TAPChatManager.getInstance().sendStartTypingEmit(currentRoomID);
+            vm.setTypingType(TAPChatViewModel.TypingType.TYPING);
+        }
+        else if (0 == text.length() && TAPChatViewModel.TypingType.TYPING == vm.getTypingType()){
+            TAPChatManager.getInstance().sendStopTypingEmit(currentRoomID);
+            vm.setTypingType(TAPChatViewModel.TypingType.BLANK);
+        }
+    }
 
     private View.OnFocusChangeListener chatFocusChangeListener = new View.OnFocusChangeListener() {
         @Override
@@ -1321,7 +1332,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             });
 
             if (0 < responseMessages.size())
-                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {});
+                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+                });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
@@ -1402,7 +1414,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {});
+            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+            });
         }
 
         @Override

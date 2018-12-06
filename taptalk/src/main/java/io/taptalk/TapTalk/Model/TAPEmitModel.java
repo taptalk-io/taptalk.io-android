@@ -1,6 +1,8 @@
 package io.taptalk.TapTalk.Model;
 
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TAPEmitModel<T> {
@@ -10,7 +12,7 @@ public class TAPEmitModel<T> {
     @JsonProperty("data")
     private T data;
 
-    public TAPEmitModel(String eventName, T data) {
+    public TAPEmitModel(String eventName, @Nullable T data) {
         this.eventName = eventName;
         this.data = data;
     }
