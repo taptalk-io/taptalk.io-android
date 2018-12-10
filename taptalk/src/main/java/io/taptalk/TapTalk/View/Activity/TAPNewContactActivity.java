@@ -424,7 +424,6 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                     .setTitle(getString(R.string.error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.ok))
-                    .setPrimaryButtonListener(true, null)
                     .show();
         }
 
