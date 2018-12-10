@@ -34,7 +34,7 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
     @Nullable @JsonProperty("isRequestAccepted") private Boolean isRequestAccepted;
-    @JsonIgnore private Integer isContact;
+    @Nullable @JsonIgnore private Integer isContact;
 
     @Ignore
     public TAPUserModel(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
@@ -232,12 +232,35 @@ public class TAPUserModel implements Parcelable {
         isRequestAccepted = requestAccepted;
     }
 
+    @Nullable
     public Integer getIsContact() {
         return isContact;
     }
 
-    public void setIsContact(Integer isContact) {
+    public void setIsContact(@Nullable Integer isContact) {
         this.isContact = isContact;
+    }
+
+    // Update when adding fields to model
+    public void updateValue(TAPUserModel userModel) {
+        this.userID = userModel.getUserID();
+        this.xcUserID = userModel.getXcUserID();
+        this.name = userModel.getName();
+        this.avatarURL = userModel.getAvatarURL();
+        this.username = userModel.getUsername();
+        this.email = userModel.getEmail();
+        this.phoneNumber = userModel.getPhoneNumber();
+        this.userRole = userModel.getUserRole();
+        this.lastLogin = userModel.getLastLogin();
+        this.lastActivity = userModel.getLastActivity();
+        this.requireChangePassword = userModel.getRequireChangePassword();
+        this.created = userModel.getCreated();
+        this.updated = userModel.getUpdated();
+        this.isRequestPending = userModel.getRequestPending();
+        this.isRequestAccepted = userModel.getRequestAccepted();
+        if (null != this.isContact && this.isContact != 1) {
+            this.isContact = userModel.isContact;
+        }
     }
 
     @Override
@@ -262,7 +285,7 @@ public class TAPUserModel implements Parcelable {
         dest.writeValue(this.updated);
         dest.writeValue(this.isRequestPending);
         dest.writeValue(this.isRequestAccepted);
-        dest.writeInt(this.isContact);
+        dest.writeValue(this.isContact);
     }
 
     protected TAPUserModel(Parcel in) {
@@ -281,7 +304,7 @@ public class TAPUserModel implements Parcelable {
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
         this.isRequestPending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isRequestAccepted = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.isContact = in.readInt();
+        this.isContact = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 
     public static final Creator<TAPUserModel> CREATOR = new Creator<TAPUserModel>() {
@@ -295,26 +318,4 @@ public class TAPUserModel implements Parcelable {
             return new TAPUserModel[size];
         }
     };
-
-    // Update when adding fields to model
-    public void updateValue(TAPUserModel userModel) {
-        this.userID = userModel.getUserID();
-        this.xcUserID = userModel.getXcUserID();
-        this.name = userModel.getName();
-        this.avatarURL = userModel.getAvatarURL();
-        this.username = userModel.getUsername();
-        this.email = userModel.getEmail();
-        this.phoneNumber = userModel.getPhoneNumber();
-        this.userRole = userModel.getUserRole();
-        this.lastLogin = userModel.getLastLogin();
-        this.lastActivity = userModel.getLastActivity();
-        this.requireChangePassword = userModel.getRequireChangePassword();
-        this.created = userModel.getCreated();
-        this.updated = userModel.getUpdated();
-        this.isRequestPending = userModel.getRequestPending();
-        this.isRequestAccepted = userModel.getRequestAccepted();
-        if (null != this.isContact && this.isContact != 1) {
-            this.isContact = userModel.isContact;
-        }
-    }
 }
