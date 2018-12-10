@@ -57,7 +57,7 @@ public class TAPUserModel implements Parcelable {
     }
 
     @Ignore
-    public TAPUserModel(String userID, String name) {
+    public TAPUserModel(@NonNull String userID, String name) {
         this.userID = userID;
         this.name = name;
     }
@@ -81,7 +81,7 @@ public class TAPUserModel implements Parcelable {
     public TAPUserModel setUserAsContact() {
         this.setRequestAccepted(true);
         this.setRequestPending(false);
-        this.isContact = 1;
+        this.setIsContact(1);
         return this;
     }
 
@@ -238,7 +238,8 @@ public class TAPUserModel implements Parcelable {
     }
 
     public void setIsContact(@Nullable Integer isContact) {
-        this.isContact = isContact;
+        if (null == this.isContact || 0 == this.isContact)
+            this.isContact = isContact;
     }
 
     // Update when adding fields to model

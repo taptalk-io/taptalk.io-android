@@ -99,11 +99,11 @@ public class TapTalkDialog extends Dialog {
         protected TapTalkDialog dialog;
 
         //listener
-        protected View.OnClickListener emptyListener = v -> {};
+        protected View.OnClickListener emptyListener = v -> dialog.dismiss();
         protected View.OnClickListener primaryListener = emptyListener;
         protected View.OnClickListener secondaryListener = emptyListener;
-        protected boolean primaryIsDismiss = false;
-        protected boolean secondaryIsDismiss = false;
+        protected boolean primaryIsDismiss = true;
+        protected boolean secondaryIsDismiss = true;
 
         public Builder(Context context) {
             this.context = context;
