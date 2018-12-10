@@ -369,7 +369,14 @@ public class TAPRoomListFragment extends Fragment {
             }
         } else if (null != getActivity()){
             //kalau room yang masuk baru
-            TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
+
+            //TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
+            TAPRoomListModel newRoomList = TAPRoomListModel.buildWithLastMessage(message);
+            if (!newRoomList.getLastMessage().getUser().getUserID()
+                    .equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+                newRoomList.setUnreadCount(1);
+            }
+
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
             getActivity().runOnUiThread(() -> {

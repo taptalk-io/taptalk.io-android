@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -119,8 +120,9 @@ public class TAPMessageRepository {
 
             if (isCheckUnreadFirst && entities.size() > 0) {
                 Map<String, Integer> unreadMap = new LinkedHashMap<>();
-                for (TAPMessageEntity entity : entities)
+                for (TAPMessageEntity entity : entities) {
                     unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+                }
                 listener.onSelectedRoomList(entities, unreadMap);
             } else listener.onSelectFinished(entities);
         }).start();
