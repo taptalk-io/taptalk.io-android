@@ -192,6 +192,7 @@ public class TAPNotificationManager {
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
         TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
+        TAPContactManager.getInstance().saveUserDataToDatabase(newMessageModel.getUser());
         TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
 
         if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()

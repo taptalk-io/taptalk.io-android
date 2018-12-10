@@ -34,19 +34,24 @@ public interface TAPMyContactDao {
 
     @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated from MyContact order by name asc")
+            "created, updated from MyContact where isContact = 1 order by name asc")
     List<TAPUserModel> getAllMyContact();
 
     @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated from MyContact order by name asc")
+            "created, updated from MyContact where isContact = 1 order by name asc")
     LiveData<List<TAPUserModel>> getAllMyContactLive();
 
     @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated from MyContact where name like :keyword order by name asc")
+            "created, updated from MyContact where name like :keyword and isContact = 1 order by name asc")
     List<TAPUserModel> searchAllMyContacts(String keyword);
 
-    @Query("select count(userID) from MyContact where userID like :userID")
+    @Query("select count(userID) from MyContact where userID like :userID and isContact = 1 ")
     Integer checkUserInMyContacts(String userID);
+
+    @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
+            "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
+            "created, updated, isContact from MyContact")
+    List<TAPUserModel> getAllUserData();
 }

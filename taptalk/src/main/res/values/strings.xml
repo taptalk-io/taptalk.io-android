@@ -91,6 +91,7 @@
     <string name="please_check_your_connection">Please check your connection</string>
     <string name="no_internet_show_error">Oops! It seems like you are offline, please check your connection.</string>
     <string name="api_call_return_error">Oops! there is an error, please try again later.</string>
+    <string name="init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
 
     <!--Attachment-->
     <string name="document">Document</string>
@@ -166,7 +167,6 @@
     <string name="you">You</string>
     <string name="over_99">99+</string>
     <string name="typing">Typing</string>
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

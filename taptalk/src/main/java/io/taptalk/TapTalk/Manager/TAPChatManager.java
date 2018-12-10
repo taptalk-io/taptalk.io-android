@@ -681,7 +681,7 @@ public class TAPChatManager {
             }
         }
 
-        //add to list delivered message
+        // Add to list delivered message
         if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
                 && null != newMessage.getSending() && !newMessage.getSending()
                 && null != newMessage.getDelivered() && !newMessage.getDelivered()
@@ -689,7 +689,7 @@ public class TAPChatManager {
             TAPMessageStatusManager.getInstance().addDeliveredMessageQueue(newMessage);
         }
 
-        //check the message is from our direct reply or not (in background)
+        // Check the message is from our direct reply or not (in background)
         if (!isReplyMessageLocalIDsEmpty()) {
             removeReplyMessageLocalID(newMessage.getLocalID());
             if (isReplyMessageLocalIDsEmpty()) {
@@ -697,6 +697,9 @@ public class TAPChatManager {
                 Toast.makeText(TapTalk.appContext, "Reply Success", Toast.LENGTH_SHORT).show();
             }
         }
+
+        // Save user data to contact manager
+        TAPContactManager.getInstance().updateUserDataMap(newMessage.getUser());
     }
 
     public void saveNewMessageToList() {
