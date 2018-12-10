@@ -165,6 +165,7 @@
     <string name="unread_messages">Unread Messages</string>
     <string name="you">You</string>
     <string name="over_99">99+</string>
+    <string name="typing">Typing</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

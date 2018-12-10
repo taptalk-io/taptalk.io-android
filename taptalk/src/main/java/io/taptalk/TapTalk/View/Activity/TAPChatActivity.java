@@ -112,11 +112,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clContainer, clEmptyChat, clReply, clChatComposer;
+    private ConstraintLayout clContainer, clEmptyChat, clReply, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach,
+            ivButtonSend, ivToBottom, ivRoomTypingIndicator;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
-    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvReplySender, tvReplyBody, tvBadgeUnread;
+    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvReplySender,
+            tvReplyBody, tvBadgeUnread, tvRoomTypingStatus;
     private View vStatusBadge;
 
     // RecyclerView
@@ -265,6 +267,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
         clReply = (ConstraintLayout) findViewById(R.id.cl_reply);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
+        clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
+        clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
         ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
         ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
@@ -272,11 +276,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send);
         ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
+        ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
         civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
         tvRoomName = (TextView) findViewById(R.id.tv_room_name);
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
+        tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
         tvReplySender = (TextView) findViewById(R.id.tv_reply_sender);
@@ -645,6 +651,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showUserOnline() {
         runOnUiThread(() -> {
+            clRoomTypingStatus.setVisibility(View.GONE);
+            clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            vStatusBadge.setVisibility(View.VISIBLE);
             vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
             tvRoomStatus.setText(getString(R.string.active_now));
         });
@@ -652,7 +661,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void showUserOffline() {
+        runOnUiThread(() -> {
+            clRoomTypingStatus.setVisibility(View.GONE);
+            clRoomOnlineStatus.setVisibility(View.VISIBLE);
+        });
         lastActivityRunnable.run();
+    }
+
+    private void showTypingIndicator() {
+        runOnUiThread(() -> {
+            clRoomTypingStatus.setVisibility(View.VISIBLE);
+            clRoomOnlineStatus.setVisibility(View.GONE);
+            Glide.with(this).load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+            tvRoomTypingStatus.setText(getString(R.string.typing));
+        });
+    }
+
+    private void hideTypingIndicator() {
+        runOnUiThread(() -> {
+            clRoomTypingStatus.setVisibility(View.GONE);
+            clRoomOnlineStatus.setVisibility(View.VISIBLE);
+        });
     }
 
     //ini Fungsi buat manggil Api Before
@@ -899,11 +928,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveStartTyping(TAPTypingModel typingModel) {
             Log.e(TAG, "onReceiveStartTyping: " );
+            showTypingIndicator();
         }
 
         @Override
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
             Log.e(TAG, "onReceiveStopTyping: " );
+            hideTypingIndicator();
         }
     };
 
@@ -1507,12 +1538,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             Long lastActive = vm.getOnlineStatus().getLastActive();
             if (lastActive == 0) {
                 runOnUiThread(() -> {
+                    vStatusBadge.setVisibility(View.VISIBLE);
                     vStatusBadge.setBackground(null);
                     tvRoomStatus.setText("");
                 });
             } else {
                 runOnUiThread(() -> {
-                    vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
+                    //vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
+                    vStatusBadge.setVisibility(View.GONE);
                     tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, lastActive));
                 });
             }
