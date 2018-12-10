@@ -429,6 +429,11 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
+    // Set isContact value to 0 or 1 then insert user model to database
+    public void checkContactAndInsertToDatabase(TAPUserModel userModel) {
+        TAPDatabaseManager.getInstance().checkContactAndInsert(userModel);
+    }
+
     public void insertAndGetMyContact(List<TAPUserModel> userModels, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().insertAndGetMyContact(userModels, listener);
     }
@@ -452,6 +457,10 @@ public class TAPDataManager {
     // FIXME: 25 October 2018 MAKE FUNCTION RETURN BOOLEAN OR GET FRIEND STATUS FROM API
     public void checkUserInMyContacts(String userID, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
+    }
+
+    public void getAllUserData(TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().getAllUserData(listener);
     }
 
     //General

@@ -36,35 +36,81 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/tv_room_status"
+            app:layout_constraintBottom_toTopOf="@id/cl_room_status"
             app:layout_constraintEnd_toStartOf="@id/civ_room_image"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="Room Name" />
 
-        <View
-            android:id="@+id/v_room_status_badge"
-            android:layout_width="7dp"
-            android:layout_height="7dp"
-            app:layout_constraintBottom_toBottomOf="@id/tv_room_status"
-            app:layout_constraintEnd_toStartOf="@id/tv_room_status"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_room_status"
-            tools:background="@drawable/tap_bg_circle_vibrantgreen" />
-
-        <TextView
-            android:id="@+id/tv_room_status"
-            style="@style/HomingPigeonRoomMessage"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_room_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
+            android:layout_marginTop="2dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_room_name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/v_room_status_badge"
-            app:layout_constraintTop_toBottomOf="@id/tv_room_name"
-            tools:text="Active Now" />
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_room_online_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible">
+
+                <View
+                    android:id="@+id/v_room_status_badge"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_marginEnd="3dp"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_room_status"
+                    app:layout_constraintEnd_toStartOf="@id/tv_room_status"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_room_status"
+                    tools:background="@drawable/tap_bg_circle_vibrantgreen" />
+
+                <TextView
+                    android:id="@+id/tv_room_status"
+                    style="@style/HomingPigeonRoomMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/v_room_status_badge"
+                    tools:text="Active Now" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_room_typing_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/iv_room_typing_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_room_typing_status"
+                    app:layout_constraintEnd_toStartOf="@id/tv_room_typing_status"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintTop_toTopOf="@id/tv_room_typing_status"
+                     />
+
+                <TextView
+                    android:id="@+id/tv_room_typing_status"
+                    style="@style/HomingPigeonRoomMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
+                    tools:text="Typing" />
+
+            </android.support.constraint.ConstraintLayout>
+
+
+        </android.support.constraint.ConstraintLayout>
 
         <io.taptalk.TapTalk.Helper.CircleImageView
             android:id="@+id/civ_room_image"

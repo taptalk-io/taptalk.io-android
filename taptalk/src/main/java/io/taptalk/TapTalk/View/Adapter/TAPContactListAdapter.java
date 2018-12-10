@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
@@ -134,6 +135,9 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             switch (viewType) {
                 case CHAT:
                     if (!myID.equals(item.getUserID())) {
+                        // Save user data to contact manager
+                        TAPContactManager.getInstance().updateUserDataMap(item);
+
                         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
                         TAPUtils.getInstance().startChatActivity(
                                 itemView.getContext(),

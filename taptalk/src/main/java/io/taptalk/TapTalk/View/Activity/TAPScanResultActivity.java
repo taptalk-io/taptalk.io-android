@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -24,6 +23,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -186,7 +186,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPCommonResponse response) {
             super.onSuccess(response);
-            TAPDataManager.getInstance().insertMyContactToDatabase(contactModel.hpUserModelForAddToDB());
+            TAPUserModel newContact = contactModel.setUserAsContact();
+            TAPDataManager.getInstance().insertMyContactToDatabase(newContact);
+            TAPContactManager.getInstance().updateUserDataMap(newContact);
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);

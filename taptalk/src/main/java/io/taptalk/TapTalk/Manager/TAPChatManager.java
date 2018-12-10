@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 
@@ -138,8 +139,20 @@ public class TAPChatManager {
                 case kSocketOpenMessage:
                     break;
                 case kSocketStartTyping:
+                    TAPEmitModel<TAPTypingModel> startTypingEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
+                            }, emitData);
+                    for (TAPChatListener listener : chatListeners) {
+                        listener.onReceiveStartTyping(startTypingEmit.getData());
+                    }
                     break;
                 case kSocketStopTyping:
+                    TAPEmitModel<TAPTypingModel> stopTypingEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
+                            }, emitData);
+                    for (TAPChatListener listener : chatListeners) {
+                        listener.onReceiveStopTyping(stopTypingEmit.getData());
+                    }
                     break;
                 case kSocketAuthentication:
                     break;
@@ -515,11 +528,36 @@ public class TAPChatManager {
     }
 
     /**
-     * Send emit to server
+     * Send Start Typing to Server
+     */
+    public void sendStartTypingEmit(String roomID) {
+        TAPTypingModel typingModel = new TAPTypingModel(roomID);
+        sendEmit(kSocketStartTyping, typingModel);
+    }
+
+    /**
+     * Send Stop Typing to Server
+     */
+    public void sendStopTypingEmit(String roomID) {
+        TAPTypingModel typingModel = new TAPTypingModel(roomID);
+        sendEmit(kSocketStopTyping, typingModel);
+    }
+
+    /**
+     * Send emit to server (Message)
      */
     private void sendEmit(String eventName, TAPMessageModel messageModel) {
         TAPEmitModel<TAPMessageModel> TAPEmitModel;
         TAPEmitModel = new TAPEmitModel<>(eventName, messageModel);
+        TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
+    }
+
+    /**
+     * Send emit to server (Typing)
+     */
+    private void sendEmit(String eventName, TAPTypingModel typingModel) {
+        TAPEmitModel<TAPTypingModel> TAPEmitModel;
+        TAPEmitModel = new TAPEmitModel<>(eventName, typingModel);
         TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
     }
 
@@ -643,7 +681,7 @@ public class TAPChatManager {
             }
         }
 
-        //add to list delivered message
+        // Add to list delivered message
         if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
                 && null != newMessage.getSending() && !newMessage.getSending()
                 && null != newMessage.getDelivered() && !newMessage.getDelivered()
@@ -651,7 +689,7 @@ public class TAPChatManager {
             TAPMessageStatusManager.getInstance().addDeliveredMessageQueue(newMessage);
         }
 
-        //check the message is from our direct reply or not (in background)
+        // Check the message is from our direct reply or not (in background)
         if (!isReplyMessageLocalIDsEmpty()) {
             removeReplyMessageLocalID(newMessage.getLocalID());
             if (isReplyMessageLocalIDsEmpty()) {
@@ -659,6 +697,9 @@ public class TAPChatManager {
                 Toast.makeText(TapTalk.appContext, "Reply Success", Toast.LENGTH_SHORT).show();
             }
         }
+
+        // Save user data to contact manager
+        TAPContactManager.getInstance().updateUserDataMap(newMessage.getUser());
     }
 
     public void saveNewMessageToList() {

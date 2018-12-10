@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
@@ -444,6 +445,9 @@ public class TAPRoomListFragment extends Fragment {
                     try {
                         TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                         tempMessage.add(TAPChatManager.getInstance().convertToEntity(temp));
+
+                        // Save user data to contact manager
+                        TAPContactManager.getInstance().updateUserDataMap(message.getUser());
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                         Log.e(TAG, "onSuccess: ", e);
@@ -492,9 +496,10 @@ public class TAPRoomListFragment extends Fragment {
             // Insert contacts to database
             List<TAPUserModel> users = new ArrayList<>();
             for (TAPContactModel contact : response.getContacts()) {
-                users.add(contact.getUser().hpUserModelForAddToDB());
+                users.add(contact.getUser().setUserAsContact());
             }
             TAPDataManager.getInstance().insertMyContactToDatabase(users);
+            TAPContactManager.getInstance().updateUserDataMap(users);
         }
     };
 

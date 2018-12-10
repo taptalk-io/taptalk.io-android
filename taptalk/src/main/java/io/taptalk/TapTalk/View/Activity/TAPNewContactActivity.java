@@ -27,6 +27,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
@@ -411,7 +412,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             finish();
 
             // Add contact to database
-            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult().hpUserModelForAddToDB());
+            TAPUserModel newContact = vm.getSearchResult().setUserAsContact();
+            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact);
+            TAPContactManager.getInstance().updateUserDataMap(newContact);
         }
 
         @Override
