@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
@@ -102,11 +103,19 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 vSeparator.setVisibility(View.VISIBLE);
             }
 
-            // Set name, last message, and timestamp text
+            // Set name and timestamp text
             tvFullName.setText(item.getLastMessage().getRoom().getRoomName());
-            tvLastMessage.setText(item.getLastMessage().getBody());
-            // TODO: 17 October 2018 FORMAT TIMESTAMP OUTSIDE BIND
-            tvLastMessageTime.setText(TAPTimeFormatter.getInstance().durationString(item.getLastMessage().getCreated()));
+            tvLastMessageTime.setText(item.getLastMessageTimestamp());
+
+            if (item.isTyping()) {
+                // Set message to Typing
+                tvLastMessage.setText(itemView.getContext().getString(R.string.typing_1));
+                typingAnimationTimer.start();
+            } else {
+                // Set last message as text
+                tvLastMessage.setText(item.getLastMessage().getBody());
+                typingAnimationTimer.cancel();
+            }
 
             // Check if room is muted
             if (item.getLastMessage().getRoom().isMuted()) {
@@ -146,7 +155,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Show unread count
             int unreadCount = item.getUnreadCount();
             if (0 < unreadCount && unreadCount < 100) {
-                tvBadgeUnread.setText(item.getUnreadCount() + "");
+                tvBadgeUnread.setText(String.valueOf(item.getUnreadCount()));
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else if (unreadCount >= 100) {
@@ -161,6 +170,28 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             itemView.setOnClickListener(v -> onRoomClicked(itemView, item, position));
             itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
+
+        private CountDownTimer typingAnimationTimer = new CountDownTimer(300L, 100L) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                switch (tvLastMessage.length()) {
+                    case 7:
+                        tvLastMessage.setText(itemView.getContext().getString(R.string.typing_2));
+                        break;
+                    case 8:
+                        tvLastMessage.setText(itemView.getContext().getString(R.string.typing_3));
+                        break;
+                    default:
+                        tvLastMessage.setText(itemView.getContext().getString(R.string.typing_1));
+                }
+                start();
+            }
+        };
     }
 
     private void onRoomClicked(View itemView, TAPRoomListModel item, int position) {

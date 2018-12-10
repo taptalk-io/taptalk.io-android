@@ -46,6 +46,7 @@ import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
@@ -174,6 +175,16 @@ public class TAPRoomListFragment extends Fragment {
             public void onReadMessage(String roomID) {
                 updateUnreadCountPerRoom(roomID);
             }
+
+            @Override
+            public void onReceiveStartTyping(TAPTypingModel typingModel) {
+                showTyping(typingModel, true);
+            }
+
+            @Override
+            public void onReceiveStopTyping(TAPTypingModel typingModel) {
+               showTyping(typingModel, false);
+            }
         };
         TAPChatManager.getInstance().addChatListener(chatListener);
 
@@ -187,8 +198,6 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void initView(View view) {
-        getActivity().getWindow().setBackgroundDrawable(null);
-
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
@@ -201,9 +210,15 @@ public class TAPRoomListFragment extends Fragment {
         ivButtonMore = view.findViewById(R.id.iv_button_more);
         rvContactList = view.findViewById(R.id.rv_contact_list);
 
+        if (null != getActivity()) {
+            getActivity().getWindow().setBackgroundDrawable(null);
+        }
+
         flSetupContainer.setVisibility(View.GONE);
 
-        if (vm.isSelecting()) showSelectionActionBar();
+        if (vm.isSelecting()) {
+            showSelectionActionBar();
+        }
         vm.setDoneFirstApiSetup(TAPDataManager.getInstance().isRoomListSetupFinished());
 
         adapter = new TAPRoomListAdapter(vm, tapTalkRoomListInterface);
@@ -412,6 +427,16 @@ public class TAPRoomListFragment extends Fragment {
 
     public boolean isSelecting() {
         return vm.isSelecting();
+    }
+
+    private void showTyping(TAPTypingModel typingModel, boolean isTyping) {
+        String roomID = typingModel.getRoomID();
+        if (!vm.getRoomPointer().containsKey(roomID)) {
+            return;
+        }
+        TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
+        roomListModel.setTyping(isTyping);
+        adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel));
     }
 
     private TapDefaultDataView<TAPGetRoomListResponse> roomListView = new TapDefaultDataView<TAPGetRoomListResponse>() {

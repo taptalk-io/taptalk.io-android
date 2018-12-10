@@ -143,12 +143,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     //endless scroll Listener
     TAPEndlessScrollListener endlessScrollListener;
 
-    private TapTalkNetworkInterface networkListener = () -> {
-        if (vm.isInitialAPICallFinished()) {
-            callApiAfter();
-        }
-    };
-
     /**
      * =========================================================================================== *
      * OVERRIDE METHODS
@@ -184,23 +178,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onResume();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
-
         addNetworkListener();
-
-        if (vm.isInitialAPICallFinished())
+        if (vm.isInitialAPICallFinished()) {
             callApiAfter();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-        String draft = etChat.getText().toString();
-        if (!draft.isEmpty()) TAPChatManager.getInstance().saveMessageToDraft(draft);
-        else TAPChatManager.getInstance().removeDraft();
-
+        saveDraftToManager();
         removeNetworkListener();
-
+        sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
     }
 
@@ -674,6 +663,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         lastActivityRunnable.run();
     }
 
+    private void sendTypingEmit(boolean isTyping) {
+        if (TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTED) {
+            return;
+        }
+        String currentRoomID = vm.getRoom().getRoomID();
+        if (isTyping && !vm.isUserTyping()) {
+            TAPChatManager.getInstance().sendStartTypingEmit(currentRoomID);
+            vm.setUserTyping(true);
+        } else if (!isTyping && vm.isUserTyping()) {
+            TAPChatManager.getInstance().sendStopTypingEmit(currentRoomID);
+            vm.setUserTyping(false);
+        }
+    }
+
     private void showTypingIndicator() {
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.VISIBLE);
@@ -688,6 +691,23 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
         });
+    }
+
+    private void saveDraftToManager() {
+        String draft = etChat.getText().toString();
+        if (!draft.isEmpty()) {
+            TAPChatManager.getInstance().saveMessageToDraft(draft);
+        } else {
+            TAPChatManager.getInstance().removeDraft();
+        }
+    }
+
+    private void addNetworkListener() {
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+    }
+
+    private void removeNetworkListener() {
+        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 
     //ini Fungsi buat manggil Api Before
@@ -933,13 +953,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReceiveStartTyping(TAPTypingModel typingModel) {
-            Log.e(TAG, "onReceiveStartTyping: " );
             showTypingIndicator();
         }
 
         @Override
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
-            Log.e(TAG, "onReceiveStopTyping: " );
             hideTypingIndicator();
         }
     };
@@ -1119,21 +1137,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-            sendTypingEmit(s);
+            sendTypingEmit(s.length() > 0);
         }
     };
-
-    private void sendTypingEmit(Editable text) {
-        String currentRoomID = vm.getRoom().getRoomID();
-        if (0 < text.length() && TAPChatViewModel.TypingType.BLANK == vm.getTypingType()) {
-            TAPChatManager.getInstance().sendStartTypingEmit(currentRoomID);
-            vm.setTypingType(TAPChatViewModel.TypingType.TYPING);
-        }
-        else if (0 == text.length() && TAPChatViewModel.TypingType.TYPING == vm.getTypingType()){
-            TAPChatManager.getInstance().sendStopTypingEmit(currentRoomID);
-            vm.setTypingType(TAPChatViewModel.TypingType.BLANK);
-        }
-    }
 
     private View.OnFocusChangeListener chatFocusChangeListener = new View.OnFocusChangeListener() {
         @Override
@@ -1315,6 +1321,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onGallerySelected() {
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY);
+        }
+    };
+
+    private TapTalkNetworkInterface networkListener = () -> {
+        if (vm.isInitialAPICallFinished()) {
+            callApiAfter();
         }
     };
 
@@ -1553,12 +1565,4 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);
         }
     };
-
-    private void addNetworkListener() {
-        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
-    }
-
-    private void removeNetworkListener() {
-        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
-    }
 }

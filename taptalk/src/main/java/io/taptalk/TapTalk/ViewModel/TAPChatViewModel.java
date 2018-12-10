@@ -40,28 +40,15 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Handler lastActivityHandler;
     private long lastTimestamp = 0;
     private int numUsers, containerAnimationState;
-    private boolean isOnBottom, /*isTyping,*/ isCustomKeyboardEnabled, isInitialAPICallFinished;
+    private boolean isOnBottom, isUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
 
-    public enum TypingType {
-        TYPING, BLANK
-    }
-    private TypingType typingType = TypingType.BLANK;
-
     public TAPChatViewModel(Application application) {
         super(application);
         allMessages = TAPDataManager.getInstance().getMessagesLiveData();
-    }
-
-    public TypingType getTypingType() {
-        return typingType;
-    }
-
-    public void setTypingType(TypingType typingType) {
-        this.typingType = typingType;
     }
 
     public LiveData<List<TAPMessageEntity>> getAllMessages() {
@@ -274,13 +261,13 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.containerAnimationState = containerAnimationState;
     }
 
-    //    public boolean isTyping() {
-//        return isTyping;
-//    }
-//
-//    public void setTyping(boolean typing) {
-//        isTyping = typing;
-//    }
+    public boolean isUserTyping() {
+        return isUserTyping;
+    }
+
+    public void setUserTyping(boolean userTyping) {
+        isUserTyping = userTyping;
+    }
 
     public boolean isCustomKeyboardEnabled() {
         return isCustomKeyboardEnabled;
