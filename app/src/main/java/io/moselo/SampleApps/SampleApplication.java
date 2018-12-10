@@ -71,6 +71,13 @@ public class SampleApplication extends Application {
             }
             return null;
         }
+
+        @Override
+        public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
+            if (customKeyboardItemModel.getItemID().equals("1")) {
+                Toast.makeText(SampleApplication.this, "See price list clicked", Toast.LENGTH_SHORT).show();
+            }
+        }
     };
 
     @Override
