@@ -84,6 +84,12 @@ public class TAPSearchChatFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        startSearch();
+    }
+
+    @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
@@ -189,6 +195,25 @@ public class TAPSearchChatFragment extends Fragment {
             getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
     }
 
+    private void startSearch() {
+        if (etSearch.getText().toString().equals(" ")) {
+            // Clear keyword when EditText only contains a space
+            etSearch.setText("");
+            return;
+        }
+
+        vm.clearSearchResults();
+        vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().trim().replaceAll("[^A-Za-z0-9 ]", ""));
+        adapter.setSearchKeyword(vm.getSearchKeyword());
+        if (vm.getSearchKeyword().isEmpty()) {
+            showRecentSearches();
+        } else {
+            TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
+            //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
+            vm.setRecentSearchShown(false);
+        }
+    }
+
     private TextWatcher searchTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -197,22 +222,7 @@ public class TAPSearchChatFragment extends Fragment {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (etSearch.getText().toString().equals(" ")) {
-                // Clear keyword when EditText only contains a space
-                etSearch.setText("");
-                return;
-            }
-
-            vm.clearSearchResults();
-            vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().trim().replaceAll("[^A-Za-z0-9 ]", ""));
-            adapter.setSearchKeyword(vm.getSearchKeyword());
-            if (vm.getSearchKeyword().isEmpty()) {
-                showRecentSearches();
-            } else {
-                TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
-                //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
-                vm.setRecentSearchShown(false);
-            }
+            startSearch();
         }
 
         @Override
