@@ -165,6 +165,9 @@ public class TAPDefaultConstant {
     public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int DEFAULT_ANIMATION_TIME = 200;
 
+    public static final long TYPING_EMIT_DELAY = 10000L;
+    public static final long TYPING_INDICATOR_TIMEOUT = 15000L;
+
     public static final String APP_KEY_ID = "b43b48745dfa0e44k1";
     public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";
 

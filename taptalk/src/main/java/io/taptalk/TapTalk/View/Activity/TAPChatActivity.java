@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -18,7 +19,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -97,6 +97,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 
 public class TAPChatActivity extends TAPBaseChatActivity {
 
@@ -668,16 +670,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             return;
         }
         String currentRoomID = vm.getRoom().getRoomID();
-        if (isTyping && !vm.isUserTyping()) {
+        if (isTyping && !vm.isActiveUserTyping()) {
             TAPChatManager.getInstance().sendStartTypingEmit(currentRoomID);
-            vm.setUserTyping(true);
-        } else if (!isTyping && vm.isUserTyping()) {
+            vm.setActiveUserTyping(true);
+            sendTypingEmitDelayTimer.cancel();
+            sendTypingEmitDelayTimer.start();
+        } else if (!isTyping && vm.isActiveUserTyping()) {
             TAPChatManager.getInstance().sendStopTypingEmit(currentRoomID);
-            vm.setUserTyping(false);
+            vm.setActiveUserTyping(false);
+            sendTypingEmitDelayTimer.cancel();
         }
     }
 
     private void showTypingIndicator() {
+        typingIndicatorTimeoutTimer.cancel();
+        typingIndicatorTimeoutTimer.start();
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
@@ -687,6 +694,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideTypingIndicator() {
+        typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
@@ -1563,6 +1571,30 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 });
             }
             vm.getLastActivityHandler().postDelayed(this, INTERVAL);
+        }
+    };
+
+    private CountDownTimer sendTypingEmitDelayTimer = new CountDownTimer(TYPING_EMIT_DELAY, 1000L) {
+        @Override
+        public void onTick(long l) {
+
+        }
+
+        @Override
+        public void onFinish() {
+            vm.setActiveUserTyping(false);
+        }
+    };
+
+    private CountDownTimer typingIndicatorTimeoutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
+        @Override
+        public void onTick(long l) {
+
+        }
+
+        @Override
+        public void onFinish() {
+            hideTypingIndicator();
         }
     };
 }

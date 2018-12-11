@@ -20,7 +20,6 @@ import java.util.List;
 import io.taptalk.TapTalk.DiffCallback.TAPRoomListDiffCallback;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -30,6 +29,8 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 
 public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
@@ -111,10 +112,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Set message to Typing
                 tvLastMessage.setText(itemView.getContext().getString(R.string.typing_1));
                 typingAnimationTimer.start();
+                typingIndicatorTimeOutTimer.cancel();
+                typingIndicatorTimeOutTimer.start();
             } else {
                 // Set last message as text
                 tvLastMessage.setText(item.getLastMessage().getBody());
                 typingAnimationTimer.cancel();
+                typingIndicatorTimeOutTimer.cancel();
             }
 
             // Check if room is muted
@@ -170,6 +174,19 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             itemView.setOnClickListener(v -> onRoomClicked(itemView, item, position));
             itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
+
+        private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                getItem().setTyping(false);
+                notifyItemChanged(getItems().indexOf(getItem()));
+            }
+        };
 
         private CountDownTimer typingAnimationTimer = new CountDownTimer(300L, 100L) {
             @Override
@@ -230,14 +247,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
     }
 
     private void onRoomSelected(TAPRoomListModel item, int position) {
-        TAPRoomModel room = item.getLastMessage().getRoom();
-
-        if (!vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
+        String roomID = item.getLastMessage().getRoom().getRoomID();
+        if (!vm.getSelectedRooms().containsKey(roomID)) {
             // Room selected
-            vm.getSelectedRooms().put(item.getLastMessage().getRoom().getRoomID(), item);
+            vm.getSelectedRooms().put(roomID, item);
         } else {
             // Room deselected
-            vm.getSelectedRooms().remove(item.getLastMessage().getRoom().getRoomID());
+            vm.getSelectedRooms().remove(roomID);
         }
         tapTalkRoomListInterface.onRoomSelected();
         notifyItemChanged(position);
