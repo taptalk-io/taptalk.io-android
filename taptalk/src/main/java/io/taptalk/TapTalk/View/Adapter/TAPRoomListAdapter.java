@@ -80,6 +80,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         protected void onBind(TAPRoomListModel item, int position) {
             Resources resource = itemView.getContext().getResources();
 
+            // Set room image
             if (null != item.getLastMessage().getRoom().getRoomImage() && !item.getLastMessage().getRoom().getRoomImage().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).into(civAvatar);
                 civAvatar.setBackground(null);
