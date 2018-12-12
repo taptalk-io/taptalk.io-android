@@ -34,6 +34,7 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
     @Nullable @JsonProperty("isRequestAccepted") private Boolean isRequestAccepted;
+    @Nullable @JsonProperty("isOnline") private Boolean isOnline;
     @Nullable @JsonIgnore private Integer isContact;
 
     @Ignore
@@ -242,6 +243,15 @@ public class TAPUserModel implements Parcelable {
             this.isContact = isContact;
     }
 
+    @Nullable
+    public Boolean getOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(@Nullable Boolean online) {
+        isOnline = online;
+    }
+
     // Update when adding fields to model
     public void updateValue(TAPUserModel userModel) {
         this.userID = userModel.getUserID();
@@ -263,6 +273,7 @@ public class TAPUserModel implements Parcelable {
             this.isContact = userModel.isContact;
         }
     }
+
 
     @Override
     public int describeContents() {
@@ -286,6 +297,7 @@ public class TAPUserModel implements Parcelable {
         dest.writeValue(this.updated);
         dest.writeValue(this.isRequestPending);
         dest.writeValue(this.isRequestAccepted);
+        dest.writeValue(this.isOnline);
         dest.writeValue(this.isContact);
     }
 
@@ -305,6 +317,7 @@ public class TAPUserModel implements Parcelable {
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
         this.isRequestPending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isRequestAccepted = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isOnline = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isContact = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 

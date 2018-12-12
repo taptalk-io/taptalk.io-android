@@ -659,16 +659,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vStatusBadge.setVisibility(View.VISIBLE);
             vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
             tvRoomStatus.setText(getString(R.string.active_now));
+            vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         });
-        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
     }
 
     private void showUserOffline() {
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            lastActivityRunnable.run();
         });
-        lastActivityRunnable.run();
     }
 
     private void sendTypingEmit(boolean isTyping) {
