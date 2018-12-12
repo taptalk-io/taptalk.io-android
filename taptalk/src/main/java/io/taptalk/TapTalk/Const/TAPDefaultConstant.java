@@ -78,11 +78,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class Extras {
-        public static final String ROOM_NAME = "roomName";
-        public static final String MY_ID = "myID";
-        public static final String GROUP_MEMBERS = "groupMembers";
-        public static final String GROUP_NAME = "kGroupName";
-        public static final String GROUP_IMAGE = "kGroupImage";
+        public static final String ROOM_NAME = "tapRoomName";
+        public static final String MY_ID = "tapMyID";
+        public static final String GROUP_MEMBERS = "tapGroupMembers";
+        public static final String GROUP_NAME = "tapGroupName";
+        public static final String GROUP_IMAGE = "tapGroupImage";
+        public static final String IS_TYPING = "tapIsTyping";
     }
 
     public static final class RequestCode {

@@ -25,7 +25,6 @@ import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
@@ -232,10 +231,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                         item.getLastMessage().getRoom().getRoomName(),
                         item.getLastMessage().getRoom().getRoomImage(),
                         item.getLastMessage().getRoom().getRoomType(),
-                        item.getLastMessage().getRoom().getRoomColor());
+                        item.getLastMessage().getRoom().getRoomColor(),
+                        item.isTyping());
                 TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
             } else {
-                Toast.makeText(itemView.getContext(), "Invalid Room", Toast.LENGTH_SHORT).show();
+                Toast.makeText(itemView.getContext(), "Invalid Room.", Toast.LENGTH_SHORT).show();
             }
         }
     }
