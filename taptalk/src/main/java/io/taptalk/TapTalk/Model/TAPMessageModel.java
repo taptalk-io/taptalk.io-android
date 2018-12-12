@@ -11,8 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.security.GeneralSecurityException;
 
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
+import io.taptalk.Taptalk.R;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -36,7 +39,8 @@ public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     @Nullable @JsonProperty("deleted") private Long deleted;
     @JsonIgnore private TAPMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
-    @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend;
+    @JsonIgnore private String messageStatusText;
+    @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend, isAnimating;
     @JsonIgnore private int imageWidth, imageHeight;
 
     public TAPMessageModel(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
@@ -63,6 +67,10 @@ public class TAPMessageModel implements Parcelable {
         this.updated = updated;
         this.deleted = deleted;
         // Update when adding fields to model
+
+        if (created > 0L) {
+            messageStatusText = String.format("%s %s", TapTalk.appContext.getString(R.string.sent_at), TAPTimeFormatter.getInstance().formatDate(created));
+        }
     }
 
     public TAPMessageModel() {
@@ -262,6 +270,14 @@ public class TAPMessageModel implements Parcelable {
         return deleted;
     }
 
+    public String getMessageStatusText() {
+        return messageStatusText;
+    }
+
+    public void setMessageStatusText(String messageStatusText) {
+        this.messageStatusText = messageStatusText;
+    }
+
     public boolean isExpanded() {
         return isExpanded;
     }
@@ -284,6 +300,14 @@ public class TAPMessageModel implements Parcelable {
 
     public void setNeedAnimateSend(boolean sendAnimateFinished) {
         isNeedAnimateSend = sendAnimateFinished;
+    }
+
+    public boolean isAnimating() {
+        return isAnimating;
+    }
+
+    public void setAnimating(boolean animating) {
+        isAnimating = animating;
     }
 
     public TAPMessageModel getReplyTo() {

@@ -462,6 +462,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.addPendingRecyclerMessage(newMessage);
         } else {
             // Message is added after transition finishes in containerTransitionListener
+            // TODO: 12 December 2018 TEMPORARY ORDER CARD LOGIC
             checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
