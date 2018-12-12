@@ -333,14 +333,7 @@ public class TAPRoomListFragment extends Fragment {
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
                 //last messagenya sama cuma update datanya aja
-                roomLastMessage.setUpdated(message.getUpdated());
-                roomLastMessage.setIsDeleted(message.getIsDeleted());
-                roomLastMessage.setSending(message.getSending());
-                roomLastMessage.setFailedSend(message.getFailedSend());
-                roomLastMessage.setIsRead(message.getIsRead());
-                roomLastMessage.setDelivered(message.getDelivered());
-                roomLastMessage.setHidden(message.getHidden());
-
+                roomLastMessage.updateValue(message);
                 Integer roomPos = vm.getRoomList().indexOf(roomList);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
             } else {
@@ -443,7 +436,7 @@ public class TAPRoomListFragment extends Fragment {
         }
         TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
         roomListModel.setTyping(isTyping);
-        adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel));
+        getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel)));
     }
 
     private TapDefaultDataView<TAPGetRoomListResponse> roomListView = new TapDefaultDataView<TAPGetRoomListResponse>() {

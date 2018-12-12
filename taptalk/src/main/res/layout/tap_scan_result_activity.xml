@@ -119,7 +119,7 @@
                         android:fontFamily="@font/tap_font_neueeinstellungbold"
                         android:gravity="center_horizontal"
                         android:maxLines="2"
-                        android:text="NAMANYABERNAMA"
+                        tools:text="NAMANYABERNAMA"
                         android:textColor="@color/mediumPurple"
                         android:textSize="20sp" />
 
@@ -130,7 +130,7 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/tap_font_neueeinstellungregular"
                         android:gravity="center_horizontal"
-                        android:text="Vivamus adipiscing fermentum quam "
+                        tools:text="Vivamus adipiscing fermentum quam "
                         android:textColor="@color/mediumPurple"
                         android:textSize="13sp" />
 
@@ -217,7 +217,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/tap_font_neueeinstellungbold"
-                    android:text="Add to Contacts"
+                    android:text="@string/add_to_contacts"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 

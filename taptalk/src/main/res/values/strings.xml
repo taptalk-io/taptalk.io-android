@@ -144,7 +144,6 @@
     <string name="intent_select_picture">Select Picture</string>
 
     <!--General-->
-    <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
     <string name="chats_and_contacts">Chats and Contacts</string>
     <string name="clear_history">Clear history</string>
@@ -170,4 +169,5 @@
     <string name="unread_messages">Unread Messages</string>
     <string name="you">You</string>
     <string name="over_99">99+</string>
+    <string name="add_to_contacts">Add to Contacts</string>
 </resources>

@@ -136,12 +136,12 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         cvResult.setVisibility(View.VISIBLE);
         pbLoading.setVisibility(View.GONE);
         contactModel = userModel;
-        if (null != addedContactUserModel.getAvatarURL() && !addedContactUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
+        if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(this).load(userModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
             civTheirContactAvatar.setBackground(null);
         } else {
             civTheirContactAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(addedContactUserModel.getName())));
+            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
         }
         if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
             Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);

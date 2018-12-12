@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.API;
 
+import android.util.Log;
+
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.API.View.TapView;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
@@ -39,6 +41,7 @@ public class TAPDefaultSubscriber<T extends TAPBaseResponse<D>, V extends TapDef
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
+        Log.e("><><><", "onError: ",e );
         view.onError(e.getMessage());
         view.onError(e);
     }
