@@ -184,7 +184,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             @Override
             public void onFinish() {
                 getItem().setTyping(false);
-                notifyItemChanged(getItems().indexOf(getItem()));
+                int position = getItems().indexOf(getItem());
+                if (position < 0) {
+                    notifyDataSetChanged();
+                } else {
+                    notifyItemChanged(position);
+                }
             }
         };
 
