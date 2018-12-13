@@ -436,7 +436,7 @@ public class TAPRoomListFragment extends Fragment {
         }
         TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
         roomListModel.setTyping(isTyping);
-        adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel));
+        getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel)));
     }
 
     private TapDefaultDataView<TAPGetRoomListResponse> roomListView = new TapDefaultDataView<TAPGetRoomListResponse>() {
