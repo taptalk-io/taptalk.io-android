@@ -95,12 +95,15 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        if (null != vm.getGroupData().getRoomName())
+        if (null != vm.getGroupData().getRoomName()) {
             intent.putExtra(GROUP_NAME, vm.getGroupData().getRoomName());
-        if (null != vm.getGroupData().getRoomImage())
+        }
+        if (null != vm.getGroupData().getRoomImage()) {
             intent.putExtra(GROUP_IMAGE, vm.getGroupData().getRoomImage());
+        }
         setResult(RESULT_CANCELED, intent);
         finish();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
     private void initViewModel() {
@@ -175,6 +178,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             startActivity(intent);
             setResult(RESULT_OK);
             finish();
+            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         } else {
             Toast.makeText(this, R.string.error_message_group_name_empty, Toast.LENGTH_SHORT).show();
         }

@@ -86,6 +86,12 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+    }
+
     private void initViewModel() {
         TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);

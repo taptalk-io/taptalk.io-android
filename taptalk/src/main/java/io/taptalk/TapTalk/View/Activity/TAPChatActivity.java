@@ -203,6 +203,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             TAPChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
     }
 
@@ -423,6 +424,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         Intent intent = new Intent(this, TAPProfileActivity.class);
         intent.putExtra(K_ROOM, vm.getRoom());
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void updateUnreadCount() {

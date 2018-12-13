@@ -76,8 +76,8 @@ public class TAPBarcodeScannerFragment extends Fragment {
             Intent intent = new Intent(getContext(), TAPScanResultActivity.class);
             intent.putExtra(SCAN_RESULT, textValue);
             startActivity(intent);
-            getActivity().overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
             getActivity().finish();
+            getActivity().overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
         };
 
         barcodeDetector.setProcessor(new TAPQRDetection(getActivity(), scanListener));
