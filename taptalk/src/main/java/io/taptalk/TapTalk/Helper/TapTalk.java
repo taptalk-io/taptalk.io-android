@@ -132,6 +132,7 @@ public class TapTalk {
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
             }
         });
 

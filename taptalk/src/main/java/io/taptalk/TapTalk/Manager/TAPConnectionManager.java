@@ -109,6 +109,7 @@ public class TAPConnectionManager {
                 Log.e(TAG, "onClose2: " + code);
                 Log.e(TAG, "onClose: " + reason);
                 connectionStatus = DISCONNECTED;
+                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
                 if (null != socketListeners && !socketListeners.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
                     for (TapTalkSocketInterface listener : socketListeners)
                         listener.onSocketDisconnected();
@@ -119,6 +120,7 @@ public class TAPConnectionManager {
             public void onError(Exception ex) {
                 Log.e(TAG, "onError: ", ex);
                 connectionStatus = DISCONNECTED;
+                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
                 if (null != socketListeners && !socketListeners.isEmpty()) {
                     for (TapTalkSocketInterface listener : socketListeners)
                         listener.onSocketError();

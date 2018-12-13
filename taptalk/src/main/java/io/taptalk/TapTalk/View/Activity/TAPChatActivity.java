@@ -60,6 +60,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -173,6 +174,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().removeChatListener(chatListener);
         // Stop offline timer
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
 
     }
 
@@ -182,6 +184,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         addNetworkListener();
+        callApiGetUserByUserID();
         if (vm.isInitialAPICallFinished()) {
             callApiAfter();
         }
@@ -399,6 +402,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             public void onSocketConnected() {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
+                    callApiGetUserByUserID();
                     callApiAfter();
                 }
             }
@@ -652,6 +656,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
+    private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
+        vm.setOnlineStatus(onlineStatus);
+        if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
+            // User is online
+            showUserOnline();
+        } else if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && !onlineStatus.getOnline()) {
+            // User is offline
+            showUserOffline();
+        }
+    }
+
     private void showUserOnline() {
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.GONE);
@@ -737,6 +752,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             else TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
                     , System.currentTimeMillis()
                     , beforeView);
+        }).start();
+    }
+
+    private void callApiGetUserByUserID() {
+        new Thread(() -> {
+            if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI())
+                TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
+                    @Override
+                    public void onSuccess(TAPGetUserResponse response) {
+                        TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(response.getUser());
+                        setChatRoomStatus(onlineStatus);
+                        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(false);
+                    }
+                });
         }).start();
     }
 
@@ -955,14 +984,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
-            vm.setOnlineStatus(onlineStatus);
-            if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
-                // User is online
-                showUserOnline();
-            } else if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && !onlineStatus.getOnline()) {
-                // User is offline
-                showUserOffline();
-            }
+            setChatRoomStatus(onlineStatus);
         }
 
         @Override
