@@ -79,6 +79,7 @@ import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -301,8 +302,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         // Set room status
+        if (getIntent().getBooleanExtra(IS_TYPING, false)) {
+            showTypingIndicator();
+        }
+
         // TODO: 24 September 2018 CALL ONLINE STATUS API
-        showUserOffline();
+        //showUserOffline();
 
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(chatListener);
@@ -654,16 +659,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vStatusBadge.setVisibility(View.VISIBLE);
             vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
             tvRoomStatus.setText(getString(R.string.active_now));
+            vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         });
-        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
     }
 
     private void showUserOffline() {
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            lastActivityRunnable.run();
         });
-        lastActivityRunnable.run();
     }
 
     private void sendTypingEmit(boolean isTyping) {
