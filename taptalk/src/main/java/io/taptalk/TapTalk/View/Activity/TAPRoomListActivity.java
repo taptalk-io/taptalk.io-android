@@ -21,8 +21,7 @@ public class TAPRoomListActivity extends TAPBaseActivity {
         initView();
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         fRoomList = (TAPMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
         showRoomList();
         redirectToChatActivityFromNotification();

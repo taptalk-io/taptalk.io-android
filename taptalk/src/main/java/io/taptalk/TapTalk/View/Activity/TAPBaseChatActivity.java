@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackActivity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.Taptalk.R;
 
 public abstract class TAPBaseChatActivity extends SwipeBackActivity {
 
@@ -18,6 +19,4 @@ public abstract class TAPBaseChatActivity extends SwipeBackActivity {
         super.onPause();
         TAPUtils.getInstance().dismissKeyboard(this);
     }
-
-    protected abstract void initView();
 }

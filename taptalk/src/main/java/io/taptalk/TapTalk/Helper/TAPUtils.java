@@ -224,24 +224,30 @@ public class TAPUtils {
         return "Rp " + str.replace(",", ".");
     }
 
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, boolean isTyping) {
-        TAPChatManager.getInstance().saveUnsentMessage();
-        Intent intent = new Intent(context, TAPChatActivity.class);
-        intent.putExtra(K_ROOM, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor));
-        intent.putExtra(IS_TYPING, isTyping);
-        context.startActivity(intent);
-    }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        startChatActivity(context, roomID, roomName, roomImage, roomType, roomColor, false);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false);
+    }
+
+    // Open chat room from room list to pass typing status
+    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, boolean isTyping) {
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), isTyping);
     }
 
     // Open chat room from notification
     public void startChatActivity(Context context, TAPRoomModel roomModel) {
+        startChatActivity(context, roomModel, false);
+    }
+
+    private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping) {
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(K_ROOM, roomModel);
+        intent.putExtra(IS_TYPING, isTyping);
         context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
     }
 
     public void pickImageFromGallery(Activity activity, int requestCode) {

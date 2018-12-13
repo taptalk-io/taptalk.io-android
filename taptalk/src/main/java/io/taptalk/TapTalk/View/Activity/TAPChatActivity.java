@@ -206,6 +206,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             TAPChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
     }
 
@@ -257,8 +258,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
@@ -427,6 +427,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         Intent intent = new Intent(this, TAPProfileActivity.class);
         intent.putExtra(K_ROOM, vm.getRoom());
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void updateUnreadCount() {

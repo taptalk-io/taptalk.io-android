@@ -52,6 +52,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         initView();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
         //setting up listener for Live Data
@@ -63,8 +69,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         });
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         llButtonNewContact = findViewById(R.id.ll_button_new_contact);
         llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
         llButtonNewGroup = findViewById(R.id.ll_button_new_group);
@@ -107,6 +112,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (TAPUtils.getInstance().hasPermissions(TAPNewChatActivity.this, Manifest.permission.CAMERA)) {
             Intent intent = new Intent(TAPNewChatActivity.this, TAPBarcodeScannerActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         } else {
             ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
         }
@@ -116,20 +122,24 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         Intent intent = new Intent(this, TAPSearchContactActivity.class);
         intent.putExtra(CONTACT_LIST, (ArrayList<TAPUserModel>) vm.getContactList());
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void addNewContact() {
         Intent intent = new Intent(TAPNewChatActivity.this, TAPNewContactActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void createNewGroup() {
         Intent intent = new Intent(this, TAPCreateNewGroupActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void viewBlockedContacts() {
         Intent intent = new Intent(this, TAPBlockedListActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 }
