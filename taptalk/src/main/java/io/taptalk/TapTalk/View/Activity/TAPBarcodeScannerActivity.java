@@ -37,8 +37,7 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         fBarcodeScanner = (TAPBarcodeScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scan_qr_code);
         fShowQR = (TAPShowQRFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_show_qr_code);
         tvToolbarTitle = findViewById(R.id.tv_toolbar_title);

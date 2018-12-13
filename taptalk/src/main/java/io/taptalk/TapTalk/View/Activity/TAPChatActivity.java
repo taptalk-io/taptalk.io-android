@@ -255,8 +255,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);

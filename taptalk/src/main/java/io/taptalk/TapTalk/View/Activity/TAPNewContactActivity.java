@@ -75,8 +75,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         vm = ViewModelProviders.of(this).get(TAPNewContactViewModel.class);
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         clSearchResult = findViewById(R.id.cl_search_result);
         clButtonAction = findViewById(R.id.cl_button_action);
         clConnectionLost = findViewById(R.id.cl_connection_lost);

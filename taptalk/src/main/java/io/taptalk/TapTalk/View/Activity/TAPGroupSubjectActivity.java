@@ -114,8 +114,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivCamera = findViewById(R.id.iv_camera);
         civGroupImage = findViewById(R.id.civ_group_image);

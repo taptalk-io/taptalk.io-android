@@ -49,8 +49,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         getWindow().setBackgroundDrawable(null);
 
         //ini buat set data yang di pass dari new chat activity

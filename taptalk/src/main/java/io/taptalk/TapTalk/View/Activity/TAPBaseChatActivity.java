@@ -19,6 +19,4 @@ public abstract class TAPBaseChatActivity extends SwipeBackActivity {
         super.onPause();
         TAPUtils.getInstance().dismissKeyboard(this);
     }
-
-    protected abstract void initView();
 }

@@ -69,8 +69,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         });
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         llButtonNewContact = findViewById(R.id.ll_button_new_contact);
         llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
         llButtonNewGroup = findViewById(R.id.ll_button_new_group);

@@ -51,8 +51,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
         //End Dummy
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         getWindow().setBackgroundDrawable(null);
 
         ivButtonBack = findViewById(R.id.iv_button_back);

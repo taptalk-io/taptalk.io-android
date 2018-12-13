@@ -76,7 +76,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
     }
 
-    public void initView() {
+    private void initView() {
         cvResult = findViewById(R.id.cv_result);
         pbLoading = findViewById(R.id.pb_loading);
         pbAddLoading = findViewById(R.id.pb_add_loading);

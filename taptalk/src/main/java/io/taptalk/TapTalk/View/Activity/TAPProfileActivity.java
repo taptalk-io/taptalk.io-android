@@ -67,8 +67,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         clButtonNotifications = findViewById(R.id.cl_button_notifications);
         llToolbarCollapsed = findViewById(R.id.ll_toolbar_collapsed);
         llButtonConversationColor = findViewById(R.id.ll_button_conversation_color);
