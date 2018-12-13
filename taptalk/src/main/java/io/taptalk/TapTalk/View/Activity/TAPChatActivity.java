@@ -306,6 +306,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // Set room status
         if (getIntent().getBooleanExtra(IS_TYPING, false)) {
+            vm.setOtherUserTyping(true);
             showTypingIndicator();
         }
 
@@ -670,8 +671,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showUserOnline() {
         runOnUiThread(() -> {
-            clRoomTypingStatus.setVisibility(View.GONE);
-            clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            if (!vm.isOtherUserTyping()) {
+                clRoomTypingStatus.setVisibility(View.GONE);
+                clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            }
             vStatusBadge.setVisibility(View.VISIBLE);
             vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
             tvRoomStatus.setText(getString(R.string.active_now));
@@ -681,8 +684,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showUserOffline() {
         runOnUiThread(() -> {
-            clRoomTypingStatus.setVisibility(View.GONE);
-            clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            if (!vm.isOtherUserTyping()) {
+                clRoomTypingStatus.setVisibility(View.GONE);
+                clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            }
             lastActivityRunnable.run();
         });
     }
@@ -705,6 +710,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void showTypingIndicator() {
+        vm.setOtherUserTyping(true);
         typingIndicatorTimeoutTimer.cancel();
         typingIndicatorTimeoutTimer.start();
         runOnUiThread(() -> {
@@ -716,6 +722,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideTypingIndicator() {
+        vm.setOtherUserTyping(false);
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.GONE);
