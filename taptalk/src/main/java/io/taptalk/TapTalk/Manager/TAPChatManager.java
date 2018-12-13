@@ -66,6 +66,7 @@ public class TAPChatManager {
     private boolean isPendingMessageExist;
     private boolean isFileUploadExist;
     private boolean isFinishChatFlow;
+    private boolean isNeedToCalledUpdateRoomStatusAPI = true;
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
@@ -775,6 +776,14 @@ public class TAPChatManager {
 
     public void setFinishChatFlow(boolean finishChatFlow) {
         isFinishChatFlow = finishChatFlow;
+    }
+
+    public boolean isNeedToCalledUpdateRoomStatusAPI() {
+        return isNeedToCalledUpdateRoomStatusAPI;
+    }
+
+    public void setNeedToCalledUpdateRoomStatusAPI(boolean needToCalledUpdateRoomStatusAPI) {
+        isNeedToCalledUpdateRoomStatusAPI = needToCalledUpdateRoomStatusAPI;
     }
 
     private List<String> getReplyMessageLocalIDs() {

@@ -30,6 +30,12 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
         initView();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
 
@@ -45,8 +51,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
         //End Dummy
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         getWindow().setBackgroundDrawable(null);
 
         ivButtonBack = findViewById(R.id.iv_button_back);

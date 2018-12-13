@@ -43,8 +43,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         etUsername = findViewById(R.id.et_username);
         tvSignIn = findViewById(R.id.tv_sign_in);
         progressBar = findViewById(R.id.pb_signing_in);

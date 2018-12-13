@@ -252,6 +252,9 @@ public class TAPRoomListFragment extends Fragment {
     private void openNewChatActivity() {
         Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
         startActivity(intent);
+        if (null != getActivity()) {
+            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
     }
 
     //ini adalah fungsi yang di panggil pertama kali pas onResume
