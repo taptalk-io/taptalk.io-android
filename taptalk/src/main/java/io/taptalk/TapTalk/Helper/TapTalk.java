@@ -20,6 +20,7 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
@@ -65,7 +66,7 @@ public class TapTalk {
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
-    private TAPListener tapListener;
+    private List<TAPListener> tapListeners = new ArrayList<>();
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -110,7 +111,7 @@ public class TapTalk {
                             .build()
             );
 
-        this.tapListener = tapListener;
+        tapListeners.add(tapListener);
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -202,7 +203,13 @@ public class TapTalk {
     }
 
     private List<TAPCustomKeyboardItemModel> requestCustomKeyboardItemsFromClient(TAPUserModel activeUser, TAPUserModel otherUser) {
-        return tapListener.onRequestCustomKeyboardItems(activeUser, otherUser);
+        for (TAPListener listener : tapListeners) {
+            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.onRequestCustomKeyboardItems(activeUser, otherUser);
+            if (null != customKeyboardItems) {
+                return customKeyboardItems;
+            }
+        }
+        return null;
     }
 
     //Builder buat setting isi dari Notification chat
@@ -336,7 +343,7 @@ public class TapTalk {
         String userPlatform = "android";
         String xcUserID = "10";
         String fullname = "Jefry Lorentono";
-        String email =  "jefry@moselo.com";
+        String email = "jefry@moselo.com";
         String phone = "08979809026";
         String username = "jefry";
         String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -398,7 +405,8 @@ public class TapTalk {
 
             TAPDataManager.getInstance().saveActiveUser(response.getUser());
             TAPConnectionManager.getInstance().connect();
-            tapListener.onLoginSuccess(response.getUser());
+            for (TAPListener listener : tapListeners)
+                listener.onLoginSuccess(response.getUser());
         }
 
         @Override
@@ -415,5 +423,13 @@ public class TapTalk {
     private void registerFcmToken() {
         new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
         })).start();
+    }
+
+    public static void addTapTalkListener(TAPListener listener) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            tapTalk.tapListeners.add(listener);
+        }
     }
 }

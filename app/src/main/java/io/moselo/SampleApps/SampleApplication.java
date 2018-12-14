@@ -24,11 +24,6 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onLoginSuccess(TAPUserModel myUserModel) {
-            Toast.makeText(getApplicationContext(), "LOGIN SUCCESS", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
         public List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
             // DUMMY CUSTOM KEYBOARD ITEMS
             TAPCustomKeyboardItemModel seePriceList = new TAPCustomKeyboardItemModel("1", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_star_yellow), "See price list");
