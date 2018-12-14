@@ -25,7 +25,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Interface.TapTalkInterface;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
@@ -65,7 +65,7 @@ public class TapTalk {
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
-    private TapTalkInterface tapTalkInterface;
+    private TAPListener tapListener;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -75,11 +75,11 @@ public class TapTalk {
         }
     };
 
-    public static TapTalk init(Context context, TapTalkInterface tapTalkInterface) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, tapTalkInterface)) : tapTalk;
+    public static TapTalk init(Context context, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, tapListener)) : tapTalk;
     }
 
-    public TapTalk(final Context appContext, TapTalkInterface tapTalkInterface) {
+    public TapTalk(final Context appContext, TAPListener tapListener) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -110,7 +110,7 @@ public class TapTalk {
                             .build()
             );
 
-        this.tapTalkInterface = tapTalkInterface;
+        this.tapListener = tapListener;
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -136,7 +136,7 @@ public class TapTalk {
             }
         });
 
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapTalkInterface);
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapListener);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -202,7 +202,7 @@ public class TapTalk {
     }
 
     private List<TAPCustomKeyboardItemModel> requestCustomKeyboardItemsFromClient(TAPUserModel activeUser, TAPUserModel otherUser) {
-        return tapTalkInterface.onRequestCustomKeyboardItems(activeUser, otherUser);
+        return tapListener.onRequestCustomKeyboardItems(activeUser, otherUser);
     }
 
     //Builder buat setting isi dari Notification chat
@@ -398,7 +398,7 @@ public class TapTalk {
 
             TAPDataManager.getInstance().saveActiveUser(response.getUser());
             TAPConnectionManager.getInstance().connect();
-            tapTalkInterface.onLoginSuccess(response.getUser());
+            tapListener.onLoginSuccess(response.getUser());
         }
 
         @Override

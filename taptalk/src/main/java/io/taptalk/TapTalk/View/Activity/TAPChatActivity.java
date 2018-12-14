@@ -50,7 +50,7 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
-import io.taptalk.TapTalk.Listener.TapTalkListener;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -1007,7 +1007,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     };
 
     // TODO: 29 November 2018 TESTING CUSTOM KEYBOARD MENU
-    private TapTalkListener customKeyboardListener = new TapTalkListener() {
+    private TAPListener customKeyboardListener = new TAPListener() {
         @Override
         public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             switch (customKeyboardItemModel.getItemID()) {

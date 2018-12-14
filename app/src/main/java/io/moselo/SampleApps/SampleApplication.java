@@ -10,14 +10,14 @@ import java.util.List;
 
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Listener.TapTalkListener;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TaptalkSample.R;
 
 public class SampleApplication extends Application {
 
-    TapTalkListener tapTalkListener = new TapTalkListener() {
+    TAPListener TAPListener = new TAPListener() {
         @Override
         public void onRefreshTokenExpiredOrInvalid() {
             TapTalk.refreshTokenExpired();
@@ -83,7 +83,7 @@ public class SampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        TapTalk.init(this, tapTalkListener);
+        TapTalk.init(this, TAPListener);
         TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
         TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
         Stetho.initialize(
