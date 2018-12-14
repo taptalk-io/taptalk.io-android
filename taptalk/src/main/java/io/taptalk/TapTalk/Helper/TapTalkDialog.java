@@ -9,6 +9,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.UiThread;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import io.taptalk.Taptalk.R;
@@ -99,11 +100,11 @@ public class TapTalkDialog extends Dialog {
         protected TapTalkDialog dialog;
 
         //listener
-        protected View.OnClickListener emptyListener = v -> {};
+        protected View.OnClickListener emptyListener = v -> dialog.dismiss();
         protected View.OnClickListener primaryListener = emptyListener;
         protected View.OnClickListener secondaryListener = emptyListener;
-        protected boolean primaryIsDismiss = false;
-        protected boolean secondaryIsDismiss = false;
+        protected boolean primaryIsDismiss = true;
+        protected boolean secondaryIsDismiss = true;
 
         public Builder(Context context) {
             this.context = context;
@@ -165,7 +166,19 @@ public class TapTalkDialog extends Dialog {
         public TapTalkDialog show() {
             TapTalkDialog dialog = build();
             dialog.show();
+
+            setDialogSize();
+
             return dialog;
+        }
+
+        @UiThread
+        private void setDialogSize() {
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(dialog.getWindow().getAttributes());
+            lp.width = TAPUtils.getInstance().getScreenWidth() - TAPUtils.getInstance().dpToPx(90);
+            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            dialog.getWindow().setAttributes(lp);
         }
     }
 }

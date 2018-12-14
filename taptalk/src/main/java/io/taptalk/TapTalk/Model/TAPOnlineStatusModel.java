@@ -46,7 +46,23 @@ public class TAPOnlineStatusModel implements Parcelable {
         dest.writeValue(this.lastActive);
     }
 
+    public TAPOnlineStatusModel(TAPUserModel user, Boolean isOnline, Long lastActive) {
+        this.user = user;
+        this.isOnline = isOnline;
+        this.lastActive = lastActive;
+    }
+
     public TAPOnlineStatusModel() {
+    }
+
+    // TODO: 5 December 2018 ADD USER MODEL TO CONSTRUCTOR
+    public TAPOnlineStatusModel(Boolean isOnline, Long lastActive) {
+        this.isOnline = isOnline;
+        this.lastActive = lastActive;
+    }
+
+    public static TAPOnlineStatusModel Builder(TAPUserModel user) {
+        return new TAPOnlineStatusModel(user, user.getOnline(), user.getLastActivity());
     }
 
     protected TAPOnlineStatusModel(Parcel in) {

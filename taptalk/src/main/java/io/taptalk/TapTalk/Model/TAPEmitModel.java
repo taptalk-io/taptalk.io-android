@@ -1,6 +1,8 @@
 package io.taptalk.TapTalk.Model;
 
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TAPEmitModel<T> {
@@ -9,18 +11,10 @@ public class TAPEmitModel<T> {
     private String eventName;
     @JsonProperty("data")
     private T data;
-    @JsonProperty("status")
-    private TAPOnlineStatusModel status;
 
-    public TAPEmitModel(String eventName, T data) {
+    public TAPEmitModel(String eventName, @Nullable T data) {
         this.eventName = eventName;
         this.data = data;
-    }
-
-    public TAPEmitModel(String eventName, T data, TAPOnlineStatusModel status) {
-        this.eventName = eventName;
-        this.data = data;
-        this.status = status;
     }
 
     public TAPEmitModel() {
@@ -44,13 +38,5 @@ public class TAPEmitModel<T> {
     @JsonProperty("data")
     public void setData(T data) {
         this.data = data;
-    }
-
-    public TAPOnlineStatusModel getStatus() {
-        return status;
-    }
-
-    public void setStatus(TAPOnlineStatusModel status) {
-        this.status = status;
     }
 }

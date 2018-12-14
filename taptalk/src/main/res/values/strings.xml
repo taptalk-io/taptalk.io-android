@@ -91,6 +91,7 @@
     <string name="please_check_your_connection">Please check your connection</string>
     <string name="no_internet_show_error">Oops! It seems like you are offline, please check your connection.</string>
     <string name="api_call_return_error">Oops! there is an error, please try again later.</string>
+    <string name="init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
 
     <!--Attachment-->
     <string name="document">Document</string>
@@ -143,7 +144,6 @@
     <string name="intent_select_picture">Select Picture</string>
 
     <!--General-->
-    <string name="add_to_contacts">Add to Contacts</string>
     <string name="chat_now">Chat Now</string>
     <string name="chats_and_contacts">Chats and Contacts</string>
     <string name="clear_history">Clear history</string>
@@ -162,10 +162,12 @@
     <string name="sending">Sending…</string>
     <string name="send_a_message">Send a message…</string>
     <string name="sent_at">Sent at</string>
+    <string name="typing">Typing</string>
+    <string name="typing_1">Typing.</string>
+    <string name="typing_2">Typing..</string>
+    <string name="typing_3">Typing...</string>
     <string name="unread_messages">Unread Messages</string>
     <string name="you">You</string>
     <string name="over_99">99+</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_to_contacts">Add to Contacts</string>
 </resources>

@@ -16,9 +16,7 @@ public class TAPDefaultConstant {
         public static final String kSocketStartTyping = "chat/startTyping";
         public static final String kSocketStopTyping = "chat/stopTyping";
         public static final String kSocketAuthentication = "user/authentication";
-        public static final String kSocketUserOnline = "chat/status/online";
-//        public static final String kSocketUserOnline = "user/online";
-        public static final String kSocketUserOffline = "user/offline";
+        public static final String kSocketUserOnlineStatus = "user/status";
     }
 
     public static final class DatabaseType {
@@ -80,11 +78,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class Extras {
-        public static final String ROOM_NAME = "roomName";
-        public static final String MY_ID = "myID";
-        public static final String GROUP_MEMBERS = "groupMembers";
-        public static final String GROUP_NAME = "kGroupName";
-        public static final String GROUP_IMAGE = "kGroupImage";
+        public static final String ROOM_NAME = "tapRoomName";
+        public static final String MY_ID = "tapMyID";
+        public static final String GROUP_MEMBERS = "tapGroupMembers";
+        public static final String GROUP_NAME = "tapGroupName";
+        public static final String GROUP_IMAGE = "tapGroupImage";
+        public static final String IS_TYPING = "tapIsTyping";
     }
 
     public static final class RequestCode {
@@ -166,6 +165,9 @@ public class TAPDefaultConstant {
     public static final int NUM_OF_ITEM = 50;
     public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int DEFAULT_ANIMATION_TIME = 200;
+
+    public static final long TYPING_EMIT_DELAY = 10000L;
+    public static final long TYPING_INDICATOR_TIMEOUT = 15000L;
 
     public static final String APP_KEY_ID = "b43b48745dfa0e44k1";
     public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";

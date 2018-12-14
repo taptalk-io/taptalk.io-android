@@ -27,6 +27,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
@@ -64,12 +65,17 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         TAPUtils.getInstance().showKeyboard(this, etSearch);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPNewContactViewModel.class);
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         clSearchResult = findViewById(R.id.cl_search_result);
         clButtonAction = findViewById(R.id.cl_button_action);
         clConnectionLost = findViewById(R.id.cl_connection_lost);
@@ -409,9 +415,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             intent.putExtra(ADDED_CONTACT, vm.getSearchResult());
             startActivity(intent);
             finish();
+            overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
 
             // Add contact to database
-            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, vm.getSearchResult().hpUserModelForAddToDB());
+            TAPUserModel newContact = vm.getSearchResult().setUserAsContact();
+            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact);
+            TAPContactManager.getInstance().updateUserDataMap(newContact);
         }
 
         @Override
@@ -421,7 +430,6 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                     .setTitle(getString(R.string.error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.ok))
-                    .setPrimaryButtonListener(true, null)
                     .show();
         }
 

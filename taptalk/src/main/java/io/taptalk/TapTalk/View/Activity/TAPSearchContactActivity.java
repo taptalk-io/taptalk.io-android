@@ -39,12 +39,17 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
         initView();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         getWindow().setBackgroundDrawable(null);
 
         //ini buat set data yang di pass dari new chat activity
@@ -76,6 +81,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
     private void openNewContactActivity() {
         Intent intent = new Intent(this, TAPNewContactActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {

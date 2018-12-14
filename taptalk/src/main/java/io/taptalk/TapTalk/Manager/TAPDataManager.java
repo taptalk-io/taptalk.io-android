@@ -16,15 +16,18 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import rx.Subscriber;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
@@ -429,6 +432,11 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().insertMyContact(userModels);
     }
 
+    // Set isContact value to 0 or 1 then insert user model to database
+    public void checkContactAndInsertToDatabase(TAPUserModel userModel) {
+        TAPDatabaseManager.getInstance().checkContactAndInsert(userModel);
+    }
+
     public void insertAndGetMyContact(List<TAPUserModel> userModels, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().insertAndGetMyContact(userModels, listener);
     }
@@ -454,6 +462,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
     }
 
+    public void getAllUserData(TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().getAllUserData(listener);
+    }
+
     //General
     public void deleteAllFromDatabase() {
         new Thread(this::deleteAllMessage).start();
@@ -473,6 +485,10 @@ public class TAPDataManager {
                 fullname, email, phone, username, new TAPDefaultSubscriber<>(view));
     }
 
+    public void sendCustomMessage(Integer messageType, String body, String filterID, String senderUserID, String recipientUserID, TapDefaultDataView<TAPSendCustomMessageResponse> view) {
+        TAPApiManager.getInstance().sendCustomMessage(messageType, body, filterID, senderUserID, recipientUserID, new TAPDefaultSubscriber<>(view));
+    }
+
     public void getAccessTokenFromApi(TapDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance().getAccessToken(new TAPDefaultSubscriber<>(view));
     }
@@ -486,7 +502,7 @@ public class TAPDataManager {
     }
 
     public void registerFcmTokenToServer(String fcmToken, TapDefaultDataView<TAPCommonResponse> view) {
-        TAPApiManager.getInstance().registerFcmTokenToServer(fcmToken, new TAPDefaultSubscriber(view));
+        TAPApiManager.getInstance().registerFcmTokenToServer(fcmToken, new TAPDefaultSubscriber<>(view));
     }
 
     public void getMessageRoomListAndUnread(String userID, TapDefaultDataView<TAPGetRoomListResponse> view) {

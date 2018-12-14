@@ -26,7 +26,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Interface.TapTalkInterface;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
@@ -43,6 +43,7 @@ import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
@@ -65,9 +66,7 @@ public class TapTalk {
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
-    private TapTalkInterface tapTalkInterface;
-
-    private List<TAPCustomKeyboardItemModel> customKeyboardItemModels;
+    private List<TAPListener> tapListeners = new ArrayList<>();
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -77,11 +76,11 @@ public class TapTalk {
         }
     };
 
-    public static TapTalk init(Context context, TapTalkInterface tapTalkInterface) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, tapTalkInterface)) : tapTalk;
+    public static TapTalk init(Context context, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, tapListener)) : tapTalk;
     }
 
-    public TapTalk(final Context appContext, TapTalkInterface tapTalkInterface) {
+    public TapTalk(final Context appContext, TAPListener tapListener) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -112,7 +111,7 @@ public class TapTalk {
                             .build()
             );
 
-        this.tapTalkInterface = tapTalkInterface;
+        tapListeners.add(tapListener);
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -134,34 +133,11 @@ public class TapTalk {
                 TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
             }
         });
 
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapTalkInterface);
-
-        // TODO: 30 November 2018 DUMMY CUSTOM KEYBOARD ITEMS
-        TAPCustomKeyboardItemModel seePriceList = new TAPCustomKeyboardItemModel("1", appContext.getDrawable(R.drawable.tap_ic_star_yellow), "See price list");
-        TAPCustomKeyboardItemModel readExpertNotes = new TAPCustomKeyboardItemModel("2", appContext.getDrawable(R.drawable.tap_ic_search_grey), "Read expert's notes");
-        TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", appContext.getDrawable(R.drawable.tap_ic_gallery_green_blue), "Send services");
-        TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", appContext.getDrawable(R.drawable.tap_ic_documents_green_blue), "Create order card");
-        List<TAPCustomKeyboardItemModel> userToExpert = new ArrayList<>();
-        List<TAPCustomKeyboardItemModel> expertToUser = new ArrayList<>();
-        List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
-        userToExpert.add(seePriceList);
-        userToExpert.add(readExpertNotes);
-        expertToUser.add(sendServices);
-        expertToUser.add(createOrderCard);
-        expertToExpert.add(seePriceList);
-        expertToExpert.add(readExpertNotes);
-        expertToExpert.add(sendServices);
-        expertToExpert.add(createOrderCard);
-        expertToExpert.add(seePriceList);
-        expertToExpert.add(readExpertNotes);
-        expertToExpert.add(sendServices);
-        expertToExpert.add(createOrderCard);
-        addCustomKeyboardItemGroup("1", "2", userToExpert);
-        addCustomKeyboardItemGroup("2", "1", expertToUser);
-        addCustomKeyboardItemGroup("2", "2", expertToExpert);
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapListener);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -213,8 +189,27 @@ public class TapTalk {
         return clientAppName;
     }
 
-    public static void addCustomKeyboardItemGroup(String senderRoleID, String recipientRoleID, List<TAPCustomKeyboardItemModel> customKeyboardItems) {
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardItemGroup(senderRoleID, recipientRoleID, customKeyboardItems);
+    public static List<TAPCustomKeyboardItemModel> requestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            try {
+                return tapTalk.requestCustomKeyboardItemsFromClient(activeUser, otherUser);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private List<TAPCustomKeyboardItemModel> requestCustomKeyboardItemsFromClient(TAPUserModel activeUser, TAPUserModel otherUser) {
+        for (TAPListener listener : tapListeners) {
+            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.onRequestCustomKeyboardItems(activeUser, otherUser);
+            if (null != customKeyboardItems) {
+                return customKeyboardItems;
+            }
+        }
+        return null;
     }
 
     //Builder buat setting isi dari Notification chat
@@ -332,7 +327,7 @@ public class TapTalk {
 
     public static void login() {
         if (null == tapTalk) {
-            throw new IllegalStateException("You Need To Init Taptalk library first, Read Documentation for detailed information.");
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             try {
                 tapTalk.tempForceLogin();
@@ -348,7 +343,7 @@ public class TapTalk {
         String userPlatform = "android";
         String xcUserID = "10";
         String fullname = "Jefry Lorentono";
-        String email =  "jefry@moselo.com";
+        String email = "jefry@moselo.com";
         String phone = "08979809026";
         String username = "jefry";
         String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -410,7 +405,8 @@ public class TapTalk {
 
             TAPDataManager.getInstance().saveActiveUser(response.getUser());
             TAPConnectionManager.getInstance().connect();
-            tapTalkInterface.onLoginSuccess(response.getUser());
+            for (TAPListener listener : tapListeners)
+                listener.onLoginSuccess(response.getUser());
         }
 
         @Override
@@ -427,5 +423,13 @@ public class TapTalk {
     private void registerFcmToken() {
         new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
         })).start();
+    }
+
+    public static void addTapTalkListener(TAPListener listener) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            tapTalk.tapListeners.add(listener);
+        }
     }
 }

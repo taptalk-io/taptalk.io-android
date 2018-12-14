@@ -86,6 +86,12 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+    }
+
     private void initViewModel() {
         TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
@@ -156,8 +162,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         };
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         llGroupMembers = findViewById(R.id.ll_group_members);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonAction = findViewById(R.id.iv_button_action);

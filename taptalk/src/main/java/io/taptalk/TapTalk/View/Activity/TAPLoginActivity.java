@@ -7,6 +7,7 @@ import android.support.design.widget.TextInputEditText;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.net.URL;
 
@@ -15,12 +16,14 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
 public class TAPLoginActivity extends TAPBaseActivity {
@@ -30,10 +33,18 @@ public class TAPLoginActivity extends TAPBaseActivity {
     private TextView tvSignIn;
     private ProgressBar progressBar;
 
+    private TAPListener tapListener = new TAPListener() {
+        @Override
+        public void onLoginSuccess(TAPUserModel myUserModel) {
+            Toast.makeText(TAPLoginActivity.this, "LOGIN SUCCESS", Toast.LENGTH_SHORT).show();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_login);
+        TapTalk.addTapTalkListener(tapListener);
 
         initView();
     }
@@ -43,8 +54,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         etUsername = findViewById(R.id.et_username);
         tvSignIn = findViewById(R.id.tv_sign_in);
         progressBar = findViewById(R.id.pb_signing_in);

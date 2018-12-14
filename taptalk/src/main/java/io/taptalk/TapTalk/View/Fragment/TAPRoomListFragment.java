@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
@@ -45,6 +46,7 @@ import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
@@ -173,6 +175,16 @@ public class TAPRoomListFragment extends Fragment {
             public void onReadMessage(String roomID) {
                 updateUnreadCountPerRoom(roomID);
             }
+
+            @Override
+            public void onReceiveStartTyping(TAPTypingModel typingModel) {
+                showTyping(typingModel, true);
+            }
+
+            @Override
+            public void onReceiveStopTyping(TAPTypingModel typingModel) {
+               showTyping(typingModel, false);
+            }
         };
         TAPChatManager.getInstance().addChatListener(chatListener);
 
@@ -186,8 +198,6 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void initView(View view) {
-        getActivity().getWindow().setBackgroundDrawable(null);
-
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         clSelection = view.findViewById(R.id.cl_selection);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
@@ -200,9 +210,15 @@ public class TAPRoomListFragment extends Fragment {
         ivButtonMore = view.findViewById(R.id.iv_button_more);
         rvContactList = view.findViewById(R.id.rv_contact_list);
 
+        if (null != getActivity()) {
+            getActivity().getWindow().setBackgroundDrawable(null);
+        }
+
         flSetupContainer.setVisibility(View.GONE);
 
-        if (vm.isSelecting()) showSelectionActionBar();
+        if (vm.isSelecting()) {
+            showSelectionActionBar();
+        }
         vm.setDoneFirstApiSetup(TAPDataManager.getInstance().isRoomListSetupFinished());
 
         adapter = new TAPRoomListAdapter(vm, tapTalkRoomListInterface);
@@ -236,6 +252,9 @@ public class TAPRoomListFragment extends Fragment {
     private void openNewChatActivity() {
         Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
         startActivity(intent);
+        if (null != getActivity()) {
+            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
     }
 
     //ini adalah fungsi yang di panggil pertama kali pas onResume
@@ -317,14 +336,7 @@ public class TAPRoomListFragment extends Fragment {
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
                 //last messagenya sama cuma update datanya aja
-                roomLastMessage.setUpdated(message.getUpdated());
-                roomLastMessage.setIsDeleted(message.getIsDeleted());
-                roomLastMessage.setSending(message.getSending());
-                roomLastMessage.setFailedSend(message.getFailedSend());
-                roomLastMessage.setIsRead(message.getIsRead());
-                roomLastMessage.setDelivered(message.getDelivered());
-                roomLastMessage.setHidden(message.getHidden());
-
+                roomLastMessage.updateValue(message);
                 Integer roomPos = vm.getRoomList().indexOf(roomList);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
             } else {
@@ -353,7 +365,14 @@ public class TAPRoomListFragment extends Fragment {
             }
         } else if (null != getActivity()){
             //kalau room yang masuk baru
-            TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
+
+            //TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
+            TAPRoomListModel newRoomList = TAPRoomListModel.buildWithLastMessage(message);
+            if (!newRoomList.getLastMessage().getUser().getUserID()
+                    .equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+                newRoomList.setUnreadCount(1);
+            }
+
             vm.addRoomPointer(newRoomList);
             vm.getRoomList().add(0, newRoomList);
             getActivity().runOnUiThread(() -> {
@@ -413,6 +432,16 @@ public class TAPRoomListFragment extends Fragment {
         return vm.isSelecting();
     }
 
+    private void showTyping(TAPTypingModel typingModel, boolean isTyping) {
+        String roomID = typingModel.getRoomID();
+        if (!vm.getRoomPointer().containsKey(roomID)) {
+            return;
+        }
+        TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
+        roomListModel.setTyping(isTyping);
+        getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel)));
+    }
+
     private TapDefaultDataView<TAPGetRoomListResponse> roomListView = new TapDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
@@ -444,6 +473,9 @@ public class TAPRoomListFragment extends Fragment {
                     try {
                         TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
                         tempMessage.add(TAPChatManager.getInstance().convertToEntity(temp));
+
+                        // Save user data to contact manager
+                        TAPContactManager.getInstance().updateUserDataMap(message.getUser());
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                         Log.e(TAG, "onSuccess: ", e);
@@ -492,9 +524,10 @@ public class TAPRoomListFragment extends Fragment {
             // Insert contacts to database
             List<TAPUserModel> users = new ArrayList<>();
             for (TAPContactModel contact : response.getContacts()) {
-                users.add(contact.getUser().hpUserModelForAddToDB());
+                users.add(contact.getUser().setUserAsContact());
             }
             TAPDataManager.getInstance().insertMyContactToDatabase(users);
+            TAPContactManager.getInstance().updateUserDataMap(users);
         }
     };
 

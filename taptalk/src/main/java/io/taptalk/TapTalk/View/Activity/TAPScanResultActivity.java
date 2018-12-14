@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -24,6 +23,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -70,7 +70,13 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         initView();
     }
 
-    public void initView() {
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_fade_out);
+    }
+
+    private void initView() {
         cvResult = findViewById(R.id.cv_result);
         pbLoading = findViewById(R.id.pb_loading);
         pbAddLoading = findViewById(R.id.pb_add_loading);
@@ -136,12 +142,12 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         cvResult.setVisibility(View.VISIBLE);
         pbLoading.setVisibility(View.GONE);
         contactModel = userModel;
-        if (null != addedContactUserModel.getAvatarURL() && !addedContactUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
+        if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(this).load(userModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
             civTheirContactAvatar.setBackground(null);
         } else {
             civTheirContactAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(addedContactUserModel.getName())));
+            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
         }
         if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
             Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
@@ -186,7 +192,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPCommonResponse response) {
             super.onSuccess(response);
-            TAPDataManager.getInstance().insertMyContactToDatabase(contactModel.hpUserModelForAddToDB());
+            TAPUserModel newContact = contactModel.setUserAsContact();
+            TAPDataManager.getInstance().insertMyContactToDatabase(newContact);
+            TAPContactManager.getInstance().updateUserDataMap(newContact);
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);

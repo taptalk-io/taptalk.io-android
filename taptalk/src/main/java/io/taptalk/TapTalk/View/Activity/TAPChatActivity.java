@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -42,21 +43,24 @@ import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
-import io.taptalk.TapTalk.Listener.TapTalkListener;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -67,6 +71,7 @@ import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPPairIdNameModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRecipientModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
@@ -75,6 +80,7 @@ import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -93,6 +99,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 
 public class TAPChatActivity extends TAPBaseChatActivity {
 
@@ -110,11 +118,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clContainer, clEmptyChat, clReply, clChatComposer;
+    private ConstraintLayout clContainer, clEmptyChat, clReply, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach,
+            ivButtonSend, ivToBottom, ivRoomTypingIndicator;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
-    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvReplySender, tvReplyBody, tvBadgeUnread;
+    private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvReplySender,
+            tvReplyBody, tvBadgeUnread, tvRoomTypingStatus;
     private View vStatusBadge;
 
     // RecyclerView
@@ -136,12 +146,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     //endless scroll Listener
     TAPEndlessScrollListener endlessScrollListener;
-
-    private TapTalkNetworkInterface networkListener = () -> {
-        if (vm.isInitialAPICallFinished()) {
-            callApiAfter();
-        }
-    };
 
     /**
      * =========================================================================================== *
@@ -170,6 +174,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().removeChatListener(chatListener);
         // Stop offline timer
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
 
     }
 
@@ -178,23 +183,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onResume();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
-
         addNetworkListener();
-
-        if (vm.isInitialAPICallFinished())
+        callApiGetUserByUserID();
+        if (vm.isInitialAPICallFinished()) {
             callApiAfter();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-        String draft = etChat.getText().toString();
-        if (!draft.isEmpty()) TAPChatManager.getInstance().saveMessageToDraft(draft);
-        else TAPChatManager.getInstance().removeDraft();
-
+        saveDraftToManager();
         removeNetworkListener();
-
+        sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
     }
 
@@ -205,6 +206,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             TAPChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
     }
 
@@ -253,16 +255,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
+        vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
     }
 
-    @Override
-    protected void initView() {
+    private void initView() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
         clReply = (ConstraintLayout) findViewById(R.id.cl_reply);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
+        clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
+        clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
         ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
         ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
@@ -270,11 +274,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send);
         ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
+        ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
         civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
         tvRoomName = (TextView) findViewById(R.id.tv_room_name);
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
+        tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
         tvReplySender = (TextView) findViewById(R.id.tv_reply_sender);
@@ -299,8 +305,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         // Set room status
+        if (getIntent().getBooleanExtra(IS_TYPING, false)) {
+            vm.setOtherUserTyping(true);
+            showTypingIndicator();
+        }
+
         // TODO: 24 September 2018 CALL ONLINE STATUS API
-        showUserOffline();
+        //showUserOffline();
 
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(chatListener);
@@ -318,17 +329,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         // Initialize custom keyboard
-        // TODO: 25 September 2018 CHANGE CUSTOM KEYBOARD MENU ACCORDING TO USER ROLES
-        vm.setCustomKeyboardEnabled(TAPCustomKeyboardManager.getInstance().isCustomKeyboardEnabled("2", "2"));
-        if (vm.isCustomKeyboardEnabled()) {
-            // Get custom keyboard items from manager
-            vm.setCustomKeyboardItems(TAPCustomKeyboardManager.getInstance().getCustomKeyboardGroup("2", "2").getCustomKeyboardItems());
-            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), "2", "2");
+        vm.setCustomKeyboardItems(TapTalk.requestCustomKeyboardItems(vm.getMyUserModel(), vm.getOtherUserModel()));
+        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
+            // Enable custom keyboard
+            vm.setCustomKeyboardEnabled(true);
+            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(),
+                    customKeyboardItemModel -> TAPCustomKeyboardManager.getInstance()
+                            .onCustomKeyboardItemClicked(customKeyboardItemModel,
+                                    vm.getMyUserModel(), vm.getOtherUserModel()));
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
             rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
         } else {
             // Disable custom keyboard
+            vm.setCustomKeyboardEnabled(false);
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
@@ -389,6 +403,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             public void onSocketConnected() {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
+                    callApiGetUserByUserID();
                     callApiAfter();
                 }
             }
@@ -413,6 +428,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         Intent intent = new Intent(this, TAPProfileActivity.class);
         intent.putExtra(K_ROOM, vm.getRoom());
         startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void updateUnreadCount() {
@@ -457,6 +473,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.addPendingRecyclerMessage(newMessage);
         } else {
             // Message is added after transition finishes in containerTransitionListener
+            // TODO: 12 December 2018 TEMPORARY ORDER CARD LOGIC
             checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
@@ -573,7 +590,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            } else if (!vm.getMessagePointer().containsKey(newID)){
+            } else if (!vm.getMessagePointer().containsKey(newID)) {
                 new Thread(() -> {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
@@ -641,16 +658,93 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
+    private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
+        vm.setOnlineStatus(onlineStatus);
+        if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
+            // User is online
+            showUserOnline();
+        } else if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && !onlineStatus.getOnline()) {
+            // User is offline
+            showUserOffline();
+        }
+    }
+
     private void showUserOnline() {
         runOnUiThread(() -> {
+            if (!vm.isOtherUserTyping()) {
+                clRoomTypingStatus.setVisibility(View.GONE);
+                clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            }
+            vStatusBadge.setVisibility(View.VISIBLE);
             vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
             tvRoomStatus.setText(getString(R.string.active_now));
+            vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         });
-        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
     }
 
     private void showUserOffline() {
-        lastActivityRunnable.run();
+        runOnUiThread(() -> {
+            if (!vm.isOtherUserTyping()) {
+                clRoomTypingStatus.setVisibility(View.GONE);
+                clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            }
+            lastActivityRunnable.run();
+        });
+    }
+
+    private void sendTypingEmit(boolean isTyping) {
+        if (TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTED) {
+            return;
+        }
+        String currentRoomID = vm.getRoom().getRoomID();
+        if (isTyping && !vm.isActiveUserTyping()) {
+            TAPChatManager.getInstance().sendStartTypingEmit(currentRoomID);
+            vm.setActiveUserTyping(true);
+            sendTypingEmitDelayTimer.cancel();
+            sendTypingEmitDelayTimer.start();
+        } else if (!isTyping && vm.isActiveUserTyping()) {
+            TAPChatManager.getInstance().sendStopTypingEmit(currentRoomID);
+            vm.setActiveUserTyping(false);
+            sendTypingEmitDelayTimer.cancel();
+        }
+    }
+
+    private void showTypingIndicator() {
+        vm.setOtherUserTyping(true);
+        typingIndicatorTimeoutTimer.cancel();
+        typingIndicatorTimeoutTimer.start();
+        runOnUiThread(() -> {
+            clRoomTypingStatus.setVisibility(View.VISIBLE);
+            clRoomOnlineStatus.setVisibility(View.GONE);
+            Glide.with(this).load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+            tvRoomTypingStatus.setText(getString(R.string.typing));
+        });
+    }
+
+    private void hideTypingIndicator() {
+        vm.setOtherUserTyping(false);
+        typingIndicatorTimeoutTimer.cancel();
+        runOnUiThread(() -> {
+            clRoomTypingStatus.setVisibility(View.GONE);
+            clRoomOnlineStatus.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void saveDraftToManager() {
+        String draft = etChat.getText().toString();
+        if (!draft.isEmpty()) {
+            TAPChatManager.getInstance().saveMessageToDraft(draft);
+        } else {
+            TAPChatManager.getInstance().removeDraft();
+        }
+    }
+
+    private void addNetworkListener() {
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+    }
+
+    private void removeNetworkListener() {
+        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 
     //ini Fungsi buat manggil Api Before
@@ -666,6 +760,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             else TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID()
                     , System.currentTimeMillis()
                     , beforeView);
+        }).start();
+    }
+
+    private void callApiGetUserByUserID() {
+        new Thread(() -> {
+            if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI())
+                TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
+                    @Override
+                    public void onSuccess(TAPGetUserResponse response) {
+                        TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(response.getUser());
+                        setChatRoomStatus(onlineStatus);
+                        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(false);
+                    }
+                });
         }).start();
     }
 
@@ -883,27 +991,25 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onUserOnline(TAPOnlineStatusModel onlineStatus) {
-            vm.setLastActivity(onlineStatus.getLastActive());
-            if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && onlineStatus.getOnline()) {
-                // User is online
-                showUserOnline();
-            } else if (onlineStatus.getUser().getUserID().equals(vm.getOtherUserID()) && !onlineStatus.getOnline()) {
-                // User is offline
-                showUserOffline();
-            }
+        public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
+            setChatRoomStatus(onlineStatus);
         }
 
         @Override
-        public void onUserOffline(Long lastActivity) {
+        public void onReceiveStartTyping(TAPTypingModel typingModel) {
+            showTypingIndicator();
+        }
 
+        @Override
+        public void onReceiveStopTyping(TAPTypingModel typingModel) {
+            hideTypingIndicator();
         }
     };
 
     // TODO: 29 November 2018 TESTING CUSTOM KEYBOARD MENU
-    private TapTalkListener customKeyboardListener = new TapTalkListener() {
+    private TAPListener customKeyboardListener = new TAPListener() {
         @Override
-        public void onCustomKeyboardItemClicked(String senderRoleID, String recipientRoleID, TAPCustomKeyboardItemModel customKeyboardItemModel) {
+        public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             switch (customKeyboardItemModel.getItemID()) {
                 case "2":
                     // TODO: 15 November 2018 DUMMY ORDER CARD FROM OTHER USER
@@ -1045,11 +1151,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
         }
 
-        @Override
-        public void onLoginSuccess(TAPUserModel myUserModel) {
-
-        }
-
         private void sendCustomKeyboardMessage(TAPMessageModel message) {
             hideKeyboards();
             addNewMessage(message);
@@ -1064,13 +1165,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0) {
+            if (s.length() > 0 && s.toString().trim().length() > 0) {
                 ivButtonChatMenu.setVisibility(View.GONE);
-                if (s.toString().trim().length() > 0) {
-                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
-                } else {
-                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
-                }
+                ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
+            } else if (s.length() > 0) {
+                ivButtonChatMenu.setVisibility(View.GONE);
+                ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
             } else {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
@@ -1081,7 +1181,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
-
+            sendTypingEmit(s.length() > 0);
         }
     };
 
@@ -1268,6 +1368,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
+    private TapTalkNetworkInterface networkListener = () -> {
+        if (vm.isInitialAPICallFinished()) {
+            callApiAfter();
+        }
+    };
+
     private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageAfterView = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
         public void startLoading() {
@@ -1326,7 +1432,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             });
 
             if (0 < responseMessages.size())
-                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {});
+                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+                });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
@@ -1407,7 +1514,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (state == STATE.DONE) updateMessageDecoration();
             });
 
-            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {});
+            TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
+            });
         }
 
         @Override
@@ -1484,15 +1592,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void run() {
-            Long lastActive = vm.getLastActivity();
+            Long lastActive = vm.getOnlineStatus().getLastActive();
             if (lastActive == 0) {
                 runOnUiThread(() -> {
+                    vStatusBadge.setVisibility(View.VISIBLE);
                     vStatusBadge.setBackground(null);
                     tvRoomStatus.setText("");
                 });
             } else {
                 runOnUiThread(() -> {
-                    vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
+                    //vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_butterscotch));
+                    vStatusBadge.setVisibility(View.GONE);
                     tvRoomStatus.setText(TAPTimeFormatter.getInstance().getLastActivityString(TAPChatActivity.this, lastActive));
                 });
             }
@@ -1500,11 +1610,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    private void addNetworkListener() {
-        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
-    }
+    private CountDownTimer sendTypingEmitDelayTimer = new CountDownTimer(TYPING_EMIT_DELAY, 1000L) {
+        @Override
+        public void onTick(long l) {
 
-    private void removeNetworkListener() {
-        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
-    }
+        }
+
+        @Override
+        public void onFinish() {
+            vm.setActiveUserTyping(false);
+        }
+    };
+
+    private CountDownTimer typingIndicatorTimeoutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
+        @Override
+        public void onTick(long l) {
+
+        }
+
+        @Override
+        public void onFinish() {
+            hideTypingIndicator();
+        }
+    };
 }

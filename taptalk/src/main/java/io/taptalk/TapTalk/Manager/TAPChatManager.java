@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 
@@ -44,8 +45,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStartTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOffline;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnline;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
@@ -66,6 +66,7 @@ public class TAPChatManager {
     private boolean isPendingMessageExist;
     private boolean isFileUploadExist;
     private boolean isFinishChatFlow;
+    private boolean isNeedToCalledUpdateRoomStatusAPI = true;
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
@@ -101,31 +102,37 @@ public class TAPChatManager {
     private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
-            TAPEmitModel<TAPMessageModel> messageEmit = TAPUtils.getInstance()
-                    .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
-                    }, emitData);
             switch (eventName) {
                 case kEventOpenRoom:
                     break;
                 case kSocketCloseRoom:
                     break;
                 case kSocketNewMessage:
+                    TAPEmitModel<TAPMessageModel> newMessageEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(newMessageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketUpdateMessage:
+                    TAPEmitModel<TAPMessageModel> updateMessageEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(updateMessageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
                     break;
                 case kSocketDeleteMessage:
+                    TAPEmitModel<TAPMessageModel> deleteMessageEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPMessageModel>>() {
+                            }, emitData);
                     try {
-                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(messageEmit.getData()), eventName);
+                        receiveMessageFromSocket(TAPMessageModel.BuilderDecrypt(deleteMessageEmit.getData()), eventName);
                     } catch (GeneralSecurityException e) {
                         e.printStackTrace();
                     }
@@ -133,22 +140,30 @@ public class TAPChatManager {
                 case kSocketOpenMessage:
                     break;
                 case kSocketStartTyping:
+                    TAPEmitModel<TAPTypingModel> startTypingEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
+                            }, emitData);
+                    for (TAPChatListener listener : chatListeners) {
+                        listener.onReceiveStartTyping(startTypingEmit.getData());
+                    }
                     break;
                 case kSocketStopTyping:
+                    TAPEmitModel<TAPTypingModel> stopTypingEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
+                            }, emitData);
+                    for (TAPChatListener listener : chatListeners) {
+                        listener.onReceiveStopTyping(stopTypingEmit.getData());
+                    }
                     break;
                 case kSocketAuthentication:
                     break;
-                case kSocketUserOnline:
-                    TAPOnlineStatusModel onlineStatus = messageEmit.getStatus();
+                case kSocketUserOnlineStatus:
+                    TAPEmitModel<TAPOnlineStatusModel> onlineStatusEmit = TAPUtils.getInstance()
+                            .fromJSON(new TypeReference<TAPEmitModel<TAPOnlineStatusModel>>() {
+                            }, emitData);
+                    TAPOnlineStatusModel onlineStatus = onlineStatusEmit.getData();
                     for (TAPChatListener listener : chatListeners) {
-                        listener.onUserOnline(onlineStatus);
-                    }
-                    //TAPUserOnlineStatusManager.getInstance().updateUserLastActivity(onlineStatus.getUser().getUserID(), onlineStatus.getLastActive());
-                    break;
-                case kSocketUserOffline:
-                    // TODO: 2 November 2018 GET EMIT DATA, SAVE LAST ACTIVE TIME TO PREFERENCE
-                    for (TAPChatListener listener : chatListeners) {
-                        listener.onUserOffline(System.currentTimeMillis());
+                        listener.onUserOnlineStatusUpdate(onlineStatus);
                     }
                     break;
             }
@@ -514,11 +529,36 @@ public class TAPChatManager {
     }
 
     /**
-     * Send emit to server
+     * Send Start Typing to Server
+     */
+    public void sendStartTypingEmit(String roomID) {
+        TAPTypingModel typingModel = new TAPTypingModel(roomID);
+        sendEmit(kSocketStartTyping, typingModel);
+    }
+
+    /**
+     * Send Stop Typing to Server
+     */
+    public void sendStopTypingEmit(String roomID) {
+        TAPTypingModel typingModel = new TAPTypingModel(roomID);
+        sendEmit(kSocketStopTyping, typingModel);
+    }
+
+    /**
+     * Send emit to server (Message)
      */
     private void sendEmit(String eventName, TAPMessageModel messageModel) {
         TAPEmitModel<TAPMessageModel> TAPEmitModel;
         TAPEmitModel = new TAPEmitModel<>(eventName, messageModel);
+        TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
+    }
+
+    /**
+     * Send emit to server (Typing)
+     */
+    private void sendEmit(String eventName, TAPTypingModel typingModel) {
+        TAPEmitModel<TAPTypingModel> TAPEmitModel;
+        TAPEmitModel = new TAPEmitModel<>(eventName, typingModel);
         TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
     }
 
@@ -642,7 +682,7 @@ public class TAPChatManager {
             }
         }
 
-        //add to list delivered message
+        // Add to list delivered message
         if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
                 && null != newMessage.getSending() && !newMessage.getSending()
                 && null != newMessage.getDelivered() && !newMessage.getDelivered()
@@ -650,7 +690,7 @@ public class TAPChatManager {
             TAPMessageStatusManager.getInstance().addDeliveredMessageQueue(newMessage);
         }
 
-        //check the message is from our direct reply or not (in background)
+        // Check the message is from our direct reply or not (in background)
         if (!isReplyMessageLocalIDsEmpty()) {
             removeReplyMessageLocalID(newMessage.getLocalID());
             if (isReplyMessageLocalIDsEmpty()) {
@@ -658,6 +698,9 @@ public class TAPChatManager {
                 Toast.makeText(TapTalk.appContext, "Reply Success", Toast.LENGTH_SHORT).show();
             }
         }
+
+        // Save user data to contact manager
+        TAPContactManager.getInstance().updateUserDataMap(newMessage.getUser());
     }
 
     public void saveNewMessageToList() {
@@ -733,6 +776,14 @@ public class TAPChatManager {
 
     public void setFinishChatFlow(boolean finishChatFlow) {
         isFinishChatFlow = finishChatFlow;
+    }
+
+    public boolean isNeedToCalledUpdateRoomStatusAPI() {
+        return isNeedToCalledUpdateRoomStatusAPI;
+    }
+
+    public void setNeedToCalledUpdateRoomStatusAPI(boolean needToCalledUpdateRoomStatusAPI) {
+        isNeedToCalledUpdateRoomStatusAPI = needToCalledUpdateRoomStatusAPI;
     }
 
     private List<String> getReplyMessageLocalIDs() {
