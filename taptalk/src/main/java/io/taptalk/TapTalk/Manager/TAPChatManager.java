@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -402,7 +403,7 @@ public class TAPChatManager {
     /**
      * Send image messages
      */
-    public void sendImageMessage(Activity activity, Uri imageUri) {
+    public void sendImageMessage(Uri imageUri) {
         // Build message model
         TAPMessageModel messageModel = TAPMessageModel.Builder(
                 imageUri.toString(),
@@ -438,6 +439,14 @@ public class TAPChatManager {
 //            messageModel.setBody(encodedImage);
 //            // TODO: 31 October 2018 SEND MESSAGE TO SERVER
 //        }).start();
+    }
+
+    // Send multiple image messages
+    public void sendImageMessage (ClipData clipData) {
+        int itemSize = clipData.getItemCount();
+        for (int i = 0; i < itemSize; i++) {
+            sendImageMessage(clipData.getItemAt(i).getUri());
+        }
     }
 
     // Send image without encoding
