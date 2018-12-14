@@ -20,12 +20,13 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Interface.TapTalkInterface;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
@@ -65,7 +66,7 @@ public class TapTalk {
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
-    private TapTalkInterface tapTalkInterface;
+    private List<TAPListener> tapListeners = new ArrayList<>();
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -75,11 +76,11 @@ public class TapTalk {
         }
     };
 
-    public static TapTalk init(Context context, TapTalkInterface tapTalkInterface) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, tapTalkInterface)) : tapTalk;
+    public static TapTalk init(Context context, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, tapListener)) : tapTalk;
     }
 
-    public TapTalk(final Context appContext, TapTalkInterface tapTalkInterface) {
+    public TapTalk(final Context appContext, TAPListener tapListener) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -110,7 +111,7 @@ public class TapTalk {
                             .build()
             );
 
-        this.tapTalkInterface = tapTalkInterface;
+        tapListeners.add(tapListener);
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -136,7 +137,7 @@ public class TapTalk {
             }
         });
 
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapTalkInterface);
+        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapListener);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -202,7 +203,13 @@ public class TapTalk {
     }
 
     private List<TAPCustomKeyboardItemModel> requestCustomKeyboardItemsFromClient(TAPUserModel activeUser, TAPUserModel otherUser) {
-        return tapTalkInterface.onRequestCustomKeyboardItems(activeUser, otherUser);
+        for (TAPListener listener : tapListeners) {
+            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.onRequestCustomKeyboardItems(activeUser, otherUser);
+            if (null != customKeyboardItems) {
+                return customKeyboardItems;
+            }
+        }
+        return null;
     }
 
     //Builder buat setting isi dari Notification chat
@@ -336,7 +343,7 @@ public class TapTalk {
         String userPlatform = "android";
         String xcUserID = "10";
         String fullname = "Jefry Lorentono";
-        String email =  "jefry@moselo.com";
+        String email = "jefry@moselo.com";
         String phone = "08979809026";
         String username = "jefry";
         String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -398,7 +405,8 @@ public class TapTalk {
 
             TAPDataManager.getInstance().saveActiveUser(response.getUser());
             TAPConnectionManager.getInstance().connect();
-            tapTalkInterface.onLoginSuccess(response.getUser());
+            for (TAPListener listener : tapListeners)
+                listener.onLoginSuccess(response.getUser());
         }
 
         @Override
@@ -415,5 +423,13 @@ public class TapTalk {
     private void registerFcmToken() {
         new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
         })).start();
+    }
+
+    public static void addTapTalkListener(TAPListener listener) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            tapTalk.tapListeners.add(listener);
+        }
     }
 }
