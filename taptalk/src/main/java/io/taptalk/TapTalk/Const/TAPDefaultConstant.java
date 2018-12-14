@@ -34,12 +34,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_CONTACT = 1006;
         public static final int TYPE_STICKER = 1007;
 
-        //public static final int TYPE_NEW_USER = 1000;
-        //public static final int TYPE_USER_LEAVE = 1001;
-        //public static final int TYPE_SEE_SERVICES_N_PRICES = 8001;
-        //public static final int TYPE_WELCOME = 8006;
-        //public static final int TYPE_ASK_PRODUCT = 9007;
-
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
         public static final int TYPE_ORDER_CARD = 2003;

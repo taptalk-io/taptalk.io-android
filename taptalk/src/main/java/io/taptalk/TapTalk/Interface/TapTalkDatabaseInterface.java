@@ -5,6 +5,7 @@ import java.util.Map;
 
 public interface TapTalkDatabaseInterface<T> {
     void onSelectFinished(List<T> entities);
+    void onSelectFinished(T entity);
     void onInsertFinished();
     void onDeleteFinished();
     void onCountedUnreadCount(String roomID, int unreadCount);
