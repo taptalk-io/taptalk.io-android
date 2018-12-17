@@ -49,8 +49,8 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
+import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -85,13 +85,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACCEPTED_BY_SELLER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACTIVE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CONFIRMED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.NOT_CONFIRMED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.PAYMENT_INCOMPLETE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_PAYMENT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_REVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
@@ -473,8 +466,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.addPendingRecyclerMessage(newMessage);
         } else {
             // Message is added after transition finishes in containerTransitionListener
-            // TODO: 12 December 2018 TEMPORARY ORDER CARD LOGIC
-            checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -506,44 +497,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
                 updateMessageDecoration();
             });
-        }
-    }
-
-    private void checkAndUpdateOrderCard(TAPMessageModel newMessage) {
-        if (newMessage.getType() != TYPE_ORDER_CARD) {
-            return;
-        }
-        // Only the latest card of the same order ID may be shown
-        TAPMessageModel oldOrderCard = vm.getPreviousOrderWithSameID(newMessage);
-
-        // Hide newMessage if it is older than ongoing card
-        if (null != oldOrderCard && oldOrderCard.getCreated() > newMessage.getCreated()) {
-            newMessage.setHidden(true);
-            return;
-        }
-
-        // Hide previous card with the same order ID
-        if (null != oldOrderCard) {
-            oldOrderCard.setHidden(true);
-            vm.removeOngoingOrderCard(oldOrderCard);
-            // TODO: 19 November 2018 UPDATE MESSAGE IN DATABASE, UNCOMMENT BELOW
-            //TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(oldOrderCard));
-            runOnUiThread(() -> messageAdapter.notifyItemRemoved(messageAdapter.getItems().indexOf(oldOrderCard)));
-        }
-
-        int orderStatus = vm.getOrderModel(newMessage).getOrderStatus();
-        switch (orderStatus) {
-            // Add order card to pointer if status is not canceled/completed
-            case NOT_CONFIRMED_BY_CUSTOMER:
-            case CONFIRMED_BY_CUSTOMER:
-            case ACCEPTED_BY_SELLER:
-            case WAITING_PAYMENT:
-            case PAYMENT_INCOMPLETE:
-            case ACTIVE:
-            case WAITING_REVIEW:
-            default:
-                vm.addOngoingOrderCard(newMessage);
-                break;
         }
     }
 

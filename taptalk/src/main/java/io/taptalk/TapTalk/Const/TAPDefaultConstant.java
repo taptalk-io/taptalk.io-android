@@ -56,21 +56,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_EMPTY = 9999;
     }
 
-    public static final class OrderStatus {
-        public static final int NOT_CONFIRMED_BY_CUSTOMER = 1;
-        public static final int CANCELLED_BY_CUSTOMER = 2;
-        public static final int CONFIRMED_BY_CUSTOMER = 3;
-        public static final int DECLINED_BY_SELLER = 4;
-        public static final int ACCEPTED_BY_SELLER = 5;
-        public static final int DISAGREED_BY_CUSTOMER = 6;
-        public static final int WAITING_PAYMENT = 7;
-        public static final int PAYMENT_INCOMPLETE = 8;
-        public static final int ACTIVE = 9;
-        public static final int OVERPAID = 10;
-        public static final int WAITING_REVIEW = 11;
-        public static final int REVIEW_COMPLETED = 12;
-    }
-
     public static final class Extras {
         public static final String ROOM_NAME = "tapRoomName";
         public static final String MY_ID = "tapMyID";
