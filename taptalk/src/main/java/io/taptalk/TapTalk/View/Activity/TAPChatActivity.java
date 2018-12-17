@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.animation.LayoutTransition;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -19,6 +20,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -211,13 +213,23 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // Set active room to prevent null pointer when returning to chat
                 TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
                 switch (requestCode) {
+                    // TODO: 14 December 2018 SHOW IMAGE PREVIEW
                     case SEND_IMAGE_FROM_CAMERA:
-                        if (null == vm.getCameraImageUri()) return;
-                        TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getCameraImageUri());
+                        if (null == vm.getCameraImageUri()) {
+                            return;
+                        }
+                        TAPChatManager.getInstance().sendImageMessage(vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
-                        if (null == intent) return;
-                        TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, intent.getData());
+                        if (null == intent) {
+                            return;
+                        }
+                        ClipData clipData = intent.getClipData();
+                        if (null != clipData) {
+                            TAPChatManager.getInstance().sendImageMessage(clipData);
+                        } else {
+                            TAPChatManager.getInstance().sendImageMessage(intent.getData());
+                        }
                         break;
                 }
         }
@@ -232,7 +244,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY);
+                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
                     break;
             }
         }
@@ -1317,7 +1329,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onGallerySelected() {
-            TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY);
+            TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
         }
     };
 
