@@ -261,8 +261,8 @@ public class TAPChatManager {
     /**
      * get other user ID from the currently active room
      */
-    private String getOtherUserIdFromActiveRoom() {
-        String[] splitRoomID = activeRoom.getRoomID().split("-");
+    private String getOtherUserIdFromActiveRoom(String roomID) {
+        String[] splitRoomID = roomID.split("-");
         return !splitRoomID[0].equals(getActiveUser().getUserID()) ? splitRoomID[0] : splitRoomID[1];
     }
 
@@ -328,6 +328,10 @@ public class TAPChatManager {
      * Send text messages
      */
     public void sendTextMessage(String textMessage) {
+        sendTextMessageWithRoomModel(textMessage, activeRoom);
+    }
+
+    public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
@@ -335,7 +339,7 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                TAPMessageModel messageModel = buildTextMessage(substr, activeRoom, getActiveUser());
+                TAPMessageModel messageModel = buildTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
                 messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
@@ -343,7 +347,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel);
             }
         } else {
-            TAPMessageModel messageModel = buildTextMessage(textMessage, activeRoom, getActiveUser());
+            TAPMessageModel messageModel = buildTextMessage(textMessage, roomModel, getActiveUser());
             // Send message
             triggerListenerAndSendMessage(messageModel);
         }
@@ -396,7 +400,7 @@ public class TAPChatManager {
                 room,
                 TYPE_TEXT,
                 System.currentTimeMillis(),
-                user, getOtherUserIdFromActiveRoom());
+                user, getOtherUserIdFromActiveRoom(room.getRoomID()));
     }
 
     /**
@@ -410,7 +414,7 @@ public class TAPChatManager {
                 TYPE_IMAGE,
                 System.currentTimeMillis(),
                 activeUser,
-                getOtherUserIdFromActiveRoom());
+                getOtherUserIdFromActiveRoom(activeRoom.getRoomID()));
 
         // TODO: 8 November 2018 CHECK IMAGE WIDTH/HEIGHT AFTER ENCODE
         // Get image width and height
@@ -448,7 +452,7 @@ public class TAPChatManager {
                 TYPE_IMAGE,
                 System.currentTimeMillis(),
                 activeUser,
-                getOtherUserIdFromActiveRoom());
+                getOtherUserIdFromActiveRoom(activeRoom.getRoomID()));
         // TODO: 31 October 2018 SEND MESSAGE TO SERVER
         triggerSendMessageListener(messageModel);
     }

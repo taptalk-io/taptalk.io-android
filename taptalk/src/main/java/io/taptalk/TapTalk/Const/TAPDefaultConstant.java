@@ -34,12 +34,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_CONTACT = 1006;
         public static final int TYPE_STICKER = 1007;
 
-        //public static final int TYPE_NEW_USER = 1000;
-        //public static final int TYPE_USER_LEAVE = 1001;
-        //public static final int TYPE_SEE_SERVICES_N_PRICES = 8001;
-        //public static final int TYPE_WELCOME = 8006;
-        //public static final int TYPE_ASK_PRODUCT = 9007;
-
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
         public static final int TYPE_ORDER_CARD = 2003;
@@ -60,21 +54,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
 
         public static final int TYPE_EMPTY = 9999;
-    }
-
-    public static final class OrderStatus {
-        public static final int NOT_CONFIRMED_BY_CUSTOMER = 1;
-        public static final int CANCELLED_BY_CUSTOMER = 2;
-        public static final int CONFIRMED_BY_CUSTOMER = 3;
-        public static final int DECLINED_BY_SELLER = 4;
-        public static final int ACCEPTED_BY_SELLER = 5;
-        public static final int DISAGREED_BY_CUSTOMER = 6;
-        public static final int WAITING_PAYMENT = 7;
-        public static final int PAYMENT_INCOMPLETE = 8;
-        public static final int ACTIVE = 9;
-        public static final int OVERPAID = 10;
-        public static final int WAITING_REVIEW = 11;
-        public static final int REVIEW_COMPLETED = 12;
     }
 
     public static final class Extras {

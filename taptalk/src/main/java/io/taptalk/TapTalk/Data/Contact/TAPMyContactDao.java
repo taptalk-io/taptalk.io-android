@@ -50,6 +50,9 @@ public interface TAPMyContactDao {
     @Query("select count(userID) from MyContact where userID like :userID and isContact = 1 ")
     Integer checkUserInMyContacts(String userID);
 
+    @Query("select * from MyContact where xcUserID like :xcUserID")
+    TAPUserModel checkUserWithXcUserID(String xcUserID);
+
     @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
             "userRoleID, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
             "created, updated, isContact from MyContact")
