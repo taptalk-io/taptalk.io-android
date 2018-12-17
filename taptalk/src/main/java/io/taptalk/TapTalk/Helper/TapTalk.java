@@ -170,6 +170,7 @@ public class TapTalk {
         TAPDataManager.getInstance().deleteAllPreference();
         TAPDataManager.getInstance().deleteAllFromDatabase();
         Intent intent = new Intent(appContext, TAPLoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         appContext.startActivity(intent);
     }
 
