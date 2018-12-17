@@ -250,7 +250,7 @@ public class TAPUtils {
         }
     }
 
-    public void pickImageFromGallery(Activity activity, int requestCode) {
+    public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE / USE CUSTOM PICKER
         // Reminder: Handle onRequestPermissionsResult in activity
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -260,6 +260,7 @@ public class TAPUtils {
             // Permission granted
             Intent intent = new Intent();
             intent.setType(activity.getString(R.string.intent_pick_image));
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
             intent.setAction(Intent.ACTION_GET_CONTENT);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.intent_select_picture)), requestCode);

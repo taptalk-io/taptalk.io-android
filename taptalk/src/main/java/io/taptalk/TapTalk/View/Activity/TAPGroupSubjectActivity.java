@@ -86,7 +86,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE);
+                    TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
                     break;
             }
         }
@@ -140,7 +140,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        civGroupImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE));
+        civGroupImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false));
         btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
     }
 
