@@ -13,12 +13,16 @@ import java.util.ArrayList;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity;
 import io.taptalk.Taptalk.R;
 
 public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePreviewModel, TAPBaseViewHolder<TAPImagePreviewModel>> {
 
-    public TAPImagePreviewRecyclerAdapter(ArrayList<TAPImagePreviewModel> images) {
+    TAPImagePreviewActivity.ImageThumbnailPreviewInterface thumbInterface;
+
+    public TAPImagePreviewRecyclerAdapter(ArrayList<TAPImagePreviewModel> images, TAPImagePreviewActivity.ImageThumbnailPreviewInterface thumbInterface) {
         setItems(images);
+        this.thumbInterface = thumbInterface;
     }
 
     @Override
@@ -48,6 +52,8 @@ public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePrevi
                 flImagePreview.setBackground(null);
                 TAPUtils.getInstance().setMargins(ivImagePreview, 0, 0, 0, 0);
             }
+
+            itemView.setOnClickListener(v -> thumbInterface.onThumbnailTap(position));
         }
     }
 }
