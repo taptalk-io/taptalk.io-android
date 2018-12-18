@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,7 +35,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -390,5 +390,16 @@ public class TAPUtils {
                 .setPrimaryButtonTitle("OK")
                 .setPrimaryButtonListener(v -> {
                 }).show();
+    }
+
+    /**
+     * untuk ngatur margin view
+     */
+    public void setMargins(View view, int left, int top, int right, int bottom) {
+        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            p.setMargins(left, top, right, bottom);
+            view.requestLayout();
+        }
     }
 }

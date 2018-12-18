@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter.PagerAdapter;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
@@ -13,29 +12,30 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.Taptalk.R;
 
 public class TAPImagePreviewPagerAdapter extends PagerAdapter {
 
-    private ArrayList<Uri> imageUris;
+    private ArrayList<TAPImagePreviewModel> images;
     private Context mContext;
 
-    public TAPImagePreviewPagerAdapter(Context mContext, ArrayList<Uri> imageUris) {
+    public TAPImagePreviewPagerAdapter(Context mContext, ArrayList<TAPImagePreviewModel> images) {
         this.mContext = mContext;
-        this.imageUris = imageUris;
+        this.images = images;
     }
 
     @Override
     public int getCount() {
-        return imageUris.size();
+        return images.size();
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        Uri imageUri = imageUris.get(position);
+        TAPImagePreviewModel imageUri = images.get(position);
         ImageView layout = (ImageView) LayoutInflater.from(mContext).inflate(R.layout.tap_image_preview, container, false);
-        Glide.with(mContext).load(imageUri).into(layout);
+        Glide.with(mContext).load(imageUri.getImageUris()).into(layout);
         container.addView(layout);
         return layout;
     }

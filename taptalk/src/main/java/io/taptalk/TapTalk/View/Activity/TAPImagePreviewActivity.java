@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.View.Activity;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPImagePreviewPagerAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPImagePreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
@@ -33,7 +33,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
 
     //Intent
     private int requestCode;
-    private ArrayList<Uri> imageUris;
+    private ArrayList<TAPImagePreviewModel> images;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +45,9 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
 
     private void receiveIntent() {
         requestCode = getIntent().getIntExtra(K_IMAGE_REQ_CODE, 0);
-        imageUris = getIntent().getParcelableArrayListExtra(K_IMAGE_URLS);
+        images = getIntent().getParcelableArrayListExtra(K_IMAGE_URLS);
 
-        if (null == imageUris) imageUris = new ArrayList<>();
+        if (null == images) images = new ArrayList<>();
     }
 
     private void initView() {
@@ -59,7 +59,9 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         etCaption = findViewById(R.id.et_caption);
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
-        vpImagePreview.setAdapter(new TAPImagePreviewPagerAdapter(this, imageUris));
+        TAPImagePreviewRecyclerAdapter adapter = new TAPImagePreviewRecyclerAdapter(images);
+
+        vpImagePreview.setAdapter(new TAPImagePreviewPagerAdapter(this, images));
         vpImagePreview.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
@@ -69,7 +71,16 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int i) {
                 if (View.VISIBLE == tvMultipleImageIndicator.getVisibility())
-                    tvMultipleImageIndicator.setText((i + 1) + " of " + imageUris.size());
+                    tvMultipleImageIndicator.setText((i + 1) + " of " + images.size());
+
+                new Thread(() -> {
+                    for (TAPImagePreviewModel recyclerItem : adapter.getItems()) {
+                        recyclerItem.setSelected(false);
+                    }
+                    adapter.getItemAt(i).setSelected(true);
+
+                    runOnUiThread(adapter::notifyDataSetChanged);
+                }).start();
             }
 
             @Override
@@ -78,15 +89,15 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             }
         });
 
-        if (1 < imageUris.size()) {
+        if (1 < images.size()) {
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
-            tvMultipleImageIndicator.setText(1 + " of " + imageUris.size());
+            tvMultipleImageIndicator.setText(1 + " of " + images.size());
 
             rvImageThumbnail.setVisibility(View.VISIBLE);
-            rvImageThumbnail.setAdapter(new TAPImagePreviewRecyclerAdapter(imageUris));
+            rvImageThumbnail.setAdapter(adapter);
             rvImageThumbnail.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvImageThumbnail.setHasFixedSize(false);
-            rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, imageUris.size(), 0, 0));
+            rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, images.size(), 0, 0));
         }
     }
 }

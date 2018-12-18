@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -66,6 +65,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCourierModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
@@ -222,8 +222,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             return;
                         }
 
-                        ArrayList<Uri> imageCameraUris = new ArrayList<>();
-                        imageCameraUris.add(vm.getCameraImageUri());
+                        ArrayList<TAPImagePreviewModel> imageCameraUris = new ArrayList<>();
+                        imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
                         openImagePreviewPage(SEND_IMAGE_FROM_CAMERA, imageCameraUris);
 
                         //TAPChatManager.getInstance().sendImageMessage(vm.getCameraImageUri());
@@ -233,7 +233,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             return;
                         }
 
-                        ArrayList<Uri> imageGalleryUris = new ArrayList<>();
+                        ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
 
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
@@ -243,7 +243,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         } else {
                             //ini buat 1 image selection
                             //TAPChatManager.getInstance().sendImageMessage(intent.getData());
-                            imageGalleryUris.add(intent.getData());
+                            imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
                         }
 
                         openImagePreviewPage(SEND_IMAGE_FROM_GALLERY, imageGalleryUris);
@@ -729,17 +729,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 
-    private void openImagePreviewPage(int requestCode, ArrayList<Uri> imageUris) {
+    private void openImagePreviewPage(int requestCode, ArrayList<TAPImagePreviewModel> imageUris) {
         Intent intent = new Intent(TAPChatActivity.this, TAPImagePreviewActivity.class);
         intent.putExtra(K_IMAGE_REQ_CODE, requestCode);
         intent.putExtra(K_IMAGE_URLS, imageUris);
         startActivityForResult(intent, SEND_IMAGE_FROM_PREVIEW);
     }
 
-    private ArrayList<Uri> getUrisFromClipData(ClipData clipData, ArrayList<Uri> uris) {
+    private ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris) {
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
-            uris.add(clipData.getItemAt(count).getUri());
+            if (count == 0) uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
+            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
         }
         return uris;
     }
