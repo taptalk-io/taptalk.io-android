@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
@@ -12,7 +13,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPImagePreviewPagerAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPImagePreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_REQ_CODE;
@@ -34,7 +38,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_preview);
+        setContentView(R.layout.tap_activity_image_preview);
         receiveIntent();
         initView();
     }
@@ -77,6 +81,12 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         if (1 < imageUris.size()) {
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
             tvMultipleImageIndicator.setText(1 + " of " + imageUris.size());
+
+            rvImageThumbnail.setVisibility(View.VISIBLE);
+            rvImageThumbnail.setAdapter(new TAPImagePreviewRecyclerAdapter(imageUris));
+            rvImageThumbnail.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            rvImageThumbnail.setHasFixedSize(false);
+            rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, imageUris.size(), 0, 0));
         }
     }
 }

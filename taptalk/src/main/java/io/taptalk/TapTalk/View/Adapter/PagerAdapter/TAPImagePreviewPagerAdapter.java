@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
@@ -36,8 +35,7 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         Uri imageUri = imageUris.get(position);
         ImageView layout = (ImageView) LayoutInflater.from(mContext).inflate(R.layout.tap_image_preview, container, false);
-        //ImageView ivImage = layout.findViewById(R.id.iv_image);
-        Glide.with(mContext).load(imageUri).apply(new RequestOptions().centerCrop()).into(layout);
+        Glide.with(mContext).load(imageUri).into(layout);
         container.addView(layout);
         return layout;
     }
