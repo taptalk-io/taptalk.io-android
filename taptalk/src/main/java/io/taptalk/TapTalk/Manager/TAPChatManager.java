@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
@@ -450,6 +449,13 @@ public class TAPChatManager {
         int itemSize = clipData.getItemCount();
         for (int i = 0; i < itemSize; i++) {
             sendImageMessage(clipData.getItemAt(i).getUri());
+        }
+    }
+
+    //sendImageFromList
+    public void sendImageMessage(ArrayList<Uri> imageUris) {
+        for (Uri imageUri : imageUris) {
+            sendImageMessage(imageUri);
         }
     }
 
