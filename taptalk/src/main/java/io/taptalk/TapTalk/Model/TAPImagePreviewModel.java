@@ -50,7 +50,7 @@ public class TAPImagePreviewModel implements Parcelable {
         this.isSelected = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<TAPImagePreviewModel> CREATOR = new Parcelable.Creator<TAPImagePreviewModel>() {
+    public static final Creator<TAPImagePreviewModel> CREATOR = new Creator<TAPImagePreviewModel>() {
         @Override
         public TAPImagePreviewModel createFromParcel(Parcel source) {
             return new TAPImagePreviewModel(source);

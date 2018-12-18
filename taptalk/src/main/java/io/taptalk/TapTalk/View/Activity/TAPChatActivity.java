@@ -84,6 +84,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_REQ_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
@@ -247,6 +248,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         }
 
                         openImagePreviewPage(SEND_IMAGE_FROM_GALLERY, imageGalleryUris);
+                        break;
+
+                    case SEND_IMAGE_FROM_PREVIEW:
+                        ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
+                        if (null != images && 0 < images.size()) TAPChatManager.getInstance().sendImageMessage(images);
                         break;
                 }
         }
@@ -739,7 +745,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris) {
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
-            if (count == 0) uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
+            if (count == 0)
+                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
             else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
         }
         return uris;

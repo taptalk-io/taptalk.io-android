@@ -28,6 +28,7 @@ import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
@@ -453,9 +454,9 @@ public class TAPChatManager {
     }
 
     //sendImageFromList
-    public void sendImageMessage(ArrayList<Uri> imageUris) {
-        for (Uri imageUri : imageUris) {
-            sendImageMessage(imageUri);
+    public void sendImageMessage(ArrayList<TAPImagePreviewModel> images) {
+        for (TAPImagePreviewModel image : images) {
+            sendImageMessage(image.getImageUris());
         }
     }
 

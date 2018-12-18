@@ -1,11 +1,13 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,6 +23,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPImagePreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_REQ_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 
 public class TAPImagePreviewActivity extends AppCompatActivity {
@@ -87,8 +90,21 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, images.size(), 0, 0));
 
             SimpleItemAnimator thumbnailItemAnimator = (SimpleItemAnimator) rvImageThumbnail.getItemAnimator();
-            if (null != thumbnailItemAnimator) thumbnailItemAnimator.setSupportsChangeAnimations(false);
+            if (null != thumbnailItemAnimator)
+                thumbnailItemAnimator.setSupportsChangeAnimations(false);
         }
+
+        tvCancelBtn.setOnClickListener(v -> {
+            setResult(RESULT_CANCELED);
+            finish();
+        });
+
+        tvSendBtn.setOnClickListener(v -> {
+            Intent sendIntent = new Intent();
+            sendIntent.putParcelableArrayListExtra(K_IMAGE_RES_CODE, images);
+            setResult(RESULT_OK, sendIntent);
+            finish();
+        });
     }
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {

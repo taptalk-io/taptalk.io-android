@@ -126,6 +126,7 @@ public class TAPDefaultConstant {
 
     public static final class ImagePreview {
         public static final String K_IMAGE_REQ_CODE = "kImageRequestCode";
+        public static final String K_IMAGE_RES_CODE = "kImageResultCode";
         public static final String K_IMAGE_URLS = "kImageUrls";
     }
 
