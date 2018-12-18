@@ -365,18 +365,30 @@ public class TAPDataManager {
     }
 
     public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
     public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), isCheckUnreadFirst, listener);
     }
 
     public void searchAllRoomsFromDatabase(String keyword, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().searchAllRooms(getActiveUser().getUserID(), keyword, listener);
     }
 
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().getUnreadCountPerRoom(getActiveUser().getUserID(), roomID, listener);
     }
 

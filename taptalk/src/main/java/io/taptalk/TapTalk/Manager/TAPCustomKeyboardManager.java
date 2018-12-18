@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.app.Activity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +35,9 @@ public class TAPCustomKeyboardManager {
         customKeyboardListeners.remove(listener);
     }
 
-    public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItem, TAPUserModel activeUser, TAPUserModel otherUser) {
+    public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItem, TAPUserModel activeUser, TAPUserModel otherUser) {
         for (TAPListener listener : customKeyboardListeners) {
-            listener.onCustomKeyboardItemClicked(customKeyboardItem, activeUser, otherUser);
+            listener.onCustomKeyboardItemClicked(activity, customKeyboardItem, activeUser, otherUser);
         }
     }
 }

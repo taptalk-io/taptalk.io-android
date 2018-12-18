@@ -20,7 +20,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -51,7 +50,6 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -63,18 +61,10 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.TAPCourierModel;
-import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
-import io.taptalk.TapTalk.Model.TAPOrderModel;
-import io.taptalk.TapTalk.Model.TAPPairIdNameModel;
-import io.taptalk.TapTalk.Model.TAPProductModel;
-import io.taptalk.TapTalk.Model.TAPRecipientModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
@@ -84,8 +74,6 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
@@ -340,7 +328,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.setCustomKeyboardEnabled(true);
             customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(),
                     customKeyboardItemModel -> TAPCustomKeyboardManager.getInstance()
-                            .onCustomKeyboardItemClicked(customKeyboardItemModel,
+                            .onCustomKeyboardItemClicked(this, customKeyboardItemModel,
                                     vm.getMyUserModel(), vm.getOtherUserModel()));
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
             rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -414,9 +402,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
         };
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
-
-        // TODO: 30 November 2018 TESTING LISTENER, REMOVE THIS LATER
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(customKeyboardListener);
     }
 
     private void closeActivity() {
@@ -968,157 +953,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
             hideTypingIndicator();
-        }
-    };
-
-    // TODO: 29 November 2018 TESTING CUSTOM KEYBOARD MENU
-    private TAPListener customKeyboardListener = new TAPListener() {
-        @Override
-        public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
-            switch (customKeyboardItemModel.getItemID()) {
-                case "2":
-                    // TODO: 15 November 2018 DUMMY ORDER CARD FROM OTHER USER
-                    TAPUserModel expert = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
-                    TAPOrderModel order = new TAPOrderModel();
-                    TAPImageURL dummyThumb = new TAPImageURL(
-                            "https://images.pexels.com/photos/722421/pexels-photo-722421.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                            "https://images.pexels.com/photos/722421/pexels-photo-722421.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-                    TAPProductModel dummyProduct = new TAPProductModel(
-                            "Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product",
-                            dummyThumb,
-                            new TAPPairIdNameModel("", ""),
-                            "0",
-                            6175927328506457372L,
-                            "");
-                    dummyProduct.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
-                    dummyProduct.setRating(4f);
-                    List<TAPProductModel> dummyProductList = new ArrayList<>();
-                    dummyProductList.add(dummyProduct);
-                    TAPRecipientModel recipient = new TAPRecipientModel();
-                    recipient.setRecipientID(Integer.valueOf(vm.getMyUserModel().getUserID()));
-                    recipient.setRecipientName(vm.getMyUserModel().getName());
-                    recipient.setPhoneNumber(vm.getMyUserModel().getPhoneNumber());
-                    recipient.setAddress("Jl. Dempo 1 no. 51");
-                    recipient.setPostalCode("12120");
-                    recipient.setRegion("Kebayoran Baru");
-                    recipient.setCity("Jakarta Selatan");
-                    recipient.setProvince("DKI Jakarta");
-                    TAPCourierModel courier = new TAPCourierModel();
-                    courier.setCourierType("Same Day");
-                    courier.setCourierCost(20000L);
-                    courier.setCourierLogo(dummyThumb);
-                    order.setCustomer(vm.getMyUserModel());
-                    order.setSeller(expert);
-                    order.setProducts(dummyProductList);
-                    order.setRecipient(recipient);
-                    order.setCourier(courier);
-                    order.setOrderID("MD-987654321");
-                    order.setOrderName("Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order");
-                    order.setNotes("Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien.");
-                    order.setOrderStatus(0);
-                    order.setOrderTime(System.currentTimeMillis());
-                    order.setAdditionalCost(55555L);
-                    order.setDiscount(333333L);
-                    order.setTotalPrice(7777777L);
-                    String dummyOrderString = TAPUtils.getInstance().toJsonString(order);
-                    TAPMessageModel orderCard = TAPMessageModel.Builder(
-                            dummyOrderString,
-                            vm.getRoom(),
-                            TYPE_ORDER_CARD,
-                            System.currentTimeMillis(),
-                            expert,
-                            vm.getMyUserModel().getUserID());
-                    sendCustomKeyboardMessage(orderCard);
-                    break;
-                case "3":
-                    // TODO: 12 November 2018 DUMMY PRODUCT LIST
-                    TAPImageURL dummyThumb3 = new TAPImageURL(
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-                    TAPProductModel dummyProduct3 = new TAPProductModel(
-                            "Dummy Product",
-                            dummyThumb3,
-                            new TAPPairIdNameModel("", ""),
-                            "0",
-                            99999999L,
-                            "");
-                    dummyProduct3.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
-                    dummyProduct3.setRating(4f);
-                    List<TAPProductModel> dummyProductList3 = new ArrayList<>();
-                    dummyProductList3.add(dummyProduct3);
-                    dummyProductList3.add(dummyProduct3);
-                    dummyProductList3.add(dummyProduct3);
-                    dummyProductList3.add(dummyProduct3);
-                    String dummyProductListString = TAPUtils.getInstance().toJsonString(dummyProductList3);
-                    TAPMessageModel services = TAPMessageModel.Builder(
-                            dummyProductListString,
-                            vm.getRoom(),
-                            TYPE_PRODUCT,
-                            System.currentTimeMillis(),
-                            vm.getMyUserModel(),
-                            vm.getOtherUserID());
-                    sendCustomKeyboardMessage(services);
-                    break;
-                case "4":
-                    // TODO: 15 November 2018 DUMMY ORDER CARD
-                    TAPUserModel customer = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
-                    TAPOrderModel order4 = new TAPOrderModel();
-                    TAPImageURL dummyThumb4 = new TAPImageURL(
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-                    TAPProductModel dummyProduct4 = new TAPProductModel(
-                            "Dummy Product",
-                            dummyThumb4,
-                            new TAPPairIdNameModel("", ""),
-                            "0",
-                            99999999L,
-                            "");
-                    dummyProduct4.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
-                    dummyProduct4.setRating(4f);
-                    List<TAPProductModel> dummyProductList4 = new ArrayList<>();
-                    dummyProductList4.add(dummyProduct4);
-                    TAPRecipientModel recipient4 = new TAPRecipientModel();
-                    recipient4.setRecipientID(Integer.valueOf(vm.getOtherUserID()));
-                    recipient4.setRecipientName(customer.getName());
-                    recipient4.setPhoneNumber(customer.getPhoneNumber());
-                    recipient4.setAddress("Jl. Kyai Maja no 25C");
-                    recipient4.setPostalCode("12120");
-                    recipient4.setRegion("Kebayoran Baru");
-                    recipient4.setCity("Jakarta Selatan");
-                    recipient4.setProvince("DKI Jakarta");
-                    TAPCourierModel courier4 = new TAPCourierModel();
-                    courier4.setCourierType("Instant Courier");
-                    courier4.setCourierCost(30000L);
-                    courier4.setCourierLogo(dummyThumb4);
-                    order4.setCustomer(customer);
-                    order4.setSeller(vm.getMyUserModel());
-                    order4.setProducts(dummyProductList4);
-                    order4.setRecipient(recipient4);
-                    order4.setCourier(courier4);
-                    order4.setOrderID("MD-123456789");
-                    order4.setOrderName("Dummy Order");
-                    order4.setNotes("Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien.");
-                    order4.setOrderStatus(0);
-                    order4.setOrderTime(System.currentTimeMillis());
-                    order4.setAdditionalCost(88888L);
-                    order4.setDiscount(1111111L);
-                    order4.setTotalPrice(9999999L);
-                    String dummyOrderString4 = TAPUtils.getInstance().toJsonString(order4);
-                    TAPMessageModel orderCard4 = TAPMessageModel.Builder(
-                            dummyOrderString4,
-                            vm.getRoom(),
-                            TYPE_ORDER_CARD,
-                            System.currentTimeMillis(),
-                            vm.getMyUserModel(),
-                            vm.getOtherUserID());
-                    sendCustomKeyboardMessage(orderCard4);
-                    break;
-            }
-        }
-
-        private void sendCustomKeyboardMessage(TAPMessageModel message) {
-            hideKeyboards();
-            addNewMessage(message);
         }
     };
 
