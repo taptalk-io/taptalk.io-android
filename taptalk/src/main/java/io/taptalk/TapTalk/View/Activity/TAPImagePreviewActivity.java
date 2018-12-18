@@ -60,9 +60,9 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
         TAPImagePreviewRecyclerAdapter adapter = new TAPImagePreviewRecyclerAdapter(images);
-
         vpImagePreview.setAdapter(new TAPImagePreviewPagerAdapter(this, images));
         vpImagePreview.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            private int lastIndex = 0;
             @Override
             public void onPageScrolled(int i, float v, int i1) {
 
@@ -79,7 +79,16 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
                     }
                     adapter.getItemAt(i).setSelected(true);
 
-                    runOnUiThread(adapter::notifyDataSetChanged);
+                    runOnUiThread(() -> {
+                        //adapter.notifyDataSetChanged();
+                        if (lastIndex == i) adapter.notifyItemRangeChanged(i,1);
+                        else {
+                            adapter.notifyItemChanged(i);
+                            adapter.notifyItemChanged(lastIndex);
+                        }
+                        lastIndex = i;
+                        rvImageThumbnail.scrollToPosition(i);
+                    });
                 }).start();
             }
 
