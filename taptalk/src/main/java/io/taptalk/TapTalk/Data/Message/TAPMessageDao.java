@@ -80,6 +80,9 @@ public interface TAPMessageDao {
             "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword order by firstQuery.created desc")
     List<TAPMessageEntity> searchAllChatRooms(String keyword);
 
+    @Query("select localID, roomName, roomImage, roomType, roomColor from Message_Table where roomID = :roomID")
+    TAPMessageEntity getRoom(String roomID);
+
     @Query("select count(isRead) from Message_Table where isRead = 0 and RoomID like :roomID and userID not like :userID")
 //    @Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID and userID not like :userID")
     Integer getUnreadCount(String userID, String roomID);

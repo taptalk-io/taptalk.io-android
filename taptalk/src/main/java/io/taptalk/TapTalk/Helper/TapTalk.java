@@ -32,7 +32,6 @@ import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
-import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
@@ -48,6 +47,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
+import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -65,6 +65,7 @@ public class TapTalk {
     public static TapTalk tapTalk;
     public static Context appContext;
     public static boolean isForeground;
+    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
@@ -139,8 +140,6 @@ public class TapTalk {
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
             }
         });
-
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapListener);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -329,10 +328,32 @@ public class TapTalk {
 
     /**
      * Enable/disable in-app notification after chat fragment goes inactive or to background
+     *
      * @param enabled
      */
     public static void setInAppNotificationEnabled(boolean enabled) {
         TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
+    }
+
+    public static void setOpenTapTalkUserProfileByDefaultEnabled(boolean enabled) {
+        isOpenDefaultProfileEnabled = enabled;
+    }
+
+    public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
+        TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener() {
+            @Override
+            public void onSelectFinished(Object entity) {
+                if (entity instanceof TAPRoomModel) {
+                    TAPRoomModel roomModel = (TAPRoomModel) entity;
+                    Intent intent = new Intent(context, TAPProfileActivity.class);
+                    intent.putExtra(K_ROOM, roomModel);
+                    context.startActivity(intent);
+                    if (context instanceof Activity) {
+                        ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                    }
+                }
+            }
+        });
     }
 
     // TODO: 05/12/18 harus diilangin pas diintegrasi
@@ -443,6 +464,10 @@ public class TapTalk {
         } else {
             tapTalk.tapListeners.add(listener);
         }
+    }
+
+    public static List<TAPListener> getTapTalkListeners() {
+        return tapTalk.tapListeners;
     }
 
     public static void sendTextMessageWithXcUserID(String message, String xcUserID, TAPSendMessageWithIDListener listener) {

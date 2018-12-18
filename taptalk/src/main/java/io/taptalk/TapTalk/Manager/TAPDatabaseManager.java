@@ -155,6 +155,13 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void getRoom(String myID, TAPUserModel otherUserModel, TAPDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.getRoom(myID, otherUserModel, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public void getUnreadCountPerRoom(String myID, String roomID, final TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getUnreadCountPerRoom(myID, roomID, listener);

@@ -10,6 +10,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public interface TapTalkInterface {
     void onRefreshTokenExpiredOrInvalid();
     void onLoginSuccess(TAPUserModel myUserModel);
+    void onUserProfileClicked(TAPUserModel userModel);
     void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser);
     List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser);
 }

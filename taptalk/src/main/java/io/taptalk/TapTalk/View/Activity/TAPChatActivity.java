@@ -20,6 +20,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -46,21 +47,23 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Interface.TapTalkCustomKeyboardInterface;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
-import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
@@ -326,10 +329,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
             // Enable custom keyboard
             vm.setCustomKeyboardEnabled(true);
-            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(),
-                    customKeyboardItemModel -> TAPCustomKeyboardManager.getInstance()
-                            .onCustomKeyboardItemClicked(this, customKeyboardItemModel,
-                                    vm.getMyUserModel(), vm.getOtherUserModel()));
+            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
+                for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+                    tapListener.onCustomKeyboardItemClicked(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
+                }
+            });
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
             rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
@@ -415,10 +419,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void openRoomProfile() {
-        Intent intent = new Intent(this, TAPProfileActivity.class);
-        intent.putExtra(K_ROOM, vm.getRoom());
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+            tapListener.onUserProfileClicked(vm.getOtherUserModel());
+        }
+        if (TapTalk.isOpenDefaultProfileEnabled) {
+            Intent intent = new Intent(this, TAPProfileActivity.class);
+            intent.putExtra(K_ROOM, vm.getRoom());
+            startActivity(intent);
+            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
     }
 
     private void updateUnreadCount() {

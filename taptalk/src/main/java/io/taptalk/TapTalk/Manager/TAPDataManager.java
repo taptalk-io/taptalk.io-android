@@ -385,6 +385,13 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().searchAllRooms(getActiveUser().getUserID(), keyword, listener);
     }
 
+    public void getRoomModel(TAPUserModel userModel, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
+        TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
+    }
+
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener listener) {
         if (null == getActiveUser()) {
             return;
