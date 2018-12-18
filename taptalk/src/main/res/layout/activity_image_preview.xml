@@ -7,16 +7,17 @@
     android:background="@color/charcoal"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity">
 
-    <!--<ImageView-->
-    <!--android:id="@+id/iv_image_selection"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:scaleType="fitCenter"-->
-    <!--app:layout_constraintStart_toStartOf="parent"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--tools:background="@color/red" />-->
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_image_preview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/cl_bottom_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_cancel_btn"
+        app:layout_constraintVertical_bias="0.0"
+        tools:background="@color/amethyst" />
 
     <TextView
         android:id="@+id/tv_cancel_btn"
@@ -47,6 +48,7 @@
         android:letterSpacing="-0.02"
         android:textColor="@color/white"
         android:textSize="17sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="1 of 7" />
@@ -56,21 +58,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/tv_cancel_btn"
         tools:background="@color/white" />
 
-    <EditText
-        android:id="@+id/et_caption"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_caption"
         android:layout_width="match_parent"
-        android:layout_height="41dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="9dp"
-        android:hint="@string/add_a_caption"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/cl_bottom_bar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:background="@color/orangeYellow" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/tap_bg_charcoal_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="9dp"
+            android:backgroundTint="@color/white"
+            android:hint="@string/add_a_caption"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@color/orangeYellow" />
+
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_bottom_bar"
@@ -87,7 +112,7 @@
             android:paddingTop="10dp"
             android:paddingEnd="16dp"
             android:paddingBottom="10dp"
-            android:src="@drawable/ic_tap_ic_failed_grey"
+            android:src="@drawable/tap_ic_icon_add_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -97,11 +122,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/tap_font_latobold"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="end"
             android:letterSpacing="0.02"
             android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="16dp"
             android:paddingBottom="10dp"
             android:text="@string/send"
             android:textColor="@color/white"
