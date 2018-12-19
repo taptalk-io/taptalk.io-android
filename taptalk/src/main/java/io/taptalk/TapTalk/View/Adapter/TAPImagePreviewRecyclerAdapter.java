@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,11 +34,13 @@ public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePrevi
     class ImagePreviewVH extends TAPBaseViewHolder<TAPImagePreviewModel> {
         ImageView ivImagePreview;
         FrameLayout flImagePreview;
+        FrameLayout flDelete;
 
         protected ImagePreviewVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             ivImagePreview = itemView.findViewById(R.id.iv_image_preview);
             flImagePreview = itemView.findViewById(R.id.fl_image_preview);
+            flDelete = itemView.findViewById(R.id.fl_delete);
         }
 
         @Override
@@ -48,12 +51,14 @@ public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePrevi
                 flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_greenblue_2dp));
                 int marginSize = TAPUtils.getInstance().dpToPx(2);
                 TAPUtils.getInstance().setMargins(ivImagePreview, marginSize, marginSize, marginSize, marginSize);
+                flDelete.setVisibility(View.VISIBLE);
             } else {
                 flImagePreview.setBackground(null);
                 TAPUtils.getInstance().setMargins(ivImagePreview, 0, 0, 0, 0);
+                flDelete.setVisibility(View.GONE);
             }
 
-            itemView.setOnClickListener(v -> thumbInterface.onThumbnailTap(position));
+            itemView.setOnClickListener(v -> thumbInterface.onThumbnailTap(position, item));
         }
     }
 }
