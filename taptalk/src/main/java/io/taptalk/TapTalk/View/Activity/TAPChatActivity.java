@@ -125,7 +125,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         WORKING, LOADED, DONE
     }
 
-    private STATE state = STATE.LOADED;
+    private STATE state = STATE.WORKING;
 
     //endless scroll Listener
     TAPEndlessScrollListener endlessScrollListener;
@@ -1098,7 +1098,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
                     }
                 });
-
             } else if (null != messageAdapter) {
                 runOnUiThread(() -> {
                     if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -1107,16 +1106,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     flMessageList.setVisibility(View.VISIBLE);
                     messageAdapter.setMessages(models);
                     new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
-                    if (rvMessageList.getVisibility() != View.VISIBLE)
+                    if (rvMessageList.getVisibility() != View.VISIBLE) {
                         rvMessageList.setVisibility(View.VISIBLE);
-                    if (state == STATE.DONE) updateMessageDecoration();
+                    }
+                    if (state == STATE.DONE) {
+                        updateMessageDecoration();
+                    }
                 });
-            }
-
-            if (NUM_OF_ITEM > entities.size()) state = STATE.DONE;
-            else {
-                rvMessageList.addOnScrollListener(endlessScrollListener);
-                state = STATE.LOADED;
+                if (NUM_OF_ITEM > entities.size() && 1 < entities.size()) {
+                    state = STATE.DONE;
+                } else {
+                    rvMessageList.addOnScrollListener(endlessScrollListener);
+                    state = STATE.LOADED;
+                }
             }
         }
     };
@@ -1272,10 +1274,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
-        public void startLoading() {
-        }
-
-        @Override
         public void onSuccess(TAPGetMessageListbyRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
@@ -1294,7 +1292,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             //sorting message balikan dari api before
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
-            mergeSort(messageBeforeModels, DESCENDING);
+            mergeSort(messageBeforeModels, ASCENDING);
 
             runOnUiThread(() -> {
                 if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < messageBeforeModels.size()) {
@@ -1315,6 +1313,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
+            if (NUM_OF_ITEM > response.getMessages().size() && 1 < response.getMessages().size()) {
+                state = STATE.DONE;
+            } else {
+                rvMessageList.addOnScrollListener(endlessScrollListener);
+                state = STATE.LOADED;
+            }
         }
 
         @Override
@@ -1358,7 +1362,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             //sorting message balikan dari api before
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
-            mergeSort(messageBeforeModels, DESCENDING);
+            mergeSort(messageBeforeModels, ASCENDING);
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 messageAdapter.addMessage(messageBeforeModels);

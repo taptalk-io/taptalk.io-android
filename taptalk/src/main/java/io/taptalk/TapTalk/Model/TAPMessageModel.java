@@ -69,7 +69,7 @@ public class TAPMessageModel implements Parcelable {
         // Update when adding fields to model
 
         if (created > 0L) {
-            messageStatusText = String.format("%s %s", TapTalk.appContext.getString(R.string.sent_at), TAPTimeFormatter.getInstance().formatDate(created));
+            messageStatusText = TAPTimeFormatter.getInstance().durationChatString(TapTalk.appContext, created);
         }
     }
 
