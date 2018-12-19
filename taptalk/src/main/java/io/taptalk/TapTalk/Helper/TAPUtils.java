@@ -270,10 +270,10 @@ public class TAPUtils {
         }
     }
 
-    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris) {
+    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
-            if (count == 0)
+            if (count == 0 && isFirstSelected)
                 uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
             else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
         }

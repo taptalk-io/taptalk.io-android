@@ -83,7 +83,6 @@ import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
@@ -225,7 +224,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                         ArrayList<TAPImagePreviewModel> imageCameraUris = new ArrayList<>();
                         imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
-                        openImagePreviewPage(SEND_IMAGE_FROM_CAMERA, imageCameraUris);
+                        openImagePreviewPage(imageCameraUris);
 
                         //TAPChatManager.getInstance().sendImageMessage(vm.getCameraImageUri());
                         break;
@@ -239,13 +238,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
                             //ini buat lebih dari 1 image selection
-                            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris);
+                            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, true);
                         } else {
                             //ini buat 1 image selection
                             imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
                         }
 
-                        openImagePreviewPage(SEND_IMAGE_FROM_GALLERY, imageGalleryUris);
+                        openImagePreviewPage(imageGalleryUris);
                         break;
 
                     case SEND_IMAGE_FROM_PREVIEW:
@@ -733,9 +732,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 
-    private void openImagePreviewPage(int requestCode, ArrayList<TAPImagePreviewModel> imageUris) {
+    private void openImagePreviewPage(ArrayList<TAPImagePreviewModel> imageUris) {
         Intent intent = new Intent(TAPChatActivity.this, TAPImagePreviewActivity.class);
-        intent.putExtra(K_IMAGE_REQ_CODE, requestCode);
         intent.putExtra(K_IMAGE_URLS, imageUris);
         startActivityForResult(intent, SEND_IMAGE_FROM_PREVIEW);
     }

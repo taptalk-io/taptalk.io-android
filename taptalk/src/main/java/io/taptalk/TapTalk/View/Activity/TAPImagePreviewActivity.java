@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,7 +24,6 @@ import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPImagePreviewPagerAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPImagePreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
@@ -40,7 +40,6 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
     TAPImagePreviewPagerAdapter pagerAdapter;
 
     //Intent
-    private int requestCode;
     private ArrayList<TAPImagePreviewModel> images;
 
     public interface ImageThumbnailPreviewInterface {
@@ -63,7 +62,6 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
     }
 
     private void receiveIntent() {
-        requestCode = getIntent().getIntExtra(K_IMAGE_REQ_CODE, 0);
         images = getIntent().getParcelableArrayListExtra(K_IMAGE_URLS);
 
         if (null == images) images = new ArrayList<>();
@@ -175,16 +173,23 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             ClipData clipData = data.getClipData();
             if (null != clipData) {
                 //ini buat lebih dari 1 image selection
-                TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris);
+                TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, false);
             } else {
                 //ini buat 1 image selection
-                imageGalleryUris.add(TAPImagePreviewModel.Builder(data.getData(), true));
+                imageGalleryUris.add(TAPImagePreviewModel.Builder(data.getData(), false));
             }
 
             images.addAll(imageGalleryUris);
             runOnUiThread(() -> {
                 pagerAdapter.notifyDataSetChanged();
-                adapter.notifyDataSetChanged();
+                if (1 < images.size()) {
+                    rvImageThumbnail.setVisibility(View.VISIBLE);
+                    rvImageThumbnail.setAdapter(adapter);
+                    rvImageThumbnail.setHasFixedSize(false);
+                    rvImageThumbnail.setLayoutManager(new LinearLayoutManager(TAPImagePreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                } else {
+                    adapter.notifyDataSetChanged();
+                }
             });
         }).start();
     }
