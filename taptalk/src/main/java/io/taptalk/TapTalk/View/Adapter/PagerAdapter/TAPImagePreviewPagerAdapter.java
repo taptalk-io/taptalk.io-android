@@ -30,6 +30,11 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
         return images.size();
     }
 
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
+    }
+
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {

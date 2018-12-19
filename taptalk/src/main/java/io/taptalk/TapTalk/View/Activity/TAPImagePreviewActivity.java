@@ -1,13 +1,14 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 
 public class TAPImagePreviewActivity extends AppCompatActivity {
 
@@ -35,6 +37,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
     private EditText etCaption;
     private ImageView ivAddMoreImage;
     TAPImagePreviewRecyclerAdapter adapter;
+    TAPImagePreviewPagerAdapter pagerAdapter;
 
     //Intent
     private int requestCode;
@@ -76,7 +79,8 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
         adapter = new TAPImagePreviewRecyclerAdapter(images, thumbInterface);
-        vpImagePreview.setAdapter(new TAPImagePreviewPagerAdapter(this, images));
+        pagerAdapter = new TAPImagePreviewPagerAdapter(this, images);
+        vpImagePreview.setAdapter(pagerAdapter);
         vpImagePreview.addOnPageChangeListener(vpPreviewListener);
 
         if (1 < images.size()) {
@@ -105,6 +109,8 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             setResult(RESULT_OK, sendIntent);
             finish();
         });
+
+        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPImagePreviewActivity.this, SEND_IMAGE_FROM_GALLERY, true));
     }
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {
@@ -144,4 +150,42 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        switch (resultCode) {
+            case RESULT_OK:
+                switch (requestCode) {
+                    case SEND_IMAGE_FROM_GALLERY:
+                        processImagesFromGallery(data);
+                        break;
+                }
+                break;
+        }
+    }
+
+    private void processImagesFromGallery(Intent data) {
+        new Thread(() -> {
+            if (null == data) {
+                return;
+            }
+
+            ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
+
+            ClipData clipData = data.getClipData();
+            if (null != clipData) {
+                //ini buat lebih dari 1 image selection
+                TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris);
+            } else {
+                //ini buat 1 image selection
+                imageGalleryUris.add(TAPImagePreviewModel.Builder(data.getData(), true));
+            }
+
+            images.addAll(imageGalleryUris);
+            runOnUiThread(() -> {
+                pagerAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
+    }
 }

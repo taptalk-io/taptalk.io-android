@@ -239,11 +239,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
                             //ini buat lebih dari 1 image selection
-                            //TAPChatManager.getInstance().sendImageMessage(clipData);
-                            getUrisFromClipData(clipData, imageGalleryUris);
+                            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris);
                         } else {
                             //ini buat 1 image selection
-                            //TAPChatManager.getInstance().sendImageMessage(intent.getData());
                             imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
                         }
 
@@ -740,16 +738,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         intent.putExtra(K_IMAGE_REQ_CODE, requestCode);
         intent.putExtra(K_IMAGE_URLS, imageUris);
         startActivityForResult(intent, SEND_IMAGE_FROM_PREVIEW);
-    }
-
-    private ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris) {
-        int itemSize = clipData.getItemCount();
-        for (int count = 0; count < itemSize; count++) {
-            if (count == 0)
-                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
-            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
-        }
-        return uris;
     }
 
     //ini Fungsi buat manggil Api Before
