@@ -108,7 +108,7 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessagesDesc(String roomID, TAPDatabaseListener listener) {
+    public void getMessagesDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getMessageListDesc(roomID, listener);
         else

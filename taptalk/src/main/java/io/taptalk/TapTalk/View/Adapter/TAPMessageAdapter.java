@@ -831,6 +831,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         addItem(messages, true);
     }
 
+    public void addMessageFirstFromAPI(List<TAPMessageModel> messages) {
+        addItem(messages, false);
+        notifyDataSetChanged();
+    }
+
     public void addMessage(int position, List<TAPMessageModel> messages) {
         addItem(position, messages, true);
     }

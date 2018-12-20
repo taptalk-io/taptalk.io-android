@@ -1105,6 +1105,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     } else {
                         // Message exists
                         vm.setMessageModels(models);
+                        state = STATE.LOADED;
                         if (clEmptyChat.getVisibility() == View.VISIBLE) {
                             clEmptyChat.setVisibility(View.GONE);
                         }
@@ -1116,11 +1117,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //ini buat ngecek kalau room nya kosong manggil api before aja
                     //sebaliknya kalau roomnya ada isinya manggil after baru before*
                     //* = kalau jumlah itemnya < 50
-                    if (0 < vm.getMessageModels().size()) {
+                    if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
                     /* Call Message List API
                     Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
+                        callApiAfter();
+                    } else if (NUM_OF_ITEM <= vm.getMessageModels().size()) {
+                        rvMessageList.addOnScrollListener(endlessScrollListener);
                         callApiAfter();
                     } else {
                         fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
@@ -1329,7 +1333,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 flMessageList.setVisibility(View.VISIBLE);
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                messageAdapter.addMessage(messageBeforeModels);
+                messageAdapter.addMessageFirstFromAPI(messageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();

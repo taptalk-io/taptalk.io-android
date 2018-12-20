@@ -348,7 +348,7 @@ public class TAPDataManager {
         return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener listener) {
+    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
     }
 
