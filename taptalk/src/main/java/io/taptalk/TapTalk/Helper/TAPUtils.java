@@ -304,7 +304,7 @@ public class TAPUtils {
      * This call has no effect on non-translucent activities or on activities
      * with the {@link android.R.attr#windowIsFloating} attribute.
      */
-    public static void convertActivityFromTranslucent(Activity activity) {
+    public void convertActivityFromTranslucent(Activity activity) {
         try {
             Method method = Activity.class.getDeclaredMethod("convertFromTranslucent");
             method.setAccessible(true);
@@ -325,7 +325,7 @@ public class TAPUtils {
      * This call has no effect on non-translucent activities or on activities
      * with the {@link android.R.attr#windowIsFloating} attribute.
      */
-    public static void convertActivityToTranslucent(Activity activity) {
+    public void convertActivityToTranslucent(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             convertActivityToTranslucentAfterL(activity);
         } else {
@@ -336,7 +336,7 @@ public class TAPUtils {
     /**
      * Calling the convertToTranslucent method on platforms before Android 5.0
      */
-    public static void convertActivityToTranslucentBeforeL(Activity activity) {
+    public void convertActivityToTranslucentBeforeL(Activity activity) {
         try {
             Class<?>[] classes = Activity.class.getDeclaredClasses();
             Class<?> translucentConversionListenerClazz = null;

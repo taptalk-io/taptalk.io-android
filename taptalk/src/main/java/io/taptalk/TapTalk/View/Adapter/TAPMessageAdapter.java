@@ -235,7 +235,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody;
         private ImageView ivMessageStatus, ivReply, ivSending, ivProgress;
-        private TextView tvMessageStatus;
+        private TextView tvMessageBody, tvMessageStatus;
         private ProgressBar pbProgress;
 
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
@@ -247,6 +247,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
             ivReply = itemView.findViewById(R.id.iv_reply);
             ivProgress = itemView.findViewById(R.id.iv_progress);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
@@ -263,6 +264,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (item.isAnimating()) {
                 return;
             }
+
+            // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
+//            if (HAS_CAPTIONS) {
+                rcivImageBody.setBottomLeftRadius(0);
+                rcivImageBody.setBottomRightRadius(0);
+                tvMessageBody.setVisibility(View.VISIBLE);
+                tvMessageBody.setText(item.getBody());
+//            } else {
+//                rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
+//                rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
+//                tvMessageBody.setVisibility(View.GONE);
+//            }
+
             tvMessageStatus.setText(item.getMessageStatusText());
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);

@@ -23,7 +23,7 @@ public class SwipeBackListenerActivityAdapter implements SwipeBackLayout.SwipeLi
     public void onEdgeTouch(int edgeFlag) {
         Activity activity = mActivity.get();
         if (null != activity) {
-            TAPUtils.convertActivityToTranslucent(activity);
+            TAPUtils.getInstance().convertActivityToTranslucent(activity);
         }
     }
 
