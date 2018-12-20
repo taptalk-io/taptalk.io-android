@@ -48,11 +48,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_TEXT_LEFT = 1002;
         public static final int TYPE_BUBBLE_IMAGE_RIGHT = 1011;
         public static final int TYPE_BUBBLE_IMAGE_LEFT = 1012;
-
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
-
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
-
         public static final int TYPE_EMPTY = 9999;
     }
 
@@ -70,6 +67,7 @@ public class TAPDefaultConstant {
         public static final int PICK_GROUP_IMAGE = 11;
         public static final int SEND_IMAGE_FROM_CAMERA = 12;
         public static final int SEND_IMAGE_FROM_GALLERY = 13;
+        public static final int SEND_IMAGE_FROM_PREVIEW = 14;
     }
 
     public static final class PermissionRequest {
@@ -124,6 +122,12 @@ public class TAPDefaultConstant {
 
     public static final class OldDataConst {
         public static final String K_LAST_DELETE_TIMESTAMP = "kLastDeleteTimestamp";
+    }
+
+    public static final class ImagePreview {
+        public static final String K_IMAGE_REQ_CODE = "kImageRequestCode";
+        public static final String K_IMAGE_RES_CODE = "kImageResultCode";
+        public static final String K_IMAGE_URLS = "kImageUrls";
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
