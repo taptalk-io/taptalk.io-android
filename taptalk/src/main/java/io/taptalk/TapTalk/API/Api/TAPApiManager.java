@@ -50,7 +50,7 @@ public class TAPApiManager {
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
     private static TAPApiManager instance;
-    private boolean isShouldRefreshToken = false;
+    private int isShouldRefreshToken = 0;
     //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
     private boolean isLogout = false;
 
@@ -73,14 +73,6 @@ public class TAPApiManager {
         isLogout = logout;
     }
 
-    public boolean isShouldRefreshToken() {
-        return isShouldRefreshToken;
-    }
-
-    public void setUnauthorized(boolean unauthorized) {
-        isShouldRefreshToken = unauthorized;
-    }
-
     private Observable.Transformer ioToMainThreadSchedulerTransformer
             = createIOMainThreadScheduler();
 
@@ -100,7 +92,6 @@ public class TAPApiManager {
                 .flatMap((Func1<T, Observable<T>>) this::validateResponse)
                 .retryWhen(o1 -> o1.flatMap((Func1<Throwable, Observable<?>>) this::validateException))
                 .subscribe(s);
-        isShouldRefreshToken = false;
     }
 
     private <T> Observable validateResponse(T t) {
@@ -112,19 +103,20 @@ public class TAPApiManager {
 
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
             Log.e(TAG, "validateResponse: √√ NO ERROR √√");
-        else if (code == UNAUTHORIZED && isShouldRefreshToken) {
+        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken) {
             return raiseApiRefreshTokenRunningException();
         } else if (code == UNAUTHORIZED) {
-            isShouldRefreshToken = true;
+            isShouldRefreshToken++;
             return raiseApiSessionExpiredException(br);
         }
+        isShouldRefreshToken = 0;
         return Observable.just(t);
     }
 
     private Observable validateException(Throwable t) {
         Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
-        return (t instanceof TAPApiSessionExpiredException && isShouldRefreshToken && !isLogout) ? refreshToken() :
-                (t instanceof TAPApiRefreshTokenRunningException && !isLogout) ?
+        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
+                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
                        Observable.just(Boolean.TRUE) : Observable.error(t);
     }
 
@@ -165,9 +157,11 @@ public class TAPApiManager {
         return hpRefresh.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
-                    if (RESPONSE_SUCCESS == response.getStatus())
+                    Log.e(TAG, "call: retryWhen(), cause: 2 "+response.getStatus() );
+                    if (RESPONSE_SUCCESS == response.getStatus()) {
                         updateSession(response);
-                    if (UNAUTHORIZED == response.getStatus()){
+                        Observable.error(new TAPAuthException(response.getError().getMessage()));
+                    } else if (UNAUTHORIZED == response.getStatus()){
                         TapTalk.refreshTokenExpired();
                     } else Observable.error(new TAPAuthException(response.getError().getMessage()));
                 }).doOnError(throwable -> {
