@@ -276,7 +276,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_reply_sender"
+                android:id="@+id/tv_quote_title"
                 style="@style/HomingPigeonReplySenderName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -304,7 +304,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_cancel_reply"
-                app:layout_constraintTop_toBottomOf="@id/tv_reply_sender"
+                app:layout_constraintTop_toBottomOf="@id/tv_quote_title"
                 tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
 
         </android.support.constraint.ConstraintLayout>
@@ -335,8 +335,8 @@
             android:hint="@string/send_a_message"
             android:inputType="textMultiLine"
             android:letterSpacing="-0.02"
-            android:maxHeight="75dp"
-            android:minHeight="36dp"
+            android:maxHeight="75sp"
+            android:minHeight="36sp"
             android:paddingStart="8dp"
             android:paddingTop="6dp"
             android:paddingEnd="40dp"

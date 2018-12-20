@@ -73,7 +73,7 @@
 
             <include
                 android:id="@+id/cl_reply"
-                layout="@layout/tap_layout_reply_chat_right"
+                layout="@layout/tap_layout_quote_bubble_right"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"

@@ -298,7 +298,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
-        tvReplySender = (TextView) findViewById(R.id.tv_reply_sender);
+        tvReplySender = (TextView) findViewById(R.id.tv_quote_title);
         tvReplyBody = (TextView) findViewById(R.id.tv_reply_body);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
