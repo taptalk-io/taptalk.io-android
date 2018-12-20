@@ -327,6 +327,14 @@ public class TapTalk {
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
+    /**
+     * Enable/disable in-app notification after chat fragment goes inactive or to background
+     * @param enabled
+     */
+    public static void setInAppNotificationEnabled(boolean enabled) {
+        TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
+    }
+
     // TODO: 05/12/18 harus diilangin pas diintegrasi
 
     public static void login() {

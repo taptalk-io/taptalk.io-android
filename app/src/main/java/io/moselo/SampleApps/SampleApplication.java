@@ -1,5 +1,6 @@
 package io.moselo.SampleApps;
 
+import android.app.Activity;
 import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
@@ -71,7 +72,7 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
+        public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             if (customKeyboardItemModel.getItemID().equals("1")) {
                 String message = "Hi "+ otherUser.getName() + ", I want to see services & pricing";
                 TapTalk.sendTextMessageWithXcUserID(message, otherUser.getXcUserID(), new TAPSendMessageWithIDListener() {
