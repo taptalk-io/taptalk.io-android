@@ -12,7 +12,6 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity;
 import io.taptalk.Taptalk.R;
@@ -49,12 +48,9 @@ public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePrevi
 
             if (item.isSelected()) {
                 flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_greenblue_2dp));
-                int marginSize = TAPUtils.getInstance().dpToPx(2);
-                TAPUtils.getInstance().setMargins(ivImagePreview, marginSize, marginSize, marginSize, marginSize);
                 flDelete.setVisibility(View.VISIBLE);
             } else {
                 flImagePreview.setBackground(null);
-                TAPUtils.getInstance().setMargins(ivImagePreview, 0, 0, 0, 0);
                 flDelete.setVisibility(View.GONE);
             }
 
