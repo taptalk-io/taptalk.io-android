@@ -7,6 +7,7 @@ import android.os.Parcelable;
 public class TAPImagePreviewModel implements Parcelable {
     private Uri imageUris;
     private boolean isSelected;
+    private String imageCaption;
 
     public TAPImagePreviewModel(Uri imageUris, boolean isSelected) {
         this.imageUris = imageUris;
@@ -33,6 +34,14 @@ public class TAPImagePreviewModel implements Parcelable {
         isSelected = selected;
     }
 
+    public String getImageCaption() {
+        return imageCaption;
+    }
+
+    public void setImageCaption(String imageCaption) {
+        this.imageCaption = imageCaption;
+    }
+
 
     @Override
     public int describeContents() {
@@ -43,11 +52,13 @@ public class TAPImagePreviewModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.imageUris, flags);
         dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
+        dest.writeString(this.imageCaption);
     }
 
     protected TAPImagePreviewModel(Parcel in) {
         this.imageUris = in.readParcelable(Uri.class.getClassLoader());
         this.isSelected = in.readByte() != 0;
+        this.imageCaption = in.readString();
     }
 
     public static final Creator<TAPImagePreviewModel> CREATOR = new Creator<TAPImagePreviewModel>() {

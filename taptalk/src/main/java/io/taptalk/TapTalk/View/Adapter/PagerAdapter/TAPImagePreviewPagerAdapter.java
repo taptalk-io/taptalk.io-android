@@ -51,6 +51,16 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
 
         EditText etCaption = layout.findViewById(R.id.et_caption);
         TextView tvTypingIndicator = layout.findViewById(R.id.tv_typing_indicator);
+
+        String imageCaption = imageUri.getImageCaption();
+
+        if (null != imageCaption) {
+            etCaption.setText(imageCaption);
+            etCaption.setSelection(imageCaption.length());
+            tvTypingIndicator.setVisibility(View.VISIBLE);
+            tvTypingIndicator.setText(imageCaption.length() + "/" + maxCharacter);
+        }
+
         etCaption.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -68,7 +78,7 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                imageUri.setImageCaption(s.toString());
             }
         });
 
