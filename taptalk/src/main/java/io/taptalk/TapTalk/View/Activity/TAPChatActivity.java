@@ -278,7 +278,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
-        clReply = (ConstraintLayout) findViewById(R.id.cl_reply);
+        clReply = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
@@ -299,7 +299,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
         tvReplySender = (TextView) findViewById(R.id.tv_quote_title);
-        tvReplyBody = (TextView) findViewById(R.id.tv_reply_body);
+        tvReplyBody = (TextView) findViewById(R.id.tv_quote_body);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);

@@ -152,13 +152,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
-            clReply = itemView.findViewById(R.id.cl_reply);
+            clReply = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivReply = itemView.findViewById(R.id.iv_reply);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             tvReplySenderName = itemView.findViewById(R.id.tv_quote_title);
-            tvReplyBody = itemView.findViewById(R.id.tv_reply_body);
+            tvReplyBody = itemView.findViewById(R.id.tv_quote_body);
             vReplyBackground = itemView.findViewById(R.id.v_reply_background);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
