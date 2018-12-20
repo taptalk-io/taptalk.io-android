@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
@@ -29,6 +28,7 @@ import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
@@ -450,6 +450,13 @@ public class TAPChatManager {
         int itemSize = clipData.getItemCount();
         for (int i = 0; i < itemSize; i++) {
             sendImageMessage(clipData.getItemAt(i).getUri());
+        }
+    }
+
+    //sendImageFromList
+    public void sendImageMessage(ArrayList<TAPImagePreviewModel> images) {
+        for (TAPImagePreviewModel image : images) {
+            sendImageMessage(image.getImageUris());
         }
     }
 
