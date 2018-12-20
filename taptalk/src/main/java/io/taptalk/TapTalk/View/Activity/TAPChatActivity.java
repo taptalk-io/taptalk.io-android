@@ -62,6 +62,7 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
@@ -73,6 +74,8 @@ import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
@@ -80,6 +83,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
@@ -206,18 +210,36 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null == vm.getCameraImageUri()) {
                             return;
                         }
-                        TAPChatManager.getInstance().sendImageMessage(vm.getCameraImageUri());
+
+                        ArrayList<TAPImagePreviewModel> imageCameraUris = new ArrayList<>();
+                        imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
+                        openImagePreviewPage(imageCameraUris);
+
+                        //TAPChatManager.getInstance().sendImageMessage(vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) {
                             return;
                         }
+
+                        ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
+
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
-                            TAPChatManager.getInstance().sendImageMessage(clipData);
+                            //ini buat lebih dari 1 image selection
+                            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, true);
                         } else {
-                            TAPChatManager.getInstance().sendImageMessage(intent.getData());
+                            //ini buat 1 image selection
+                            imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
                         }
+
+                        openImagePreviewPage(imageGalleryUris);
+                        break;
+
+                    case SEND_IMAGE_FROM_PREVIEW:
+                        ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
+                        if (null != images && 0 < images.size())
+                            TAPChatManager.getInstance().sendImageMessage(images);
                         break;
                 }
         }
@@ -695,6 +717,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void removeNetworkListener() {
         TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
+    }
+
+    private void openImagePreviewPage(ArrayList<TAPImagePreviewModel> imageUris) {
+        Intent intent = new Intent(TAPChatActivity.this, TAPImagePreviewActivity.class);
+        intent.putExtra(K_IMAGE_URLS, imageUris);
+        startActivityForResult(intent, SEND_IMAGE_FROM_PREVIEW);
     }
 
     //ini Fungsi buat manggil Api Before

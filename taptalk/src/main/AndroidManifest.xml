@@ -14,7 +14,7 @@
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
 
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"/>
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -24,8 +24,9 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity"
             android:windowSoftInputMode="adjustNothing" />
@@ -33,6 +34,7 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPProfileActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity"></activity>
     </application>
 
 </manifest>

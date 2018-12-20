@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,8 +36,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -268,6 +270,16 @@ public class TAPUtils {
         }
     }
 
+    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
+        int itemSize = clipData.getItemCount();
+        for (int count = 0; count < itemSize; count++) {
+            if (count == 0 && isFirstSelected)
+                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
+            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
+        }
+        return uris;
+    }
+
     /**
      * @return Uri to receive saved image path
      */
@@ -390,5 +402,16 @@ public class TAPUtils {
                 .setPrimaryButtonTitle("OK")
                 .setPrimaryButtonListener(v -> {
                 }).show();
+    }
+
+    /**
+     * untuk ngatur margin view
+     */
+    public void setMargins(View view, int left, int top, int right, int bottom) {
+        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            p.setMargins(left, top, right, bottom);
+            view.requestLayout();
+        }
     }
 }
