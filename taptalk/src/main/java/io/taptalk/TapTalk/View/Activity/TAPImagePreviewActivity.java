@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,12 +33,13 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
 
     //View
     private ViewPager vpImagePreview;
-    private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn;
+    private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn, tvTypingIndicator;
     private RecyclerView rvImageThumbnail;
     private EditText etCaption;
     private ImageView ivAddMoreImage;
-    TAPImagePreviewRecyclerAdapter adapter;
-    TAPImagePreviewPagerAdapter pagerAdapter;
+    private TAPImagePreviewRecyclerAdapter adapter;
+    private TAPImagePreviewPagerAdapter pagerAdapter;
+    private int maxCharacter = 100;
 
     //Intent
     private ArrayList<TAPImagePreviewModel> images;
@@ -76,6 +79,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         tvCancelBtn = findViewById(R.id.tv_cancel_btn);
         tvMultipleImageIndicator = findViewById(R.id.tv_multiple_image_indicator);
         tvSendBtn = findViewById(R.id.tv_send_btn);
+        tvTypingIndicator = findViewById(R.id.tv_typing_indicator);
         rvImageThumbnail = findViewById(R.id.rv_image_thumbnail);
         etCaption = findViewById(R.id.et_caption);
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
@@ -113,6 +117,27 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         });
 
         ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPImagePreviewActivity.this, SEND_IMAGE_FROM_GALLERY, true));
+
+        etCaption.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (0 == s.length()) tvTypingIndicator.setVisibility(View.GONE);
+                else {
+                    tvTypingIndicator.setVisibility(View.VISIBLE);
+                    tvTypingIndicator.setText(s.length() + "/" + maxCharacter);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {

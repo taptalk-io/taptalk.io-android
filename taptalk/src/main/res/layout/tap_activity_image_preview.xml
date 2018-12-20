@@ -66,35 +66,59 @@
         android:id="@+id/cl_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/tap_bg_charcoal_gradient_90"
         app:layout_constraintBottom_toTopOf="@id/cl_bottom_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@drawable/tap_bg_charcoal_gradient_90"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <EditText
             android:id="@+id/et_caption"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="9dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="9dp"
+            android:background="@color/transparent_white"
             android:hint="@string/add_a_caption"
+            android:maxHeight="75sp"
+            android:minHeight="36sp"
+            android:maxLength="100"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
             android:theme="@style/EditTextTheme"
-            app:backgroundTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_typing_indicator"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@color/orangeYellow" />
+
+        <TextView
+            android:id="@+id/tv_typing_indicator"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/tap_font_latobold"
+            android:gravity="end"
+            android:letterSpacing="0.04"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="100/100" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_caption" />
 
     </android.support.constraint.ConstraintLayout>
 
