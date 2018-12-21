@@ -172,7 +172,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             itemView.setOnClickListener(v -> onRoomClicked(itemView, item, position));
-            itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
+            // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
+            //itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
 
         private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {

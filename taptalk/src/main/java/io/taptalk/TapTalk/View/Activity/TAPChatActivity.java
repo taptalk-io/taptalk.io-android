@@ -442,14 +442,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void openRoomProfile() {
         for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-            tapListener.onUserProfileClicked(vm.getOtherUserModel());
+            // TODO: 21 December 2018 HANDLE GROUP CHAT
+            tapListener.onUserProfileClicked(TAPChatActivity.this, vm.getOtherUserModel());
         }
-        if (TapTalk.isOpenDefaultProfileEnabled) {
-            Intent intent = new Intent(this, TAPProfileActivity.class);
-            intent.putExtra(K_ROOM, vm.getRoom());
-            startActivity(intent);
-            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-        }
+        // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
+//        if (TapTalk.isOpenDefaultProfileEnabled) {
+//            Intent intent = new Intent(this, TAPProfileActivity.class);
+//            intent.putExtra(K_ROOM, vm.getRoom());
+//            startActivity(intent);
+//            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+//        }
     }
 
     private void updateUnreadCount() {

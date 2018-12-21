@@ -11,10 +11,9 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public abstract class TAPListener implements TapTalkInterface {
     @Override public void onRefreshTokenExpiredOrInvalid() {}
     @Override public void onLoginSuccess(TAPUserModel myUserModel) {}
-    @Override public void onUserProfileClicked(TAPUserModel userModel) {}
+    @Override public void onUserProfileClicked(Activity activity, TAPUserModel userModel) {}
     @Override public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {}
-    @Override
-    public List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
+    @Override public List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
         return null;
     }
 }

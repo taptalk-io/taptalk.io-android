@@ -90,8 +90,8 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onUserProfileClicked(TAPUserModel userModel) {
-            TapTalk.openTapTalkUserProfile(getApplicationContext(), userModel);
+        public void onUserProfileClicked(Activity activity, TAPUserModel userModel) {
+            TapTalk.openTapTalkUserProfile(activity, userModel);
         }
     };
 
