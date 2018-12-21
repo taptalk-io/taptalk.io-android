@@ -103,9 +103,9 @@ public class TAPApiManager {
 
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
             Log.e(TAG, "validateResponse: √√ NO ERROR √√");
-        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken) {
+        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
             return raiseApiRefreshTokenRunningException();
-        } else if (code == UNAUTHORIZED) {
+        } else if (code == UNAUTHORIZED && !isLogout) {
             isShouldRefreshToken++;
             return raiseApiSessionExpiredException(br);
         }
