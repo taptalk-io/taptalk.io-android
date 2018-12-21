@@ -165,11 +165,12 @@ public class TapTalk {
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
         TAPApiManager.getInstance().setLogout(true);
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
         TAPDataManager.getInstance().deleteAllPreference();
         TAPDataManager.getInstance().deleteAllFromDatabase();
         Intent intent = new Intent(appContext, TAPLoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         appContext.startActivity(intent);
     }
 

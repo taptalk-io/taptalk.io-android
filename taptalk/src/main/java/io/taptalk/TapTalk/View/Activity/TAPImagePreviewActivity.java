@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -33,10 +32,9 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
     private ViewPager vpImagePreview;
     private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn;
     private RecyclerView rvImageThumbnail;
-    private EditText etCaption;
     private ImageView ivAddMoreImage;
-    TAPImagePreviewRecyclerAdapter adapter;
-    TAPImagePreviewPagerAdapter pagerAdapter;
+    private TAPImagePreviewRecyclerAdapter adapter;
+    private TAPImagePreviewPagerAdapter pagerAdapter;
 
     //Intent
     private ArrayList<TAPImagePreviewModel> images;
@@ -77,7 +75,6 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         tvMultipleImageIndicator = findViewById(R.id.tv_multiple_image_indicator);
         tvSendBtn = findViewById(R.id.tv_send_btn);
         rvImageThumbnail = findViewById(R.id.rv_image_thumbnail);
-        etCaption = findViewById(R.id.et_caption);
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
         adapter = new TAPImagePreviewRecyclerAdapter(images, thumbInterface);

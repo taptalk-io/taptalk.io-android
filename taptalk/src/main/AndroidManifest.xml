@@ -34,7 +34,8 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPProfileActivity" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity"></activity>
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
     </application>
 
 </manifest>

@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -88,7 +87,7 @@ public class TAPMessageRepository {
         return allMessages;
     }
 
-    public void getMessageListDesc(final String roomID, final TAPDatabaseListener listener) {
+    public void getMessageListDesc(final String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
             allMessageList = messageDao.getAllMessageListDesc(roomID);
             listener.onSelectFinished(allMessageList);
