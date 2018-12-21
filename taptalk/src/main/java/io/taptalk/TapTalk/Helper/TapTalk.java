@@ -26,11 +26,12 @@ import java.util.List;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
+import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
-import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
@@ -39,12 +40,14 @@ import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
+import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -62,6 +65,7 @@ public class TapTalk {
     public static TapTalk tapTalk;
     public static Context appContext;
     public static boolean isForeground;
+    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
@@ -136,8 +140,6 @@ public class TapTalk {
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
             }
         });
-
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(tapListener);
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
@@ -163,10 +165,12 @@ public class TapTalk {
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
         TAPApiManager.getInstance().setLogout(true);
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
         TAPDataManager.getInstance().deleteAllPreference();
         TAPDataManager.getInstance().deleteAllFromDatabase();
         Intent intent = new Intent(appContext, TAPLoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         appContext.startActivity(intent);
     }
 
@@ -323,6 +327,36 @@ public class TapTalk {
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
+    /**
+     * Enable/disable in-app notification after chat fragment goes inactive or to background
+     *
+     * @param enabled
+     */
+    public static void setInAppNotificationEnabled(boolean enabled) {
+        TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
+    }
+
+    public static void setOpenTapTalkUserProfileByDefaultEnabled(boolean enabled) {
+        isOpenDefaultProfileEnabled = enabled;
+    }
+
+    public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
+        TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener() {
+            @Override
+            public void onSelectFinished(Object entity) {
+                if (entity instanceof TAPRoomModel) {
+                    TAPRoomModel roomModel = (TAPRoomModel) entity;
+                    Intent intent = new Intent(context, TAPProfileActivity.class);
+                    intent.putExtra(K_ROOM, roomModel);
+                    context.startActivity(intent);
+                    if (context instanceof Activity) {
+                        ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                    }
+                }
+            }
+        });
+    }
+
     // TODO: 05/12/18 harus diilangin pas diintegrasi
 
     public static void login() {
@@ -431,5 +465,62 @@ public class TapTalk {
         } else {
             tapTalk.tapListeners.add(listener);
         }
+    }
+
+    public static List<TAPListener> getTapTalkListeners() {
+        return tapTalk.tapListeners;
+    }
+
+    public static void sendTextMessageWithXcUserID(String message, String xcUserID, TAPSendMessageWithIDListener listener) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            tapTalk.getUserFromXcUserIDAndSendProductRequestMessage(message, xcUserID, listener);
+        }
+    }
+
+    private void getUserFromXcUserIDAndSendProductRequestMessage(String message, String xcUserID, TAPSendMessageWithIDListener listener) {
+        new Thread(() -> {
+            TAPUserModel otherUserModel = new TAPUserModel();
+            final TAPUserModel myUserModel = TAPChatManager.getInstance().getActiveUser();
+            TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+                @Override
+                public void onSelectFinished(TAPUserModel entity) {
+                    if (null == entity) {
+                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+                            @Override
+                            public void onSuccess(TAPGetUserResponse response) {
+                                if (null != response && null != response.getUser()) {
+                                    otherUserModel.updateValue(response.getUser());
+                                    createAndSendProductRequestMessage(message, myUserModel, otherUserModel, listener);
+                                } else {
+                                    listener.sendFailed(new TAPErrorModel("404", "User Not Found", ""));
+                                }
+                            }
+
+                            @Override
+                            public void onError(TAPErrorModel error) {
+                                listener.sendFailed(error);
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                listener.sendFailed(new TAPErrorModel("404", "User Not Found", ""));
+                            }
+                        });
+                    } else {
+                        otherUserModel.updateValue(entity);
+                        createAndSendProductRequestMessage(message, myUserModel, otherUserModel, listener);
+                    }
+                }
+            });
+        }).start();
+    }
+
+    private void createAndSendProductRequestMessage(String message, TAPUserModel myUserModel, TAPUserModel otherUserModel, TAPSendMessageWithIDListener listener) {
+        TAPRoomModel roomModel = TAPRoomModel.Builder(TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), otherUserModel.getUserID()),
+                otherUserModel.getName(), 1, otherUserModel.getAvatarURL(), "#FFFFFF");
+        TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, roomModel);
+        listener.sendSuccess();
     }
 }

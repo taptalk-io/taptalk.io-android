@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.animation.LayoutTransition;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -49,30 +50,22 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
+import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
-import io.taptalk.TapTalk.Manager.TAPCustomKeyboardManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.TAPCourierModel;
-import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
-import io.taptalk.TapTalk.Model.TAPOrderModel;
-import io.taptalk.TapTalk.Model.TAPPairIdNameModel;
-import io.taptalk.TapTalk.Model.TAPProductModel;
-import io.taptalk.TapTalk.Model.TAPRecipientModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
@@ -81,22 +74,16 @@ import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACCEPTED_BY_SELLER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACTIVE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CONFIRMED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.NOT_CONFIRMED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.PAYMENT_INCOMPLETE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_PAYMENT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_REVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
@@ -142,7 +129,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         WORKING, LOADED, DONE
     }
 
-    private STATE state = STATE.LOADED;
+    private STATE state = STATE.WORKING;
 
     //endless scroll Listener
     TAPEndlessScrollListener endlessScrollListener;
@@ -218,13 +205,41 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // Set active room to prevent null pointer when returning to chat
                 TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
                 switch (requestCode) {
+                    // TODO: 14 December 2018 SHOW IMAGE PREVIEW
                     case SEND_IMAGE_FROM_CAMERA:
-                        if (null == vm.getCameraImageUri()) return;
-                        TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getCameraImageUri());
+                        if (null == vm.getCameraImageUri()) {
+                            return;
+                        }
+
+                        ArrayList<TAPImagePreviewModel> imageCameraUris = new ArrayList<>();
+                        imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
+                        openImagePreviewPage(imageCameraUris);
+
+                        //TAPChatManager.getInstance().sendImageMessage(vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
-                        if (null == intent) return;
-                        TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, intent.getData());
+                        if (null == intent) {
+                            return;
+                        }
+
+                        ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
+
+                        ClipData clipData = intent.getClipData();
+                        if (null != clipData) {
+                            //ini buat lebih dari 1 image selection
+                            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, true);
+                        } else {
+                            //ini buat 1 image selection
+                            imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
+                        }
+
+                        openImagePreviewPage(imageGalleryUris);
+                        break;
+
+                    case SEND_IMAGE_FROM_PREVIEW:
+                        ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
+                        if (null != images && 0 < images.size())
+                            TAPChatManager.getInstance().sendImageMessage(images);
                         break;
                 }
         }
@@ -239,7 +254,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY);
+                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
                     break;
             }
         }
@@ -263,7 +278,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
-        clReply = (ConstraintLayout) findViewById(R.id.cl_reply);
+        clReply = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
@@ -283,8 +298,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
-        tvReplySender = (TextView) findViewById(R.id.tv_reply_sender);
-        tvReplyBody = (TextView) findViewById(R.id.tv_reply_body);
+        tvReplySender = (TextView) findViewById(R.id.tv_quote_title);
+        tvReplyBody = (TextView) findViewById(R.id.tv_quote_body);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
@@ -333,10 +348,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
             // Enable custom keyboard
             vm.setCustomKeyboardEnabled(true);
-            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(),
-                    customKeyboardItemModel -> TAPCustomKeyboardManager.getInstance()
-                            .onCustomKeyboardItemClicked(customKeyboardItemModel,
-                                    vm.getMyUserModel(), vm.getOtherUserModel()));
+            customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
+                for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+                    tapListener.onCustomKeyboardItemClicked(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
+                }
+            });
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
             rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             ivButtonChatMenu.setOnClickListener(v -> toggleCustomKeyboard());
@@ -409,9 +425,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
         };
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
-
-        // TODO: 30 November 2018 TESTING LISTENER, REMOVE THIS LATER
-        TAPCustomKeyboardManager.getInstance().addCustomKeyboardListener(customKeyboardListener);
     }
 
     private void closeActivity() {
@@ -425,10 +438,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void openRoomProfile() {
-        Intent intent = new Intent(this, TAPProfileActivity.class);
-        intent.putExtra(K_ROOM, vm.getRoom());
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+            // TODO: 21 December 2018 HANDLE GROUP CHAT
+            tapListener.onUserProfileClicked(TAPChatActivity.this, vm.getOtherUserModel());
+        }
+        // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
+//        if (TapTalk.isOpenDefaultProfileEnabled) {
+//            Intent intent = new Intent(this, TAPProfileActivity.class);
+//            intent.putExtra(K_ROOM, vm.getRoom());
+//            startActivity(intent);
+//            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+//        }
     }
 
     private void updateUnreadCount() {
@@ -473,8 +493,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.addPendingRecyclerMessage(newMessage);
         } else {
             // Message is added after transition finishes in containerTransitionListener
-            // TODO: 12 December 2018 TEMPORARY ORDER CARD LOGIC
-            checkAndUpdateOrderCard(newMessage);
             runOnUiThread(() -> {
                 //ini ngecek kalau masih ada logo empty chat ilangin dlu
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -506,44 +524,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
                 updateMessageDecoration();
             });
-        }
-    }
-
-    private void checkAndUpdateOrderCard(TAPMessageModel newMessage) {
-        if (newMessage.getType() != TYPE_ORDER_CARD) {
-            return;
-        }
-        // Only the latest card of the same order ID may be shown
-        TAPMessageModel oldOrderCard = vm.getPreviousOrderWithSameID(newMessage);
-
-        // Hide newMessage if it is older than ongoing card
-        if (null != oldOrderCard && oldOrderCard.getCreated() > newMessage.getCreated()) {
-            newMessage.setHidden(true);
-            return;
-        }
-
-        // Hide previous card with the same order ID
-        if (null != oldOrderCard) {
-            oldOrderCard.setHidden(true);
-            vm.removeOngoingOrderCard(oldOrderCard);
-            // TODO: 19 November 2018 UPDATE MESSAGE IN DATABASE, UNCOMMENT BELOW
-            //TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(oldOrderCard));
-            runOnUiThread(() -> messageAdapter.notifyItemRemoved(messageAdapter.getItems().indexOf(oldOrderCard)));
-        }
-
-        int orderStatus = vm.getOrderModel(newMessage).getOrderStatus();
-        switch (orderStatus) {
-            // Add order card to pointer if status is not canceled/completed
-            case NOT_CONFIRMED_BY_CUSTOMER:
-            case CONFIRMED_BY_CUSTOMER:
-            case ACCEPTED_BY_SELLER:
-            case WAITING_PAYMENT:
-            case PAYMENT_INCOMPLETE:
-            case ACTIVE:
-            case WAITING_REVIEW:
-            default:
-                vm.addOngoingOrderCard(newMessage);
-                break;
         }
     }
 
@@ -745,6 +725,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void removeNetworkListener() {
         TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
+    }
+
+    private void openImagePreviewPage(ArrayList<TAPImagePreviewModel> imageUris) {
+        Intent intent = new Intent(TAPChatActivity.this, TAPImagePreviewActivity.class);
+        intent.putExtra(K_IMAGE_URLS, imageUris);
+        startActivityForResult(intent, SEND_IMAGE_FROM_PREVIEW);
     }
 
     //ini Fungsi buat manggil Api Before
@@ -1006,157 +992,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    // TODO: 29 November 2018 TESTING CUSTOM KEYBOARD MENU
-    private TAPListener customKeyboardListener = new TAPListener() {
-        @Override
-        public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
-            switch (customKeyboardItemModel.getItemID()) {
-                case "2":
-                    // TODO: 15 November 2018 DUMMY ORDER CARD FROM OTHER USER
-                    TAPUserModel expert = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
-                    TAPOrderModel order = new TAPOrderModel();
-                    TAPImageURL dummyThumb = new TAPImageURL(
-                            "https://images.pexels.com/photos/722421/pexels-photo-722421.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                            "https://images.pexels.com/photos/722421/pexels-photo-722421.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-                    TAPProductModel dummyProduct = new TAPProductModel(
-                            "Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product Dummy Product",
-                            dummyThumb,
-                            new TAPPairIdNameModel("", ""),
-                            "0",
-                            6175927328506457372L,
-                            "");
-                    dummyProduct.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
-                    dummyProduct.setRating(4f);
-                    List<TAPProductModel> dummyProductList = new ArrayList<>();
-                    dummyProductList.add(dummyProduct);
-                    TAPRecipientModel recipient = new TAPRecipientModel();
-                    recipient.setRecipientID(Integer.valueOf(vm.getMyUserModel().getUserID()));
-                    recipient.setRecipientName(vm.getMyUserModel().getName());
-                    recipient.setPhoneNumber(vm.getMyUserModel().getPhoneNumber());
-                    recipient.setAddress("Jl. Dempo 1 no. 51");
-                    recipient.setPostalCode("12120");
-                    recipient.setRegion("Kebayoran Baru");
-                    recipient.setCity("Jakarta Selatan");
-                    recipient.setProvince("DKI Jakarta");
-                    TAPCourierModel courier = new TAPCourierModel();
-                    courier.setCourierType("Same Day");
-                    courier.setCourierCost(20000L);
-                    courier.setCourierLogo(dummyThumb);
-                    order.setCustomer(vm.getMyUserModel());
-                    order.setSeller(expert);
-                    order.setProducts(dummyProductList);
-                    order.setRecipient(recipient);
-                    order.setCourier(courier);
-                    order.setOrderID("MD-987654321");
-                    order.setOrderName("Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order Dummy Order");
-                    order.setNotes("Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien.");
-                    order.setOrderStatus(0);
-                    order.setOrderTime(System.currentTimeMillis());
-                    order.setAdditionalCost(55555L);
-                    order.setDiscount(333333L);
-                    order.setTotalPrice(7777777L);
-                    String dummyOrderString = TAPUtils.getInstance().toJsonString(order);
-                    TAPMessageModel orderCard = TAPMessageModel.Builder(
-                            dummyOrderString,
-                            vm.getRoom(),
-                            TYPE_ORDER_CARD,
-                            System.currentTimeMillis(),
-                            expert,
-                            vm.getMyUserModel().getUserID());
-                    sendCustomKeyboardMessage(orderCard);
-                    break;
-                case "3":
-                    // TODO: 12 November 2018 DUMMY PRODUCT LIST
-                    TAPImageURL dummyThumb3 = new TAPImageURL(
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-                    TAPProductModel dummyProduct3 = new TAPProductModel(
-                            "Dummy Product",
-                            dummyThumb3,
-                            new TAPPairIdNameModel("", ""),
-                            "0",
-                            99999999L,
-                            "");
-                    dummyProduct3.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
-                    dummyProduct3.setRating(4f);
-                    List<TAPProductModel> dummyProductList3 = new ArrayList<>();
-                    dummyProductList3.add(dummyProduct3);
-                    dummyProductList3.add(dummyProduct3);
-                    dummyProductList3.add(dummyProduct3);
-                    dummyProductList3.add(dummyProduct3);
-                    String dummyProductListString = TAPUtils.getInstance().toJsonString(dummyProductList3);
-                    TAPMessageModel services = TAPMessageModel.Builder(
-                            dummyProductListString,
-                            vm.getRoom(),
-                            TYPE_PRODUCT,
-                            System.currentTimeMillis(),
-                            vm.getMyUserModel(),
-                            vm.getOtherUserID());
-                    sendCustomKeyboardMessage(services);
-                    break;
-                case "4":
-                    // TODO: 15 November 2018 DUMMY ORDER CARD
-                    TAPUserModel customer = new TAPUserModel(vm.getOtherUserID(), "", vm.getRoom().getRoomName(), vm.getRoom().getRoomImage(), "", "", "08123456789", null, System.currentTimeMillis(), System.currentTimeMillis(), false, System.currentTimeMillis(), System.currentTimeMillis());
-                    TAPOrderModel order4 = new TAPOrderModel();
-                    TAPImageURL dummyThumb4 = new TAPImageURL(
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                            "https://images.pexels.com/photos/1029919/pexels-photo-1029919.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260");
-                    TAPProductModel dummyProduct4 = new TAPProductModel(
-                            "Dummy Product",
-                            dummyThumb4,
-                            new TAPPairIdNameModel("", ""),
-                            "0",
-                            99999999L,
-                            "");
-                    dummyProduct4.setDescription("Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas");
-                    dummyProduct4.setRating(4f);
-                    List<TAPProductModel> dummyProductList4 = new ArrayList<>();
-                    dummyProductList4.add(dummyProduct4);
-                    TAPRecipientModel recipient4 = new TAPRecipientModel();
-                    recipient4.setRecipientID(Integer.valueOf(vm.getOtherUserID()));
-                    recipient4.setRecipientName(customer.getName());
-                    recipient4.setPhoneNumber(customer.getPhoneNumber());
-                    recipient4.setAddress("Jl. Kyai Maja no 25C");
-                    recipient4.setPostalCode("12120");
-                    recipient4.setRegion("Kebayoran Baru");
-                    recipient4.setCity("Jakarta Selatan");
-                    recipient4.setProvince("DKI Jakarta");
-                    TAPCourierModel courier4 = new TAPCourierModel();
-                    courier4.setCourierType("Instant Courier");
-                    courier4.setCourierCost(30000L);
-                    courier4.setCourierLogo(dummyThumb4);
-                    order4.setCustomer(customer);
-                    order4.setSeller(vm.getMyUserModel());
-                    order4.setProducts(dummyProductList4);
-                    order4.setRecipient(recipient4);
-                    order4.setCourier(courier4);
-                    order4.setOrderID("MD-123456789");
-                    order4.setOrderName("Dummy Order");
-                    order4.setNotes("Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien. Mauris non tempor quam, et lacinia sapien.");
-                    order4.setOrderStatus(0);
-                    order4.setOrderTime(System.currentTimeMillis());
-                    order4.setAdditionalCost(88888L);
-                    order4.setDiscount(1111111L);
-                    order4.setTotalPrice(9999999L);
-                    String dummyOrderString4 = TAPUtils.getInstance().toJsonString(order4);
-                    TAPMessageModel orderCard4 = TAPMessageModel.Builder(
-                            dummyOrderString4,
-                            vm.getRoom(),
-                            TYPE_ORDER_CARD,
-                            System.currentTimeMillis(),
-                            vm.getMyUserModel(),
-                            vm.getOtherUserID());
-                    sendCustomKeyboardMessage(orderCard4);
-                    break;
-            }
-        }
-
-        private void sendCustomKeyboardMessage(TAPMessageModel message) {
-            hideKeyboards();
-            addNewMessage(message);
-        }
-    };
-
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1262,7 +1097,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         // TODO: 24 September 2018 CHECK ROOM TYPE, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
                         clEmptyChat.setVisibility(View.VISIBLE);
                         tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
-                        tvProfileDescription.setText("Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!");
+                        tvProfileDescription.setText(getResources().getString(R.string.empty_chat_text_to_see_product));
                         if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             Glide.with(TAPChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
                         } else {
@@ -1278,6 +1113,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     } else {
                         // Message exists
                         vm.setMessageModels(models);
+                        state = STATE.LOADED;
                         if (clEmptyChat.getVisibility() == View.VISIBLE) {
                             clEmptyChat.setVisibility(View.GONE);
                         }
@@ -1289,17 +1125,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //ini buat ngecek kalau room nya kosong manggil api before aja
                     //sebaliknya kalau roomnya ada isinya manggil after baru before*
                     //* = kalau jumlah itemnya < 50
-                    if (0 < vm.getMessageModels().size()) {
+                    if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
                     /* Call Message List API
                     Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
                         callApiAfter();
+                    } else if (NUM_OF_ITEM <= vm.getMessageModels().size()) {
+                        rvMessageList.addOnScrollListener(endlessScrollListener);
+                        callApiAfter();
                     } else {
                         fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
                     }
                 });
-
             } else if (null != messageAdapter) {
                 runOnUiThread(() -> {
                     if (clEmptyChat.getVisibility() == View.VISIBLE) {
@@ -1308,16 +1146,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     flMessageList.setVisibility(View.VISIBLE);
                     messageAdapter.setMessages(models);
                     new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
-                    if (rvMessageList.getVisibility() != View.VISIBLE)
+                    if (rvMessageList.getVisibility() != View.VISIBLE) {
                         rvMessageList.setVisibility(View.VISIBLE);
-                    if (state == STATE.DONE) updateMessageDecoration();
+                    }
+                    if (state == STATE.DONE) {
+                        updateMessageDecoration();
+                    }
                 });
-            }
-
-            if (NUM_OF_ITEM > entities.size()) state = STATE.DONE;
-            else {
-                rvMessageList.addOnScrollListener(endlessScrollListener);
-                state = STATE.LOADED;
+                if (NUM_OF_ITEM > entities.size() && 1 < entities.size()) {
+                    state = STATE.DONE;
+                } else {
+                    rvMessageList.addOnScrollListener(endlessScrollListener);
+                    state = STATE.LOADED;
+                }
             }
         }
     };
@@ -1364,7 +1205,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onGallerySelected() {
-            TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY);
+            TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
         }
     };
 
@@ -1473,10 +1314,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private TapDefaultDataView<TAPGetMessageListbyRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListbyRoomResponse>() {
         @Override
-        public void startLoading() {
-        }
-
-        @Override
         public void onSuccess(TAPGetMessageListbyRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
@@ -1495,7 +1332,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             //sorting message balikan dari api before
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
-            mergeSort(messageBeforeModels, DESCENDING);
+            mergeSort(messageBeforeModels, ASCENDING);
 
             runOnUiThread(() -> {
                 if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < messageBeforeModels.size()) {
@@ -1504,7 +1341,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 flMessageList.setVisibility(View.VISIBLE);
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                messageAdapter.addMessage(messageBeforeModels);
+                messageAdapter.addMessageFirstFromAPI(messageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
@@ -1516,6 +1353,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
+            if (NUM_OF_ITEM > response.getMessages().size() && 1 < response.getMessages().size()) {
+                state = STATE.DONE;
+            } else {
+                rvMessageList.addOnScrollListener(endlessScrollListener);
+                state = STATE.LOADED;
+            }
         }
 
         @Override
@@ -1559,7 +1402,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             //sorting message balikan dari api before
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
-            mergeSort(messageBeforeModels, DESCENDING);
+            mergeSort(messageBeforeModels, ASCENDING);
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 messageAdapter.addMessage(messageBeforeModels);

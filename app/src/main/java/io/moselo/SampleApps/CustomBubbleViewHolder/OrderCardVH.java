@@ -28,18 +28,6 @@ import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TaptalkSample.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACCEPTED_BY_SELLER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.ACTIVE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CANCELLED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.CONFIRMED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.DECLINED_BY_SELLER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.DISAGREED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.NOT_CONFIRMED_BY_CUSTOMER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.OVERPAID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.PAYMENT_INCOMPLETE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.REVIEW_COMPLETED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_PAYMENT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OrderStatus.WAITING_REVIEW;
 
 public class OrderCardVH extends TAPBaseChatViewHolder {
     private ConstraintLayout clContainer, clCard, clButtonDetail, clProductPreview, clButtonMoreItems, clDateTime;
@@ -127,7 +115,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
         // Update layout according to order status
         Context c = itemView.getContext();
         switch (order.getOrderStatus()) {
-            case NOT_CONFIRMED_BY_CUSTOMER:
+            case 1:
                 // Customer can confirm order
                 // Seller waits for user confirmation
                 showRecipient(order);
@@ -144,7 +132,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
-            case CANCELLED_BY_CUSTOMER:
+            case 2:
                 // Order is canceled
                 showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_canceled), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
                 hideOrderPrice();
@@ -154,7 +142,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 tvButtonOrderAction.setVisibility(View.GONE);
                 break;
-            case CONFIRMED_BY_CUSTOMER:
+            case 3:
                 // Customer waits for seller confirmation
                 // Seller can confirm order
                 showRecipient(order);
@@ -171,7 +159,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     tvOrderStatus.setVisibility(View.GONE);
                 }
                 break;
-            case DECLINED_BY_SELLER:
+            case 4:
                 // Order is canceled
                 showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_declined), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
                 hideOrderPrice();
@@ -181,8 +169,8 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 tvButtonOrderAction.setVisibility(View.GONE);
                 break;
-            case ACCEPTED_BY_SELLER:
-            case WAITING_PAYMENT:
+            case 5:
+            case 6:
                 // User can proceed to payment
                 // Seller waits for user to complete payment
                 showRecipient(order);
@@ -199,7 +187,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
-            case DISAGREED_BY_CUSTOMER:
+            case 7:
                 // Order is canceled
                 showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.user_disagreed), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
                 hideOrderPrice();
@@ -209,7 +197,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 tvButtonOrderAction.setVisibility(View.GONE);
                 break;
-            case PAYMENT_INCOMPLETE:
+            case 8:
                 // User is required to complete payment before proceeding
                 // Seller waits for user to complete payment
                 showRecipient(order);
@@ -226,7 +214,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
-            case ACTIVE:
+            case 9:
                 // User waits for seller to complete the service
                 // Seller can mark order as finished
                 hideOrderPrice();
@@ -242,7 +230,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     showActionButton(c.getString(io.taptalk.Taptalk.R.string.mark_as_finished));
                 }
                 break;
-            case OVERPAID:
+            case 10:
                 // Order is canceled
                 showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_overpaid), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
                 hideOrderPrice();
@@ -252,7 +240,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 tvButtonOrderAction.setVisibility(View.GONE);
                 break;
-            case WAITING_REVIEW:
+            case 11:
                 // User can write a review on the product
                 // Seller has completed the order
                 hideOrderPrice();
@@ -268,7 +256,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     llOrderStatusGuide.setVisibility(View.GONE);
                 }
                 break;
-            case REVIEW_COMPLETED:
+            case 12:
                 // Order is completed for both sides
                 showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_completed), c.getResources().getColor(io.taptalk.Taptalk.R.color.tealish));
                 hideOrderPrice();
@@ -305,40 +293,40 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 order.setOrderStatus(0);
             }
             switch (order.getOrderStatus()) {
-                case NOT_CONFIRMED_BY_CUSTOMER:
+                case 1:
                     Toast.makeText(c, order.getOrderStatus() + " - NOT_CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                     break;
-                case CANCELLED_BY_CUSTOMER:
+                case 2:
                     Toast.makeText(c, order.getOrderStatus() + " - CANCELLED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                     break;
-                case CONFIRMED_BY_CUSTOMER:
+                case 3:
                     Toast.makeText(c, order.getOrderStatus() + " - CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                     break;
-                case DECLINED_BY_SELLER:
+                case 4:
                     Toast.makeText(c, order.getOrderStatus() + " - DECLINED_BY_SELLER", Toast.LENGTH_LONG).show();
                     break;
-                case ACCEPTED_BY_SELLER:
+                case 5:
                     Toast.makeText(c, order.getOrderStatus() + " - ACCEPTED_BY_SELLER", Toast.LENGTH_LONG).show();
                     break;
-                case DISAGREED_BY_CUSTOMER:
+                case 6:
                     Toast.makeText(c, order.getOrderStatus() + " - DISAGREED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
                     break;
-                case WAITING_PAYMENT:
+                case 7:
                     Toast.makeText(c, order.getOrderStatus() + " - WAITING_PAYMENT", Toast.LENGTH_LONG).show();
                     break;
-                case PAYMENT_INCOMPLETE:
+                case 8:
                     Toast.makeText(c, order.getOrderStatus() + " - PAYMENT_INCOMPLETE", Toast.LENGTH_LONG).show();
                     break;
-                case ACTIVE:
+                case 9:
                     Toast.makeText(c, order.getOrderStatus() + " - ACTIVE", Toast.LENGTH_LONG).show();
                     break;
-                case OVERPAID:
+                case 10:
                     Toast.makeText(c, order.getOrderStatus() + " - OVERPAID", Toast.LENGTH_LONG).show();
                     break;
-                case WAITING_REVIEW:
+                case 11:
                     Toast.makeText(c, order.getOrderStatus() + " - WAITING_REVIEW", Toast.LENGTH_LONG).show();
                     break;
-                case REVIEW_COMPLETED:
+                case 12:
                     Toast.makeText(c, order.getOrderStatus() + " - REVIEW_COMPLETED", Toast.LENGTH_LONG).show();
                     break;
                 default:

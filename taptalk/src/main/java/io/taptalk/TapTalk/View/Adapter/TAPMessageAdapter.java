@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -32,7 +31,6 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
@@ -87,7 +85,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_BUBBLE_ORDER_CARD:
                 //return new OrderVH(parent, R.layout.tap_cell_chat_order_card);
                 TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD);
-                return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener() );
+                return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
             case TYPE_EMPTY:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
             default:
@@ -154,13 +152,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
-            clReply = itemView.findViewById(R.id.cl_reply);
+            clReply = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivReply = itemView.findViewById(R.id.iv_reply);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
-            tvReplySenderName = itemView.findViewById(R.id.tv_reply_sender);
-            tvReplyBody = itemView.findViewById(R.id.tv_reply_body);
+            tvReplySenderName = itemView.findViewById(R.id.tv_quote_title);
+            tvReplyBody = itemView.findViewById(R.id.tv_quote_body);
             vReplyBackground = itemView.findViewById(R.id.v_reply_background);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
@@ -235,7 +233,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody;
         private ImageView ivMessageStatus, ivReply, ivSending, ivProgress;
-        private TextView tvMessageStatus;
+        private TextView tvMessageBody, tvMessageStatus;
         private ProgressBar pbProgress;
 
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
@@ -247,6 +245,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
             ivReply = itemView.findViewById(R.id.iv_reply);
             ivProgress = itemView.findViewById(R.id.iv_progress);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
@@ -263,7 +262,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (item.isAnimating()) {
                 return;
             }
-            tvMessageStatus.setText(TAPTimeFormatter.getInstance().durationString(item.getCreated()));
+
+            // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
+//            if (HAS_CAPTIONS) {
+                rcivImageBody.setBottomLeftRadius(0);
+                rcivImageBody.setBottomRightRadius(0);
+                tvMessageBody.setVisibility(View.VISIBLE);
+                tvMessageBody.setText(item.getBody());
+//            } else {
+//                rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
+//                rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
+//                tvMessageBody.setVisibility(View.GONE);
+//            }
+
+            tvMessageStatus.setText(item.getMessageStatusText());
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
 
@@ -631,7 +643,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 item.setExpanded(false);
             } else {
                 // Expand clicked bubble
-                tvMessageStatus.setText(TAPTimeFormatter.getInstance().durationChatString(itemView.getContext(), item.getCreated()));
+                tvMessageStatus.setText(item.getMessageStatusText());
                 shrinkExpandedBubble();
                 item.setExpanded(true);
             }
@@ -817,6 +829,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public void addMessage(List<TAPMessageModel> messages) {
         addItem(messages, true);
+    }
+
+    public void addMessageFirstFromAPI(List<TAPMessageModel> messages) {
+        addItem(messages, false);
+        notifyDataSetChanged();
     }
 
     public void addMessage(int position, List<TAPMessageModel> messages) {

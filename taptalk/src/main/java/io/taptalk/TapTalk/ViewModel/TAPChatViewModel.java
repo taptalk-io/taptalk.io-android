@@ -140,7 +140,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         getUnreadMessages().clear();
     }
 
-    public void getMessageEntities(String roomID, TAPDatabaseListener listener) {
+    public void getMessageEntities(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener);
     }
 

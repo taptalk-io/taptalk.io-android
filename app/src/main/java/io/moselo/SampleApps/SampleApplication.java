@@ -1,6 +1,8 @@
 package io.moselo.SampleApps;
 
+import android.app.Activity;
 import android.app.Application;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
@@ -10,8 +12,10 @@ import java.util.List;
 
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TaptalkSample.R;
 
@@ -68,10 +72,26 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onCustomKeyboardItemClicked(TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
+        public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             if (customKeyboardItemModel.getItemID().equals("1")) {
-                Toast.makeText(SampleApplication.this, "See price list clicked", Toast.LENGTH_SHORT).show();
+                String message = "Hi "+ otherUser.getName() + ", I want to see services & pricing";
+                TapTalk.sendTextMessageWithXcUserID(message, otherUser.getXcUserID(), new TAPSendMessageWithIDListener() {
+                    @Override
+                    public void sendSuccess() {
+                        Log.e("><><><", "sendSuccess: " );
+                    }
+
+                    @Override
+                    public void sendFailed(TAPErrorModel errorModel) {
+                        Log.e("><><><", "sendFailed: ");
+                    }
+                });
             }
+        }
+
+        @Override
+        public void onUserProfileClicked(Activity activity, TAPUserModel userModel) {
+            TapTalk.openTapTalkUserProfile(activity, userModel);
         }
     };
 
@@ -81,6 +101,7 @@ public class SampleApplication extends Application {
         TapTalk.init(this, TAPListener);
         TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
         TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
+        TapTalk.setOpenTapTalkUserProfileByDefaultEnabled(false);
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

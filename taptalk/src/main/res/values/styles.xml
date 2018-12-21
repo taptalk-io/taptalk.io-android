@@ -188,4 +188,8 @@
         <!--<item name="tap_shadow_bottom">@drawable/tap_shadow_bottom</item>-->
     </style>
 
+    <style name="EditTextTheme">
+        <item name="colorControlActivated">@color/white</item>
+    </style>
+
 </resources>

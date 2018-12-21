@@ -3,7 +3,8 @@ package io.taptalk.TapTalk.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.util.Log;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,9 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.Data.TapTalkDatabase;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
+import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPMessageRepository {
 
@@ -81,7 +87,7 @@ public class TAPMessageRepository {
         return allMessages;
     }
 
-    public void getMessageListDesc(final String roomID, final TAPDatabaseListener listener) {
+    public void getMessageListDesc(final String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
             allMessageList = messageDao.getAllMessageListDesc(roomID);
             listener.onSelectFinished(allMessageList);
@@ -136,6 +142,23 @@ public class TAPMessageRepository {
             for (TAPMessageEntity entity : entities)
                 unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
             listener.onSelectedRoomList(entities, unreadMap);
+        }).start();
+    }
+
+    public void getRoom(String myID, TAPUserModel otherUserModel, final TAPDatabaseListener listener) {
+        new Thread(() -> {
+            String roomID = TAPChatManager.getInstance().arrangeRoomId(myID, otherUserModel.getUserID());
+            TAPMessageEntity room = messageDao.getRoom(roomID);
+            if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
+                // Get room model from saved message
+                listener.onSelectFinished(new TAPRoomModel(roomID, room.getRoomName(), room.getRoomType(),
+                        TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                        }, room.getRoomImage()), room.getRoomColor()));
+            } else {
+                // Create new room model from user data
+                // TODO: 18 December 2018 DEFINE ROOM TYPE AND DEFAULT ROOM COLOR
+                listener.onSelectFinished(new TAPRoomModel(roomID, otherUserModel.getName(), 1, otherUserModel.getAvatarURL(), ""));
+            }
         }).start();
     }
 

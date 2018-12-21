@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,8 +36,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -250,7 +252,7 @@ public class TAPUtils {
         }
     }
 
-    public void pickImageFromGallery(Activity activity, int requestCode) {
+    public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE / USE CUSTOM PICKER
         // Reminder: Handle onRequestPermissionsResult in activity
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -260,11 +262,22 @@ public class TAPUtils {
             // Permission granted
             Intent intent = new Intent();
             intent.setType(activity.getString(R.string.intent_pick_image));
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
             intent.setAction(Intent.ACTION_GET_CONTENT);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.intent_select_picture)), requestCode);
             }
         }
+    }
+
+    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
+        int itemSize = clipData.getItemCount();
+        for (int count = 0; count < itemSize; count++) {
+            if (count == 0 && isFirstSelected)
+                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
+            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
+        }
+        return uris;
     }
 
     /**
@@ -303,7 +316,7 @@ public class TAPUtils {
      * This call has no effect on non-translucent activities or on activities
      * with the {@link android.R.attr#windowIsFloating} attribute.
      */
-    public static void convertActivityFromTranslucent(Activity activity) {
+    public void convertActivityFromTranslucent(Activity activity) {
         try {
             Method method = Activity.class.getDeclaredMethod("convertFromTranslucent");
             method.setAccessible(true);
@@ -324,7 +337,7 @@ public class TAPUtils {
      * This call has no effect on non-translucent activities or on activities
      * with the {@link android.R.attr#windowIsFloating} attribute.
      */
-    public static void convertActivityToTranslucent(Activity activity) {
+    public void convertActivityToTranslucent(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             convertActivityToTranslucentAfterL(activity);
         } else {
@@ -335,7 +348,7 @@ public class TAPUtils {
     /**
      * Calling the convertToTranslucent method on platforms before Android 5.0
      */
-    public static void convertActivityToTranslucentBeforeL(Activity activity) {
+    public void convertActivityToTranslucentBeforeL(Activity activity) {
         try {
             Class<?>[] classes = Activity.class.getDeclaredClasses();
             Class<?> translucentConversionListenerClazz = null;
@@ -389,5 +402,16 @@ public class TAPUtils {
                 .setPrimaryButtonTitle("OK")
                 .setPrimaryButtonListener(v -> {
                 }).show();
+    }
+
+    /**
+     * untuk ngatur margin view
+     */
+    public void setMargins(View view, int left, int top, int right, int bottom) {
+        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+            p.setMargins(left, top, right, bottom);
+            view.requestLayout();
+        }
     }
 }

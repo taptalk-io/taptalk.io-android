@@ -16,7 +16,6 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -27,7 +26,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import rx.Subscriber;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
@@ -350,7 +348,7 @@ public class TAPDataManager {
         return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }
 
-    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener listener) {
+    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
     }
 
@@ -367,18 +365,37 @@ public class TAPDataManager {
     }
 
     public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
     public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), isCheckUnreadFirst, listener);
     }
 
     public void searchAllRoomsFromDatabase(String keyword, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().searchAllRooms(getActiveUser().getUserID(), keyword, listener);
     }
 
+    public void getRoomModel(TAPUserModel userModel, TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
+        TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
+    }
+
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
         TAPDatabaseManager.getInstance().getUnreadCountPerRoom(getActiveUser().getUserID(), roomID, listener);
     }
 
@@ -435,6 +452,10 @@ public class TAPDataManager {
     // Set isContact value to 0 or 1 then insert user model to database
     public void checkContactAndInsertToDatabase(TAPUserModel userModel) {
         TAPDatabaseManager.getInstance().checkContactAndInsert(userModel);
+    }
+
+    public void getUserWithXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().getUserWithXcUserID(xcUserID, listener);
     }
 
     public void insertAndGetMyContact(List<TAPUserModel> userModels, TAPDatabaseListener<TAPUserModel> listener) {

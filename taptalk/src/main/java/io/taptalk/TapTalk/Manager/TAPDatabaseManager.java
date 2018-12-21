@@ -108,7 +108,7 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessagesDesc(String roomID, TAPDatabaseListener listener) {
+    public void getMessagesDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getMessageListDesc(roomID, listener);
         else
@@ -151,6 +151,13 @@ public class TAPDatabaseManager {
     public void searchAllRooms(String myID, String keyword, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.searchAllChatRooms(myID, keyword, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getRoom(String myID, TAPUserModel otherUserModel, TAPDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.getRoom(myID, otherUserModel, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -253,6 +260,12 @@ public class TAPDatabaseManager {
     public void checkContactAndInsert(TAPUserModel userModel) {
         if (null != myContactRepository)
             myContactRepository.checkContactAndInsert(userModel);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void getUserWithXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
+        if (null != myContactRepository)
+            myContactRepository.getUserWithXcUserID(xcUserID, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 

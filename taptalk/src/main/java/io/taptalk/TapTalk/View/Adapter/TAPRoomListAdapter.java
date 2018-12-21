@@ -145,7 +145,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
             // Message failed to send
             else if (null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
-                ivMessageStatus.setImageResource(R.drawable.ic_tap_ic_failed_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
             }
             // Message sent
             else if (null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {
@@ -172,7 +172,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             itemView.setOnClickListener(v -> onRoomClicked(itemView, item, position));
-            itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
+            // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
+            //itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
 
         private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
