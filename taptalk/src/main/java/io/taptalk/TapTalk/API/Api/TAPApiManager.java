@@ -1,7 +1,12 @@
 package io.taptalk.TapTalk.API.Api;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
@@ -10,6 +15,7 @@ import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
@@ -33,8 +39,11 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -238,5 +247,21 @@ public class TAPApiManager {
     public void getUserByUsername(String username, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
         execute(homingPigeon.getUserByUsername(request), subscriber);
+    }
+
+    public void uploadImage(Uri imageBitmap, String roomID, String caption, Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        try {
+            RequestBody roomIDReqBody = TAPUtils.getInstance().createPartFromString(roomID);
+            RequestBody captionReqBody = TAPUtils.getInstance().createPartFromString(caption);
+            Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);
+            File file = TAPUtils.getInstance().createTempFile(mImage);
+            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
+            execute(homingPigeon.uploadImage(reqFile, roomIDReqBody, captionReqBody), subscriber);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //execute(homingPigeon.uploadImage(reqFile, roomIDReqBody, captionReqBody), subscriber);
+        //execute(homingPigeon.uploadImage(body), subscriber);
     }
 }

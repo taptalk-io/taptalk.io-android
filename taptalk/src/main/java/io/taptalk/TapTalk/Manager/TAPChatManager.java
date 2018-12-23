@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -27,6 +29,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
@@ -446,7 +449,7 @@ public class TAPChatManager {
     }
 
     // Send multiple image messages
-    public void sendImageMessage (ClipData clipData) {
+    public void sendImageMessage(ClipData clipData) {
         int itemSize = clipData.getItemCount();
         for (int i = 0; i < itemSize; i++) {
             sendImageMessage(clipData.getItemAt(i).getUri());
@@ -454,7 +457,13 @@ public class TAPChatManager {
     }
 
     //sendImageFromList
-    public void sendImageMessage(ArrayList<TAPImagePreviewModel> images) {
+    public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images) {
+        new Thread(() -> {
+            TAPImagePreviewModel tempModel = images.get(0);
+            TAPDataManager.getInstance().uploadImage(tempModel.getImageUris(), getActiveRoom().getRoomID(), tempModel.getImageCaption(), new TapDefaultDataView<TAPUploadFileResponse>() {
+            });
+        }).start();
+
         for (TAPImagePreviewModel image : images) {
             sendImageMessage(image.getImageUris());
         }

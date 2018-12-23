@@ -21,9 +21,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.Taptalk.BuildConfig;
+import okhttp3.RequestBody;
 import retrofit2.http.Body;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import rx.Observable;
 
 public interface TAPTalkApiService {
@@ -77,5 +81,16 @@ public interface TAPTalkApiService {
 
     @POST("client/user/get_by_xcuserid")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
+
+    @Multipart
+    @POST("chat/file/upload")
+//    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part MultipartBody.Part image,
+//                                                                   @Part("imageData") RequestBody imageData);
+    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part("file") RequestBody image,
+                                                                   @Part("roomID") RequestBody roomID,
+                                                                   @Part("caption") RequestBody caption);
+//    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part MultipartBody.Part image,
+//                                                                   @Part("roomID") RequestBody roomID,
+//                                                                   @Part("caption") RequestBody caption);
 
 }

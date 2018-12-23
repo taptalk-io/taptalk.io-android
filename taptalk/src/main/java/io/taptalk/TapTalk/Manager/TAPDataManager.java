@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.net.Uri;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -24,6 +25,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -575,6 +577,10 @@ public class TAPDataManager {
 
     public void getUserByUsernameFromApi(String username, TapDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
+    }
+
+    public void uploadImage(Uri imageBitmap, String roomID, String caption, TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadImage(imageBitmap, roomID, caption, new TAPDefaultSubscriber<>(view));
     }
 
     // FIXME: 25 October 2018
