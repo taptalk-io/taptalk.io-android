@@ -28,6 +28,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPUploadFileRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
@@ -251,6 +252,7 @@ public class TAPApiManager {
 
     public void uploadImage(Uri imageBitmap, String roomID, String caption, Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         try {
+            //TAPUploadFileRequest request = TAPUploadFileRequest.Builder(roomID, imageBitmap.toString(), caption);
             RequestBody roomIDReqBody = TAPUtils.getInstance().createPartFromString(roomID);
             RequestBody captionReqBody = TAPUtils.getInstance().createPartFromString(caption);
             Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);

@@ -88,7 +88,8 @@ public interface TAPTalkApiService {
 //                                                                   @Part("imageData") RequestBody imageData);
     Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part("file") RequestBody image,
                                                                    @Part("roomID") RequestBody roomID,
-                                                                   @Part("caption") RequestBody caption);
+                                                                   @Part("caption") RequestBody caption
+                                                                   /*@Part("image") TAPUploadFileRequest request*/);
 //    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part MultipartBody.Part image,
 //                                                                   @Part("roomID") RequestBody roomID,
 //                                                                   @Part("caption") RequestBody caption);
