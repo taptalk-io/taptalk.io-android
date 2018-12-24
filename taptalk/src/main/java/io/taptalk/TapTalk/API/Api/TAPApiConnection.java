@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.taptalk.TapTalk.API.Interceptor.TAPHeaderRequestInterceptor;
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
+import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
 import io.taptalk.Taptalk.BuildConfig;
@@ -19,6 +20,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.MULTIPART_CONTENT_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
 
@@ -36,6 +38,7 @@ public class TAPApiConnection {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
+    private TAPTalkMultipartApiService tapMultipart;
 
     public ObjectMapper objectMapper;
 
@@ -49,14 +52,17 @@ public class TAPApiConnection {
         this.objectMapper = createObjectMapper();
         OkHttpClient httpHpClientAccessToken = buildHttpHpClient(NOT_USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientRefreshToken = buildHttpHpClient(USE_REFRESH_TOKEN);
+        OkHttpClient httpHpClientMultipartToken = buildHttpHpClient(MULTIPART_CONTENT_TYPE);
 
         Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkApiService.BASE_URL);
         Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkSocketService.BASE_URL);
         Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPTalkRefreshTokenService.BASE_URL);
+        Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPTalkMultipartApiService.BASE_URL);
 
         this.homingPigeon = homingPigeonAdapter.create(TAPTalkApiService.class);
         this.hpSocket = hpSocketAdapter.create(TAPTalkSocketService.class);
         this.hpRefresh = hpRefreshAdapter.create(TAPTalkRefreshTokenService.class);
+        this.tapMultipart = tapMultipartAdapter.create(TAPTalkMultipartApiService.class);
     }
 
     public TAPTalkApiService getHomingPigeon() {
@@ -69,6 +75,10 @@ public class TAPApiConnection {
 
     public TAPTalkRefreshTokenService getHpRefresh() {
         return hpRefresh;
+    }
+
+    public TAPTalkMultipartApiService getTapMultipart() {
+        return tapMultipart;
     }
 
     private ObjectMapper createObjectMapper() {

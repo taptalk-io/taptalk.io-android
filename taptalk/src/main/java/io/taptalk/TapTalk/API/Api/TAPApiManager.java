@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
+import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
@@ -28,7 +29,6 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPUploadFileRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
@@ -59,6 +59,7 @@ public class TAPApiManager {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
+    private TAPTalkMultipartApiService tapMultipart;
     private static TAPApiManager instance;
     private int isShouldRefreshToken = 0;
     //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
@@ -73,6 +74,7 @@ public class TAPApiManager {
         this.homingPigeon = connection.getHomingPigeon();
         this.hpSocket = connection.getHpValidate();
         this.hpRefresh = connection.getHpRefresh();
+        this.tapMultipart = connection.getTapMultipart();
     }
 
     public boolean isLogout() {
@@ -258,7 +260,7 @@ public class TAPApiManager {
             Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);
             File file = TAPUtils.getInstance().createTempFile(mImage);
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
-            execute(homingPigeon.uploadImage(reqFile, roomIDReqBody, captionReqBody), subscriber);
+            execute(tapMultipart.uploadImage(roomIDReqBody, reqFile, captionReqBody), subscriber);
         } catch (IOException e) {
             e.printStackTrace();
         }

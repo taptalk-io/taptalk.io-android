@@ -15,6 +15,7 @@ import okhttp3.Response;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.APP_KEY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.APP_KEY_SECRET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.MULTIPART_CONTENT_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
 
@@ -29,7 +30,7 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
-        String appKey = Base64.encodeToString((APP_KEY_ID+":"+APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
+        String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
 
         Context context = TapTalk.appContext;
 
@@ -37,7 +38,7 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (TAPDataManager.getInstance().checkAccessTokenAvailable() && NOT_USE_REFRESH_TOKEN == headerAuth) {
+        if (TAPDataManager.getInstance().checkAccessTokenAvailable() && (NOT_USE_REFRESH_TOKEN == headerAuth || MULTIPART_CONTENT_TYPE == headerAuth)) {
             authorization = "Bearer " + TAPDataManager.getInstance().getAccessToken();
         } else if (TAPDataManager.getInstance().checkRefreshTokenAvailable() && USE_REFRESH_TOKEN == headerAuth) {
             authorization = "Bearer " + TAPDataManager.getInstance().getRefreshToken();
@@ -46,11 +47,16 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         } else
             authorization = "Bearer ";
 
-        String deviceID = Settings.Secure.getString(context.getContentResolver(),Settings.Secure.ANDROID_ID);
+        String contentType = "application/json";
+
+        if (MULTIPART_CONTENT_TYPE == headerAuth)
+            contentType = "multipart/form-data";
+
+        String deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
         Request request = original
                 .newBuilder()
-                .header("Content-Type", "application/json")
+                .header("Content-Type", contentType)
                 .header("App-Key", appKey)
                 .header("Authorization", authorization)
                 .header("Device-Identifier", deviceID)

@@ -435,10 +435,10 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 */
     public File createTempFile(Bitmap bitmap) {
         File file = new File(TapTalk.appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                , System.currentTimeMillis() +"_image.webp");
+                , System.currentTimeMillis() +"_image.jpeg");
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.WEBP,0, bos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG,0, bos);
         byte[] bitmapdata = bos.toByteArray();
         //write the bytes in file
 

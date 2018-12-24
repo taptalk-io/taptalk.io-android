@@ -118,6 +118,7 @@ public class TAPDefaultConstant {
     public static final class TokenHeaderConst {
         public static final int NOT_USE_REFRESH_TOKEN = 1;
         public static final int USE_REFRESH_TOKEN = 2;
+        public static final int MULTIPART_CONTENT_TYPE = 3;
     }
 
     public static final class OldDataConst {
