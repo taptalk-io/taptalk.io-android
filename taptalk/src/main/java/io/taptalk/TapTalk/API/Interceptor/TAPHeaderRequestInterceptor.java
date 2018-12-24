@@ -10,6 +10,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.Interceptor;
+import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -50,7 +51,7 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         String contentType = "application/json";
 
         if (MULTIPART_CONTENT_TYPE == headerAuth)
-            contentType = "multipart/form-data";
+            contentType = MultipartBody.FORM.toString();
 
         String deviceID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;

@@ -44,6 +44,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
 import rx.Subscriber;
@@ -254,13 +255,25 @@ public class TAPApiManager {
 
     public void uploadImage(Uri imageBitmap, String roomID, String caption, Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         try {
-            //TAPUploadFileRequest request = TAPUploadFileRequest.Builder(roomID, imageBitmap.toString(), caption);
-            RequestBody roomIDReqBody = TAPUtils.getInstance().createPartFromString(roomID);
-            RequestBody captionReqBody = TAPUtils.getInstance().createPartFromString(caption);
+            //RequestBody roomIDReqBody = TAPUtils.getInstance().createPartFromString(roomID);
+            //RequestBody captionReqBody = TAPUtils.getInstance().createPartFromString(caption);
             Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);
-            File file = TAPUtils.getInstance().createTempFile(mImage);
-            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
-            execute(tapMultipart.uploadImage(roomIDReqBody, reqFile, captionReqBody), subscriber);
+            File fileImage = TAPUtils.getInstance().createTempFile(mImage);
+            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), fileImage);
+
+//            HashMap<String, RequestBody> multipartAddInfo = new HashMap<>();
+//            multipartAddInfo.put("roomID", RequestBody.create(MultipartBody.FORM, roomID));
+//            multipartAddInfo.put("caption", RequestBody.create(MultipartBody.FORM, caption));
+//
+//            MultipartBody.Part file = MultipartBody.Part.createFormData("file", fileImage.getName(), reqFile);
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("roomID", roomID)
+                    .addFormDataPart("file", fileImage.getName(), reqFile)
+                    .addFormDataPart("caption", caption)
+                    .build();
+            execute(tapMultipart.uploadImage(requestBody), subscriber);
         } catch (IOException e) {
             e.printStackTrace();
         }
