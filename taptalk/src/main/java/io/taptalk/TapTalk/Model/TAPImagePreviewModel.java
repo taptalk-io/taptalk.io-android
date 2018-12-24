@@ -12,6 +12,7 @@ public class TAPImagePreviewModel implements Parcelable {
     public TAPImagePreviewModel(Uri imageUris, boolean isSelected) {
         this.imageUris = imageUris;
         this.isSelected = isSelected;
+        this.imageCaption = "";
     }
 
     public static TAPImagePreviewModel Builder(Uri imageUris, boolean isSelected) {
