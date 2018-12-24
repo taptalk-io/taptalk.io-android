@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -49,8 +48,6 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.Taptalk.R;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
@@ -422,12 +419,6 @@ public class TAPUtils {
             p.setMargins(left, top, right, bottom);
             view.requestLayout();
         }
-    }
-
-    @NonNull
-    public RequestBody createPartFromString(String descriptionString) {
-        return RequestBody.create(
-                MediaType.parse("text/plain"), descriptionString);
     }
 
     /*

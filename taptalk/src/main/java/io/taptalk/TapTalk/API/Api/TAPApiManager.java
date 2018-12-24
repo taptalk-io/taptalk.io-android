@@ -255,17 +255,9 @@ public class TAPApiManager {
 
     public void uploadImage(Uri imageBitmap, String roomID, String caption, Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         try {
-            //RequestBody roomIDReqBody = TAPUtils.getInstance().createPartFromString(roomID);
-            //RequestBody captionReqBody = TAPUtils.getInstance().createPartFromString(caption);
             Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);
             File fileImage = TAPUtils.getInstance().createTempFile(mImage);
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), fileImage);
-
-//            HashMap<String, RequestBody> multipartAddInfo = new HashMap<>();
-//            multipartAddInfo.put("roomID", RequestBody.create(MultipartBody.FORM, roomID));
-//            multipartAddInfo.put("caption", RequestBody.create(MultipartBody.FORM, caption));
-//
-//            MultipartBody.Part file = MultipartBody.Part.createFormData("file", fileImage.getName(), reqFile);
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
@@ -277,8 +269,5 @@ public class TAPApiManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //execute(homingPigeon.uploadImage(reqFile, roomIDReqBody, captionReqBody), subscriber);
-        //execute(homingPigeon.uploadImage(body), subscriber);
     }
 }

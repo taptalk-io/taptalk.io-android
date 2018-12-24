@@ -10,21 +10,8 @@ import rx.Observable;
 
 public interface TAPTalkMultipartApiService {
     String BASE_URL = BuildConfig.BASE_URL_API;
-    //String BASE_URL = "dev.taptalk.io:8080/api/v1/";
 
-    //@Multipart
     @POST("chat/file/upload")
     Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Body RequestBody uploadFile);
-//    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@PartMap() HashMap<String, RequestBody> addInfo,
-//                                                                   @Part MultipartBody.Part uploadFile);
-//    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part MultipartBody.Part image,
-//                                                                   @Part("imageData") RequestBody imageData);
-//    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part("roomID") RequestBody roomID,
-//                                                                   @Part("file") RequestBody image,
-//                                                                   @Part("caption") RequestBody caption
-//            /*@Part("image") TAPUploadFileRequest request*/);
-//    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Part MultipartBody.Part image,
-//                                                                   @Part("roomID") RequestBody roomID,
-//                                                                   @Part("caption") RequestBody caption);
 
 }
