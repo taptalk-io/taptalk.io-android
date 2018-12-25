@@ -73,7 +73,7 @@ public class TAPUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            Log.e("><><><", "toJsonString: ",e );
+            Log.e("><><><", "toJsonString: ", e);
             return "{}";
         }
     }
@@ -426,10 +426,10 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 */
     public File createTempFile(Bitmap bitmap) {
         File file = new File(TapTalk.appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                , System.currentTimeMillis() +"_image.jpeg");
+                , System.currentTimeMillis() + "_image.jpeg");
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG,0, bos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
         byte[] bitmapdata = bos.toByteArray();
         //write the bytes in file
 
