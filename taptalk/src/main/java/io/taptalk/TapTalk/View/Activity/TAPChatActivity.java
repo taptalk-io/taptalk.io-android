@@ -239,7 +239,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, images);
+                            TAPChatManager.getInstance().sendImageMessage(images);
                         break;
                 }
         }
@@ -934,7 +934,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     TAPChatManager.getInstance().sendTextMessage(message.getBody());
                     break;
                 case TAPDefaultConstant.MessageType.TYPE_IMAGE:
-                    TAPChatManager.getInstance().sendImageMessage(message.getBody());
+                    // TODO: 7 January 2019 RESEND IMAGE MESSAGE
+//                    TAPChatManager.getInstance().sendImageMessage(message.getBody());
                     break;
             }
         }

@@ -1,10 +1,9 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.content.ClipData;
-import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -31,6 +30,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -410,7 +410,10 @@ public class TAPChatManager {
     /**
      * Send image messages
      */
-    public void sendImageMessage(Uri imageUri) {
+    public void sendImageMessage(TAPImagePreviewModel image) {
+        Log.e(TAG, "sendImageMessage: " + image.getImageUri().toString());
+        Uri imageUri = image.getImageUri();
+
         // Build message model
         TAPMessageModel messageModel = TAPMessageModel.Builder(
                 imageUri.toString(),
@@ -420,7 +423,6 @@ public class TAPChatManager {
                 activeUser,
                 getOtherUserIdFromActiveRoom(activeRoom.getRoomID()));
 
-        // TODO: 8 November 2018 CHECK IMAGE WIDTH/HEIGHT AFTER ENCODE
         // Get image width and height
         String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
 
@@ -436,50 +438,38 @@ public class TAPChatManager {
             messageModel.setImageHeight(options.outHeight);
         }
 
-        // Trigger listener to create temporary image in activity
+        // Trigger listener to show image preview in activity
         triggerSendMessageListener(messageModel);
 
-//        new Thread(() -> {
-//            // Encode image to base 64
-//            // TODO: 1 November 2018 UPDATE ENCODE METHOD
-//            String encodedImage = TAPFileUtils.getInstance().encodeToBase64(imageUri, maxImageSize, activity);
-//            messageModel.setBody(encodedImage);
-//            // TODO: 31 October 2018 SEND MESSAGE TO SERVER
-//        }).start();
+        TAPDataManager.getInstance().uploadImage(imageUri, getActiveRoom().getRoomID(), image.getImageCaption(), new TapDefaultDataView<TAPUploadFileResponse>() {
+            @Override
+            public void onSuccess(TAPUploadFileResponse response) {
+                Log.e(TAG, "sendImageMessage onSuccess: " + TAPUtils.getInstance().toJsonString(response));
+                // Send file message emit
+                // TODO: 7 January 2019 UPDATE MESSAGE DATA
+                messageModel.setBody(TAPUtils.getInstance().toJsonString(response));
+                triggerListenerAndSendMessage(messageModel);
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                Log.e(TAG, "sendImageMessage onError: " + error.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e(TAG, "sendImageMessage onError: " + throwable.getMessage());
+            }
+        });
     }
 
     // Send multiple image messages
-    public void sendImageMessage(ClipData clipData) {
-        int itemSize = clipData.getItemCount();
-        for (int i = 0; i < itemSize; i++) {
-            sendImageMessage(clipData.getItemAt(i).getUri());
-        }
-    }
-
-    //sendImageFromList
-    public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images) {
+    public void sendImageMessage(ArrayList<TAPImagePreviewModel> images) {
         new Thread(() -> {
-            TAPImagePreviewModel tempModel = images.get(0);
-            TAPDataManager.getInstance().uploadImage(tempModel.getImageUris(), getActiveRoom().getRoomID(), tempModel.getImageCaption(), new TapDefaultDataView<TAPUploadFileResponse>() {
-            });
+            for (TAPImagePreviewModel image : images) {
+                sendImageMessage(image);
+            }
         }).start();
-
-        for (TAPImagePreviewModel image : images) {
-            sendImageMessage(image.getImageUris());
-        }
-    }
-
-    // Send image without encoding
-    public void sendImageMessage(String encodedImage) {
-        TAPMessageModel messageModel = TAPMessageModel.Builder(
-                encodedImage,
-                activeRoom,
-                TYPE_IMAGE,
-                System.currentTimeMillis(),
-                activeUser,
-                getOtherUserIdFromActiveRoom(activeRoom.getRoomID()));
-        // TODO: 31 October 2018 SEND MESSAGE TO SERVER
-        triggerSendMessageListener(messageModel);
     }
 
     private void triggerSendMessageListener(TAPMessageModel messageModel) {
@@ -662,6 +652,7 @@ public class TAPChatManager {
      * @param newMessage
      */
     private void receiveMessageFromSocket(TAPMessageModel newMessage, String eventName) {
+        Log.e(TAG, "receiveMessageFromSocket: " + newMessage.getBody());
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());

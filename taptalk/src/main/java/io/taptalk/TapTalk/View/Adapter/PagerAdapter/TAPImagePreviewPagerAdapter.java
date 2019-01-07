@@ -47,7 +47,7 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
         ViewGroup layout = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.tap_image_preview, container, false);
 
         ImageView ivImagePreview = layout.findViewById(R.id.iv_image);
-        Glide.with(mContext).load(imageUri.getImageUris()).into(ivImagePreview);
+        Glide.with(mContext).load(imageUri.getImageUri()).into(ivImagePreview);
 
         EditText etCaption = layout.findViewById(R.id.et_caption);
         TextView tvTypingIndicator = layout.findViewById(R.id.tv_typing_indicator);
