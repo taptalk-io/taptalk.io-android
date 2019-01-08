@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.net.Uri;
 
 import com.orhanobut.hawk.Hawk;
@@ -267,6 +268,14 @@ public class TAPDataManager {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public Boolean checkFirebaseToken() {
+        if (!checkPreferenceKeyAvailable(K_FIREBASE_TOKEN) || null == getFirebaseToken() || "0".equals(getFirebaseToken()))
+            return false;
+        else {
+            return true;
         }
     }
 
@@ -579,8 +588,8 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void uploadImage(Uri imageBitmap, String roomID, String caption, TapDefaultDataView<TAPUploadFileResponse> view) {
-        TAPApiManager.getInstance().uploadImage(imageBitmap, roomID, caption, new TAPDefaultSubscriber<>(view));
+    public void uploadImage(Context context, Uri imageBitmap, String roomID, String caption, TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadImage(context, imageBitmap, roomID, caption, new TAPDefaultSubscriber<>(view));
     }
 
     // FIXME: 25 October 2018

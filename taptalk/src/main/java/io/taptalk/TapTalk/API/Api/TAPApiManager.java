@@ -1,9 +1,12 @@
 package io.taptalk.TapTalk.API.Api;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,7 +133,7 @@ public class TAPApiManager {
         Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
         return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
                 ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
-                       Observable.just(Boolean.TRUE) : Observable.error(t);
+                        Observable.just(Boolean.TRUE) : Observable.error(t);
     }
 
     private Observable<Throwable> raiseApiSessionExpiredException(TAPBaseResponse br) {
@@ -170,11 +173,11 @@ public class TAPApiManager {
         return hpRefresh.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
-                    Log.e(TAG, "call: retryWhen(), cause: 2 "+response.getStatus() );
+                    Log.e(TAG, "call: retryWhen(), cause: 2 " + response.getStatus());
                     if (RESPONSE_SUCCESS == response.getStatus()) {
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
-                    } else if (UNAUTHORIZED == response.getStatus()){
+                    } else if (UNAUTHORIZED == response.getStatus()) {
                         TapTalk.refreshTokenExpired();
                     } else Observable.error(new TAPAuthException(response.getError().getMessage()));
                 }).doOnError(throwable -> {
@@ -253,11 +256,16 @@ public class TAPApiManager {
         execute(homingPigeon.getUserByUsername(request), subscriber);
     }
 
-    public void uploadImage(Uri imageBitmap, String roomID, String caption, Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+    public void uploadImage(Context context, Uri imageBitmap, String roomID, String caption, Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         try {
             Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);
-            File fileImage = TAPUtils.getInstance().createTempFile(mImage);
-            RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), fileImage);
+            ContentResolver cR = context.getContentResolver();
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String mimeType = cR.getType(imageBitmap);
+            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+
+            File fileImage = TAPUtils.getInstance().createTempFile(mimeTypeExtension, mImage);
+            RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)

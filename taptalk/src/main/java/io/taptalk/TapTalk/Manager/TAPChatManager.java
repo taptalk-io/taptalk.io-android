@@ -460,7 +460,7 @@ public class TAPChatManager {
     public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images) {
         new Thread(() -> {
             TAPImagePreviewModel tempModel = images.get(0);
-            TAPDataManager.getInstance().uploadImage(tempModel.getImageUris(), getActiveRoom().getRoomID(), tempModel.getImageCaption(), new TapDefaultDataView<TAPUploadFileResponse>() {
+            TAPDataManager.getInstance().uploadImage(context, tempModel.getImageUris(), getActiveRoom().getRoomID(), tempModel.getImageCaption(), new TapDefaultDataView<TAPUploadFileResponse>() {
             });
         }).start();
 

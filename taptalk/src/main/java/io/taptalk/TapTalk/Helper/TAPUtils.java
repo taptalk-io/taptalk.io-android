@@ -424,12 +424,12 @@ public class TAPUtils {
     /*
 TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe file untuk upload gambarnya sekaligus mengcompressnya menjadi WEBP dikarenakan size bisa sangat kecil dan kualitasnya pun setara dengan PNG.
 */
-    public File createTempFile(Bitmap bitmap) {
+    public File createTempFile(String mimeType, Bitmap bitmap) {
         File file = new File(TapTalk.appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                , System.currentTimeMillis() +"_image.jpeg");
+                , System.currentTimeMillis() +"."+mimeType);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG,0, bos);
+        bitmap.compress(Bitmap.CompressFormat.WEBP,0, bos);
         byte[] bitmapdata = bos.toByteArray();
         //write the bytes in file
 
