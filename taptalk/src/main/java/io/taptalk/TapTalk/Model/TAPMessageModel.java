@@ -10,16 +10,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
-import io.taptalk.Taptalk.R;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
  */
+
 public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
     @NonNull @JsonProperty("localID") private String localID;
@@ -30,6 +31,7 @@ public class TAPMessageModel implements Parcelable {
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private TAPUserModel user;
     @JsonProperty("recipientID") private String recipientID;
+    @Nullable @JsonProperty("data") private HashMap<String, Object> data;
     @Nullable @JsonProperty("isRead") private Boolean isRead;
     @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
     @Nullable @JsonProperty("isHidden") private Boolean isHidden;
@@ -45,7 +47,7 @@ public class TAPMessageModel implements Parcelable {
 
     public TAPMessageModel(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                            TAPRoomModel room, Integer type, Long created, TAPUserModel user,
-                           String recipientID, @Nullable Boolean isDeleted,
+                           String recipientID, @Nullable HashMap<String, Object> data, @Nullable Boolean isDeleted,
                            @Nullable Boolean isSending, @Nullable Boolean isFailedSend,
                            @Nullable Boolean isDelivered, @Nullable Boolean isRead,
                            @Nullable Boolean isHidden, @Nullable Long updated, @Nullable Long deleted) {
@@ -58,6 +60,7 @@ public class TAPMessageModel implements Parcelable {
         this.created = created;
         this.user = user;
         this.recipientID = recipientID;
+        this.data = data;
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
@@ -68,17 +71,15 @@ public class TAPMessageModel implements Parcelable {
         this.deleted = deleted;
         // Update when adding fields to model
 
-        if (created > 0L) {
-            messageStatusText = TAPTimeFormatter.getInstance().durationChatString(TapTalk.appContext, created);
-        }
+        updateMessageStatusText();
     }
 
     public TAPMessageModel() {
     }
 
-    public static TAPMessageModel Builder(String message, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID) {
+    public static TAPMessageModel Builder(String message, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, false, true, false, false, false, false, created, null);
+        return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, data, false, true, false, false, false, false, created, null);
     }
 
     public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
@@ -92,6 +93,7 @@ public class TAPMessageModel implements Parcelable {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
+                messageModel.getData(),
                 messageModel.getIsDeleted(),
                 messageModel.getSending(),
                 messageModel.getFailedSend(),
@@ -113,6 +115,7 @@ public class TAPMessageModel implements Parcelable {
                 messageModel.getCreated(),
                 messageModel.getUser(),
                 messageModel.getRecipientID(),
+                messageModel.getData(),
                 messageModel.getIsDeleted(),
                 messageModel.getSending(),
                 messageModel.getFailedSend(),
@@ -121,6 +124,12 @@ public class TAPMessageModel implements Parcelable {
                 messageModel.getHidden(),
                 messageModel.getUpdated(),
                 messageModel.getDeleted());
+    }
+
+    private void updateMessageStatusText() {
+        if (created > 0L) {
+            messageStatusText = TAPTimeFormatter.getInstance().durationChatString(TapTalk.appContext, created);
+        }
     }
 
     @Nullable
@@ -196,6 +205,15 @@ public class TAPMessageModel implements Parcelable {
 
     public void setRecipientID(String recipientID) {
         this.recipientID = recipientID;
+    }
+
+    @Nullable
+    public HashMap<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(@Nullable HashMap<String, Object> data) {
+        this.data = data;
     }
 
     @Nullable
@@ -342,6 +360,7 @@ public class TAPMessageModel implements Parcelable {
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
+        this.data = model.getData();
         this.isDeleted = model.getIsDeleted();
         this.isSending = model.getSending();
         this.isFailedSend = model.getFailedSend();
@@ -376,6 +395,7 @@ public class TAPMessageModel implements Parcelable {
                 getCreated(),
                 getUser(),
                 getRecipientID(),
+                getData(),
                 getIsDeleted(),
                 getSending(),
                 getFailedSend(),
@@ -385,7 +405,6 @@ public class TAPMessageModel implements Parcelable {
                 getUpdated(),
                 getDeleted());
     }
-
 
     @Override
     public int describeContents() {
@@ -403,6 +422,7 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.created);
         dest.writeParcelable(this.user, flags);
         dest.writeString(this.recipientID);
+        dest.writeSerializable(this.data);
         dest.writeValue(this.isRead);
         dest.writeValue(this.isDelivered);
         dest.writeValue(this.isHidden);
@@ -412,9 +432,11 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.updated);
         dest.writeValue(this.deleted);
         dest.writeParcelable(this.replyTo, flags);
+        dest.writeString(this.messageStatusText);
         dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isFirstLoadFinished ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isNeedAnimateSend ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isAnimating ? (byte) 1 : (byte) 0);
         dest.writeInt(this.imageWidth);
         dest.writeInt(this.imageHeight);
     }
@@ -429,6 +451,7 @@ public class TAPMessageModel implements Parcelable {
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.user = in.readParcelable(TAPUserModel.class.getClassLoader());
         this.recipientID = in.readString();
+        this.data = (HashMap<String, Object>) in.readSerializable();
         this.isRead = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDelivered = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isHidden = (Boolean) in.readValue(Boolean.class.getClassLoader());
@@ -438,9 +461,11 @@ public class TAPMessageModel implements Parcelable {
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
         this.deleted = (Long) in.readValue(Long.class.getClassLoader());
         this.replyTo = in.readParcelable(TAPMessageModel.class.getClassLoader());
+        this.messageStatusText = in.readString();
         this.isExpanded = in.readByte() != 0;
         this.isFirstLoadFinished = in.readByte() != 0;
         this.isNeedAnimateSend = in.readByte() != 0;
+        this.isAnimating = in.readByte() != 0;
         this.imageWidth = in.readInt();
         this.imageHeight = in.readInt();
     }

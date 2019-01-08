@@ -17,6 +17,7 @@ public class TAPMessageEntity {
     @ColumnInfo(name = "recipientID") private String recipientID;
     @ColumnInfo(name = "type") private Integer type;
     @ColumnInfo(name = "created") private Long created;
+    @Nullable @ColumnInfo(name = "data") private String data;
     @Nullable @ColumnInfo(name = "updated") private Long updated;
     @Nullable @ColumnInfo(name = "isRead") private Boolean isRead;
     @Nullable @ColumnInfo(name = "isDelivered") private Boolean isDelivered;
@@ -46,7 +47,7 @@ public class TAPMessageEntity {
 
     public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                             String recipientID, Integer type, Long created,
-                            @Nullable Long updated,
+                            @Nullable String data, @Nullable Long updated,
                             @Nullable Boolean isRead, @Nullable Boolean isDelivered,
                             @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                             @Nullable Boolean isSending, @Nullable Boolean isFailedSend, String roomID,
@@ -63,6 +64,7 @@ public class TAPMessageEntity {
         this.recipientID = recipientID;
         this.type = type;
         this.created = created;
+        this.data = data;
         this.updated = updated;
         this.isRead = isRead;
         this.isDelivered = isDelivered;
@@ -148,6 +150,15 @@ public class TAPMessageEntity {
 
     public void setCreated(Long created) {
         this.created = created;
+    }
+
+    @Nullable
+    public String getData() {
+        return data;
+    }
+
+    public void setData(@Nullable String data) {
+        this.data = data;
     }
 
     @Nullable

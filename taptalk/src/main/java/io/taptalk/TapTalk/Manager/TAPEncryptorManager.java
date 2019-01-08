@@ -1,9 +1,13 @@
 package io.taptalk.TapTalk.Manager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.AESCrypt;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ENCRYPTION_KEY;
 
@@ -54,5 +58,30 @@ public class TAPEncryptorManager {
             return "";
         }
         return decrypted;
+    }
+
+    public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel) {
+        HashMap<String, Object> encryptedMessageMap = TAPUtils.getInstance().toHashMap(messageModel);
+        try {
+            encryptedMessageMap.put("body", encrypt(messageModel.getBody(), messageModel.getLocalID()));
+            if (null != messageModel.getData()) {
+                encryptedMessageMap.put("data", encrypt(TAPUtils.getInstance().toJsonString(messageModel.getData()), messageModel.getLocalID()));
+            }
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+        return encryptedMessageMap;
+    }
+
+    public TAPMessageModel decryptMessage(HashMap<String, Object> messageMap) {
+            try {
+                messageMap.put("body", decrypt(messageMap.get("body").toString(), messageMap.get("localID").toString()));
+                if (null != messageMap.get("data")) {
+                    messageMap.put("data", TAPUtils.getInstance().toHashMap(decrypt(messageMap.get("data").toString(), messageMap.get("localID").toString())));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        return new ObjectMapper().convertValue(messageMap, TAPMessageModel.class);
     }
 }
