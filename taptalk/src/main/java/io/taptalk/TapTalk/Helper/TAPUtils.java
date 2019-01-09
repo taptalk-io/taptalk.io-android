@@ -73,7 +73,7 @@ public class TAPUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            Log.e("><><><", "toJsonString: ",e );
+            Log.e("><><><", "toJsonString: ", e);
             return "{}";
         }
     }
@@ -429,7 +429,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
                 , System.currentTimeMillis() +"."+mimeType);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.WEBP,0, bos);
+        bitmap.compress(Bitmap.CompressFormat.WEBP,100, bos);
         byte[] bitmapdata = bos.toByteArray();
         //write the bytes in file
 
