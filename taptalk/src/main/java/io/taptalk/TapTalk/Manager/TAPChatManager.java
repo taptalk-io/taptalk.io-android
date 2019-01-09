@@ -30,10 +30,13 @@ import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPQuoteModel;
+import io.taptalk.TapTalk.Model.TAPReplyToModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -275,7 +278,11 @@ public class TAPChatManager {
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated()),
                 entity.getRecipientID(),
-                TAPUtils.getInstance().toHashMap(entity.getData()),
+                // TODO: 9 January 2019 CHECK NULL
+                null == entity.getData() ? null : TAPUtils.getInstance().toHashMap(entity.getData()),
+                null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {}, entity.getQuote()),
+                null == entity.getReplyTo() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPReplyToModel>() {}, entity.getReplyTo()),
+                null == entity.getForwardFrom() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPForwardFromModel>() {}, entity.getForwardFrom()),
                 entity.getDeleted(),
                 entity.getSending(),
                 entity.getFailedSend(),
@@ -293,7 +300,11 @@ public class TAPChatManager {
         return new TAPMessageEntity(
                 model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(),
                 model.getRecipientID(), model.getType(), model.getCreated(),
-                TAPUtils.getInstance().toJsonString(model.getData()), model.getUpdated(),
+                null == model.getData() ? null : TAPUtils.getInstance().toJsonString(model.getData()),
+                null == model.getQuote() ? null : TAPUtils.getInstance().toJsonString(model.getQuote()),
+                null == model.getReplyTo() ? null : TAPUtils.getInstance().toJsonString(model.getReplyTo()),
+                null == model.getForwardFrom() ? null : TAPUtils.getInstance().toJsonString(model.getForwardFrom()),
+                model.getUpdated(),
                 model.getIsRead(), model.getDelivered(), model.getHidden(), model.getIsDeleted(),
                 model.getSending(), model.getFailedSend(), model.getRoom().getRoomID(),
                 model.getRoom().getRoomName(), model.getRoom().getRoomColor(),

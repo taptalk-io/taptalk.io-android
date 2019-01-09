@@ -9,13 +9,11 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -32,6 +30,9 @@ public class TAPMessageModel implements Parcelable {
     @JsonProperty("user") private TAPUserModel user;
     @JsonProperty("recipientID") private String recipientID;
     @Nullable @JsonProperty("data") private HashMap<String, Object> data;
+    @Nullable @JsonProperty("quote") private TAPQuoteModel quote;
+    @Nullable @JsonProperty("replyTo") private TAPReplyToModel replyTo;
+    @Nullable @JsonProperty("forwardFrom") private TAPForwardFromModel forwardFrom;
     @Nullable @JsonProperty("isRead") private Boolean isRead;
     @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
     @Nullable @JsonProperty("isHidden") private Boolean isHidden;
@@ -40,14 +41,15 @@ public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
     @Nullable @JsonProperty("updated") private Long updated;
     @Nullable @JsonProperty("deleted") private Long deleted;
-    @JsonIgnore private TAPMessageModel replyTo; // TODO: 1 November 2018 TESTING REPLY LAYOUT
     @JsonIgnore private String messageStatusText;
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend, isAnimating;
     @JsonIgnore private int imageWidth, imageHeight;
 
     public TAPMessageModel(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                            TAPRoomModel room, Integer type, Long created, TAPUserModel user,
-                           String recipientID, @Nullable HashMap<String, Object> data, @Nullable Boolean isDeleted,
+                           String recipientID, @Nullable HashMap<String, Object> data,
+                           @Nullable TAPQuoteModel quote, @Nullable TAPReplyToModel replyTo,
+                           @Nullable TAPForwardFromModel forwardFrom, @Nullable Boolean isDeleted,
                            @Nullable Boolean isSending, @Nullable Boolean isFailedSend,
                            @Nullable Boolean isDelivered, @Nullable Boolean isRead,
                            @Nullable Boolean isHidden, @Nullable Long updated, @Nullable Long deleted) {
@@ -61,6 +63,9 @@ public class TAPMessageModel implements Parcelable {
         this.user = user;
         this.recipientID = recipientID;
         this.data = data;
+        this.quote = quote;
+        this.replyTo = replyTo;
+        this.forwardFrom = forwardFrom;
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
@@ -79,52 +84,52 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel Builder(String message, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, data, false, true, false, false, false, false, created, null);
+        return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, data,null,null,null, false, true, false, false, false, false, created, null);
     }
 
-    public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
-        return new TAPMessageModel(
-                messageModel.getMessageID(),
-                messageModel.getLocalID(),
-                messageModel.getFilterID(),
-                TAPEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
-                messageModel.getRoom(),
-                messageModel.getType(),
-                messageModel.getCreated(),
-                messageModel.getUser(),
-                messageModel.getRecipientID(),
-                messageModel.getData(),
-                messageModel.getIsDeleted(),
-                messageModel.getSending(),
-                messageModel.getFailedSend(),
-                messageModel.getDelivered(),
-                messageModel.getIsRead(),
-                messageModel.getHidden(),
-                messageModel.getUpdated(),
-                messageModel.getDeleted());
-    }
-
-    public static TAPMessageModel BuilderDecrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
-        return new TAPMessageModel(
-                messageModel.getMessageID(),
-                messageModel.getLocalID(),
-                messageModel.getFilterID(),
-                TAPEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
-                messageModel.getRoom(),
-                messageModel.getType(),
-                messageModel.getCreated(),
-                messageModel.getUser(),
-                messageModel.getRecipientID(),
-                messageModel.getData(),
-                messageModel.getIsDeleted(),
-                messageModel.getSending(),
-                messageModel.getFailedSend(),
-                messageModel.getDelivered(),
-                messageModel.getIsRead(),
-                messageModel.getHidden(),
-                messageModel.getUpdated(),
-                messageModel.getDeleted());
-    }
+//    public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
+//        return new TAPMessageModel(
+//                messageModel.getMessageID(),
+//                messageModel.getLocalID(),
+//                messageModel.getFilterID(),
+//                TAPEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
+//                messageModel.getRoom(),
+//                messageModel.getType(),
+//                messageModel.getCreated(),
+//                messageModel.getUser(),
+//                messageModel.getRecipientID(),
+//                messageModel.getData(),
+//                messageModel.getIsDeleted(),
+//                messageModel.getSending(),
+//                messageModel.getFailedSend(),
+//                messageModel.getDelivered(),
+//                messageModel.getIsRead(),
+//                messageModel.getHidden(),
+//                messageModel.getUpdated(),
+//                messageModel.getDeleted());
+//    }
+//
+//    public static TAPMessageModel BuilderDecrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
+//        return new TAPMessageModel(
+//                messageModel.getMessageID(),
+//                messageModel.getLocalID(),
+//                messageModel.getFilterID(),
+//                TAPEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
+//                messageModel.getRoom(),
+//                messageModel.getType(),
+//                messageModel.getCreated(),
+//                messageModel.getUser(),
+//                messageModel.getRecipientID(),
+//                messageModel.getData(),
+//                messageModel.getIsDeleted(),
+//                messageModel.getSending(),
+//                messageModel.getFailedSend(),
+//                messageModel.getDelivered(),
+//                messageModel.getIsRead(),
+//                messageModel.getHidden(),
+//                messageModel.getUpdated(),
+//                messageModel.getDeleted());
+//    }
 
     private void updateMessageStatusText() {
         if (created > 0L) {
@@ -214,6 +219,33 @@ public class TAPMessageModel implements Parcelable {
 
     public void setData(@Nullable HashMap<String, Object> data) {
         this.data = data;
+    }
+
+    @Nullable
+    public TAPQuoteModel getQuote() {
+        return quote;
+    }
+
+    public void setQuote(@Nullable TAPQuoteModel quote) {
+        this.quote = quote;
+    }
+
+    @Nullable
+    public TAPReplyToModel getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(@Nullable TAPReplyToModel replyTo) {
+        this.replyTo = replyTo;
+    }
+
+    @Nullable
+    public TAPForwardFromModel getForwardFrom() {
+        return forwardFrom;
+    }
+
+    public void setForwardFrom(@Nullable TAPForwardFromModel forwardFrom) {
+        this.forwardFrom = forwardFrom;
     }
 
     @Nullable
@@ -328,14 +360,6 @@ public class TAPMessageModel implements Parcelable {
         isAnimating = animating;
     }
 
-    public TAPMessageModel getReplyTo() {
-        return replyTo;
-    }
-
-    public void setReplyTo(TAPMessageModel replyTo) {
-        this.replyTo = replyTo;
-    }
-
     public int getImageWidth() {
         return imageWidth;
     }
@@ -396,6 +420,9 @@ public class TAPMessageModel implements Parcelable {
                 getUser(),
                 getRecipientID(),
                 getData(),
+                getQuote(),
+                getReplyTo(),
+                getForwardFrom(),
                 getIsDeleted(),
                 getSending(),
                 getFailedSend(),
@@ -423,6 +450,9 @@ public class TAPMessageModel implements Parcelable {
         dest.writeParcelable(this.user, flags);
         dest.writeString(this.recipientID);
         dest.writeSerializable(this.data);
+        dest.writeParcelable(this.quote, flags);
+        dest.writeParcelable(this.replyTo, flags);
+        dest.writeParcelable(this.forwardFrom, flags);
         dest.writeValue(this.isRead);
         dest.writeValue(this.isDelivered);
         dest.writeValue(this.isHidden);
@@ -431,7 +461,6 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.isFailedSend);
         dest.writeValue(this.updated);
         dest.writeValue(this.deleted);
-        dest.writeParcelable(this.replyTo, flags);
         dest.writeString(this.messageStatusText);
         dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isFirstLoadFinished ? (byte) 1 : (byte) 0);
@@ -452,6 +481,9 @@ public class TAPMessageModel implements Parcelable {
         this.user = in.readParcelable(TAPUserModel.class.getClassLoader());
         this.recipientID = in.readString();
         this.data = (HashMap<String, Object>) in.readSerializable();
+        this.quote = in.readParcelable(TAPQuoteModel.class.getClassLoader());
+        this.replyTo = in.readParcelable(TAPReplyToModel.class.getClassLoader());
+        this.forwardFrom = in.readParcelable(TAPForwardFromModel.class.getClassLoader());
         this.isRead = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDelivered = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isHidden = (Boolean) in.readValue(Boolean.class.getClassLoader());
@@ -460,7 +492,6 @@ public class TAPMessageModel implements Parcelable {
         this.isFailedSend = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
         this.deleted = (Long) in.readValue(Long.class.getClassLoader());
-        this.replyTo = in.readParcelable(TAPMessageModel.class.getClassLoader());
         this.messageStatusText = in.readString();
         this.isExpanded = in.readByte() != 0;
         this.isFirstLoadFinished = in.readByte() != 0;

@@ -18,6 +18,9 @@ public class TAPMessageEntity {
     @ColumnInfo(name = "type") private Integer type;
     @ColumnInfo(name = "created") private Long created;
     @Nullable @ColumnInfo(name = "data") private String data;
+    @Nullable @ColumnInfo(name = "quote") private String quote;
+    @Nullable @ColumnInfo(name = "replyTo") private String replyTo;
+    @Nullable @ColumnInfo(name = "forwardFrom") private String forwardFrom;
     @Nullable @ColumnInfo(name = "updated") private Long updated;
     @Nullable @ColumnInfo(name = "isRead") private Boolean isRead;
     @Nullable @ColumnInfo(name = "isDelivered") private Boolean isDelivered;
@@ -47,7 +50,8 @@ public class TAPMessageEntity {
 
     public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                             String recipientID, Integer type, Long created,
-                            @Nullable String data, @Nullable Long updated,
+                            @Nullable String data, @Nullable String quote, @Nullable String replyTo,
+                            @Nullable String forwardFrom, @Nullable Long updated,
                             @Nullable Boolean isRead, @Nullable Boolean isDelivered,
                             @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                             @Nullable Boolean isSending, @Nullable Boolean isFailedSend, String roomID,
@@ -65,6 +69,9 @@ public class TAPMessageEntity {
         this.type = type;
         this.created = created;
         this.data = data;
+        this.quote = quote;
+        this.replyTo = replyTo;
+        this.forwardFrom = forwardFrom;
         this.updated = updated;
         this.isRead = isRead;
         this.isDelivered = isDelivered;
@@ -159,6 +166,33 @@ public class TAPMessageEntity {
 
     public void setData(@Nullable String data) {
         this.data = data;
+    }
+
+    @Nullable
+    public String getQuote() {
+        return quote;
+    }
+
+    public void setQuote(@Nullable String quote) {
+        this.quote = quote;
+    }
+
+    @Nullable
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(@Nullable String replyTo) {
+        this.replyTo = replyTo;
+    }
+
+    @Nullable
+    public String getForwardFrom() {
+        return forwardFrom;
+    }
+
+    public void setForwardFrom(@Nullable String forwardFrom) {
+        this.forwardFrom = forwardFrom;
     }
 
     @Nullable

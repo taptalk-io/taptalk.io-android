@@ -303,7 +303,7 @@
                 tools:text="User Name" />
 
             <TextView
-                android:id="@+id/tv_quote_body"
+                android:id="@+id/tv_quote_content"
                 style="@style/HomingPigeonReplyBody"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

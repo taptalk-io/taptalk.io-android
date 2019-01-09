@@ -145,8 +145,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus, ivReply, ivSending;
-        private TextView tvUsername, tvMessageBody, tvMessageStatus, tvReplySenderName, tvReplyBody;
-        private View vReplyBackground;
+        private TAPRoundedCornerImageView rcivQuoteImage;
+        private TextView tvUsername, tvMessageBody, tvMessageStatus, tvQuoteTitle, tvQuoteContent;
+        private View vReplyBackground, vQuoteDecoration;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -155,11 +156,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clReply = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivReply = itemView.findViewById(R.id.iv_reply);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
-            tvReplySenderName = itemView.findViewById(R.id.tv_quote_title);
-            tvReplyBody = itemView.findViewById(R.id.tv_quote_body);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vReplyBackground = itemView.findViewById(R.id.v_reply_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -186,12 +189,31 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }).start();
             }
 
-            // TODO: 1 November 2018 TESTING REPLY LAYOUT
-            if (null != item.getReplyTo() && !item.getReplyTo().getBody().isEmpty()) {
+            if (null != item.getQuote()) {
                 clReply.setVisibility(View.VISIBLE);
                 vReplyBackground.setVisibility(View.VISIBLE);
-                tvReplySenderName.setText(item.getReplyTo().getUser().getName());
-                tvReplyBody.setText(item.getReplyTo().getBody());
+                tvQuoteTitle.setText(item.getQuote().getTitle());
+                tvQuoteContent.setText(item.getQuote().getContent());
+                String quoteImageURL = item.getQuote().getImageURLString();
+                String quoteFileID = item.getQuote().getFileID();
+                if (!quoteImageURL.isEmpty()) {
+                    // Get quote image from URL
+                    Glide.with(itemView.getContext()).load(quoteImageURL).into(ivReply);
+                    vQuoteDecoration.setVisibility(View.GONE);
+                    rcivQuoteImage.setVisibility(View.VISIBLE);
+                    tvQuoteContent.setMaxLines(1);
+                } else if (!quoteFileID.isEmpty()) {
+                    // Get quote image from file ID
+                    // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
+                    vQuoteDecoration.setVisibility(View.GONE);
+                    rcivQuoteImage.setVisibility(View.VISIBLE);
+                    tvQuoteContent.setMaxLines(1);
+                } else {
+                    // Show no image
+                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                    rcivQuoteImage.setVisibility(View.GONE);
+                    tvQuoteContent.setMaxLines(2);
+                }
             } else {
                 clReply.setVisibility(View.GONE);
                 vReplyBackground.setVisibility(View.GONE);

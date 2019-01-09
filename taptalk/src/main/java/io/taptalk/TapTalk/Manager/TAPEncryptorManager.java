@@ -16,6 +16,12 @@ public class TAPEncryptorManager {
 
     private static TAPEncryptorManager instance;
 
+    private final String K_LOCAL_ID = "localID";
+    private final String K_BODY = "body";
+    private final String K_DATA = "data";
+    private final String K_QUOTE = "quote";
+    private final String K_CONTENT = "content";
+
     public static TAPEncryptorManager getInstance() {
         return instance == null ? (instance = new TAPEncryptorManager()) : instance;
     }
@@ -64,9 +70,18 @@ public class TAPEncryptorManager {
     public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel) {
         HashMap<String, Object> encryptedMessageMap = TAPUtils.getInstance().toHashMap(messageModel);
         try {
-            encryptedMessageMap.put("body", encrypt(messageModel.getBody(), messageModel.getLocalID()));
+            String localID = messageModel.getLocalID();
+            // Encrypt message body
+            encryptedMessageMap.put(K_BODY, encrypt(messageModel.getBody(), localID));
             if (null != messageModel.getData()) {
-                encryptedMessageMap.put("data", encrypt(TAPUtils.getInstance().toJsonString(messageModel.getData()), messageModel.getLocalID()));
+                // Encrypt message data
+                encryptedMessageMap.put(K_DATA, encrypt(TAPUtils.getInstance().toJsonString(messageModel.getData()), localID));
+            }
+            if (null != messageModel.getQuote()) {
+                // Encrypt quote content
+                HashMap<String, Object> quoteMap = TAPUtils.getInstance().toHashMap(messageModel.getQuote());
+                quoteMap.put(K_CONTENT, encrypt(messageModel.getQuote().getContent(), localID));
+                encryptedMessageMap.put(K_QUOTE, quoteMap);
             }
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
@@ -75,15 +90,23 @@ public class TAPEncryptorManager {
     }
 
     public TAPMessageModel decryptMessage(HashMap<String, Object> messageMap) {
-            try {
-                messageMap.put("body", decrypt(messageMap.get("body").toString(), messageMap.get("localID").toString()));
-                if (null != messageMap.get("data")) {
-                    messageMap.put("data", TAPUtils.getInstance().toHashMap(decrypt(messageMap.get("data").toString(), messageMap.get("localID").toString())));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            String localID = messageMap.get(K_LOCAL_ID).toString();
+            // Decrypt message body
+            messageMap.put(K_BODY, decrypt(messageMap.get(K_BODY).toString(), localID));
+            if (null != messageMap.get(K_DATA)) {
+                // Decrypt message data
+                messageMap.put(K_DATA, TAPUtils.getInstance().toHashMap(decrypt(messageMap.get(K_DATA).toString(), localID)));
             }
-
+            if (null != messageMap.get(K_QUOTE)) {
+                // Decrypt quote content
+                HashMap<String, Object> quoteMap = TAPUtils.getInstance().toHashMap(messageMap.get(K_QUOTE));
+                quoteMap.put(K_CONTENT, decrypt(quoteMap.get(K_CONTENT).toString(), localID));
+                messageMap.put(K_QUOTE, quoteMap);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return TAPUtils.getInstance().convertObject(messageMap, new TypeReference<TAPMessageModel>() {});
     }
 }

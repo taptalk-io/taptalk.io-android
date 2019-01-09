@@ -7,9 +7,11 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TaptalkSample.R;
@@ -21,12 +23,12 @@ public class MyFireMsgService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
-        TAPMessageModel notifModel = TAPUtils.getInstance().fromJSON(new TypeReference<TAPMessageModel>() {
+        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
         }, remoteMessage.getData().get("body"));
         try {
             //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
-            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher, TAPMessageModel.BuilderDecrypt(notifModel));
-        } catch (GeneralSecurityException e) {
+            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher, TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
