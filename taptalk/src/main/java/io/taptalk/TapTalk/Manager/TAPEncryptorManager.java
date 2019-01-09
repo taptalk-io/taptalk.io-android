@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.security.GeneralSecurityException;
@@ -82,6 +83,7 @@ public class TAPEncryptorManager {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        return new ObjectMapper().convertValue(messageMap, TAPMessageModel.class);
+
+        return TAPUtils.getInstance().convertObject(messageMap, new TypeReference<TAPMessageModel>() {});
     }
 }

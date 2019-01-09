@@ -116,8 +116,8 @@ public class TAPUtils {
         }
     }
 
-    public <T> T convertObject(Object fromObject, Class<T> toObject) {
-        return objectMapper.convertValue(fromObject, toObject);
+    public <T> T convertObject(Object fromObject, TypeReference<T> toObjectType) {
+        return objectMapper.convertValue(fromObject, toObjectType);
     }
 
     /**
