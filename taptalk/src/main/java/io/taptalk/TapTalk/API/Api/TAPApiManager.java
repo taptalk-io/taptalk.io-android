@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
@@ -46,7 +47,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Observable;
@@ -265,7 +265,23 @@ public class TAPApiManager {
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
 
             File fileImage = TAPUtils.getInstance().createTempFile(mimeTypeExtension, mImage);
-            RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
+            //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
+            ProgressRequestBody reqFile = new ProgressRequestBody(fileImage, mimeType, new ProgressRequestBody.UploadCallbacks() {
+                @Override
+                public void onProgressUpdate(int percentage) {
+                    Log.e(TAG, "onProgressUpdate: "+percentage );
+                }
+
+                @Override
+                public void onError() {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    Log.e(TAG, "onFinish: " );
+                }
+            });
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
