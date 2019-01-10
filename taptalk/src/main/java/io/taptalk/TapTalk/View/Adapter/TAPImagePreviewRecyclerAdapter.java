@@ -44,7 +44,7 @@ public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePrevi
 
         @Override
         protected void onBind(TAPImagePreviewModel item, int position) {
-            Glide.with(itemView.getContext()).load(item.getImageUris()).apply(new RequestOptions().centerCrop()).into(ivImagePreview);
+            Glide.with(itemView.getContext()).load(item.getImageUri()).apply(new RequestOptions().centerCrop()).into(ivImagePreview);
 
             if (item.isSelected()) {
                 flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_greenblue_2dp));

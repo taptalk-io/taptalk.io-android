@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -469,16 +471,18 @@ public class TAPRoomListFragment extends Fragment {
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
-                for (TAPMessageModel message : response.getMessages()) {
+                for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
-                        TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
-                        tempMessage.add(TAPChatManager.getInstance().convertToEntity(temp));
+                        TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
+                        tempMessage.add(TAPChatManager.getInstance().convertToEntity(message));
+
+                        // Update status to delivered
+                        TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(message);
 
                         // Save user data to contact manager
                         TAPContactManager.getInstance().updateUserDataMap(message.getUser());
-                    } catch (GeneralSecurityException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e(TAG, "onSuccess: ", e);
                     }
                 }
 
@@ -491,11 +495,6 @@ public class TAPRoomListFragment extends Fragment {
                         getDatabaseAndAnimateResult();
                     }
                 });
-
-                //ini untuk get API ngasih tau kalau message yang dikirim udah berhasil d terima
-                if (null != response.getMessages() && 0 < response.getMessages().size()) {
-                    TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(response.getMessages());
-                }
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }

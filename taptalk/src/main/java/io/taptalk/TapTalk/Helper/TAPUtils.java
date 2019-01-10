@@ -36,8 +36,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -93,6 +95,29 @@ public class TAPUtils {
             Log.e(TAPUtils.class.getSimpleName(), "fromJSON: ", e);
             return null;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public HashMap<String, Object> toHashMap(Object object) {
+        try {
+            return objectMapper.convertValue(object, HashMap.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap(String jsonString) {
+        try {
+            return objectMapper.readValue(jsonString, new TypeReference<HashMap<String, Object>>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public <T> T convertObject(Object fromObject, TypeReference<T> toObjectType) {
+        return objectMapper.convertValue(fromObject, toObjectType);
     }
 
     /**

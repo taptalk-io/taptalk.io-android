@@ -40,7 +40,7 @@
         android:maxLines="1"
         android:textColor="@color/white"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toTopOf="@id/tv_quote_body"
+        app:layout_constraintBottom_toTopOf="@id/tv_quote_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/rciv_quote_image"
@@ -49,7 +49,7 @@
         tools:text="User Name" />
 
     <TextView
-        android:id="@+id/tv_quote_body"
+        android:id="@+id/tv_quote_content"
         style="@style/HomingPigeonReplyBody"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
