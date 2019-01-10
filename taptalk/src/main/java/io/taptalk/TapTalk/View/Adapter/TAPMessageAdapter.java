@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
@@ -141,19 +142,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class TextVH extends TAPBaseChatViewHolder {
 
-        private ConstraintLayout clContainer, clReply;
+        private ConstraintLayout clContainer, clQuote;
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus, ivReply, ivSending;
         private TAPRoundedCornerImageView rcivQuoteImage;
         private TextView tvUsername, tvMessageBody, tvMessageStatus, tvQuoteTitle, tvQuoteContent;
-        private View vReplyBackground, vQuoteDecoration;
+        private View vQuoteBackground, vQuoteDecoration;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
-            clReply = itemView.findViewById(R.id.cl_quote);
+            clQuote = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivReply = itemView.findViewById(R.id.iv_reply);
             rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
@@ -161,7 +162,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
-            vReplyBackground = itemView.findViewById(R.id.v_reply_background);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
@@ -189,38 +190,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }).start();
             }
 
-            if (null != item.getQuote()) {
-                clReply.setVisibility(View.VISIBLE);
-                vReplyBackground.setVisibility(View.VISIBLE);
-                tvQuoteTitle.setText(item.getQuote().getTitle());
-                tvQuoteContent.setText(item.getQuote().getContent());
-                String quoteImageURL = item.getQuote().getImageURLString();
-                String quoteFileID = item.getQuote().getFileID();
-                if (!quoteImageURL.isEmpty()) {
-                    // Get quote image from URL
-                    Glide.with(itemView.getContext()).load(quoteImageURL).into(ivReply);
-                    vQuoteDecoration.setVisibility(View.GONE);
-                    rcivQuoteImage.setVisibility(View.VISIBLE);
-                    tvQuoteContent.setMaxLines(1);
-                } else if (!quoteFileID.isEmpty()) {
-                    // Get quote image from file ID
-                    // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
-                    vQuoteDecoration.setVisibility(View.GONE);
-                    rcivQuoteImage.setVisibility(View.VISIBLE);
-                    tvQuoteContent.setMaxLines(1);
-                } else {
-                    // Show no image
-                    vQuoteDecoration.setVisibility(View.VISIBLE);
-                    rcivQuoteImage.setVisibility(View.GONE);
-                    tvQuoteContent.setMaxLines(2);
-                }
-            } else {
-                clReply.setVisibility(View.GONE);
-                vReplyBackground.setVisibility(View.GONE);
-            }
-
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+            showOrHideQuote(item.getQuote(), itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
@@ -651,6 +623,49 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ivReply.setVisibility(View.GONE);
                 tvMessageStatus.setVisibility(View.GONE);
             }
+        }
+    }
+
+    private void showOrHideQuote(@Nullable TAPQuoteModel quote, View itemView,
+                                 ConstraintLayout clQuote, TextView tvQuoteTitle,
+                                 TextView tvQuoteContent, TAPRoundedCornerImageView rcivQuoteImage,
+                                 View vQuoteBackground, View vQuoteDecoration) {
+        if (null != quote) {
+            // Show quote
+            clQuote.setVisibility(View.VISIBLE);
+            vQuoteBackground.setVisibility(View.VISIBLE);
+            tvQuoteTitle.setText(quote.getTitle());
+            tvQuoteContent.setText(quote.getContent());
+            String quoteImageURL = quote.getImageURLString();
+            String quoteFileID = quote.getFileID();
+            if (!quoteImageURL.isEmpty()) {
+                // Get quote image from URL
+                Glide.with(itemView.getContext()).load(quoteImageURL).into(rcivQuoteImage);
+                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteContent.setMaxLines(1);
+            } else if (!quoteFileID.isEmpty()) {
+                // Get quote image from file ID
+                // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
+                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteContent.setMaxLines(1);
+            } else {
+                // Show no image
+                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
+                vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
+                vQuoteDecoration.setVisibility(View.VISIBLE);
+                rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteContent.setMaxLines(2);
+            }
+        } else {
+            // Hide quote
+            clQuote.setVisibility(View.GONE);
+            vQuoteBackground.setVisibility(View.GONE);
         }
     }
 

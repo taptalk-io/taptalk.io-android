@@ -61,7 +61,7 @@
             android:paddingBottom="12dp">
 
             <View
-                android:id="@+id/v_reply_background"
+                android:id="@+id/v_quote_background"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@drawable/tap_bg_mediumpurple_rounded_4dp"
