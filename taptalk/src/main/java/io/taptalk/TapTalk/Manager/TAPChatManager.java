@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
@@ -30,7 +31,6 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
-import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
@@ -412,10 +412,9 @@ public class TAPChatManager {
     }
 
     /**
-     * Send image messages
+     * Create image message model and call upload api
      */
-    public void sendImageMessage(TAPImagePreviewModel image) {
-        Log.e(TAG, "sendImageMessage: " + image.getImageUri().toString());
+    private void createImageMessageModelAndCallUploadAPI (Context context, TAPImagePreviewModel image) {
         Uri imageUri = image.getImageUri();
 
         // Build message model
@@ -429,6 +428,43 @@ public class TAPChatManager {
                 // TODO: 8 January 2019 UPDATE DATA
                 null);
 
+        ProgressRequestBody.UploadCallbacks uploadCallback = new ProgressRequestBody.UploadCallbacks() {
+            @Override
+            public void onProgressUpdate(int percentage) {
+                Log.e(TAG, messageModel.getLocalID()+" : "+percentage );
+            }
+
+            @Override
+            public void onError() {
+
+            }
+
+            @Override
+            public void onFinish() {
+            }
+        };
+
+        showImageMessageThumbnail(messageModel);
+
+        TAPDataManager.getInstance().uploadImage(context, imageUri, getActiveRoom().getRoomID(),
+                image.getImageCaption(), uploadCallback,
+                new TapDefaultDataView<TAPUploadFileResponse>() {
+            @Override
+            public void onSuccess(TAPUploadFileResponse response) {
+                super.onSuccess(response);
+                Log.e(TAG, "onSuccess: " );
+                // TODO: 10/01/19 send emit message to server 
+            }
+        });
+        
+    }
+
+    /**
+     * Send image messages
+     */
+    private void showImageMessageThumbnail(TAPMessageModel imageMessage) {
+        Uri imageUri = Uri.parse(imageMessage.getBody());
+
         // Get image width and height
         String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
 
@@ -436,26 +472,25 @@ public class TAPChatManager {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
         int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            messageModel.setImageWidth(options.outHeight);
-            messageModel.setImageHeight(options.outWidth);
+            imageMessage.setImageWidth(options.outHeight);
+            imageMessage.setImageHeight(options.outWidth);
         } else {
-            messageModel.setImageWidth(options.outWidth);
-            messageModel.setImageHeight(options.outHeight);
+            imageMessage.setImageWidth(options.outWidth);
+            imageMessage.setImageHeight(options.outHeight);
         }
 
         // Trigger listener to show image preview in activity
-        triggerSendMessageListener(messageModel);
+        triggerSendMessageListener(imageMessage);
     }
 
     // Send multiple image messages
-    public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images) {
+    public void showImageMessageThumbnail(Context context, ArrayList<TAPImagePreviewModel> images) {
         new Thread(() -> {
-            TAPImagePreviewModel tempModel = images.get(0);
-            TAPDataManager.getInstance().uploadImage(context, tempModel.getImageUri(), getActiveRoom().getRoomID(), tempModel.getImageCaption(), new TapDefaultDataView<TAPUploadFileResponse>() {
-            });
+            //TAPImagePreviewModel tempModel = images.get(0);
             for (TAPImagePreviewModel image : images) {
-                sendImageMessage(image);
+                createImageMessageModelAndCallUploadAPI(context, image);
             }
         }).start();
     }

@@ -256,7 +256,9 @@ public class TAPApiManager {
         execute(homingPigeon.getUserByUsername(request), subscriber);
     }
 
-    public void uploadImage(Context context, Uri imageBitmap, String roomID, String caption, Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+    public void uploadImage(Context context,
+                            Uri imageBitmap, String roomID, String caption, ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         try {
             Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);
             ContentResolver cR = context.getContentResolver();
@@ -266,22 +268,7 @@ public class TAPApiManager {
 
             File fileImage = TAPUtils.getInstance().createTempFile(mimeTypeExtension, mImage);
             //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
-            ProgressRequestBody reqFile = new ProgressRequestBody(fileImage, mimeType, new ProgressRequestBody.UploadCallbacks() {
-                @Override
-                public void onProgressUpdate(int percentage) {
-                    Log.e(TAG, "onProgressUpdate: "+percentage );
-                }
-
-                @Override
-                public void onError() {
-
-                }
-
-                @Override
-                public void onFinish() {
-                    Log.e(TAG, "onFinish: " );
-                }
-            });
+            ProgressRequestBody reqFile = new ProgressRequestBody(fileImage, mimeType, uploadCallback);
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
