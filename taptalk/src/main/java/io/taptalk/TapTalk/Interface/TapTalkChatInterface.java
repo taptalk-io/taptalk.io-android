@@ -5,7 +5,6 @@ import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 
 public interface TapTalkChatInterface {
-
     void onReceiveMessageInActiveRoom(TAPMessageModel message);
     void onUpdateMessageInActiveRoom(TAPMessageModel message);
     void onDeleteMessageInActiveRoom(TAPMessageModel message);
@@ -25,4 +24,6 @@ public interface TapTalkChatInterface {
     void onOutsideClicked();
     void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
     void onReadMessage(String roomID);
+    void onProgressLoading(String localID, int progress);
+    void onProgressFinish(String localID);
 }

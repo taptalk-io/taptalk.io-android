@@ -43,7 +43,7 @@ public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("deleted") private Long deleted;
     @JsonIgnore private String messageStatusText;
     @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend, isAnimating;
-    @JsonIgnore private int imageWidth, imageHeight;
+    @JsonIgnore private int imageWidth, imageHeight, progress = 0;
 
     public TAPMessageModel(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                            TAPRoomModel room, Integer type, Long created, TAPUserModel user,
@@ -376,6 +376,14 @@ public class TAPMessageModel implements Parcelable {
         this.imageHeight = imageHeight;
     }
 
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
     public void updateValue(TAPMessageModel model) {
         this.messageID = model.getMessageID();
         this.localID = model.getLocalID();
@@ -433,6 +441,7 @@ public class TAPMessageModel implements Parcelable {
                 getDeleted());
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -468,6 +477,7 @@ public class TAPMessageModel implements Parcelable {
         dest.writeByte(this.isAnimating ? (byte) 1 : (byte) 0);
         dest.writeInt(this.imageWidth);
         dest.writeInt(this.imageHeight);
+        dest.writeInt(this.progress);
     }
 
     protected TAPMessageModel(Parcel in) {
@@ -499,6 +509,7 @@ public class TAPMessageModel implements Parcelable {
         this.isAnimating = in.readByte() != 0;
         this.imageWidth = in.readInt();
         this.imageHeight = in.readInt();
+        this.progress = in.readInt();
     }
 
     public static final Creator<TAPMessageModel> CREATOR = new Creator<TAPMessageModel>() {

@@ -25,4 +25,6 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override public void onOutsideClicked() {}
     @Override public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {}
     @Override public void onReadMessage(String roomID) {}
+    @Override public void onProgressLoading(String localID, int progress) {}
+    @Override public void onProgressFinish(String localID) {}
 }

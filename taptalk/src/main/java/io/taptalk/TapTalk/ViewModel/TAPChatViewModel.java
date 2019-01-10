@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -80,6 +81,19 @@ public class TAPChatViewModel extends AndroidViewModel {
         TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
         if (null != message) {
             message.updateValue(newMessage);
+        }
+    }
+
+    public void updateMessagePointerProgress(String localID, int progress) {
+        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
+        TAPMessageModel message = getMessagePointer().get(localID);
+        if (null != message && 100 > progress) {
+            Log.e(TAG, "updateMessagePointerProgress: "+progress);
+            message.setProgress(progress);
+            message.setFirstLoadFinished(false);
+        } else if (null != message) {
+            message.setProgress(progress);
+            message.setFirstLoadFinished(true);
         }
     }
 

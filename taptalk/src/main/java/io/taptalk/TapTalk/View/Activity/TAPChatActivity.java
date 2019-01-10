@@ -20,6 +20,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1010,6 +1011,24 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
             hideTypingIndicator();
+        }
+
+        @Override
+        public void onProgressFinish(String localID) {
+            if (vm.getMessagePointer().containsKey(localID)) {
+                // Update message instead of adding when message pointer already contains the same local ID
+                vm.updateMessagePointerProgress(localID, 100);
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+            }
+        }
+
+        @Override
+        public void onProgressLoading(String localID, int progress) {
+            if (vm.getMessagePointer().containsKey(localID)) {
+                Log.e(TAG, localID + " : " + progress);
+                vm.updateMessagePointerProgress(localID, progress);
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+            }
         }
     };
 

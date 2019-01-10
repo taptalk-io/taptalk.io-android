@@ -1,13 +1,13 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.graphics.drawable.Drawable;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -302,19 +302,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         } else {
                             flBubble.setForeground(bubbleOverlayLeft);
                         }
-                        flProgress.setVisibility(View.VISIBLE);
-                        new CountDownTimer(1000, 10) {
-                            @Override
-                            public void onTick(long millisUntilFinished) {
-                                pbProgress.setProgress((int) (1000 - millisUntilFinished) / 10);
-                            }
 
-                            @Override
-                            public void onFinish() {
-                                flProgress.setVisibility(View.GONE);
-                                flBubble.setForeground(null);
-                            }
-                        }.start();
+                        if (100 == item.getProgress()) {
+                            Log.e(TAG, "onResourceReady2: "+item.getProgress() );
+                            flProgress.setVisibility(View.GONE);
+                            flBubble.setForeground(null);
+                        } else if (100 > item.getProgress()) {
+                            Log.e(TAG, "onResourceReady: "+item.getProgress() );
+                            flProgress.setVisibility(View.VISIBLE);
+                            pbProgress.setMax(100);
+                            pbProgress.setProgress(item.getProgress());
+                        }
                         return false;
                     }
                 }).into(rcivImageBody);

@@ -427,11 +427,16 @@ public class TAPChatManager {
                 getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
                 // TODO: 8 January 2019 UPDATE DATA
                 null);
+        String localID = messageModel.getLocalID();
 
         ProgressRequestBody.UploadCallbacks uploadCallback = new ProgressRequestBody.UploadCallbacks() {
             @Override
             public void onProgressUpdate(int percentage) {
-                Log.e(TAG, messageModel.getLocalID()+" : "+percentage );
+                if (null != chatListeners && !chatListeners.isEmpty()) {
+                    for (TAPChatListener chatListener : chatListeners) {
+                        chatListener.onProgressLoading(localID, percentage);
+                    }
+                }
             }
 
             @Override
@@ -453,7 +458,12 @@ public class TAPChatManager {
             public void onSuccess(TAPUploadFileResponse response) {
                 super.onSuccess(response);
                 Log.e(TAG, "onSuccess: " );
-                // TODO: 10/01/19 send emit message to server 
+                if (null != chatListeners && !chatListeners.isEmpty()) {
+                    for (TAPChatListener chatListener : chatListeners) {
+                        chatListener.onProgressFinish(localID);
+                    }
+                }
+                // TODO: 10/01/19 send emit message to server
             }
         });
         
