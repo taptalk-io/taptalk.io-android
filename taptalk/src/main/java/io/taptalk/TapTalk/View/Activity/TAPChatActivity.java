@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -178,6 +179,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onResume();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
+        showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage());
         addNetworkListener();
         callApiGetUserByUserID();
         if (vm.isInitialAPICallFinished()) {
@@ -591,7 +593,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    private void showQuoteLayout(TAPMessageModel message) {
+    private void showQuoteLayout(@Nullable TAPMessageModel message) {
+        if (null == message) {
+            return;
+        }
         vm.setQuotedMessage(message);
         clReply.setVisibility(View.VISIBLE);
         tvQuoteTitle.setText(message.getUser().getName());
@@ -923,13 +928,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onSendTextMessage(TAPMessageModel message) {
-            if (null != vm.getQuotedMessage()) {
-                // TODO: 9 January 2019 HANDLE NON-TEXT MESSAGES
-                message.setQuote(new TAPQuoteModel(vm.getQuotedMessage().getUser().getName(), vm.getQuotedMessage().getBody(), "", "", ""));
-                message.setReplyTo(new TAPReplyToModel(vm.getQuotedMessage().getMessageID(), vm.getQuotedMessage().getLocalID(), vm.getQuotedMessage().getType()));
-                vm.setQuotedMessage(null);
-            }
             addNewMessage(message);
+            vm.setQuotedMessage(null);
             if (clReply.getVisibility() == View.VISIBLE) {
                 clReply.setVisibility(View.GONE);
             }

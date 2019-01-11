@@ -87,6 +87,14 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, data,null,null,null, false, true, false, false, false, false, created, null);
     }
 
+    public static TAPMessageModel BuilderWithQuotedMessage(String message, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
+        String localID = TAPUtils.getInstance().generateRandomString(32);
+        // TODO: 9 January 2019 HANDLE NON-TEXT MESSAGES
+        TAPQuoteModel quote = new TAPQuoteModel(quotedMessage.getUser().getName(), quotedMessage.getBody(), "", "", "");
+        TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID(), quotedMessage.getLocalID(), quotedMessage.getType());
+        return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null);
+    }
+
 //    public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
 //        return new TAPMessageModel(
 //                messageModel.getMessageID(),

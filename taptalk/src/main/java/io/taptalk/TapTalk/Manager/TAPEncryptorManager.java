@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -73,9 +75,13 @@ public class TAPEncryptorManager {
             String localID = messageModel.getLocalID();
             // Encrypt message body
             encryptedMessageMap.put(K_BODY, encrypt(messageModel.getBody(), localID));
-            if (null != messageModel.getData()) {
+            if (null != messageModel.getData() && !messageModel.getData().isEmpty()) {
                 // Encrypt message data
-                encryptedMessageMap.put(K_DATA, encrypt(TAPUtils.getInstance().toJsonString(messageModel.getData()), localID));
+                try {
+                    encryptedMessageMap.put(K_DATA, encrypt(TAPUtils.getInstance().toJsonString(messageModel.getData()), localID));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             if (null != messageModel.getQuote()) {
                 // Encrypt quote content
@@ -94,9 +100,16 @@ public class TAPEncryptorManager {
             String localID = messageMap.get(K_LOCAL_ID).toString();
             // Decrypt message body
             messageMap.put(K_BODY, decrypt(messageMap.get(K_BODY).toString(), localID));
-            if (null != messageMap.get(K_DATA)) {
+            if (null != messageMap.get(K_DATA) && !messageMap.get(K_DATA).toString().isEmpty()) {
                 // Decrypt message data
-                messageMap.put(K_DATA, TAPUtils.getInstance().toHashMap(decrypt(messageMap.get(K_DATA).toString(), localID)));
+                try {
+                    messageMap.put(K_DATA, TAPUtils.getInstance().toHashMap(decrypt(messageMap.get(K_DATA).toString(), localID)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // Data is empty
+                messageMap.put(K_DATA, null);
             }
             if (null != messageMap.get(K_QUOTE)) {
                 // Decrypt quote content
