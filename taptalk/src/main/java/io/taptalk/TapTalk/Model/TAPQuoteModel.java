@@ -9,14 +9,14 @@ public class TAPQuoteModel implements Parcelable {
     @JsonProperty("title") private String title;
     @JsonProperty("content") private String content;
     @JsonProperty("fileID") private String fileID;
-    @JsonProperty("imageURLString") private String imageURLString;
+    @JsonProperty("imageURL") private String imageURL;
     @JsonProperty("fileType") private String fileType;
 
-    public TAPQuoteModel(String title, String content, String fileID, String imageURLString, String fileType) {
+    public TAPQuoteModel(String title, String content, String fileID, String imageURL, String fileType) {
         this.title = title;
         this.content = content;
         this.fileID = fileID;
-        this.imageURLString = imageURLString;
+        this.imageURL = imageURL;
         this.fileType = fileType;
     }
 
@@ -44,12 +44,12 @@ public class TAPQuoteModel implements Parcelable {
         this.fileID = fileID;
     }
 
-    public String getImageURLString() {
-        return imageURLString;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImageURLString(String imageURLString) {
-        this.imageURLString = imageURLString;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public String getFileType() {
@@ -70,7 +70,7 @@ public class TAPQuoteModel implements Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.content);
         dest.writeString(this.fileID);
-        dest.writeString(this.imageURLString);
+        dest.writeString(this.imageURL);
         dest.writeString(this.fileType);
     }
 
@@ -81,7 +81,7 @@ public class TAPQuoteModel implements Parcelable {
         this.title = in.readString();
         this.content = in.readString();
         this.fileID = in.readString();
-        this.imageURLString = in.readString();
+        this.imageURL = in.readString();
         this.fileType = in.readString();
     }
 

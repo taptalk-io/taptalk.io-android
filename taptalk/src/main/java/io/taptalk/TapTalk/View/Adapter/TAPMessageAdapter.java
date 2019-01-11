@@ -636,7 +636,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteBackground.setVisibility(View.VISIBLE);
             tvQuoteTitle.setText(quote.getTitle());
             tvQuoteContent.setText(quote.getContent());
-            String quoteImageURL = quote.getImageURLString();
+            String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();
             if (!quoteImageURL.isEmpty()) {
                 // Get quote image from URL
