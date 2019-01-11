@@ -20,6 +20,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -53,6 +54,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Listener.TAPUploadProgressListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -221,7 +223,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
                         openImagePreviewPage(imageCameraUris);
 
-                        //TAPChatManager.getInstance().sendImageMessage(vm.getCameraImageUri());
+                        //TAPChatManager.getInstance().showImageMessageThumbnail(vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) {
@@ -245,7 +247,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().sendImageMessage(images);
+                            TAPChatManager.getInstance().showImageMessageThumbnail(this, images, uploadListener);
                         break;
                 }
         }
@@ -955,7 +957,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case TYPE_IMAGE:
                     // TODO: 7 January 2019 RESEND IMAGE MESSAGE
-//                    TAPChatManager.getInstance().sendImageMessage(message.getBody());
+//                    TAPChatManager.getInstance().showImageMessageThumbnail(message.getBody());
                     break;
             }
         }
@@ -1010,6 +1012,26 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
             hideTypingIndicator();
+        }
+    };
+
+    private TAPUploadProgressListener uploadListener = new TAPUploadProgressListener() {
+        @Override
+        public void onProgressLoading(String localID, int progress) {
+            if (vm.getMessagePointer().containsKey(localID)) {
+                Log.e(TAG, localID + " : " + progress);
+                vm.updateMessagePointerProgress(localID, progress);
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+            }
+        }
+
+        @Override
+        public void onProgressFinish(String localID) {
+            if (vm.getMessagePointer().containsKey(localID)) {
+                // Update message instead of adding when message pointer already contains the same local ID
+                vm.updateMessagePointerProgress(localID, 100);
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+            }
         }
     };
 

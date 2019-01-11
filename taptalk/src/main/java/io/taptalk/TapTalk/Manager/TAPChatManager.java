@@ -1,8 +1,10 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,6 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
@@ -27,9 +30,9 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Listener.TAPUploadProgressListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
-import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
@@ -118,7 +121,8 @@ public class TAPChatManager {
                 case kSocketDeleteMessage:
                     Log.e(TAG, "onReceiveNewEmit: " + emitData);
                     receiveMessageFromSocket(TAPUtils.getInstance().fromJSON(
-                            new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {},
+                            new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {
+                            },
                             emitData).getData(),
                             eventName);
                     break;
@@ -280,9 +284,12 @@ public class TAPChatManager {
                 entity.getRecipientID(),
                 // TODO: 9 January 2019 CHECK NULL
                 null == entity.getData() ? null : TAPUtils.getInstance().toHashMap(entity.getData()),
-                null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {}, entity.getQuote()),
-                null == entity.getReplyTo() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPReplyToModel>() {}, entity.getReplyTo()),
-                null == entity.getForwardFrom() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPForwardFromModel>() {}, entity.getForwardFrom()),
+                null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {
+                }, entity.getQuote()),
+                null == entity.getReplyTo() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPReplyToModel>() {
+                }, entity.getReplyTo()),
+                null == entity.getForwardFrom() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPForwardFromModel>() {
+                }, entity.getForwardFrom()),
                 entity.getDeleted(),
                 entity.getSending(),
                 entity.getFailedSend(),
@@ -407,14 +414,14 @@ public class TAPChatManager {
                 System.currentTimeMillis(),
                 user, getOtherUserIdFromActiveRoom(room.getRoomID()),
                 dummyDataMap
-                );
+        );
     }
 
     /**
-     * Send image messages
+     * Create image message model and call upload api
      */
-    public void sendImageMessage(TAPImagePreviewModel image) {
-        Log.e(TAG, "sendImageMessage: " + image.getImageUri().toString());
+    private void createImageMessageModelAndCallUploadAPI(Context context, TAPImagePreviewModel image,
+                                                         @NonNull TAPUploadProgressListener uploadListener) {
         Uri imageUri = image.getImageUri();
 
         // Build message model
@@ -427,6 +434,45 @@ public class TAPChatManager {
                 getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
                 // TODO: 8 January 2019 UPDATE DATA
                 null);
+        String localID = messageModel.getLocalID();
+
+        ProgressRequestBody.UploadCallbacks uploadCallback = new ProgressRequestBody.UploadCallbacks() {
+            @Override
+            public void onProgressUpdate(int percentage) {
+                uploadListener.onProgressLoading(localID, percentage);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+
+            @Override
+            public void onFinish() {
+            }
+        };
+
+        showImageMessageThumbnail(messageModel);
+
+        TAPDataManager.getInstance().uploadImage(context, imageUri, getActiveRoom().getRoomID(),
+                image.getImageCaption(), uploadCallback,
+                new TapDefaultDataView<TAPUploadFileResponse>() {
+                    @Override
+                    public void onSuccess(TAPUploadFileResponse response) {
+                        super.onSuccess(response);
+                        Log.e(TAG, "onSuccess: ");
+                        uploadListener.onProgressFinish(localID);
+                        // TODO: 10/01/19 send emit message to server
+                    }
+                });
+
+    }
+
+    /**
+     * Send image messages
+     */
+    private void showImageMessageThumbnail(TAPMessageModel imageMessage) {
+        Uri imageUri = Uri.parse(imageMessage.getBody());
 
         // Get image width and height
         String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
@@ -435,44 +481,26 @@ public class TAPChatManager {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
         int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            messageModel.setImageWidth(options.outHeight);
-            messageModel.setImageHeight(options.outWidth);
+            imageMessage.setImageWidth(options.outHeight);
+            imageMessage.setImageHeight(options.outWidth);
         } else {
-            messageModel.setImageWidth(options.outWidth);
-            messageModel.setImageHeight(options.outHeight);
+            imageMessage.setImageWidth(options.outWidth);
+            imageMessage.setImageHeight(options.outHeight);
         }
 
         // Trigger listener to show image preview in activity
-        triggerSendMessageListener(messageModel);
-
-        TAPDataManager.getInstance().uploadImage(imageUri, getActiveRoom().getRoomID(), image.getImageCaption(), new TapDefaultDataView<TAPUploadFileResponse>() {
-            @Override
-            public void onSuccess(TAPUploadFileResponse response) {
-                Log.e(TAG, "sendImageMessage onSuccess: " + TAPUtils.getInstance().toJsonString(response));
-                // Send file message emit
-                // TODO: 7 January 2019 UPDATE MESSAGE DATA
-                messageModel.setBody(TAPUtils.getInstance().toJsonString(response));
-                triggerListenerAndSendMessage(messageModel);
-            }
-
-            @Override
-            public void onError(TAPErrorModel error) {
-                Log.e(TAG, "sendImageMessage onError: " + error.getMessage());
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e(TAG, "sendImageMessage onError: " + throwable.getMessage());
-            }
-        });
+        triggerSendMessageListener(imageMessage);
     }
 
     // Send multiple image messages
-    public void sendImageMessage(ArrayList<TAPImagePreviewModel> images) {
+    public void showImageMessageThumbnail(Context context, ArrayList<TAPImagePreviewModel> images,
+                                          @NonNull TAPUploadProgressListener uploadListener) {
         new Thread(() -> {
+            //TAPImagePreviewModel tempModel = images.get(0);
             for (TAPImagePreviewModel image : images) {
-                sendImageMessage(image);
+                createImageMessageModelAndCallUploadAPI(context, image, uploadListener);
             }
         }).start();
     }

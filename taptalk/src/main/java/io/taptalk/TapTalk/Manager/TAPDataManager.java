@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.net.Uri;
 
 import com.orhanobut.hawk.Hawk;
@@ -11,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
+import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -267,6 +269,14 @@ public class TAPDataManager {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public Boolean checkFirebaseToken() {
+        if (!checkPreferenceKeyAvailable(K_FIREBASE_TOKEN) || null == getFirebaseToken() || "0".equals(getFirebaseToken()))
+            return false;
+        else {
+            return true;
         }
     }
 
@@ -579,8 +589,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void uploadImage(Uri imageBitmap, String roomID, String caption, TapDefaultDataView<TAPUploadFileResponse> view) {
-        TAPApiManager.getInstance().uploadImage(imageBitmap, roomID, caption, new TAPDefaultSubscriber<>(view));
+    public void uploadImage(Context context, Uri imageBitmap, String roomID, String caption,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadImage(context, imageBitmap, roomID, caption, uploadCallback, new TAPDefaultSubscriber<>(view));
     }
 
     // FIXME: 25 October 2018

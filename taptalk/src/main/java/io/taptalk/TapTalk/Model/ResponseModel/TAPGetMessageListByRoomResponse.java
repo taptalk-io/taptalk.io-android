@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TAPGetMessageListByRoomResponse {
-    @JsonProperty("messages") List<HashMap<String, Object>> messages;
-    @JsonProperty("hasMore") Boolean hasMore;
+    @JsonProperty("messages") private List<HashMap<String, Object>> messages;
+    @JsonProperty("hasMore") private Boolean hasMore;
 
     public List<HashMap<String, Object>> getMessages() {
         return messages;

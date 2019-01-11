@@ -75,7 +75,7 @@ public class SampleApplication extends Application {
         public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             if (customKeyboardItemModel.getItemID().equals("1")) {
                 String message = "Hi "+ otherUser.getName() + ", I want to see services & pricing";
-                TapTalk.sendTextMessageWithXcUserID(message, otherUser.getXcUserID(), new TAPSendMessageWithIDListener() {
+                TapTalk.sendTextMessageWithRecipientUser(message, otherUser, new TAPSendMessageWithIDListener() {
                     @Override
                     public void sendSuccess() {
                         Log.e("><><><", "sendSuccess: " );
