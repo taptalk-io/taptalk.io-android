@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Listener.TAPUploadProgressListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
@@ -119,7 +121,8 @@ public class TAPChatManager {
                 case kSocketDeleteMessage:
                     Log.e(TAG, "onReceiveNewEmit: " + emitData);
                     receiveMessageFromSocket(TAPUtils.getInstance().fromJSON(
-                            new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {},
+                            new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {
+                            },
                             emitData).getData(),
                             eventName);
                     break;
@@ -281,9 +284,12 @@ public class TAPChatManager {
                 entity.getRecipientID(),
                 // TODO: 9 January 2019 CHECK NULL
                 null == entity.getData() ? null : TAPUtils.getInstance().toHashMap(entity.getData()),
-                null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {}, entity.getQuote()),
-                null == entity.getReplyTo() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPReplyToModel>() {}, entity.getReplyTo()),
-                null == entity.getForwardFrom() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPForwardFromModel>() {}, entity.getForwardFrom()),
+                null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {
+                }, entity.getQuote()),
+                null == entity.getReplyTo() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPReplyToModel>() {
+                }, entity.getReplyTo()),
+                null == entity.getForwardFrom() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPForwardFromModel>() {
+                }, entity.getForwardFrom()),
                 entity.getDeleted(),
                 entity.getSending(),
                 entity.getFailedSend(),
@@ -408,13 +414,14 @@ public class TAPChatManager {
                 System.currentTimeMillis(),
                 user, getOtherUserIdFromActiveRoom(room.getRoomID()),
                 dummyDataMap
-                );
+        );
     }
 
     /**
      * Create image message model and call upload api
      */
-    private void createImageMessageModelAndCallUploadAPI (Context context, TAPImagePreviewModel image) {
+    private void createImageMessageModelAndCallUploadAPI(Context context, TAPImagePreviewModel image,
+                                                         @NonNull TAPUploadProgressListener uploadListener) {
         Uri imageUri = image.getImageUri();
 
         // Build message model
@@ -432,11 +439,7 @@ public class TAPChatManager {
         ProgressRequestBody.UploadCallbacks uploadCallback = new ProgressRequestBody.UploadCallbacks() {
             @Override
             public void onProgressUpdate(int percentage) {
-                if (null != chatListeners && !chatListeners.isEmpty()) {
-                    for (TAPChatListener chatListener : chatListeners) {
-                        chatListener.onProgressLoading(localID, percentage);
-                    }
-                }
+                uploadListener.onProgressLoading(localID, percentage);
             }
 
             @Override
@@ -454,19 +457,15 @@ public class TAPChatManager {
         TAPDataManager.getInstance().uploadImage(context, imageUri, getActiveRoom().getRoomID(),
                 image.getImageCaption(), uploadCallback,
                 new TapDefaultDataView<TAPUploadFileResponse>() {
-            @Override
-            public void onSuccess(TAPUploadFileResponse response) {
-                super.onSuccess(response);
-                Log.e(TAG, "onSuccess: " );
-                if (null != chatListeners && !chatListeners.isEmpty()) {
-                    for (TAPChatListener chatListener : chatListeners) {
-                        chatListener.onProgressFinish(localID);
+                    @Override
+                    public void onSuccess(TAPUploadFileResponse response) {
+                        super.onSuccess(response);
+                        Log.e(TAG, "onSuccess: ");
+                        uploadListener.onProgressFinish(localID);
+                        // TODO: 10/01/19 send emit message to server
                     }
-                }
-                // TODO: 10/01/19 send emit message to server
-            }
-        });
-        
+                });
+
     }
 
     /**
@@ -496,11 +495,12 @@ public class TAPChatManager {
     }
 
     // Send multiple image messages
-    public void showImageMessageThumbnail(Context context, ArrayList<TAPImagePreviewModel> images) {
+    public void showImageMessageThumbnail(Context context, ArrayList<TAPImagePreviewModel> images,
+                                          @NonNull TAPUploadProgressListener uploadListener) {
         new Thread(() -> {
             //TAPImagePreviewModel tempModel = images.get(0);
             for (TAPImagePreviewModel image : images) {
-                createImageMessageModelAndCallUploadAPI(context, image);
+                createImageMessageModelAndCallUploadAPI(context, image, uploadListener);
             }
         }).start();
     }

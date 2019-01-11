@@ -24,6 +24,4 @@ public interface TapTalkChatInterface {
     void onOutsideClicked();
     void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
     void onReadMessage(String roomID);
-    void onProgressLoading(String localID, int progress);
-    void onProgressFinish(String localID);
 }
