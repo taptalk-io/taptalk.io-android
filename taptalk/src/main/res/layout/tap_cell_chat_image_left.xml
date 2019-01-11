@@ -39,6 +39,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_quote"
+                android:layout_width="234dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_white_rounded_1dp_8dp_0dp_0dp_stroke_eaeaea_1dp"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/v_quote_background"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp" />
+
+                <include layout="@layout/tap_layout_quote_bubble_left" />
+
+            </android.support.constraint.ConstraintLayout>
+
             <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
                 android:id="@+id/rciv_image"
                 android:layout_width="wrap_content"
@@ -49,6 +66,9 @@
                 android:maxHeight="300dp"
                 app:cornerRadius="9dp"
                 app:dimensionRatio="0.78"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 app:minHeight="100dp"
                 app:minWidth="78dp"
                 app:topLeftRadius="2dp"
@@ -89,6 +109,7 @@
                 style="@style/HomingPigeonMessageBody"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_white_rounded_0dp_0dp_8dp_8dp_stroke_eaeaea_1dp"
                 android:paddingStart="12dp"
                 android:paddingTop="12dp"
                 android:paddingEnd="12dp"

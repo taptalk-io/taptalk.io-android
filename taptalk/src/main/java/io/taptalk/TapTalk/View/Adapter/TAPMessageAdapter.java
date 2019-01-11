@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
@@ -192,7 +193,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
-            showOrHideQuote(item.getQuote(), itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
             clContainer.setOnClickListener(v -> listener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
@@ -222,25 +223,32 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class ImageVH extends TAPBaseChatViewHolder {
 
-        private ConstraintLayout clContainer;
+        private ConstraintLayout clContainer, clQuote;
         private FrameLayout flBubble, flProgress;
         private CircleImageView civAvatar;
-        private TAPRoundedCornerImageView rcivImageBody;
+        private TAPRoundedCornerImageView rcivImageBody, rcivQuoteImage;
         private ImageView ivMessageStatus, ivReply, ivSending, ivProgress;
-        private TextView tvMessageBody, tvMessageStatus;
+        private TextView tvMessageBody, tvMessageStatus, tvQuoteTitle, tvQuoteContent;
+        private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
+            clQuote = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             ivReply = itemView.findViewById(R.id.iv_reply);
             ivProgress = itemView.findViewById(R.id.iv_progress);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
@@ -272,6 +280,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setText(item.getMessageStatusText());
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            // Fix layout when quote exists
+            if (null != item.getQuote()) {
+                rcivImageBody.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, TAPUtils.getInstance().dpToPx(244)));
+                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            } else {
+                rcivImageBody.setLayoutParams(new ConstraintLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            }
 
             if (item.isFirstLoadFinished()) {
                 flProgress.setVisibility(View.GONE);
@@ -626,10 +643,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void showOrHideQuote(@Nullable TAPQuoteModel quote, View itemView,
+    private void showOrHideQuote(TAPMessageModel item, View itemView,
                                  ConstraintLayout clQuote, TextView tvQuoteTitle,
                                  TextView tvQuoteContent, TAPRoundedCornerImageView rcivQuoteImage,
                                  View vQuoteBackground, View vQuoteDecoration) {
+        TAPQuoteModel quote = item.getQuote();
         if (null != quote) {
             // Show quote
             clQuote.setVisibility(View.VISIBLE);
