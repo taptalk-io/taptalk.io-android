@@ -22,8 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -32,7 +30,6 @@ import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
@@ -460,47 +457,14 @@ public class TAPChatManager {
     /**
      * Create image message model and call upload api
      */
-    private void createImageMessageModelAndCallUploadAPI(Context context, TAPImagePreviewModel image,
-                                                         @NonNull TAPUploadListener uploadListener) {
+    private void createImageMessageModelAndAddToQueueUpload(Context context, TAPImagePreviewModel image,
+                                                            TAPUploadListener uploadListener) {
 
-        // Build message model
-        Log.e(TAG, "createImageMessageModelAndCallUploadAPI: " );
         TAPMessageModel messageModel = createImageMessageModel(image);
-
+        // Build message model
         sendImageMessageThumbnailBeforeUpload(messageModel);
 
-        String localID = messageModel.getLocalID();
-
-        ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
-            @Override
-            public void onProgressUpdate(int percentage) {
-                uploadListener.onProgressLoading(localID, percentage);
-            }
-
-            @Override
-            public void onError() {
-
-            }
-
-            @Override
-            public void onFinish() {
-            }
-        };
-
-        TapDefaultDataView<TAPUploadFileResponse> uploadView = new TapDefaultDataView<TAPUploadFileResponse>() {
-            @Override
-            public void onSuccess(TAPUploadFileResponse response, String localID) {
-                super.onSuccess(response, localID);
-                Log.e(TAG, "onSuccess: ");
-                uploadListener.onProgressFinish(localID);
-                TAPDataManager.getInstance().removeUploadSubscriber();
-                TAPFileManager.getInstance().restartUploadSequence(context, uploadCallbacks, this);
-                // TODO: 10/01/19 send emit message to server
-            }
-        };
-
-        TAPFileManager.getInstance().uploadImage(context,
-                messageModel, uploadCallbacks, uploadView);
+        TAPFileManager.getInstance().addQueueUploadImage(context, messageModel, uploadListener);
     }
 
     /**
@@ -533,9 +497,8 @@ public class TAPChatManager {
     public void sendImageMessageThumbnailBeforeUpload(Context context, ArrayList<TAPImagePreviewModel> images,
                                                       @NonNull TAPUploadListener uploadListener) {
         new Thread(() -> {
-            Log.e(TAG, "sendImageMessageThumbnailBeforeUpload: " );
             for (TAPImagePreviewModel image : images) {
-                new Thread(() -> createImageMessageModelAndCallUploadAPI(context, image, uploadListener)).start();
+                createImageMessageModelAndAddToQueueUpload(context, image, uploadListener);
             }
         }).start();
     }

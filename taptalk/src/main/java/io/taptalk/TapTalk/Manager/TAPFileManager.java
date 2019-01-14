@@ -18,6 +18,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -39,29 +40,29 @@ public class TAPFileManager {
     }
 
     /**
-     * @param messageModel   Requires TAPMessageModel with data
-     * @param uploadCallback Callback is used to obtain upload progress
+     * Masukin Message Model ke dalem Queue Upload Image
+     *
+     * @param messageModel
      */
-    public void uploadImage(Context context, TAPMessageModel messageModel,
-                            ProgressRequestBody.UploadCallbacks uploadCallback,
-                            TapDefaultDataView<TAPUploadFileResponse> view) {
+    public void addQueueUploadImage(Context context,
+                                    TAPMessageModel messageModel,
+                                    TAPUploadListener uploadListener) {
         uploadQueue.add(messageModel);
-        startUploadSequenceFromQueue(context, uploadCallback, view);
-
+        if (1 == uploadQueue.size()) uploadImage(context, uploadListener);
     }
 
     // TODO: 14 January 2019 HANDLE OTHER FILE TYPES
-    private void startUploadSequenceFromQueue(Context context,
-                                              ProgressRequestBody.UploadCallbacks uploadCallback,
-                                              TapDefaultDataView<TAPUploadFileResponse> view) {
+    private void uploadImage(Context context, TAPUploadListener uploadListener) {
         new Thread(() -> {
+            Log.e(TAG, "startUploadSequenceFromQueue: ");
             if (uploadQueue.isEmpty()) {
                 // Queue is empty
                 return;
             }
 
             TAPMessageModel messageModel = uploadQueue.get(0);
-            Log.e(TAG, "startUploadSequenceFromQueue: "+messageModel.getData() );
+
+            Log.e(TAG, "startUploadSequenceFromQueue: " + messageModel.getData());
             if (null == messageModel.getData()) {
                 // No data
                 Log.e(TAG, "File upload failed: data is required in MessageModel.");
@@ -92,14 +93,52 @@ public class TAPFileManager {
 
                 // Update message data
 
-
-                // Upload file
-                TAPDataManager.getInstance()
-                        .uploadImage(messageModel.getLocalID(), imageFile,
-                                messageModel.getRoom().getRoomID(), imageData.getCaption(),
-                                mimeType, uploadCallback, view);
+                callUploadAPI(context, messageModel, imageFile, mimeType, imageData, uploadListener);
             }
         }).start();
+    }
+
+    private void callUploadAPI(Context context, TAPMessageModel messageModel, File imageFile, String mimeType,
+                               TAPDataImageModel imageData,
+                               TAPUploadListener uploadListener) {
+
+        String localID = messageModel.getLocalID();
+
+        ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
+            @Override
+            public void onProgressUpdate(int percentage) {
+                uploadListener.onProgressLoading(localID, percentage);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+
+            @Override
+            public void onFinish() {
+            }
+        };
+
+        TapDefaultDataView<TAPUploadFileResponse> uploadView = new TapDefaultDataView<TAPUploadFileResponse>() {
+            @Override
+            public void onSuccess(TAPUploadFileResponse response, String localID) {
+                super.onSuccess(response, localID);
+                Log.e(TAG, "onSuccess: ");
+                uploadListener.onProgressFinish(localID);
+                TAPDataManager.getInstance().removeUploadSubscriber();
+
+                //manggil restart buat queue selanjutnya
+                restartUploadSequence(context, uploadListener);
+                // TODO: 10/01/19 send emit message to server
+            }
+        };
+
+        // Upload file
+        TAPDataManager.getInstance()
+                .uploadImage(localID, imageFile,
+                        messageModel.getRoom().getRoomID(), imageData.getCaption(),
+                        mimeType, uploadCallbacks, uploadView);
     }
 
     private Bitmap createAndResizeImageFile(Context context, Uri imageUri) {
@@ -126,11 +165,11 @@ public class TAPFileManager {
      * Check upload queue and restart upload sequence
      */
     public void restartUploadSequence(Context context,
-                                      ProgressRequestBody.UploadCallbacks uploadCallback,
-                                      TapDefaultDataView<TAPUploadFileResponse> view) {
+                                      TAPUploadListener uploadListener) {
         uploadQueue.remove(0);
+        //ini ngecek kalau kosong ga perlu jalanin lagi
         if (!uploadQueue.isEmpty()) {
-            startUploadSequenceFromQueue(context, uploadCallback, view);
+            uploadImage(context, uploadListener);
         }
     }
 
