@@ -61,6 +61,7 @@ import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
+import io.taptalk.TapTalk.Manager.TAPFileManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -1034,7 +1035,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onUploadCanceled(String localID) {
             if (vm.getMessagePointer().containsKey(localID)) {
-                int itemPos = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID));
+                TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
+                int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
+
+                TAPFileManager.getInstance().cancelledUpload(TAPChatActivity.this,
+                        cancelledMessageModel, this);
+
                 vm.removeMessagePointer(localID);
                 messageAdapter.removeMessageAt(itemPos);
                 Log.e(TAG, "onUploadCanceled: " );

@@ -45,6 +45,7 @@ import java.util.Random;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
@@ -468,5 +469,18 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
             e.printStackTrace();
         }
         return file;
+    }
+
+    /**
+     * Ini Untuk Search Position MessageModel dari Sebuah List berdasarkan LocalID
+     *
+     */
+    public int searchMessagePositionByLocalID(List<TAPMessageModel> messageModels, String localID) {
+        for (int index = 0; index < messageModels.size(); index++) {
+            if (localID.equals(messageModels.get(index).getLocalID())) {
+                return index;
+            }
+        }
+        return -1;
     }
 }

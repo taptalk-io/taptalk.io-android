@@ -173,5 +173,19 @@ public class TAPFileManager {
         }
     }
 
+    /**
+     * @param cancelledMessageModel
+     */
+    public void cancelledUpload(Context context, TAPMessageModel cancelledMessageModel,
+                                TAPUploadListener uploadListener) {
+        int position = TAPUtils.getInstance().searchMessagePositionByLocalID(uploadQueue, cancelledMessageModel.getLocalID());
+
+        if (-1 != position && 0 == position && !uploadQueue.isEmpty()) {
+            restartUploadSequence(context, uploadListener);
+        } else if (-1 != position && !uploadQueue.isEmpty()) {
+            uploadQueue.remove(position);
+        }
+    }
+
     // TODO: 14 January 2019 REMOVE FROM QUEUE WHEN UPLOAD FINISHES
 }
