@@ -82,6 +82,8 @@ public class TAPEncryptorManager {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else {
+                encryptedMessageMap.put(K_DATA, "");
             }
             if (null != messageModel.getQuote()) {
                 // Encrypt quote content

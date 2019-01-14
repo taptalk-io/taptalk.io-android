@@ -283,11 +283,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             // Fix layout when quote exists
             if (null != item.getQuote()) {
-                rcivImageBody.setLayoutParams(new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, TAPUtils.getInstance().dpToPx(244)));
+                rcivImageBody.getLayoutParams().width = 0;
+                rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
                 rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivImageBody.setTopLeftRadius(0);
+                rcivImageBody.setTopRightRadius(0);
             } else {
-                rcivImageBody.setLayoutParams(new ConstraintLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                 rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
             }
 
             if (item.isFirstLoadFinished()) {
@@ -657,7 +663,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (!quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 Glide.with(itemView.getContext()).load(quoteImageURL).into(rcivQuoteImage);
-                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
@@ -665,14 +670,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if (!quoteFileID.isEmpty()) {
                 // Get quote image from file ID
                 // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
-                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else {
                 // Show no image
-                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
                 vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);

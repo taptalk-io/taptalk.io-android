@@ -70,8 +70,6 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
-import io.taptalk.TapTalk.Model.TAPQuoteModel;
-import io.taptalk.TapTalk.Model.TAPReplyToModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
@@ -113,7 +111,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clContainer, clEmptyChat, clReply, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus;
+    private ConstraintLayout clContainer, clEmptyChat, clQuote, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach,
             ivButtonSend, ivToBottom, ivRoomTypingIndicator;
@@ -288,7 +286,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
-        clReply = (ConstraintLayout) findViewById(R.id.cl_quote);
+        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
@@ -598,28 +596,30 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             return;
         }
         vm.setQuotedMessage(message);
-        clReply.setVisibility(View.VISIBLE);
-        tvQuoteTitle.setText(message.getUser().getName());
-        tvQuoteContent.setText(message.getBody());
-        // TODO: 9 January 2019 HANDLE OTHER TYPES
-        if (message.getType() == TYPE_IMAGE) {
-            // TODO: 9 January 2019 LOAD IMAGE
+        runOnUiThread(() -> {
+            clQuote.setVisibility(View.VISIBLE);
+            tvQuoteTitle.setText(message.getUser().getName());
+            tvQuoteContent.setText(message.getBody());
+            // TODO: 9 January 2019 HANDLE OTHER TYPES
+            if (message.getType() == TYPE_IMAGE) {
+                // TODO: 9 January 2019 LOAD IMAGE
 //            Glide.with(this).load(message.getThumbnail()).into(rcivQuoteImage);
-            vQuoteDecoration.setVisibility(View.GONE);
-            rcivQuoteImage.setVisibility(View.VISIBLE);
-            tvQuoteContent.setMaxLines(1);
-        } else {
-            vQuoteDecoration.setVisibility(View.VISIBLE);
-            rcivQuoteImage.setVisibility(View.GONE);
-            tvQuoteContent.setMaxLines(2);
-        }
-        etChat.requestFocus();
-        TAPUtils.getInstance().showKeyboard(this, etChat);
+                vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteContent.setMaxLines(1);
+            } else {
+                vQuoteDecoration.setVisibility(View.VISIBLE);
+                rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteContent.setMaxLines(2);
+            }
+            etChat.requestFocus();
+            TAPUtils.getInstance().showKeyboard(this, etChat);
+        });
     }
 
     private void hideQuoteLayout() {
         vm.setQuotedMessage(null);
-        clReply.setVisibility(View.GONE);
+        runOnUiThread(() -> clQuote.setVisibility(View.GONE));
     }
 
     private void scrollToBottom() {
@@ -929,10 +929,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onSendTextMessage(TAPMessageModel message) {
             addNewMessage(message);
-            vm.setQuotedMessage(null);
-            if (clReply.getVisibility() == View.VISIBLE) {
-                clReply.setVisibility(View.GONE);
-            }
+            hideQuoteLayout();
         }
 
         @Override

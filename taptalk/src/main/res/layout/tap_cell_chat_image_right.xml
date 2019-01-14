@@ -64,7 +64,12 @@
                 <View
                     android:id="@+id/v_quote_background"
                     android:layout_width="0dp"
-                    android:layout_height="0dp" />
+                    android:layout_height="0dp"
+                    android:background="@drawable/tap_bg_mediumpurple_rounded_4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <include layout="@layout/tap_layout_quote_bubble_right" />
 

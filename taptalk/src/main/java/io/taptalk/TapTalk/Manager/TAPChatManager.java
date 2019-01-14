@@ -283,7 +283,6 @@ public class TAPChatManager {
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated()),
                 entity.getRecipientID(),
-                // TODO: 9 January 2019 CHECK NULL
                 null == entity.getData() ? null : TAPUtils.getInstance().toHashMap(entity.getData()),
                 null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {
                 }, entity.getQuote()),
@@ -430,15 +429,29 @@ public class TAPChatManager {
         Uri imageUri = image.getImageUri();
 
         // Build message model
-        TAPMessageModel messageModel = TAPMessageModel.Builder(
-                imageUri.toString(),
-                activeRoom,
-                TYPE_IMAGE,
-                System.currentTimeMillis(),
-                activeUser,
-                getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                // TODO: 8 January 2019 UPDATE DATA
-                null);
+        TAPMessageModel messageModel;
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    imageUri.toString(),
+                    activeRoom,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
+                    // TODO: 8 January 2019 UPDATE DATA
+                    null);
+        } else {
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    imageUri.toString(),
+                    activeRoom,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
+                    // TODO: 8 January 2019 UPDATE DATA
+                    null,
+                    getQuotedMessage());
+        }
         String localID = messageModel.getLocalID();
 
         ProgressRequestBody.UploadCallbacks uploadCallback = new ProgressRequestBody.UploadCallbacks() {
