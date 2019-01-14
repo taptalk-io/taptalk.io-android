@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
@@ -432,27 +433,28 @@ public class TAPChatManager {
         TAPMessageModel messageModel;
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
+                    // TODO: 14 January 2019 GET CAPTION
                     imageUri.toString(),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    // TODO: 8 January 2019 UPDATE DATA
-                    null);
+                    // TODO: 14 January 2019 GET CAPTION
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, imageUri.toString())));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    // TODO: 14 January 2019 GET CAPTION
                     imageUri.toString(),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    // TODO: 8 January 2019 UPDATE DATA
-                    null,
+                    // TODO: 14 January 2019 GET CAPTION
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, imageUri.toString())),
                     getQuotedMessage());
         }
-
 
         showImageMessageThumbnail(messageModel);
 

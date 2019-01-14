@@ -98,10 +98,14 @@ public class TAPFileManager {
             String mimeType = cr.getType(imageUri);
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
             File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
-            // TODO: 14 January 2019 UPDATE SIZE, WIDTH & HEIGHT IN MESSAGE MODEL
+
+            // Update message data
+
 
             // Upload file
             TAPDataManager.getInstance().uploadImage(messageModel.getLocalID(), imageFile, messageModel.getRoom().getRoomID(), imageData.getCaption(), mimeType, uploadCallback, view);
         });
     }
+
+    // TODO: 14 January 2019 REMOVE FROM QUEUE WHEN UPLOAD FINISHES
 }

@@ -12,56 +12,76 @@ import java.util.HashMap;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPDataImageModel implements Parcelable {
-    @JsonProperty("fileID") private String fileID;
-    @JsonProperty("mediaType") private String mediaType;
-    @JsonProperty("width") private Long width;
-    @JsonProperty("height") private Long height;
-    @JsonProperty("caption") private String caption;
+    @Nullable @JsonProperty("fileID") private String fileID;
+    @Nullable @JsonProperty("mediaType") private String mediaType;
+    @Nullable @JsonProperty("size") private Long size;
+    @Nullable @JsonProperty("width") private Long width;
+    @Nullable @JsonProperty("height") private Long height;
+    @Nullable @JsonProperty("caption") private String caption;
     @Nullable @JsonProperty("fileUri") private Uri fileUri;
 
-    public HashMap<String, Object> toHashMap() {
+    public TAPDataImageModel(@Nullable Uri fileUri, @Nullable String caption) {
+        this.fileUri = fileUri;
+        this.caption = caption;
+    }
+
+    public HashMap<String, Object> removeUriAndConvertToHashMap() {
         HashMap<String, Object> dataImageMap = TAPUtils.getInstance().toHashMap(this);
         dataImageMap.remove("fileUri");
         return dataImageMap;
     }
 
+    @Nullable
     public String getFileID() {
         return fileID;
     }
 
-    public void setFileID(String fileID) {
+    public void setFileID(@Nullable String fileID) {
         this.fileID = fileID;
     }
 
+    @Nullable
     public String getMediaType() {
         return mediaType;
     }
 
-    public void setMediaType(String mediaType) {
+    public void setMediaType(@Nullable String mediaType) {
         this.mediaType = mediaType;
     }
 
+    @Nullable
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(@Nullable Long size) {
+        this.size = size;
+    }
+
+    @Nullable
     public Long getWidth() {
         return width;
     }
 
-    public void setWidth(Long width) {
+    public void setWidth(@Nullable Long width) {
         this.width = width;
     }
 
+    @Nullable
     public Long getHeight() {
         return height;
     }
 
-    public void setHeight(Long height) {
+    public void setHeight(@Nullable Long height) {
         this.height = height;
     }
 
+    @Nullable
     public String getCaption() {
         return caption;
     }
 
-    public void setCaption(String caption) {
+    public void setCaption(@Nullable String caption) {
         this.caption = caption;
     }
 
@@ -83,6 +103,7 @@ public class TAPDataImageModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.fileID);
         dest.writeString(this.mediaType);
+        dest.writeValue(this.size);
         dest.writeValue(this.width);
         dest.writeValue(this.height);
         dest.writeString(this.caption);
