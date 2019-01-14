@@ -2,11 +2,10 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
-import android.net.Uri;
 
 import com.orhanobut.hawk.Hawk;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -589,10 +588,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void uploadImage(Context context, Uri imageBitmap, String roomID, String caption,
+    public void uploadImage(File imageFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             TapDefaultDataView<TAPUploadFileResponse> view) {
-        TAPApiManager.getInstance().uploadImage(context, imageBitmap, roomID, caption, uploadCallback, new TAPDefaultSubscriber<>(view));
+        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, new TAPDefaultSubscriber<>(view));
     }
 
     // FIXME: 25 October 2018

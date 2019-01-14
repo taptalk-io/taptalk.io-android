@@ -452,28 +452,30 @@ public class TAPChatManager {
                     null,
                     getQuotedMessage());
         }
-        String localID = messageModel.getLocalID();
 
-        ProgressRequestBody.UploadCallbacks uploadCallback = new ProgressRequestBody.UploadCallbacks() {
-            @Override
-            public void onProgressUpdate(int percentage) {
-                uploadListener.onProgressLoading(localID, percentage);
-            }
-
-            @Override
-            public void onError() {
-
-            }
-
-            @Override
-            public void onFinish() {
-            }
-        };
 
         showImageMessageThumbnail(messageModel);
 
-        TAPDataManager.getInstance().uploadImage(context, imageUri, getActiveRoom().getRoomID(),
-                image.getImageCaption(), uploadCallback,
+        String localID = messageModel.getLocalID();
+
+        TAPFileManager.getInstance().uploadImage(
+                context,
+                messageModel,
+                new ProgressRequestBody.UploadCallbacks() {
+                    @Override
+                    public void onProgressUpdate(int percentage) {
+                        uploadListener.onProgressLoading(localID, percentage);
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                    }
+                },
                 new TapDefaultDataView<TAPUploadFileResponse>() {
                     @Override
                     public void onSuccess(TAPUploadFileResponse response) {
@@ -482,8 +484,8 @@ public class TAPChatManager {
                         uploadListener.onProgressFinish(localID);
                         // TODO: 10/01/19 send emit message to server
                     }
-                });
-
+                }
+        );
     }
 
     /**

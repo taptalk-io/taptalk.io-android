@@ -1,15 +1,8 @@
 package io.taptalk.TapTalk.API.Api;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
@@ -20,7 +13,6 @@ import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
@@ -256,29 +248,18 @@ public class TAPApiManager {
         execute(homingPigeon.getUserByUsername(request), subscriber);
     }
 
-    public void uploadImage(Context context,
-                            Uri imageBitmap, String roomID, String caption, ProgressRequestBody.UploadCallbacks uploadCallback,
+    public void uploadImage(File imageFile, String roomID, String caption, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
-        try {
-            Bitmap mImage = MediaStore.Images.Media.getBitmap(TapTalk.appContext.getContentResolver(), imageBitmap);
-            ContentResolver cR = context.getContentResolver();
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            String mimeType = cR.getType(imageBitmap);
-            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+        //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
+        ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
 
-            File fileImage = TAPUtils.getInstance().createTempFile(mimeTypeExtension, mImage);
-            //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
-            ProgressRequestBody reqFile = new ProgressRequestBody(fileImage, mimeType, uploadCallback);
-
-            RequestBody requestBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("roomID", roomID)
-                    .addFormDataPart("file", fileImage.getName(), reqFile)
-                    .addFormDataPart("caption", caption)
-                    .build();
-            execute(tapMultipart.uploadImage(requestBody), subscriber);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("roomID", roomID)
+                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("caption", caption)
+                .build();
+        execute(tapMultipart.uploadImage(requestBody), subscriber);
     }
 }
