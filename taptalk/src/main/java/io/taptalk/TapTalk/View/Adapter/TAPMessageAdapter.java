@@ -34,6 +34,7 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
@@ -58,16 +59,18 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
 
     private static final String TAG = TAPMessageAdapter.class.getSimpleName();
-    private TAPChatListener listener;
+    private TAPChatListener chatListener;
+    private TAPUploadListener uploadListener;
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
     private long defaultAnimationTime = 200L;
 
-    public TAPMessageAdapter(TAPChatListener listener) {
+    public TAPMessageAdapter(TAPChatListener chatListener, TAPUploadListener uploadListener) {
         myUserModel = TAPDataManager.getInstance().getActiveUser();
-        this.listener = listener;
+        this.chatListener = chatListener;
+        this.uploadListener = uploadListener;
     }
 
     @NonNull
@@ -195,7 +198,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
-            clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
@@ -321,10 +324,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }).into(rcivImageBody);
             }
 
-            clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> {
                 // TODO: 5 November 2018 VIEW IMAGE
             });
+            flProgress.setOnClickListener(v -> TAPDataManager.getInstance().cancelUploadImage(item.getLocalID(), uploadListener));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -375,7 +379,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (null == adapter) {
-                adapter = new TAPProductListAdapter(item, myUserModel, listener);
+                adapter = new TAPProductListAdapter(item, myUserModel, chatListener);
             }
 
             rvProductList.setAdapter(adapter);
@@ -408,7 +412,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             tvLogMessage.setText(item.getBody());
-            clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
         }
     }
 
@@ -553,7 +557,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvUsername.setText(item.getUser().getUsername());
                 //tvUsername.setVisibility(View.VISIBLE);
             }
-            listener.onMessageRead(item);
+            chatListener.onMessageRead(item);
         }
     }
 
@@ -707,12 +711,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void onReplyButtonClicked(TAPMessageModel item) {
-        listener.onReplyMessage(item);
+        chatListener.onReplyMessage(item);
     }
 
     private void resendMessage(TAPMessageModel item) {
         removeMessage(item);
-        listener.onRetrySendMessage(item);
+        chatListener.onRetrySendMessage(item);
     }
 
     private void animateSend(TAPMessageModel item, FrameLayout flBubble,
@@ -780,7 +784,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 .setDuration(defaultAnimationTime)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
-        new Handler().postDelayed(() -> listener.onBubbleExpanded(), 50L);
+        new Handler().postDelayed(() -> chatListener.onBubbleExpanded(), 50L);
     }
 
     private void animateFadeOutToTop(View view) {

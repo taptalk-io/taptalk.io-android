@@ -101,7 +101,7 @@ public class TAPFileManager {
             // TODO: 14 January 2019 UPDATE SIZE, WIDTH & HEIGHT IN MESSAGE MODEL
 
             // Upload file
-            TAPDataManager.getInstance().uploadImage(imageFile, messageModel.getRoom().getRoomID(), imageData.getCaption(), mimeType, uploadCallback, view);
+            TAPDataManager.getInstance().uploadImage(messageModel.getLocalID(), imageFile, messageModel.getRoom().getRoomID(), imageData.getCaption(), mimeType, uploadCallback, view);
         });
     }
 }

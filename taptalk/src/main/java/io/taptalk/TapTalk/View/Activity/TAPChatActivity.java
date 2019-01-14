@@ -55,7 +55,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
-import io.taptalk.TapTalk.Listener.TAPUploadProgressListener;
+import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -339,7 +339,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         //showUserOffline();
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(chatListener);
+        messageAdapter = new TAPMessageAdapter(chatListener, uploadListener);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);
@@ -1012,7 +1012,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    private TAPUploadProgressListener uploadListener = new TAPUploadProgressListener() {
+    private TAPUploadListener uploadListener = new TAPUploadListener() {
         @Override
         public void onProgressLoading(String localID, int progress) {
             if (vm.getMessagePointer().containsKey(localID)) {
@@ -1028,6 +1028,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // Update message instead of adding when message pointer already contains the same local ID
                 vm.updateMessagePointerProgress(localID, 100);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+            }
+        }
+
+        @Override
+        public void onUploadCanceled(String localID) {
+            if (vm.getMessagePointer().containsKey(localID)) {
+                int itemPos = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID));
+                vm.removeMessagePointer(localID);
+                messageAdapter.removeMessageAt(itemPos);
+                Log.e(TAG, "onUploadCanceled: " );
             }
         }
     };
