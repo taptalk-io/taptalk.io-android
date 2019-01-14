@@ -229,7 +229,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private FrameLayout flBubble, flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody;
-        private ImageView ivMessageStatus, ivReply, ivSending, ivProgress;
+        private ImageView ivMessageStatus, ivReply, ivSending, ivButtonProgress;
         private TextView tvMessageBody, tvMessageStatus;
         private ProgressBar pbProgress;
 
@@ -241,7 +241,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
             ivReply = itemView.findViewById(R.id.iv_reply);
-            ivProgress = itemView.findViewById(R.id.iv_progress);
+            ivButtonProgress = itemView.findViewById(R.id.iv_button_progress);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             pbProgress = itemView.findViewById(R.id.pb_progress);
@@ -273,7 +273,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //            }
 
             tvMessageStatus.setText(item.getMessageStatusText());
-
+            setImageViewButtonProgress(item);
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
 
             if (!item.getBody().isEmpty()) {
@@ -305,7 +305,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             flBubble.setOnClickListener(v -> {
                 // TODO: 5 November 2018 VIEW IMAGE
             });
-            flProgress.setOnClickListener(v -> TAPDataManager.getInstance().cancelUploadImage(item.getLocalID(), uploadListener));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -319,6 +318,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
                 pbProgress.setProgress(item.getProgress());
+            }
+        }
+
+        private void setImageViewButtonProgress(TAPMessageModel item) {
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
+                flProgress.setOnClickListener(v -> uploadListener.onUploadFailed(item.getLocalID()));
+            } else {
+                ivButtonProgress.setImageResource(R.drawable.tap_ic_cancel_white);
+                flProgress.setOnClickListener(v -> TAPDataManager.getInstance().cancelUploadImage(item.getLocalID(), uploadListener));
             }
         }
 

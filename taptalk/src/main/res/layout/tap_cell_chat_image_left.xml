@@ -58,6 +58,7 @@
                 android:id="@+id/fl_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_circle_66000000"
                 app:layout_constraintBottom_toBottomOf="@+id/rciv_image"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
@@ -68,7 +69,6 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/tap_bg_circle_66000000"
                     android:indeterminate="false"
                     android:max="100"
                     android:padding="4dp"
@@ -76,7 +76,7 @@
                     tools:progress="65" />
 
                 <ImageView
-                    android:id="@+id/iv_cancel"
+                    android:id="@+id/iv_button_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
