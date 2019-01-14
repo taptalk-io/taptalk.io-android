@@ -1,4 +1,4 @@
-package io.taptalk.TapTalk.API;
+package io.taptalk.TapTalk.API.Subscriber;
 
 import android.util.Log;
 
@@ -17,6 +17,7 @@ public class TAPDefaultSubscriber<T extends TAPBaseResponse<D>, V extends TapDef
     private static final String LOG_TAG = TAPDefaultSubscriber.class.getSimpleName();
 
     protected V view;
+    protected String localID;
 
     public TAPDefaultSubscriber() {
         super();
@@ -27,29 +28,48 @@ public class TAPDefaultSubscriber<T extends TAPBaseResponse<D>, V extends TapDef
         if (view == null) throw new IllegalArgumentException("ERR: null view");
     }
 
+    public TAPDefaultSubscriber(V view, String localID) {
+        this.view = view;
+        this.localID = localID;
+        if (view == null) throw new IllegalArgumentException("ERR: null view");
+    }
+
     @Override
     public void onStart() {
         super.onStart();
-        view.startLoading();
+        if (null != localID) view.startLoading(localID);
+        else view.startLoading();
     }
 
     @Override
     public void onCompleted() {
-        view.endLoading();
+        if (null != localID) view.endLoading(localID);
+        else view.endLoading();
     }
 
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
         Log.e("><><><", "onError: ",e );
-        view.onError(e.getMessage());
-        view.onError(e);
+        if (null != localID) {
+            view.onError(e.getMessage(), localID);
+            view.onError(e, localID);
+        } else {
+            view.onError(e.getMessage());
+            view.onError(e);
+        }
     }
 
     @Override
     public void onNext(T t) {
-        if (t.getError() != null && 200 != t.getStatus()) {
+        if (t.getError() != null && 200 != t.getStatus() && null != localID) {
+            view.onError(t.getError(), localID);
+        } else if (t.getError() != null && 200 != t.getStatus()) {
             view.onError(t.getError());
-        } else view.onSuccess(t.getData());
+        } else if (null != localID) {
+            view.onSuccess(t.getData(), localID);
+        } else {
+            view.onSuccess(t.getData());
+        }
     }
 }

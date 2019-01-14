@@ -50,9 +50,9 @@ public class TAPApiConnection {
 
     private TAPApiConnection() {
         this.objectMapper = createObjectMapper();
-        OkHttpClient httpHpClientAccessToken = buildHttpHpClient(NOT_USE_REFRESH_TOKEN);
-        OkHttpClient httpHpClientRefreshToken = buildHttpHpClient(USE_REFRESH_TOKEN);
-        OkHttpClient httpHpClientMultipartToken = buildHttpHpClient(MULTIPART_CONTENT_TYPE);
+        OkHttpClient httpHpClientAccessToken = buildHttpTapClient(NOT_USE_REFRESH_TOKEN);
+        OkHttpClient httpHpClientRefreshToken = buildHttpTapClient(USE_REFRESH_TOKEN);
+        OkHttpClient httpHpClientMultipartToken = buildHttpTapUploadClient(MULTIPART_CONTENT_TYPE);
 
         Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkApiService.BASE_URL);
         Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkSocketService.BASE_URL);
@@ -91,7 +91,7 @@ public class TAPApiConnection {
         return objectMapper;
     }
 
-    private OkHttpClient buildHttpHpClient(int headerAuth) {
+    private OkHttpClient buildHttpTapClient(int headerAuth) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
@@ -100,6 +100,21 @@ public class TAPApiConnection {
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .readTimeout(2, TimeUnit.MINUTES)
                 .writeTimeout(2, TimeUnit.MINUTES)
+                .retryOnConnectionFailure(true)
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
+                .build();
+    }
+
+    private OkHttpClient buildHttpTapUploadClient(int headerAuth) {
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+
+        return new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .connectTimeout(10, TimeUnit.MINUTES)
+                .readTimeout(10, TimeUnit.MINUTES)
+                .writeTimeout(10, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))

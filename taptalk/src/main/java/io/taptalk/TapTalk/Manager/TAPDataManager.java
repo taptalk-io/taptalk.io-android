@@ -4,21 +4,25 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
-import io.taptalk.TapTalk.API.TAPDefaultSubscriber;
+import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -368,29 +372,29 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getMessagesDesc(roomID, listener, lastTimestamp);
     }
 
-    public void getMessagesFromDatabaseAsc(String roomID, TAPDatabaseListener listener) {
+    public void getMessagesFromDatabaseAsc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getMessagesAsc(roomID, listener);
     }
 
-    public void searchAllMessagesFromDatabase(String keyword, TAPDatabaseListener listener) {
+    public void searchAllMessagesFromDatabase(String keyword, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().searchAllMessages(keyword, listener);
     }
 
-    public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+    public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
         }
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
-    public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+    public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
         }
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), isCheckUnreadFirst, listener);
     }
 
-    public void searchAllRoomsFromDatabase(String keyword, TAPDatabaseListener listener) {
+    public void searchAllRoomsFromDatabase(String keyword, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
         }
@@ -404,7 +408,7 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
     }
 
-    public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
         }
@@ -575,7 +579,7 @@ public class TAPDataManager {
     }
 
     // Search User
-    private TAPDefaultSubscriber searchUserSubscriber;
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TapDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> searchUserSubscriber;
 
     public void getUserByIdFromApi(String id, TapDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByID(id, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
@@ -589,10 +593,36 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void uploadImage(Context context, Uri imageBitmap, String roomID, String caption,
+    //Upload Image
+    private Map<String,
+            TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>,
+                    TAPUploadFileResponse>> uploadSubscriberMap = new HashMap<>();
+
+    public void uploadImage(Context context, String localID, Uri imageBitmap, String roomID, String caption,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             TapDefaultDataView<TAPUploadFileResponse> view) {
-        TAPApiManager.getInstance().uploadImage(context, imageBitmap, roomID, caption, uploadCallback, new TAPDefaultSubscriber<>(view));
+        TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>,
+                TAPUploadFileResponse> uploadImageSubscriber = new TAPDefaultSubscriber<>(view, localID);
+
+        if (null != uploadSubscriberMap)
+            uploadSubscriberMap.put(localID, uploadImageSubscriber);
+
+        TAPApiManager.getInstance().uploadImage(context, imageBitmap, roomID, caption, uploadCallback, uploadImageSubscriber);
+    }
+
+    public void cancelUploadImage(String localID, TAPUploadListener uploadListener) {
+        if (null != uploadSubscriberMap && uploadSubscriberMap.containsKey(localID) && uploadSubscriberMap.get(localID).isUnsubscribed()) {
+            uploadSubscriberMap.get(localID).unsubscribe();
+            uploadSubscriberMap.remove(localID);
+        }
+        uploadListener.onUploadCanceled(localID);
+        Log.e(TAG, "cancelUploadImage: ");
+    }
+
+    public void removeUploadSubscriber(String localID) {
+        if (null != uploadSubscriberMap && uploadSubscriberMap.containsKey(localID)) {
+            uploadSubscriberMap.remove(localID);
+        }
     }
 
     // FIXME: 25 October 2018

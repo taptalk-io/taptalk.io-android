@@ -30,7 +30,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
-import io.taptalk.TapTalk.Listener.TAPUploadProgressListener;
+import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
@@ -421,7 +421,7 @@ public class TAPChatManager {
      * Create image message model and call upload api
      */
     private void createImageMessageModelAndCallUploadAPI(Context context, TAPImagePreviewModel image,
-                                                         @NonNull TAPUploadProgressListener uploadListener) {
+                                                         @NonNull TAPUploadListener uploadListener) {
         Uri imageUri = image.getImageUri();
 
         // Build message model
@@ -454,14 +454,15 @@ public class TAPChatManager {
 
         showImageMessageThumbnail(messageModel);
 
-        TAPDataManager.getInstance().uploadImage(context, imageUri, getActiveRoom().getRoomID(),
+        TAPDataManager.getInstance().uploadImage(context, localID, imageUri, getActiveRoom().getRoomID(),
                 image.getImageCaption(), uploadCallback,
                 new TapDefaultDataView<TAPUploadFileResponse>() {
                     @Override
-                    public void onSuccess(TAPUploadFileResponse response) {
-                        super.onSuccess(response);
+                    public void onSuccess(TAPUploadFileResponse response, String localID) {
+                        super.onSuccess(response, localID);
                         Log.e(TAG, "onSuccess: ");
                         uploadListener.onProgressFinish(localID);
+                        TAPDataManager.getInstance().removeUploadSubscriber(localID);
                         // TODO: 10/01/19 send emit message to server
                     }
                 });
@@ -496,7 +497,7 @@ public class TAPChatManager {
 
     // Send multiple image messages
     public void showImageMessageThumbnail(Context context, ArrayList<TAPImagePreviewModel> images,
-                                          @NonNull TAPUploadProgressListener uploadListener) {
+                                          @NonNull TAPUploadListener uploadListener) {
         new Thread(() -> {
             //TAPImagePreviewModel tempModel = images.get(0);
             for (TAPImagePreviewModel image : images) {
