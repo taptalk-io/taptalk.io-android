@@ -267,7 +267,6 @@ public class TAPApiManager {
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
 
             File fileImage = TAPUtils.getInstance().createTempFile(mimeTypeExtension, mImage);
-            //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
             ProgressRequestBody reqFile = new ProgressRequestBody(fileImage, mimeType, uploadCallback);
 
             RequestBody requestBody = new MultipartBody.Builder()

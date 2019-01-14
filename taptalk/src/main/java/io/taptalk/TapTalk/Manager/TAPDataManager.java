@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -616,7 +615,6 @@ public class TAPDataManager {
             uploadSubscriberMap.remove(localID);
         }
         uploadListener.onUploadCanceled(localID);
-        Log.e(TAG, "cancelUploadImage: ");
     }
 
     public void removeUploadSubscriber(String localID) {
