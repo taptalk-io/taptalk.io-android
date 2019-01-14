@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -59,6 +58,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 
 public class TAPUtils {
 
+    private static final String TAG = TAPUtils.class.getSimpleName();
     private static TAPUtils instance;
     private ObjectMapper objectMapper;
 
@@ -102,6 +102,7 @@ public class TAPUtils {
         try {
             return objectMapper.convertValue(object, HashMap.class);
         } catch (Exception e) {
+            Log.e(TAG, "toHashMap: ", e);
             e.printStackTrace();
             return null;
         }

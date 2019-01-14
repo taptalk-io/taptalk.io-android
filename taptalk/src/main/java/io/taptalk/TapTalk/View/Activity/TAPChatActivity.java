@@ -223,7 +223,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
                         openImagePreviewPage(imageCameraUris);
 
-                        //TAPChatManager.getInstance().showImageMessageThumbnail(vm.getCameraImageUri());
+                        //TAPChatManager.getInstance().sendImageMessageThumbnailBeforeUpload(vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) {
@@ -247,7 +247,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().showImageMessageThumbnail(this, images, uploadListener);
+                            TAPChatManager.getInstance().sendImageMessageThumbnailBeforeUpload(this, images, uploadListener);
                         break;
                 }
         }
@@ -954,7 +954,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case TYPE_IMAGE:
                     // TODO: 7 January 2019 RESEND IMAGE MESSAGE
-//                    TAPChatManager.getInstance().showImageMessageThumbnail(message.getBody());
+//                    TAPChatManager.getInstance().sendImageMessageThumbnailBeforeUpload(message.getBody());
                     break;
             }
         }

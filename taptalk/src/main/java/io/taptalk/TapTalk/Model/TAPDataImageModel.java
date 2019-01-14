@@ -1,15 +1,10 @@
 package io.taptalk.TapTalk.Model;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.HashMap;
-
-import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPDataImageModel implements Parcelable {
     @Nullable @JsonProperty("fileID") private String fileID;
@@ -18,17 +13,14 @@ public class TAPDataImageModel implements Parcelable {
     @Nullable @JsonProperty("width") private Long width;
     @Nullable @JsonProperty("height") private Long height;
     @Nullable @JsonProperty("caption") private String caption;
-    @Nullable @JsonProperty("fileUri") private Uri fileUri;
+    @Nullable @JsonProperty("fileUri") private String fileUri;
 
-    public TAPDataImageModel(@Nullable Uri fileUri, @Nullable String caption) {
+    public TAPDataImageModel(@Nullable String fileUri, @Nullable String caption) {
         this.fileUri = fileUri;
         this.caption = caption;
     }
 
-    public HashMap<String, Object> removeUriAndConvertToHashMap() {
-        HashMap<String, Object> dataImageMap = TAPUtils.getInstance().toHashMap(this);
-        dataImageMap.remove("fileUri");
-        return dataImageMap;
+    public TAPDataImageModel() {
     }
 
     @Nullable
@@ -86,13 +78,14 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     @Nullable
-    public Uri getFileUri() {
+    public String getFileUri() {
         return fileUri;
     }
 
-    public void setFileUri(@Nullable Uri fileUri) {
+    public void setFileUri(@Nullable String fileUri) {
         this.fileUri = fileUri;
     }
+
 
     @Override
     public int describeContents() {
@@ -107,19 +100,17 @@ public class TAPDataImageModel implements Parcelable {
         dest.writeValue(this.width);
         dest.writeValue(this.height);
         dest.writeString(this.caption);
-        dest.writeParcelable(this.fileUri, flags);
-    }
-
-    public TAPDataImageModel() {
+        dest.writeString(this.fileUri);
     }
 
     protected TAPDataImageModel(Parcel in) {
         this.fileID = in.readString();
         this.mediaType = in.readString();
+        this.size = (Long) in.readValue(Long.class.getClassLoader());
         this.width = (Long) in.readValue(Long.class.getClassLoader());
         this.height = (Long) in.readValue(Long.class.getClassLoader());
         this.caption = in.readString();
-        this.fileUri = in.readParcelable(Uri.class.getClassLoader());
+        this.fileUri = in.readString();
     }
 
     public static final Creator<TAPDataImageModel> CREATOR = new Creator<TAPDataImageModel>() {

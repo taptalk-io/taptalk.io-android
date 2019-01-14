@@ -95,49 +95,6 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", message, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null);
     }
 
-//    public static TAPMessageModel BuilderEncrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
-//        return new TAPMessageModel(
-//                messageModel.getMessageID(),
-//                messageModel.getLocalID(),
-//                messageModel.getFilterID(),
-//                TAPEncryptorManager.getInstance().encrypt(messageModel.getBody(), messageModel.getLocalID()),
-//                messageModel.getRoom(),
-//                messageModel.getType(),
-//                messageModel.getCreated(),
-//                messageModel.getUser(),
-//                messageModel.getRecipientID(),
-//                messageModel.getData(),
-//                messageModel.getIsDeleted(),
-//                messageModel.getSending(),
-//                messageModel.getFailedSend(),
-//                messageModel.getDelivered(),
-//                messageModel.getIsRead(),
-//                messageModel.getHidden(),
-//                messageModel.getUpdated(),
-//                messageModel.getDeleted());
-//    }
-//
-//    public static TAPMessageModel BuilderDecrypt(TAPMessageModel messageModel) throws GeneralSecurityException {
-//        return new TAPMessageModel(
-//                messageModel.getMessageID(),
-//                messageModel.getLocalID(),
-//                messageModel.getFilterID(),
-//                TAPEncryptorManager.getInstance().decrypt(messageModel.getBody(), messageModel.getLocalID()),
-//                messageModel.getRoom(),
-//                messageModel.getType(),
-//                messageModel.getCreated(),
-//                messageModel.getUser(),
-//                messageModel.getRecipientID(),
-//                messageModel.getData(),
-//                messageModel.getIsDeleted(),
-//                messageModel.getSending(),
-//                messageModel.getFailedSend(),
-//                messageModel.getDelivered(),
-//                messageModel.getIsRead(),
-//                messageModel.getHidden(),
-//                messageModel.getUpdated(),
-//                messageModel.getDeleted());
-//    }
 
     private void updateMessageStatusText() {
         if (created > 0L) {

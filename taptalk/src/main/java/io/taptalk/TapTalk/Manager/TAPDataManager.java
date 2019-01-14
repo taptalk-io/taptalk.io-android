@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
@@ -592,35 +591,23 @@ public class TAPDataManager {
     }
 
     //Upload Image
-    private Map<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>,
-            TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>
-            uploadSubscriberMap = new HashMap<>();
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse> uploadSubscriber;
 
     public void uploadImage(String localID, File imageFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             TapDefaultDataView<TAPUploadFileResponse> view) {
-        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, new TAPDefaultSubscriber<>(view));
-        TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>,
-                TAPUploadFileResponse> uploadImageSubscriber = new TAPDefaultSubscriber<>(view, localID);
-
-        if (null != uploadSubscriberMap) {
-            uploadSubscriberMap.put(localID, uploadImageSubscriber);
-        }
-
-        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, uploadImageSubscriber);
+        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, uploadSubscriber = new TAPDefaultSubscriber<>(view, localID));
     }
 
     public void cancelUploadImage(String localID, TAPUploadListener uploadListener) {
-        if (null != uploadSubscriberMap && uploadSubscriberMap.containsKey(localID) && uploadSubscriberMap.get(localID).isUnsubscribed()) {
-            uploadSubscriberMap.get(localID).unsubscribe();
-            uploadSubscriberMap.remove(localID);
+        if (null != uploadSubscriber) {
+            uploadListener.onUploadCanceled(localID);
         }
-        uploadListener.onUploadCanceled(localID);
     }
 
-    public void removeUploadSubscriber(String localID) {
-        if (null != uploadSubscriberMap && uploadSubscriberMap.containsKey(localID)) {
-            uploadSubscriberMap.remove(localID);
+    public void removeUploadSubscriber() {
+        if (null != uploadSubscriber) {
+            uploadSubscriber = null;
         }
     }
 
