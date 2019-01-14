@@ -88,12 +88,9 @@ public class TAPChatViewModel extends AndroidViewModel {
         // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
         TAPMessageModel message = getMessagePointer().get(localID);
         if (null != message && 100 > progress) {
-            Log.e(TAG, "updateMessagePointerProgress: "+progress);
             message.setProgress(progress);
-            message.setFirstLoadFinished(false);
         } else if (null != message) {
             message.setProgress(progress);
-            message.setFirstLoadFinished(true);
         }
     }
 

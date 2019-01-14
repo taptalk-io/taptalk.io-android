@@ -518,7 +518,7 @@ public class TAPChatManager {
         new Thread(() -> {
             //TAPImagePreviewModel tempModel = images.get(0);
             for (TAPImagePreviewModel image : images) {
-                createImageMessageModelAndCallUploadAPI(context, image, uploadListener);
+                new Thread(() -> createImageMessageModelAndCallUploadAPI(context, image, uploadListener)).start();
             }
         }).start();
     }

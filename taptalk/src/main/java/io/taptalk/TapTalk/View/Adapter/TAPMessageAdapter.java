@@ -296,10 +296,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
             }
 
-            if (item.isFirstLoadFinished()) {
-                flProgress.setVisibility(View.GONE);
-            }
-
             if (!item.getBody().isEmpty()) {
                 rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
                 int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
@@ -311,14 +307,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        if (item.isFirstLoadFinished()) {
-                            // Image has been loaded once
-                            return false;
-                        }
 
-                        // Image is loading for the first time
-                        item.setFirstLoadFinished(true);
-                        listener.onLayoutLoaded(item);
                         // TODO: 31 October 2018 TESTING DUMMY IMAGE PROGRESS BAR
                         if (isMessageFromMySelf(item)) {
                             flBubble.setForeground(bubbleOverlayRight);
@@ -326,16 +315,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             flBubble.setForeground(bubbleOverlayLeft);
                         }
 
-                        if (100 == item.getProgress()) {
-                            Log.e(TAG, "onResourceReady2: "+item.getProgress() );
-                            flProgress.setVisibility(View.GONE);
-                            flBubble.setForeground(null);
-                        } else if (100 > item.getProgress()) {
-                            Log.e(TAG, "onResourceReady: "+item.getProgress() );
-                            flProgress.setVisibility(View.VISIBLE);
-                            pbProgress.setMax(100);
-                            pbProgress.setProgress(item.getProgress());
-                        }
+                        setProgress(item);
                         return false;
                     }
                 }).into(rcivImageBody);
@@ -346,6 +326,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // TODO: 5 November 2018 VIEW IMAGE
             });
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+        }
+
+        private void setProgress(TAPMessageModel item) {
+            if (100 == item.getProgress()) {
+                Log.e(TAG, "onResourceReady2: "+item.getProgress() );
+                flProgress.setVisibility(View.GONE);
+                flBubble.setForeground(null);
+            } else if (100 > item.getProgress()) {
+                Log.e(TAG, "onResourceReady: "+item.getProgress() );
+                flProgress.setVisibility(View.VISIBLE);
+                pbProgress.setMax(100);
+                pbProgress.setProgress(item.getProgress());
+            }
         }
 
         @Override

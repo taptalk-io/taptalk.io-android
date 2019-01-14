@@ -42,7 +42,7 @@ public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("updated") private Long updated;
     @Nullable @JsonProperty("deleted") private Long deleted;
     @JsonIgnore private String messageStatusText;
-    @JsonIgnore private boolean isExpanded, isFirstLoadFinished, isNeedAnimateSend, isAnimating;
+    @JsonIgnore private boolean isExpanded, isNeedAnimateSend, isAnimating;
     @JsonIgnore private int imageWidth, imageHeight, progress = 0;
 
     public TAPMessageModel(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
@@ -344,14 +344,6 @@ public class TAPMessageModel implements Parcelable {
         isExpanded = expanded;
     }
 
-    public boolean isFirstLoadFinished() {
-        return isFirstLoadFinished;
-    }
-
-    public void setFirstLoadFinished(boolean firstLoadFinished) {
-        isFirstLoadFinished = firstLoadFinished;
-    }
-
     public boolean isNeedAnimateSend() {
         return isNeedAnimateSend;
     }
@@ -480,7 +472,6 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.deleted);
         dest.writeString(this.messageStatusText);
         dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.isFirstLoadFinished ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isNeedAnimateSend ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isAnimating ? (byte) 1 : (byte) 0);
         dest.writeInt(this.imageWidth);
@@ -512,7 +503,6 @@ public class TAPMessageModel implements Parcelable {
         this.deleted = (Long) in.readValue(Long.class.getClassLoader());
         this.messageStatusText = in.readString();
         this.isExpanded = in.readByte() != 0;
-        this.isFirstLoadFinished = in.readByte() != 0;
         this.isNeedAnimateSend = in.readByte() != 0;
         this.isAnimating = in.readByte() != 0;
         this.imageWidth = in.readInt();
