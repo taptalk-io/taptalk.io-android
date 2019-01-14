@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
@@ -195,7 +196,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
-            showOrHideQuote(item.getQuote(), itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
@@ -225,25 +226,32 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class ImageVH extends TAPBaseChatViewHolder {
 
-        private ConstraintLayout clContainer;
+        private ConstraintLayout clContainer, clQuote;
         private FrameLayout flBubble, flProgress;
         private CircleImageView civAvatar;
-        private TAPRoundedCornerImageView rcivImageBody;
+        private TAPRoundedCornerImageView rcivImageBody, rcivQuoteImage;
         private ImageView ivMessageStatus, ivReply, ivSending, ivButtonProgress;
-        private TextView tvMessageBody, tvMessageStatus;
+        private TextView tvMessageBody, tvMessageStatus, tvQuoteTitle, tvQuoteContent;
+        private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
+            clQuote = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             ivReply = itemView.findViewById(R.id.iv_reply);
             ivButtonProgress = itemView.findViewById(R.id.iv_button_progress);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
@@ -275,6 +283,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setText(item.getMessageStatusText());
             setImageViewButtonProgress(item);
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            // Fix layout when quote exists
+            if (null != item.getQuote()) {
+                rcivImageBody.getLayoutParams().width = 0;
+                rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
+                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivImageBody.setTopLeftRadius(0);
+                rcivImageBody.setTopRightRadius(0);
+            } else {
+                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+            }
 
             if (!item.getBody().isEmpty()) {
                 rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
@@ -630,22 +653,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void showOrHideQuote(@Nullable TAPQuoteModel quote, View itemView,
+    private void showOrHideQuote(TAPMessageModel item, View itemView,
                                  ConstraintLayout clQuote, TextView tvQuoteTitle,
                                  TextView tvQuoteContent, TAPRoundedCornerImageView rcivQuoteImage,
                                  View vQuoteBackground, View vQuoteDecoration) {
+        TAPQuoteModel quote = item.getQuote();
         if (null != quote) {
             // Show quote
             clQuote.setVisibility(View.VISIBLE);
             vQuoteBackground.setVisibility(View.VISIBLE);
             tvQuoteTitle.setText(quote.getTitle());
             tvQuoteContent.setText(quote.getContent());
-            String quoteImageURL = quote.getImageURLString();
+            String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();
             if (!quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 Glide.with(itemView.getContext()).load(quoteImageURL).into(rcivQuoteImage);
-                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
@@ -653,14 +676,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if (!quoteFileID.isEmpty()) {
                 // Get quote image from file ID
                 // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
-                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else {
                 // Show no image
-                clQuote.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
                 vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);

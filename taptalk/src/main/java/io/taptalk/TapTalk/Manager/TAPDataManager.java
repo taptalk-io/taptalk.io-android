@@ -2,11 +2,10 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
-import android.net.Uri;
 
 import com.orhanobut.hawk.Hawk;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -593,20 +592,22 @@ public class TAPDataManager {
     }
 
     //Upload Image
-    private Map<String,
-            TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>,
-                    TAPUploadFileResponse>> uploadSubscriberMap = new HashMap<>();
+    private Map<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>,
+            TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>
+            uploadSubscriberMap = new HashMap<>();
 
-    public void uploadImage(Context context, String localID, Uri imageBitmap, String roomID, String caption,
+    public void uploadImage(String localID, File imageFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, new TAPDefaultSubscriber<>(view));
         TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>,
                 TAPUploadFileResponse> uploadImageSubscriber = new TAPDefaultSubscriber<>(view, localID);
 
-        if (null != uploadSubscriberMap)
+        if (null != uploadSubscriberMap) {
             uploadSubscriberMap.put(localID, uploadImageSubscriber);
+        }
 
-        TAPApiManager.getInstance().uploadImage(context, imageBitmap, roomID, caption, uploadCallback, uploadImageSubscriber);
+        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, uploadImageSubscriber);
     }
 
     public void cancelUploadImage(String localID, TAPUploadListener uploadListener) {

@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
@@ -62,7 +64,7 @@ public class TAPChatManager {
 
     private final String TAG = TAPChatManager.class.getSimpleName();
     private static TAPChatManager instance;
-    private Map<String, TAPMessageModel> pendingMessages, waitingResponses, incomingMessages;
+    private Map<String, TAPMessageModel> pendingMessages, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, String> messageDrafts;
     private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
@@ -119,7 +121,7 @@ public class TAPChatManager {
                 case kSocketNewMessage:
                 case kSocketUpdateMessage:
                 case kSocketDeleteMessage:
-                    Log.e(TAG, "onReceiveNewEmit: " + emitData);
+                    Log.d(TAG, "onReceiveNewEmit: " + emitData);
                     receiveMessageFromSocket(TAPUtils.getInstance().fromJSON(
                             new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {
                             },
@@ -282,7 +284,6 @@ public class TAPChatManager {
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated()),
                 entity.getRecipientID(),
-                // TODO: 9 January 2019 CHECK NULL
                 null == entity.getData() ? null : TAPUtils.getInstance().toHashMap(entity.getData()),
                 null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {
                 }, entity.getQuote()),
@@ -398,23 +399,27 @@ public class TAPChatManager {
     }
 
     private TAPMessageModel buildTextMessage(String message, TAPRoomModel room, TAPUserModel user) {
-
-        // TODO: 8 January 2019 DUMMY DATA FOR TESTING
-        HashMap<String, Object> dummyDataMap = new HashMap<>();
-        dummyDataMap.put("test", "hello");
-        dummyDataMap.put("test1", "world");
-        dummyDataMap.put("length", message.length());
-        dummyDataMap.put("user", user.getName());
-
         // Create new TAPMessageModel based on text
-        return TAPMessageModel.Builder(
-                message,
-                room,
-                TYPE_TEXT,
-                System.currentTimeMillis(),
-                user, getOtherUserIdFromActiveRoom(room.getRoomID()),
-                dummyDataMap
-        );
+        if (null == quotedMessages.get(room.getRoomID())) {
+            return TAPMessageModel.Builder(
+                    message,
+                    room,
+                    TYPE_TEXT,
+                    System.currentTimeMillis(),
+                    user, getOtherUserIdFromActiveRoom(room.getRoomID()),
+                    null
+            );
+        } else {
+            return TAPMessageModel.BuilderWithQuotedMessage(
+                    message,
+                    room,
+                    TYPE_TEXT,
+                    System.currentTimeMillis(),
+                    user, getOtherUserIdFromActiveRoom(room.getRoomID()),
+                    null,
+                    quotedMessages.get(room.getRoomID())
+            );
+        }
     }
 
     /**
@@ -425,37 +430,54 @@ public class TAPChatManager {
         Uri imageUri = image.getImageUri();
 
         // Build message model
-        TAPMessageModel messageModel = TAPMessageModel.Builder(
-                imageUri.toString(),
-                activeRoom,
-                TYPE_IMAGE,
-                System.currentTimeMillis(),
-                activeUser,
-                getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                // TODO: 8 January 2019 UPDATE DATA
-                null);
-        String localID = messageModel.getLocalID();
-
-        ProgressRequestBody.UploadCallbacks uploadCallback = new ProgressRequestBody.UploadCallbacks() {
-            @Override
-            public void onProgressUpdate(int percentage) {
-                uploadListener.onProgressLoading(localID, percentage);
-            }
-
-            @Override
-            public void onError() {
-
-            }
-
-            @Override
-            public void onFinish() {
-            }
-        };
+        TAPMessageModel messageModel;
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    // TODO: 14 January 2019 GET CAPTION
+                    imageUri.toString(),
+                    activeRoom,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
+                    // TODO: 14 January 2019 GET CAPTION
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, imageUri.toString())));
+        } else {
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    // TODO: 14 January 2019 GET CAPTION
+                    imageUri.toString(),
+                    activeRoom,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
+                    // TODO: 14 January 2019 GET CAPTION
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, imageUri.toString())),
+                    getQuotedMessage());
+        }
 
         showImageMessageThumbnail(messageModel);
 
-        TAPDataManager.getInstance().uploadImage(context, localID, imageUri, getActiveRoom().getRoomID(),
-                image.getImageCaption(), uploadCallback,
+        String localID = messageModel.getLocalID();
+
+        TAPFileManager.getInstance().uploadImage(
+                context,
+                messageModel,
+                new ProgressRequestBody.UploadCallbacks() {
+                    @Override
+                    public void onProgressUpdate(int percentage) {
+                        uploadListener.onProgressLoading(localID, percentage);
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                    }
+                },
                 new TapDefaultDataView<TAPUploadFileResponse>() {
                     @Override
                     public void onSuccess(TAPUploadFileResponse response, String localID) {
@@ -465,8 +487,8 @@ public class TAPChatManager {
                         TAPDataManager.getInstance().removeUploadSubscriber(localID);
                         // TODO: 10/01/19 send emit message to server
                     }
-                });
-
+                }
+        );
     }
 
     /**
@@ -531,7 +553,7 @@ public class TAPChatManager {
     }
 
     /**
-     * save text to draft
+     * Message draft
      */
     public void saveMessageToDraft(String message) {
         messageDrafts.put(getActiveRoom().getRoomID(), message);
@@ -543,6 +565,28 @@ public class TAPChatManager {
 
     public void removeDraft() {
         messageDrafts.remove(getActiveRoom().getRoomID());
+    }
+
+    /**
+     * Quoted message
+     */
+    private Map<String, TAPMessageModel> getQuotedMessages() {
+        return null == quotedMessages ? quotedMessages = new LinkedHashMap<>() : quotedMessages;
+    }
+
+    public void setQuotedMessage(@Nullable TAPMessageModel message) {
+        if (null == activeRoom) {
+            return;
+        }
+        if (null == message) {
+            getQuotedMessages().remove(activeRoom.getRoomID());
+        } else {
+            getQuotedMessages().put(activeRoom.getRoomID(), message);
+        }
+    }
+
+    public TAPMessageModel getQuotedMessage() {
+        return getQuotedMessages().get(activeRoom.getRoomID());
     }
 
     /**
@@ -600,6 +644,7 @@ public class TAPChatManager {
         TAPEmitModel<HashMap<String, Object>> TAPEmitModel;
         TAPEmitModel = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
         TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
+        Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(TAPEmitModel));
     }
 
     /**

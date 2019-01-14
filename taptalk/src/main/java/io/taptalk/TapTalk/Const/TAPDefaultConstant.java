@@ -149,6 +149,7 @@ public class TAPDefaultConstant {
     public static final int NUM_OF_ITEM = 50;
     public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int DEFAULT_ANIMATION_TIME = 200;
+    public static final int IMAGE_MAX_DIMENSION = 2000;
 
     public static final long TYPING_EMIT_DELAY = 10000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 15000L;

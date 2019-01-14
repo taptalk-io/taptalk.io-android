@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -69,8 +70,6 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
-import io.taptalk.TapTalk.Model.TAPQuoteModel;
-import io.taptalk.TapTalk.Model.TAPReplyToModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
@@ -112,7 +111,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
-    private ConstraintLayout clContainer, clEmptyChat, clReply, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus;
+    private ConstraintLayout clContainer, clEmptyChat, clQuote, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach,
             ivButtonSend, ivToBottom, ivRoomTypingIndicator;
@@ -178,6 +177,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onResume();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
+        showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage());
         addNetworkListener();
         callApiGetUserByUserID();
         if (vm.isInitialAPICallFinished()) {
@@ -286,7 +286,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
-        clReply = (ConstraintLayout) findViewById(R.id.cl_quote);
+        clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
@@ -591,30 +591,35 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    private void showQuoteLayout(TAPMessageModel message) {
-        vm.setQuotedMessage(message);
-        clReply.setVisibility(View.VISIBLE);
-        tvQuoteTitle.setText(message.getUser().getName());
-        tvQuoteContent.setText(message.getBody());
-        // TODO: 9 January 2019 HANDLE OTHER TYPES
-        if (message.getType() == TYPE_IMAGE) {
-            // TODO: 9 January 2019 LOAD IMAGE
-//            Glide.with(this).load(message.getThumbnail()).into(rcivQuoteImage);
-            vQuoteDecoration.setVisibility(View.GONE);
-            rcivQuoteImage.setVisibility(View.VISIBLE);
-            tvQuoteContent.setMaxLines(1);
-        } else {
-            vQuoteDecoration.setVisibility(View.VISIBLE);
-            rcivQuoteImage.setVisibility(View.GONE);
-            tvQuoteContent.setMaxLines(2);
+    private void showQuoteLayout(@Nullable TAPMessageModel message) {
+        if (null == message) {
+            return;
         }
-        etChat.requestFocus();
-        TAPUtils.getInstance().showKeyboard(this, etChat);
+        vm.setQuotedMessage(message);
+        runOnUiThread(() -> {
+            clQuote.setVisibility(View.VISIBLE);
+            tvQuoteTitle.setText(message.getUser().getName());
+            tvQuoteContent.setText(message.getBody());
+            // TODO: 9 January 2019 HANDLE OTHER TYPES
+            if (message.getType() == TYPE_IMAGE) {
+                // TODO: 9 January 2019 LOAD IMAGE
+//            Glide.with(this).load(message.getThumbnail()).into(rcivQuoteImage);
+                vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteContent.setMaxLines(1);
+            } else {
+                vQuoteDecoration.setVisibility(View.VISIBLE);
+                rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteContent.setMaxLines(2);
+            }
+            etChat.requestFocus();
+            TAPUtils.getInstance().showKeyboard(this, etChat);
+        });
     }
 
     private void hideQuoteLayout() {
         vm.setQuotedMessage(null);
-        clReply.setVisibility(View.GONE);
+        runOnUiThread(() -> clQuote.setVisibility(View.GONE));
     }
 
     private void scrollToBottom() {
@@ -923,16 +928,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onSendTextMessage(TAPMessageModel message) {
-            if (null != vm.getQuotedMessage()) {
-                // TODO: 9 January 2019 HANDLE NON-TEXT MESSAGES
-                message.setQuote(new TAPQuoteModel(vm.getQuotedMessage().getUser().getName(), vm.getQuotedMessage().getBody(), "", "", ""));
-                message.setReplyTo(new TAPReplyToModel(vm.getQuotedMessage().getMessageID(), vm.getQuotedMessage().getLocalID(), vm.getQuotedMessage().getType()));
-                vm.setQuotedMessage(null);
-            }
             addNewMessage(message);
-            if (clReply.getVisibility() == View.VISIBLE) {
-                clReply.setVisibility(View.GONE);
-            }
+            hideQuoteLayout();
         }
 
         @Override

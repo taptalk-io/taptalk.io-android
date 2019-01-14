@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -521,6 +520,9 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void onSuccess(TAPContactResponse response) {
             // Insert contacts to database
+            if (null == response.getContacts() || response.getContacts().isEmpty()) {
+                return;
+            }
             List<TAPUserModel> users = new ArrayList<>();
             for (TAPContactModel contact : response.getContacts()) {
                 users.add(contact.getUser().setUserAsContact());

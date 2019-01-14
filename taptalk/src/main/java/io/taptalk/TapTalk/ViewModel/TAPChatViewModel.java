@@ -226,6 +226,7 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setQuotedMessage(TAPMessageModel quotedMessage) {
         this.quotedMessage = quotedMessage;
+        TAPChatManager.getInstance().setQuotedMessage(quotedMessage);
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {

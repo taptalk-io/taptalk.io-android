@@ -53,6 +53,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_quote"
+                android:layout_width="234dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_0dp_0dp"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/v_quote_background"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/tap_bg_mediumpurple_rounded_4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <include layout="@layout/tap_layout_quote_bubble_right" />
+
+            </android.support.constraint.ConstraintLayout>
+
             <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
                 android:id="@+id/rciv_image"
                 android:layout_width="wrap_content"
@@ -62,6 +84,9 @@
                 android:maxHeight="300dp"
                 app:cornerRadius="9dp"
                 app:dimensionRatio="0.78"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 app:minHeight="100dp"
                 app:minWidth="78dp"
                 app:topRightRadius="2dp"
