@@ -186,15 +186,21 @@ public class TAPFileManager {
         Bitmap bitmap;
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+            int originalWidth = bitmap.getWidth();
+            int originalHeight = bitmap.getHeight();
+            if (originalWidth <= IMAGE_MAX_DIMENSION && originalHeight <= IMAGE_MAX_DIMENSION) {
+                // Image is smaller than max dimensions
+                return bitmap;
+            }
+            // Resize image
             float scaleRatio = Math.min(
-                    (float) IMAGE_MAX_DIMENSION / bitmap.getWidth(),
-                    (float) IMAGE_MAX_DIMENSION / bitmap.getHeight());
+                    (float) IMAGE_MAX_DIMENSION / originalWidth,
+                    (float) IMAGE_MAX_DIMENSION / originalHeight);
             bitmap = Bitmap.createScaledBitmap(
                     bitmap,
-                    Math.round(scaleRatio * bitmap.getWidth()),
-                    Math.round(scaleRatio * bitmap.getHeight()),
+                    Math.round(scaleRatio * originalWidth),
+                    Math.round(scaleRatio * originalHeight),
                     false);
-
             return bitmap;
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -293,6 +294,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (null != item.getData()) {
+                Log.e(TAG, "message data: " + TAPUtils.getInstance().toJsonString(item.getData()));
                 int widthDimension = (int) item.getData().get("width");
                 int heightDimension = (int) item.getData().get("height");
                 String imageUri = (String) item.getData().get("fileUri");
