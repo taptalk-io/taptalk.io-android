@@ -462,7 +462,7 @@ public class TAPChatManager {
 
         TAPMessageModel messageModel = createImageMessageModel(image);
         // Build message model
-        sendImageMessageThumbnailBeforeUpload(messageModel);
+        showDummyImageMessage(messageModel);
 
         TAPFileManager.getInstance().addQueueUploadImage(context, messageModel, uploadListener);
     }
@@ -470,7 +470,7 @@ public class TAPChatManager {
     /**
      * Send image messages
      */
-    private void sendImageMessageThumbnailBeforeUpload(TAPMessageModel imageMessage) {
+    private void showDummyImageMessage(TAPMessageModel imageMessage) {
         Uri imageUri = Uri.parse(imageMessage.getBody());
 
         // Get image width and height
@@ -494,8 +494,8 @@ public class TAPChatManager {
     }
 
     // Send multiple image messages
-    public void sendImageMessageThumbnailBeforeUpload(Context context, ArrayList<TAPImagePreviewModel> images,
-                                                      @NonNull TAPUploadListener uploadListener) {
+    public void showDummyImageMessage(Context context, ArrayList<TAPImagePreviewModel> images,
+                                      @NonNull TAPUploadListener uploadListener) {
         new Thread(() -> {
             for (TAPImagePreviewModel image : images) {
                 createImageMessageModelAndAddToQueueUpload(context, image, uploadListener);

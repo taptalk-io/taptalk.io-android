@@ -224,7 +224,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
                         openImagePreviewPage(imageCameraUris);
 
-                        //TAPChatManager.getInstance().sendImageMessageThumbnailBeforeUpload(vm.getCameraImageUri());
+                        //TAPChatManager.getInstance().showDummyImageMessage(vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) {
@@ -248,7 +248,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().sendImageMessageThumbnailBeforeUpload(this, images, uploadListener);
+                            TAPChatManager.getInstance().showDummyImageMessage(this, images, uploadListener);
                         break;
                 }
         }
@@ -991,7 +991,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case TYPE_IMAGE:
                     // TODO: 7 January 2019 RESEND IMAGE MESSAGE
-//                    TAPChatManager.getInstance().sendImageMessageThumbnailBeforeUpload(message.getBody());
+//                    TAPChatManager.getInstance().showDummyImageMessage(message.getBody());
                     break;
             }
         }
@@ -1074,7 +1074,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
                 int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
 
-                TAPFileManager.getInstance().cancelledUpload(TAPChatActivity.this,
+                TAPFileManager.getInstance().cancelUpload(TAPChatActivity.this,
                         cancelledMessageModel, this);
 
                 vm.removeMessagePointer(localID);

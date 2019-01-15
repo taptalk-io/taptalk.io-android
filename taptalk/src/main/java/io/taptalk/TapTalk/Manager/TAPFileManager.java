@@ -21,6 +21,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
@@ -92,6 +93,11 @@ public class TAPFileManager {
                 File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
 
                 // Update message data
+                imageData.setHeight(bitmap.getHeight());
+                imageData.setWidth(bitmap.getWidth());
+                imageData.setSize(imageFile.length());
+                imageData.setMediaType(mimeType);
+                messageModel.setData(imageData.toHashMapWithoutFileUri());
 
                 callUploadAPI(context, messageModel, imageFile, mimeType, imageData, uploadListener);
             }
@@ -129,8 +135,18 @@ public class TAPFileManager {
                 TAPDataManager.getInstance().removeUploadSubscriber();
 
                 //manggil restart buat queue selanjutnya
-                restartUploadSequence(context, uploadListener);
+                uploadNextSequence(context, uploadListener);
                 // TODO: 10/01/19 send emit message to server
+            }
+
+            @Override
+            public void onError(TAPErrorModel error, String localID) {
+                uploadListener.onUploadFailed(localID);
+            }
+
+            @Override
+            public void onError(String errorMessage, String localID) {
+                uploadListener.onUploadFailed(localID);
             }
         };
 
@@ -164,8 +180,8 @@ public class TAPFileManager {
     /**
      * Check upload queue and restart upload sequence
      */
-    public void restartUploadSequence(Context context,
-                                      TAPUploadListener uploadListener) {
+    public void uploadNextSequence(Context context,
+                                   TAPUploadListener uploadListener) {
         uploadQueue.remove(0);
         //ini ngecek kalau kosong ga perlu jalanin lagi
         if (!uploadQueue.isEmpty()) {
@@ -176,12 +192,12 @@ public class TAPFileManager {
     /**
      * @param cancelledMessageModel
      */
-    public void cancelledUpload(Context context, TAPMessageModel cancelledMessageModel,
-                                TAPUploadListener uploadListener) {
+    public void cancelUpload(Context context, TAPMessageModel cancelledMessageModel,
+                             TAPUploadListener uploadListener) {
         int position = TAPUtils.getInstance().searchMessagePositionByLocalID(uploadQueue, cancelledMessageModel.getLocalID());
 
         if (-1 != position && 0 == position && !uploadQueue.isEmpty()) {
-            restartUploadSequence(context, uploadListener);
+            uploadNextSequence(context, uploadListener);
         } else if (-1 != position && !uploadQueue.isEmpty()) {
             uploadQueue.remove(position);
         }

@@ -6,12 +6,16 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
 public class TAPDataImageModel implements Parcelable {
     @Nullable @JsonProperty("fileID") private String fileID;
     @Nullable @JsonProperty("mediaType") private String mediaType;
     @Nullable @JsonProperty("size") private Long size;
-    @Nullable @JsonProperty("width") private Long width;
-    @Nullable @JsonProperty("height") private Long height;
+    @Nullable @JsonProperty("width") private Integer width;
+    @Nullable @JsonProperty("height") private Integer height;
     @Nullable @JsonProperty("caption") private String caption;
     @Nullable @JsonProperty("fileUri") private String fileUri;
 
@@ -21,6 +25,12 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     public TAPDataImageModel() {
+    }
+
+    public HashMap<String, Object> toHashMapWithoutFileUri() {
+        HashMap<String, Object> dataMap = TAPUtils.getInstance().toHashMap(this);
+        dataMap.remove("fileUri");
+        return dataMap;
     }
 
     @Nullable
@@ -51,20 +61,20 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     @Nullable
-    public Long getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
-    public void setWidth(@Nullable Long width) {
+    public void setWidth(@Nullable Integer width) {
         this.width = width;
     }
 
     @Nullable
-    public Long getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(@Nullable Long height) {
+    public void setHeight(@Nullable Integer height) {
         this.height = height;
     }
 
@@ -107,8 +117,8 @@ public class TAPDataImageModel implements Parcelable {
         this.fileID = in.readString();
         this.mediaType = in.readString();
         this.size = (Long) in.readValue(Long.class.getClassLoader());
-        this.width = (Long) in.readValue(Long.class.getClassLoader());
-        this.height = (Long) in.readValue(Long.class.getClassLoader());
+        this.width = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.height = (Integer) in.readValue(Integer.class.getClassLoader());
         this.caption = in.readString();
         this.fileUri = in.readString();
     }
