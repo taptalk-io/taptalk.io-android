@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE
 
 public class TAPImagePreviewActivity extends AppCompatActivity {
 
+    private static final String TAG = TAPImagePreviewActivity.class.getSimpleName();
     //View
     private ViewPager vpImagePreview;
     private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn;
@@ -38,6 +40,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
 
     //Intent
     private ArrayList<TAPImagePreviewModel> images;
+    //private ArrayList<String> imageCaptions;
 
     //ImagePreview RecyclerView Data
     private int lastIndex = 0;
@@ -179,6 +182,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             }
 
             images.addAll(imageGalleryUris);
+            Log.e(TAG, "processImagesFromGallery: " );
 
             runOnUiThread(() -> {
                 pagerAdapter.notifyDataSetChanged();

@@ -268,18 +268,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return;
             }
 
-            // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
-//            if (HAS_CAPTIONS) {
-                rcivImageBody.setBottomLeftRadius(0);
-                rcivImageBody.setBottomRightRadius(0);
-                tvMessageBody.setVisibility(View.VISIBLE);
-                tvMessageBody.setText(item.getBody());
-//            } else {
-//                rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
-//                rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
-//                tvMessageBody.setVisibility(View.GONE);
-//            }
-
             tvMessageStatus.setText(item.getMessageStatusText());
             setImageViewButtonProgress(item);
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
@@ -295,14 +283,37 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
                 rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                 rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                if (isMessageFromMySelf(item)) {
+                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(1));
+                } else {
+                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(1));
+                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                }
             }
 
-            if (!item.getBody().isEmpty()) {
-                rcivImageBody.setImageDimensions(item.getImageWidth(), item.getImageHeight());
+            if (null != item.getData()) {
+                int widthDimension = (int) item.getData().get("width");
+                int heightDimension = (int) item.getData().get("height");
+                String imageUri = (String) item.getData().get("fileUri");
+                String imageCaption = (String) item.getData().get("caption");
+
+                // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
+                if (null != imageCaption && !imageCaption.isEmpty()) {
+                    rcivImageBody.setBottomLeftRadius(0);
+                    rcivImageBody.setBottomRightRadius(0);
+                    tvMessageBody.setVisibility(View.VISIBLE);
+                    tvMessageBody.setText(imageCaption);
+                } else {
+                    rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                    rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
+                    tvMessageBody.setVisibility(View.GONE);
+                }
+
+                // TODO: 15/01/19 kalau tidak berguna di hapus atau di ubah
+                rcivImageBody.setImageDimensions(widthDimension, heightDimension);
                 int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                Glide.with(itemView.getContext()).load(item.getBody()).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
+                Glide.with(itemView.getContext()).load(imageUri).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         return false;
