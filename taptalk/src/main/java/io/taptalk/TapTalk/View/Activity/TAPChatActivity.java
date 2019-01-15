@@ -80,6 +80,7 @@ import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_CAPTIONS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
@@ -247,8 +248,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
+                        ArrayList<String> captions = intent.getStringArrayListExtra(K_IMAGE_CAPTIONS);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().showDummyImageMessage(this, images, uploadListener);
+                            TAPChatManager.getInstance().showDummyImageMessage(this, images, captions, uploadListener);
                         break;
                 }
         }

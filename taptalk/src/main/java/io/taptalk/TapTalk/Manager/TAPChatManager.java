@@ -422,33 +422,29 @@ public class TAPChatManager {
     /**
      * Construct Image Message Model
      */
-    private TAPMessageModel createImageMessageModel(TAPImagePreviewModel image) {
+    private TAPMessageModel createImageMessageModel(TAPImagePreviewModel image, String caption) {
         String imageUri = image.getImageUri().toString();
 
         // Build message model
         TAPMessageModel messageModel;
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
-                    // TODO: 14 January 2019 GET CAPTION
-                    imageUri.toString(),
+                    caption,
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    // TODO: 14 January 2019 GET CAPTION
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, "")));
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, caption)));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                    // TODO: 14 January 2019 GET CAPTION
-                    imageUri.toString(),
+                    caption,
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    // TODO: 14 January 2019 GET CAPTION
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, imageUri)),
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, caption)),
                     getQuotedMessage());
         }
         return messageModel;
@@ -458,20 +454,22 @@ public class TAPChatManager {
      * Create image message model and call upload api
      */
     private void createImageMessageModelAndAddToQueueUpload(Context context, TAPImagePreviewModel image,
-                                                            TAPUploadListener uploadListener) {
+                                                            String caption, TAPUploadListener uploadListener) {
 
-        TAPMessageModel messageModel = createImageMessageModel(image);
-        // Build message model
-        showDummyImageMessage(messageModel);
-
+        TAPMessageModel messageModel = createImageMessageModel(image, caption);
+        messageModel = showDummyImageMessage(messageModel);
         TAPFileManager.getInstance().addQueueUploadImage(context, messageModel, uploadListener);
     }
 
     /**
-     * Send image messages
+     * Returns Message Model with original image width & height data
      */
-    private void showDummyImageMessage(TAPMessageModel imageMessage) {
-        Uri imageUri = Uri.parse(imageMessage.getBody());
+    private TAPMessageModel showDummyImageMessage(TAPMessageModel imageMessage) {
+        if (null == imageMessage.getData()) {
+            return imageMessage;
+        }
+        TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
+        Uri imageUri = Uri.parse(imageData.getFileUri());
 
         // Get image width and height
         String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
@@ -480,25 +478,29 @@ public class TAPChatManager {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
         int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
-
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            imageMessage.setImageWidth(options.outHeight);
-            imageMessage.setImageHeight(options.outWidth);
+            imageData.setWidth(options.outHeight);
+            imageData.setHeight(options.outWidth);
         } else {
-            imageMessage.setImageWidth(options.outWidth);
-            imageMessage.setImageHeight(options.outHeight);
+            imageData.setWidth(options.outWidth);
+            imageData.setHeight(options.outHeight);
         }
+        imageMessage.setData(TAPUtils.getInstance().toHashMap(imageData));
 
         // Trigger listener to show image preview in activity
         triggerSendMessageListener(imageMessage);
+
+        return imageMessage;
     }
 
     // Send multiple image messages
     public void showDummyImageMessage(Context context, ArrayList<TAPImagePreviewModel> images,
+                                      ArrayList<String> captions,
                                       @NonNull TAPUploadListener uploadListener) {
         new Thread(() -> {
-            for (TAPImagePreviewModel image : images) {
-                createImageMessageModelAndAddToQueueUpload(context, image, uploadListener);
+            int size = images.size();
+            for (int i = 0; i < size; i++) {
+                createImageMessageModelAndAddToQueueUpload(context, images.get(i), captions.get(i), uploadListener);
             }
         }).start();
     }
@@ -507,9 +509,6 @@ public class TAPChatManager {
         if (null != chatListeners && !chatListeners.isEmpty()) {
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                // TODO: 8 November 2018 TESTING
-                tempNewMessage.setImageWidth(messageModel.getImageWidth());
-                tempNewMessage.setImageHeight(messageModel.getImageHeight());
                 chatListener.onSendTextMessage(tempNewMessage);
             }
         }

@@ -24,6 +24,16 @@ public class TAPDataImageModel implements Parcelable {
         this.caption = caption;
     }
 
+    public TAPDataImageModel(HashMap<String, Object> imageDataMap) {
+        this.fileID = (String) imageDataMap.get("fileID");
+        this.mediaType = (String) imageDataMap.get("mediaType");
+        this.size = (Long) imageDataMap.get("size");
+        this.width = (Integer) imageDataMap.get("width");
+        this.height = (Integer) imageDataMap.get("height");
+        this.caption = (String) imageDataMap.get("caption");
+        this.fileUri = (String) imageDataMap.get("fileUri");
+    }
+
     public TAPDataImageModel() {
     }
 

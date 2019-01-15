@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPImagePreviewPagerAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPImagePreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_CAPTIONS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
@@ -38,6 +39,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
 
     //Intent
     private ArrayList<TAPImagePreviewModel> images;
+    private ArrayList<String> imageCaptions;
 
     //ImagePreview RecyclerView Data
     private int lastIndex = 0;
@@ -67,6 +69,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         images = getIntent().getParcelableArrayListExtra(K_IMAGE_URLS);
 
         if (null == images) images = new ArrayList<>();
+        if (null == imageCaptions) imageCaptions = new ArrayList<>();
     }
 
     private void initView() {
@@ -105,6 +108,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         tvSendBtn.setOnClickListener(v -> {
             Intent sendIntent = new Intent();
             sendIntent.putParcelableArrayListExtra(K_IMAGE_RES_CODE, images);
+            sendIntent.putStringArrayListExtra(K_IMAGE_CAPTIONS, imageCaptions);
             setResult(RESULT_OK, sendIntent);
             finish();
         });
@@ -179,6 +183,9 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             }
 
             images.addAll(imageGalleryUris);
+            for (TAPImagePreviewModel imagePreview : imageGalleryUris) {
+                imageCaptions.add(imagePreview.getImageCaption());
+            }
 
             runOnUiThread(() -> {
                 pagerAdapter.notifyDataSetChanged();
