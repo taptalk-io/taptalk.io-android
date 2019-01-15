@@ -497,7 +497,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     // Previously addNewTextMessage
-    private void addNewMessage(final TAPMessageModel newMessage) {
+    private void updateMessage(final TAPMessageModel newMessage) {
         if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener
@@ -538,6 +538,42 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
+    // Previously addNewTextMessage
+    private void addNewMessage(final TAPMessageModel newMessage) {
+        if (vm.getContainerAnimationState() == vm.ANIMATING) {
+            // Hold message if layout is animating
+            // Message is added after transition finishes in containerTransitionListener
+            vm.addPendingRecyclerMessage(newMessage);
+        } else {
+            // Message is added after transition finishes in containerTransitionListener
+            runOnUiThread(() -> {
+                //ini ngecek kalau masih ada logo empty chat ilangin dlu
+                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                    clEmptyChat.setVisibility(View.GONE);
+                    flMessageList.setVisibility(View.VISIBLE);
+                }
+            });
+            //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
+            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
+                    .getInstance().getActiveUser().getUserID());
+            runOnUiThread(() -> {
+                if (vm.isOnBottom() || ownMessage) {
+                    // Scroll recycler to bottom if own message or recycler is already on bottom
+                    messageAdapter.addMessage(newMessage);
+                    rvMessageList.scrollToPosition(0);
+                    vm.addMessagePointer(newMessage);
+                } else {
+                    // Message from other people is received when recycler is scrolled up
+                    messageAdapter.addMessage(newMessage);
+                    vm.addUnreadMessage(newMessage);
+                    vm.addMessagePointer(newMessage);
+                    updateUnreadCount();
+                }
+                updateMessageDecoration();
+            });
+        }
+    }
+
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
@@ -547,7 +583,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 messageAdapter.getItemAt(position).updateValue(message);
                 messageAdapter.notifyItemChanged(position);
             } else {
-                new Thread(() -> addNewMessage(message)).start();
+                new Thread(() -> updateMessage(message)).start();
             }
         });
     }
@@ -895,7 +931,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-            addNewMessage(message);
+            updateMessage(message);
         }
 
         @Override
@@ -914,7 +950,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             if (null != TAPChatManager.getInstance().getOpenRoom() &&
                     TAPChatManager.getInstance().getOpenRoom().equals(message.getRoom().getRoomID()))
-                addNewMessage(message);
+                updateMessage(message);
         }
 
         @Override
@@ -1115,7 +1151,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (vm.getContainerAnimationState() != vm.PROCESSING) {
                         return;
                     }
-                    addNewMessage(pendingMessage);
+                    updateMessage(pendingMessage);
                 }
                 // Remove added messages from pending message list
                 vm.getPendingRecyclerMessages().removeAll(pendingMessages);

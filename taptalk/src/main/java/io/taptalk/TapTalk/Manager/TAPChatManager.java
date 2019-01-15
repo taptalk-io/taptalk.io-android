@@ -346,12 +346,12 @@ public class TAPChatManager {
                 messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
                 // Send truncated message
-                triggerListenerAndSendMessage(messageModel);
+                triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
             TAPMessageModel messageModel = buildTextMessage(textMessage, roomModel, getActiveUser());
             // Send message
-            triggerListenerAndSendMessage(messageModel);
+            triggerListenerAndSendMessage(messageModel, true);
         }
         // Run queue after list is updated
         //checkAndSendPendingMessages();
@@ -378,7 +378,7 @@ public class TAPChatManager {
                 addReplyMessageLocalID(messageModel.getLocalID());
 
                 // Send truncated message
-                triggerListenerAndSendMessage(messageModel);
+                triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
             TAPMessageModel messageModel = buildTextMessage(textMessage, roomModel, TAPDataManager.getInstance().getActiveUser());
@@ -389,7 +389,7 @@ public class TAPChatManager {
             addReplyMessageLocalID(messageModel.getLocalID());
 
             // Send message
-            triggerListenerAndSendMessage(messageModel);
+            triggerListenerAndSendMessage(messageModel, true);
         }
         // Run queue after list is updated
         //checkAndSendPendingMessages();
@@ -516,9 +516,9 @@ public class TAPChatManager {
     }
 
     // Previously sendMessage
-    private void triggerListenerAndSendMessage(TAPMessageModel messageModel) {
+    private void triggerListenerAndSendMessage(TAPMessageModel messageModel, boolean isNotifyChatListener) {
         // Call listener
-        if (null != chatListeners && !chatListeners.isEmpty()) {
+        if (null != chatListeners && !chatListeners.isEmpty() && isNotifyChatListener) {
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
                 chatListener.onSendTextMessage(tempNewMessage);
