@@ -43,7 +43,6 @@ public class TAPMessageModel implements Parcelable {
     @Nullable @JsonProperty("deleted") private Long deleted;
     @JsonIgnore private String messageStatusText;
     @JsonIgnore private boolean isExpanded, isNeedAnimateSend, isAnimating;
-    @JsonIgnore private int imageWidth, imageHeight, progress = 0;
 
     public TAPMessageModel(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                            TAPRoomModel room, Integer type, Long created, TAPUserModel user,
@@ -317,30 +316,6 @@ public class TAPMessageModel implements Parcelable {
         isAnimating = animating;
     }
 
-    public int getImageWidth() {
-        return imageWidth;
-    }
-
-    public void setImageWidth(int imageWidth) {
-        this.imageWidth = imageWidth;
-    }
-
-    public int getImageHeight() {
-        return imageHeight;
-    }
-
-    public void setImageHeight(int imageHeight) {
-        this.imageHeight = imageHeight;
-    }
-
-    public int getProgress() {
-        return progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
-
     public void updateValue(TAPMessageModel model) {
         this.messageID = model.getMessageID();
         this.localID = model.getLocalID();
@@ -431,9 +406,6 @@ public class TAPMessageModel implements Parcelable {
         dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isNeedAnimateSend ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isAnimating ? (byte) 1 : (byte) 0);
-        dest.writeInt(this.imageWidth);
-        dest.writeInt(this.imageHeight);
-        dest.writeInt(this.progress);
     }
 
     protected TAPMessageModel(Parcel in) {
@@ -462,9 +434,6 @@ public class TAPMessageModel implements Parcelable {
         this.isExpanded = in.readByte() != 0;
         this.isNeedAnimateSend = in.readByte() != 0;
         this.isAnimating = in.readByte() != 0;
-        this.imageWidth = in.readInt();
-        this.imageHeight = in.readInt();
-        this.progress = in.readInt();
     }
 
     public static final Creator<TAPMessageModel> CREATOR = new Creator<TAPMessageModel>() {

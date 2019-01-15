@@ -13,6 +13,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
@@ -31,6 +33,7 @@ public class TAPFileManager {
     private final String TAG = TAPFileManager.class.getSimpleName();
     private static TAPFileManager instance;
     private List<TAPMessageModel> uploadQueue;
+    private HashMap<String, Integer> uploadProgressMap;
 
     private TAPFileManager() {
         uploadQueue = new ArrayList<>();
@@ -38,6 +41,26 @@ public class TAPFileManager {
 
     public static TAPFileManager getInstance() {
         return null == instance ? instance = new TAPFileManager() : instance;
+    }
+
+    private HashMap<String, Integer> getUploadProgressMap() {
+        return null == uploadProgressMap ? uploadProgressMap = new LinkedHashMap<>() : uploadProgressMap;
+    }
+
+    public Integer getUploadProgressMapProgressPerLocalID(String localID) {
+        if (!getUploadProgressMap().containsKey(localID)) {
+            return null;
+        } else {
+            return getUploadProgressMap().get(localID);
+        }
+    }
+
+    public void addUploadProgressMap(String localID, int progress) {
+        getUploadProgressMap().put(localID, progress);
+    }
+
+    private void removeUploadProgressMap(String localID) {
+        getUploadProgressMap().remove(localID);
     }
 
     /**
@@ -113,7 +136,8 @@ public class TAPFileManager {
         ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
             @Override
             public void onProgressUpdate(int percentage) {
-                uploadListener.onProgressLoading(localID, percentage);
+                addUploadProgressMap(localID, percentage);
+                uploadListener.onProgressLoading(localID);
             }
 
             @Override
@@ -130,7 +154,8 @@ public class TAPFileManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
-                Log.e(TAG, "onSuccess: ");
+                Log.e(TAG, "onSuccess: " );
+                removeUploadProgressMap(localID);
                 uploadListener.onProgressFinish(localID);
                 TAPDataManager.getInstance().removeUploadSubscriber();
 
@@ -195,7 +220,7 @@ public class TAPFileManager {
     public void cancelUpload(Context context, TAPMessageModel cancelledMessageModel,
                              TAPUploadListener uploadListener) {
         int position = TAPUtils.getInstance().searchMessagePositionByLocalID(uploadQueue, cancelledMessageModel.getLocalID());
-
+        removeUploadProgressMap(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !uploadQueue.isEmpty()) {
             uploadNextSequence(context, uploadListener);
         } else if (-1 != position && !uploadQueue.isEmpty()) {

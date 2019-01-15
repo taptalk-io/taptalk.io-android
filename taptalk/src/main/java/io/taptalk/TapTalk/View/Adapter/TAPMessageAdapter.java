@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -37,6 +36,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPFileManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
@@ -332,15 +332,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void setProgress(TAPMessageModel item) {
-            if (100 == item.getProgress()) {
-                Log.e(TAG, "onResourceReady2: "+item.getProgress() );
+            String localID = item.getLocalID();
+            Integer progressValue = TAPFileManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
+            if (null == progressValue) {
                 flProgress.setVisibility(View.GONE);
                 flBubble.setForeground(null);
-            } else if (100 > item.getProgress()) {
-                Log.e(TAG, "onResourceReady: "+item.getProgress() );
+            } else {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
-                pbProgress.setProgress(item.getProgress());
+                pbProgress.setProgress(progressValue);
             }
         }
 

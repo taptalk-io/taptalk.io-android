@@ -1051,10 +1051,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private TAPUploadListener uploadListener = new TAPUploadListener() {
         @Override
-        public void onProgressLoading(String localID, int progress) {
+        public void onProgressLoading(String localID) {
             if (vm.getMessagePointer().containsKey(localID)) {
-                Log.e(TAG, localID + " : " + progress);
-                vm.updateMessagePointerProgress(localID, progress);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
             }
         }
@@ -1062,8 +1060,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onProgressFinish(String localID) {
             if (vm.getMessagePointer().containsKey(localID)) {
-                // Update message instead of adding when message pointer already contains the same local ID
-                vm.updateMessagePointerProgress(localID, 100);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
             }
         }

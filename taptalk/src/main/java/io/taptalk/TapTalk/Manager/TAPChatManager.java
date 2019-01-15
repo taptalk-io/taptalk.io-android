@@ -461,6 +461,10 @@ public class TAPChatManager {
                                                             TAPUploadListener uploadListener) {
 
         TAPMessageModel messageModel = createImageMessageModel(image);
+
+        // Set Start Point for Progress
+        TAPFileManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
+
         // Build message model
         showDummyImageMessage(messageModel);
 
