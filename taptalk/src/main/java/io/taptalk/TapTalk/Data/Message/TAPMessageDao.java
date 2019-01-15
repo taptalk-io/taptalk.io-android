@@ -33,8 +33,8 @@ public interface TAPMessageDao {
     @Query("select * from Message_Table order by created desc")
     LiveData<List<TAPMessageEntity>> getAllMessage();
 
-    @Query("select messageID, localID, roomID, roomName, roomColor, roomType," +
-            " roomImage, type, body, created, " +
+    @Query("select messageID, localID, roomID, roomName, roomColor, roomType, " +
+            " roomImage, type, body, created, data, quote, replyTo, forwardFrom, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
             "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
@@ -42,7 +42,7 @@ public interface TAPMessageDao {
     List<TAPMessageEntity> getAllMessageListDesc(String roomID);
 
     @Query("select messageID, localID, roomID, roomName, roomColor, roomType," +
-            " roomImage, type, body, created, " +
+            " roomImage, type, body, created, data, quote, replyTo, forwardFrom, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
             "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +
@@ -50,7 +50,7 @@ public interface TAPMessageDao {
     List<TAPMessageEntity> getAllMessageListAsc(String roomID);
 
     @Query("select messageID, localID, roomID, roomName, roomColor, roomType, " +
-            "roomImage, type, body, created, " +
+            "roomImage, type, body, created, data, quote, replyTo, forwardFrom, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
             "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend " +
@@ -60,7 +60,7 @@ public interface TAPMessageDao {
     List<TAPMessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);
 
     @Query("select messageID, localID, roomID, roomName, roomColor, roomType," +
-            " roomImage, type, body, created, " +
+            " roomImage, type, body, created, data, quote, replyTo, forwardFrom, " +
             "userID, xcUserID, userFullName, userImage, username, userEmail, " +
             "userPhone, userRole, lastLogin, requireChangePassword, userCreated, userUpdated, " +
             "recipientID, isRead, isDelivered, isHidden, isDeleted, isSending, isFailedSend" +

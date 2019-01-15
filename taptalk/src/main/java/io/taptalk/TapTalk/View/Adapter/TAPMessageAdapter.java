@@ -658,7 +658,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                  TextView tvQuoteContent, TAPRoundedCornerImageView rcivQuoteImage,
                                  View vQuoteBackground, View vQuoteDecoration) {
         TAPQuoteModel quote = item.getQuote();
-        if (null != quote) {
+        if (null != quote && !quote.getTitle().isEmpty()) {
             // Show quote
             clQuote.setVisibility(View.VISIBLE);
             vQuoteBackground.setVisibility(View.VISIBLE);
@@ -669,20 +669,32 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (!quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 Glide.with(itemView.getContext()).load(quoteImageURL).into(rcivQuoteImage);
-                vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                if (isMessageFromMySelf(item)) {
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                } else {
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_f3f3f3_rounded_8dp));
+                }
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else if (!quoteFileID.isEmpty()) {
                 // Get quote image from file ID
                 // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
-                vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                if (isMessageFromMySelf(item)) {
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                } else {
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_f3f3f3_rounded_8dp));
+                }
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else {
                 // Show no image
-                vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
+                if (isMessageFromMySelf(item)) {
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
+                } else {
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_f3f3f3_rounded_4dp));
+                }
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
