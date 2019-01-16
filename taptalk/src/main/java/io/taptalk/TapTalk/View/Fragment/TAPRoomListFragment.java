@@ -21,14 +21,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -38,7 +34,6 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -531,21 +526,8 @@ public class TAPRoomListFragment extends Fragment {
                 }
                 List<TAPUserModel> users = new ArrayList<>();
                 for (TAPContactModel contact : response.getContacts()) {
-                    new Thread(() -> {
-                        try {
-                            Log.e(TAG, "onSuccess: "+contact.getUser().getName() );
-                            TAPCacheManager.getInstance(getContext()).addBitmapToCache(contact.getUser().getUserID(), Glide.with(getContext()).asBitmap().load(contact.getUser().getAvatarURL().getThumbnail()).submit().get());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
                     users.add(contact.getUser().setUserAsContact());
                 }
-                //TAPCacheManager.getInstance(getContext()).closeCache();
                 TAPDataManager.getInstance().insertMyContactToDatabase(users);
                 TAPContactManager.getInstance().updateUserDataMap(users);
             } catch (Exception e) {

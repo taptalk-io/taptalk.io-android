@@ -1,10 +1,8 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,7 +17,6 @@ import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
-import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -96,15 +93,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
         @Override
         protected void onBind(TAPUserModel item, int position) {
-            Bitmap image = TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(item.getUserID());
-            if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty() && null != image) {
-                Log.e("><><><", "onBind: "+item.getName());
-                Glide.with(itemView.getContext())
-                        .load(image)
-                        .apply(new RequestOptions().centerCrop())
-                        .into(ivAvatar);
-                ivAvatar.setBackground(null);
-            } else if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty() && null == image) {
+            if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext())
                         .load(item.getAvatarURL().getThumbnail())
                         .apply(new RequestOptions().centerCrop())

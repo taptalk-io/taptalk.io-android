@@ -107,6 +107,7 @@ public class TAPCacheManager {
         }).start();
     }
 
+    //harus background thread
     public void addBitmapToCache(String key, Bitmap bitmap) throws IOException {
         // Add to memory cache as before
         if (getBitmapFromMemCache(key) == null) {
@@ -137,9 +138,5 @@ public class TAPCacheManager {
         } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
             return mDiskLruCache.getBitmap(key);
         } else return null;
-    }
-
-    public void closeCache() throws IOException {
-        mDiskLruCache.closeCache();
     }
 }
