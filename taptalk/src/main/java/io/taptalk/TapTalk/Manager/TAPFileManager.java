@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.Taptalk.R;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
@@ -224,8 +225,7 @@ public class TAPFileManager {
     /**
      * Check upload queue and restart upload sequence
      */
-    public void uploadNextSequence(Context context,
-                                   TAPUploadListener uploadListener) {
+    public void uploadNextSequence(Context context, TAPUploadListener uploadListener) {
         uploadQueue.remove(0);
         //ini ngecek kalau kosong ga perlu jalanin lagi
         if (!uploadQueue.isEmpty()) {
@@ -247,83 +247,24 @@ public class TAPFileManager {
         }
     }
 
-    public void writeDownloadedFileToDisk(String localID, ResponseBody responseBody, TAPDownloadListener listener) {
+    public void writeImageFileToDisk(String localID, ResponseBody responseBody, TAPDownloadListener listener) {
         // TODO: 16 January 2019 FILE NAME IS CURRENTLY USING TIMESTAMP
-        String filename = TAPTimeFormatter.getInstance().formatTime(System.currentTimeMillis(), "yyyyMMddHHmmssSSS") + ".jpeg";
-        // TODO: 16 January 2019 FIX FILE DIRECTORY
-        Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
-        File myDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/saved_images");
-        myDir.mkdirs();
-        File file = new File (myDir, filename);
-        if (file.exists ()) file.delete ();
+        String filename = TAPTimeFormatter.getInstance().formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS") + ".jpeg";
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
+        dir.mkdirs();
+        File file = new File (dir, filename);
+        if (file.exists ()) {
+            file.delete ();
+        }
         try {
+            Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
             FileOutputStream out = new FileOutputStream(file);
             bmp.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
             out.close();
-
-            listener.onWriteToStorageFinished(localID, file, bmp);
+            listener.onWriteToStorageFinished(localID, file);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        File downloadedFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
-//        BufferedSink sink;
-//        try {
-//            Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
-//            sink = Okio.buffer(Okio.sink(downloadedFile));
-//            sink.writeAll(responseBody.source());
-//            sink.close();
-//
-//            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + file.getAbsolutePath());
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + file.getName());
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + file.length());
-//            listener.onWriteToStorageFinished(localID, file, bmp);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + e.getLocalizedMessage());
-//        }
     }
-
-//    public void writeDownloadedFileToDisk(ResponseBody responseBody) {
-//        // TODO: 16 January 2019 FILE NAME IS CURRENTLY USING TIMESTAMP
-//        String filename = TAPTimeFormatter.getInstance().formatTime(System.currentTimeMillis(), "yyyyMMddHHmmss");
-//        File downloadedFile = new File((TapTalk.appContext.getFilesDir()), filename);
-//        Log.e(TAG, "writeDownloadedFileToDisk: " + TapTalk.appContext.getExternalFilesDir(null).toString());
-//
-//        InputStream is;
-//        OutputStream os;
-//
-//        try {
-//            byte[] fileReader = new byte[1024];
-//            long fileSize = responseBody.contentLength();
-//            long downloaded = 0;
-//
-//            is = responseBody.byteStream();
-//            os = new FileOutputStream(downloadedFile);
-//
-//            while (true) {
-//                int read = is.read(fileReader);
-//                if (read == -1) {
-//                    break;
-//                }
-//                os.write(fileReader, 0, read);
-//                downloaded += read;
-////                Log.e(TAG, "writeDownloadedFileToDisk: " + downloaded + " of " + fileSize);
-//            }
-//            os.flush();
-//            os.close();
-//            is.close();
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + downloaded + " of " + fileSize);
-//
-//            File file = new File(TapTalk.appContext.getFilesDir(), filename);
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + file.getAbsolutePath());
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + file.getName());
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + file.length());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Log.e(TAG, "writeDownloadedFileToDisk: " + e.getLocalizedMessage());
-//        }
-//    }
 }

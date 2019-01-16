@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,12 +21,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.signature.ObjectKey;
 
 import java.io.File;
 import java.util.List;
@@ -329,12 +326,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 TAPDataManager.getInstance().downloadFile(item.getRoom().getRoomID(), (String) item.getData().get("fileID"), new TapDefaultDataView<ResponseBody>() {
                     @Override
                     public void onSuccess(ResponseBody response) {
-                        TAPFileManager.getInstance().writeDownloadedFileToDisk(item.getLocalID(), response, new TAPDownloadListener() {
+                        TAPFileManager.getInstance().writeImageFileToDisk(item.getLocalID(), response, new TAPDownloadListener() {
                             @Override
-                            public void onWriteToStorageFinished(String localID, File file, Bitmap bitmap) {
+                            public void onWriteToStorageFinished(String localID, File file) {
                                 // TODO: 15 January 2019 CHANGE PLACEHOLDER
                                 int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                                glide.load(bitmap).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
+                                glide.load(file).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
                                     @Override
                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                         Log.e(TAG, "onLoadFailed: " + e);

@@ -8,7 +8,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import io.taptalk.Taptalk.R;
 
@@ -122,7 +121,6 @@ public class TAPRoundedCornerImageView extends android.support.v7.widget.AppComp
     public void setImageDimensions(int width, int height) {
         imageWidth = width;
         imageHeight = height;
-        Log.e("]]]]", "setImageDimensions: " + width + " " + height);
     }
 
     @Override
@@ -182,26 +180,18 @@ public class TAPRoundedCornerImageView extends android.support.v7.widget.AppComp
 
         MeasureSpec.makeMeasureSpec(size, mode);
 
-        Log.e("]]]]", "dimensionRatio: " + dimensionRatio);
-        Log.e("]]]]", "imageWidth: " + imageWidth);
-        Log.e("]]]]", "imageHeight: " + imageHeight);
-        Log.e("]]]]", "minWidth: " + minWidth);
-        Log.e("]]]]", "minHeight: " + minHeight);
-        Log.e("]]]]", "minWidth: " + maxWidth);
-        Log.e("]]]]", "minHeight: " + maxHeight);
-
         if (dimensionRatio == 0 || minWidth == 0 || minHeight == 0 || maxWidth == 0 || maxHeight == 0) {
             return;
         }
-//        Drawable drawable = getDrawable();
-//        if (drawable == null) {
-//            return;
-//        }
-//        int wMode = MeasureSpec.getMode(widthMeasureSpec);
-//        int hMode = MeasureSpec.getMode(heightMeasureSpec);
-//        if (wMode == MeasureSpec.EXACTLY || hMode == MeasureSpec.EXACTLY) {
-//            return;
-//        }
+        Drawable drawable = getDrawable();
+        if (drawable == null) {
+            return;
+        }
+        int wMode = MeasureSpec.getMode(widthMeasureSpec);
+        int hMode = MeasureSpec.getMode(heightMeasureSpec);
+        if (wMode == MeasureSpec.EXACTLY || hMode == MeasureSpec.EXACTLY) {
+            return;
+        }
 
         int resultWidth, resultHeight;
         float ratio = ((float) imageWidth) / imageHeight;
@@ -244,8 +234,6 @@ public class TAPRoundedCornerImageView extends android.support.v7.widget.AppComp
             }
             setScaleType(ScaleType.FIT_CENTER);
         }
-        Log.e("]]]]", "resultWidth: " + resultWidth);
-        Log.e("]]]]", "resultHeight: " + resultHeight);
         setMeasuredDimension(resultWidth, resultHeight);
     }
 }

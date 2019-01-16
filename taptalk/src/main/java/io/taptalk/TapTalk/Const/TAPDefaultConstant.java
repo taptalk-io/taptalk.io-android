@@ -130,6 +130,12 @@ public class TAPDefaultConstant {
         public static final String K_IMAGE_URLS = "tapImageUrls";
     }
 
+    public static final class MediaType {
+        public static final String IMAGE_JPEG = "image/jpeg";
+        public static final String IMAGE_PNG = "image/png";
+        public static final String IMAGE_GIF = "image/gif";
+    }
+
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kTAPAccessToken";
