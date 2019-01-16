@@ -21,10 +21,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -34,6 +38,7 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -74,9 +79,9 @@ public class TAPRoomListFragment extends Fragment {
     private TAPChatListener chatListener;
 
     private TapTalkNetworkInterface networkListener = () -> {
-       if (vm.isDoneFirstSetup()) {
-           updateQueryRoomListFromBackground();
-       }
+        if (vm.isDoneFirstSetup()) {
+            updateQueryRoomListFromBackground();
+        }
     };
 
     public TAPRoomListFragment() {
@@ -184,7 +189,7 @@ public class TAPRoomListFragment extends Fragment {
 
             @Override
             public void onReceiveStopTyping(TAPTypingModel typingModel) {
-               showTyping(typingModel, false);
+                showTyping(typingModel, false);
             }
         };
         TAPChatManager.getInstance().addChatListener(chatListener);
@@ -364,7 +369,7 @@ public class TAPRoomListFragment extends Fragment {
                         rvContactList.scrollToPosition(0);
                 });
             }
-        } else if (null != getActivity()){
+        } else if (null != getActivity()) {
             //kalau room yang masuk baru
 
             //TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
@@ -519,16 +524,33 @@ public class TAPRoomListFragment extends Fragment {
     private TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
         @Override
         public void onSuccess(TAPContactResponse response) {
-            // Insert contacts to database
-            if (null == response.getContacts() || response.getContacts().isEmpty()) {
-                return;
+            try {
+                // Insert contacts to database
+                if (null == response.getContacts() || response.getContacts().isEmpty()) {
+                    return;
+                }
+                List<TAPUserModel> users = new ArrayList<>();
+                for (TAPContactModel contact : response.getContacts()) {
+                    new Thread(() -> {
+                        try {
+                            Log.e(TAG, "onSuccess: "+contact.getUser().getName() );
+                            TAPCacheManager.getInstance(getContext()).addBitmapToCache(contact.getUser().getUserID(), Glide.with(getContext()).asBitmap().load(contact.getUser().getAvatarURL().getThumbnail()).submit().get());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                    users.add(contact.getUser().setUserAsContact());
+                }
+                //TAPCacheManager.getInstance(getContext()).closeCache();
+                TAPDataManager.getInstance().insertMyContactToDatabase(users);
+                TAPContactManager.getInstance().updateUserDataMap(users);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            List<TAPUserModel> users = new ArrayList<>();
-            for (TAPContactModel contact : response.getContacts()) {
-                users.add(contact.getUser().setUserAsContact());
-            }
-            TAPDataManager.getInstance().insertMyContactToDatabase(users);
-            TAPContactManager.getInstance().updateUserDataMap(users);
         }
     };
 
@@ -553,7 +575,7 @@ public class TAPRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) ) {
+            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID)) {
                 vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             }
@@ -609,7 +631,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void updateUnreadCountPerRoom(String roomID) {
-        new Thread(() ->{
+        new Thread(() -> {
             if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) && TAPMessageStatusManager.getInstance().getUnreadList().containsKey(roomID)) {
                 vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance().getUnreadList().get(roomID));
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
