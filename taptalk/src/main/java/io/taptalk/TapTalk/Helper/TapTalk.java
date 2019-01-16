@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
@@ -90,6 +91,8 @@ public class TapTalk {
         if (BuildConfig.BUILD_TYPE.equals("dev"))
             Hawk.init(appContext).setEncryption(new NoEncryption()).build();
         else Hawk.init(appContext).build();
+
+        TAPCacheManager.getInstance(appContext).initAllCache();
 
         //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
         TAPDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);

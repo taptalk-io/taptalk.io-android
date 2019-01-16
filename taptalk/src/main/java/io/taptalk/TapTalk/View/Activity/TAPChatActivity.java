@@ -340,7 +340,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         //showUserOffline();
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(chatListener, uploadListener);
+        messageAdapter = new TAPMessageAdapter(Glide.with(this), chatListener, uploadListener);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);

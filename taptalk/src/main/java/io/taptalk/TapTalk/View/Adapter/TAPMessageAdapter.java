@@ -20,12 +20,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.signature.ObjectKey;
 
 import java.io.File;
 import java.util.List;
@@ -74,11 +76,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
     private long defaultAnimationTime = 200L;
+    private RequestManager glide;
 
-    public TAPMessageAdapter(TAPChatListener chatListener, TAPUploadListener uploadListener) {
+    public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener, TAPUploadListener uploadListener) {
         myUserModel = TAPDataManager.getInstance().getActiveUser();
         this.chatListener = chatListener;
         this.uploadListener = uploadListener;
+        this.glide = glide;
     }
 
     @NonNull
@@ -279,26 +283,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setText(item.getMessageStatusText());
             setImageViewButtonProgress(item);
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
-//            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-//            // Fix layout when quote exists
-//            if (null != item.getQuote()) {
-//                rcivImageBody.getLayoutParams().width = 0;
-//                rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
-//                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                rcivImageBody.setTopLeftRadius(0);
-//                rcivImageBody.setTopRightRadius(0);
-//            } else {
-//                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-//                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-//                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                if (isMessageFromMySelf(item)) {
-//                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-//                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(1));
-//                } else {
-//                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(1));
-//                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
-//                }
-//            }
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            // Fix layout when quote exists
+            if (null != item.getQuote() && !item.getQuote().getTitle().isEmpty()) {
+                rcivImageBody.getLayoutParams().width = 0;
+                rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
+                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivImageBody.setTopLeftRadius(0);
+                rcivImageBody.setTopRightRadius(0);
+            } else {
+                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                if (isMessageFromMySelf(item)) {
+                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(1));
+                } else {
+                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(1));
+                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                }
+            }
 
             if (null != item.getData()) {
                 Log.e(TAG, "message data: " + TAPUtils.getInstance().toJsonString(item.getData()));
@@ -306,6 +310,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 int heightDimension = (int) item.getData().get("height");
                 String imageUri = (String) item.getData().get("fileUri");
                 String imageCaption = (String) item.getData().get("caption");
+                String fileID = (String) item.getData().get("fileID");
 
                 if (null != imageCaption && !imageCaption.isEmpty()) {
                     rcivImageBody.setBottomLeftRadius(0);
@@ -319,20 +324,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
 
                 rcivImageBody.setImageDimensions(widthDimension, heightDimension);
-                Log.e(TAG, "onBind: " + rcivImageBody.getLayoutParams().width);
-                Log.e(TAG, "onBind: " + rcivImageBody.getLayoutParams().height);
 
                 // TODO: 16 January 2019 TESTING
                 TAPDataManager.getInstance().downloadFile(item.getRoom().getRoomID(), (String) item.getData().get("fileID"), new TapDefaultDataView<ResponseBody>() {
                     @Override
                     public void onSuccess(ResponseBody response) {
-                        Log.e(TAG, "onSuccess: " + response.toString());
                         TAPFileManager.getInstance().writeDownloadedFileToDisk(item.getLocalID(), response, new TAPDownloadListener() {
                             @Override
                             public void onWriteToStorageFinished(String localID, File file, Bitmap bitmap) {
                                 // TODO: 15 January 2019 CHANGE PLACEHOLDER
                                 int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                                Glide.with(itemView.getContext()).load(bitmap).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
+                                glide.load(bitmap).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
                                     @Override
                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                         Log.e(TAG, "onLoadFailed: " + e);
@@ -341,11 +343,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
                                     @Override
                                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                        Log.e(TAG, "onResourceReady: " + file.getAbsolutePath());
-                                        Log.e(TAG, "onResourceReady: " + rcivImageBody.getLayoutParams().width);
-                                        Log.e(TAG, "onResourceReady: " + rcivImageBody.getLayoutParams().height);
-                                        Log.e(TAG, "onResourceReady: " + bitmap.getWidth());
-                                        Log.e(TAG, "onResourceReady: " + bitmap.getHeight());
                                         if (isMessageFromMySelf(item)) {
                                             flBubble.setForeground(bubbleOverlayRight);
                                         } else {
@@ -607,7 +604,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Message from others
             // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
             if (null != civAvatar && null != item.getUser().getAvatarURL()) {
-                Glide.with(vh.itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
                 //civAvatar.setVisibility(View.VISIBLE);
             }
             if (null != tvUsername) {
@@ -716,7 +713,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String quoteFileID = quote.getFileID();
             if (!quoteImageURL.isEmpty()) {
                 // Get quote image from URL
-                Glide.with(itemView.getContext()).load(quoteImageURL).into(rcivQuoteImage);
+                glide.load(quoteImageURL).into(rcivQuoteImage);
                 if (isMessageFromMySelf(item)) {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 } else {

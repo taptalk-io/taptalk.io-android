@@ -262,8 +262,6 @@ public class TAPFileManager {
             out.flush();
             out.close();
 
-            Log.e(TAG, "writeDownloadedFileToDisk: " + file.getAbsolutePath());
-            Log.e(TAG, "writeDownloadedFileToDisk: " + file.length());
             listener.onWriteToStorageFinished(localID, file, bmp);
         } catch (Exception e) {
             e.printStackTrace();

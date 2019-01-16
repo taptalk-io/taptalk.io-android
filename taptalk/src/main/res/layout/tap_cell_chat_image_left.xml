@@ -66,7 +66,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:foreground="@drawable/tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp"
                 android:maxWidth="234dp"
                 android:maxHeight="300dp"
                 app:cornerRadius="9dp"
