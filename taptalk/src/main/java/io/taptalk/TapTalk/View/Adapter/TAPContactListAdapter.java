@@ -94,7 +94,10 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
         @Override
         protected void onBind(TAPUserModel item, int position) {
             if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty()) {
-                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).into(ivAvatar);
+                Glide.with(itemView.getContext())
+                        .load(item.getAvatarURL().getThumbnail())
+                        .apply(new RequestOptions().centerCrop())
+                        .into(ivAvatar);
                 ivAvatar.setBackground(null);
             } else {
                 ivAvatar.setImageDrawable(null);
@@ -104,8 +107,8 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
             // Change avatar icon and background
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
-            if (null != item.getAvatarURL())
-                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).apply(new RequestOptions().centerCrop()).into(ivAvatar);
+            //if (null != item.getAvatarURL())
+            //  Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).apply(new RequestOptions().centerCrop()).into(ivAvatar);
 
             // Set name
             tvFullName.setText(item.getName());

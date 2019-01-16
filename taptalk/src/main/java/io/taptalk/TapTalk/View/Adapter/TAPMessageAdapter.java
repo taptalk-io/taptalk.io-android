@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -17,12 +18,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.signature.ObjectKey;
 
 import java.util.List;
 
@@ -66,11 +69,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
     private long defaultAnimationTime = 200L;
+    private RequestManager glide;
 
-    public TAPMessageAdapter(TAPChatListener chatListener, TAPUploadListener uploadListener) {
+    public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener, TAPUploadListener uploadListener) {
         myUserModel = TAPDataManager.getInstance().getActiveUser();
         this.chatListener = chatListener;
         this.uploadListener = uploadListener;
+        this.glide = glide;
     }
 
     @NonNull
@@ -297,6 +302,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 int heightDimension = (int) item.getData().get("height");
                 String imageUri = (String) item.getData().get("fileUri");
                 String imageCaption = (String) item.getData().get("caption");
+                String fileID = (String) item.getData().get("fileID");
 
                 // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
                 if (null != imageCaption && !imageCaption.isEmpty()) {
@@ -313,9 +319,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // TODO: 15/01/19 kalau tidak berguna di hapus atau di ubah
                 rcivImageBody.setImageDimensions(widthDimension, heightDimension);
                 int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                Glide.with(itemView.getContext()).load(imageUri).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
+                glide.load(imageUri)
+                        .apply(new RequestOptions().placeholder(placeholder).signature(new ObjectKey(fileID != null ? fileID : ""))
+                                .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        Log.e(TAG, "onLoadFailed: " );
+                        // TODO: 15/01/19 get Image API
                         return false;
                     }
 
@@ -570,7 +581,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Message from others
             // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
             if (null != civAvatar && null != item.getUser().getAvatarURL()) {
-                Glide.with(vh.itemView.getContext()).load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
                 //civAvatar.setVisibility(View.VISIBLE);
             }
             if (null != tvUsername) {
@@ -679,7 +690,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String quoteFileID = quote.getFileID();
             if (!quoteImageURL.isEmpty()) {
                 // Get quote image from URL
-                Glide.with(itemView.getContext()).load(quoteImageURL).into(rcivQuoteImage);
+                glide.load(quoteImageURL).into(rcivQuoteImage);
                 if (isMessageFromMySelf(item)) {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 } else {
