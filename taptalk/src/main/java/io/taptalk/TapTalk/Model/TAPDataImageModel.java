@@ -24,6 +24,17 @@ public class TAPDataImageModel implements Parcelable {
         this.caption = caption;
     }
 
+    public TAPDataImageModel(@Nullable String fileID, @Nullable String mediaType,
+                             @Nullable Long size, @Nullable Integer width,
+                             @Nullable Integer height, @Nullable String caption) {
+        this.fileID = fileID;
+        this.mediaType = mediaType;
+        this.size = size;
+        this.width = width;
+        this.height = height;
+        this.caption = caption;
+    }
+
     public TAPDataImageModel(HashMap<String, Object> imageDataMap) {
         this.fileID = (String) imageDataMap.get("fileID");
         this.mediaType = (String) imageDataMap.get("mediaType");
@@ -35,6 +46,11 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     public TAPDataImageModel() {
+    }
+
+    public static TAPDataImageModel Builder(String fileID, String mediaType, Long size,
+                                            Integer width, Integer height, String caption) {
+        return new TAPDataImageModel(fileID, mediaType, size, width, height, caption);
     }
 
     public HashMap<String, Object> toHashMapWithoutFileUri() {

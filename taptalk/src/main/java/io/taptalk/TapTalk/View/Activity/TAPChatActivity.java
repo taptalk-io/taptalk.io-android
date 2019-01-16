@@ -67,6 +67,7 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -1058,9 +1059,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onProgressFinish(String localID) {
+        public void onProgressFinish(String localID, TAPDataImageModel imageDataModel) {
             if (vm.getMessagePointer().containsKey(localID)) {
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                messageModel.setData(imageDataModel.toHashMapWithoutFileUri());
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
             }
         }
 
@@ -1075,7 +1078,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 vm.removeMessagePointer(localID);
                 messageAdapter.removeMessageAt(itemPos);
-                Log.e(TAG, "onUploadCanceled: " );
+                Log.e(TAG, "onUploadCanceled: ");
             }
         }
     };

@@ -35,7 +35,7 @@ public class TAPCacheManager {
     }
 
     //untuk Memory Cache
-    public LruCache<String, Bitmap> getMemoryCache() {
+    private LruCache<String, Bitmap> getMemoryCache() {
         return null == mMemoryCache ? initMemoryCache() : mMemoryCache;
     }
 
@@ -67,7 +67,7 @@ public class TAPCacheManager {
         }
     }
 
-    public Bitmap getBitmapFromMemCache(String key) {
+    private Bitmap getBitmapFromMemCache(String key) {
         return getMemoryCache().get(key);
     }
 

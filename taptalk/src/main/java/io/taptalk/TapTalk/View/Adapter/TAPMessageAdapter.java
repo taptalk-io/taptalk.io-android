@@ -19,13 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.signature.ObjectKey;
 
 import java.util.List;
 
@@ -37,6 +32,7 @@ import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileManager;
@@ -298,52 +294,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (null != item.getData()) {
-                int widthDimension = (int) item.getData().get("width");
-                int heightDimension = (int) item.getData().get("height");
-                String imageUri = (String) item.getData().get("fileUri");
-                String imageCaption = (String) item.getData().get("caption");
-                String fileID = (String) item.getData().get("fileID");
+                setImageMessage(item);
 
-                // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
-                if (null != imageCaption && !imageCaption.isEmpty()) {
-                    rcivImageBody.setBottomLeftRadius(0);
-                    rcivImageBody.setBottomRightRadius(0);
-                    tvMessageBody.setVisibility(View.VISIBLE);
-                    tvMessageBody.setText(imageCaption);
+                // TODO: 31 October 2018 TESTING DUMMY IMAGE PROGRESS BAR
+                if (isMessageFromMySelf(item)) {
+                    flBubble.setForeground(bubbleOverlayRight);
                 } else {
-                    rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                    rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
-                    tvMessageBody.setVisibility(View.GONE);
+                    flBubble.setForeground(bubbleOverlayLeft);
                 }
 
-                // TODO: 15/01/19 kalau tidak berguna di hapus atau di ubah
-                rcivImageBody.setImageDimensions(widthDimension, heightDimension);
-                int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                glide.load(imageUri)
-                        .apply(new RequestOptions().placeholder(placeholder).signature(new ObjectKey(fileID != null ? fileID : ""))
-                                .diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        Log.e(TAG, "onLoadFailed: " );
-                        // TODO: 15/01/19 get Image API
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-
-                        // TODO: 31 October 2018 TESTING DUMMY IMAGE PROGRESS BAR
-                        if (isMessageFromMySelf(item)) {
-                            flBubble.setForeground(bubbleOverlayRight);
-                        } else {
-                            flBubble.setForeground(bubbleOverlayLeft);
-                        }
-
-                        setProgress(item);
-                        return false;
-                    }
-                }).into(rcivImageBody);
+                setProgress(item);
             }
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -363,6 +323,45 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
                 pbProgress.setProgress(progressValue);
+            }
+        }
+
+        private void setImageMessage(TAPMessageModel item) {
+            int widthDimension = (int) item.getData().get("width");
+            int heightDimension = (int) item.getData().get("height");
+            String imageUri = (String) item.getData().get("fileUri");
+            String imageCaption = (String) item.getData().get("caption");
+            String fileID = (String) item.getData().get("fileID");
+
+            // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
+            if (null != imageCaption && !imageCaption.isEmpty()) {
+                rcivImageBody.setBottomLeftRadius(0);
+                rcivImageBody.setBottomRightRadius(0);
+                tvMessageBody.setVisibility(View.VISIBLE);
+                tvMessageBody.setText(imageCaption);
+            } else {
+                rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
+                tvMessageBody.setVisibility(View.GONE);
+            }
+
+            // TODO: 15/01/19 kalau tidak berguna di hapus atau di ubah
+            rcivImageBody.setImageDimensions(widthDimension, heightDimension);
+            int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp
+                    : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
+
+            if (null == fileID && null != imageUri) {
+                glide.load(imageUri)
+                        .apply(new RequestOptions().placeholder(placeholder)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)).into(rcivImageBody);
+            } else if (null != fileID && null != TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(fileID)){
+                Log.e(TAG, "setImageMessage: " );
+                glide.load(TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(fileID))
+                        .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(rcivImageBody);
+            } else {
+                // TODO: 16/01/19 minta ko kepin tggu push dlu yaa :3
+                Log.e(TAG, "setImageMessage: " );
             }
         }
 
