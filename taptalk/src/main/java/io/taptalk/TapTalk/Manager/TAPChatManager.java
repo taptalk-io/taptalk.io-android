@@ -333,6 +333,10 @@ public class TAPChatManager {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
 
+    public void sendImageMessage(TAPMessageModel messageModel) {
+        triggerListenerAndSendMessage(messageModel, false);
+    }
+
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {

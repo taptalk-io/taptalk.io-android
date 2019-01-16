@@ -67,7 +67,6 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -932,6 +931,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+
             updateMessage(message);
         }
 
@@ -1059,10 +1059,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onProgressFinish(String localID, TAPDataImageModel imageDataModel) {
+        public void onProgressFinish(String localID, HashMap<String, Object> imageDataModel) {
             if (vm.getMessagePointer().containsKey(localID)) {
                 TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
-                messageModel.setData(imageDataModel.toHashMapWithoutFileUri());
+                messageModel.setData(imageDataModel);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
             }
         }

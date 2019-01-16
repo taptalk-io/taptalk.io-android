@@ -155,7 +155,7 @@ public class TAPFileManager {
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
                 Log.e(TAG, "onSuccess: ");
-                saveImageToCache(context, bitmap, localID, response, uploadListener);
+                saveImageToCache(context, bitmap, messageModel, response, uploadListener);
             }
 
             @Override
@@ -222,7 +222,8 @@ public class TAPFileManager {
         }
     }
 
-    private void saveImageToCache(Context context, Bitmap bitmap, String localID, TAPUploadFileResponse response, TAPUploadListener uploadListener) {
+    private void saveImageToCache(Context context, Bitmap bitmap, TAPMessageModel messageModel,
+                                  TAPUploadFileResponse response, TAPUploadListener uploadListener) {
         try {
             //add ke dalem cache
             new Thread(() -> {
@@ -234,12 +235,17 @@ public class TAPFileManager {
                 }
             }).start();
 
+            String localID = messageModel.getLocalID();
             TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(),
                     response.getMediaType(), response.getSize(), response.getWidth(),
                     response.getHeight(), response.getCaption());
+            HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
+            messageModel.setData(imageDataMap);
+
+            new Thread(() -> TAPChatManager.getInstance().sendImageMessage(messageModel)).start();
 
             removeUploadProgressMap(localID);
-            uploadListener.onProgressFinish(localID, imageDataModel);
+            uploadListener.onProgressFinish(localID, imageDataMap);
             TAPDataManager.getInstance().removeUploadSubscriber();
 
             //manggil restart buat queue selanjutnya
