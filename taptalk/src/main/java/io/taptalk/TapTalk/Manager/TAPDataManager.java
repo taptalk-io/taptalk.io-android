@@ -31,6 +31,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import okhttp3.ResponseBody;
+import rx.Subscriber;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
@@ -590,7 +592,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    //Upload Image
+    // Upload Image
     private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse> uploadSubscriber;
 
     public void uploadImage(String localID, File imageFile, String roomID, String caption, String mimeType,
@@ -603,6 +605,31 @@ public class TAPDataManager {
         if (null != uploadSubscriber) {
             uploadListener.onUploadCanceled(localID);
         }
+    }
+
+    // File Download
+    public void downloadFile(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        TAPApiManager.getInstance().downloadFile(roomID, fileID, new Subscriber<ResponseBody>() {
+            @Override
+            public void onCompleted() {
+                view.endLoading();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                view.onError(e.getMessage());
+                view.onError(e);
+            }
+
+            @Override
+            public void onNext(ResponseBody responseBody) {
+                if (null == responseBody) {
+                    view.onError(new TAPErrorModel("999", "Unknown Error", ""));
+                } else {
+                    view.onSuccess(responseBody);
+                }
+            }
+        });
     }
 
     public void removeUploadSubscriber() {

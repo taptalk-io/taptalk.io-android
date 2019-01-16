@@ -1,6 +1,8 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,8 +27,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
+import java.io.File;
 import java.util.List;
 
+import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
@@ -34,15 +38,18 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
+import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
@@ -272,26 +279,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setText(item.getMessageStatusText());
             setImageViewButtonProgress(item);
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
-            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            // Fix layout when quote exists
-            if (null != item.getQuote()) {
-                rcivImageBody.getLayoutParams().width = 0;
-                rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
-                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivImageBody.setTopLeftRadius(0);
-                rcivImageBody.setTopRightRadius(0);
-            } else {
-                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                if (isMessageFromMySelf(item)) {
-                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(1));
-                } else {
-                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(1));
-                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
-                }
-            }
+//            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+//            // Fix layout when quote exists
+//            if (null != item.getQuote()) {
+//                rcivImageBody.getLayoutParams().width = 0;
+//                rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
+//                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//                rcivImageBody.setTopLeftRadius(0);
+//                rcivImageBody.setTopRightRadius(0);
+//            } else {
+//                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+//                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+//                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+//                if (isMessageFromMySelf(item)) {
+//                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+//                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(1));
+//                } else {
+//                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(1));
+//                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+//                }
+//            }
 
             if (null != item.getData()) {
                 Log.e(TAG, "message data: " + TAPUtils.getInstance().toJsonString(item.getData()));
@@ -300,7 +307,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 String imageUri = (String) item.getData().get("fileUri");
                 String imageCaption = (String) item.getData().get("caption");
 
-                // TODO: 20 December 2018 CHECK IF MESSAGE CONTAINS CAPTION
                 if (null != imageCaption && !imageCaption.isEmpty()) {
                     rcivImageBody.setBottomLeftRadius(0);
                     rcivImageBody.setBottomRightRadius(0);
@@ -312,29 +318,58 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     tvMessageBody.setVisibility(View.GONE);
                 }
 
-                // TODO: 15/01/19 kalau tidak berguna di hapus atau di ubah
                 rcivImageBody.setImageDimensions(widthDimension, heightDimension);
-                int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
-                Glide.with(itemView.getContext()).load(imageUri).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
+                Log.e(TAG, "onBind: " + rcivImageBody.getLayoutParams().width);
+                Log.e(TAG, "onBind: " + rcivImageBody.getLayoutParams().height);
+
+                // TODO: 16 January 2019 TESTING
+                TAPDataManager.getInstance().downloadFile(item.getRoom().getRoomID(), (String) item.getData().get("fileID"), new TapDefaultDataView<ResponseBody>() {
                     @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        return false;
+                    public void onSuccess(ResponseBody response) {
+                        Log.e(TAG, "onSuccess: " + response.toString());
+                        TAPFileManager.getInstance().writeDownloadedFileToDisk(item.getLocalID(), response, new TAPDownloadListener() {
+                            @Override
+                            public void onWriteToStorageFinished(String localID, File file, Bitmap bitmap) {
+                                // TODO: 15 January 2019 CHANGE PLACEHOLDER
+                                int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
+                                Glide.with(itemView.getContext()).load(bitmap).apply(new RequestOptions().placeholder(placeholder)).listener(new RequestListener<Drawable>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                        Log.e(TAG, "onLoadFailed: " + e);
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                        Log.e(TAG, "onResourceReady: " + file.getAbsolutePath());
+                                        Log.e(TAG, "onResourceReady: " + rcivImageBody.getLayoutParams().width);
+                                        Log.e(TAG, "onResourceReady: " + rcivImageBody.getLayoutParams().height);
+                                        Log.e(TAG, "onResourceReady: " + bitmap.getWidth());
+                                        Log.e(TAG, "onResourceReady: " + bitmap.getHeight());
+                                        if (isMessageFromMySelf(item)) {
+                                            flBubble.setForeground(bubbleOverlayRight);
+                                        } else {
+                                            flBubble.setForeground(bubbleOverlayLeft);
+                                        }
+
+                                        setProgress(item);
+                                        return false;
+                                    }
+                                }).into(rcivImageBody);
+                            }
+                        });
                     }
 
                     @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-
-                        // TODO: 31 October 2018 TESTING DUMMY IMAGE PROGRESS BAR
-                        if (isMessageFromMySelf(item)) {
-                            flBubble.setForeground(bubbleOverlayRight);
-                        } else {
-                            flBubble.setForeground(bubbleOverlayLeft);
-                        }
-
-                        setProgress(item);
-                        return false;
+                    public void onError(TAPErrorModel error) {
+                        Log.e(TAG, "onError: " + error.getMessage());
                     }
-                }).into(rcivImageBody);
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e(TAG, "onError: " + throwable.getMessage());
+                    }
+                });
             }
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());

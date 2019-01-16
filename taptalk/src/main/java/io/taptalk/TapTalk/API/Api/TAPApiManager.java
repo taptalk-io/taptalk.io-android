@@ -17,6 +17,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
@@ -41,6 +42,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -100,6 +102,11 @@ public class TAPApiManager {
                 .flatMap((Func1<T, Observable<T>>) this::validateResponse)
                 .retryWhen(o1 -> o1.flatMap((Func1<Throwable, Observable<?>>) this::validateException))
                 .subscribe(s);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> void executeWithoutBaseResponse(Observable<? extends T> o, Subscriber<T> s) {
+        o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers()).subscribe(s);
     }
 
     private <T> Observable validateResponse(T t) {
@@ -261,5 +268,10 @@ public class TAPApiManager {
                 .addFormDataPart("caption", caption)
                 .build();
         execute(tapMultipart.uploadImage(requestBody), subscriber);
+    }
+
+    public void downloadFile(String roomID, String fileID, Subscriber<ResponseBody> subscriber) {
+        TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
+        executeWithoutBaseResponse(homingPigeon.downloadFile(request), subscriber);
     }
 }

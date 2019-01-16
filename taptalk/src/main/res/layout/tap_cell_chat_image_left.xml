@@ -77,7 +77,7 @@
                 app:minHeight="100dp"
                 app:minWidth="78dp"
                 app:topLeftRadius="2dp"
-                tools:src="@drawable/tap_img_chat_empty" />
+                android:src="@drawable/tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp" />
 
             <FrameLayout
                 android:id="@+id/fl_progress"
