@@ -447,7 +447,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, imageUri, caption)));
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, imageUri)));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     caption,
@@ -456,7 +456,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, imageUri, caption)),
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, imageUri)),
                     getQuotedMessage());
         }
         return messageModel;
