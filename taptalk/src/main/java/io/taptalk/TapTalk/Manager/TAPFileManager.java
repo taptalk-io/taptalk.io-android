@@ -59,7 +59,7 @@ public class TAPFileManager {
         getUploadProgressMap().put(localID, progress);
     }
 
-    private void removeUploadProgressMap(String localID) {
+    public void removeUploadProgressMap(String localID) {
         getUploadProgressMap().remove(localID);
     }
 
@@ -237,6 +237,7 @@ public class TAPFileManager {
             }).start();
 
             String localID = messageModel.getLocalID();
+            addUploadProgressMap(localID, 100);
             TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(),
                     response.getMediaType(), response.getSize(), response.getWidth(),
                     response.getHeight(), response.getCaption());
@@ -245,7 +246,7 @@ public class TAPFileManager {
 
             new Thread(() -> TAPChatManager.getInstance().sendImageMessage(messageModel)).start();
 
-            removeUploadProgressMap(localID);
+            //removeUploadProgressMap(localID);
             uploadListener.onProgressFinish(localID, imageDataMap);
             TAPDataManager.getInstance().removeUploadSubscriber();
 
