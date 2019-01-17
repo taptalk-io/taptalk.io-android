@@ -523,7 +523,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                                 .equals(newMessage.getUser().getUserID())) {
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
-                    TAPFileManager.getInstance().removeUploadProgressMap(newMessage.getLocalID());
+                    TAPFileUploadManager.getInstance().removeUploadProgressMap(newMessage.getLocalID());
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID

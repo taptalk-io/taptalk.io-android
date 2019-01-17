@@ -3,10 +3,8 @@ package io.taptalk.TapTalk.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 
 public class TAPUserRoleModel implements Parcelable {
     @JsonProperty("userRoleID") private String userRoleID;
