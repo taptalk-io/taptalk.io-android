@@ -1,9 +1,17 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.LruCache;
+import android.widget.ImageView;
+
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.io.IOException;
 
@@ -24,6 +32,7 @@ public class TAPCacheManager {
     private final Object mDiskCacheLock = new Object();
     private boolean mDiskCacheStarting = true;
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 100; // 100MB
+
     private interface AddDiskCacheListener {
         void onDiskCacheNotNull();
     }
@@ -98,7 +107,7 @@ public class TAPCacheManager {
                 try {
                     if (null == mDiskLruCache) {
                         mDiskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
-                                , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
+                                , DISK_CACHE_SIZE, Bitmap.CompressFormat.WEBP, 100);
                         mDiskCacheStarting = false; // Finished initialization
                         mDiskCacheLock.notifyAll(); // Wake any waiting threads
 
@@ -146,5 +155,27 @@ public class TAPCacheManager {
                 return mDiskLruCache.getBitmap(key);
             } else return null;
         }
+    }
+
+    public void getBipmapPerKey(Context context, String key, @Nullable int placeholder, ImageView ivImage, RequestManager glide) {
+        new Thread(() -> {
+            synchronized (mDiskCacheLock) {
+                Bitmap imageBitmap;
+                if (null != getMemoryCache().get(key)) {
+                    imageBitmap = getMemoryCache().get(key);
+                    ((Activity) context).runOnUiThread(() -> glide.load(imageBitmap).transition(DrawableTransitionOptions.withCrossFade(100))
+                            .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
+                            .into(ivImage));
+                } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
+                    imageBitmap = mDiskLruCache.getBitmap(key);
+                    ((Activity) context).runOnUiThread(() -> glide.load(imageBitmap).transition(DrawableTransitionOptions.withCrossFade(100))
+                            .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
+                            .into(ivImage));
+                } else {
+                    // TODO: 16/01/19 minta ko kepin tggu push dlu yaa :3
+                    Log.e(TAG, "setImageMessage2: ");
+                }
+            }
+        }).start();
     }
 }
