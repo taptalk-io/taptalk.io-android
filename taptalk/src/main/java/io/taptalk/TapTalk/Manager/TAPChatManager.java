@@ -63,6 +63,7 @@ public class TAPChatManager {
     private static TAPChatManager instance;
     private Map<String, TAPMessageModel> pendingMessages, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, String> messageDrafts;
+    private Map<String, HashMap<String, Object>> userData; // TODO: 17 January 2019 DATA FROM USER WHEN OPENING ROOM FROM CLIENT APP
     private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
@@ -498,7 +499,7 @@ public class TAPChatManager {
     }
 
     // Send multiple image messages
-    public void showDummyImageMessage(Context context, ArrayList<TAPImagePreviewModel> images,
+    public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images,
                                       @NonNull TAPUploadListener uploadListener) {
         new Thread(() -> {
             for (TAPImagePreviewModel imagePreview : images) {

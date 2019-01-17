@@ -248,7 +248,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().showDummyImageMessage(this, images, uploadListener);
+                            TAPChatManager.getInstance().sendImageMessage(this, images, uploadListener);
                         break;
                 }
         }

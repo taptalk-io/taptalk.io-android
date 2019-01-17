@@ -12,17 +12,14 @@ import android.webkit.MimeTypeMap;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
@@ -37,8 +34,6 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
 import okhttp3.ResponseBody;
-import okio.BufferedSink;
-import okio.Okio;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 
@@ -215,6 +210,9 @@ public class TAPFileManager {
                     Math.round(scaleRatio * originalWidth),
                     Math.round(scaleRatio * originalHeight),
                     false);
+            Log.e(TAG, "createAndResizeImageFile: " + bitmap.getByteCount());
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, new ByteArrayOutputStream());
+            Log.e(TAG, "createAndResizeImageFile: " + bitmap.getByteCount());
             return bitmap;
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -248,13 +246,12 @@ public class TAPFileManager {
     }
 
     public void writeImageFileToDisk(String localID, ResponseBody responseBody, TAPDownloadListener listener) {
-        // TODO: 16 January 2019 FILE NAME IS CURRENTLY USING TIMESTAMP
         String filename = TAPTimeFormatter.getInstance().formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS") + ".jpeg";
         File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
         dir.mkdirs();
         File file = new File (dir, filename);
-        if (file.exists ()) {
-            file.delete ();
+        if (file.exists()) {
+            file.delete();
         }
         try {
             Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
@@ -267,4 +264,5 @@ public class TAPFileManager {
             e.printStackTrace();
         }
     }
+    // TODO: 16 January 2019 FIX DOWNLOAD FLOW, SAVE IMAGE TO CACHE
 }

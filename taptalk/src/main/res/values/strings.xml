@@ -94,12 +94,14 @@
     <string name="init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
 
     <!--Attachment-->
+    <string name="photo">Photo</string>
     <string name="document">Document</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="audio">Audio</string>
     <string name="location">Location</string>
     <string name="contact">Contact</string>
+    <string name="emoji_photo">🖼</string>
 
     <!--Product/Order-->
     <string name="price">Price</string>

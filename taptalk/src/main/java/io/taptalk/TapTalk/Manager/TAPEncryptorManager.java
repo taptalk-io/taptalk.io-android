@@ -32,7 +32,10 @@ public class TAPEncryptorManager {
 
     }
 
-    public String encrypt(String textToEncrypt, String id) throws GeneralSecurityException {
+    public String encrypt(String textToEncrypt, String id) {
+        if (textToEncrypt.isEmpty() || id.isEmpty()) {
+            return "";
+        }
         String localKey, encrypted, encryptedWithSalt;
         char salt;
         int encryptedLength, saltIndex;
@@ -52,7 +55,10 @@ public class TAPEncryptorManager {
         return encryptedWithSalt;
     }
 
-    public String decrypt(String textToDecrypt, String id) throws GeneralSecurityException {
+    public String decrypt(String textToDecrypt, String id) {
+        if (textToDecrypt.isEmpty() || id.isEmpty()) {
+            return "";
+        }
         String localKey, encrypted, decrypted;
         int randomNumber, encryptedLength, saltIndex;
         try {
@@ -77,11 +83,7 @@ public class TAPEncryptorManager {
             encryptedMessageMap.put(K_BODY, encrypt(messageModel.getBody(), localID));
             if (null != messageModel.getData() && !messageModel.getData().isEmpty()) {
                 // Encrypt message data
-                try {
-                    encryptedMessageMap.put(K_DATA, encrypt(TAPUtils.getInstance().toJsonString(messageModel.getData()), localID));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                encryptedMessageMap.put(K_DATA, encrypt(TAPUtils.getInstance().toJsonString(messageModel.getData()), localID));
             } else {
                 encryptedMessageMap.put(K_DATA, "");
             }
@@ -91,7 +93,7 @@ public class TAPEncryptorManager {
                 quoteMap.put(K_CONTENT, encrypt(messageModel.getQuote().getContent(), localID));
                 encryptedMessageMap.put(K_QUOTE, quoteMap);
             }
-        } catch (GeneralSecurityException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return encryptedMessageMap;
@@ -99,16 +101,12 @@ public class TAPEncryptorManager {
 
     public TAPMessageModel decryptMessage(HashMap<String, Object> messageMap) {
         try {
-            String localID = messageMap.get(K_LOCAL_ID).toString();
+            String localID = (String) messageMap.get(K_LOCAL_ID);
             // Decrypt message body
-            messageMap.put(K_BODY, decrypt(messageMap.get(K_BODY).toString(), localID));
-            if (null != messageMap.get(K_DATA) && !messageMap.get(K_DATA).toString().isEmpty()) {
+            messageMap.put(K_BODY, decrypt((String) messageMap.get(K_BODY), localID));
+            if (null != messageMap.get(K_DATA) && !((String) messageMap.get(K_DATA)).isEmpty()) {
                 // Decrypt message data
-                try {
-                    messageMap.put(K_DATA, TAPUtils.getInstance().toHashMap(decrypt(messageMap.get(K_DATA).toString(), localID)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                messageMap.put(K_DATA, TAPUtils.getInstance().toHashMap(decrypt((String) messageMap.get(K_DATA), localID)));
             } else {
                 // Data is empty
                 messageMap.put(K_DATA, null);
@@ -116,7 +114,7 @@ public class TAPEncryptorManager {
             if (null != messageMap.get(K_QUOTE)) {
                 // Decrypt quote content
                 HashMap<String, Object> quoteMap = TAPUtils.getInstance().toHashMap(messageMap.get(K_QUOTE));
-                quoteMap.put(K_CONTENT, decrypt(quoteMap.get(K_CONTENT).toString(), localID));
+                quoteMap.put(K_CONTENT, decrypt((String) quoteMap.get(K_CONTENT), localID));
                 messageMap.put(K_QUOTE, quoteMap);
             }
         } catch (Exception e) {
