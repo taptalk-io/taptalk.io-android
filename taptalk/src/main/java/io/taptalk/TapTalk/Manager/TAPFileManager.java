@@ -216,6 +216,7 @@ public class TAPFileManager {
         int position = TAPUtils.getInstance().searchMessagePositionByLocalID(uploadQueue, cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !uploadQueue.isEmpty()) {
+            TAPDataManager.getInstance().unSubscribeToUploadImage();
             uploadNextSequence(context, uploadListener);
         } else if (-1 != position && !uploadQueue.isEmpty()) {
             uploadQueue.remove(position);

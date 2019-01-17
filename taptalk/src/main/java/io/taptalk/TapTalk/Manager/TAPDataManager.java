@@ -611,6 +611,12 @@ public class TAPDataManager {
         }
     }
 
+    public void unSubscribeToUploadImage() {
+        if (null != uploadSubscriber) {
+            uploadSubscriber.unsubscribe();
+        }
+    }
+
     // FIXME: 25 October 2018
     public void cancelUserSearchApiCall() {
         if (null != searchUserSubscriber) {
