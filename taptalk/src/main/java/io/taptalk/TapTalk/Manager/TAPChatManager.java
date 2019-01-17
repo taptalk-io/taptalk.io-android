@@ -470,11 +470,11 @@ public class TAPChatManager {
         TAPMessageModel messageModel = createImageMessageModel(image, caption);
 
         // Set Start Point for Progress
-        TAPFileManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
 
         messageModel = showDummyImageMessage(messageModel);
 
-        TAPFileManager.getInstance().addQueueUploadImage(context, messageModel, uploadListener);
+        TAPFileUploadManager.getInstance().addQueueUploadImage(context, messageModel, uploadListener);
     }
 
     /**

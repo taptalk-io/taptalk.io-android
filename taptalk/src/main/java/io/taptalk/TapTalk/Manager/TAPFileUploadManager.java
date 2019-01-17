@@ -3,9 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -14,7 +12,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,33 +20,28 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.Taptalk.R;
-import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 
-public class TAPFileManager {
+public class TAPFileUploadManager {
 
-    private final String TAG = TAPFileManager.class.getSimpleName();
-    private static TAPFileManager instance;
+    private final String TAG = TAPFileUploadManager.class.getSimpleName();
+    private static TAPFileUploadManager instance;
     private List<TAPMessageModel> uploadQueue;
     private HashMap<String, Integer> uploadProgressMap;
 
-    private TAPFileManager() {
+    private TAPFileUploadManager() {
         uploadQueue = new ArrayList<>();
     }
 
-    public static TAPFileManager getInstance() {
-        return null == instance ? instance = new TAPFileManager() : instance;
+    public static TAPFileUploadManager getInstance() {
+        return null == instance ? instance = new TAPFileUploadManager() : instance;
     }
 
     private HashMap<String, Integer> getUploadProgressMap() {
@@ -235,26 +227,6 @@ public class TAPFileManager {
             uploadNextSequence(context, uploadListener);
         } else if (-1 != position && !uploadQueue.isEmpty()) {
             uploadQueue.remove(position);
-        }
-    }
-
-    public void writeImageFileToDisk(String localID, ResponseBody responseBody, TAPDownloadListener listener) {
-        String filename = TAPTimeFormatter.getInstance().formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS") + ".jpeg";
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
-        dir.mkdirs();
-        File file = new File (dir, filename);
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
-            FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 20, out);
-            out.flush();
-            out.close();
-            listener.onWriteToStorageFinished(localID, file);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

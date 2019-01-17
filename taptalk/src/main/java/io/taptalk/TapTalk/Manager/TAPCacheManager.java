@@ -145,16 +145,14 @@ public class TAPCacheManager {
         }
     }
 
-    public Bitmap getBipmapPerKey(String key) {
-        synchronized (mDiskCacheLock) {
-            if (null != getMemoryCache().get(key)) {
-                Log.e(TAG, "getBipmapPerKey: 1");
-                return getMemoryCache().get(key);
-            } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
-                Log.e(TAG, "getBipmapPerKey: 2");
-                return mDiskLruCache.getBitmap(key);
-            } else return null;
-        }
+    public Bitmap getBitmapPerKey(String key) {
+        if (null != getMemoryCache().get(key)) {
+            Log.e(TAG, "getBitmapPerKey: 1");
+            return getMemoryCache().get(key);
+        } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
+            Log.e(TAG, "getBitmapPerKey: 2");
+            return mDiskLruCache.getBitmap(key);
+        } else return null;
     }
 
     public void getBipmapPerKey(Context context, String key, @Nullable int placeholder, ImageView ivImage, RequestManager glide) {
