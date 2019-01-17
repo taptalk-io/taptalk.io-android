@@ -156,24 +156,21 @@ public class TAPCacheManager {
     }
 
     public void getBipmapPerKey(Context context, String key, @Nullable int placeholder, ImageView ivImage, RequestManager glide) {
-        new Thread(() -> {
-            synchronized (mDiskCacheLock) {
+        if (null != getMemoryCache().get(key)) {
+            glide.load(getMemoryCache().get(key)).transition(DrawableTransitionOptions.withCrossFade(100))
+                    .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
+                    .into(ivImage);
+        } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
+            new Thread(() -> {
                 Bitmap imageBitmap;
-                if (null != getMemoryCache().get(key)) {
-                    imageBitmap = getMemoryCache().get(key);
-                    ((Activity) context).runOnUiThread(() -> glide.load(imageBitmap).transition(DrawableTransitionOptions.withCrossFade(100))
-                            .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
-                            .into(ivImage));
-                } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
-                    imageBitmap = mDiskLruCache.getBitmap(key);
-                    ((Activity) context).runOnUiThread(() -> glide.load(imageBitmap).transition(DrawableTransitionOptions.withCrossFade(100))
-                            .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
-                            .into(ivImage));
-                } else {
-                    // TODO: 16/01/19 minta ko kepin tggu push dlu yaa :3
-                    Log.e(TAG, "setImageMessage2: ");
-                }
-            }
-        }).start();
+                imageBitmap = mDiskLruCache.getBitmap(key);
+                ((Activity) context).runOnUiThread(() -> glide.load(imageBitmap).transition(DrawableTransitionOptions.withCrossFade(100))
+                        .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(ivImage));
+            }).start();
+        } else {
+            // TODO: 16/01/19 minta ko kepin tggu push dlu yaa :3
+            Log.e(TAG, "setImageMessage2: ");
+        }
     }
 }

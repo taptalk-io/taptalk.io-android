@@ -60,7 +60,7 @@ public class TAPFileUploadManager {
         getUploadProgressMap().put(localID, progress);
     }
 
-    private void removeUploadProgressMap(String localID) {
+    public void removeUploadProgressMap(String localID) {
         getUploadProgressMap().remove(localID);
     }
 
@@ -224,6 +224,7 @@ public class TAPFileUploadManager {
         int position = TAPUtils.getInstance().searchMessagePositionByLocalID(uploadQueue, cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !uploadQueue.isEmpty()) {
+            TAPDataManager.getInstance().unSubscribeToUploadImage();
             uploadNextSequence(context, uploadListener);
         } else if (-1 != position && !uploadQueue.isEmpty()) {
             uploadQueue.remove(position);
@@ -244,6 +245,7 @@ public class TAPFileUploadManager {
             }).start();
 
             String localID = messageModel.getLocalID();
+            addUploadProgressMap(localID, 100);
             TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(),
                     response.getMediaType(), response.getSize(), response.getWidth(),
                     response.getHeight(), response.getCaption());
@@ -252,7 +254,7 @@ public class TAPFileUploadManager {
 
             new Thread(() -> TAPChatManager.getInstance().sendImageMessage(messageModel)).start();
 
-            removeUploadProgressMap(localID);
+            //removeUploadProgressMap(localID);
             uploadListener.onProgressFinish(localID, imageDataMap);
             TAPDataManager.getInstance().removeUploadSubscriber();
 

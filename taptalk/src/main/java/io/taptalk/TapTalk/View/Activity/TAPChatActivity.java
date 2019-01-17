@@ -517,7 +517,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
-                if (vm.getMessagePointer().containsKey(newID)) {
+                if (vm.getMessagePointer().containsKey(newID) &&
+                        TYPE_IMAGE == newMessage.getType() &&
+                        TAPChatManager.getInstance().getActiveUser().getUserID()
+                                .equals(newMessage.getUser().getUserID())) {
+                    // Update message instead of adding when message pointer already contains the same local ID
+                    vm.updateMessagePointer(newMessage);
+                    TAPFileManager.getInstance().removeUploadProgressMap(newMessage.getLocalID());
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                } else if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
@@ -931,7 +939,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-
             updateMessage(message);
         }
 
