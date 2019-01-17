@@ -6,11 +6,11 @@ public class TAPUploadFileResponse {
     @JsonProperty("id") private String id;
     @JsonProperty("mediaType") private String mediaType;
     @JsonProperty("size") private long size;
-    @JsonProperty("width") private long width;
-    @JsonProperty("height") private long height;
+    @JsonProperty("width") private int width;
+    @JsonProperty("height") private int height;
     @JsonProperty("caption") private String caption;
 
-    public TAPUploadFileResponse(String id, String mediaType, long size, long width, long height, String caption) {
+    public TAPUploadFileResponse(String id, String mediaType, long size, int width, int height, String caption) {
         this.id = id;
         this.mediaType = mediaType;
         this.size = size;
@@ -45,19 +45,19 @@ public class TAPUploadFileResponse {
         this.size = size;
     }
 
-    public long getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    public void setWidth(long width) {
+    public void setWidth(int width) {
         this.width = width;
     }
 
-    public long getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeight(long height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 

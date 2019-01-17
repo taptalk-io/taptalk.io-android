@@ -931,6 +931,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+
             updateMessage(message);
         }
 
@@ -1058,9 +1059,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onProgressFinish(String localID) {
+        public void onProgressFinish(String localID, HashMap<String, Object> imageDataModel) {
             if (vm.getMessagePointer().containsKey(localID)) {
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                messageModel.setData(imageDataModel);
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
             }
         }
 
@@ -1075,7 +1078,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 vm.removeMessagePointer(localID);
                 messageAdapter.removeMessageAt(itemPos);
-                Log.e(TAG, "onUploadCanceled: " );
+                Log.e(TAG, "onUploadCanceled: ");
             }
         }
     };

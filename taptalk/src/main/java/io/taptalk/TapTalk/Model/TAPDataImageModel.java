@@ -19,8 +19,21 @@ public class TAPDataImageModel implements Parcelable {
     @Nullable @JsonProperty("caption") private String caption;
     @Nullable @JsonProperty("fileUri") private String fileUri;
 
-    public TAPDataImageModel(@Nullable String fileUri, @Nullable String caption) {
+    public TAPDataImageModel(@Nullable Integer width, @Nullable Integer height, @Nullable String caption, @Nullable String fileUri) {
+        this.width = width;
+        this.height = height;
+        this.caption = caption;
         this.fileUri = fileUri;
+    }
+
+    public TAPDataImageModel(@Nullable String fileID, @Nullable String mediaType,
+                             @Nullable Long size, @Nullable Integer width,
+                             @Nullable Integer height, @Nullable String caption) {
+        this.fileID = fileID;
+        this.mediaType = mediaType;
+        this.size = size;
+        this.width = width;
+        this.height = height;
         this.caption = caption;
     }
 
@@ -35,6 +48,11 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     public TAPDataImageModel() {
+    }
+
+    public static TAPDataImageModel Builder(String fileID, String mediaType, Long size,
+                                            Integer width, Integer height, String caption) {
+        return new TAPDataImageModel(fileID, mediaType, size, width, height, caption);
     }
 
     public HashMap<String, Object> toHashMapWithoutFileUri() {

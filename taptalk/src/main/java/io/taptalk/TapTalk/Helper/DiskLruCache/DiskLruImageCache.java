@@ -103,7 +103,6 @@ public class DiskLruImageCache {
         Bitmap bitmap = null;
         DiskLruCache.Snapshot snapshot = null;
         try {
-
             snapshot = mDiskCache.get(key);
             if (snapshot == null) {
                 return null;
@@ -159,7 +158,6 @@ public class DiskLruImageCache {
             e.printStackTrace();
         }
     }
-
     public void closeCache() throws IOException {
         mDiskCache.close();
     }

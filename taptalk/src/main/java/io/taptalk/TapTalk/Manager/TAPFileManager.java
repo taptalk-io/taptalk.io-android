@@ -131,12 +131,12 @@ public class TAPFileManager {
                 imageData.setMediaType(mimeType);
                 messageModel.setData(imageData.toHashMapWithoutFileUri());
 
-                callUploadAPI(context, messageModel, imageFile, mimeType, imageData, uploadListener);
+                callUploadAPI(context, messageModel, imageFile, bitmap, mimeType, imageData, uploadListener);
             }
         }).start();
     }
 
-    private void callUploadAPI(Context context, TAPMessageModel messageModel, File imageFile, String mimeType,
+    private void callUploadAPI(Context context, TAPMessageModel messageModel, File imageFile, Bitmap bitmap, String mimeType,
                                TAPDataImageModel imageData,
                                TAPUploadListener uploadListener) {
 
@@ -163,14 +163,8 @@ public class TAPFileManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
-                Log.e(TAG, "onSuccess: " );
-                removeUploadProgressMap(localID);
-                uploadListener.onProgressFinish(localID);
-                TAPDataManager.getInstance().removeUploadSubscriber();
-
-                //manggil restart buat queue selanjutnya
-                uploadNextSequence(context, uploadListener);
-                // TODO: 10/01/19 send emit message to server
+                Log.e(TAG, "onSuccess: ");
+                saveImageToCache(context, bitmap, messageModel, response, uploadListener);
             }
 
             @Override
@@ -197,19 +191,18 @@ public class TAPFileManager {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
             int originalWidth = bitmap.getWidth();
             int originalHeight = bitmap.getHeight();
-            if (originalWidth <= IMAGE_MAX_DIMENSION && originalHeight <= IMAGE_MAX_DIMENSION) {
-                // Image is smaller than max dimensions
-                return bitmap;
+            if (originalWidth > IMAGE_MAX_DIMENSION || originalHeight > IMAGE_MAX_DIMENSION) {
+                // Resize image
+                float scaleRatio = Math.min(
+                        (float) IMAGE_MAX_DIMENSION / originalWidth,
+                        (float) IMAGE_MAX_DIMENSION / originalHeight);
+                bitmap = Bitmap.createScaledBitmap(
+                        bitmap,
+                        Math.round(scaleRatio * originalWidth),
+                        Math.round(scaleRatio * originalHeight),
+                        false);
             }
-            // Resize image
-            float scaleRatio = Math.min(
-                    (float) IMAGE_MAX_DIMENSION / originalWidth,
-                    (float) IMAGE_MAX_DIMENSION / originalHeight);
-            bitmap = Bitmap.createScaledBitmap(
-                    bitmap,
-                    Math.round(scaleRatio * originalWidth),
-                    Math.round(scaleRatio * originalHeight),
-                    false);
+            // Compress image
             Log.e(TAG, "createAndResizeImageFile: " + bitmap.getByteCount());
             bitmap.compress(Bitmap.CompressFormat.JPEG, 20, new ByteArrayOutputStream());
             Log.e(TAG, "createAndResizeImageFile: " + bitmap.getByteCount());
@@ -256,7 +249,7 @@ public class TAPFileManager {
         try {
             Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
             FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 20, out);
             out.flush();
             out.close();
             listener.onWriteToStorageFinished(localID, file);
@@ -264,5 +257,38 @@ public class TAPFileManager {
             e.printStackTrace();
         }
     }
-    // TODO: 16 January 2019 FIX DOWNLOAD FLOW, SAVE IMAGE TO CACHE
+
+    private void saveImageToCache(Context context, Bitmap bitmap, TAPMessageModel messageModel,
+                                  TAPUploadFileResponse response, TAPUploadListener uploadListener) {
+        try {
+            //add ke dalem cache
+            new Thread(() -> {
+                try {
+                    String fileID = response.getId();
+                    TAPCacheManager.getInstance(context).addBitmapToCache(fileID, bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            String localID = messageModel.getLocalID();
+            TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(),
+                    response.getMediaType(), response.getSize(), response.getWidth(),
+                    response.getHeight(), response.getCaption());
+            HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
+            messageModel.setData(imageDataMap);
+
+            new Thread(() -> TAPChatManager.getInstance().sendImageMessage(messageModel)).start();
+
+            removeUploadProgressMap(localID);
+            uploadListener.onProgressFinish(localID, imageDataMap);
+            TAPDataManager.getInstance().removeUploadSubscriber();
+
+            //manggil restart buat queue selanjutnya
+            uploadNextSequence(context, uploadListener);
+            // TODO: 10/01/19 send emit message to server
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

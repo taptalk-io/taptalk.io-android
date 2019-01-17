@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -334,6 +335,10 @@ public class TAPChatManager {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
 
+    public void sendImageMessage(TAPMessageModel messageModel) {
+        triggerListenerAndSendMessage(messageModel, false);
+    }
+
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
@@ -426,6 +431,12 @@ public class TAPChatManager {
     private TAPMessageModel createImageMessageModel(TAPImagePreviewModel image, String caption) {
         String imageUri = image.getImageUri().toString();
 
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(new File(image.getImageUri().getPath()).getAbsolutePath(), options);
+        int imageHeight = options.outHeight;
+        int imageWidth = options.outWidth;
+
         // Build message model
         TAPMessageModel messageModel;
         if (null == getQuotedMessage()) {
@@ -436,7 +447,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, caption)));
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, imageUri, caption)));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     caption,
@@ -445,7 +456,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageUri, caption)),
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, imageUri, caption)),
                     getQuotedMessage());
         }
         return messageModel;
@@ -498,7 +509,6 @@ public class TAPChatManager {
         return imageMessage;
     }
 
-    // Send multiple image messages
     public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images,
                                       @NonNull TAPUploadListener uploadListener) {
         new Thread(() -> {
