@@ -274,7 +274,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             // Fix layout when quote exists
-            if (null != item.getQuote()) {
+            if (null != item.getQuote() && !item.getQuote().getTitle().isEmpty()) {
                 rcivImageBody.getLayoutParams().width = 0;
                 rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
                 rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -355,13 +355,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .apply(new RequestOptions().placeholder(placeholder)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)).into(rcivImageBody);
             } else if (null != fileID && null != TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(fileID)){
-                Log.e(TAG, "setImageMessage: " );
+                Log.e(TAG, item.getBody()+" : "+fileID );
                 glide.load(TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(fileID))
                         .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivImageBody);
             } else {
                 // TODO: 16/01/19 minta ko kepin tggu push dlu yaa :3
-                Log.e(TAG, "setImageMessage: " );
+                Log.e(TAG, "setImageMessage2: " );
             }
         }
 

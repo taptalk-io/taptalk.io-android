@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Manager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.util.LruCache;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import io.taptalk.Taptalk.R;
 
 
 public class TAPCacheManager {
+    private static final String TAG = TAPCacheManager.class.getSimpleName();
     private static TAPCacheManager instance;
     private Context context;
 
@@ -21,7 +23,7 @@ public class TAPCacheManager {
     private DiskLruImageCache mDiskLruCache;
     private final Object mDiskCacheLock = new Object();
     private boolean mDiskCacheStarting = true;
-    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB
+    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 100; // 100MB
     private interface AddDiskCacheListener {
         void onDiskCacheNotNull();
     }
@@ -99,6 +101,8 @@ public class TAPCacheManager {
                                 , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
                         mDiskCacheStarting = false; // Finished initialization
                         mDiskCacheLock.notifyAll(); // Wake any waiting threads
+
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -133,10 +137,14 @@ public class TAPCacheManager {
     }
 
     public Bitmap getBipmapPerKey(String key) {
-        if (null != getMemoryCache().get(key)) {
-          return getMemoryCache().get(key);
-        } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
-            return mDiskLruCache.getBitmap(key);
-        } else return null;
+        synchronized (mDiskCacheLock) {
+            if (null != getMemoryCache().get(key)) {
+                Log.e(TAG, "getBipmapPerKey: 1");
+                return getMemoryCache().get(key);
+            } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
+                Log.e(TAG, "getBipmapPerKey: 2");
+                return mDiskLruCache.getBitmap(key);
+            } else return null;
+        }
     }
 }
