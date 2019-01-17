@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -400,21 +399,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             rcivImageBody.setImageDimensions(widthDimension, heightDimension);
-            int placeholder = isMessageFromMySelf(item) ? R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp
-                    : R.drawable.tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp;
+            int placeholder = R.drawable.tap_bg_grey_e4;
+
+            glide.load(placeholder)
+                    .apply(new RequestOptions().placeholder(placeholder)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)).into(rcivImageBody);
 
             if (null == fileID && null != imageUri) {
                 glide.load(imageUri)
                         .apply(new RequestOptions().placeholder(placeholder)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)).into(rcivImageBody);
-            } else if (null != fileID && null != TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(fileID)){
-                Log.e(TAG, item.getBody()+" : "+fileID );
-                glide.load(TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(fileID))
-                        .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(rcivImageBody);
-            } else {
-                // TODO: 16/01/19 minta ko kepin tggu push dlu yaa :3
-                Log.e(TAG, "setImageMessage2: " );
+            } else if (null != fileID){
+                TAPCacheManager.getInstance(itemView.getContext()).getBipmapPerKey(itemView.getContext(),fileID, placeholder, rcivImageBody, glide);
             }
         }
 
