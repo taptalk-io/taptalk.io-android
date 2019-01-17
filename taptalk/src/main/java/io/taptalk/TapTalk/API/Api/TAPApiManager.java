@@ -266,6 +266,7 @@ public class TAPApiManager {
                 .addFormDataPart("roomID", roomID)
                 .addFormDataPart("file", imageFile.getName(), reqFile)
                 .addFormDataPart("caption", caption)
+                .addFormDataPart("fileType", "image")
                 .build();
         execute(tapMultipart.uploadImage(requestBody), subscriber);
     }
