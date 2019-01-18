@@ -115,6 +115,13 @@ public class TAPDefaultConstant {
         public static final int OTHER_ERRORS = 99999;
     }
 
+    public static final class UploadBroadcastEvent {
+        public static final String UploadProgressLoading = "kUploadProgressLading";
+        public static final String UploadProgressFinish = "kUploadProgressFinish";
+        public static final String UploadFailed = "kUploadFailed";
+        public static final String UploadCancelled = "kUploadCancelled";
+    }
+
     public static final class TokenHeaderConst {
         public static final int NOT_USE_REFRESH_TOKEN = 1;
         public static final int USE_REFRESH_TOKEN = 2;
