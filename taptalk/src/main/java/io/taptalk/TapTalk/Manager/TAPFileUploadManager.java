@@ -226,6 +226,7 @@ public class TAPFileUploadManager {
         //ini ngecek kalau kosong ga perlu jalanin lagi
         if (!uploadQueue.isEmpty()) {
             uploadImage(context);
+            Log.e(TAG, "uploadNextSequence: " );
         }
     }
 
