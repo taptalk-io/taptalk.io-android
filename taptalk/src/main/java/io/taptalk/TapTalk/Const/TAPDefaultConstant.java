@@ -118,7 +118,10 @@ public class TAPDefaultConstant {
     public static final class UploadBroadcastEvent {
         public static final String UploadProgressLoading = "kUploadProgressLading";
         public static final String UploadProgressFinish = "kUploadProgressFinish";
+        public static final String UploadImageData = "kUploadImageData";
+        public static final String UploadLocalID = "kUploadLocalID";
         public static final String UploadFailed = "kUploadFailed";
+        public static final String UploadFailedErrorMessage = "kUploadFailedErrorMessage";
         public static final String UploadCancelled = "kUploadCancelled";
     }
 

@@ -2,7 +2,9 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.animation.LayoutTransition;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -41,6 +43,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
@@ -55,7 +58,6 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
-import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -95,6 +97,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 
 public class TAPChatActivity extends TAPBaseChatActivity {
 
@@ -158,6 +166,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         initHelper();
         initListener();
         cancelNotificationWhenEnterRoom();
+        TAPBroadcastManager.register(this, uploadReceiver, UploadProgressLoading
+                , UploadProgressFinish, UploadFailed, UploadCancelled);
     }
 
     @Override
@@ -170,7 +180,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         // Stop offline timer
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-
+        TAPBroadcastManager.unregister(this, uploadReceiver);
     }
 
     @Override
@@ -248,7 +258,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().sendImageMessage(this, images, uploadListener);
+                            TAPChatManager.getInstance().sendImageMessage(this, images);
                         break;
                 }
         }
@@ -340,7 +350,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         //showUserOffline();
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(Glide.with(this), chatListener, uploadListener);
+        messageAdapter = new TAPMessageAdapter(Glide.with(this), chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);
@@ -1057,35 +1067,43 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    private TAPUploadListener uploadListener = new TAPUploadListener() {
+    BroadcastReceiver uploadReceiver = new BroadcastReceiver() {
         @Override
-        public void onProgressLoading(String localID) {
-            if (vm.getMessagePointer().containsKey(localID)) {
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-            }
-        }
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            String localID;
+            switch (action) {
+                case UploadProgressLoading :
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case UploadProgressFinish :
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID) &&
+                            intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
+                        TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                        messageModel.setData((HashMap<String, Object>) intent.getSerializableExtra(UploadImageData));
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
+                    }
+                    break;
+                case UploadFailed :
+                    break;
+                case UploadCancelled :
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
+                        int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
 
-        @Override
-        public void onProgressFinish(String localID, HashMap<String, Object> imageDataModel) {
-            if (vm.getMessagePointer().containsKey(localID)) {
-                TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
-                messageModel.setData(imageDataModel);
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
-            }
-        }
+                        TAPFileUploadManager.getInstance().cancelUpload(TAPChatActivity.this,
+                                cancelledMessageModel);
 
-        @Override
-        public void onUploadCanceled(String localID) {
-            if (vm.getMessagePointer().containsKey(localID)) {
-                TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
-                int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
-
-                TAPFileUploadManager.getInstance().cancelUpload(TAPChatActivity.this,
-                        cancelledMessageModel, this);
-
-                vm.removeMessagePointer(localID);
-                messageAdapter.removeMessageAt(itemPos);
-                Log.e(TAG, "onUploadCanceled: ");
+                        vm.removeMessagePointer(localID);
+                        messageAdapter.removeMessageAt(itemPos);
+                        Log.e(TAG, "onUploadCanceled: ");
+                    }
+                    break;
             }
         }
     };
