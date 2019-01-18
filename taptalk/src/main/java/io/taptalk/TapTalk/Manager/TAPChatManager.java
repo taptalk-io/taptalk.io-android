@@ -42,6 +42,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
+import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -439,7 +440,7 @@ public class TAPChatManager {
         TAPMessageModel messageModel;
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
-                    caption,
+                    TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
@@ -448,7 +449,7 @@ public class TAPChatManager {
                     TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, imageUri)));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                    caption,
+                    TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
