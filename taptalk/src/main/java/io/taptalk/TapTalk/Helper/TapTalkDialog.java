@@ -97,6 +97,7 @@ public class TapTalkDialog extends Dialog {
 
         protected String dialogTitle = "", dialogMessage = "", textSecondary = "", textPrimary = "";
         protected int layout = 1; //1 one Button, 2 two button
+        protected boolean cancelable;
         protected TapTalkDialog dialog;
 
         //listener
@@ -155,10 +156,16 @@ public class TapTalkDialog extends Dialog {
             return this;
         }
 
+        public Builder setCancelable(boolean cancelable) {
+            this.cancelable = cancelable;
+            return this;
+        }
+
         @UiThread
         public TapTalkDialog build() {
             TapTalkDialog dialog = new TapTalkDialog(this);
             this.dialog = dialog;
+            dialog.setCancelable(cancelable);
             return dialog;
         }
 

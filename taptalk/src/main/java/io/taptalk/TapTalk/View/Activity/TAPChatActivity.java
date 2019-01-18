@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.Manifest;
 import android.animation.LayoutTransition;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -87,9 +89,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
@@ -161,6 +164,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
 
+        checkPermissions();
         initViewModel();
         initView();
         initHelper();
@@ -268,12 +272,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
-                case PERMISSION_CAMERA:
-                case PERMISSION_WRITE_EXTERNAL_STORAGE:
+                case PERMISSION_CAMERA_CAMERA:
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA:
                     vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
-                case PERMISSION_READ_EXTERNAL_STORAGE:
+                case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
                     TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+                    break;
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK:
+                    if (null != messageAdapter) {
+                        messageAdapter.notifyDataSetChanged();
+                    }
                     break;
             }
         }
@@ -284,6 +293,25 @@ public class TAPChatActivity extends TAPBaseChatActivity {
      * PRIVATE METHODS
      * =========================================================================================== *
      */
+
+    private void checkPermissions() {
+        // Check and request write storage permission (only request once)
+        if (!TAPDataManager.getInstance().isWriteStoragePermissionRequested() &&
+                !TAPUtils.getInstance().hasPermissions(
+                        TAPChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            new TapTalkDialog.Builder(TAPChatActivity.this)
+                    .setTitle(getString(R.string.permission_request))
+                    .setMessage(getString(R.string.write_storage_permission))
+                    .setPrimaryButtonTitle(getString(R.string.ok))
+                    .setCancelable(false)
+                    .setPrimaryButtonListener(v -> {
+                        ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK);
+                        TAPDataManager.getInstance().setWriteStoragePermissionRequested(true);
+                        }
+                    )
+                    .show();
+        }
+    }
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);

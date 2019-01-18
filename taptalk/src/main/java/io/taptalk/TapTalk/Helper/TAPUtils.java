@@ -53,9 +53,9 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 
 public class TAPUtils {
 
@@ -286,11 +286,10 @@ public class TAPUtils {
     }
 
     public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE / USE CUSTOM PICKER
         // Reminder: Handle onRequestPermissionsResult in activity
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // Check read storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
             Intent intent = new Intent();
@@ -303,16 +302,6 @@ public class TAPUtils {
         }
     }
 
-    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
-        int itemSize = clipData.getItemCount();
-        for (int count = 0; count < itemSize; count++) {
-            if (count == 0 && isFirstSelected)
-                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
-            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
-        }
-        return uris;
-    }
-
     /**
      * @return Uri to receive saved image path
      */
@@ -320,10 +309,10 @@ public class TAPUtils {
         // Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         } else if (!hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
         } else {
             // All permissions granted
             Uri imageUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
@@ -335,6 +324,16 @@ public class TAPUtils {
             return imageUri;
         }
         return null;
+    }
+
+    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
+        int itemSize = clipData.getItemCount();
+        for (int count = 0; count < itemSize; count++) {
+            if (count == 0 && isFirstSelected)
+                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
+            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
+        }
+        return uris;
     }
 
     /**

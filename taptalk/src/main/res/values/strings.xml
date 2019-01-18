@@ -79,6 +79,7 @@
     <string name="search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
     <string name="change_group_image_guide">Tap icon to change group profile image</string>
     <string name="chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
+    <string name="write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
 
     <!--Error Message-->
     <string name="error">Error</string>
@@ -158,6 +159,7 @@
     <string name="no_chats">No Chats</string>
     <string name="ok">OK</string>
     <string name="oops">Oops…</string>
+    <string name="permission_request">Permission Request</string>
     <string name="reply">Reply</string>
     <string name="search">Search</string>
     <string name="send">Send</string>

@@ -16,14 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
-import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -31,7 +26,7 @@ import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CONTACT_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 
 public class TAPNewChatActivity extends TAPBaseActivity {
 
@@ -106,7 +101,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
-                case PERMISSION_CAMERA:
+                case PERMISSION_CAMERA_CAMERA:
                     openQRScanner();
                     break;
             }
@@ -119,7 +114,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             startActivity(intent);
             overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         } else {
-            ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         }
     }
 

@@ -11,6 +11,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -325,11 +326,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item.getData()) {
                 return;
             }
-            int widthDimension = (int) item.getData().get("width");
-            int heightDimension = (int) item.getData().get("height");
+            Integer widthDimension = (Integer) item.getData().get("width");
+            Integer heightDimension = (Integer) item.getData().get("height");
             String imageUri = (String) item.getData().get("fileUri");
             String imageCaption = (String) item.getData().get("caption");
             String fileID = (String) item.getData().get("fileID");
+            Log.e(TAG, "setImageData: " + TAPUtils.getInstance().toJsonString(item.getData()));
 
             // Set caption
             if (null != imageCaption && !imageCaption.isEmpty()) {
@@ -343,7 +345,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMessageBody.setVisibility(View.GONE);
             }
 
-            rcivImageBody.setImageDimensions(widthDimension, heightDimension);
+            // TODO: 18 January 2019 TEMP CHECK
+            if (null != widthDimension && null != heightDimension) {
+                rcivImageBody.setImageDimensions(widthDimension, heightDimension);
+            }
             int placeholder = R.drawable.tap_bg_grey_e4;
 
             // Load placeholder image
