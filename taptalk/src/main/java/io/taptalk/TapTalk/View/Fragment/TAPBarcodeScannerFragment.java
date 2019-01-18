@@ -26,7 +26,7 @@ import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPScanResultActivity;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SCAN_RESULT;
 
 public class TAPBarcodeScannerFragment extends Fragment {
@@ -121,7 +121,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
 
     public void startCameraSource() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         } else {
             try {
                 cameraSource.start(svScanner.getHolder());
@@ -135,7 +135,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
-                case PERMISSION_CAMERA:
+                case PERMISSION_CAMERA_CAMERA:
                     startCameraSource();
                     break;
             }

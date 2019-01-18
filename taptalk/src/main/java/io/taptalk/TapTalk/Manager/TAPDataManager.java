@@ -38,6 +38,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
@@ -70,6 +71,10 @@ public class TAPDataManager {
      * GENERIC METHODS FOR PREFERENCE
      * =========================================================================================== *
      */
+
+    private void saveBooleanPreference(boolean bool, String key) {
+        Hawk.put(key, bool);
+    }
 
     private void saveStringPreference(String string, String key) {
         Hawk.put(key, string);
@@ -238,6 +243,18 @@ public class TAPDataManager {
 
     public Boolean isRoomListSetupFinished() {
         return checkPreferenceKeyAvailable(K_IS_ROOM_LIST_SETUP_FINISHED);
+    }
+
+    /**
+     * WRITE STORAGE PERMISSION REQUEST ON OPEN CHAT ROOM
+     */
+
+    public Boolean isWriteStoragePermissionRequested() {
+        return checkPreferenceKeyAvailable(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
+    }
+
+    public void setWriteStoragePermissionRequested(boolean isRequested) {
+        saveBooleanPreference(isRequested, K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
     }
 
     public void setRoomListSetupFinished() {

@@ -71,9 +71,10 @@ public class TAPDefaultConstant {
     }
 
     public static final class PermissionRequest {
-        public static final int PERMISSION_CAMERA = 1;
-        public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 3;
+        public static final int PERMISSION_CAMERA_CAMERA = 1;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 2;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
     }
 
     public static final class Sorting {
@@ -147,6 +148,7 @@ public class TAPDefaultConstant {
     public static final String K_ROOM = "kTAPRoom";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
+    public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
