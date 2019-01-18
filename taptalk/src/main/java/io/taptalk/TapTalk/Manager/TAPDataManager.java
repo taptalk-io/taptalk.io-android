@@ -2,6 +2,9 @@ package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -17,7 +20,6 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
@@ -48,6 +50,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 
 public class TAPDataManager {
     private static final String TAG = TAPDataManager.class.getSimpleName();
@@ -618,9 +622,11 @@ public class TAPDataManager {
         TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, uploadSubscriber = new TAPDefaultSubscriber<>(view, localID));
     }
 
-    public void cancelUploadImage(String localID, TAPUploadListener uploadListener) {
+    public void cancelUploadImage(Context context, String localID) {
         if (null != uploadSubscriber) {
-            uploadListener.onUploadCanceled(localID);
+            Intent intent = new Intent(UploadCancelled);
+            intent.putExtra(UploadLocalID, localID);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         }
     }
 

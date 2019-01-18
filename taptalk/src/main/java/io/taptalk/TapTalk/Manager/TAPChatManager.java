@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,7 +29,6 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
-import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
@@ -466,7 +464,7 @@ public class TAPChatManager {
      * Create image message model and call upload api
      */
     private void createImageMessageModelAndAddToQueueUpload(Context context, TAPImagePreviewModel image,
-                                                            String caption, TAPUploadListener uploadListener) {
+                                                            String caption) {
         TAPMessageModel messageModel = createImageMessageModel(image, caption);
 
         // Set Start Point for Progress
@@ -474,7 +472,7 @@ public class TAPChatManager {
 
         messageModel = showDummyImageMessage(messageModel);
 
-        TAPFileUploadManager.getInstance().addQueueUploadImage(context, messageModel, uploadListener);
+        TAPFileUploadManager.getInstance().addQueueUploadImage(context, messageModel);
     }
 
     /**
@@ -509,11 +507,10 @@ public class TAPChatManager {
         return imageMessage;
     }
 
-    public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images,
-                                      @NonNull TAPUploadListener uploadListener) {
+    public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images) {
         new Thread(() -> {
             for (TAPImagePreviewModel imagePreview : images) {
-                createImageMessageModelAndAddToQueueUpload(context, imagePreview, imagePreview.getImageCaption(), uploadListener);
+                createImageMessageModelAndAddToQueueUpload(context, imagePreview, imagePreview.getImageCaption());
             }
         }).start();
     }

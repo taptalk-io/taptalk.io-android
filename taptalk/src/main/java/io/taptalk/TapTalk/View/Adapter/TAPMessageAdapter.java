@@ -1,12 +1,14 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,9 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -35,7 +37,6 @@ import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
-import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -59,12 +60,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
 
     private static final String TAG = TAPMessageAdapter.class.getSimpleName();
     private TAPChatListener chatListener;
-    private TAPUploadListener uploadListener;
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
@@ -72,10 +74,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private long defaultAnimationTime = 200L;
     private RequestManager glide;
 
-    public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener, TAPUploadListener uploadListener) {
+    public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener) {
         myUserModel = TAPDataManager.getInstance().getActiveUser();
         this.chatListener = chatListener;
-        this.uploadListener = uploadListener;
         this.glide = glide;
     }
 
@@ -400,10 +401,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void setImageViewButtonProgress(TAPMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
-                flProgress.setOnClickListener(v -> uploadListener.onUploadFailed(item.getLocalID()));
+                flProgress.setOnClickListener(v -> {
+                    Intent intent = new Intent(UploadFailed);
+                    intent.putExtra(UploadLocalID, item.getLocalID());
+                    LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
+                });
             } else {
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_cancel_white);
-                flProgress.setOnClickListener(v -> TAPDataManager.getInstance().cancelUploadImage(item.getLocalID(), uploadListener));
+                flProgress.setOnClickListener(v -> TAPDataManager.getInstance()
+                        .cancelUploadImage(itemView.getContext(), item.getLocalID()));
             }
         }
 

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
-public class BroadcastManager {
+public class TAPBroadcastManager {
 
     public static void register(Context context, BroadcastReceiver receiver, String... actions) {
         IntentFilter filter = new IntentFilter();

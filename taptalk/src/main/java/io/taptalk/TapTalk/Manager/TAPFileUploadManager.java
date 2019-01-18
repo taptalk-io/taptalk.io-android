@@ -2,12 +2,14 @@ package io.taptalk.TapTalk.Manager;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -26,13 +28,18 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Listener.TAPUploadListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 
 public class TAPFileUploadManager {
 
@@ -75,14 +82,13 @@ public class TAPFileUploadManager {
      * @param messageModel
      */
     public void addQueueUploadImage(Context context,
-                                    TAPMessageModel messageModel,
-                                    TAPUploadListener uploadListener) {
+                                    TAPMessageModel messageModel) {
         uploadQueue.add(messageModel);
-        if (1 == uploadQueue.size()) uploadImage(context, uploadListener);
+        if (1 == uploadQueue.size()) uploadImage(context);
     }
 
     // TODO: 14 January 2019 HANDLE OTHER FILE TYPES
-    private void uploadImage(Context context, TAPUploadListener uploadListener) {
+    private void uploadImage(Context context) {
         new Thread(() -> {
             Log.e(TAG, "startUploadSequenceFromQueue: ");
             if (uploadQueue.isEmpty()) {
@@ -128,14 +134,13 @@ public class TAPFileUploadManager {
                 imageData.setMediaType(mimeType);
                 messageModel.setData(imageData.toHashMapWithoutFileUri());
 
-                callUploadAPI(context, messageModel, imageFile, bitmap, mimeType, imageData, uploadListener);
+                callUploadAPI(context, messageModel, imageFile, bitmap, mimeType, imageData);
             }
         }).start();
     }
 
     private void callUploadAPI(Context context, TAPMessageModel messageModel, File imageFile, Bitmap bitmap, String mimeType,
-                               TAPDataImageModel imageData,
-                               TAPUploadListener uploadListener) {
+                               TAPDataImageModel imageData) {
 
         String localID = messageModel.getLocalID();
 
@@ -143,7 +148,9 @@ public class TAPFileUploadManager {
             @Override
             public void onProgressUpdate(int percentage) {
                 addUploadProgressMap(localID, percentage);
-                uploadListener.onProgressLoading(localID);
+                Intent intent = new Intent(UploadProgressLoading);
+                intent.putExtra(UploadLocalID, localID);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
 
             @Override
@@ -161,17 +168,23 @@ public class TAPFileUploadManager {
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
                 Log.e(TAG, "onSuccess: ");
-                saveImageToCache(context, bitmap, messageModel, response, uploadListener);
+                saveImageToCache(context, bitmap, messageModel, response);
             }
 
             @Override
             public void onError(TAPErrorModel error, String localID) {
-                uploadListener.onUploadFailed(localID);
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, localID);
+                intent.putExtra(UploadFailedErrorMessage, error.getMessage());
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
 
             @Override
             public void onError(String errorMessage, String localID) {
-                uploadListener.onUploadFailed(localID);
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, localID);
+                intent.putExtra(UploadFailedErrorMessage, errorMessage);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
         };
 
@@ -229,31 +242,30 @@ public class TAPFileUploadManager {
     /**
      * Check upload queue and restart upload sequence
      */
-    public void uploadNextSequence(Context context, TAPUploadListener uploadListener) {
+    public void uploadNextSequence(Context context) {
         uploadQueue.remove(0);
         //ini ngecek kalau kosong ga perlu jalanin lagi
         if (!uploadQueue.isEmpty()) {
-            uploadImage(context, uploadListener);
+            uploadImage(context);
         }
     }
 
     /**
      * @param cancelledMessageModel
      */
-    public void cancelUpload(Context context, TAPMessageModel cancelledMessageModel,
-                             TAPUploadListener uploadListener) {
+    public void cancelUpload(Context context, TAPMessageModel cancelledMessageModel) {
         int position = TAPUtils.getInstance().searchMessagePositionByLocalID(uploadQueue, cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !uploadQueue.isEmpty()) {
             TAPDataManager.getInstance().unSubscribeToUploadImage();
-            uploadNextSequence(context, uploadListener);
+            uploadNextSequence(context);
         } else if (-1 != position && !uploadQueue.isEmpty()) {
             uploadQueue.remove(position);
         }
     }
 
     private void saveImageToCache(Context context, Bitmap bitmap, TAPMessageModel messageModel,
-                                  TAPUploadFileResponse response, TAPUploadListener uploadListener) {
+                                  TAPUploadFileResponse response) {
         try {
             //add ke dalem cache
             new Thread(() -> {
@@ -276,11 +288,14 @@ public class TAPFileUploadManager {
             new Thread(() -> TAPChatManager.getInstance().sendImageMessage(messageModel)).start();
 
             //removeUploadProgressMap(localID);
-            uploadListener.onProgressFinish(localID, imageDataMap);
+            Intent intent = new Intent(UploadProgressFinish);
+            intent.putExtra(UploadLocalID, localID);
+            intent.putExtra(UploadImageData, imageDataMap);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             TAPDataManager.getInstance().removeUploadSubscriber();
 
             //manggil restart buat queue selanjutnya
-            uploadNextSequence(context, uploadListener);
+            uploadNextSequence(context);
             // TODO: 10/01/19 send emit message to server
         } catch (Exception e) {
             e.printStackTrace();
