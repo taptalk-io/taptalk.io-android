@@ -1127,6 +1127,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPFileUploadManager.getInstance().cancelUpload(TAPChatActivity.this,
                                 cancelledMessageModel);
 
+                        vm.removeFromUploadingList(localID);
+                        vm.delete(localID);
                         vm.removeMessagePointer(localID);
                         messageAdapter.removeMessageAt(itemPos);
                         Log.e(TAG, "onUploadCanceled: ");

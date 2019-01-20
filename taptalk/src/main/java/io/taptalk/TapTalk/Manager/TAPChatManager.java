@@ -660,7 +660,7 @@ public class TAPChatManager {
         waitingUploadProgress.put(messageModel.getLocalID(), messageModel);
     }
 
-    private void removeUploadingMessageFromHashMap(String localID) {
+    public void removeUploadingMessageFromHashMap(String localID) {
         waitingUploadProgress.remove(localID);
     }
 
