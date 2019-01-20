@@ -1154,7 +1154,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPFileUploadManager.getInstance().addUploadProgressMap(failedMessageModel.getLocalID(), 0);
                         failedMessageModel.setFailedSend(false);
                         failedMessageModel.setSending(true);
-                        TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, failedMessageModel);
+                        new Thread(() -> {
+                            TAPMessageModel imageMessageRetry = failedMessageModel.copyMessageModel();
+                            TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, imageMessageRetry);
+                        }).start();
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
