@@ -380,6 +380,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().updatePendingStatus(localID);
     }
 
+    public void updateFailedMessageToSending(String localID) {
+        TAPDatabaseManager.getInstance().updateFailedStatusToSending(localID);
+    }
+
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }

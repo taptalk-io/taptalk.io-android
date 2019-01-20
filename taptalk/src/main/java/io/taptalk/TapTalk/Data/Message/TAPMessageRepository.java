@@ -199,4 +199,8 @@ public class TAPMessageRepository {
     public void updatePendingStatus(final String localID) {
         new Thread(() -> messageDao.updatePendingStatus(localID)).start();
     }
+
+    public void updateFailedStatusToSending(final String localID) {
+        new Thread(() -> messageDao.updateFailedStatusToSending(localID)).start();
+    }
 }

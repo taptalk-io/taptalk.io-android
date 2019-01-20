@@ -123,6 +123,7 @@ public class TAPDefaultConstant {
         public static final String UploadLocalID = "kUploadLocalID";
         public static final String UploadFailed = "kUploadFailed";
         public static final String UploadFailedErrorMessage = "kUploadFailedErrorMessage";
+        public static final String UploadRetried = "kUploadRetried";
         public static final String UploadCancelled = "kUploadCancelled";
     }
 

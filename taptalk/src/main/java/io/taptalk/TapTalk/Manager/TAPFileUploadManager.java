@@ -265,7 +265,7 @@ public class TAPFileUploadManager {
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
             messageModel.setData(imageDataMap);
 
-            new Thread(() -> TAPChatManager.getInstance().sendImageMessage(messageModel)).start();
+            new Thread(() -> TAPChatManager.getInstance().sendImageMessageToServer(messageModel)).start();
 
             //removeUploadProgressMap(localID);
             Intent intent = new Intent(UploadProgressFinish);

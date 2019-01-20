@@ -334,7 +334,7 @@ public class TAPChatManager {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
 
-    public void sendImageMessage(TAPMessageModel messageModel) {
+    public void sendImageMessageToServer(TAPMessageModel messageModel) {
         removeUploadingMessageFromHashMap(messageModel.getLocalID());
         triggerListenerAndSendMessage(messageModel, false);
     }
@@ -515,6 +515,13 @@ public class TAPChatManager {
             for (TAPImagePreviewModel imagePreview : images) {
                 createImageMessageModelAndAddToQueueUpload(context, imagePreview, imagePreview.getImageCaption());
             }
+        }).start();
+    }
+
+    public void sendImageMessage(Context context, TAPMessageModel imageModel) {
+        new Thread(() -> {
+            addUploadingMessageToHashMap(imageModel);
+            TAPFileUploadManager.getInstance().addQueueUploadImage(context, imageModel);
         }).start();
     }
 
