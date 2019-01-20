@@ -1117,6 +1117,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                     break;
                 case UploadFailed :
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
+                        vm.removeFromUploadingList(localID);
+                        failedMessageModel.setFailedSend(true);
+                        failedMessageModel.setSending(false);
+                        TAPDataManager.getInstance().updateSendingMessageToFailed(localID);
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
+                    }
                     break;
                 case UploadCancelled :
                     localID = intent.getStringExtra(UploadLocalID);

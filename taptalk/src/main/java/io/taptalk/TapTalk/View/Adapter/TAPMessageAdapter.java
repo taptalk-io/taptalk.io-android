@@ -312,11 +312,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
             Integer progressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
-            if (null == progressValue || (null != item.getSending() && !item.getSending())) {
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                flProgress.setVisibility(View.VISIBLE);
+                pbProgress.setVisibility(View.GONE);
+            } else if (null == progressValue || (null != item.getSending() && !item.getSending())) {
                 flProgress.setVisibility(View.GONE);
                 flBubble.setForeground(null);
             } else {
                 flProgress.setVisibility(View.VISIBLE);
+                pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
                 pbProgress.setProgress(progressValue);
             }
