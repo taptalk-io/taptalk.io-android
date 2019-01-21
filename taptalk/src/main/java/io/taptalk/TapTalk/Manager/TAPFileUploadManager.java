@@ -103,6 +103,10 @@ public class TAPFileUploadManager {
                 // No data
                 Log.e(TAG, "File upload failed: data is required in MessageModel.");
                 uploadQueue.remove(0);
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, messageModel.getLocalID());
+                intent.putExtra(UploadFailedErrorMessage, "File upload failed: data is required in MessageModel.");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 return;
             }
             TAPDataImageModel imageData = TAPUtils.getInstance().convertObject(messageModel.getData(),
@@ -115,6 +119,10 @@ public class TAPFileUploadManager {
                 // Image data does not contain URI
                 Log.e(TAG, "File upload failed: URI is required in MessageModel data.");
                 uploadQueue.remove(0);
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, messageModel.getLocalID());
+                intent.putExtra(UploadFailedErrorMessage, "File upload failed: URI is required in MessageModel data.");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 return;
             } else {
                 imageUri = Uri.parse(imageData.getFileUri());
