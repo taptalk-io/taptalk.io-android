@@ -295,7 +295,7 @@ public class TAPUtils {
             Intent intent = new Intent();
             intent.setType(activity.getString(R.string.intent_pick_image));
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.intent_select_picture)), requestCode);
             }

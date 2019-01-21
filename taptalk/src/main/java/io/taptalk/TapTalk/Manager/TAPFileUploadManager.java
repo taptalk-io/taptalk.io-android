@@ -110,12 +110,14 @@ public class TAPFileUploadManager {
                     });
 
             // Create and resize image file
-            Uri imageUri = Uri.parse(imageData.getFileUri());
-            if (null == imageUri) {
+            Uri imageUri;
+            if (null == imageData.getFileUri()) {
                 // Image data does not contain URI
                 Log.e(TAG, "File upload failed: URI is required in MessageModel data.");
                 uploadQueue.remove(0);
                 return;
+            } else {
+                imageUri = Uri.parse(imageData.getFileUri());
             }
 
             Bitmap bitmap = createAndResizeImageFile(context, imageUri);
@@ -247,6 +249,7 @@ public class TAPFileUploadManager {
         //ini ngecek kalau kosong ga perlu jalanin lagi
         if (!uploadQueue.isEmpty()) {
             uploadImage(context);
+            Log.e(TAG, "uploadNextSequence: " );
         }
     }
 
@@ -285,7 +288,7 @@ public class TAPFileUploadManager {
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
             messageModel.setData(imageDataMap);
 
-            new Thread(() -> TAPChatManager.getInstance().sendImageMessage(messageModel)).start();
+            new Thread(() -> TAPChatManager.getInstance().sendImageMessageToServer(messageModel)).start();
 
             //removeUploadProgressMap(localID);
             Intent intent = new Intent(UploadProgressFinish);

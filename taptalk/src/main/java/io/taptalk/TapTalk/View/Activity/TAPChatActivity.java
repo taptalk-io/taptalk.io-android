@@ -106,6 +106,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
 
 public class TAPChatActivity extends TAPBaseChatActivity {
 
@@ -171,7 +172,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         initListener();
         cancelNotificationWhenEnterRoom();
         TAPBroadcastManager.register(this, uploadReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled);
+                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried);
     }
 
     @Override
@@ -262,7 +263,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().sendImageMessage(this, images);
+                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, images);
                         break;
                 }
         }
@@ -1117,6 +1118,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                     break;
                 case UploadFailed :
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
+                        vm.removeFromUploadingList(localID);
+                        failedMessageModel.setFailedSend(true);
+                        failedMessageModel.setSending(false);
+                        TAPDataManager.getInstance().updateSendingMessageToFailed(localID);
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
+                    }
                     break;
                 case UploadCancelled :
                     localID = intent.getStringExtra(UploadLocalID);
@@ -1127,9 +1137,28 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPFileUploadManager.getInstance().cancelUpload(TAPChatActivity.this,
                                 cancelledMessageModel);
 
+                        vm.removeFromUploadingList(localID);
+                        vm.delete(localID);
                         vm.removeMessagePointer(localID);
                         messageAdapter.removeMessageAt(itemPos);
                         Log.e(TAG, "onUploadCanceled: ");
+                    }
+                    break;
+                case UploadRetried :
+                    localID = intent.getStringExtra(UploadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        Log.e(TAG, "onReceive: "+localID );
+                        TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
+                        TAPDataManager.getInstance().updateFailedMessageToSending(localID);
+                        // Set Start Point for Progress
+                        TAPFileUploadManager.getInstance().addUploadProgressMap(failedMessageModel.getLocalID(), 0);
+                        failedMessageModel.setFailedSend(false);
+                        failedMessageModel.setSending(true);
+                        new Thread(() -> {
+                            TAPMessageModel imageMessageRetry = failedMessageModel.copyMessageModel();
+                            TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, imageMessageRetry);
+                        }).start();
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
             }

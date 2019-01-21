@@ -92,4 +92,7 @@ public interface TAPMessageDao {
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where localID = :localID")
     void updatePendingStatus(String localID);
+
+    @Query("update Message_Table set isFailedSend = 0, isSending = 1 where localID = :localID")
+    void updateFailedStatusToSending(String localID);
 }

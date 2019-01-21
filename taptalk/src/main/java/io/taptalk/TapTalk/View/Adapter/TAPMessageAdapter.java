@@ -60,8 +60,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
 
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
 
@@ -312,11 +312,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
             Integer progressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
-            if (null == progressValue) {
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                flProgress.setVisibility(View.VISIBLE);
+                pbProgress.setVisibility(View.GONE);
+            } else if (null == progressValue || (null != item.getSending() && !item.getSending())) {
                 flProgress.setVisibility(View.GONE);
                 flBubble.setForeground(null);
             } else {
                 flProgress.setVisibility(View.VISIBLE);
+                pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
                 pbProgress.setProgress(progressValue);
             }
@@ -402,7 +406,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
                 flProgress.setOnClickListener(v -> {
-                    Intent intent = new Intent(UploadFailed);
+                    Intent intent = new Intent(UploadRetried);
                     intent.putExtra(UploadLocalID, item.getLocalID());
                     LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
                 });

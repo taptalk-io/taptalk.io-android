@@ -59,6 +59,10 @@ public class TAPChatViewModel extends AndroidViewModel {
         TAPDataManager.getInstance().deleteFromDatabase(messageLocalID);
     }
 
+    public void removeFromUploadingList(String messageLocalID) {
+        TAPChatManager.getInstance().removeUploadingMessageFromHashMap(messageLocalID);
+    }
+
     public Map<String, TAPMessageModel> getMessagePointer() {
         return messagePointer == null ? messagePointer = new LinkedHashMap<>() : messagePointer;
     }

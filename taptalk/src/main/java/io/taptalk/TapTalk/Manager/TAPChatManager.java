@@ -61,7 +61,7 @@ public class TAPChatManager {
 
     private final String TAG = TAPChatManager.class.getSimpleName();
     private static TAPChatManager instance;
-    private Map<String, TAPMessageModel> pendingMessages, waitingResponses, incomingMessages, quotedMessages;
+    private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, String> messageDrafts;
     private Map<String, HashMap<String, Object>> userData; // TODO: 17 January 2019 DATA FROM USER WHEN OPENING ROOM FROM CLIENT APP
     private List<TAPChatListener> chatListeners;
@@ -172,6 +172,7 @@ public class TAPChatManager {
         pendingMessages = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
         incomingMessages = new LinkedHashMap<>();
+        waitingUploadProgress = new LinkedHashMap<>();
         messageDrafts = new HashMap<>();
     }
 
@@ -334,7 +335,8 @@ public class TAPChatManager {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
 
-    public void sendImageMessage(TAPMessageModel messageModel) {
+    public void sendImageMessageToServer(TAPMessageModel messageModel) {
+        removeUploadingMessageFromHashMap(messageModel.getLocalID());
         triggerListenerAndSendMessage(messageModel, false);
     }
 
@@ -471,6 +473,7 @@ public class TAPChatManager {
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
 
+        addUploadingMessageToHashMap(messageModel);
         messageModel = showDummyImageMessage(messageModel);
 
         TAPFileUploadManager.getInstance().addQueueUploadImage(context, messageModel);
@@ -513,6 +516,13 @@ public class TAPChatManager {
             for (TAPImagePreviewModel imagePreview : images) {
                 createImageMessageModelAndAddToQueueUpload(context, imagePreview, imagePreview.getImageCaption());
             }
+        }).start();
+    }
+
+    public void sendImageMessage(Context context, TAPMessageModel imageModel) {
+        new Thread(() -> {
+            addUploadingMessageToHashMap(imageModel);
+            TAPFileUploadManager.getInstance().addQueueUploadImage(context, imageModel);
         }).start();
     }
 
@@ -652,6 +662,14 @@ public class TAPChatManager {
             scheduler.shutdown();
         saveUnsentMessage();
         checkPendingBackgroundTask();
+    }
+
+    private void addUploadingMessageToHashMap(TAPMessageModel messageModel) {
+        waitingUploadProgress.put(messageModel.getLocalID(), messageModel);
+    }
+
+    public void removeUploadingMessageFromHashMap(String localID) {
+        waitingUploadProgress.remove(localID);
     }
 
     private void insertToList(Map<String, TAPMessageModel> hashMap) {
@@ -801,6 +819,14 @@ public class TAPChatManager {
         waitingResponses.clear();
     }
 
+    public void saveUploadingMessageToList() {
+        if (0 == waitingUploadProgress.size())
+            return;
+
+        insertToList(waitingUploadProgress);
+        waitingUploadProgress.clear();
+    }
+
     public void triggerSaveNewMessage() {
         if (null == scheduler || scheduler.isShutdown()) {
             scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -819,6 +845,7 @@ public class TAPChatManager {
         saveNewMessageToList();
         savePendingMessageToList();
         saveWaitingMessageToList();
+        saveUploadingMessageToList();
         saveMessageToDatabase();
     }
 
@@ -826,6 +853,7 @@ public class TAPChatManager {
         saveNewMessageToList();
         savePendingMessageToList();
         saveWaitingMessageToList();
+        saveUploadingMessageToList();
     }
 
     public void saveMessageToDatabase() {
