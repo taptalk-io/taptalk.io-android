@@ -192,14 +192,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvMessageBody.setText(item.getBody());
 
-            if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)
-                    && (null != item.getSending() && !item.getSending())) {
-                item.updateReadMessage();
-                new Thread(() -> {
-                    TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
-                    TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
-                }).start();
-            }
+            markUnreadForMessage(item);
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
@@ -299,6 +292,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             }
 
+            markUnreadForMessage(item);
             setImageData(item);
             setProgress(item);
 
@@ -996,5 +990,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         if (null == expandedBubble) return;
         expandedBubble.setExpanded(false);
         notifyItemChanged(getItems().indexOf(expandedBubble));
+    }
+
+    private void markUnreadForMessage(TAPMessageModel item) {
+        if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)
+                && (null != item.getSending() && !item.getSending())) {
+            item.updateReadMessage();
+            new Thread(() -> {
+                TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
+                TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
+            }).start();
+        }
     }
 }
