@@ -1141,13 +1141,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         vm.delete(localID);
                         vm.removeMessagePointer(localID);
                         messageAdapter.removeMessageAt(itemPos);
-                        Log.e(TAG, "onUploadCanceled: ");
                     }
                     break;
                 case UploadRetried :
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
-                        Log.e(TAG, "onReceive: "+localID );
                         TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
                         TAPDataManager.getInstance().updateFailedMessageToSending(localID);
                         // Set Start Point for Progress

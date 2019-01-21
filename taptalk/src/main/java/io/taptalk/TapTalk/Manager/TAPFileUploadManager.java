@@ -97,6 +97,7 @@ public class TAPFileUploadManager {
             }
 
             TAPMessageModel messageModel = uploadQueue.get(0);
+            TAPMessageModel apiMessageModel = messageModel.copyMessageModel();
 
             Log.e(TAG, "startUploadSequenceFromQueue: " + messageModel.getData());
             if (null == messageModel.getData()) {
@@ -142,9 +143,10 @@ public class TAPFileUploadManager {
                 imageData.setWidth(bitmap.getWidth());
                 imageData.setSize(imageFile.length());
                 imageData.setMediaType(mimeType);
-                messageModel.setData(imageData.toHashMapWithoutFileUri());
+                messageModel.setData(imageData.toHashMap());
+                apiMessageModel.setData(imageData.toHashMapWithoutFileUri());
 
-                callUploadAPI(context, messageModel, imageFile, bitmap, mimeType, imageData);
+                callUploadAPI(context, apiMessageModel, imageFile, bitmap, mimeType, imageData);
             }
         }).start();
     }
