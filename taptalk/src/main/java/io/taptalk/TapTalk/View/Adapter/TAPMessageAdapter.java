@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -376,7 +377,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivImageBody);
             } else if (null != fileID && !fileID.isEmpty()) {
-//                TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(itemView.getContext(), fileID, placeholder, rcivImageBody, glide);
                 new Thread(() -> {
                     Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
                     if (null != cachedImage) {
@@ -384,17 +384,46 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         ((Activity) itemView.getContext()).runOnUiThread(() -> glide
                                 .load(cachedImage)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
-                                .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
+                                .apply(new RequestOptions()
+                                        .placeholder(placeholder)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE))
                                 .into(rcivImageBody));
                     } else {
+                        // Load thumbnail
+                        final Bitmap[] thumbnail = {TAPFileDownloadManager.getInstance().getThumbnail(fileID)};
+                        if (null != thumbnail[0]) {
+                            glide.load(thumbnail[0])
+                                    .apply(new RequestOptions()
+                                            .placeholder(placeholder)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE))
+                                    .into(rcivImageBody);
+                        }
                         // Download image
                         TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
                             @Override
+                            public void onThumbnailDownloaded(String fileID, Bitmap bitmap) {
+                                // Get thumbnail from chat manager if actual image have not finished downloading
+                                thumbnail[0] = bitmap;
+                                if (null == TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID)) {
+                                    ((Activity) itemView.getContext()).runOnUiThread(() -> glide
+                                            .load(bitmap)
+                                            .transition(DrawableTransitionOptions.withCrossFade(100))
+                                            .apply(new RequestOptions()
+                                                    .placeholder(placeholder)
+                                                    .diskCacheStrategy(DiskCacheStrategy.NONE))
+                                            .into(rcivImageBody));
+                                }
+                            }
+
+                            @Override
                             public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
+                                // Load bitmap to view
                                 ((Activity) itemView.getContext()).runOnUiThread(() -> glide
                                         .load(bitmap)
                                         .transition(DrawableTransitionOptions.withCrossFade(100))
-                                        .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
+                                        .apply(new RequestOptions()
+                                                .placeholder(new BitmapDrawable(itemView.getResources(), thumbnail[0]))
+                                                .diskCacheStrategy(DiskCacheStrategy.NONE))
                                         .into(rcivImageBody));
                             }
                         });
