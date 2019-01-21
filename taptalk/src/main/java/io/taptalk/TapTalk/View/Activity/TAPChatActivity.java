@@ -25,7 +25,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -263,7 +262,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size())
-                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, images);
+                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom().getRoomID(), images);
                         break;
                 }
         }
@@ -1134,8 +1133,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
                         int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
 
-                        TAPFileUploadManager.getInstance().cancelUpload(TAPChatActivity.this,
-                                cancelledMessageModel);
+                        TAPFileUploadManager.getInstance().cancelUpload(TAPChatActivity.this, cancelledMessageModel,
+                                vm.getRoom().getRoomID());
 
                         vm.removeFromUploadingList(localID);
                         vm.delete(localID);
@@ -1154,7 +1153,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         failedMessageModel.setSending(true);
                         new Thread(() -> {
                             TAPMessageModel imageMessageRetry = failedMessageModel.copyMessageModel();
-                            TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, imageMessageRetry);
+                            TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), imageMessageRetry);
                         }).start();
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }

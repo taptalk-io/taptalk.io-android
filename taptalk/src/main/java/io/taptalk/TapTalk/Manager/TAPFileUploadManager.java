@@ -45,11 +45,10 @@ public class TAPFileUploadManager {
 
     private final String TAG = TAPFileUploadManager.class.getSimpleName();
     private static TAPFileUploadManager instance;
-    private List<TAPMessageModel> uploadQueue;
+    private HashMap<String, List<TAPMessageModel>> uploadQueuePerRoom;
     private HashMap<String, Integer> uploadProgressMap;
 
     private TAPFileUploadManager() {
-        uploadQueue = new ArrayList<>();
     }
 
     public static TAPFileUploadManager getInstance() {
@@ -76,34 +75,70 @@ public class TAPFileUploadManager {
         getUploadProgressMap().remove(localID);
     }
 
+    private HashMap<String, List<TAPMessageModel>> getUploadQueuePerRoom() {
+        return null == uploadQueuePerRoom ? uploadQueuePerRoom = new LinkedHashMap<>() : uploadQueuePerRoom;
+    }
+
+    public void addUploadQueue(TAPMessageModel messageModel) {
+        String roomID = messageModel.getRoom().getRoomID();
+
+        if (getUploadQueuePerRoom().containsKey(roomID) && null != getUploadQueue(roomID)) {
+            getUploadQueue(roomID).add(messageModel);
+        } else {
+            List<TAPMessageModel> tempMessageModels = new ArrayList<>();
+            tempMessageModels.add(messageModel);
+            getUploadQueuePerRoom().put(roomID, tempMessageModels);
+        }
+    }
+
+    private List<TAPMessageModel> getUploadQueue(String roomID) {
+        if (!getUploadQueuePerRoom().containsKey(roomID))
+            return new ArrayList<>();
+
+        return getUploadQueuePerRoom().get(roomID);
+    }
+
+    private int getUploadQueueSize(String roomID) {
+        if (!getUploadQueuePerRoom().containsKey(roomID) && null != getUploadQueue(roomID))
+            return 0;
+
+        return getUploadQueue(roomID).size();
+    }
+
+    private boolean isUploadQueueIsEmpty(String roomID) {
+        if (!getUploadQueuePerRoom().containsKey(roomID) && null != getUploadQueue(roomID))
+            return false;
+
+        return getUploadQueue(roomID).isEmpty();
+    }
+
     /**
      * Masukin Message Model ke dalem Queue Upload Image
-     *
+     * @param roomID
      * @param messageModel
      */
-    public void addQueueUploadImage(Context context,
+    public void addQueueUploadImage(Context context, String roomID,
                                     TAPMessageModel messageModel) {
-        uploadQueue.add(messageModel);
-        if (1 == uploadQueue.size()) uploadImage(context);
+        addUploadQueue(messageModel);
+        if (1 == getUploadQueueSize(roomID)) uploadImage(context, roomID);
     }
 
     // TODO: 14 January 2019 HANDLE OTHER FILE TYPES
-    private void uploadImage(Context context) {
+    private void uploadImage(Context context, String roomID) {
         new Thread(() -> {
-            Log.e(TAG, "startUploadSequenceFromQueue: ");
-            if (uploadQueue.isEmpty()) {
+            if (isUploadQueueIsEmpty(roomID)) {
                 // Queue is empty
                 return;
             }
 
-            TAPMessageModel messageModel = uploadQueue.get(0);
+            TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
             TAPMessageModel apiMessageModel = messageModel.copyMessageModel();
 
             Log.e(TAG, "startUploadSequenceFromQueue: " + messageModel.getData());
             if (null == messageModel.getData()) {
                 // No data
                 Log.e(TAG, "File upload failed: data is required in MessageModel.");
-                uploadQueue.remove(0);
+                getUploadQueue(roomID).remove(0);
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, messageModel.getLocalID());
                 intent.putExtra(UploadFailedErrorMessage, "File upload failed: data is required in MessageModel.");
@@ -119,7 +154,7 @@ public class TAPFileUploadManager {
             if (null == imageData.getFileUri()) {
                 // Image data does not contain URI
                 Log.e(TAG, "File upload failed: URI is required in MessageModel data.");
-                uploadQueue.remove(0);
+                getUploadQueue(roomID).remove(0);
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, messageModel.getLocalID());
                 intent.putExtra(UploadFailedErrorMessage, "File upload failed: URI is required in MessageModel data.");
@@ -146,12 +181,12 @@ public class TAPFileUploadManager {
                 messageModel.setData(imageData.toHashMap());
                 apiMessageModel.setData(imageData.toHashMapWithoutFileUri());
 
-                callUploadAPI(context, apiMessageModel, imageFile, bitmap, mimeType, imageData);
+                callUploadAPI(context, roomID, apiMessageModel, imageFile, bitmap, mimeType, imageData);
             }
         }).start();
     }
 
-    private void callUploadAPI(Context context, TAPMessageModel messageModel, File imageFile, Bitmap bitmap, String mimeType,
+    private void callUploadAPI(Context context, String roomID, TAPMessageModel messageModel, File imageFile, Bitmap bitmap, String mimeType,
                                TAPDataImageModel imageData) {
 
         String localID = messageModel.getLocalID();
@@ -179,8 +214,7 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
-                Log.e(TAG, "onSuccess: ");
-                saveImageToCache(context, bitmap, messageModel, response);
+                saveImageToCache(context, roomID, bitmap, messageModel, response);
             }
 
             @Override
@@ -254,30 +288,29 @@ public class TAPFileUploadManager {
     /**
      * Check upload queue and restart upload sequence
      */
-    public void uploadNextSequence(Context context) {
-        uploadQueue.remove(0);
+    public void uploadNextSequence(Context context, String roomID) {
+        getUploadQueue(roomID).remove(0);
         //ini ngecek kalau kosong ga perlu jalanin lagi
-        if (!uploadQueue.isEmpty()) {
-            uploadImage(context);
-            Log.e(TAG, "uploadNextSequence: " );
+        if (!isUploadQueueIsEmpty(roomID)) {
+            uploadImage(context, roomID);
         }
     }
 
     /**
      * @param cancelledMessageModel
      */
-    public void cancelUpload(Context context, TAPMessageModel cancelledMessageModel) {
-        int position = TAPUtils.getInstance().searchMessagePositionByLocalID(uploadQueue, cancelledMessageModel.getLocalID());
+    public void cancelUpload(Context context, TAPMessageModel cancelledMessageModel, String roomID) {
+        int position = TAPUtils.getInstance().searchMessagePositionByLocalID(getUploadQueue(roomID), cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
-        if (-1 != position && 0 == position && !uploadQueue.isEmpty()) {
+        if (-1 != position && 0 == position && !isUploadQueueIsEmpty(roomID)) {
             TAPDataManager.getInstance().unSubscribeToUploadImage();
-            uploadNextSequence(context);
-        } else if (-1 != position && !uploadQueue.isEmpty()) {
-            uploadQueue.remove(position);
+            uploadNextSequence(context, roomID);
+        } else if (-1 != position && !isUploadQueueIsEmpty(roomID)) {
+            getUploadQueue(roomID).remove(position);
         }
     }
 
-    private void saveImageToCache(Context context, Bitmap bitmap, TAPMessageModel messageModel,
+    private void saveImageToCache(Context context, String roomID, Bitmap bitmap, TAPMessageModel messageModel,
                                   TAPUploadFileResponse response) {
         try {
             //add ke dalem cache
@@ -308,7 +341,7 @@ public class TAPFileUploadManager {
             TAPDataManager.getInstance().removeUploadSubscriber();
 
             //manggil restart buat queue selanjutnya
-            uploadNextSequence(context);
+            uploadNextSequence(context, roomID);
             // TODO: 10/01/19 send emit message to server
         } catch (Exception e) {
             e.printStackTrace();
