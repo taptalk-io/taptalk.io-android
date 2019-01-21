@@ -26,7 +26,6 @@ import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
-import retrofit2.http.Streaming;
 import rx.Observable;
 
 public interface TAPTalkApiService {

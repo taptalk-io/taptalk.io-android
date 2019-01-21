@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -387,9 +388,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .into(rcivImageBody));
                     } else {
                         // Download image
-                        TAPFileDownloadManager.getInstance().downloadImage(itemView.getContext(), item, new TAPDownloadListener() {
+                        TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
                             @Override
-                            public void onDownloadProcessFinished(String localID, Bitmap bitmap) {
+                            public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
                                 ((Activity) itemView.getContext()).runOnUiThread(() -> glide
                                         .load(bitmap)
                                         .transition(DrawableTransitionOptions.withCrossFade(100))

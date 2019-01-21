@@ -5,5 +5,6 @@ import android.graphics.Bitmap;
 import java.io.File;
 
 public interface TapTalkDownloadInterface {
-    void onDownloadProcessFinished(String localID, Bitmap bitmap);
+    void onImageDownloadProcessFinished(String localID, Bitmap bitmap);
+    void onThumbnailDownloaded(String localID, Bitmap bitmap);
 }

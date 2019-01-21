@@ -233,6 +233,8 @@ public class TAPFileUploadManager {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 20, os);
             byte[] byteArray = os.toByteArray();
             bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            os.flush();
+            os.close();
 
             return bitmap;
         } catch (IOException e) {
