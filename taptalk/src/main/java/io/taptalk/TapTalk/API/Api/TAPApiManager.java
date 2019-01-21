@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
+import io.taptalk.TapTalk.API.Service.TAPTalkDownloadApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
@@ -58,6 +59,7 @@ public class TAPApiManager {
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
     private TAPTalkMultipartApiService tapMultipart;
+    private TAPTalkDownloadApiService tapDownload;
     private static TAPApiManager instance;
     private int isShouldRefreshToken = 0;
     //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
@@ -73,6 +75,7 @@ public class TAPApiManager {
         this.hpSocket = connection.getHpValidate();
         this.hpRefresh = connection.getHpRefresh();
         this.tapMultipart = connection.getTapMultipart();
+        this.tapDownload = connection.getTapDownload();
     }
 
     public boolean isLogout() {
@@ -273,7 +276,7 @@ public class TAPApiManager {
 
     public void downloadFile(String roomID, String fileID, Subscriber<ResponseBody> subscriber) {
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
-        executeWithoutBaseResponse(homingPigeon.downloadFile(request), subscriber);
+        executeWithoutBaseResponse(tapDownload.downloadFile(request), subscriber);
     }
 
     public void downloadThumbnail(String roomID, String fileID, Subscriber<ResponseBody> subscriber) {

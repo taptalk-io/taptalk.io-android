@@ -386,11 +386,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         // Load thumbnail
                         final Bitmap[] thumbnail = {TAPFileDownloadManager.getInstance().getThumbnail(fileID)};
                         if (null != thumbnail[0]) {
-                            glide.load(thumbnail[0])
+                            ((Activity) itemView.getContext()).runOnUiThread(() -> glide.load(thumbnail[0])
                                     .apply(new RequestOptions()
                                             .placeholder(placeholder)
                                             .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                    .into(rcivImageBody);
+                                    .into(rcivImageBody));
                         }
                         // Download image
                         TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
