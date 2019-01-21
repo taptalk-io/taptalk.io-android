@@ -4,6 +4,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,7 +25,9 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -196,10 +201,11 @@ public class TAPFileUploadManager {
         Bitmap bitmap;
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+
+            // Resize image
             int originalWidth = bitmap.getWidth();
             int originalHeight = bitmap.getHeight();
             if (originalWidth > IMAGE_MAX_DIMENSION || originalHeight > IMAGE_MAX_DIMENSION) {
-                // Resize image
                 float scaleRatio = Math.min(
                         (float) IMAGE_MAX_DIMENSION / originalWidth,
                         (float) IMAGE_MAX_DIMENSION / originalHeight);
@@ -209,10 +215,25 @@ public class TAPFileUploadManager {
                         Math.round(scaleRatio * originalHeight),
                         false);
             }
+
+            // Fix image orientation
+            int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(270);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            }
+
             // Compress image
-            Log.e(TAG, "createAndResizeImageFile: " + bitmap.getByteCount());
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, new ByteArrayOutputStream());
-            Log.e(TAG, "createAndResizeImageFile: " + bitmap.getByteCount());
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, os);
+            byte[] byteArray = os.toByteArray();
+            bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+
             return bitmap;
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
