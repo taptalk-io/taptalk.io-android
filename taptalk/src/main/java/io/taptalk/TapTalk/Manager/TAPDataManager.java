@@ -15,6 +15,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
+import io.taptalk.TapTalk.API.Subscriber.TAPBaseSubscriber;
 import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -634,27 +635,11 @@ public class TAPDataManager {
 
     // File Download
     public void downloadFile(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, fileID, new Subscriber<ResponseBody>() {
-            @Override
-            public void onCompleted() {
-                view.endLoading();
-            }
+        TAPApiManager.getInstance().downloadFile(roomID, fileID, new TAPBaseSubscriber<>(view));
+    }
 
-            @Override
-            public void onError(Throwable e) {
-                view.onError(e.getMessage());
-                view.onError(e);
-            }
-
-            @Override
-            public void onNext(ResponseBody responseBody) {
-                if (null == responseBody) {
-                    view.onError(new TAPErrorModel("999", "Unknown Error", ""));
-                } else {
-                    view.onSuccess(responseBody);
-                }
-            }
-        });
+    public void downloadThumbnail(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        TAPApiManager.getInstance().downloadThumbnail(roomID, fileID, new TAPBaseSubscriber<>(view));
     }
 
     public void removeUploadSubscriber() {
