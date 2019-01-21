@@ -467,7 +467,7 @@ public class TAPChatManager {
     /**
      * Create image message model and call upload api
      */
-    private void createImageMessageModelAndAddToQueueUpload(Context context, TAPImagePreviewModel image,
+    private void createImageMessageModelAndAddToQueueUpload(Context context, String roomID, TAPImagePreviewModel image,
                                                             String caption) {
         TAPMessageModel messageModel = createImageMessageModel(image, caption);
 
@@ -477,7 +477,7 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         messageModel = showDummyImageMessage(messageModel);
 
-        TAPFileUploadManager.getInstance().addQueueUploadImage(context, messageModel);
+        TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel);
     }
 
     /**
@@ -512,18 +512,18 @@ public class TAPChatManager {
         return imageMessage;
     }
 
-    public void sendImageMessage(Context context, ArrayList<TAPImagePreviewModel> images) {
+    public void sendImageMessage(Context context, String roomID, ArrayList<TAPImagePreviewModel> images) {
         new Thread(() -> {
             for (TAPImagePreviewModel imagePreview : images) {
-                createImageMessageModelAndAddToQueueUpload(context, imagePreview, imagePreview.getImageCaption());
+                createImageMessageModelAndAddToQueueUpload(context, roomID, imagePreview, imagePreview.getImageCaption());
             }
         }).start();
     }
 
-    public void sendImageMessage(Context context, TAPMessageModel imageModel) {
+    public void sendImageMessage(Context context, String roomID, TAPMessageModel imageModel) {
         new Thread(() -> {
             addUploadingMessageToHashMap(imageModel);
-            TAPFileUploadManager.getInstance().addQueueUploadImage(context, imageModel);
+            TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, imageModel);
         }).start();
     }
 
