@@ -61,6 +61,11 @@ public class TAPDataImageModel implements Parcelable {
         return dataMap;
     }
 
+    public HashMap<String, Object> toHashMap() {
+        HashMap<String, Object> dataMap = TAPUtils.getInstance().toHashMap(this);
+        return dataMap;
+    }
+
     @Nullable
     public String getFileID() {
         return fileID;

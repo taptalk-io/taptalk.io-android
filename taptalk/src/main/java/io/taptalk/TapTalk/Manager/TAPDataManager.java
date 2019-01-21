@@ -628,11 +628,9 @@ public class TAPDataManager {
     }
 
     public void cancelUploadImage(Context context, String localID) {
-        if (null != uploadSubscriber) {
-            Intent intent = new Intent(UploadCancelled);
-            intent.putExtra(UploadLocalID, localID);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-        }
+        Intent intent = new Intent(UploadCancelled);
+        intent.putExtra(UploadLocalID, localID);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     // File Download

@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,9 +32,9 @@ public class TAPFileDownloadManager {
     }
 
     // TODO: 17 January 2019 ADD QUEUE, SHOW DOWNLOAD PROGRESS
-    // TODO: 21 January 2019 DO NOT DOWNLOAD IF STORAGE PERMISSION IS DENIED
     public void downloadImage(Context context, TAPMessageModel message, TAPDownloadListener listener) {
-        if (null == message.getData() || TAPUtils.getInstance().hasPermissions(context, )) {
+        // Return if message data is null or permission is not granted
+        if (null == message.getData() || TAPUtils.getInstance().hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             return;
         }
         String fileID = (String) message.getData().get("fileID");

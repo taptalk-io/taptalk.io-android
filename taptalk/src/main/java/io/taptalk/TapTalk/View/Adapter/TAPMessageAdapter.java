@@ -611,9 +611,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Message is delivered
             else if (null != item.getDelivered() && item.getDelivered()) {
                 vh.receiveDeliveredEvent(item);
+            } else if (null != item.getFailedSend() && item.getFailedSend()) {
+                vh.setMessage(item);
             }
             // Message sent
-            else if (null != item.getSending() && !item.getSending()) {
+            else if ((null != item.getSending() && !item.getSending())) {
                 vh.receiveSentEvent(item);
             } else {
                 vh.setMessage(item);
