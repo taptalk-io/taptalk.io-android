@@ -21,8 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -73,9 +74,9 @@ public class TAPRoomListFragment extends Fragment {
     private TAPChatListener chatListener;
 
     private TapTalkNetworkInterface networkListener = () -> {
-       if (vm.isDoneFirstSetup()) {
-           updateQueryRoomListFromBackground();
-       }
+        if (vm.isDoneFirstSetup()) {
+            updateQueryRoomListFromBackground();
+        }
     };
 
     public TAPRoomListFragment() {
@@ -183,7 +184,7 @@ public class TAPRoomListFragment extends Fragment {
 
             @Override
             public void onReceiveStopTyping(TAPTypingModel typingModel) {
-               showTyping(typingModel, false);
+                showTyping(typingModel, false);
             }
         };
         TAPChatManager.getInstance().addChatListener(chatListener);
@@ -363,7 +364,7 @@ public class TAPRoomListFragment extends Fragment {
                         rvContactList.scrollToPosition(0);
                 });
             }
-        } else if (null != getActivity()){
+        } else if (null != getActivity()) {
             //kalau room yang masuk baru
 
             //TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
@@ -469,16 +470,18 @@ public class TAPRoomListFragment extends Fragment {
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
-                for (TAPMessageModel message : response.getMessages()) {
+                for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
-                        TAPMessageModel temp = TAPMessageModel.BuilderDecrypt(message);
-                        tempMessage.add(TAPChatManager.getInstance().convertToEntity(temp));
+                        TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
+                        tempMessage.add(TAPChatManager.getInstance().convertToEntity(message));
+
+                        // Update status to delivered
+                        TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(message);
 
                         // Save user data to contact manager
                         TAPContactManager.getInstance().updateUserDataMap(message.getUser());
-                    } catch (GeneralSecurityException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
-                        Log.e(TAG, "onSuccess: ", e);
                     }
                 }
 
@@ -491,11 +494,6 @@ public class TAPRoomListFragment extends Fragment {
                         getDatabaseAndAnimateResult();
                     }
                 });
-
-                //ini untuk get API ngasih tau kalau message yang dikirim udah berhasil d terima
-                if (null != response.getMessages() && 0 < response.getMessages().size()) {
-                    TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(response.getMessages());
-                }
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }
@@ -521,13 +519,20 @@ public class TAPRoomListFragment extends Fragment {
     private TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
         @Override
         public void onSuccess(TAPContactResponse response) {
-            // Insert contacts to database
-            List<TAPUserModel> users = new ArrayList<>();
-            for (TAPContactModel contact : response.getContacts()) {
-                users.add(contact.getUser().setUserAsContact());
+            try {
+                // Insert contacts to database
+                if (null == response.getContacts() || response.getContacts().isEmpty()) {
+                    return;
+                }
+                List<TAPUserModel> users = new ArrayList<>();
+                for (TAPContactModel contact : response.getContacts()) {
+                    users.add(contact.getUser().setUserAsContact());
+                }
+                TAPDataManager.getInstance().insertMyContactToDatabase(users);
+                TAPContactManager.getInstance().updateUserDataMap(users);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            TAPDataManager.getInstance().insertMyContactToDatabase(users);
-            TAPContactManager.getInstance().updateUserDataMap(users);
         }
     };
 
@@ -552,7 +557,7 @@ public class TAPRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) ) {
+            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID)) {
                 vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             }
@@ -608,7 +613,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void updateUnreadCountPerRoom(String roomID) {
-        new Thread(() ->{
+        new Thread(() -> {
             if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) && TAPMessageStatusManager.getInstance().getUnreadList().containsKey(roomID)) {
                 vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance().getUnreadList().get(roomID));
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);

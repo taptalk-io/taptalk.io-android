@@ -2,25 +2,26 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 public class TAPGetRoomListResponse {
-    @JsonProperty("messages") private List<TAPMessageModel> messages;
+    @JsonProperty("messages") private List<HashMap<String, Object>> messages;
 
     public TAPGetRoomListResponse() {
     }
 
-    public TAPGetRoomListResponse(List<TAPMessageModel> messages) {
+    public TAPGetRoomListResponse(List<HashMap<String, Object>> messages) {
         this.messages = messages;
     }
 
-    public List<TAPMessageModel> getMessages() {
+    public List<HashMap<String, Object>> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<TAPMessageModel> messages) {
+    public void setMessages(List<HashMap<String, Object>> messages) {
         this.messages = messages;
     }
 }

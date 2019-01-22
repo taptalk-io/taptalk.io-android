@@ -2,9 +2,12 @@ package io.taptalk.TapTalk.API.Api;
 
 import android.util.Log;
 
+import java.io.File;
 import java.util.List;
 
+import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
+import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
@@ -14,6 +17,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
@@ -28,13 +32,17 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListbyRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -49,6 +57,7 @@ public class TAPApiManager {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
+    private TAPTalkMultipartApiService tapMultipart;
     private static TAPApiManager instance;
     private int isShouldRefreshToken = 0;
     //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
@@ -63,6 +72,7 @@ public class TAPApiManager {
         this.homingPigeon = connection.getHomingPigeon();
         this.hpSocket = connection.getHpValidate();
         this.hpRefresh = connection.getHpRefresh();
+        this.tapMultipart = connection.getTapMultipart();
     }
 
     public boolean isLogout() {
@@ -94,6 +104,11 @@ public class TAPApiManager {
                 .subscribe(s);
     }
 
+    @SuppressWarnings("unchecked")
+    private <T> void executeWithoutBaseResponse(Observable<? extends T> o, Subscriber<T> s) {
+        o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers()).subscribe(s);
+    }
+
     private <T> Observable validateResponse(T t) {
         TAPBaseResponse br = (TAPBaseResponse) t;
 
@@ -103,9 +118,9 @@ public class TAPApiManager {
 
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
             Log.e(TAG, "validateResponse: √√ NO ERROR √√");
-        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken) {
+        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
             return raiseApiRefreshTokenRunningException();
-        } else if (code == UNAUTHORIZED) {
+        } else if (code == UNAUTHORIZED && !isLogout) {
             isShouldRefreshToken++;
             return raiseApiSessionExpiredException(br);
         }
@@ -117,7 +132,7 @@ public class TAPApiManager {
         Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
         return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
                 ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
-                       Observable.just(Boolean.TRUE) : Observable.error(t);
+                        Observable.just(Boolean.TRUE) : Observable.error(t);
     }
 
     private Observable<Throwable> raiseApiSessionExpiredException(TAPBaseResponse br) {
@@ -157,11 +172,11 @@ public class TAPApiManager {
         return hpRefresh.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
-                    Log.e(TAG, "call: retryWhen(), cause: 2 "+response.getStatus() );
+                    Log.e(TAG, "call: retryWhen(), cause: 2 " + response.getStatus());
                     if (RESPONSE_SUCCESS == response.getStatus()) {
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
-                    } else if (UNAUTHORIZED == response.getStatus()){
+                    } else if (UNAUTHORIZED == response.getStatus()) {
                         TapTalk.refreshTokenExpired();
                     } else Observable.error(new TAPAuthException(response.getError().getMessage()));
                 }).doOnError(throwable -> {
@@ -191,12 +206,12 @@ public class TAPApiManager {
         execute(homingPigeon.getPendingAndUpdatedMessage(), subscriber);
     }
 
-    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> subscriber) {
+    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
         TAPGetMessageListbyRoomAfterRequest request = new TAPGetMessageListbyRoomAfterRequest(roomID, minCreated, lastUpdated);
         execute(homingPigeon.getMessageListByRoomAfter(request), subscriber);
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<TAPBaseResponse<TAPGetMessageListbyRoomResponse>> subscriber) {
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
         TAPGetMessageListbyRoomBeforeRequest request = new TAPGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
         execute(homingPigeon.getMessageListByRoomBefore(request), subscriber);
     }
@@ -238,5 +253,26 @@ public class TAPApiManager {
     public void getUserByUsername(String username, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
         execute(homingPigeon.getUserByUsername(request), subscriber);
+    }
+
+    public void uploadImage(File imageFile, String roomID, String caption, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
+        ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("roomID", roomID)
+                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("caption", caption)
+                .addFormDataPart("fileType", "image")
+                .build();
+        execute(tapMultipart.uploadImage(requestBody), subscriber);
+    }
+
+    public void downloadFile(String roomID, String fileID, Subscriber<ResponseBody> subscriber) {
+        TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
+        executeWithoutBaseResponse(homingPigeon.downloadFile(request), subscriber);
     }
 }

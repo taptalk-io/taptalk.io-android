@@ -53,6 +53,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_quote"
+                android:layout_width="234dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_0dp_0dp"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <View
+                    android:id="@+id/v_quote_background"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/tap_bg_mediumpurple_rounded_4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <include layout="@layout/tap_layout_quote_bubble_right" />
+
+            </android.support.constraint.ConstraintLayout>
+
             <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
                 android:id="@+id/rciv_image"
                 android:layout_width="wrap_content"
@@ -62,15 +84,19 @@
                 android:maxHeight="300dp"
                 app:cornerRadius="9dp"
                 app:dimensionRatio="0.78"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 app:minHeight="100dp"
                 app:minWidth="78dp"
                 app:topRightRadius="2dp"
-                tools:src="@drawable/tap_img_chat_empty" />
+                android:src="@drawable/tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_8dp_8dp" />
 
             <FrameLayout
                 android:id="@+id/fl_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_circle_66000000"
                 app:layout_constraintBottom_toBottomOf="@+id/rciv_image"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
@@ -81,7 +107,6 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/tap_bg_circle_66000000"
                     android:indeterminate="false"
                     android:max="100"
                     android:padding="4dp"
@@ -89,11 +114,11 @@
                     tools:progress="65" />
 
                 <ImageView
-                    android:id="@+id/iv_progress"
+                    android:id="@+id/iv_button_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/tap_ic_cancel_white" />
+                    tools:src="@drawable/tap_ic_cancel_white" />
 
             </FrameLayout>
 

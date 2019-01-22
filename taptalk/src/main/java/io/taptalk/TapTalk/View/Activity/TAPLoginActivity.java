@@ -9,6 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.net.URL;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
@@ -393,7 +395,21 @@ public class TAPLoginActivity extends TAPBaseActivity {
     }
 
     private void registerFcmToken() {
-        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
-        })).start();
+        new Thread(() -> {
+            if (!TAPDataManager.getInstance().checkFirebaseToken()) {
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(task -> {
+                            if (null != task.getResult()) {
+                                String fcmToken = task.getResult().getToken();
+                                TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TapDefaultDataView<TAPCommonResponse>() {
+                                });
+                                TAPDataManager.getInstance().saveFirebaseToken(fcmToken);
+                            }
+                        });
+            } else {
+                TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
+                });
+            }
+        }).start();
     }
 }

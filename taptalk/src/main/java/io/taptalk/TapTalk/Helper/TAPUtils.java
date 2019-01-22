@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
@@ -26,11 +28,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -39,6 +45,7 @@ import java.util.Random;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
@@ -46,12 +53,13 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 
 public class TAPUtils {
 
+    private static final String TAG = TAPUtils.class.getSimpleName();
     private static TAPUtils instance;
     private ObjectMapper objectMapper;
 
@@ -68,6 +76,7 @@ public class TAPUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
+            Log.e("><><><", "toJsonString: ", e);
             return "{}";
         }
     }
@@ -87,6 +96,30 @@ public class TAPUtils {
             Log.e(TAPUtils.class.getSimpleName(), "fromJSON: ", e);
             return null;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public HashMap<String, Object> toHashMap(Object object) {
+        try {
+            return objectMapper.convertValue(object, HashMap.class);
+        } catch (Exception e) {
+            Log.e(TAG, "toHashMap: ", e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap(String jsonString) {
+        try {
+            return objectMapper.readValue(jsonString, new TypeReference<HashMap<String, Object>>() {});
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public <T> T convertObject(Object fromObject, TypeReference<T> toObjectType) {
+        return objectMapper.convertValue(fromObject, toObjectType);
     }
 
     /**
@@ -253,31 +286,20 @@ public class TAPUtils {
     }
 
     public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        // TODO: 30 October 2018 CHANGE TO SELECT MULTIPLE IMAGE / USE CUSTOM PICKER
         // Reminder: Handle onRequestPermissionsResult in activity
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // Check read storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
             Intent intent = new Intent();
             intent.setType(activity.getString(R.string.intent_pick_image));
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
-            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.intent_select_picture)), requestCode);
             }
         }
-    }
-
-    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
-        int itemSize = clipData.getItemCount();
-        for (int count = 0; count < itemSize; count++) {
-            if (count == 0 && isFirstSelected)
-                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
-            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
-        }
-        return uris;
     }
 
     /**
@@ -287,10 +309,10 @@ public class TAPUtils {
         // Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA);
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         } else if (!hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
         } else {
             // All permissions granted
             Uri imageUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
@@ -302,6 +324,16 @@ public class TAPUtils {
             return imageUri;
         }
         return null;
+    }
+
+    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
+        int itemSize = clipData.getItemCount();
+        for (int count = 0; count < itemSize; count++) {
+            if (count == 0 && isFirstSelected)
+                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
+            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
+        }
+        return uris;
     }
 
     /**
@@ -413,5 +445,41 @@ public class TAPUtils {
             p.setMargins(left, top, right, bottom);
             view.requestLayout();
         }
+    }
+
+    /*
+TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe file untuk upload gambarnya sekaligus mengcompressnya menjadi WEBP dikarenakan size bisa sangat kecil dan kualitasnya pun setara dengan PNG.
+*/
+    public File createTempFile(String mimeType, Bitmap bitmap) {
+        File file = new File(TapTalk.appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                , System.currentTimeMillis() +"."+mimeType);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        bitmap.compress(Bitmap.CompressFormat.WEBP,100, bos);
+        byte[] bitmapdata = bos.toByteArray();
+        //write the bytes in file
+
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapdata);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    /**
+     * Ini Untuk Search Position MessageModel dari Sebuah List berdasarkan LocalID
+     *
+     */
+    public int searchMessagePositionByLocalID(List<TAPMessageModel> messageModels, String localID) {
+        for (int index = 0; index < messageModels.size(); index++) {
+            if (localID.equals(messageModels.get(index).getLocalID())) {
+                return index;
+            }
+        }
+        return -1;
     }
 }

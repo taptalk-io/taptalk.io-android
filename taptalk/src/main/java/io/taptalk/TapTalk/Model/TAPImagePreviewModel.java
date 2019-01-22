@@ -5,25 +5,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class TAPImagePreviewModel implements Parcelable {
-    private Uri imageUris;
+    private Uri imageUri;
     private boolean isSelected;
     private String imageCaption;
 
-    public TAPImagePreviewModel(Uri imageUris, boolean isSelected) {
-        this.imageUris = imageUris;
+    public TAPImagePreviewModel(Uri imageUri, boolean isSelected) {
+        this.imageUri = imageUri;
         this.isSelected = isSelected;
+        this.imageCaption = "";
     }
 
     public static TAPImagePreviewModel Builder(Uri imageUris, boolean isSelected) {
         return new TAPImagePreviewModel(imageUris, isSelected);
     }
 
-    public Uri getImageUris() {
-        return imageUris;
+    public Uri getImageUri() {
+        return imageUri;
     }
 
-    public void setImageUris(Uri imageUris) {
-        this.imageUris = imageUris;
+    public void setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
     }
 
     public boolean isSelected() {
@@ -50,13 +51,13 @@ public class TAPImagePreviewModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.imageUris, flags);
+        dest.writeParcelable(this.imageUri, flags);
         dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
         dest.writeString(this.imageCaption);
     }
 
     protected TAPImagePreviewModel(Parcel in) {
-        this.imageUris = in.readParcelable(Uri.class.getClassLoader());
+        this.imageUri = in.readParcelable(Uri.class.getClassLoader());
         this.isSelected = in.readByte() != 0;
         this.imageCaption = in.readString();
     }

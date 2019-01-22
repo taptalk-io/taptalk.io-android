@@ -15,7 +15,6 @@ import io.taptalk.TapTalk.Data.TapTalkDatabase;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -23,6 +22,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPMessageRepository {
 
+    private static final String TAG = TAPMessageRepository.class.getSimpleName();
     private TAPMessageDao messageDao;
     private LiveData<List<TAPMessageEntity>> allMessages;
     private List<TAPMessageEntity> allMessageList = new ArrayList<>();
@@ -198,5 +198,9 @@ public class TAPMessageRepository {
 
     public void updatePendingStatus(final String localID) {
         new Thread(() -> messageDao.updatePendingStatus(localID)).start();
+    }
+
+    public void updateFailedStatusToSending(final String localID) {
+        new Thread(() -> messageDao.updateFailedStatusToSending(localID)).start();
     }
 }

@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
@@ -29,6 +30,7 @@ import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
@@ -40,7 +42,6 @@ import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -90,6 +91,8 @@ public class TapTalk {
         if (BuildConfig.BUILD_TYPE.equals("dev"))
             Hawk.init(appContext).setEncryption(new NoEncryption()).build();
         else Hawk.init(appContext).build();
+
+        TAPCacheManager.getInstance(appContext).initAllCache();
 
         //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
         TAPDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
@@ -471,49 +474,23 @@ public class TapTalk {
         return tapTalk.tapListeners;
     }
 
-    public static void sendTextMessageWithXcUserID(String message, String xcUserID, TAPSendMessageWithIDListener listener) {
+    public static void sendTextMessageWithRecipientUser(String message, TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
-            tapTalk.getUserFromXcUserIDAndSendProductRequestMessage(message, xcUserID, listener);
+            tapTalk.getUserFromRecipientUserAndSendProductRequestMessage(message, recipientUser, listener);
         }
     }
 
-    private void getUserFromXcUserIDAndSendProductRequestMessage(String message, String xcUserID, TAPSendMessageWithIDListener listener) {
+    private void getUserFromRecipientUserAndSendProductRequestMessage(String message, @NonNull TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
         new Thread(() -> {
-            TAPUserModel otherUserModel = new TAPUserModel();
-            final TAPUserModel myUserModel = TAPChatManager.getInstance().getActiveUser();
-            TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
-                @Override
-                public void onSelectFinished(TAPUserModel entity) {
-                    if (null == entity) {
-                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
-                            @Override
-                            public void onSuccess(TAPGetUserResponse response) {
-                                if (null != response && null != response.getUser()) {
-                                    otherUserModel.updateValue(response.getUser());
-                                    createAndSendProductRequestMessage(message, myUserModel, otherUserModel, listener);
-                                } else {
-                                    listener.sendFailed(new TAPErrorModel("404", "User Not Found", ""));
-                                }
-                            }
-
-                            @Override
-                            public void onError(TAPErrorModel error) {
-                                listener.sendFailed(error);
-                            }
-
-                            @Override
-                            public void onError(Throwable throwable) {
-                                listener.sendFailed(new TAPErrorModel("404", "User Not Found", ""));
-                            }
-                        });
-                    } else {
-                        otherUserModel.updateValue(entity);
-                        createAndSendProductRequestMessage(message, myUserModel, otherUserModel, listener);
-                    }
-                }
-            });
+            try {
+                final TAPUserModel myUserModel = TAPChatManager.getInstance().getActiveUser();
+                createAndSendProductRequestMessage(message, myUserModel, recipientUser, listener);
+            } catch (Exception e) {
+                e.printStackTrace();
+                listener.sendFailed(new TAPErrorModel("", "Oops, Something Wrong Please Try Again Later", ""));
+            }
         }).start();
     }
 

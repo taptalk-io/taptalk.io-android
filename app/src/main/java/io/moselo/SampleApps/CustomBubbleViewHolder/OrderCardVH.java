@@ -339,7 +339,8 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     TYPE_ORDER_CARD,
                     System.currentTimeMillis(),
                     item.getUser(),
-                    item.getRecipientID());
+                    item.getRecipientID(),
+                    null);
             adapter.setItemAt(position, orderCard);
             adapter.notifyItemChanged(position);
             //listener.onBubbleExpanded();

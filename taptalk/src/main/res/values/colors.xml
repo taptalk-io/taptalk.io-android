@@ -51,6 +51,7 @@
     <color name="black">#000000</color>
     <color name="charcoal">#04040f</color>
     <color name="charcoal_alpha_50">#8004040f</color>
+    <color name="charcoal_alpha_40">#6604040f</color>
 
     <color name="transparent_white">#00ffffff</color>
     <color name="transparent_black">#00000000</color>

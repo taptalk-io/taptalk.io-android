@@ -34,7 +34,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel replyTo;
+    private TAPMessageModel quotedMessage;
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
@@ -57,6 +57,10 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void delete(String messageLocalID) {
         TAPDataManager.getInstance().deleteFromDatabase(messageLocalID);
+    }
+
+    public void removeFromUploadingList(String messageLocalID) {
+        TAPChatManager.getInstance().removeUploadingMessageFromHashMap(messageLocalID);
     }
 
     public Map<String, TAPMessageModel> getMessagePointer() {
@@ -209,12 +213,13 @@ public class TAPChatViewModel extends AndroidViewModel {
         TAPChatManager.getInstance().setActiveRoom(room);
     }
 
-    public TAPMessageModel getReplyTo() {
-        return replyTo;
+    public TAPMessageModel getQuotedMessage() {
+        return quotedMessage;
     }
 
-    public void setReplyTo(TAPMessageModel replyTo) {
-        this.replyTo = replyTo;
+    public void setQuotedMessage(TAPMessageModel quotedMessage) {
+        this.quotedMessage = quotedMessage;
+        TAPChatManager.getInstance().setQuotedMessage(quotedMessage);
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {

@@ -71,9 +71,10 @@ public class TAPDefaultConstant {
     }
 
     public static final class PermissionRequest {
-        public static final int PERMISSION_CAMERA = 1;
-        public static final int PERMISSION_READ_EXTERNAL_STORAGE = 2;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 3;
+        public static final int PERMISSION_CAMERA_CAMERA = 1;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 2;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
     }
 
     public static final class Sorting {
@@ -115,9 +116,21 @@ public class TAPDefaultConstant {
         public static final int OTHER_ERRORS = 99999;
     }
 
+    public static final class UploadBroadcastEvent {
+        public static final String UploadProgressLoading = "kUploadProgressLading";
+        public static final String UploadProgressFinish = "kUploadProgressFinish";
+        public static final String UploadImageData = "kUploadImageData";
+        public static final String UploadLocalID = "kUploadLocalID";
+        public static final String UploadFailed = "kUploadFailed";
+        public static final String UploadFailedErrorMessage = "kUploadFailedErrorMessage";
+        public static final String UploadRetried = "kUploadRetried";
+        public static final String UploadCancelled = "kUploadCancelled";
+    }
+
     public static final class TokenHeaderConst {
         public static final int NOT_USE_REFRESH_TOKEN = 1;
         public static final int USE_REFRESH_TOKEN = 2;
+        public static final int MULTIPART_CONTENT_TYPE = 3;
     }
 
     public static final class OldDataConst {
@@ -125,9 +138,14 @@ public class TAPDefaultConstant {
     }
 
     public static final class ImagePreview {
-        public static final String K_IMAGE_REQ_CODE = "kImageRequestCode";
-        public static final String K_IMAGE_RES_CODE = "kImageResultCode";
-        public static final String K_IMAGE_URLS = "kImageUrls";
+        public static final String K_IMAGE_RES_CODE = "tapImageResultCode";
+        public static final String K_IMAGE_URLS = "tapImageUrls";
+    }
+
+    public static final class MediaType {
+        public static final String IMAGE_JPEG = "image/jpeg";
+        public static final String IMAGE_PNG = "image/png";
+        public static final String IMAGE_GIF = "image/gif";
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -141,6 +159,7 @@ public class TAPDefaultConstant {
     public static final String K_ROOM = "kTAPRoom";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
+    public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
@@ -148,6 +167,7 @@ public class TAPDefaultConstant {
     public static final int NUM_OF_ITEM = 50;
     public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int DEFAULT_ANIMATION_TIME = 200;
+    public static final int IMAGE_MAX_DIMENSION = 2000;
 
     public static final long TYPING_EMIT_DELAY = 10000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 15000L;
