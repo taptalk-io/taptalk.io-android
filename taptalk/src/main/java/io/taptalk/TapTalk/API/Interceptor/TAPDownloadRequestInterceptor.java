@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import io.taptalk.TapTalk.API.ResponseBody.TAPDownloadProgressResponseBody;
 import io.taptalk.TapTalk.Interface.TapTalkDownloadProgressInterface;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -29,6 +30,7 @@ public class TAPDownloadRequestInterceptor implements Interceptor {
                         new TapTalkDownloadProgressInterface() {
                             @Override
                             public void update(int percentage, String localID) {
+                                TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, percentage);
                                 Intent intent = new Intent(DownloadProgressLoading);
                                 intent.putExtra(DownloadLocalID, localID);
                                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);

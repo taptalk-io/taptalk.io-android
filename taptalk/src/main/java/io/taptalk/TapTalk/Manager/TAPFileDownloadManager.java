@@ -72,6 +72,8 @@ public class TAPFileDownloadManager {
         if (null == message.getData() || !TAPUtils.getInstance().hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             return;
         }
+
+        TAPFileDownloadManager.getInstance().addDownloadProgressMap(message.getLocalID(), 0);
         String fileID = (String) message.getData().get("fileID");
         // Download thumbnail
         TAPDataManager.getInstance().downloadThumbnail(message.getRoom().getRoomID(), fileID, new TapDefaultDataView<ResponseBody>() {

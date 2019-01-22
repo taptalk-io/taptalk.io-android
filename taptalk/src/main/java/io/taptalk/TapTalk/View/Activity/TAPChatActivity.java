@@ -25,7 +25,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -84,6 +83,7 @@ import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
@@ -1163,10 +1163,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                     break;
                 case DownloadProgressLoading :
-                    Log.e(TAG, "onReceive: loading" );
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
                     break;
                 case DownloadFinish :
-                    Log.e(TAG, "onReceive: finish" );
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
                     break;
             }
         }

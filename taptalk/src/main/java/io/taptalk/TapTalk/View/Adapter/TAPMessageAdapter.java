@@ -382,7 +382,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         .placeholder(placeholder)
                                         .diskCacheStrategy(DiskCacheStrategy.NONE))
                                 .into(rcivImageBody));
-                    } else {
+                    } else if (null == TAPFileDownloadManager.getInstance()
+                            .getDownloadProgressMapProgressPerLocalID(item.getLocalID())){
                         // Load thumbnail
                         final Bitmap[] thumbnail = {TAPFileDownloadManager.getInstance().getThumbnail(fileID)};
                         if (null != thumbnail[0]) {
@@ -412,6 +413,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             @Override
                             public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
                                 // Load bitmap to view
+                                TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
+                                //TAPCacheManager.getInstance(itemView.getContext()).addBitmapToCache(fileID, bitmap);
                                 ((Activity) itemView.getContext()).runOnUiThread(() -> glide
                                         .load(bitmap)
                                         .transition(DrawableTransitionOptions.withCrossFade(100))
