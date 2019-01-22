@@ -25,6 +25,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -82,6 +83,8 @@ import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
@@ -171,7 +174,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         initListener();
         cancelNotificationWhenEnterRoom();
         TAPBroadcastManager.register(this, uploadReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried);
+                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
+                DownloadProgressLoading, DownloadFinish);
     }
 
     @Override
@@ -1157,6 +1161,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         }).start();
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
+                    break;
+                case DownloadProgressLoading :
+                    Log.e(TAG, "onReceive: loading" );
+                    break;
+                case DownloadFinish :
+                    Log.e(TAG, "onReceive: finish" );
                     break;
             }
         }
