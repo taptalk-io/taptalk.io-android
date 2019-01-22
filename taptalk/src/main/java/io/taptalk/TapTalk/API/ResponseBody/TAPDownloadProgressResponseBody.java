@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.annotation.Nullable;
 
+import io.taptalk.TapTalk.Interface.TapTalkDownloadProgressInterface;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import okio.Buffer;
@@ -15,10 +16,10 @@ import okio.Source;
 public class TAPDownloadProgressResponseBody extends ResponseBody {
 
     private final ResponseBody responseBody;
-    private final ProgressListener progressListener;
+    private final TapTalkDownloadProgressInterface progressListener;
     private BufferedSource bufferedSource;
 
-    public TAPDownloadProgressResponseBody(ResponseBody responseBody, ProgressListener progressListener) {
+    public TAPDownloadProgressResponseBody(ResponseBody responseBody, TapTalkDownloadProgressInterface progressListener) {
         this.responseBody = responseBody;
         this.progressListener = progressListener;
     }
@@ -50,13 +51,13 @@ public class TAPDownloadProgressResponseBody extends ResponseBody {
                 long bytesRead = super.read(sink, byteCount);
                 // read() returns the number of bytes read, or -1 if this source is exhausted.
                 totalBytesRead += bytesRead != -1 ? bytesRead : 0;
-                progressListener.update(totalBytesRead, responseBody.contentLength(), bytesRead == -1);
+
+                if (bytesRead != -1) {
+                    int percentage = (int) (100 * totalBytesRead/responseBody.contentLength());
+                    progressListener.update(percentage);
+                } else progressListener.finish();
                 return bytesRead;
             }
         };
-    }
-
-    public interface ProgressListener {
-        void update(long bytesRead, long contentLength, boolean done);
     }
 }
