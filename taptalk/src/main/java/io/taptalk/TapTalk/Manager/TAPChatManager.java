@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -55,6 +56,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
@@ -489,14 +491,21 @@ public class TAPChatManager {
         }
         TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
         Uri imageUri = Uri.parse(imageData.getFileUri());
+        Log.e(TAG, "showDummyImageMessage imageUri: " + imageUri);
 
         // Get image width and height
-        String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+        String pathName;
+//        if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
+//            pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
+//        } else {
+            pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+//        }
+        Log.e(TAG, "showDummyImageMessage pathName: " + pathName);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
-        int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+        int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
             imageData.setWidth(options.outHeight);
             imageData.setHeight(options.outWidth);
@@ -916,5 +925,16 @@ public class TAPChatManager {
                 chatListener.onReadMessage(roomID);
             }
         }).start();
+    }
+
+    // TODO: 22 January 2019 TESTING FILEPROVIDER PATH
+    private Map<String, String> imagePathMap = new HashMap<>();
+
+    public void addImagePath(Uri uri, String path) {
+        imagePathMap.put(uri.toString(), path);
+    }
+
+    public String getImagePath(Uri uri) {
+        return imagePathMap.get(uri.toString());
     }
 }

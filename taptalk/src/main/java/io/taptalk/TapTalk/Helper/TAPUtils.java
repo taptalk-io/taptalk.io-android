@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -52,6 +53,7 @@ import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
@@ -285,8 +287,10 @@ public class TAPUtils {
         }
     }
 
+    /**
+     * Reminder: Handle onRequestPermissionsResult in activity
+     */
     public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        // Reminder: Handle onRequestPermissionsResult in activity
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // Check read storage permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
@@ -304,24 +308,35 @@ public class TAPUtils {
 
     /**
      * @return Uri to receive saved image path
+     * Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
      */
     public Uri takePicture(Activity activity, int requestCode) {
-        // Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
-        } else if (!hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            // Check write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
+        } else if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Check read & write storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
         } else {
             // All permissions granted
-            Uri imageUri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivityForResult(intent, requestCode);
+                try {
+                    String filename = TAPTimeFormatter.getInstance().formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+                    File dir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    File image = File.createTempFile(filename, ".jpeg", dir);
+                    Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    activity.startActivityForResult(intent, requestCode);
+                    Log.e(TAG, "takePicture: " + image.getAbsolutePath());
+                    // TODO: 22 January 2019 TESTING
+                    TAPChatManager.getInstance().addImagePath(imageUri, image.getAbsolutePath());
+                    return imageUri;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
-            return imageUri;
         }
         return null;
     }

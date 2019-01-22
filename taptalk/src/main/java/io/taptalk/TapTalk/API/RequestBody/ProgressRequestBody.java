@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.API.RequestBody;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,7 +60,6 @@ public class ProgressRequestBody extends RequestBody {
             int read;
             Handler handler = new Handler(Looper.getMainLooper());
             while ((read = in.read(buffer)) != -1) {
-                Log.e(TAG, fileLength+" : "+read+" : "+uploaded );
                 handler.post(new ProgressUpdater(uploaded, fileLength));
                 uploaded += read;
                 sink.write(buffer, 0, read);

@@ -183,4 +183,5 @@ public class TAPDefaultConstant {
     public static final String TAP_NOTIFICATION_CHANNEL = "homingPigeon_channel_id";
 
     public static final String CONTACT_LIST = "ContactList";
+    public static final String FILEPROVIDER_AUTHORITY = "io.taptalk.Taptalk.fileprovider";
 }

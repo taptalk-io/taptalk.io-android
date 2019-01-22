@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage;
@@ -261,7 +262,13 @@ public class TAPFileUploadManager {
             }
 
             // Fix image orientation
-            int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+            String pathName;
+//            if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
+//                pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
+//            } else {
+                pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+//            }
+            int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
