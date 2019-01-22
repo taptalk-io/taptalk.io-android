@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
@@ -27,14 +26,14 @@ public class TAPFileDownloadManager {
 
     private final String TAG = TAPFileDownloadManager.class.getSimpleName();
     private static TAPFileDownloadManager instance;
-    private Map<String, Bitmap> thumbnails;
+    private HashMap<String, Bitmap> thumbnails;
     private HashMap<String, Integer> downloadProgressMap;
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;
     }
 
-    private Map<String, Bitmap> getThumbnails() {
+    private HashMap<String, Bitmap> getThumbnails() {
         return null == thumbnails ? thumbnails = new HashMap<>() : thumbnails;
     }
 
@@ -70,8 +69,11 @@ public class TAPFileDownloadManager {
     public void downloadImage(Context context, TAPMessageModel message, TAPDownloadListener listener) {
         // Return if message data is null or permission is not granted
         if (null == message.getData() || !TAPUtils.getInstance().hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Log.e(TAG, "downloadImage: " );
             return;
         }
+
+        TAPFileDownloadManager.getInstance().addDownloadProgressMap(message.getLocalID(), 0);
 
         String fileID = (String) message.getData().get("fileID");
         // Download thumbnail

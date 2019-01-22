@@ -636,7 +636,6 @@ public class TAPDataManager {
     // File Download
     public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
         Log.e(TAG, "downloadFile: "+fileID );
-        TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 0);
         TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
     }
 
