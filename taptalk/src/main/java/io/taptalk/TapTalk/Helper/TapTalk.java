@@ -79,11 +79,12 @@ public class TapTalk {
         }
     };
 
-    public static TapTalk init(Context context, TAPListener tapListener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, tapListener)) : tapTalk;
+    public static TapTalk init(Context context, String appID, String appSecret, String userAgent, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, tapListener)) : tapTalk;
     }
 
-    public TapTalk(final Context appContext, TAPListener tapListener) {
+    public TapTalk(@NonNull final Context appContext, @NonNull String appID, @NonNull String appSecret
+            , @NonNull String userAgent, @NonNull TAPListener tapListener) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -99,6 +100,13 @@ public class TapTalk {
         //ini buat ambil context dr app utama karena library module ga bsa punya app context sndiri
         TapTalk.appContext = appContext;
         clientAppName = appContext.getResources().getString(R.string.app_name);
+
+        //save header requirement
+        new Thread(() -> {
+            TAPDataManager.getInstance().saveApplicationID(appID);
+            TAPDataManager.getInstance().saveApplicationSecret(appSecret);
+            TAPDataManager.getInstance().saveUserAgent(userAgent);
+        }).start();
 
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance().connect();
@@ -441,5 +449,12 @@ public class TapTalk {
                 });
             }
         }).start();
+    }
+
+    /**
+     * for AccessToken Availability checking
+     */
+    public static boolean checkAccessTokenAvailability() {
+        return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
 }

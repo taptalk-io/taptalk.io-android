@@ -36,6 +36,9 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import okhttp3.ResponseBody;
 import rx.Subscriber;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
@@ -89,7 +92,7 @@ public class TAPDataManager {
     }
 
     private String getStringPreference(String key) {
-        return Hawk.get(key, "0");
+        return Hawk.get(key, "");
     }
 
     private Long getLongTimestampPreference(String key) {
@@ -338,6 +341,57 @@ public class TAPDataManager {
 
     public boolean checkNotificationMap() {
         return checkPreferenceKeyAvailable(K_NOTIFICATION_MESSAGE_MAP);
+    }
+
+    /**
+     * API HEADER
+     */
+    public void saveApplicationID(String applicationID) {
+        saveStringPreference(applicationID, APP_ID);
+    }
+
+    public String getApplicationID() {
+        return getStringPreference(APP_ID);
+    }
+
+    public boolean checkApplicationIDAvailability() {
+        return checkPreferenceKeyAvailable(APP_ID);
+    }
+
+    public void removeApplicationID() {
+        deletePreference(APP_ID);
+    }
+
+    public void saveApplicationSecret(String applicationSecret) {
+        saveStringPreference(applicationSecret, APP_SECRET);
+    }
+
+    public String getApplicationSecret() {
+        return getStringPreference(APP_SECRET);
+    }
+
+    public boolean checkApplicationSecretAvailability() {
+        return checkPreferenceKeyAvailable(APP_SECRET);
+    }
+
+    public void removeApplicationSecret() {
+        deletePreference(APP_SECRET);
+    }
+
+    public void saveUserAgent(String userAgent) {
+        saveStringPreference(userAgent, USER_AGENT);
+    }
+
+    public String getUserAgent() {
+        return getStringPreference(USER_AGENT);
+    }
+
+    public boolean checkUserAgentAvailability() {
+        return checkPreferenceKeyAvailable(USER_AGENT);
+    }
+
+    public void removeUserAgent() {
+        deletePreference(USER_AGENT);
     }
 
     /**
