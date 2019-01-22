@@ -69,7 +69,7 @@ public class TAPFileDownloadManager {
             }
         });
         // Download image
-        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), fileID, new TapDefaultDataView<ResponseBody>() {
+        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), message.getLocalID(), fileID, new TapDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
                 writeImageFileToDisk(context, message.getLocalID(), fileID, message.getCreated(), response, listener);

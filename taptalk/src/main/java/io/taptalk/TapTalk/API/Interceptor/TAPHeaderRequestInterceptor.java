@@ -57,15 +57,15 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
         Request request = original
                 .newBuilder()
-                .header("Content-Type", contentType)
-                .header("App-Key", appKey)
-                .header("Authorization", authorization)
-                .header("Device-Identifier", deviceID)
-                .header("Device-Model", android.os.Build.MODEL)
-                .header("Device-Platform", "android")
-                .header("Device-OS-Version", deviceOsVersion)
-                .header("App-Version", BuildConfig.VERSION_NAME)
-                .header("User-Agent", "android")
+                .addHeader("Content-Type", contentType)
+                .addHeader("App-Key", appKey)
+                .addHeader("Authorization", authorization)
+                .addHeader("Device-Identifier", deviceID)
+                .addHeader("Device-Model", android.os.Build.MODEL)
+                .addHeader("Device-Platform", "android")
+                .addHeader("Device-OS-Version", deviceOsVersion)
+                .addHeader("App-Version", BuildConfig.VERSION_NAME)
+                .addHeader("User-Agent", "android")
                 .method(original.method(), original.body())
                 .build();
 

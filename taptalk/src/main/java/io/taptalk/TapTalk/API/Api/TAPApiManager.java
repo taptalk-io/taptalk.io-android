@@ -274,9 +274,9 @@ public class TAPApiManager {
         execute(tapMultipart.uploadImage(requestBody), subscriber);
     }
 
-    public void downloadFile(String roomID, String fileID, Subscriber<ResponseBody> subscriber) {
+    public void downloadFile(String roomID, String localID, String fileID, Subscriber<ResponseBody> subscriber) {
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
-        executeWithoutBaseResponse(tapDownload.downloadFile(request), subscriber);
+        executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }
 
     public void downloadThumbnail(String roomID, String fileID, Subscriber<ResponseBody> subscriber) {

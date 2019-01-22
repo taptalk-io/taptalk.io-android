@@ -35,7 +35,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import okhttp3.ResponseBody;
-import rx.Subscriber;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
@@ -634,8 +633,8 @@ public class TAPDataManager {
     }
 
     // File Download
-    public void downloadFile(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, fileID, new TAPBaseSubscriber<>(view));
+    public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
     }
 
     public void downloadThumbnail(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {

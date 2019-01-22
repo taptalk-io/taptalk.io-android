@@ -17,11 +17,14 @@ public class TAPDownloadProgressResponseBody extends ResponseBody {
 
     private final ResponseBody responseBody;
     private final TapTalkDownloadProgressInterface progressListener;
+    private final String localID, roomID;
     private BufferedSource bufferedSource;
 
-    public TAPDownloadProgressResponseBody(ResponseBody responseBody, TapTalkDownloadProgressInterface progressListener) {
+    public TAPDownloadProgressResponseBody(ResponseBody responseBody, String roomID, String localID, TapTalkDownloadProgressInterface progressListener) {
         this.responseBody = responseBody;
         this.progressListener = progressListener;
+        this.roomID = roomID;
+        this.localID = localID;
     }
 
     @Nullable
@@ -54,8 +57,8 @@ public class TAPDownloadProgressResponseBody extends ResponseBody {
 
                 if (bytesRead != -1) {
                     int percentage = (int) (100 * totalBytesRead/responseBody.contentLength());
-                    progressListener.update(percentage);
-                } else progressListener.finish();
+                    progressListener.update(percentage, roomID, localID);
+                } else progressListener.finish(roomID, localID);
                 return bytesRead;
             }
         };
