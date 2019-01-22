@@ -10,6 +10,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
@@ -27,6 +28,7 @@ public class TAPFileDownloadManager {
     private final String TAG = TAPFileDownloadManager.class.getSimpleName();
     private static TAPFileDownloadManager instance;
     private Map<String, Bitmap> thumbnails;
+    private HashMap<String, Integer> downloadProgressMap;
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;
@@ -42,6 +44,26 @@ public class TAPFileDownloadManager {
 
     public Bitmap getThumbnail(String fileID) {
         return getThumbnails().get(fileID);
+    }
+
+    public HashMap<String, Integer> getDownloadProgressMap() {
+         return null == downloadProgressMap ? downloadProgressMap = new LinkedHashMap<>() : downloadProgressMap;
+    }
+
+    public Integer getDownloadProgressMapProgressPerLocalID(String localID) {
+        if (!getDownloadProgressMap().containsKey(localID)) {
+            return null;
+        } else {
+            return getDownloadProgressMap().get(localID);
+        }
+    }
+
+    public void addDownloadProgressMap(String localID, int progress) {
+        getDownloadProgressMap().put(localID, progress);
+    }
+
+    public void removeDownloadProgressMap(String localID) {
+        getDownloadProgressMap().remove(localID);
     }
 
     // TODO: 17 January 2019 ADD QUEUE, SHOW DOWNLOAD PROGRESS

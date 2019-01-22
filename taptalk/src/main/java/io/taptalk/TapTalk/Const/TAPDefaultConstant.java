@@ -129,9 +129,7 @@ public class TAPDefaultConstant {
 
     public static final class DownloadBroadcastEvent {
         public static final String DownloadProgressLoading = "kDownloadProgressLoading";
-        public static final String DownloadProgress = "kDownloadProgress";
         public static final String DownloadLocalID = "kDownloadLocalID";
-        public static final String DownloadRoomID = "kDownloadRoomID";
         public static final String DownloadFinish = "kDownloadFinish";
     }
 

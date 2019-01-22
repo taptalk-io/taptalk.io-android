@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.API.Interceptor;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import java.io.IOException;
 
@@ -14,9 +13,7 @@ import okhttp3.Response;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgress;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadRoomID;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPDownloadRequestInterceptor implements Interceptor {
@@ -28,24 +25,19 @@ public class TAPDownloadRequestInterceptor implements Interceptor {
 
         return chain.proceed(original).newBuilder()
                 .body(new TAPDownloadProgressResponseBody(chain.proceed(original).body(),
-                        original.header("roomID"), original.header("localID"),
+                        original.header("localID"),
                         new TapTalkDownloadProgressInterface() {
                             @Override
-                            public void update(int percentage, String roomID, String localID) {
-                                Log.e(TAG, roomID + " : " + localID + " : " + percentage);
+                            public void update(int percentage, String localID) {
                                 Intent intent = new Intent(DownloadProgressLoading);
                                 intent.putExtra(DownloadLocalID, localID);
-                                intent.putExtra(DownloadRoomID, roomID);
-                                intent.putExtra(DownloadProgress, percentage);
                                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                             }
 
                             @Override
-                            public void finish(String roomID, String localID) {
-                                Log.e(TAG, roomID + " : " + localID);
+                            public void finish(String localID) {
                                 Intent intent = new Intent(DownloadFinish);
                                 intent.putExtra(DownloadLocalID, localID);
-                                intent.putExtra(DownloadRoomID, roomID);
                                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                             }
                         })).build();
