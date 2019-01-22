@@ -157,7 +157,7 @@ public class TapTalk {
             @Override
             public void onSuccess(TAPGetAccessTokenResponse response) {
                 super.onSuccess(response);
-                TAPDataManager.getInstance().deleteAuthTicket();
+                TAPDataManager.getInstance().removeAuthTicket();
 
                 TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
                 TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
