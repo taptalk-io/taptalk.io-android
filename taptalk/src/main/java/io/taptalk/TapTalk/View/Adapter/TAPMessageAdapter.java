@@ -58,12 +58,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
 
@@ -307,18 +310,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
-            Integer progressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
+            Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID());
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setVisibility(View.GONE);
-            } else if (null == progressValue || (null != item.getSending() && !item.getSending())) {
+            } else if ((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue) {
                 flProgress.setVisibility(View.GONE);
                 flBubble.setForeground(null);
             } else {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
-                pbProgress.setProgress(progressValue);
+                if (null != uploadProgressValue)
+                pbProgress.setProgress(uploadProgressValue);
+                else pbProgress.setProgress(downloadProgressValue);
             }
         }
 
@@ -413,8 +420,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             @Override
                             public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
                                 // Load bitmap to view
-                                TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
                                 //TAPCacheManager.getInstance(itemView.getContext()).addBitmapToCache(fileID, bitmap);
+                                Log.e(TAG, "downloadFile2: "+fileID );
                                 ((Activity) itemView.getContext()).runOnUiThread(() -> glide
                                         .load(bitmap)
                                         .transition(DrawableTransitionOptions.withCrossFade(100))
@@ -422,6 +429,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                                 .placeholder(new BitmapDrawable(itemView.getResources(), thumbnail[0]))
                                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                                         .into(rcivImageBody));
+                                TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
+                                Intent intent = new Intent(DownloadFinish);
+                                intent.putExtra(DownloadLocalID, localID);
+                                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                             }
                         });
                     }

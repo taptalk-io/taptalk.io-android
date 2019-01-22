@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -634,6 +635,8 @@ public class TAPDataManager {
 
     // File Download
     public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        Log.e(TAG, "downloadFile: "+fileID );
+        TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 0);
         TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
     }
 

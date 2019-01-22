@@ -12,7 +12,6 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
@@ -38,7 +37,8 @@ public class TAPDownloadRequestInterceptor implements Interceptor {
 
                             @Override
                             public void finish(String localID) {
-                                Intent intent = new Intent(DownloadFinish);
+                                TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 100);
+                                Intent intent = new Intent(DownloadProgressLoading);
                                 intent.putExtra(DownloadLocalID, localID);
                                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                             }
