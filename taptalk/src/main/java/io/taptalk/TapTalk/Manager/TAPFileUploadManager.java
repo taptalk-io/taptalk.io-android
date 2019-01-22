@@ -274,7 +274,7 @@ public class TAPFileUploadManager {
 
             // Compress image
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, os);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
             byte[] byteArray = os.toByteArray();
             bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             os.flush();
