@@ -27,8 +27,6 @@ import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.Taptalk.BuildConfig;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.APP_KEY_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.APP_KEY_SECRET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTING;
@@ -244,7 +242,11 @@ public class TAPConnectionManager {
     private void createHeaderForConnectWebSocket(Map<String, String> websocketHeader) {
         //Map<String, String> websocketHeader = new HashMap<>();
 
+        String APP_KEY_ID = TAPDataManager.getInstance().getApplicationID();
+        String APP_KEY_SECRET = TAPDataManager.getInstance().getApplicationSecret();
         String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
+
+        String userAgent = TAPDataManager.getInstance().getUserAgent();
         String deviceID = Settings.Secure.getString(appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
 
@@ -256,7 +258,7 @@ public class TAPConnectionManager {
             websocketHeader.put("Device-Platform", "android");
             websocketHeader.put("Device-OS-Version", deviceOsVersion);
             websocketHeader.put("App-Version", BuildConfig.VERSION_NAME);
-            websocketHeader.put("User-Agent", "android");
+            websocketHeader.put("User-Agent", userAgent);
         }
         //return websocketHeader;
     }

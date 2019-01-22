@@ -9,8 +9,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
 import java.net.URL;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
@@ -18,12 +16,11 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
@@ -335,7 +332,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
             super.onSuccess(response);
             TAPApiManager.getInstance().setLogout(false);
             TapTalk.saveAuthTicketAndGetAccessToken(response.getTicket()
-                    , accessTokenView);
+                    , loginInterface);
         }
 
         @Override
@@ -345,29 +342,9 @@ public class TAPLoginActivity extends TAPBaseActivity {
         }
     };
 
-    TapDefaultDataView<TAPGetAccessTokenResponse> accessTokenView = new TapDefaultDataView<TAPGetAccessTokenResponse>() {
+    TAPLoginInterface loginInterface = new TAPLoginInterface() {
         @Override
-        public void startLoading() {
-            super.startLoading();
-        }
-
-        @Override
-        public void endLoading() {
-            super.endLoading();
-        }
-
-        @Override
-        public void onSuccess(TAPGetAccessTokenResponse response) {
-            super.onSuccess(response);
-            TAPDataManager.getInstance().deleteAuthTicket();
-
-            TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
-            TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
-            TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
-            TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
-            registerFcmToken();
-
-            TAPDataManager.getInstance().saveActiveUser(response.getUser());
+        public void onLoginSuccess() {
             runOnUiThread(() -> {
                 Intent intent = new Intent(TAPLoginActivity.this, TAPRoomListActivity.class);
                 startActivity(intent);
@@ -377,9 +354,8 @@ public class TAPLoginActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onError(TAPErrorModel error) {
-            super.onError(error);
-            showDialog("ERROR " + error.getCode(), error.getMessage());
+        public void onLoginFailed(String reason) {
+            showDialog("ERROR ", reason);
         }
     };
 
@@ -394,22 +370,4 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 }).show();
     }
 
-    private void registerFcmToken() {
-        new Thread(() -> {
-            if (!TAPDataManager.getInstance().checkFirebaseToken()) {
-                FirebaseInstanceId.getInstance().getInstanceId()
-                        .addOnCompleteListener(task -> {
-                            if (null != task.getResult()) {
-                                String fcmToken = task.getResult().getToken();
-                                TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TapDefaultDataView<TAPCommonResponse>() {
-                                });
-                                TAPDataManager.getInstance().saveFirebaseToken(fcmToken);
-                            }
-                        });
-            } else {
-                TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
-                });
-            }
-        }).start();
-    }
 }
