@@ -154,6 +154,12 @@ public class TAPDefaultConstant {
         public static final String IMAGE_GIF = "image/gif";
     }
 
+    public static final class CustomHeaderKey {
+        public static final String USER_AGENT = "kUserAgent";
+        public static final String APP_ID = "kApplicationID";
+        public static final String APP_SECRET = "kApplicationSecret";
+    }
+
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kTAPAccessToken";
@@ -177,9 +183,6 @@ public class TAPDefaultConstant {
 
     public static final long TYPING_EMIT_DELAY = 10000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 15000L;
-
-    public static final String APP_KEY_ID = "b43b48745dfa0e44k1";
-    public static final String APP_KEY_SECRET = "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4";
 
     public static final String SCAN_RESULT = "kScanResult";
     public static final String ADDED_CONTACT = "kAddedContact";

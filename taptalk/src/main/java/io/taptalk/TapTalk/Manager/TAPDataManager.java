@@ -37,6 +37,9 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import okhttp3.ResponseBody;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
@@ -90,7 +93,7 @@ public class TAPDataManager {
     }
 
     private String getStringPreference(String key) {
-        return Hawk.get(key, "0");
+        return Hawk.get(key, "");
     }
 
     private Long getLongTimestampPreference(String key) {
@@ -101,7 +104,7 @@ public class TAPDataManager {
         return Hawk.contains(key);
     }
 
-    private void deletePreference(String key) {
+    private void removePreference(String key) {
         Hawk.delete(key);
     }
 
@@ -113,7 +116,20 @@ public class TAPDataManager {
      */
 
     public void deleteAllPreference() {
-        Hawk.deleteAll();
+        removeApplicationID();
+        removeApplicationSecret();
+        removeUserAgent();
+        removeActiveUser();
+        removeAuthTicket();
+        removeAccessToken();
+        removeRefreshToken();
+        removeLastUpdatedMessageTimestampMap();
+        removeUserLastActivityMap();
+        removeRoomListSetupFinished();
+        removeRecipientID();
+        removeWriteStoragePermissionRequested();
+        removeLastDeleteTimestamp();
+        removeNotificationMap();
     }
 
     /**
@@ -134,6 +150,10 @@ public class TAPDataManager {
         TAPChatManager.getInstance().setActiveUser(user);
     }
 
+    public void removeActiveUser() {
+        Hawk.delete(K_USER);
+    }
+
     /**
      * AUTH TICKET
      */
@@ -150,8 +170,8 @@ public class TAPDataManager {
         saveStringPreference(authTicket, K_AUTH_TICKET);
     }
 
-    public void deleteAuthTicket() {
-        deletePreference(K_AUTH_TICKET);
+    public void removeAuthTicket() {
+        removePreference(K_AUTH_TICKET);
     }
 
     /**
@@ -174,8 +194,8 @@ public class TAPDataManager {
         saveLongTimestampPreference(accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
     }
 
-    public void deleteAccessToken() {
-        deletePreference(K_ACCESS_TOKEN);
+    public void removeAccessToken() {
+        removePreference(K_ACCESS_TOKEN);
     }
 
     /**
@@ -196,6 +216,10 @@ public class TAPDataManager {
 
     public void saveRefreshTokenExpiry(Long refreshTokenExpiry) {
         saveLongTimestampPreference(refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
+    }
+
+    public void removeRefreshToken() {
+        removePreference(K_REFRESH_TOKEN);
     }
 
     /**
@@ -230,6 +254,10 @@ public class TAPDataManager {
         Hawk.put(K_LAST_UPDATED, tempLastUpdated);
     }
 
+    private void removeLastUpdatedMessageTimestampMap() {
+        Hawk.delete(K_LAST_UPDATED);
+    }
+
     /**
      * USER LAST ACTIVITY
      */
@@ -242,12 +270,24 @@ public class TAPDataManager {
         Hawk.put(K_USER_LAST_ACTIVITY, userLastActivityMap);
     }
 
+    public void removeUserLastActivityMap() {
+        Hawk.delete(K_USER_LAST_ACTIVITY);
+    }
+
     /**
      * ROOM LIST FIRST SETUP
      */
 
+    public void setRoomListSetupFinished() {
+        saveLongTimestampPreference(System.currentTimeMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
+    }
+
     public Boolean isRoomListSetupFinished() {
         return checkPreferenceKeyAvailable(K_IS_ROOM_LIST_SETUP_FINISHED);
+    }
+
+    private void removeRoomListSetupFinished() {
+        removePreference(K_IS_ROOM_LIST_SETUP_FINISHED);
     }
 
     /**
@@ -262,8 +302,8 @@ public class TAPDataManager {
         saveBooleanPreference(isRequested, K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
     }
 
-    public void setRoomListSetupFinished() {
-        saveLongTimestampPreference(System.currentTimeMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
+    public void removeWriteStoragePermissionRequested() {
+        removePreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
     }
 
     // TODO: 14/09/18 TEMP
@@ -274,6 +314,10 @@ public class TAPDataManager {
     // TODO: 14/09/18 TEMP
     public void saveRecipientID(String recipientID) {
         Hawk.put(K_RECIPIENT_ID, recipientID);
+    }
+
+    public void removeRecipientID() {
+        removePreference(K_RECIPIENT_ID);
     }
 
     /**
@@ -322,6 +366,10 @@ public class TAPDataManager {
         else return 0 != getLastDeleteTimestamp();
     }
 
+    private void removeLastDeleteTimestamp() {
+        removePreference(K_LAST_DELETE_TIMESTAMP);
+    }
+
     /**
      * Notification Message Map
      */
@@ -339,6 +387,61 @@ public class TAPDataManager {
 
     public boolean checkNotificationMap() {
         return checkPreferenceKeyAvailable(K_NOTIFICATION_MESSAGE_MAP);
+    }
+
+    private void removeNotificationMap() {
+        removePreference(K_NOTIFICATION_MESSAGE_MAP);
+    }
+
+    /**
+     * API HEADER
+     */
+    public void saveApplicationID(String applicationID) {
+        saveStringPreference(applicationID, APP_ID);
+    }
+
+    public String getApplicationID() {
+        return getStringPreference(APP_ID);
+    }
+
+    public boolean checkApplicationIDAvailability() {
+        return checkPreferenceKeyAvailable(APP_ID);
+    }
+
+    public void removeApplicationID() {
+        removePreference(APP_ID);
+    }
+
+    public void saveApplicationSecret(String applicationSecret) {
+        saveStringPreference(applicationSecret, APP_SECRET);
+    }
+
+    public String getApplicationSecret() {
+        return getStringPreference(APP_SECRET);
+    }
+
+    public boolean checkApplicationSecretAvailability() {
+        return checkPreferenceKeyAvailable(APP_SECRET);
+    }
+
+    public void removeApplicationSecret() {
+        removePreference(APP_SECRET);
+    }
+
+    public void saveUserAgent(String userAgent) {
+        saveStringPreference(userAgent, USER_AGENT);
+    }
+
+    public String getUserAgent() {
+        return getStringPreference(USER_AGENT);
+    }
+
+    public boolean checkUserAgentAvailability() {
+        return checkPreferenceKeyAvailable(USER_AGENT);
+    }
+
+    public void removeUserAgent() {
+        removePreference(USER_AGENT);
     }
 
     /**

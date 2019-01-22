@@ -14,8 +14,6 @@ import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.APP_KEY_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.APP_KEY_SECRET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.MULTIPART_CONTENT_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.NOT_USE_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.USE_REFRESH_TOKEN;
@@ -31,6 +29,10 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
+        String APP_KEY_ID = TAPDataManager.getInstance().getApplicationID();
+        String APP_KEY_SECRET = TAPDataManager.getInstance().getApplicationSecret();
+        String userAgent = TAPDataManager.getInstance().getUserAgent();
+
         String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
 
         Context context = TapTalk.appContext;
@@ -65,7 +67,7 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
                 .addHeader("Device-Platform", "android")
                 .addHeader("Device-OS-Version", deviceOsVersion)
                 .addHeader("App-Version", BuildConfig.VERSION_NAME)
-                .addHeader("User-Agent", "android")
+                .addHeader("User-Agent", userAgent)
                 .method(original.method(), original.body())
                 .build();
 
