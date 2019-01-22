@@ -10,36 +10,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
 
 import com.facebook.stetho.Stetho;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
+import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
@@ -145,9 +143,36 @@ public class TapTalk {
         });
     }
 
-    public static void saveAuthTicketAndGetAccessToken(String authTicket, TapDefaultDataView<TAPGetAccessTokenResponse> view) {
+    public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPLoginInterface loginInterface) {
         TAPDataManager.getInstance().saveAuthTicket(authTicket);
-        TAPDataManager.getInstance().getAccessTokenFromApi(view);
+        TAPDataManager.getInstance().getAccessTokenFromApi(new TapDefaultDataView<TAPGetAccessTokenResponse>() {
+            @Override
+            public void onSuccess(TAPGetAccessTokenResponse response) {
+                super.onSuccess(response);
+                TAPDataManager.getInstance().deleteAuthTicket();
+
+                TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
+                TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
+                TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
+                TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
+                registerFcmToken();
+
+                TAPDataManager.getInstance().saveActiveUser(response.getUser());
+                loginInterface.onLoginSuccess();
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                loginInterface.onLoginFailed(error.getMessage());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                loginInterface.onLoginFailed(errorMessage);
+            }
+        });
     }
 
     public static void checkActiveUserToShowPage(Activity activity) {
@@ -360,108 +385,6 @@ public class TapTalk {
         });
     }
 
-    // TODO: 05/12/18 harus diilangin pas diintegrasi
-
-    public static void login() {
-        if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
-        } else {
-            try {
-                tapTalk.tempForceLogin();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void tempForceLogin() throws Exception {
-        String ipAddress = TAPUtils.getInstance().getStringFromURL(new URL("https://api.ipify.org/"));
-        String userAgent = "android";
-        String userPlatform = "android";
-        String xcUserID = "10";
-        String fullname = "Jefry Lorentono";
-        String email = "jefry@moselo.com";
-        String phone = "08979809026";
-        String username = "jefry";
-        String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        TAPDataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,
-                fullname, email, phone, username, authView);
-    }
-
-    private TapDefaultDataView<TAPAuthTicketResponse> authView = new TapDefaultDataView<TAPAuthTicketResponse>() {
-        @Override
-        public void startLoading() {
-            super.startLoading();
-        }
-
-        @Override
-        public void endLoading() {
-            super.endLoading();
-        }
-
-        @Override
-        public void onSuccess(TAPAuthTicketResponse response) {
-            super.onSuccess(response);
-            TAPApiManager.getInstance().setLogout(false);
-            TapTalk.saveAuthTicketAndGetAccessToken(response.getTicket()
-                    , accessTokenView);
-        }
-
-        @Override
-        public void onError(TAPErrorModel error) {
-            super.onError(error);
-            new TapTalkDialog.Builder(appContext)
-                    .setTitle("ERROR " + error.getCode())
-                    .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle("OK")
-                    .show();
-        }
-    };
-
-    private TapDefaultDataView<TAPGetAccessTokenResponse> accessTokenView = new TapDefaultDataView<TAPGetAccessTokenResponse>() {
-        @Override
-        public void startLoading() {
-            super.startLoading();
-        }
-
-        @Override
-        public void endLoading() {
-            super.endLoading();
-        }
-
-        @Override
-        public void onSuccess(TAPGetAccessTokenResponse response) {
-            super.onSuccess(response);
-            TAPDataManager.getInstance().deleteAuthTicket();
-
-            TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
-            TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
-            TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
-            TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
-            registerFcmToken();
-
-            TAPDataManager.getInstance().saveActiveUser(response.getUser());
-            TAPConnectionManager.getInstance().connect();
-            for (TAPListener listener : tapListeners)
-                listener.onLoginSuccess(response.getUser());
-        }
-
-        @Override
-        public void onError(TAPErrorModel error) {
-            super.onError(error);
-            new TapTalkDialog.Builder(appContext)
-                    .setTitle("ERROR " + error.getCode())
-                    .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle("OK")
-                    .show();
-        }
-    };
-
-    private void registerFcmToken() {
-        new Thread(() -> TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
-        })).start();
-    }
-
     public static void addTapTalkListener(TAPListener listener) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
@@ -499,5 +422,24 @@ public class TapTalk {
                 otherUserModel.getName(), 1, otherUserModel.getAvatarURL(), "#FFFFFF");
         TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, roomModel);
         listener.sendSuccess();
+    }
+
+    private static void registerFcmToken() {
+        new Thread(() -> {
+            if (!TAPDataManager.getInstance().checkFirebaseToken()) {
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(task -> {
+                            if (null != task.getResult()) {
+                                String fcmToken = task.getResult().getToken();
+                                TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TapDefaultDataView<TAPCommonResponse>() {
+                                });
+                                TAPDataManager.getInstance().saveFirebaseToken(fcmToken);
+                            }
+                        });
+            } else {
+                TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
+                });
+            }
+        }).start();
     }
 }
