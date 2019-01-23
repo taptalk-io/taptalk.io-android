@@ -32,6 +32,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -337,7 +338,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageUri = (String) item.getData().get("fileUri");
             String imageCaption = (String) item.getData().get("caption");
             String fileID = (String) item.getData().get("fileID");
-            Log.e(TAG, "setImageData: " + TAPUtils.getInstance().toJsonString(item.getData()));
+            String thumbnail = (String) (null == item.getData().get("thumbnail") ? "" : item.getData().get("thumbnail"));
+            Bitmap thumbnailBitmap = TAPFileUtils.getInstance().decodeBase64(thumbnail);
+            Log.e(TAG, "setImageData2: " + item.getData().get("thumbnail"));
 
             // Set caption
             if (null != imageCaption && !imageCaption.isEmpty()) {
@@ -358,11 +361,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             int placeholder = R.drawable.tap_bg_grey_e4;
 
             // Load placeholder image
-            glide.load(placeholder)
-                    .apply(new RequestOptions()
-                            .placeholder(placeholder)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(rcivImageBody);
+
+            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+                glide.load(placeholder)
+                        .apply(new RequestOptions()
+                                .placeholder(placeholder)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(rcivImageBody);
+            }
 
             if (null != imageUri && !imageUri.isEmpty()) {
                 // Message is not sent to server, load image from URI
@@ -390,48 +396,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .into(rcivImageBody));
                     } else if (null == TAPFileDownloadManager.getInstance()
                             .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
-                        Log.e(TAG, "setImageData: 2");
-                        // Load thumbnail
-                        final Bitmap[] thumbnail = {TAPFileDownloadManager.getInstance().getThumbnail(fileID)};
-                        if (null != thumbnail[0]) {
-                            Log.e(TAG, "setImageData: 3 " + thumbnail[0]);
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> glide.load(thumbnail[0])
+
+                        if (null != thumbnailBitmap) {
+                            ((Activity) itemView.getContext()).runOnUiThread(() -> glide.load(thumbnailBitmap)
                                     .apply(new RequestOptions()
                                             .placeholder(placeholder)
                                             .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                    .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .into(rcivImageBody));
                         }
                         // Download image
                         TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
                             @Override
-                            public void onThumbnailDownloaded(String fileID, Bitmap bitmap) {
-                                // Get thumbnail from chat manager if actual image have not finished downloading
-                                if (null == thumbnail[0] && null == TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID)) {
-                                    thumbnail[0] = bitmap;
-
-                                    ((Activity) itemView.getContext()).runOnUiThread(() -> glide
-                                            .load(bitmap)
-                                            .transition(DrawableTransitionOptions.withCrossFade(100))
-                                            .apply(new RequestOptions()
-                                                    .placeholder(placeholder)
-                                                    .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                            .into(rcivImageBody));
-
-                                }
-                            }
-
-                            @Override
                             public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
                                 // Load bitmap to view
-                                //TAPCacheManager.getInstance(itemView.getContext()).addBitmapToCache(fileID, bitmap);
-                                Log.e(TAG, "downloadFile2: " + fileID);
                                 TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
                                 Intent intent = new Intent(DownloadFinish);
                                 intent.putExtra(DownloadLocalID, localID);
                                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                             }
                         });
+
                     }
                 }).start();
             }

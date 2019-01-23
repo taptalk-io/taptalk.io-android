@@ -448,7 +448,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, imageUri)));
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
@@ -457,7 +457,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, imageUri)),
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)),
                     getQuotedMessage());
         }
         return messageModel;

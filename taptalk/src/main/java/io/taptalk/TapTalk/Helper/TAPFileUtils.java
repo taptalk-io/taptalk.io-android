@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,8 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -35,20 +32,17 @@ public class TAPFileUtils {
         return instance == null ? (instance = new TAPFileUtils()) : instance;
     }
 
-    public String encodeToBase64(Uri imageUri, int maxSize) {
-        final InputStream imageStream;
-        try {
-            Log.e("]]]]", "encodeToBase64 imageUri: " + imageUri.getPath());
-            imageStream = TapTalk.appContext.getContentResolver().openInputStream(imageUri);
-            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-            final Bitmap resizedImage = scaleDown(selectedImage, maxSize, true);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            resizedImage.compress(Bitmap.CompressFormat.WEBP, 100, byteArrayOutputStream);
-            return "data:image/webp;base64," + Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String encodeToBase64(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+    public Bitmap decodeBase64(String encodedMessage) {
+        byte[] imageBytes = Base64.decode(encodedMessage, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
     public String encodeToBase64(Uri imageUri, int maxSize, Activity activity) {
@@ -78,20 +72,6 @@ public class TAPFileUtils {
             return null;
         }
     }
-
-//    public int getImageOrientation(Uri imageUri, Context context) {
-//        ExifInterface exif;
-//        try {
-//            if (getFilePath(context, imageUri) != null) {
-//                exif = new ExifInterface(getFilePath(context, imageUri));
-//            } else {
-//                return 0;
-//            }
-//        } catch (IOException e) {
-//            return 0;
-//        }
-//        return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-//    }
 
     public int getImageOrientation(String imagePath) {
         ExifInterface exif;
