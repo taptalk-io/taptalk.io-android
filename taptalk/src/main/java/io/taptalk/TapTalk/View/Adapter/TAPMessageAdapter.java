@@ -296,8 +296,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             markUnreadForMessage(item);
-            setImageData(item);
             setProgress(item);
+            setImageData(item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> {
@@ -390,6 +390,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     } else {
                         if (null != thumbnailBitmap) {
                             ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                                flProgress.setVisibility(View.VISIBLE);
                                 rcivImageBody.setImageBitmap(thumbnailBitmap);
                             });
                         }
@@ -415,7 +416,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setImageViewButtonProgress(TAPMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
-                ivButtonProgress.setVisibility(View.VISIBLE);
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
                 flProgress.setOnClickListener(v -> {
                     Intent intent = new Intent(UploadRetried);
@@ -425,12 +425,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(item.getLocalID())
                     && null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID()))
                     || null != TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
-                ivButtonProgress.setVisibility(View.GONE);
-                ivButtonProgress.setImageDrawable(null);
+                ivButtonProgress.setImageResource(R.drawable.tap_ic_download_white);
                 flProgress.setOnClickListener(v -> {
                 });
             } else {
-                ivButtonProgress.setVisibility(View.VISIBLE);
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_cancel_white);
                 flProgress.setOnClickListener(v -> TAPDataManager.getInstance()
                         .cancelUploadImage(itemView.getContext(), item.getLocalID()));
