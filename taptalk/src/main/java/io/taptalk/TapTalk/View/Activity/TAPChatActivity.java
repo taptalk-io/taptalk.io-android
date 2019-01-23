@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
@@ -48,6 +49,7 @@ import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -60,6 +62,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -682,10 +685,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             tvQuoteTitle.setText(message.getUser().getName());
             tvQuoteContent.setText(message.getBody());
             // TODO: 9 January 2019 HANDLE OTHER TYPES
-            if (message.getType() == TYPE_IMAGE) {
-                // TODO: 9 January 2019 LOAD IMAGE
-//            Glide.with(this).load(message.getThumbnail()).into(rcivQuoteImage);
+            if (message.getType() == TYPE_IMAGE && null != message.getData()) {
                 vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setImageBitmap(TAPCacheManager.getInstance(this).getBitmapPerKey((String) message.getData().get("fileID")));
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else {

@@ -764,7 +764,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvQuoteContent.setMaxLines(1);
             } else if (!quoteFileID.isEmpty()) {
                 // Get quote image from file ID
-                // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
+                // TODO: 9 January 2019 SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
+                rcivQuoteImage.setImageBitmap(TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(quoteFileID));
                 if (isMessageFromMySelf(item)) {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 } else {
