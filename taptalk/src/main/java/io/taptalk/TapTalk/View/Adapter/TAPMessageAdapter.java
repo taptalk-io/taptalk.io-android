@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,7 +11,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -25,7 +23,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
@@ -33,6 +30,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -58,12 +56,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
 
@@ -307,18 +308,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
-            Integer progressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
+            Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID());
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setVisibility(View.GONE);
-            } else if (null == progressValue || (null != item.getSending() && !item.getSending())) {
+            } else if ((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue) {
                 flProgress.setVisibility(View.GONE);
                 flBubble.setForeground(null);
             } else {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
-                pbProgress.setProgress(progressValue);
+                if (null != uploadProgressValue)
+                    pbProgress.setProgress(uploadProgressValue);
+                else pbProgress.setProgress(downloadProgressValue);
             }
         }
 
@@ -331,7 +336,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageUri = (String) item.getData().get("fileUri");
             String imageCaption = (String) item.getData().get("caption");
             String fileID = (String) item.getData().get("fileID");
-            Log.e(TAG, "setImageData: " + TAPUtils.getInstance().toJsonString(item.getData()));
+            String thumbnail = (String) (null == item.getData().get("thumbnail") ? "" : item.getData().get("thumbnail"));
+            Bitmap thumbnailBitmap = TAPFileUtils.getInstance().decodeBase64(thumbnail);
 
             // Set caption
             if (null != imageCaption && !imageCaption.isEmpty()) {
@@ -352,11 +358,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             int placeholder = R.drawable.tap_bg_grey_e4;
 
             // Load placeholder image
-            glide.load(placeholder)
-                    .apply(new RequestOptions()
-                            .placeholder(placeholder)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(rcivImageBody);
+
+            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+                glide.load(placeholder)
+                        .apply(new RequestOptions()
+                                .placeholder(placeholder)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(rcivImageBody);
+            }
 
             if (null != imageUri && !imageUri.isEmpty()) {
                 // Message is not sent to server, load image from URI
@@ -375,53 +384,30 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
-                        ((Activity) itemView.getContext()).runOnUiThread(() -> glide
-                                .load(cachedImage)
-                                .transition(DrawableTransitionOptions.withCrossFade(100))
-                                .apply(new RequestOptions()
-                                        .placeholder(placeholder)
-                                        .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                .into(rcivImageBody));
-                    } else {
-                        // Load thumbnail
-                        final Bitmap[] thumbnail = {TAPFileDownloadManager.getInstance().getThumbnail(fileID)};
-                        if (null != thumbnail[0]) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> glide
-                                    .load(thumbnail[0])
-                                    .apply(new RequestOptions()
-                                            .placeholder(placeholder)
-                                            .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                    .into(rcivImageBody));
-                        }
-                        // Download image
-                        TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
-                            @Override
-                            public void onThumbnailDownloaded(String fileID, Bitmap bitmap) {
-                                // Get thumbnail from chat manager if actual image have not finished downloading
-                                thumbnail[0] = bitmap;
-                                if (null == TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID)) {
-                                    ((Activity) itemView.getContext()).runOnUiThread(() -> glide
-                                            .load(bitmap)
-                                            .transition(DrawableTransitionOptions.withCrossFade(100))
-                                            .apply(new RequestOptions()
-                                                    .placeholder(placeholder)
-                                                    .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                            .into(rcivImageBody));
-                                }
-                            }
-
-                            @Override
-                            public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
-                                // Load bitmap to view
-                                ((Activity) itemView.getContext()).runOnUiThread(() -> glide
-                                        .load(bitmap)
-                                        .transition(DrawableTransitionOptions.withCrossFade(100))
-                                        .apply(new RequestOptions()
-                                                .placeholder(new BitmapDrawable(itemView.getResources(), thumbnail[0]))
-                                                .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                        .into(rcivImageBody));
-                            }
+                        ((Activity) itemView.getContext()).runOnUiThread(() ->{
+                            rcivImageBody.setImageBitmap(cachedImage);
                         });
+                    } else {
+                        if (null != thumbnailBitmap) {
+                            ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                                rcivImageBody.setImageBitmap(thumbnailBitmap);
+                            });
+                        }
+
+                        if (null == TAPFileDownloadManager.getInstance()
+                                .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+                            // Download image
+                            TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
+                                @Override
+                                public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
+                                    // Load bitmap to view
+                                    TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
+                                    Intent intent = new Intent(DownloadFinish);
+                                    intent.putExtra(DownloadLocalID, localID);
+                                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                                }
+                            });
+                        }
                     }
                 }).start();
             }
@@ -429,13 +415,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setImageViewButtonProgress(TAPMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
+                ivButtonProgress.setVisibility(View.VISIBLE);
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
                 flProgress.setOnClickListener(v -> {
                     Intent intent = new Intent(UploadRetried);
                     intent.putExtra(UploadLocalID, item.getLocalID());
                     LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
                 });
+            } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(item.getLocalID())
+                    && null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID()))
+                    || null != TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+                ivButtonProgress.setVisibility(View.GONE);
+                ivButtonProgress.setImageDrawable(null);
+                flProgress.setOnClickListener(v -> {
+                });
             } else {
+                ivButtonProgress.setVisibility(View.VISIBLE);
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_cancel_white);
                 flProgress.setOnClickListener(v -> TAPDataManager.getInstance()
                         .cancelUploadImage(itemView.getContext(), item.getLocalID()));

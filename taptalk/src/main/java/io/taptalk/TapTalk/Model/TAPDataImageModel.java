@@ -18,15 +18,18 @@ public class TAPDataImageModel implements Parcelable {
     @Nullable @JsonProperty("height") private Integer height;
     @Nullable @JsonProperty("caption") private String caption;
     @Nullable @JsonProperty("fileUri") private String fileUri;
+    @Nullable @JsonProperty("thumbnail") private String thumbnail;
 
-    public TAPDataImageModel(@Nullable Integer width, @Nullable Integer height, @Nullable String caption, @Nullable String fileUri) {
+    public TAPDataImageModel(@Nullable Integer width, @Nullable Integer height, @Nullable String caption,
+                             @Nullable String thumbnail, @Nullable String fileUri) {
         this.width = width;
         this.height = height;
         this.caption = caption;
         this.fileUri = fileUri;
+        this.thumbnail = thumbnail;
     }
 
-    public TAPDataImageModel(@Nullable String fileID, @Nullable String mediaType,
+    public TAPDataImageModel(@Nullable String fileID, @Nullable String thumbnail, @Nullable String mediaType,
                              @Nullable Long size, @Nullable Integer width,
                              @Nullable Integer height, @Nullable String caption) {
         this.fileID = fileID;
@@ -35,6 +38,7 @@ public class TAPDataImageModel implements Parcelable {
         this.width = width;
         this.height = height;
         this.caption = caption;
+        this.thumbnail = thumbnail;
     }
 
     public TAPDataImageModel(HashMap<String, Object> imageDataMap) {
@@ -45,14 +49,15 @@ public class TAPDataImageModel implements Parcelable {
         this.height = (Integer) imageDataMap.get("height");
         this.caption = (String) imageDataMap.get("caption");
         this.fileUri = (String) imageDataMap.get("fileUri");
+        this.thumbnail = (String) imageDataMap.get("thumbnail");
     }
 
     public TAPDataImageModel() {
     }
 
-    public static TAPDataImageModel Builder(String fileID, String mediaType, Long size,
+    public static TAPDataImageModel Builder(String fileID, @Nullable String thumbnail, String mediaType, Long size,
                                             Integer width, Integer height, String caption) {
-        return new TAPDataImageModel(fileID, mediaType, size, width, height, caption);
+        return new TAPDataImageModel(fileID, thumbnail, mediaType, size, width, height, caption);
     }
 
     public HashMap<String, Object> toHashMapWithoutFileUri() {
@@ -129,6 +134,15 @@ public class TAPDataImageModel implements Parcelable {
         this.fileUri = fileUri;
     }
 
+    @Nullable
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(@Nullable String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
 
     @Override
     public int describeContents() {
@@ -144,6 +158,7 @@ public class TAPDataImageModel implements Parcelable {
         dest.writeValue(this.height);
         dest.writeString(this.caption);
         dest.writeString(this.fileUri);
+        dest.writeString(this.thumbnail);
     }
 
     protected TAPDataImageModel(Parcel in) {
@@ -154,6 +169,7 @@ public class TAPDataImageModel implements Parcelable {
         this.height = (Integer) in.readValue(Integer.class.getClassLoader());
         this.caption = in.readString();
         this.fileUri = in.readString();
+        this.thumbnail = in.readString();
     }
 
     public static final Creator<TAPDataImageModel> CREATOR = new Creator<TAPDataImageModel>() {

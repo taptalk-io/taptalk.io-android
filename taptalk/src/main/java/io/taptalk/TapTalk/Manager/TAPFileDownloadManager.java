@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,11 +11,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -28,33 +26,43 @@ public class TAPFileDownloadManager {
 
     private final String TAG = TAPFileDownloadManager.class.getSimpleName();
     private static TAPFileDownloadManager instance;
-    private Map<String, Bitmap> thumbnails;
+    private HashMap<String, Integer> downloadProgressMap;
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;
     }
 
-    private Map<String, Bitmap> getThumbnails() {
-        return null == thumbnails ? thumbnails = new HashMap<>() : thumbnails;
+    public HashMap<String, Integer> getDownloadProgressMap() {
+        return null == downloadProgressMap ? downloadProgressMap = new LinkedHashMap<>() : downloadProgressMap;
     }
 
-    private void addThumbnail(String fileID, Bitmap thumbnail) {
-        getThumbnails().put(fileID, thumbnail);
+    public Integer getDownloadProgressMapProgressPerLocalID(String localID) {
+        if (!getDownloadProgressMap().containsKey(localID)) {
+            return null;
+        } else {
+            return getDownloadProgressMap().get(localID);
+        }
     }
 
-    public Bitmap getThumbnail(String fileID) {
-        return getThumbnails().get(fileID);
+    public void addDownloadProgressMap(String localID, int progress) {
+        getDownloadProgressMap().put(localID, progress);
     }
 
-    // TODO: 17 January 2019 ADD QUEUE, SHOW DOWNLOAD PROGRESS
+    public void removeDownloadProgressMap(String localID) {
+        getDownloadProgressMap().remove(localID);
+    }
+
     public void downloadImage(Context context, TAPMessageModel message, TAPDownloadListener listener) {
         // Return if message data is null
         if (null == message.getData()) {
             return;
         }
         String fileID = (String) message.getData().get("fileID");
+
+        TAPFileDownloadManager.getInstance().addDownloadProgressMap(message.getLocalID(), 0);
+
         // Download image
-        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), fileID, new TapDefaultDataView<ResponseBody>() {
+        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), message.getLocalID(), fileID, new TapDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
                 new Thread(() -> {
@@ -77,7 +85,6 @@ public class TAPFileDownloadManager {
 
     private void saveDownloadedThumbnailAndCallListener(ResponseBody responseBody, String fileID, TAPDownloadListener listener) {
         Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
-        addThumbnail(fileID, bmp);
         listener.onThumbnailDownloaded(fileID, bmp);
     }
 
@@ -89,11 +96,8 @@ public class TAPFileDownloadManager {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
             out.flush();
             out.close();
-            Log.e(TAG, "getBitmapFromResponse: " + bitmap.getWidth());
-            Log.e(TAG, "getBitmapFromResponse: " + bitmap.getHeight());
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "getBitmapFromResponse exception: ", e);
             return null;
         }
         return bitmap;
@@ -104,7 +108,7 @@ public class TAPFileDownloadManager {
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + ".jpeg";
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
             dir.mkdirs();
-            File file = new File (dir, filename);
+            File file = new File(dir, filename);
             if (file.exists()) {
                 file.delete();
             }

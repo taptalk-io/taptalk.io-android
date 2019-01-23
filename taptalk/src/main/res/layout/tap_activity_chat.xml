@@ -280,7 +280,6 @@
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/tap_img_chat_empty"
                 android:visibility="gone"
                 app:cornerRadius="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -36,7 +36,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import okhttp3.ResponseBody;
-import rx.Subscriber;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
@@ -762,8 +761,9 @@ public class TAPDataManager {
     }
 
     // File Download
-    public void downloadFile(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, fileID, new TAPBaseSubscriber<>(view));
+    public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        Log.e(TAG, "downloadFile: "+fileID );
+        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
     }
 
     // FIXME: 25 October 2018

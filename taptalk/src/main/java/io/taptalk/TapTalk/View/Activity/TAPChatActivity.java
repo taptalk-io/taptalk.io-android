@@ -83,6 +83,9 @@ import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
@@ -172,7 +175,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         initListener();
         cancelNotificationWhenEnterRoom();
         TAPBroadcastManager.register(this, uploadReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried);
+                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
+                DownloadProgressLoading, DownloadFinish);
     }
 
     @Override
@@ -1150,6 +1154,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), imageMessageRetry);
                         }).start();
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
+                    }
+                    break;
+                case DownloadProgressLoading :
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case DownloadFinish :
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
             }

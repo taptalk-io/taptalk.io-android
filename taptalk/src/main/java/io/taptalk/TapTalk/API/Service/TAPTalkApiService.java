@@ -59,9 +59,6 @@ public interface TAPTalkApiService {
     @POST("chat/message/list_by_room/after")
     Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getMessageListByRoomAfter(@Body TAPGetMessageListbyRoomAfterRequest request);
 
-    @POST("chat/file/download")
-    Observable<ResponseBody> downloadFile(@Body TAPFileDownloadRequest request);
-
     @POST("client/contact/list")
     Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();
 
@@ -82,4 +79,7 @@ public interface TAPTalkApiService {
 
     @POST("client/user/get_by_xcuserid")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
+
+    @POST("chat/file/download")
+    Observable<ResponseBody> downloadFile(@Body TAPFileDownloadRequest request);
 }
