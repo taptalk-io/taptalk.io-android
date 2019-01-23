@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
@@ -384,8 +385,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
-                        ((Activity) itemView.getContext()).runOnUiThread(() ->{
-                            rcivImageBody.setImageBitmap(cachedImage);
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            glide.load(cachedImage)
+                                    .transition(DrawableTransitionOptions.withCrossFade(100))
+                                    .apply(new RequestOptions().centerCrop().placeholder(placeholder))
+                                    .into(rcivImageBody);
+                            //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
                         if (null != thumbnailBitmap) {
