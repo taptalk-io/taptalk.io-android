@@ -11,7 +11,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
@@ -340,7 +338,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String fileID = (String) item.getData().get("fileID");
             String thumbnail = (String) (null == item.getData().get("thumbnail") ? "" : item.getData().get("thumbnail"));
             Bitmap thumbnailBitmap = TAPFileUtils.getInstance().decodeBase64(thumbnail);
-            Log.e(TAG, "setImageData2: " + item.getData().get("thumbnail"));
 
             // Set caption
             if (null != imageCaption && !imageCaption.isEmpty()) {
@@ -387,35 +384,30 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
-                        ((Activity) itemView.getContext()).runOnUiThread(() -> glide
-                                .load(cachedImage)
-                                .transition(DrawableTransitionOptions.withCrossFade(100))
-                                .apply(new RequestOptions()
-                                        .placeholder(placeholder)
-                                        .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                .into(rcivImageBody));
-                    } else if (null == TAPFileDownloadManager.getInstance()
-                            .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
-
-                        if (null != thumbnailBitmap) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> glide.load(thumbnailBitmap)
-                                    .apply(new RequestOptions()
-                                            .placeholder(placeholder)
-                                            .diskCacheStrategy(DiskCacheStrategy.NONE))
-                                    .into(rcivImageBody));
-                        }
-                        // Download image
-                        TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
-                            @Override
-                            public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
-                                // Load bitmap to view
-                                TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
-                                Intent intent = new Intent(DownloadFinish);
-                                intent.putExtra(DownloadLocalID, localID);
-                                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                            }
+                        ((Activity) itemView.getContext()).runOnUiThread(() ->{
+                            rcivImageBody.setImageBitmap(cachedImage);
                         });
+                    } else {
+                        if (null != thumbnailBitmap) {
+                            ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                                rcivImageBody.setImageBitmap(thumbnailBitmap);
+                            });
+                        }
 
+                        if (null == TAPFileDownloadManager.getInstance()
+                                .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+                            // Download image
+                            TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
+                                @Override
+                                public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
+                                    // Load bitmap to view
+                                    TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
+                                    Intent intent = new Intent(DownloadFinish);
+                                    intent.putExtra(DownloadLocalID, localID);
+                                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                                }
+                            });
+                        }
                     }
                 }).start();
             }
