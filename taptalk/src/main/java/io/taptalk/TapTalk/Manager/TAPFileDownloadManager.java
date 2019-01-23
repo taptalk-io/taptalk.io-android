@@ -132,7 +132,7 @@ public class TAPFileDownloadManager {
             try {
                 Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
                 FileOutputStream out = new FileOutputStream(file);
-                bmp.compress(Bitmap.CompressFormat.JPEG, 20, out);
+                bmp.compress(Bitmap.CompressFormat.JPEG, 50, out);
                 out.flush();
                 out.close();
                 saveImageToCacheAndCallListener(context, localID, fileID, bmp, listener);

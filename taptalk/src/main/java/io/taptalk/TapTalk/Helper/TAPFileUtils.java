@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,6 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 
 public class TAPFileUtils {
 
@@ -72,11 +79,25 @@ public class TAPFileUtils {
         }
     }
 
-    public int getImageOrientation(Uri imageUri, Context context) {
+//    public int getImageOrientation(Uri imageUri, Context context) {
+//        ExifInterface exif;
+//        try {
+//            if (getFilePath(context, imageUri) != null) {
+//                exif = new ExifInterface(getFilePath(context, imageUri));
+//            } else {
+//                return 0;
+//            }
+//        } catch (IOException e) {
+//            return 0;
+//        }
+//        return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+//    }
+
+    public int getImageOrientation(String imagePath) {
         ExifInterface exif;
         try {
-            if (getFilePath(context, imageUri) != null) {
-                exif = new ExifInterface(getFilePath(context, imageUri));
+            if (imagePath != null) {
+                exif = new ExifInterface(imagePath);
             } else {
                 return 0;
             }
@@ -135,6 +156,9 @@ public class TAPFileUtils {
             // Return the remote address
             if (isGooglePhotosUri(uri)) {
                 return uri.getLastPathSegment();
+            } else if (isFileProviderUri(uri)) {
+                // FIXME: 23 January 2019
+                return TAPFileUploadManager.getInstance().getImagePath(uri);
             }
             return getDataColumn(context, uri, null, null);
         }
@@ -144,6 +168,8 @@ public class TAPFileUtils {
         }
         return null;
     }
+
+
 
     private Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
@@ -239,6 +265,11 @@ public class TAPFileUtils {
 
     private boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    private boolean isFileProviderUri(Uri uri) {
+        Log.e("]]]]", "isFileProviderUri: " + uri.getAuthority());
+        return FILEPROVIDER_AUTHORITY.equals(uri.getAuthority());
     }
 
     private String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {

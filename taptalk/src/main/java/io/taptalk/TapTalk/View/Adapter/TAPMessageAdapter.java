@@ -398,7 +398,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             ((Activity) itemView.getContext()).runOnUiThread(() -> glide.load(thumbnail[0])
                                     .apply(new RequestOptions()
                                             .placeholder(placeholder)
-                                            .diskCacheStrategy(DiskCacheStrategy.NONE)).transition(DrawableTransitionOptions.withCrossFade(100))
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE))
+                                    .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .into(rcivImageBody));
                         }
                         // Download image

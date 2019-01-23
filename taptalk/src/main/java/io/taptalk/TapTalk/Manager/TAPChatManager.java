@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -489,14 +488,21 @@ public class TAPChatManager {
         }
         TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
         Uri imageUri = Uri.parse(imageData.getFileUri());
+        Log.e(TAG, "showDummyImageMessage imageUri: " + imageUri);
 
         // Get image width and height
-        String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+        String pathName;
+//        if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
+//            pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
+//        } else {
+        pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+//        }
+        Log.e(TAG, "showDummyImageMessage pathName: " + pathName);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
-        int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+        int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
             imageData.setWidth(options.outHeight);
             imageData.setHeight(options.outWidth);
