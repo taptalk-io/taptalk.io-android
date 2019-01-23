@@ -20,9 +20,9 @@ public class TAPDefaultConstant {
     }
 
     public static final class DatabaseType {
-        public static final String MESSAGE_DB = "MessageDB";
-        public static final String SEARCH_DB = "SearchDB";
-        public static final String MY_CONTACT_DB = "MyContactDB";
+        public static final String MESSAGE_DB = "kTAPMessageDB";
+        public static final String SEARCH_DB = "kTAPSearchDB";
+        public static final String MY_CONTACT_DB = "kTAPMyContactDB";
     }
 
     public static final class MessageType {
@@ -54,12 +54,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class Extras {
-        public static final String ROOM_NAME = "tapRoomName";
-        public static final String MY_ID = "tapMyID";
-        public static final String GROUP_MEMBERS = "tapGroupMembers";
-        public static final String GROUP_NAME = "tapGroupName";
-        public static final String GROUP_IMAGE = "tapGroupImage";
-        public static final String IS_TYPING = "tapIsTyping";
+        public static final String ROOM_NAME = "kTAPRoomName";
+        public static final String MY_ID = "kTAPMyID";
+        public static final String GROUP_MEMBERS = "kTAPGroupMembers";
+        public static final String GROUP_NAME = "kTAPGroupName";
+        public static final String GROUP_IMAGE = "kTAPGroupImage";
+        public static final String IS_TYPING = "kTAPIsTyping";
     }
 
     public static final class RequestCode {
@@ -96,9 +96,9 @@ public class TAPDefaultConstant {
     }
 
     public static final class Notification {
-        public static final String K_FIREBASE_TOKEN = "kFirebaseToken";
-        public static final String K_TEXT_REPLY = "kTextReply";
-        public static final String K_NOTIFICATION_MESSAGE_MAP = "kNotificationMessageMap";
+        public static final String K_FIREBASE_TOKEN = "kTAPFirebaseToken";
+        public static final String K_TEXT_REPLY = "kTAPTextReply";
+        public static final String K_NOTIFICATION_MESSAGE_MAP = "kTAPNotificationMessageMap";
         public static final int K_REPLY_REQ_CODE = 1;
     }
 
@@ -117,14 +117,14 @@ public class TAPDefaultConstant {
     }
 
     public static final class UploadBroadcastEvent {
-        public static final String UploadProgressLoading = "kUploadProgressLading";
-        public static final String UploadProgressFinish = "kUploadProgressFinish";
-        public static final String UploadImageData = "kUploadImageData";
-        public static final String UploadLocalID = "kUploadLocalID";
-        public static final String UploadFailed = "kUploadFailed";
-        public static final String UploadFailedErrorMessage = "kUploadFailedErrorMessage";
-        public static final String UploadRetried = "kUploadRetried";
-        public static final String UploadCancelled = "kUploadCancelled";
+        public static final String UploadProgressLoading = "kTAPUploadProgressLading";
+        public static final String UploadProgressFinish = "kTAPUploadProgressFinish";
+        public static final String UploadImageData = "kTAPUploadImageData";
+        public static final String UploadLocalID = "kTAPUploadLocalID";
+        public static final String UploadFailed = "kTAPUploadFailed";
+        public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
+        public static final String UploadRetried = "kTAPUploadRetried";
+        public static final String UploadCancelled = "kTAPUploadCancelled";
     }
 
     public static final class TokenHeaderConst {
@@ -134,12 +134,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class OldDataConst {
-        public static final String K_LAST_DELETE_TIMESTAMP = "kLastDeleteTimestamp";
+        public static final String K_LAST_DELETE_TIMESTAMP = "kTAPLastDeleteTimestamp";
     }
 
     public static final class ImagePreview {
-        public static final String K_IMAGE_RES_CODE = "tapImageResultCode";
-        public static final String K_IMAGE_URLS = "tapImageUrls";
+        public static final String K_IMAGE_RES_CODE = "kTAPImageResultCode";
+        public static final String K_IMAGE_URLS = "kTAPImageUrls";
     }
 
     public static final class MediaType {
@@ -149,9 +149,9 @@ public class TAPDefaultConstant {
     }
 
     public static final class CustomHeaderKey {
-        public static final String USER_AGENT = "kUserAgent";
-        public static final String APP_ID = "kApplicationID";
-        public static final String APP_SECRET = "kApplicationSecret";
+        public static final String USER_AGENT = "kTAPUserAgent";
+        public static final String APP_ID = "kTAPApplicationID";
+        public static final String APP_SECRET = "kTAPApplicationSecret";
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -178,12 +178,12 @@ public class TAPDefaultConstant {
     public static final long TYPING_EMIT_DELAY = 10000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 15000L;
 
-    public static final String SCAN_RESULT = "kScanResult";
-    public static final String ADDED_CONTACT = "kAddedContact";
+    public static final String SCAN_RESULT = "kTAPScanResult";
+    public static final String ADDED_CONTACT = "kTAPAddedContact";
 
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
 
-    public static final String TAP_NOTIFICATION_CHANNEL = "homingPigeon_channel_id";
+    public static final String TAP_NOTIFICATION_CHANNEL = "taptalk_channel_id";
 
-    public static final String CONTACT_LIST = "ContactList";
+    public static final String CONTACT_LIST = "kTAPContactList";
 }

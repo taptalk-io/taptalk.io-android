@@ -18,7 +18,7 @@ import java.util.Map;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
+import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
 
@@ -28,6 +28,7 @@ public class TAPNotificationManager {
     private String notificationGroup = "homing-pigeon";
     private Map<String, List<TAPMessageModel>> notifMessagesMap;
     private boolean isRoomListAppear;
+
 
     public static TAPNotificationManager getInstance() {
         return null == instance ? (instance = new TAPNotificationManager()) : instance;
@@ -185,12 +186,12 @@ public class TAPNotificationManager {
                     .setNotificationMessage(newMessageModel)
                     .setSmallIcon(TapTalk.getClientAppIcon())
                     .setNeedReply(false)
-                    .setOnClickAction(TAPRoomListActivity.class)
+                    .setOnClickAction(TAPChatActivity.class)
                     .show();
         }
     }
 
-    public void createAndShowBackgroundNotification(Context context, int notificationIcon, TAPMessageModel newMessageModel) {
+    public void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
         TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
         TAPContactManager.getInstance().saveUserDataToDatabase(newMessageModel.getUser());
         TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
@@ -201,7 +202,7 @@ public class TAPNotificationManager {
                     .setNotificationMessage(newMessageModel)
                     .setSmallIcon(notificationIcon)
                     .setNeedReply(false)
-                    .setOnClickAction(TAPRoomListActivity.class)
+                    .setOnClickAction(destinationClass)
                     .show();
         }
     }
