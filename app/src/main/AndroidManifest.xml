@@ -17,6 +17,16 @@
         <receiver android:name="io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver"
             android:enabled="true"/>
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <service android:name="io.moselo.SampleApps.Firebase.MyFireMsgService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
