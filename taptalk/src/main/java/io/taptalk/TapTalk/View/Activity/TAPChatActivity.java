@@ -165,7 +165,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
 
-        checkPermissions();
+        //checkPermissions();
         initViewModel();
         initView();
         initHelper();
@@ -224,9 +224,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        Log.e(TAG, "onActivityResult: " + requestCode);
-        Log.e(TAG, "onActivityResult: " + resultCode);
-        Log.e(TAG, "onActivityResult: " + vm.getCameraImageUri());
         switch (resultCode) {
             case RESULT_OK:
                 // Set active room to prevent null pointer when returning to chat

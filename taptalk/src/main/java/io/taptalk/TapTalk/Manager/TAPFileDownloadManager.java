@@ -7,8 +7,10 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,33 +48,19 @@ public class TAPFileDownloadManager {
 
     // TODO: 17 January 2019 ADD QUEUE, SHOW DOWNLOAD PROGRESS
     public void downloadImage(Context context, TAPMessageModel message, TAPDownloadListener listener) {
-        // Return if message data is null or permission is not granted
-        if (null == message.getData() || !TAPUtils.getInstance().hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        // Return if message data is null
+        if (null == message.getData()) {
             return;
         }
         String fileID = (String) message.getData().get("fileID");
-        // Download thumbnail
-        TAPDataManager.getInstance().downloadThumbnail(message.getRoom().getRoomID(), fileID, new TapDefaultDataView<ResponseBody>() {
-            @Override
-            public void onSuccess(ResponseBody response) {
-                saveDownloadedThumbnailAndCallListener(response, fileID, listener);
-            }
-
-            @Override
-            public void onError(TAPErrorModel error) {
-                Log.e(TAG, "onError: " + error.getMessage());
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e(TAG, "onError: " + throwable.getMessage());
-            }
-        });
         // Download image
         TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), fileID, new TapDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
-                writeImageFileToDisk(context, message.getLocalID(), fileID, message.getCreated(), response, listener);
+                new Thread(() -> {
+                    Bitmap bitmap = getBitmapFromResponse(response);
+                    saveImageToCacheAndCallListener(context, message.getLocalID(), fileID, bitmap, listener);
+                }).start();
             }
 
             @Override
@@ -88,14 +76,30 @@ public class TAPFileDownloadManager {
     }
 
     private void saveDownloadedThumbnailAndCallListener(ResponseBody responseBody, String fileID, TAPDownloadListener listener) {
-        new Thread(() -> {
-            Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
-            addThumbnail(fileID, bmp);
-            listener.onThumbnailDownloaded(fileID, bmp);
-        }).start();
+        Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
+        addThumbnail(fileID, bmp);
+        listener.onThumbnailDownloaded(fileID, bmp);
     }
 
-    private void writeImageFileToDisk(Context context, String localID, String fileID, Long timestamp, ResponseBody responseBody, TAPDownloadListener listener) {
+    private Bitmap getBitmapFromResponse(ResponseBody responseBody) {
+        Bitmap bitmap;
+        try {
+            bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            out.flush();
+            out.close();
+            Log.e(TAG, "getBitmapFromResponse: " + bitmap.getWidth());
+            Log.e(TAG, "getBitmapFromResponse: " + bitmap.getHeight());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "getBitmapFromResponse exception: ", e);
+            return null;
+        }
+        return bitmap;
+    }
+
+    private void writeImageFileToDisk(Long timestamp, Bitmap bitmap) {
         new Thread(() -> {
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + ".jpeg";
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
@@ -105,12 +109,10 @@ public class TAPFileDownloadManager {
                 file.delete();
             }
             try {
-                Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
                 FileOutputStream out = new FileOutputStream(file);
-                bmp.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
                 out.flush();
                 out.close();
-                saveImageToCacheAndCallListener(context, localID, fileID, bmp, listener);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -119,13 +121,7 @@ public class TAPFileDownloadManager {
 
     private void saveImageToCacheAndCallListener(Context context, String localID, String fileID, Bitmap bitmap, TAPDownloadListener listener) {
         try {
-//            new Thread(() -> {
-                try {
-                    TAPCacheManager.getInstance(context).addBitmapToCache(fileID, bitmap);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-//            }).start();
+            TAPCacheManager.getInstance(context).addBitmapToCache(fileID, bitmap);
             listener.onImageDownloadProcessFinished(localID, bitmap);
         } catch (Exception e) {
             e.printStackTrace();
