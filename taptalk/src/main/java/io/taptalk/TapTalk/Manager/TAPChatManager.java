@@ -448,7 +448,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, imageUri)));
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
@@ -457,7 +457,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, imageUri)),
+                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)),
                     getQuotedMessage());
         }
         return messageModel;
@@ -488,14 +488,21 @@ public class TAPChatManager {
         }
         TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
         Uri imageUri = Uri.parse(imageData.getFileUri());
+        Log.e(TAG, "showDummyImageMessage imageUri: " + imageUri);
 
         // Get image width and height
-        String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+        String pathName;
+//        if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
+//            pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
+//        } else {
+        pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+//        }
+        Log.e(TAG, "showDummyImageMessage pathName: " + pathName);
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
-        int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+        int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
             imageData.setWidth(options.outHeight);
             imageData.setHeight(options.outWidth);

@@ -26,7 +26,6 @@ import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
-import retrofit2.http.Streaming;
 import rx.Observable;
 
 public interface TAPTalkApiService {
@@ -60,9 +59,6 @@ public interface TAPTalkApiService {
     @POST("chat/message/list_by_room/after")
     Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getMessageListByRoomAfter(@Body TAPGetMessageListbyRoomAfterRequest request);
 
-    @POST("chat/file/download")
-    Observable<ResponseBody> downloadFile(@Body TAPFileDownloadRequest request);
-
     @POST("client/contact/list")
     Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();
 
@@ -83,4 +79,7 @@ public interface TAPTalkApiService {
 
     @POST("client/user/get_by_xcuserid")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
+
+    @POST("chat/file/download")
+    Observable<ResponseBody> downloadFile(@Body TAPFileDownloadRequest request);
 }

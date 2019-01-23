@@ -25,6 +25,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -82,6 +83,9 @@ import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
@@ -171,7 +175,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         initListener();
         cancelNotificationWhenEnterRoom();
         TAPBroadcastManager.register(this, uploadReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried);
+                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
+                DownloadProgressLoading, DownloadFinish);
     }
 
     @Override
@@ -223,30 +228,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        Log.e(TAG, "onActivityResult: " + requestCode);
+        Log.e(TAG, "onActivityResult: " + resultCode);
+        Log.e(TAG, "onActivityResult: " + vm.getCameraImageUri());
         switch (resultCode) {
             case RESULT_OK:
                 // Set active room to prevent null pointer when returning to chat
                 TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
                 switch (requestCode) {
-                    // TODO: 14 December 2018 SHOW IMAGE PREVIEW
                     case SEND_IMAGE_FROM_CAMERA:
                         if (null == vm.getCameraImageUri()) {
                             return;
                         }
-
                         ArrayList<TAPImagePreviewModel> imageCameraUris = new ArrayList<>();
                         imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
                         openImagePreviewPage(imageCameraUris);
-
-                        //TAPChatManager.getInstance().showDummyImageMessage(vm.getCameraImageUri());
                         break;
                     case SEND_IMAGE_FROM_GALLERY:
                         if (null == intent) {
                             return;
                         }
-
                         ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
-
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
                             //ini buat lebih dari 1 image selection
@@ -255,14 +257,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             //ini buat 1 image selection
                             imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
                         }
-
                         openImagePreviewPage(imageGalleryUris);
                         break;
-
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
-                        if (null != images && 0 < images.size())
+                        if (null != images && 0 < images.size()) {
                             TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom().getRoomID(), images);
+                        }
                         break;
                 }
         }
@@ -1156,6 +1157,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), imageMessageRetry);
                         }).start();
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
+                    }
+                    break;
+                case DownloadProgressLoading :
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case DownloadFinish :
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
             }

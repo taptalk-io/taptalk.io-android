@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
+import io.taptalk.TapTalk.API.Subscriber.TAPBaseSubscriber;
 import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -34,7 +36,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import okhttp3.ResponseBody;
-import rx.Subscriber;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
@@ -736,28 +737,13 @@ public class TAPDataManager {
     }
 
     // File Download
-    public void downloadFile(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, fileID, new Subscriber<ResponseBody>() {
-            @Override
-            public void onCompleted() {
-                view.endLoading();
-            }
+    public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        Log.e(TAG, "downloadFile: "+fileID );
+        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
+    }
 
-            @Override
-            public void onError(Throwable e) {
-                view.onError(e.getMessage());
-                view.onError(e);
-            }
-
-            @Override
-            public void onNext(ResponseBody responseBody) {
-                if (null == responseBody) {
-                    view.onError(new TAPErrorModel("999", "Unknown Error", ""));
-                } else {
-                    view.onSuccess(responseBody);
-                }
-            }
-        });
+    public void downloadThumbnail(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        TAPApiManager.getInstance().downloadThumbnail(roomID, fileID, new TAPBaseSubscriber<>(view));
     }
 
     public void removeUploadSubscriber() {

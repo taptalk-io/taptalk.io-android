@@ -20,6 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+
 public class TAPFileUtils {
 
     private static TAPFileUtils instance;
@@ -28,20 +32,17 @@ public class TAPFileUtils {
         return instance == null ? (instance = new TAPFileUtils()) : instance;
     }
 
-    public String encodeToBase64(Uri imageUri, int maxSize) {
-        final InputStream imageStream;
-        try {
-            Log.e("]]]]", "encodeToBase64 imageUri: " + imageUri.getPath());
-            imageStream = TapTalk.appContext.getContentResolver().openInputStream(imageUri);
-            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-            final Bitmap resizedImage = scaleDown(selectedImage, maxSize, true);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            resizedImage.compress(Bitmap.CompressFormat.WEBP, 100, byteArrayOutputStream);
-            return "data:image/webp;base64," + Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String encodeToBase64(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+    public Bitmap decodeBase64(String encodedMessage) {
+        byte[] imageBytes = Base64.decode(encodedMessage, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
     public String encodeToBase64(Uri imageUri, int maxSize, Activity activity) {
@@ -72,11 +73,11 @@ public class TAPFileUtils {
         }
     }
 
-    public int getImageOrientation(Uri imageUri, Context context) {
+    public int getImageOrientation(String imagePath) {
         ExifInterface exif;
         try {
-            if (getFilePath(context, imageUri) != null) {
-                exif = new ExifInterface(getFilePath(context, imageUri));
+            if (imagePath != null) {
+                exif = new ExifInterface(imagePath);
             } else {
                 return 0;
             }
@@ -135,6 +136,9 @@ public class TAPFileUtils {
             // Return the remote address
             if (isGooglePhotosUri(uri)) {
                 return uri.getLastPathSegment();
+            } else if (isFileProviderUri(uri)) {
+                // FIXME: 23 January 2019
+                return TAPFileUploadManager.getInstance().getImagePath(uri);
             }
             return getDataColumn(context, uri, null, null);
         }
@@ -144,6 +148,8 @@ public class TAPFileUtils {
         }
         return null;
     }
+
+
 
     private Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
@@ -239,6 +245,11 @@ public class TAPFileUtils {
 
     private boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    private boolean isFileProviderUri(Uri uri) {
+        Log.e("]]]]", "isFileProviderUri: " + uri.getAuthority());
+        return FILEPROVIDER_AUTHORITY.equals(uri.getAuthority());
     }
 
     private String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
