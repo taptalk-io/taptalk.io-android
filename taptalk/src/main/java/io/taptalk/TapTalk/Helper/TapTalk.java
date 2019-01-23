@@ -457,4 +457,11 @@ public class TapTalk {
     public static boolean checkAccessTokenAvailability() {
         return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
+
+    /**
+     * Create Notification for Background
+     */
+    public void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
+        TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
+    }
 }
