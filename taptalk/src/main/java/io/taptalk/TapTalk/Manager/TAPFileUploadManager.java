@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
@@ -34,6 +35,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
@@ -47,6 +49,7 @@ public class TAPFileUploadManager {
     private static TAPFileUploadManager instance;
     private HashMap<String, List<TAPMessageModel>> uploadQueuePerRoom;
     private HashMap<String, Integer> uploadProgressMap;
+    private HashMap<String, String> imagePathMap;
 
     private TAPFileUploadManager() {
     }
@@ -112,8 +115,21 @@ public class TAPFileUploadManager {
         return getUploadQueue(roomID).isEmpty();
     }
 
+    private HashMap<String, String> getImagePathMap() {
+        return null == imagePathMap ? imagePathMap = new HashMap<>() : imagePathMap;
+    }
+
+    public void addImagePath(Uri uri, String path) {
+        getImagePathMap().put(uri.toString(), path);
+    }
+
+    public String getImagePath(Uri uri) {
+        return getImagePathMap().get(uri.toString());
+    }
+
     /**
      * Masukin Message Model ke dalem Queue Upload Image
+     *
      * @param roomID
      * @param messageModel
      */
@@ -164,7 +180,10 @@ public class TAPFileUploadManager {
                 imageUri = Uri.parse(imageData.getFileUri());
             }
 
-            Bitmap bitmap = createAndResizeImageFile(context, imageUri);
+            Bitmap thumbBitmap = createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION);
+            String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+
+            Bitmap bitmap = createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION);
 
             if (null != bitmap) {
                 ContentResolver cr = context.getContentResolver();
@@ -178,15 +197,20 @@ public class TAPFileUploadManager {
                 imageData.setWidth(bitmap.getWidth());
                 imageData.setSize(imageFile.length());
                 imageData.setMediaType(mimeType);
+                imageData.setThumbnail(thumbBase64);
+
                 messageModel.setData(imageData.toHashMap());
                 apiMessageModel.setData(imageData.toHashMapWithoutFileUri());
 
-                callUploadAPI(context, roomID, apiMessageModel, imageFile, bitmap, mimeType, imageData);
+                Log.e(TAG, "uploadImage: "+apiMessageModel.getData().get("thumbnail") );
+
+                callUploadAPI(context, roomID, apiMessageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
             }
         }).start();
     }
 
-    private void callUploadAPI(Context context, String roomID, TAPMessageModel messageModel, File imageFile, Bitmap bitmap, String mimeType,
+    private void callUploadAPI(Context context, String roomID, TAPMessageModel messageModel, File imageFile,
+                               Bitmap bitmap, String encodedThumbnail, String mimeType,
                                TAPDataImageModel imageData) {
 
         String localID = messageModel.getLocalID();
@@ -214,7 +238,7 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
-                saveImageToCache(context, roomID, bitmap, messageModel, response);
+                saveImageToCache(context, roomID, bitmap, encodedThumbnail, messageModel, response);
             }
 
             @Override
@@ -241,7 +265,7 @@ public class TAPFileUploadManager {
                         mimeType, uploadCallbacks, uploadView);
     }
 
-    private Bitmap createAndResizeImageFile(Context context, Uri imageUri) {
+    private Bitmap createAndResizeImageFile(Context context, Uri imageUri, @NonNull int imageMaxSize) {
         Bitmap bitmap;
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
@@ -249,10 +273,10 @@ public class TAPFileUploadManager {
             // Resize image
             int originalWidth = bitmap.getWidth();
             int originalHeight = bitmap.getHeight();
-            if (originalWidth > IMAGE_MAX_DIMENSION || originalHeight > IMAGE_MAX_DIMENSION) {
+            if (originalWidth > imageMaxSize || originalHeight > imageMaxSize) {
                 float scaleRatio = Math.min(
-                        (float) IMAGE_MAX_DIMENSION / originalWidth,
-                        (float) IMAGE_MAX_DIMENSION / originalHeight);
+                        (float) imageMaxSize / originalWidth,
+                        (float) imageMaxSize / originalHeight);
                 bitmap = Bitmap.createScaledBitmap(
                         bitmap,
                         Math.round(scaleRatio * originalWidth),
@@ -261,7 +285,13 @@ public class TAPFileUploadManager {
             }
 
             // Fix image orientation
-            int orientation = TAPFileUtils.getInstance().getImageOrientation(imageUri, TapTalk.appContext);
+            String pathName;
+//            if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
+//                pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
+//            } else {
+            pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+//            }
+            int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
@@ -274,9 +304,11 @@ public class TAPFileUploadManager {
 
             // Compress image
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, os);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os);
             byte[] byteArray = os.toByteArray();
             bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+            os.flush();
+            os.close();
 
             return bitmap;
         } catch (IOException e) {
@@ -310,7 +342,7 @@ public class TAPFileUploadManager {
         }
     }
 
-    private void saveImageToCache(Context context, String roomID, Bitmap bitmap, TAPMessageModel messageModel,
+    private void saveImageToCache(Context context, String roomID, Bitmap bitmap, String encodedThumbnail, TAPMessageModel messageModel,
                                   TAPUploadFileResponse response) {
         try {
             //add ke dalem cache
@@ -325,11 +357,12 @@ public class TAPFileUploadManager {
 
             String localID = messageModel.getLocalID();
             addUploadProgressMap(localID, 100);
-            TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(),
+            TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(), encodedThumbnail,
                     response.getMediaType(), response.getSize(), response.getWidth(),
                     response.getHeight(), response.getCaption());
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
             messageModel.setData(imageDataMap);
+            Log.e(TAG, "saveImageToCache: "+messageModel.getData().get("thumbnail") );
 
             new Thread(() -> TAPChatManager.getInstance().sendImageMessageToServer(messageModel)).start();
 
