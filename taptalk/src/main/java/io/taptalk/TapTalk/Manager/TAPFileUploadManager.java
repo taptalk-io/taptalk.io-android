@@ -325,7 +325,7 @@ public class TAPFileUploadManager {
         int position = TAPUtils.getInstance().searchMessagePositionByLocalID(getUploadQueue(roomID), cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !isUploadQueueIsEmpty(roomID)) {
-            TAPDataManager.getInstance().unSubscribeToUploadImage();
+            TAPDataManager.getInstance().unSubscribeToUploadImage(roomID);
             uploadNextSequence(context, roomID);
         } else if (-1 != position && !isUploadQueueIsEmpty(roomID)) {
             getUploadQueue(roomID).remove(position);
@@ -360,7 +360,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, localID);
             intent.putExtra(UploadImageData, imageDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            TAPDataManager.getInstance().removeUploadSubscriber();
+            TAPDataManager.getInstance().removeUploadSubscriber(roomID);
 
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
