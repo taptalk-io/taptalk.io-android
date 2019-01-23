@@ -33,7 +33,6 @@ import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage;
@@ -48,6 +47,7 @@ public class TAPFileUploadManager {
     private static TAPFileUploadManager instance;
     private HashMap<String, List<TAPMessageModel>> uploadQueuePerRoom;
     private HashMap<String, Integer> uploadProgressMap;
+    private HashMap<String, String> imagePathMap;
 
     private TAPFileUploadManager() {
     }
@@ -113,8 +113,21 @@ public class TAPFileUploadManager {
         return getUploadQueue(roomID).isEmpty();
     }
 
+    private HashMap<String, String> getImagePathMap() {
+        return null == imagePathMap ? imagePathMap = new HashMap<>() : imagePathMap;
+    }
+
+    public void addImagePath(Uri uri, String path) {
+        getImagePathMap().put(uri.toString(), path);
+    }
+
+    public String getImagePath(Uri uri) {
+        return getImagePathMap().get(uri.toString());
+    }
+
     /**
      * Masukin Message Model ke dalem Queue Upload Image
+     *
      * @param roomID
      * @param messageModel
      */
@@ -266,7 +279,7 @@ public class TAPFileUploadManager {
 //            if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
 //                pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
 //            } else {
-                pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+            pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
 //            }
             int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {

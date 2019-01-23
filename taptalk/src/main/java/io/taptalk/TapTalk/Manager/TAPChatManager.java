@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -23,7 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -56,7 +54,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
@@ -498,7 +495,7 @@ public class TAPChatManager {
 //        if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
 //            pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
 //        } else {
-            pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+        pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
 //        }
         Log.e(TAG, "showDummyImageMessage pathName: " + pathName);
 
@@ -925,16 +922,5 @@ public class TAPChatManager {
                 chatListener.onReadMessage(roomID);
             }
         }).start();
-    }
-
-    // TODO: 22 January 2019 TESTING FILEPROVIDER PATH
-    private Map<String, String> imagePathMap = new HashMap<>();
-
-    public void addImagePath(Uri uri, String path) {
-        imagePathMap.put(uri.toString(), path);
-    }
-
-    public String getImagePath(Uri uri) {
-        return imagePathMap.get(uri.toString());
     }
 }

@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 
@@ -156,8 +157,8 @@ public class TAPFileUtils {
             if (isGooglePhotosUri(uri)) {
                 return uri.getLastPathSegment();
             } else if (isFileProviderUri(uri)) {
-                // TODO: 22 January 2019 TESTING
-                return TAPChatManager.getInstance().getImagePath(uri);
+                // FIXME: 23 January 2019
+                return TAPFileUploadManager.getInstance().getImagePath(uri);
             }
             return getDataColumn(context, uri, null, null);
         }

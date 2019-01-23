@@ -44,6 +44,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -330,7 +331,7 @@ public class TAPUtils {
                     activity.startActivityForResult(intent, requestCode);
                     Log.e(TAG, "takePicture: " + image.getAbsolutePath());
                     // TODO: 22 January 2019 TESTING
-                    TAPChatManager.getInstance().addImagePath(imageUri, image.getAbsolutePath());
+                    TAPFileUploadManager.getInstance().addImagePath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
                     e.printStackTrace();
