@@ -14,16 +14,6 @@
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
 
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="io.taptalk.Taptalk.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"

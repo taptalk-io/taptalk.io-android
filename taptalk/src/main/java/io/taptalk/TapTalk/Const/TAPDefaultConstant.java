@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Const;
 
+import io.taptalk.TapTalk.Helper.TapTalk;
+
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
@@ -192,6 +194,6 @@ public class TAPDefaultConstant {
 
     public static final String TAP_NOTIFICATION_CHANNEL = "taptalk_channel_id";
 
-    public static final String FILEPROVIDER_AUTHORITY = "io.taptalk.Taptalk.fileprovider";
+    public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
 }

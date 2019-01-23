@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -248,7 +247,6 @@ public class TAPFileUtils {
     }
 
     private boolean isFileProviderUri(Uri uri) {
-        Log.e("]]]]", "isFileProviderUri: " + uri.getAuthority());
         return FILEPROVIDER_AUTHORITY.equals(uri.getAuthority());
     }
 
