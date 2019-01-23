@@ -6,14 +6,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
-import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TaptalkSample.R;
 
 public class MyFireMsgService extends FirebaseMessagingService {
@@ -27,7 +26,9 @@ public class MyFireMsgService extends FirebaseMessagingService {
         }, remoteMessage.getData().get("body"));
         try {
             //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
-            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher, TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
+            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher,
+                    TAPRoomListActivity.class,
+                    TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
         } catch (Exception e) {
             e.printStackTrace();
         }
