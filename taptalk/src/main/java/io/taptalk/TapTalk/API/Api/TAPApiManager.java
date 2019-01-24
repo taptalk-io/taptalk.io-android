@@ -278,9 +278,4 @@ public class TAPApiManager {
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }
-
-    public void downloadThumbnail(String roomID, String fileID, Subscriber<ResponseBody> subscriber) {
-        TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID, true);
-        executeWithoutBaseResponse(homingPigeon.downloadFile(request), subscriber);
-    }
 }

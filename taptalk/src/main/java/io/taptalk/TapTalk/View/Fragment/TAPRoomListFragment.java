@@ -471,19 +471,27 @@ public class TAPRoomListFragment extends Fragment {
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
+                List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                         tempMessage.add(TAPChatManager.getInstance().convertToEntity(message));
 
-                        // Update status to delivered
-                        TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(message);
+                        // Save undelivered messages to list
+                        if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                            deliveredMessages.add(message);
+                        }
 
                         // Save user data to contact manager
                         TAPContactManager.getInstance().updateUserDataMap(message.getUser());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+
+                // Update status to delivered
+                if (deliveredMessages.size() > 0) {
+                    TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(deliveredMessages);
                 }
 
                 //hasil dari API disimpen ke dalem database

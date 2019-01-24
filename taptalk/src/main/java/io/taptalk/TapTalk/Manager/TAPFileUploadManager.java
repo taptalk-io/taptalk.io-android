@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -350,7 +351,7 @@ public class TAPFileUploadManager {
         int position = TAPUtils.getInstance().searchMessagePositionByLocalID(getUploadQueue(roomID), cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !isUploadQueueIsEmpty(roomID)) {
-            TAPDataManager.getInstance().unSubscribeToUploadImage();
+            TAPDataManager.getInstance().unSubscribeToUploadImage(roomID);
             uploadNextSequence(context, roomID);
         } else if (-1 != position && !isUploadQueueIsEmpty(roomID)) {
             getUploadQueue(roomID).remove(position);
@@ -364,7 +365,7 @@ public class TAPFileUploadManager {
             new Thread(() -> {
                 try {
                     String fileID = response.getId();
-                    TAPCacheManager.getInstance(context).addBitmapToCache(fileID, bitmap);
+                    TAPCacheManager.getInstance(context).addBitmapDrawableToCache(fileID, new BitmapDrawable(context.getResources(), bitmap));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -386,7 +387,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, localID);
             intent.putExtra(UploadImageData, imageDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            TAPDataManager.getInstance().removeUploadSubscriber();
+            TAPDataManager.getInstance().removeUploadSubscriber(roomID);
 
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);

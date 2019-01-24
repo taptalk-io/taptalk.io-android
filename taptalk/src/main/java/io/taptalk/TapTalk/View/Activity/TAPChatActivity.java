@@ -25,7 +25,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -60,6 +59,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -168,7 +168,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
 
-        checkPermissions();
+        //checkPermissions();
         initViewModel();
         initView();
         initHelper();
@@ -228,9 +228,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        Log.e(TAG, "onActivityResult: " + requestCode);
-        Log.e(TAG, "onActivityResult: " + resultCode);
-        Log.e(TAG, "onActivityResult: " + vm.getCameraImageUri());
         switch (resultCode) {
             case RESULT_OK:
                 // Set active room to prevent null pointer when returning to chat
@@ -685,10 +682,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             tvQuoteTitle.setText(message.getUser().getName());
             tvQuoteContent.setText(message.getBody());
             // TODO: 9 January 2019 HANDLE OTHER TYPES
-            if (message.getType() == TYPE_IMAGE) {
-                // TODO: 9 January 2019 LOAD IMAGE
-//            Glide.with(this).load(message.getThumbnail()).into(rcivQuoteImage);
+            if (message.getType() == TYPE_IMAGE && null != message.getData()) {
                 vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get("fileID")));
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else {
