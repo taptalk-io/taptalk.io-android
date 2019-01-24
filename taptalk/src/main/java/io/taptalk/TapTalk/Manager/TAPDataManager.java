@@ -116,9 +116,6 @@ public class TAPDataManager {
      */
 
     public void deleteAllPreference() {
-        removeApplicationID();
-        removeApplicationSecret();
-        removeUserAgent();
         removeActiveUser();
         removeAuthTicket();
         removeAccessToken();
