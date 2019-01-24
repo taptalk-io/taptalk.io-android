@@ -276,6 +276,7 @@ public class TAPFileUploadManager {
                 messageModelWithUri.setSending(false);
                 messageModelWithUri.setFailedSend(true);
                 TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(messageModelWithUri));
+                TAPDataManager.getInstance().removeUploadSubscriber(roomID);
             }
         }).start();
     }

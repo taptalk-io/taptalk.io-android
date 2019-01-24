@@ -760,7 +760,6 @@ public class TAPDataManager {
 
     // File Download
     public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        Log.e(TAG, "downloadFile: " + fileID);
         TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
     }
 
