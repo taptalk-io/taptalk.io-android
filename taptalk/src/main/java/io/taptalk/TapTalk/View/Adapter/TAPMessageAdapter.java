@@ -572,7 +572,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
-        tvMessageStatus.setVisibility(View.GONE);
+        // Show status text and reply button for non-text bubbles
+        if (item.getType() == TYPE_TEXT) {
+            tvMessageStatus.setVisibility(View.GONE);
+        } else if (null != ivReply) {
+            tvMessageStatus.setVisibility(View.VISIBLE);
+            ivReply.setVisibility(View.VISIBLE);
+        }
         animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
     }
 
