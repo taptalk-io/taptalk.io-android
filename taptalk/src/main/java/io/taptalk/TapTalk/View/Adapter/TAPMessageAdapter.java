@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
@@ -296,8 +297,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             markUnreadForMessage(item);
-            setImageData(item);
             setProgress(item);
+            setImageData(item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> {
@@ -384,12 +385,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
-                        ((Activity) itemView.getContext()).runOnUiThread(() ->{
-                            rcivImageBody.setImageBitmap(cachedImage);
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            glide.load(cachedImage)
+                                    .transition(DrawableTransitionOptions.withCrossFade(100))
+                                    .apply(new RequestOptions().centerCrop().placeholder(placeholder))
+                                    .into(rcivImageBody);
+                            //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
                         if (null != thumbnailBitmap) {
                             ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                                flProgress.setVisibility(View.VISIBLE);
                                 rcivImageBody.setImageBitmap(thumbnailBitmap);
                             });
                         }
@@ -415,7 +421,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setImageViewButtonProgress(TAPMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
-                ivButtonProgress.setVisibility(View.VISIBLE);
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
                 flProgress.setOnClickListener(v -> {
                     Intent intent = new Intent(UploadRetried);
@@ -425,12 +430,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(item.getLocalID())
                     && null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID()))
                     || null != TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
-                ivButtonProgress.setVisibility(View.GONE);
-                ivButtonProgress.setImageDrawable(null);
+                ivButtonProgress.setImageResource(R.drawable.tap_ic_download_white);
                 flProgress.setOnClickListener(v -> {
                 });
             } else {
-                ivButtonProgress.setVisibility(View.VISIBLE);
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_cancel_white);
                 flProgress.setOnClickListener(v -> TAPDataManager.getInstance()
                         .cancelUploadImage(itemView.getContext(), item.getLocalID()));
