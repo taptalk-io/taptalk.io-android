@@ -166,6 +166,7 @@ public class TapTalk {
                 registerFcmToken();
 
                 TAPDataManager.getInstance().saveActiveUser(response.getUser());
+                TAPApiManager.getInstance().setLogout(false);
                 loginInterface.onLoginSuccess();
             }
 
@@ -198,16 +199,22 @@ public class TapTalk {
         }
     }
 
+
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
-        TAPApiManager.getInstance().setLogout(true);
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
-        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
-        TAPDataManager.getInstance().deleteAllPreference();
-        TAPDataManager.getInstance().deleteAllFromDatabase();
-        Intent intent = new Intent(appContext, TAPLoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        appContext.startActivity(intent);
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            TAPApiManager.getInstance().setLogout(true);
+            TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+            TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
+            TAPDataManager.getInstance().deleteAllPreference();
+            TAPDataManager.getInstance().deleteAllFromDatabase();
+
+            for (TAPListener listener : getTapTalkListeners()) {
+                listener.onRefreshTokenExpiredOrInvalid();
+            }
+        }
     }
 
     public static void saveFirebaseToken(String newFirebaseToken) {
