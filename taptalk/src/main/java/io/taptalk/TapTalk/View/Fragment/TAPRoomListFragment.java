@@ -276,6 +276,7 @@ public class TAPRoomListFragment extends Fragment {
 
     //ini fungsi untuk manggil full cycle dari room List
     private void runFullRefreshSequence() {
+        TAPChatManager.getInstance().saveMessageToDatabase();
         if (vm.getRoomList().size() > 0) {
             //kalau ga recyclerView ga kosong, kita check dan update unread dlu baru update tampilan
             TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), true, dbListener);

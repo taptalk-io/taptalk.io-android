@@ -1121,10 +1121,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
-                        vm.removeFromUploadingList(localID);
                         failedMessageModel.setFailedSend(true);
                         failedMessageModel.setSending(false);
-                        TAPDataManager.getInstance().updateSendingMessageToFailed(localID);
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
@@ -1132,13 +1130,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
+                        vm.delete(localID);
                         int itemPos = messageAdapter.getItems().indexOf(cancelledMessageModel);
 
                         TAPFileUploadManager.getInstance().cancelUpload(TAPChatActivity.this, cancelledMessageModel,
                                 vm.getRoom().getRoomID());
 
                         vm.removeFromUploadingList(localID);
-                        vm.delete(localID);
                         vm.removeMessagePointer(localID);
                         messageAdapter.removeMessageAt(itemPos);
                     }

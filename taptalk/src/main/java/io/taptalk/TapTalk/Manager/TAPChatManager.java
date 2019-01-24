@@ -679,6 +679,14 @@ public class TAPChatManager {
         waitingUploadProgress.remove(localID);
     }
 
+    public boolean checkMessageIsUploading(String localID) {
+        if (waitingUploadProgress.containsKey(localID) && null != waitingUploadProgress.get(localID)) {
+            return true;
+        }
+
+        return false;
+    }
+
     private void insertToList(Map<String, TAPMessageModel> hashMap) {
         for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
             saveMessages.add(convertToEntity(message.getValue()));
@@ -844,7 +852,6 @@ public class TAPChatManager {
 
         scheduler.scheduleAtFixedRate(() -> {
             saveNewMessageToList();
-            saveMessageToDatabase();
             TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
         }, 0, 1, TimeUnit.SECONDS);
     }

@@ -202,14 +202,12 @@ public class TAPFileUploadManager {
                 messageModel.setData(imageData.toHashMap());
                 apiMessageModel.setData(imageData.toHashMapWithoutFileUri());
 
-                Log.e(TAG, "uploadImage: "+apiMessageModel.getData().get("thumbnail") );
-
-                callUploadAPI(context, roomID, apiMessageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
+                callUploadAPI(context, roomID, messageModel, apiMessageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
             }
         }).start();
     }
 
-    private void callUploadAPI(Context context, String roomID, TAPMessageModel messageModel, File imageFile,
+    private void callUploadAPI(Context context, String roomID, TAPMessageModel messageModelWithUri, TAPMessageModel messageModel, File imageFile,
                                Bitmap bitmap, String encodedThumbnail, String mimeType,
                                TAPDataImageModel imageData) {
 
@@ -243,6 +241,7 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(TAPErrorModel error, String localID) {
+                messageUploadFailed(context, messageModelWithUri, roomID);
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, error.getMessage());
@@ -251,6 +250,8 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(String errorMessage, String localID) {
+                Log.e(TAG, "onError: " );
+                messageUploadFailed(context, messageModelWithUri, roomID);
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, errorMessage);
@@ -258,11 +259,24 @@ public class TAPFileUploadManager {
             }
         };
 
+        Log.e(TAG, "callUploadAPI: " );
         // Upload file
         TAPDataManager.getInstance()
                 .uploadImage(localID, imageFile,
                         messageModel.getRoom().getRoomID(), imageData.getCaption(),
                         mimeType, uploadCallbacks, uploadView);
+    }
+
+    private void messageUploadFailed(Context context, TAPMessageModel messageModelWithUri, String roomID) {
+        new Thread(() -> {
+            if (TAPChatManager.getInstance().checkMessageIsUploading(messageModelWithUri.getLocalID())) {
+                TAPChatManager.getInstance().removeUploadingMessageFromHashMap(messageModelWithUri.getLocalID());
+                cancelUpload(context, messageModelWithUri, roomID);
+                messageModelWithUri.setSending(false);
+                messageModelWithUri.setFailedSend(true);
+                TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(messageModelWithUri));
+            }
+        }).start();
     }
 
     private Bitmap createAndResizeImageFile(Context context, Uri imageUri, @NonNull int imageMaxSize) {
@@ -323,7 +337,8 @@ public class TAPFileUploadManager {
     public void uploadNextSequence(Context context, String roomID) {
         getUploadQueue(roomID).remove(0);
         //ini ngecek kalau kosong ga perlu jalanin lagi
-        if (!isUploadQueueIsEmpty(roomID)) {
+        if (!isUploadQueueIsEmpty(roomID) || 0 < getUploadQueue(roomID).size()) {
+            Log.e(TAG, "uploadNextSequence: "+getUploadQueue(roomID).size() );
             uploadImage(context, roomID);
         }
     }
