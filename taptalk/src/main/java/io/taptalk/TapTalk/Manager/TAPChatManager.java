@@ -845,6 +845,7 @@ public class TAPChatManager {
         scheduler.scheduleAtFixedRate(() -> {
             saveNewMessageToList();
             saveMessageToDatabase();
+            TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
         }, 0, 1, TimeUnit.SECONDS);
     }
 

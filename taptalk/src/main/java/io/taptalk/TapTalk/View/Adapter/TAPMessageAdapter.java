@@ -406,13 +406,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             Log.e(TAG, "setImageData: load from cache " + fileID);
                         });
                     } else {
-//                        if (null != thumbnail) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                flProgress.setVisibility(View.VISIBLE);
-//                                rcivImageBody.setImageBitmap(thumbnailBitmap);
-                            });
-//                        }
-
+                        ((Activity) itemView.getContext()).runOnUiThread(() ->
+                                flProgress.setVisibility(View.VISIBLE));
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
                             // Download image

@@ -15,7 +15,6 @@ import io.taptalk.TapTalk.Data.TapTalkDatabase;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -65,8 +64,6 @@ public class TAPMessageRepository {
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
 
-            TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
-
         }).start();
     }
 
@@ -75,8 +72,6 @@ public class TAPMessageRepository {
             messageDao.insert(new ArrayList<>(messageEntities));
             if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
                 TAPChatManager.getInstance().clearSaveMessages();
-
-            TAPMessageStatusManager.getInstance().triggerCallMessageStatusApi();
 
             listener.onInsertFinished();
 

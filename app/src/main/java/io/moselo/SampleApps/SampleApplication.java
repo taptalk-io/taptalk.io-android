@@ -2,6 +2,7 @@ package io.moselo.SampleApps;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TaptalkSample.R;
 
 public class SampleApplication extends Application {
@@ -24,7 +26,9 @@ public class SampleApplication extends Application {
     TAPListener TAPListener = new TAPListener() {
         @Override
         public void onRefreshTokenExpiredOrInvalid() {
-            TapTalk.refreshTokenExpired();
+            Intent intent = new Intent(getApplicationContext(), TAPLoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            getApplicationContext().startActivity(intent);
         }
 
         @Override
