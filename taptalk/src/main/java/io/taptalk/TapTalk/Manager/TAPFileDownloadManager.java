@@ -9,7 +9,6 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -66,8 +65,13 @@ public class TAPFileDownloadManager {
             @Override
             public void onSuccess(ResponseBody response) {
                 new Thread(() -> {
-                    Bitmap bitmap = getBitmapFromResponse(response);
-                    saveImageToCacheAndCallListener(context, message.getLocalID(), fileID, bitmap, listener);
+                    try {
+                        Bitmap bitmap = getBitmapFromResponse(response);
+                        saveImageToCacheAndCallListener(context, message.getLocalID(), fileID, bitmap, listener);
+                    } catch (Exception e)  {
+                        // Retry download
+                        Log.e(TAG, "onSuccess exception: " + e.getMessage());
+                    }
                 }).start();
             }
 
@@ -88,18 +92,13 @@ public class TAPFileDownloadManager {
         listener.onThumbnailDownloaded(fileID, bmp);
     }
 
-    private Bitmap getBitmapFromResponse(ResponseBody responseBody) {
+    private Bitmap getBitmapFromResponse(ResponseBody responseBody) throws Exception {
         Bitmap bitmap;
-        try {
-            bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
+        out.flush();
+        out.close();
         return bitmap;
     }
 
