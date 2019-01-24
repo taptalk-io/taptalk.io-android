@@ -384,7 +384,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivImageBody);
-                Log.e(TAG, "setImageData: load from URI " + fileID);
             } else if (null != fileID && !fileID.isEmpty()) {
                 Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
@@ -399,7 +398,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .centerCrop())
                                     .into(rcivImageBody);
                             //rcivImageBody.setImageBitmap(cachedImage);
-                            Log.e(TAG, "setImageData: load from cache " + fileID);
                         });
                     } else {
                         ((Activity) itemView.getContext()).runOnUiThread(() ->
@@ -417,7 +415,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                                 }
                             });
-                            Log.e(TAG, "setImageData: download image " + fileID);
                         }
                     }
                 }).start();

@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Manager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
 import android.util.LruCache;
 
 import io.taptalk.TapTalk.Helper.DiskLruCache.DiskLruImageCache;
@@ -51,7 +50,6 @@ public class TAPCacheManager {
         memoryCache = new LruCache<String, BitmapDrawable>(cacheSize) {
             @Override
             protected int sizeOf(String key, BitmapDrawable value) {
-                Log.e(TAG, "sizeOf: " + value.getBitmap().getByteCount() / 1024);
                 return value.getBitmap().getByteCount() / 1024;
             }
         };
