@@ -116,9 +116,6 @@ public class TAPDataManager {
      */
 
     public void deleteAllPreference() {
-        removeApplicationID();
-        removeApplicationSecret();
-        removeUserAgent();
         removeActiveUser();
         removeAuthTicket();
         removeAccessToken();
@@ -663,7 +660,8 @@ public class TAPDataManager {
     }
 
     public void validateAccessToken(TapDefaultDataView<TAPErrorModel> view) {
-        TAPApiManager.getInstance().validateAccessToken(new TAPDefaultSubscriber<>(view));
+        if (TAPDataManager.getInstance().checkAccessTokenAvailable())
+            TAPApiManager.getInstance().validateAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
     public void registerFcmTokenToServer(String fcmToken, TapDefaultDataView<TAPCommonResponse> view) {
@@ -738,7 +736,7 @@ public class TAPDataManager {
 
     // File Download
     public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        Log.e(TAG, "downloadFile: "+fileID );
+        Log.e(TAG, "downloadFile: " + fileID);
         TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
     }
 

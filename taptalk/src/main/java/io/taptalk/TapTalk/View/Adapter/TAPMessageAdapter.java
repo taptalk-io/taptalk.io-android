@@ -394,10 +394,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         });
                     } else {
                         if (null != thumbnailBitmap) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                flProgress.setVisibility(View.VISIBLE);
-                                rcivImageBody.setImageBitmap(thumbnailBitmap);
-                            });
+                            ((Activity) itemView.getContext()).runOnUiThread(() -> rcivImageBody.setImageBitmap(thumbnailBitmap));
                         }
 
                         if (null == TAPFileDownloadManager.getInstance()
