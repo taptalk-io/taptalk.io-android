@@ -3,13 +3,13 @@ package io.taptalk.TapTalk.Helper.DiskLruCache;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,9 +18,9 @@ import io.taptalk.Taptalk.BuildConfig;
 
 public class DiskLruImageCache {
 
-    private DiskLruCache mDiskCache;
+    private DiskLruCache diskCache;
     private Bitmap.CompressFormat mCompressFormat = Bitmap.CompressFormat.JPEG;
-    private int mCompressQuality = 70;
+    private int compressQuality = 70;
     private static final int APP_VERSION = 1;
     private static final int VALUE_COUNT = 1;
     private static final String TAG = "DiskLruImageCache";
@@ -29,20 +29,20 @@ public class DiskLruImageCache {
                              Bitmap.CompressFormat compressFormat, int quality) {
         try {
             final File diskCacheDir = getDiskCacheDir(context, uniqueName);
-            mDiskCache = DiskLruCache.open(diskCacheDir, APP_VERSION, VALUE_COUNT, diskCacheSize);
+            diskCache = DiskLruCache.open(diskCacheDir, APP_VERSION, VALUE_COUNT, diskCacheSize);
             mCompressFormat = compressFormat;
-            mCompressQuality = quality;
+            compressQuality = quality;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private boolean writeBitmapToFile(Bitmap bitmap, DiskLruCache.Editor editor)
-            throws IOException, FileNotFoundException {
+            throws IOException {
         OutputStream out = null;
         try {
             out = new BufferedOutputStream(editor.newOutputStream(0), Utils.IO_BUFFER_SIZE);
-            return bitmap.compress(mCompressFormat, mCompressQuality, out);
+            return bitmap.compress(mCompressFormat, compressQuality, out);
         } finally {
             if (out != null) {
                 out.close();
@@ -63,17 +63,16 @@ public class DiskLruImageCache {
         return new File(cachePath + File.separator + uniqueName);
     }
 
-    public void put(String key, Bitmap data) {
-
+    public void put(String key, BitmapDrawable data) {
         DiskLruCache.Editor editor = null;
         try {
-            editor = mDiskCache.edit(key);
+            editor = diskCache.edit(key);
             if (editor == null) {
                 return;
             }
 
-            if (writeBitmapToFile(data, editor)) {
-                mDiskCache.flush();
+            if (writeBitmapToFile(data.getBitmap(), editor)) {
+                diskCache.flush();
                 editor.commit();
                 if (BuildConfig.DEBUG) {
                     Log.d("cache_test_DISK_", "image put on disk cache " + key);
@@ -98,12 +97,11 @@ public class DiskLruImageCache {
 
     }
 
-    public Bitmap getBitmap(String key) {
-
-        Bitmap bitmap = null;
+    public BitmapDrawable getBitmapDrawable(Context context, String key) {
+        BitmapDrawable bitmapDrawable = null;
         DiskLruCache.Snapshot snapshot = null;
         try {
-            snapshot = mDiskCache.get(key);
+            snapshot = diskCache.get(key);
             if (snapshot == null) {
                 return null;
             }
@@ -111,7 +109,7 @@ public class DiskLruImageCache {
             if (in != null) {
                 final BufferedInputStream buffIn =
                         new BufferedInputStream(in, Utils.IO_BUFFER_SIZE);
-                bitmap = BitmapFactory.decodeStream(buffIn);
+                bitmapDrawable = new BitmapDrawable(context.getResources(), BitmapFactory.decodeStream(buffIn));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -120,21 +118,18 @@ public class DiskLruImageCache {
                 snapshot.close();
             }
         }
-
         if (BuildConfig.DEBUG) {
-            Log.d("cache_test_DISK_", bitmap == null ? "" : "image read from disk " + key);
+            Log.d("cache_test_DISK_", bitmapDrawable == null ? "" : "image read from disk " + key);
         }
-
-        return bitmap;
+        return bitmapDrawable;
 
     }
 
     public boolean containsKey(String key) {
-
         boolean contained = false;
         DiskLruCache.Snapshot snapshot = null;
         try {
-            snapshot = mDiskCache.get(key);
+            snapshot = diskCache.get(key);
             contained = snapshot != null;
         } catch (IOException e) {
             e.printStackTrace();
@@ -143,7 +138,6 @@ public class DiskLruImageCache {
                 snapshot.close();
             }
         }
-
         return contained;
 
     }
@@ -153,17 +147,17 @@ public class DiskLruImageCache {
             Log.d("cache_test_DISK_", "disk cache CLEARED");
         }
         try {
-            mDiskCache.delete();
+            diskCache.delete();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void closeCache() throws IOException {
-        mDiskCache.close();
+        diskCache.close();
     }
 
     public File getCacheFolder() {
-        return mDiskCache.getDirectory();
+        return diskCache.getDirectory();
     }
 
 }

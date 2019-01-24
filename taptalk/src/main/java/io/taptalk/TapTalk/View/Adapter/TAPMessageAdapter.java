@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -337,8 +339,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageUri = (String) item.getData().get("fileUri");
             String imageCaption = (String) item.getData().get("caption");
             String fileID = (String) item.getData().get("fileID");
-            String thumbnail = (String) (null == item.getData().get("thumbnail") ? "" : item.getData().get("thumbnail"));
-            Bitmap thumbnailBitmap = TAPFileUtils.getInstance().decodeBase64(thumbnail);
+            Drawable thumbnail = new BitmapDrawable(
+                        itemView.getContext().getResources(),
+                        TAPFileUtils.getInstance().decodeBase64(
+                                (String) (null == item.getData().get("thumbnail") ? "" :
+                                        item.getData().get("thumbnail"))));
+            if (thumbnail.getIntrinsicHeight() <= 0) {
+                // Set placeholder image if thumbnail fails to laod
+                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            }
 
             // Set caption
             if (null != imageCaption && !imageCaption.isEmpty()) {
@@ -356,16 +365,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != widthDimension && null != heightDimension) {
                 rcivImageBody.setImageDimensions(widthDimension, heightDimension);
             }
-            int placeholder = R.drawable.tap_bg_grey_e4;
 
-            // Load placeholder image
-
+            // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
-                glide.load(placeholder)
-                        .apply(new RequestOptions()
-                                .placeholder(placeholder)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(rcivImageBody);
+                rcivImageBody.setImageDrawable(thumbnail);
             }
 
             if (null != imageUri && !imageUri.isEmpty()) {
@@ -376,27 +379,29 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     flBubble.setForeground(bubbleOverlayLeft);
                 }
                 glide.load(imageUri)
+                        .transition(DrawableTransitionOptions.withCrossFade(100))
                         .apply(new RequestOptions()
-                                .placeholder(placeholder)
+                                .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivImageBody);
             } else if (null != fileID && !fileID.isEmpty()) {
+                Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
-                    Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
+                    BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
                             glide.load(cachedImage)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
-                                    .apply(new RequestOptions().centerCrop().placeholder(placeholder))
+                                    .apply(new RequestOptions()
+                                            .placeholder(finalThumbnail)
+                                            .centerCrop())
                                     .into(rcivImageBody);
                             //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
-                        if (null != thumbnailBitmap) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> rcivImageBody.setImageBitmap(thumbnailBitmap));
-                        }
-
+                        ((Activity) itemView.getContext()).runOnUiThread(() ->
+                                flProgress.setVisibility(View.VISIBLE));
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
                             // Download image
@@ -567,7 +572,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
-        tvMessageStatus.setVisibility(View.GONE);
+        // Show status text and reply button for non-text bubbles
+        if (item.getType() == TYPE_TEXT) {
+            tvMessageStatus.setVisibility(View.GONE);
+        } else if (null != ivReply) {
+            tvMessageStatus.setVisibility(View.VISIBLE);
+            ivReply.setVisibility(View.VISIBLE);
+        }
         animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
     }
 
@@ -764,7 +775,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvQuoteContent.setMaxLines(1);
             } else if (!quoteFileID.isEmpty()) {
                 // Get quote image from file ID
-                // TODO: 9 January 2019 DOWNLOAD IMAGE / SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
+                // TODO: 9 January 2019 SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
+                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteFileID));
                 if (isMessageFromMySelf(item)) {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 } else {
