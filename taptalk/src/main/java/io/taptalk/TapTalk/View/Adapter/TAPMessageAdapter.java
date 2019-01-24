@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -22,9 +24,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
@@ -337,8 +343,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageUri = (String) item.getData().get("fileUri");
             String imageCaption = (String) item.getData().get("caption");
             String fileID = (String) item.getData().get("fileID");
-            String thumbnail = (String) (null == item.getData().get("thumbnail") ? "" : item.getData().get("thumbnail"));
-            Bitmap thumbnailBitmap = TAPFileUtils.getInstance().decodeBase64(thumbnail);
+            Drawable thumbnail = new BitmapDrawable(
+                        itemView.getContext().getResources(),
+                        TAPFileUtils.getInstance().decodeBase64(
+                                (String) (null == item.getData().get("thumbnail") ? "" :
+                                        item.getData().get("thumbnail"))));
+            if (thumbnail.getIntrinsicHeight() <= 0) {
+                // Set placeholder image if thumbnail fails to laod
+                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            }
 
             // Set caption
             if (null != imageCaption && !imageCaption.isEmpty()) {
@@ -356,16 +369,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != widthDimension && null != heightDimension) {
                 rcivImageBody.setImageDimensions(widthDimension, heightDimension);
             }
-            int placeholder = R.drawable.tap_bg_grey_e4;
 
-            // Load placeholder image
-
+            // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
-                glide.load(placeholder)
-                        .apply(new RequestOptions()
-                                .placeholder(placeholder)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(rcivImageBody);
+                rcivImageBody.setImageDrawable(thumbnail);
             }
 
             if (null != imageUri && !imageUri.isEmpty()) {
@@ -376,11 +383,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     flBubble.setForeground(bubbleOverlayLeft);
                 }
                 glide.load(imageUri)
+                        .transition(DrawableTransitionOptions.withCrossFade(100))
                         .apply(new RequestOptions()
-                                .placeholder(placeholder)
+                                .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivImageBody);
+                Log.e(TAG, "setImageData: load from URI " + fileID);
             } else if (null != fileID && !fileID.isEmpty()) {
+                Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
                     Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
                     if (null != cachedImage) {
@@ -388,17 +398,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
                             glide.load(cachedImage)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
-                                    .apply(new RequestOptions().centerCrop().placeholder(placeholder))
+                                    .apply(new RequestOptions()
+                                            .placeholder(finalThumbnail)
+                                            .centerCrop())
                                     .into(rcivImageBody);
                             //rcivImageBody.setImageBitmap(cachedImage);
+                            Log.e(TAG, "setImageData: load from cache " + fileID);
                         });
                     } else {
-                        if (null != thumbnailBitmap) {
+//                        if (null != thumbnail) {
                             ((Activity) itemView.getContext()).runOnUiThread(() -> {
                                 flProgress.setVisibility(View.VISIBLE);
-                                rcivImageBody.setImageBitmap(thumbnailBitmap);
+//                                rcivImageBody.setImageBitmap(thumbnailBitmap);
                             });
-                        }
+//                        }
 
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
@@ -413,6 +426,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                                 }
                             });
+                            Log.e(TAG, "setImageData: download image " + fileID);
                         }
                     }
                 }).start();
