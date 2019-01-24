@@ -18,7 +18,6 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Listener.TAPListener;
-import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -348,7 +347,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 Intent intent = new Intent(TAPLoginActivity.this, TAPRoomListActivity.class);
                 startActivity(intent);
-                TAPConnectionManager.getInstance().connect();
                 finish();
             });
         }
