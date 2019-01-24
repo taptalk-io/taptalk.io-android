@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -349,7 +350,7 @@ public class TAPFileUploadManager {
             new Thread(() -> {
                 try {
                     String fileID = response.getId();
-                    TAPCacheManager.getInstance(context).addBitmapToCache(fileID, bitmap);
+                    TAPCacheManager.getInstance(context).addBitmapDrawableToCache(fileID, new BitmapDrawable(context.getResources(), bitmap));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

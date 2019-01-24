@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.util.Log;
 
@@ -124,7 +125,7 @@ public class TAPFileDownloadManager {
 
     private void saveImageToCacheAndCallListener(Context context, String localID, String fileID, Bitmap bitmap, TAPDownloadListener listener) {
         try {
-            TAPCacheManager.getInstance(context).addBitmapToCache(fileID, bitmap);
+            TAPCacheManager.getInstance(context).addBitmapDrawableToCache(fileID, new BitmapDrawable(context.getResources(), bitmap));
             listener.onImageDownloadProcessFinished(localID, bitmap);
         } catch (Exception e) {
             e.printStackTrace();

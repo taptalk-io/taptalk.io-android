@@ -24,13 +24,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
@@ -392,7 +388,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if (null != fileID && !fileID.isEmpty()) {
                 Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
-                    Bitmap cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(fileID);
+                    BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
@@ -777,7 +773,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if (!quoteFileID.isEmpty()) {
                 // Get quote image from file ID
                 // TODO: 9 January 2019 SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
-                rcivQuoteImage.setImageBitmap(TAPCacheManager.getInstance(itemView.getContext()).getBitmapPerKey(quoteFileID));
+                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteFileID));
                 if (isMessageFromMySelf(item)) {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 } else {
