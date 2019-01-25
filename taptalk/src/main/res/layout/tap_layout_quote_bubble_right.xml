@@ -45,6 +45,7 @@
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/rciv_quote_image"
         app:layout_constraintTop_toTopOf="@id/v_quote_decoration"
+        app:layout_constraintVertical_chainStyle="packed"
         app:layout_goneMarginTop="0dp"
         tools:text="User Name" />
 

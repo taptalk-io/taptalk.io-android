@@ -116,9 +116,6 @@ public class TAPDataManager {
      */
 
     public void deleteAllPreference() {
-        removeApplicationID();
-        removeApplicationSecret();
-        removeUserAgent();
         removeActiveUser();
         removeAuthTicket();
         removeAccessToken();
@@ -663,7 +660,8 @@ public class TAPDataManager {
     }
 
     public void validateAccessToken(TapDefaultDataView<TAPErrorModel> view) {
-        TAPApiManager.getInstance().validateAccessToken(new TAPDefaultSubscriber<>(view));
+        if (TAPDataManager.getInstance().checkAccessTokenAvailable())
+            TAPApiManager.getInstance().validateAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
     public void registerFcmTokenToServer(String fcmToken, TapDefaultDataView<TAPCommonResponse> view) {
@@ -722,12 +720,36 @@ public class TAPDataManager {
     }
 
     // Upload Image
-    private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse> uploadSubscriber;
+    private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>> uploadSubscribers;
 
     public void uploadImage(String localID, File imageFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             TapDefaultDataView<TAPUploadFileResponse> view) {
-        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, uploadSubscriber = new TAPDefaultSubscriber<>(view, localID));
+        TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
+    }
+
+    private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>
+    getUploadSubscribers() {
+        return null == uploadSubscribers ? uploadSubscribers = new HashMap<>() : uploadSubscribers;
+    }
+
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>
+    getUploadSubscriber(String roomID, String localID, TapDefaultDataView<TAPUploadFileResponse> view) {
+        if (null == getUploadSubscribers().get(roomID)) {
+            getUploadSubscribers().put(roomID, new TAPDefaultSubscriber<>(view, localID));
+        }
+        return getUploadSubscribers().get(roomID);
+    }
+
+    public void removeUploadSubscriber(String roomID) {
+        getUploadSubscribers().remove(roomID);
+    }
+
+    public void unSubscribeToUploadImage(String roomID) {
+        if (null == getUploadSubscribers().get(roomID)) {
+            return;
+        }
+        getUploadSubscribers().get(roomID).unsubscribe();
     }
 
     public void cancelUploadImage(Context context, String localID) {
@@ -738,24 +760,7 @@ public class TAPDataManager {
 
     // File Download
     public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        Log.e(TAG, "downloadFile: "+fileID );
         TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
-    }
-
-    public void downloadThumbnail(String roomID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadThumbnail(roomID, fileID, new TAPBaseSubscriber<>(view));
-    }
-
-    public void removeUploadSubscriber() {
-        if (null != uploadSubscriber) {
-            uploadSubscriber = null;
-        }
-    }
-
-    public void unSubscribeToUploadImage() {
-        if (null != uploadSubscriber) {
-            uploadSubscriber.unsubscribe();
-        }
     }
 
     // FIXME: 25 October 2018

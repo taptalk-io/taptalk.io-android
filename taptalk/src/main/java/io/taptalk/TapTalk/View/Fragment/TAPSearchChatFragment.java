@@ -255,9 +255,13 @@ public class TAPSearchChatFragment extends Fragment {
                     result.setRoom(room);
                     vm.addSearchResult(result);
                 }
-                getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+                getActivity().runOnUiThread(() -> {
+                    adapter.setItems(vm.getSearchResults(), false);
+                    TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
+                });
+            } else {
+                TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
             }
-            TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
         }
     };
 
@@ -289,9 +293,13 @@ public class TAPSearchChatFragment extends Fragment {
                 }
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
                 if (null != getActivity())
-                    getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+                    getActivity().runOnUiThread(() -> {
+                        adapter.setItems(vm.getSearchResults(), false);
+                        TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
+                    });
+            } else {
+                TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
             }
-            TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
         }
     };
 

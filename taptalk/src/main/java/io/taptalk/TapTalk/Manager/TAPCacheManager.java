@@ -1,19 +1,9 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
-import android.util.Log;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.LruCache;
-import android.widget.ImageView;
-
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
-
-import java.io.IOException;
 
 import io.taptalk.TapTalk.Helper.DiskLruCache.DiskLruImageCache;
 import io.taptalk.Taptalk.R;
@@ -25,12 +15,11 @@ public class TAPCacheManager {
     private Context context;
 
     //atribut untuk Memory Cache
-    private LruCache<String, Bitmap> mMemoryCache;
+    private LruCache<String, BitmapDrawable> memoryCache;
 
     //atribut untuk Disk Cache
-    private DiskLruImageCache mDiskLruCache;
-    private final Object mDiskCacheLock = new Object();
-    private boolean mDiskCacheStarting = true;
+    private DiskLruImageCache diskLruCache;
+    private final Object diskCacheLock = new Object();
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 100; // 100MB
 
     private interface AddDiskCacheListener {
@@ -46,11 +35,11 @@ public class TAPCacheManager {
     }
 
     //untuk Memory Cache
-    private LruCache<String, Bitmap> getMemoryCache() {
-        return null == mMemoryCache ? initMemoryCache() : mMemoryCache;
+    private LruCache<String, BitmapDrawable> getMemoryCache() {
+        return null == memoryCache ? initMemoryCache() : memoryCache;
     }
 
-    private LruCache<String, Bitmap> initMemoryCache() {
+    private LruCache<String, BitmapDrawable> initMemoryCache() {
         // Get max available VM memory, exceeding this amount will throw an
         // OutOfMemory exception. Stored in kilobytes as LruCache takes an
         // int in its constructor.
@@ -58,13 +47,13 @@ public class TAPCacheManager {
         // Use 1/8th of the available memory for this memory cache.
         final int cacheSize = maxMemory / 8;
 
-        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+        memoryCache = new LruCache<String, BitmapDrawable>(cacheSize) {
             @Override
-            protected int sizeOf(String key, Bitmap value) {
-                return value.getByteCount() / 1024;
+            protected int sizeOf(String key, BitmapDrawable value) {
+                return value.getBitmap().getByteCount() / 1024;
             }
         };
-        return mMemoryCache;
+        return memoryCache;
     }
 
     public void initAllCache() {
@@ -72,26 +61,25 @@ public class TAPCacheManager {
         initDiskCacheTask(context);
     }
 
-    private void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if (null == getBitmapFromMemCache(key)) {
-            getMemoryCache().put(key, bitmap);
+    private void addBitmapDrawableToMemoryCache(String key, BitmapDrawable bitmapDrawable) {
+        if (null == getBitmapDrawableFromMemoryCache(key)) {
+            getMemoryCache().put(key, bitmapDrawable);
         }
     }
 
-    private Bitmap getBitmapFromMemCache(String key) {
+    private BitmapDrawable getBitmapDrawableFromMemoryCache(String key) {
         return getMemoryCache().get(key);
     }
 
     //untuk Disk Cache
     private void initDiskCacheTask(Context context, AddDiskCacheListener listener) {
         new Thread(() -> {
-            synchronized (mDiskCacheLock) {
+            synchronized (diskCacheLock) {
                 try {
-                    if (null == mDiskLruCache) {
-                        mDiskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
+                    if (null == diskLruCache) {
+                        diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
                                 , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
-                        mDiskCacheStarting = false; // Finished initialization
-                        mDiskCacheLock.notifyAll(); // Wake any waiting threads
+                        diskCacheLock.notifyAll(); // Wake any waiting threads
                     }
                     listener.onDiskCacheNotNull();
                 } catch (Exception e) {
@@ -103,15 +91,12 @@ public class TAPCacheManager {
 
     private void initDiskCacheTask(Context context) {
         new Thread(() -> {
-            synchronized (mDiskCacheLock) {
+            synchronized (diskCacheLock) {
                 try {
-                    if (null == mDiskLruCache) {
-                        mDiskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
+                    if (null == diskLruCache) {
+                        diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
                                 , DISK_CACHE_SIZE, Bitmap.CompressFormat.WEBP, 100);
-                        mDiskCacheStarting = false; // Finished initialization
-                        mDiskCacheLock.notifyAll(); // Wake any waiting threads
-
-
+                        diskCacheLock.notifyAll(); // Wake any waiting threads
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -121,56 +106,31 @@ public class TAPCacheManager {
     }
 
     //harus background thread
-    public void addBitmapToCache(String key, Bitmap bitmap) throws IOException {
+    public void addBitmapDrawableToCache(String key, BitmapDrawable bitmapDrawable) {
         // Add to memory cache as before
-        if (getBitmapFromMemCache(key) == null) {
-            addBitmapToMemoryCache(key, bitmap);
+        if (getBitmapDrawableFromMemoryCache(key) == null) {
+            addBitmapDrawableToMemoryCache(key, bitmapDrawable);
         }
-
-        new Thread(() -> initDiskCacheTask(context, () -> {
-            try {
-                addBitmapToDiskCache(key, bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        })).start();
+        new Thread(() -> initDiskCacheTask(context, () ->
+                addBitmapDrawableToDiskCache(key, bitmapDrawable))).start();
     }
 
-    private void addBitmapToDiskCache(String key, Bitmap bitmap) throws IOException {
+    private void addBitmapDrawableToDiskCache(String key, BitmapDrawable bitmapDrawable) {
         // Also add to disk cache
-        synchronized (mDiskCacheLock) {
-            if (mDiskLruCache != null && mDiskLruCache.getBitmap(key) == null) {
-                mDiskLruCache.put(key, bitmap);
+        synchronized (diskCacheLock) {
+            if (diskLruCache != null && diskLruCache.getBitmapDrawable(context, key) == null) {
+                diskLruCache.put(key, bitmapDrawable);
             }
         }
     }
 
-    public Bitmap getBitmapPerKey(String key) {
+    public BitmapDrawable getBitmapDrawable(String key) {
         if (null != getMemoryCache().get(key)) {
-            Log.e(TAG, "getBitmapPerKey: 1");
+            // Get image from memory cache
             return getMemoryCache().get(key);
-        } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
-            Log.e(TAG, "getBitmapPerKey: 2");
-            return mDiskLruCache.getBitmap(key);
+        } else if (null != diskLruCache && diskLruCache.containsKey(key)) {
+            // Get image from disk cache
+            return diskLruCache.getBitmapDrawable(context, key);
         } else return null;
-    }
-
-    public void getBipmapPerKey(Context context, String key, @Nullable int placeholder, ImageView ivImage, RequestManager glide) {
-        if (null != getMemoryCache().get(key)) {
-            glide.load(getMemoryCache().get(key)).transition(DrawableTransitionOptions.withCrossFade(100))
-                    .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(ivImage);
-        } else if (null != mDiskLruCache && mDiskLruCache.containsKey(key)) {
-            new Thread(() -> {
-                Bitmap imageBitmap;
-                imageBitmap = mDiskLruCache.getBitmap(key);
-                ((Activity) context).runOnUiThread(() -> glide.load(imageBitmap).transition(DrawableTransitionOptions.withCrossFade(100))
-                        .apply(new RequestOptions().placeholder(placeholder).diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(ivImage));
-            }).start();
-        } else {
-            // TODO: 16/01/19 minta ko kepin tggu push dlu yaa :3
-            Log.e(TAG, "setImageMessage2: ");
-        }
     }
 }
