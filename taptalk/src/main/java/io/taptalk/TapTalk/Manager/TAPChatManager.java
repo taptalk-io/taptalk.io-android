@@ -63,7 +63,7 @@ public class TAPChatManager {
     private static TAPChatManager instance;
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, String> messageDrafts;
-    private Map<String, HashMap<String, Object>> userData; // TODO: 17 January 2019 DATA FROM USER WHEN OPENING ROOM FROM CLIENT APP
+    private Map<String, HashMap<String, Object>> userInfo; // TODO: 17 January 2019 DATA FROM USER WHEN OPENING ROOM FROM CLIENT APP, SAVE THIS TO DATA IN MESSAGE MODEL AS "userInfo" WHEN SENDING MESSAGE
     private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
