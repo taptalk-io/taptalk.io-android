@@ -368,6 +368,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+                flProgress.setVisibility(View.GONE);
                 rcivImageBody.setImageDrawable(thumbnail);
             }
 
@@ -391,6 +392,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null != cachedImage) {
                         // Load image from cache
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            flProgress.setVisibility(View.GONE);
                             glide.load(cachedImage)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .apply(new RequestOptions()
@@ -409,7 +411,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 @Override
                                 public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
                                     // Load bitmap to view
-                                    TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
                                     Intent intent = new Intent(DownloadFinish);
                                     intent.putExtra(DownloadLocalID, localID);
                                     LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);

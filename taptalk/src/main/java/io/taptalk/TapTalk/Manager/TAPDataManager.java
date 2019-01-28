@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.orhanobut.hawk.Hawk;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -461,7 +462,8 @@ public class TAPDataManager {
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
-        TAPDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
+        List<TAPMessageEntity> messageToBeSave = new ArrayList<>(messageEntities);
+        TAPDatabaseManager.getInstance().insert(messageToBeSave, isClearSaveMessages);
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
