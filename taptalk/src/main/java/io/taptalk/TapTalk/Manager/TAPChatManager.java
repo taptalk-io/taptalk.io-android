@@ -251,7 +251,7 @@ public class TAPChatManager {
     /**
      * get other user ID from the currently active room
      */
-    private String getOtherUserIdFromActiveRoom(String roomID) {
+    public String getOtherUserIdFromRoom(String roomID) {
         String[] splitRoomID = roomID.split("-");
         return !splitRoomID[0].equals(getActiveUser().getUserID()) ? splitRoomID[0] : splitRoomID[1];
     }
@@ -410,7 +410,7 @@ public class TAPChatManager {
                     room,
                     TYPE_TEXT,
                     System.currentTimeMillis(),
-                    user, getOtherUserIdFromActiveRoom(room.getRoomID()),
+                    user, getOtherUserIdFromRoom(room.getRoomID()),
                     null
             );
         } else {
@@ -419,7 +419,7 @@ public class TAPChatManager {
                     room,
                     TYPE_TEXT,
                     System.currentTimeMillis(),
-                    user, getOtherUserIdFromActiveRoom(room.getRoomID()),
+                    user, getOtherUserIdFromRoom(room.getRoomID()),
                     null,
                     quotedMessages.get(room.getRoomID())
             );
@@ -447,7 +447,7 @@ public class TAPChatManager {
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
                     TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)));
         } else {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
@@ -456,7 +456,7 @@ public class TAPChatManager {
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromActiveRoom(activeRoom.getRoomID()),
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
                     TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)),
                     getQuotedMessage());
         }

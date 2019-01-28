@@ -27,6 +27,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
@@ -716,6 +717,10 @@ public class TAPDataManager {
 
     public void getUserByUsernameFromApi(String username, TapDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getMultipleUsersByIdFromApi(List<String> ids, TapDefaultDataView<TAPGetMultipleUserResponse> view) {
+        TAPApiManager.getInstance().getMultipleUserByID(ids, new TAPDefaultSubscriber<>(view));
     }
 
     // Upload Image

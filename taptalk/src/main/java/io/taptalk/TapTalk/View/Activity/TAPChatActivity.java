@@ -900,11 +900,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 TAPConnectionManager.getInstance().getConnectionStatus() ==
                         TAPConnectionManager.ConnectionStatus.CONNECTED) {
             // Notify chat bubbles with failed download
-            Log.e(TAG, "restartFailedDownloads: " + TAPFileDownloadManager.getInstance().getFailedDownloads().size());
             for (String localID : TAPFileDownloadManager.getInstance().getFailedDownloads()) {
                 if (vm.getMessagePointer().containsKey(localID)) {
                     runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
-                    Log.e(TAG, "restartFailedDownloads: " + localID);
                 }
             }
             //TAPFileDownloadManager.getInstance().clearFailedDownloads();

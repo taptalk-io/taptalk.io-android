@@ -21,6 +21,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
@@ -34,6 +35,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
@@ -256,6 +258,11 @@ public class TAPApiManager {
     public void getUserByUsername(String username, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
         execute(homingPigeon.getUserByUsername(request), subscriber);
+    }
+
+    public void getMultipleUserByID(List<String> ids, Subscriber<TAPBaseResponse<TAPGetMultipleUserResponse>> subscriber) {
+        TAPGetMultipleUserByIdRequest request = new TAPGetMultipleUserByIdRequest(ids);
+        execute(homingPigeon.getMultipleUserByID(request), subscriber);
     }
 
     public void uploadImage(File imageFile, String roomID, String caption, String mimeType,

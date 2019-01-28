@@ -302,11 +302,7 @@ public class TAPFileUploadManager {
 
             // Fix image orientation
             String pathName;
-//            if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
-//                pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
-//            } else {
             pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
-//            }
             int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
                 Matrix matrix = new Matrix();
@@ -390,7 +386,6 @@ public class TAPFileUploadManager {
 
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
-            // TODO: 10/01/19 send emit message to server
         } catch (Exception e) {
             e.printStackTrace();
         }

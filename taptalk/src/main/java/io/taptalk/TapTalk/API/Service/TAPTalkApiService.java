@@ -5,6 +5,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
@@ -18,6 +19,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
@@ -62,23 +64,26 @@ public interface TAPTalkApiService {
     @POST("client/contact/list")
     Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();
 
-    @POST("client/push_notification/update")
-    Observable<TAPBaseResponse<TAPCommonResponse>> registerFcmTokenToServer(@Body TAPPushNotificationRequest request);
-
-    @POST("client/user/get_by_username")
-    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByUsername(@Body TAPGetUserByUsernameRequest request);
-
     @POST("client/contact/add")
     Observable<TAPBaseResponse<TAPCommonResponse>> addContact(@Body TAPUserIdRequest request);
 
     @POST("client/contact/remove")
     Observable<TAPBaseResponse<TAPCommonResponse>> removeContact(@Body TAPUserIdRequest request);
 
+    @POST("client/push_notification/update")
+    Observable<TAPBaseResponse<TAPCommonResponse>> registerFcmTokenToServer(@Body TAPPushNotificationRequest request);
+
+    @POST("client/user/get_by_username")
+    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByUsername(@Body TAPGetUserByUsernameRequest request);
+
     @POST("client/user/get_by_id")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByID(@Body TAPGetUserByIdRequest request);
 
     @POST("client/user/get_by_xcuserid")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
+
+    @POST("client/user/get_all_by_ids")
+    Observable<TAPBaseResponse<TAPGetMultipleUserResponse>> getMultipleUserByID(@Body TAPGetMultipleUserByIdRequest request);
 
     @POST("chat/file/download")
     Observable<ResponseBody> downloadFile(@Body TAPFileDownloadRequest request);
