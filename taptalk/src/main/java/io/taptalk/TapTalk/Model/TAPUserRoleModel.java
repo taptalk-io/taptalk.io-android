@@ -3,11 +3,13 @@ package io.taptalk.TapTalk.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class TAPUserRoleModel implements Parcelable {
-    @JsonProperty("userRoleCode") private String userRoleCode;
+    @JsonProperty("userRoleCode") @JsonAlias("userRoleID")
+    private String userRoleCode;
     @JsonProperty("name") private String roleName;
     @JsonProperty("iconURL") private String roleIconURL;
 
