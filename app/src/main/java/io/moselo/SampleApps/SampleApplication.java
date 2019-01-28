@@ -39,28 +39,28 @@ public class SampleApplication extends Application {
             TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_gallery_green_blue), "Send services");
             TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_documents_green_blue), "Create order card");
 
-            if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleID().equals("1") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleID().equals("2")) {
+            if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleCode().equals("1") &&
+                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleCode().equals("2")) {
                 List<TAPCustomKeyboardItemModel> userToExpert = new ArrayList<>();
                 userToExpert.add(seePriceList);
                 userToExpert.add(readExpertNotes);
                 return userToExpert;
-            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleID().equals("2") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleID().equals("1")) {
+            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleCode().equals("2") &&
+                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleCode().equals("1")) {
                 List<TAPCustomKeyboardItemModel> expertToUser = new ArrayList<>();
                 expertToUser.add(sendServices);
                 expertToUser.add(createOrderCard);
                 return expertToUser;
-            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleID().equals("2") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleID().equals("2")) {
+            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleCode().equals("2") &&
+                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleCode().equals("2")) {
                 List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
                 expertToExpert.add(seePriceList);
                 expertToExpert.add(readExpertNotes);
                 expertToExpert.add(sendServices);
                 expertToExpert.add(createOrderCard);
                 return expertToExpert;
-            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleID().equals("0") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleID().equals("0")) {
+            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getUserRoleCode().equals("0") &&
+                    null != otherUser.getUserRole() && otherUser.getUserRole().getUserRoleCode().equals("0")) {
                 List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
                 expertToExpert.add(seePriceList);
                 expertToExpert.add(readExpertNotes);
