@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -735,14 +734,8 @@ public class TAPDataManager {
 
     private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>
     getUploadSubscriber(String roomID, String localID, TapDefaultDataView<TAPUploadFileResponse> view) {
-        if (null == getUploadSubscribers().get(roomID)) {
-            getUploadSubscribers().put(roomID, new TAPDefaultSubscriber<>(view, localID));
-        }
+        getUploadSubscribers().put(roomID, new TAPDefaultSubscriber<>(view, localID));
         return getUploadSubscribers().get(roomID);
-    }
-
-    public void removeUploadSubscriber(String roomID) {
-        getUploadSubscribers().remove(roomID);
     }
 
     public void unSubscribeToUploadImage(String roomID) {

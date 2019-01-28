@@ -277,7 +277,6 @@ public class TAPFileUploadManager {
                 messageModelWithUri.setSending(false);
                 messageModelWithUri.setFailedSend(true);
                 TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(messageModelWithUri));
-                TAPDataManager.getInstance().removeUploadSubscriber(roomID);
             }
         }).start();
     }
@@ -380,7 +379,6 @@ public class TAPFileUploadManager {
                     response.getHeight(), response.getCaption());
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
             messageModel.setData(imageDataMap);
-            Log.e(TAG, "saveImageToCache: "+messageModel.getData().get("thumbnail") );
 
             new Thread(() -> TAPChatManager.getInstance().sendImageMessageToServer(messageModel)).start();
 
@@ -389,7 +387,6 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, localID);
             intent.putExtra(UploadImageData, imageDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            TAPDataManager.getInstance().removeUploadSubscriber(roomID);
 
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
