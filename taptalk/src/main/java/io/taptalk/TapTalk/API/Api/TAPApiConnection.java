@@ -41,7 +41,6 @@ public class TAPApiConnection {
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
     private TAPTalkMultipartApiService tapMultipart;
-    private TAPTalkDownloadApiService tapDownload;
 
     public ObjectMapper objectMapper;
 
@@ -56,19 +55,16 @@ public class TAPApiConnection {
         OkHttpClient httpHpClientAccessToken = buildHttpTapClient(NOT_USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientRefreshToken = buildHttpTapClient(USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientMultipartToken = buildHttpTapUploadClient(MULTIPART_CONTENT_TYPE);
-        OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN);
 
         Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkApiService.BASE_URL);
         Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkSocketService.BASE_URL);
         Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPTalkRefreshTokenService.BASE_URL);
         Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPTalkMultipartApiService.BASE_URL);
-        Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPTalkDownloadApiService.BASE_URL);
 
         this.homingPigeon = homingPigeonAdapter.create(TAPTalkApiService.class);
         this.hpSocket = hpSocketAdapter.create(TAPTalkSocketService.class);
         this.hpRefresh = hpRefreshAdapter.create(TAPTalkRefreshTokenService.class);
         this.tapMultipart = tapMultipartAdapter.create(TAPTalkMultipartApiService.class);
-        this.tapDownload = tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
 
     }
 
@@ -89,6 +85,9 @@ public class TAPApiConnection {
     }
 
     public TAPTalkDownloadApiService getTapDownload() {
+        OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN);
+        Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPTalkDownloadApiService.BASE_URL);
+        TAPTalkDownloadApiService tapDownload = tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
         return tapDownload;
     }
 
