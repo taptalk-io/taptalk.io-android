@@ -41,6 +41,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
+import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -59,6 +60,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -405,18 +407,28 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
                             // Download image
-                            TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
-                                @Override
-                                public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
-                                    // Load bitmap to view
-                                    Intent intent = new Intent(DownloadFinish);
-                                    intent.putExtra(DownloadLocalID, localID);
-                                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                                }
-                            });
+                            if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                                TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
+                                    @Override
+                                    public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
+                                        // Load bitmap to view
+                                        Intent intent = new Intent(DownloadFinish);
+                                        intent.putExtra(DownloadLocalID, localID);
+                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                                    }
 
-                            ((Activity) itemView.getContext()).runOnUiThread(() ->
-                                    flProgress.setVisibility(View.VISIBLE));
+                                    @Override
+                                    public void onDownloadFailed(String localID) {
+                                        Intent intent = new Intent(DownloadFailed);
+                                        intent.putExtra(DownloadLocalID, localID);
+                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                                    }
+                                });
+                            } else {
+                                ((Activity) itemView.getContext()).runOnUiThread(() ->
+                                        flProgress.setVisibility(View.GONE));
+                                TAPFileDownloadManager.getInstance().addFailedDownload(item.getLocalID());
+                            }
                         }
                     }
                 }).start();

@@ -130,9 +130,10 @@ public class TAPDefaultConstant {
     }
 
     public static final class DownloadBroadcastEvent {
-        public static final String DownloadProgressLoading = "kDownloadProgressLoading";
-        public static final String DownloadLocalID = "kDownloadLocalID";
-        public static final String DownloadFinish = "kDownloadFinish";
+        public static final String DownloadProgressLoading = "kTAPDownloadProgressLoading";
+        public static final String DownloadLocalID = "kTAPDownloadLocalID";
+        public static final String DownloadFinish = "kTAPDownloadFinish";
+        public static final String DownloadFailed = "kTAPDownloadFailed";
     }
 
     public static final class TokenHeaderConst {
@@ -183,6 +184,7 @@ public class TAPDefaultConstant {
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;
     public static final int THUMB_MAX_DIMENSION = 20;
+    public static final int IMAGE_COMPRESSION_QUALITY = 50;
 
     public static final long TYPING_EMIT_DELAY = 10000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 15000L;

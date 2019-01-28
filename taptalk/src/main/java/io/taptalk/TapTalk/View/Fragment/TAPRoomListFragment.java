@@ -483,6 +483,7 @@ public class TAPRoomListFragment extends Fragment {
                         }
 
                         // Save user data to contact manager
+                        // TODO: 25 January 2019 CALL API IF USER IS SELF
                         TAPContactManager.getInstance().updateUserDataMap(message.getUser());
                     } catch (Exception e) {
                         e.printStackTrace();
