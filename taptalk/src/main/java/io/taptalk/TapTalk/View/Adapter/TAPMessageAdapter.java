@@ -402,8 +402,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
-                        ((Activity) itemView.getContext()).runOnUiThread(() ->
-                                flProgress.setVisibility(View.VISIBLE));
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
                             // Download image
@@ -416,6 +414,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                                 }
                             });
+
+                            ((Activity) itemView.getContext()).runOnUiThread(() ->
+                                    flProgress.setVisibility(View.VISIBLE));
                         }
                     }
                 }).start();

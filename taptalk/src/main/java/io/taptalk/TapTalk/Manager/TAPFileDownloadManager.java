@@ -125,8 +125,8 @@ public class TAPFileDownloadManager {
 
     private void saveImageToCacheAndCallListener(Context context, String localID, String fileID, Bitmap bitmap, TAPDownloadListener listener) {
         try {
-            TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
             TAPCacheManager.getInstance(context).addBitmapDrawableToCache(fileID, new BitmapDrawable(context.getResources(), bitmap));
+            TAPFileDownloadManager.getInstance().removeDownloadProgressMap(localID);
             listener.onImageDownloadProcessFinished(localID, bitmap);
         } catch (Exception e) {
             e.printStackTrace();
