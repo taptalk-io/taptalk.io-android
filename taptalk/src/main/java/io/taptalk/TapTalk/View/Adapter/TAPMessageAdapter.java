@@ -50,7 +50,6 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreview;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
@@ -64,7 +63,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImageDetail.IMAGE_FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -306,6 +304,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageData(item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            flBubble.setOnClickListener(v -> {
+                // TODO: 5 November 2018 VIEW IMAGE
+            });
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -371,24 +372,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setImageDrawable(thumbnail);
             }
 
-            if (null != imageUri && !imageUri.isEmpty()) {
-                flBubble.setOnClickListener(v -> {});
-                // Message is not sent to server, load image from URI
-                if (isMessageFromMySelf(item)) {
-                    flBubble.setForeground(bubbleOverlayRight);
-                } else {
-                    flBubble.setForeground(bubbleOverlayLeft);
-                }
-                glide.load(imageUri)
-                        .transition(DrawableTransitionOptions.withCrossFade(100))
-                        .apply(new RequestOptions()
-                                .placeholder(thumbnail)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(rcivImageBody);
-            } else if (null != fileID && !fileID.isEmpty()) {
+            if (null != fileID && !fileID.isEmpty()) {
                 Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
-                    BitmapDrawable cachedImage = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(fileID);
+                    BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
@@ -398,14 +385,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .placeholder(finalThumbnail)
                                             .centerCrop())
                                     .into(rcivImageBody);
-
-                            flBubble.setOnClickListener(v -> openImageDetailPreview(fileID));
                             //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
-                            ((Activity) itemView.getContext()).runOnUiThread(() -> flBubble.setOnClickListener(v -> {}));
                             // Download image
                             if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
                                 TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
@@ -428,18 +412,24 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 ((Activity) itemView.getContext()).runOnUiThread(() ->
                                         flProgress.setVisibility(View.GONE));
                                 TAPFileDownloadManager.getInstance().addFailedDownload(item.getLocalID());
-
                             }
                         }
                     }
                 }).start();
+            } else if (null != imageUri && !imageUri.isEmpty()) {
+                // Message is not sent to server, load image from URI
+                if (isMessageFromMySelf(item)) {
+                    flBubble.setForeground(bubbleOverlayRight);
+                } else {
+                    flBubble.setForeground(bubbleOverlayLeft);
+                }
+                glide.load(imageUri)
+                        .transition(DrawableTransitionOptions.withCrossFade(100))
+                        .apply(new RequestOptions()
+                                .placeholder(thumbnail)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(rcivImageBody);
             }
-        }
-
-        private void openImageDetailPreview(String fileID) {
-            Intent intent = new Intent(itemView.getContext(), TAPImageDetailPreview.class);
-            intent.putExtra(IMAGE_FILE_ID, fileID);
-            itemView.getContext().startActivity(intent);
         }
 
         private void setImageViewButtonProgress(TAPMessageModel item) {
@@ -496,7 +486,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            Log.e(TAG, "onBind: "+TAPUtils.getInstance().toJsonString(item) );
             if (null == adapter) {
                 adapter = new TAPProductListAdapter(item, myUserModel, chatListener);
             }
@@ -784,7 +773,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent.setText(quote.getContent());
             String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();
-            if (!quoteImageURL.isEmpty()) {
+            if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 glide.load(quoteImageURL).into(rcivQuoteImage);
                 if (isMessageFromMySelf(item)) {
@@ -795,7 +784,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
-            } else if (!quoteFileID.isEmpty()) {
+            } else if (null != quoteFileID && !quoteFileID.isEmpty()) {
                 // Get quote image from file ID
                 // TODO: 9 January 2019 SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
                 rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteFileID));

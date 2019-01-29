@@ -355,11 +355,11 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
         if (!order.getProducts().isEmpty()) {
             // Show product preview
             TAPProductModel product = order.getProducts().get(0);
-            Glide.with(itemView.getContext()).load(product.getProductImage().getThumbnail()).into(ivProductThumbnail);
+            Glide.with(itemView.getContext()).load(product.getImageURL()).into(ivProductThumbnail);
             tvProductName.setText(product.getName());
-            tvProductPrice.setText(TAPUtils.getInstance().formatCurrencyRp(product.getPrice()));
-            tvProductQty.setText(String.format(Locale.getDefault(), "%s %d",
-                    itemView.getContext().getString(io.taptalk.Taptalk.R.string.order_quantity), product.getQuantity()));
+            tvProductPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(product.getPrice())));
+            //tvProductQty.setText(String.format(Locale.getDefault(), "%s %d",
+            //        itemView.getContext().getString(io.taptalk.Taptalk.R.string.order_quantity), product.getQuantity()));
             int size = order.getProducts().size();
             if (1 < size) {
                 // Show more items layout if there are more than 1 product

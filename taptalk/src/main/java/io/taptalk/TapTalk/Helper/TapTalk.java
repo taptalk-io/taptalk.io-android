@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
@@ -22,6 +23,8 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
@@ -29,11 +32,13 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
+import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
@@ -42,9 +47,12 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
@@ -424,6 +432,12 @@ public class TapTalk {
         }
     }
 
+    public static void sendProductMessage(List<TAPProductModel> productModels, TAPUserModel recipientUserModel) {
+        HashMap<String, Object> productHashMap = new LinkedHashMap<>();
+        productHashMap.put("items", productModels);
+        TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, recipientUserModel);
+    }
+
     private void getUserFromRecipientUserAndSendProductRequestMessage(String message, @NonNull TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
         new Thread(() -> {
             try {
@@ -431,8 +445,8 @@ public class TapTalk {
                 createAndSendProductRequestMessage(message, myUserModel, recipientUser, listener);
             } catch (Exception e) {
                 e.printStackTrace();
+                listener.sendFailed(new TAPErrorModel("", e.getMessage(), ""));
                 Log.e(TAG, "getUserFromRecipientUserAndSendProductRequestMessage: ",e );
-                listener.sendFailed(new TAPErrorModel("", "Oops, Something Wrong Please Try Again Later", ""));
             }
         }).start();
     }
@@ -475,5 +489,88 @@ public class TapTalk {
      */
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
+    }
+
+    /**
+     * @param quoteTitle is required to open room with predefined quote
+     * @param quoteImageURL quote will only contain text if Image URL is empty
+     * @param userInfo (requires quoteTitle) will be returned on click action after the next message is delivered
+     * @param listener returns onOpenRoomSuccess when room is successfully opened, returns onOpenRoomFailed when other user data is not obtained
+     */
+    public static void openChatRoomWithUserID(
+            Activity activity,
+            String xcUserID,
+            @Nullable String quoteTitle,
+            @Nullable String quoteContent,
+            @Nullable String quoteImageURL,
+            @Nullable HashMap<String, Object> userInfo,
+            TapTalkOpenChatRoomInterface listener) {
+        // Get user ID from Contact Manager
+        TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(TAPUserModel entity) {
+                if (null != entity && null != entity.getUserID()) {
+                    startActivityFromUserResult(activity, entity, quoteTitle, quoteContent, quoteImageURL, userInfo, listener);
+                } else {
+                    // Get user data from API
+                    if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+                            @Override
+                            public void onSuccess(TAPGetUserResponse response) {
+                                TAPUserModel userResponse = response.getUser();
+                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                startActivityFromUserResult(activity, userResponse, quoteTitle, quoteContent, quoteImageURL, userInfo, listener);
+                            }
+
+                            @Override
+                            public void onError(TAPErrorModel error) {
+                                listener.onOpenRoomFailed(error.getMessage());
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                                    TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
+                                } else {
+                                    listener.onOpenRoomFailed(activity.getString(R.string.error_open_room_failed));
+                                }
+                            }
+                        });
+                    } else {
+                        listener.onOpenRoomFailed(activity.getString(R.string.error_open_room_failed));
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * from openChatRoomWithUserID
+     */
+    private static void startActivityFromUserResult(Activity activity,
+                                             TAPUserModel user,
+                                             @Nullable String quoteTitle,
+                                             @Nullable String quoteContent,
+                                             @Nullable String quoteImageURL,
+                                             @Nullable HashMap<String, Object> userInfo,
+                                             TapTalkOpenChatRoomInterface listener) {
+        String roomID = TAPChatManager.getInstance().arrangeRoomId(
+                TAPDataManager.getInstance().getActiveUser().getUserID(),
+                user.getUserID());
+        if (null != quoteTitle && null != userInfo) {
+            // Save user info to Chat Manager
+            TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+        }
+        // Save quote to Chat Manager
+        TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
+        // Start activity
+        TAPUtils.getInstance().startChatActivity(
+                activity,
+                roomID,
+                user.getName(),
+                user.getAvatarURL(),
+                1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
+                "");    // TODO: 28 January 2019 GET ROOM COLOR
+        listener.onOpenRoomSuccess();
     }
 }

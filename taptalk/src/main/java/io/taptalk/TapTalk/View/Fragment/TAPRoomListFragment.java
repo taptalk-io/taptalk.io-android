@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,9 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
+import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -42,6 +45,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -472,6 +476,7 @@ public class TAPRoomListFragment extends Fragment {
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
+                List<String> userIds = new ArrayList<>();
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -482,9 +487,13 @@ public class TAPRoomListFragment extends Fragment {
                             deliveredMessages.add(message);
                         }
 
-                        // Save user data to contact manager
-                        // TODO: 25 January 2019 CALL API IF USER IS SELF
-                        TAPContactManager.getInstance().updateUserDataMap(message.getUser());
+                        if (message.getUser().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+                            // User is self, get other user data from API
+                            userIds.add(TAPChatManager.getInstance().getOtherUserIdFromRoom(message.getRoom().getRoomID()));
+                        } else {
+                            // Save user data to contact manager
+                            TAPContactManager.getInstance().updateUserDataMap(message.getUser());
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -493,6 +502,11 @@ public class TAPRoomListFragment extends Fragment {
                 // Update status to delivered
                 if (deliveredMessages.size() > 0) {
                     TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(deliveredMessages);
+                }
+
+                // Get updated other user data from API
+                if (userIds.size() > 0) {
+                    TAPDataManager.getInstance().getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                 }
 
                 //hasil dari API disimpen ke dalem database
@@ -543,6 +557,16 @@ public class TAPRoomListFragment extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    };
+
+    private TapDefaultDataView<TAPGetMultipleUserResponse> getMultipleUserView = new TapDefaultDataView<TAPGetMultipleUserResponse>() {
+        @Override
+        public void onSuccess(TAPGetMultipleUserResponse response) {
+            if (null == response || response.getUsers().isEmpty()) {
+                return;
+            }
+            TAPContactManager.getInstance().updateUserDataMap(response.getUsers());
         }
     };
 
