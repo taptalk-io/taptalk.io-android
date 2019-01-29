@@ -185,6 +185,14 @@ public class TAPMessageModel implements Parcelable {
         this.data = data;
     }
 
+    public void putData(HashMap<String, Object> data) {
+        if (null == this.data) {
+            setData(data);
+        } else {
+            this.data.putAll(data);
+        }
+    }
+
     @Nullable
     public TAPQuoteModel getQuote() {
         return quote;

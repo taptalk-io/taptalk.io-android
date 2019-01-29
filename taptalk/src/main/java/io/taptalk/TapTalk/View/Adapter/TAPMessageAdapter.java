@@ -808,11 +808,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
             }
-            // TODO: 29 January 2019 TESTING
-            clQuote.setOnClickListener(v -> {
-                if (null != item.getData())
-                    Log.e(TAG, "userInfo: " + item.getData().get("userInfo"));
-            });
         } else {
             // Hide quote
             clQuote.setVisibility(View.GONE);

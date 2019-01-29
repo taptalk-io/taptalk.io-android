@@ -153,7 +153,7 @@ public class TAPFileUploadManager {
             TAPMessageModel apiMessageModel = messageModel.copyMessageModel();
 
             Log.e(TAG, "startUploadSequenceFromQueue: " + messageModel.getData());
-            if (null == messageModel.getData()) {
+            if (null == messageModel.getData() || null == apiMessageModel.getData()) {
                 // No data
                 Log.e(TAG, "File upload failed: data is required in MessageModel.");
                 getUploadQueue(roomID).remove(0);
@@ -163,9 +163,7 @@ public class TAPFileUploadManager {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 return;
             }
-            TAPDataImageModel imageData = TAPUtils.getInstance().convertObject(messageModel.getData(),
-                    new TypeReference<TAPDataImageModel>() {
-                    });
+            TAPDataImageModel imageData = new TAPDataImageModel(messageModel.getData());
 
             // Create and resize image file
             Uri imageUri;
@@ -201,8 +199,8 @@ public class TAPFileUploadManager {
                 imageData.setMediaType(mimeType);
                 imageData.setThumbnail(thumbBase64);
 
-                messageModel.setData(imageData.toHashMap());
-                apiMessageModel.setData(imageData.toHashMapWithoutFileUri());
+                messageModel.putData(imageData.toHashMap());
+                apiMessageModel.putData(imageData.toHashMapWithoutFileUri());
 
                 callUploadAPI(context, roomID, messageModel, apiMessageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
             }
@@ -261,7 +259,6 @@ public class TAPFileUploadManager {
             }
         };
 
-        Log.e(TAG, "callUploadAPI: " );
         // Upload file
         TAPDataManager.getInstance()
                 .uploadImage(localID, imageFile,
@@ -374,7 +371,11 @@ public class TAPFileUploadManager {
                     response.getMediaType(), response.getSize(), response.getWidth(),
                     response.getHeight(), response.getCaption());
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
-            messageModel.setData(imageDataMap);
+            if (null != messageModel.getData()) {
+                messageModel.putData(imageDataMap);
+            } else {
+                messageModel.setData(imageDataMap);
+            }
 
             new Thread(() -> TAPChatManager.getInstance().sendImageMessageToServer(messageModel)).start();
 

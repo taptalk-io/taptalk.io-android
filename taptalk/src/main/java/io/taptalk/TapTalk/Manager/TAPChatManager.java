@@ -119,7 +119,6 @@ public class TAPChatManager {
                 case kSocketNewMessage:
                 case kSocketUpdateMessage:
                 case kSocketDeleteMessage:
-                    Log.d(TAG, "onReceiveNewEmit: " + emitData);
                     receiveMessageFromSocket(TAPUtils.getInstance().fromJSON(
                             new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {
                             },
@@ -414,13 +413,17 @@ public class TAPChatManager {
                     null
             );
         } else {
+            HashMap<String, Object> data = new HashMap<>();
+            if (null != getUserInfo()) {
+                data.put("userInfo", getUserInfo());
+            }
             return TAPMessageModel.BuilderWithQuotedMessage(
                     message,
                     room,
                     TYPE_TEXT,
                     System.currentTimeMillis(),
                     user, getOtherUserIdFromRoom(room.getRoomID()),
-                    getUserInfo(),
+                    data,
                     quotedMessages.get(room.getRoomID())
             );
         }
@@ -451,7 +454,9 @@ public class TAPChatManager {
                     TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)));
         } else {
             HashMap<String, Object> data = TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri));
-            data.putAll(getUserInfo());
+            if (null != getUserInfo()) {
+                data.put("userInfo", getUserInfo());
+            }
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
                     activeRoom,
@@ -490,17 +495,9 @@ public class TAPChatManager {
         }
         TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
         Uri imageUri = Uri.parse(imageData.getFileUri());
-        Log.e(TAG, "showDummyImageMessage imageUri: " + imageUri);
 
         // Get image width and height
-        String pathName;
-//        if (imageUri.toString().contains(FILEPROVIDER_AUTHORITY)) {
-//            pathName = imageUri.toString().replace("content://" + FILEPROVIDER_AUTHORITY, "");
-//        } else {
-        pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
-//        }
-        Log.e(TAG, "showDummyImageMessage pathName: " + pathName);
-
+        String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
@@ -512,7 +509,7 @@ public class TAPChatManager {
             imageData.setWidth(options.outWidth);
             imageData.setHeight(options.outHeight);
         }
-        imageMessage.setData(TAPUtils.getInstance().toHashMap(imageData));
+        imageMessage.putData(TAPUtils.getInstance().toHashMap(imageData));
 
         // Trigger listener to show image preview in activity
         triggerSendMessageListener(imageMessage);
@@ -689,7 +686,7 @@ public class TAPChatManager {
         TAPEmitModel<HashMap<String, Object>> TAPEmitModel;
         TAPEmitModel = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
         TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
-        Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(TAPEmitModel));
+        Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(messageModel));
     }
 
     /**
@@ -784,6 +781,7 @@ public class TAPChatManager {
 
     private void receiveMessageFromSocket(HashMap<String, Object> newMessageMap, String eventName) {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
+        Log.d(TAG, "receiveMessageFromSocket: " + TAPUtils.getInstance().toJsonString(newMessage));
 
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
