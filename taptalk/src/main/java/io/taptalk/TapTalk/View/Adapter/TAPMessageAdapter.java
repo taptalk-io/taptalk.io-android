@@ -272,13 +272,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (item.isAnimating()) {
-                return;
+            if (!item.isAnimating()) {
+                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
             setImageViewButtonProgress(item);
-            checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             // Fix layout when quote exists
             if (null != item.getQuote() && !item.getQuote().getTitle().isEmpty()) {
@@ -402,8 +401,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
-                        ((Activity) itemView.getContext()).runOnUiThread(() ->
-                                flProgress.setVisibility(View.VISIBLE));
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
                             // Download image

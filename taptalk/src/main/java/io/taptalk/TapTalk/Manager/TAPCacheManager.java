@@ -74,17 +74,15 @@ public class TAPCacheManager {
     //untuk Disk Cache
     private void initDiskCacheTask(Context context, AddDiskCacheListener listener) {
         new Thread(() -> {
-            synchronized (diskCacheLock) {
-                try {
-                    if (null == diskLruCache) {
-                        diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
-                                , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
-                        diskCacheLock.notifyAll(); // Wake any waiting threads
-                    }
-                    listener.onDiskCacheNotNull();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                if (null == diskLruCache) {
+                    diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
+                            , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
+                    diskCacheLock.notifyAll(); // Wake any waiting threads
                 }
+                listener.onDiskCacheNotNull();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }).start();
     }
@@ -107,21 +105,23 @@ public class TAPCacheManager {
 
     //harus background thread
     public void addBitmapDrawableToCache(String key, BitmapDrawable bitmapDrawable) {
-        // Add to memory cache as before
-        if (getBitmapDrawableFromMemoryCache(key) == null) {
-            addBitmapDrawableToMemoryCache(key, bitmapDrawable);
-        }
-        new Thread(() -> initDiskCacheTask(context, () ->
-                addBitmapDrawableToDiskCache(key, bitmapDrawable))).start();
+        new Thread(() -> {
+            if (getBitmapDrawableFromMemoryCache(key) == null) {
+                addBitmapDrawableToMemoryCache(key, bitmapDrawable);
+            }
+
+            new Thread(() -> initDiskCacheTask(context, () ->
+                    addBitmapDrawableToDiskCache(key, bitmapDrawable))).start();
+        }).start();
     }
 
     private void addBitmapDrawableToDiskCache(String key, BitmapDrawable bitmapDrawable) {
         // Also add to disk cache
-        synchronized (diskCacheLock) {
+        new Thread(() -> {
             if (diskLruCache != null && diskLruCache.getBitmapDrawable(context, key) == null) {
                 diskLruCache.put(key, bitmapDrawable);
             }
-        }
+        }).start();
     }
 
     public BitmapDrawable getBitmapDrawable(String key) {
