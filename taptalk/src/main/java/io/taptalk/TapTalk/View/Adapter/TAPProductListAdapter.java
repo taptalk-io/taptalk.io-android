@@ -24,7 +24,7 @@ import io.taptalk.Taptalk.R;
 
 public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 
-    private List<TAPProductModel> items = new ArrayList<>();
+    private List<TAPProductModel> items;
     private TAPMessageModel messageModel;
     private TAPUserModel myUserModel;
     private TAPChatListener chatListener;
@@ -32,8 +32,8 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
     private final int TYPE_SELLER = 2;
 
     public TAPProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
-        setItems(TAPUtils.getInstance().fromJSON(
-                new TypeReference<List<TAPProductModel>>() {}, messageModel.getBody()), false);
+        items = TAPUtils.getInstance().convertObject(messageModel.getData().get("products")
+                , new TypeReference<List<TAPProductModel>>() {});
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;
@@ -92,13 +92,13 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
-            Glide.with(itemView.getContext()).load(item.getProductImage().getThumbnail()).into(rcivProductImage);
+            Glide.with(itemView.getContext()).load(item.getImageURL()).into(rcivProductImage);
             tvProductName.setText(item.getName());
-            tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(item.getPrice()));
+            tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
             tvProductDescription.setText(item.getDescription());
-            if (item.getRating() > 0) {
+            if (item.getRating().equals(0.0)) {
                 // Show rating
-                String ratingString = Float.toString(item.getRating());
+                String ratingString = item.getRating();
                 ivRatingIcon.setVisibility(View.VISIBLE);
                 tvRating.setText(ratingString);
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.purply));
