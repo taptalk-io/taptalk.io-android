@@ -24,6 +24,7 @@ import com.orhanobut.hawk.NoEncryption;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
@@ -50,6 +51,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -428,6 +430,12 @@ public class TapTalk {
         } else {
             tapTalk.getUserFromRecipientUserAndSendProductRequestMessage(message, recipientUser, listener);
         }
+    }
+
+    public static void sendProductMessage(List<TAPProductModel> productModels, TAPUserModel recipientUserModel) {
+        HashMap<String, Object> productHashMap = new LinkedHashMap<>();
+        productHashMap.put("items", productModels);
+        TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, recipientUserModel);
     }
 
     private void getUserFromRecipientUserAndSendProductRequestMessage(String message, @NonNull TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {

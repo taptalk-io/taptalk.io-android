@@ -486,7 +486,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            Log.e(TAG, "onBind: "+TAPUtils.getInstance().toJsonString(item) );
             if (null == adapter) {
                 adapter = new TAPProductListAdapter(item, myUserModel, chatListener);
             }

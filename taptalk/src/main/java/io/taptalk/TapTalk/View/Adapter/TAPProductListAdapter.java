@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -32,8 +33,9 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
     private final int TYPE_SELLER = 2;
 
     public TAPProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
-        items = TAPUtils.getInstance().convertObject(messageModel.getData().get("products")
+        items = TAPUtils.getInstance().convertObject(messageModel.getData().get("items")
                 , new TypeReference<List<TAPProductModel>>() {});
+        setItems(items);
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;

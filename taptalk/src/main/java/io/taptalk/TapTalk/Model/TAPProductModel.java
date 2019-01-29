@@ -38,6 +38,14 @@ public class TAPProductModel implements Parcelable {
         this.rating = rating;
     }
 
+    public static TAPProductModel Builder(String buttonOption1Color, String buttonOption1Text
+            , String buttonOption2Color, String buttonOption2Text, String currency
+            , String description, String id, String imageURL, String name
+            , String price, String rating) {
+        return new TAPProductModel(buttonOption1Color, buttonOption1Text, buttonOption2Color,
+                buttonOption2Text, currency, description, id, imageURL, name, price, rating);
+    }
+
     public TAPProductModel() {
     }
 

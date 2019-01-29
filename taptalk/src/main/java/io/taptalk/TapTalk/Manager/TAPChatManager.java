@@ -55,6 +55,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
 public class TAPChatManager {
@@ -339,6 +340,12 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(messageModel, false);
     }
 
+    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPUserModel recipientUserModel) {
+        TAPRoomModel roomModel = TAPRoomModel.Builder(TAPChatManager.getInstance().arrangeRoomId(getActiveUser().getUserID(), recipientUserModel.getUserID()),
+                recipientUserModel.getName(), 1, recipientUserModel.getAvatarURL(), "#FFFFFF");
+        triggerListenerAndSendMessage(createProductMessageModel(productList, recipientUserModel, roomModel), true);
+    }
+
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
         Integer startIndex;
         if (textMessage.length() > CHARACTER_LIMIT) {
@@ -427,6 +434,23 @@ public class TAPChatManager {
                     quotedMessages.get(room.getRoomID())
             );
         }
+    }
+
+    /**
+     * Construct Product Message Model
+     */
+    private TAPMessageModel createProductMessageModel(HashMap<String, Object> product,
+                                                      TAPUserModel recipientUserModel,
+                                                      TAPRoomModel roomModel) {
+        return TAPMessageModel.Builder(
+                "ProductList",
+                roomModel,
+                TYPE_PRODUCT,
+                System.currentTimeMillis(),
+                activeUser,
+                recipientUserModel.getUserID(),
+                product
+        );
     }
 
     /**
