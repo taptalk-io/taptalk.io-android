@@ -31,18 +31,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
     private TextView tvSignIn;
     private ProgressBar progressBar;
 
-    private TAPListener tapListener = new TAPListener() {
-        @Override
-        public void onLoginSuccess(TAPUserModel myUserModel) {
-            Toast.makeText(TAPLoginActivity.this, "LOGIN SUCCESS", Toast.LENGTH_SHORT).show();
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_login);
-        TapTalk.addTapTalkListener(tapListener);
 
         initView();
     }

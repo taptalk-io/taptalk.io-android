@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application android:theme="@style/AppTheme">
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreview"></activity>
+
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
@@ -34,8 +36,9 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPProfileActivity" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
     </application>
 
 </manifest>

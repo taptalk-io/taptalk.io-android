@@ -77,7 +77,7 @@ public class TAPCacheManager {
             try {
                 if (null == diskLruCache) {
                     diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
-                            , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
+                            , DISK_CACHE_SIZE, Bitmap.CompressFormat.WEBP, 100);
                     diskCacheLock.notifyAll(); // Wake any waiting threads
                 }
                 listener.onDiskCacheNotNull();
@@ -93,7 +93,7 @@ public class TAPCacheManager {
                 try {
                     if (null == diskLruCache) {
                         diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
-                                , DISK_CACHE_SIZE, Bitmap.CompressFormat.WEBP, 100);
+                                , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
                         diskCacheLock.notifyAll(); // Wake any waiting threads
                     }
                 } catch (Exception e) {
