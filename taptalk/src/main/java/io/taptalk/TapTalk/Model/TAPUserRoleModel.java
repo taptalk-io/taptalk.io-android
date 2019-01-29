@@ -3,22 +3,24 @@ package io.taptalk.TapTalk.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class TAPUserRoleModel implements Parcelable {
-    @JsonProperty("userRoleID") private String userRoleID;
+    @JsonProperty("userRoleCode") @JsonAlias("userRoleID")
+    private String userRoleCode;
     @JsonProperty("name") private String roleName;
     @JsonProperty("iconURL") private String roleIconURL;
 
-    public TAPUserRoleModel(String userRoleID, String roleName, String roleIconURL) {
-        this.userRoleID = userRoleID;
+    public TAPUserRoleModel(String userRoleCode, String roleName, String roleIconURL) {
+        this.userRoleCode = userRoleCode;
         this.roleName = roleName;
         this.roleIconURL = roleIconURL;
     }
 
-    public TAPUserRoleModel(String userRoleID, String roleName) {
-        this.userRoleID = userRoleID;
+    public TAPUserRoleModel(String userRoleCode, String roleName) {
+        this.userRoleCode = userRoleCode;
         this.roleName = roleName;
     }
 
@@ -29,12 +31,12 @@ public class TAPUserRoleModel implements Parcelable {
         return new TAPUserRoleModel(userRoleID, userRoleName);
     }
 
-    public String getUserRoleID() {
-        return userRoleID;
+    public String getUserRoleCode() {
+        return userRoleCode;
     }
 
-    public void setUserRoleID(String userRoleID) {
-        this.userRoleID = userRoleID;
+    public void setUserRoleCode(String userRoleCode) {
+        this.userRoleCode = userRoleCode;
     }
 
     public String getRoleName() {
@@ -61,13 +63,13 @@ public class TAPUserRoleModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.userRoleID);
+        dest.writeString(this.userRoleCode);
         dest.writeString(this.roleName);
         dest.writeString(this.roleIconURL);
     }
 
     protected TAPUserRoleModel(Parcel in) {
-        this.userRoleID = in.readString();
+        this.userRoleCode = in.readString();
         this.roleName = in.readString();
         this.roleIconURL = in.readString();
     }

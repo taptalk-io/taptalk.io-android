@@ -25,6 +25,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -65,6 +66,7 @@ import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
@@ -83,6 +85,7 @@ import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
@@ -168,28 +171,26 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
 
-        //checkPermissions();
         initViewModel();
         initView();
         initHelper();
         initListener();
         cancelNotificationWhenEnterRoom();
-        TAPBroadcastManager.register(this, uploadReceiver, UploadProgressLoading
+        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading
                 , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
-                DownloadProgressLoading, DownloadFinish);
+                DownloadProgressLoading, DownloadFinish, DownloadFailed);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
-        //ini buat reset openRoom
-        TAPChatManager.getInstance().setOpenRoom(null);
+        TAPChatManager.getInstance().setOpenRoom(null); // Reset open room
         TAPChatManager.getInstance().removeChatListener(chatListener);
-        // Stop offline timer
-        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
+        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-        TAPBroadcastManager.unregister(this, uploadReceiver);
+        TAPBroadcastManager.unregister(this, broadcastReceiver);
+        TAPFileDownloadManager.getInstance().clearFailedDownloads(); // Remove failed download list from active room
     }
 
     @Override
@@ -469,6 +470,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     callApiGetUserByUserID();
                     callApiAfter();
                 }
+                restartFailedDownloads();
             }
         };
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
@@ -893,6 +895,22 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }).start();
     }
 
+    private void restartFailedDownloads() {
+        if (TAPFileDownloadManager.getInstance().hasFailedDownloads() &&
+                TAPConnectionManager.getInstance().getConnectionStatus() ==
+                        TAPConnectionManager.ConnectionStatus.CONNECTED) {
+            // Notify chat bubbles with failed download
+            Log.e(TAG, "restartFailedDownloads: " + TAPFileDownloadManager.getInstance().getFailedDownloads().size());
+            for (String localID : TAPFileDownloadManager.getInstance().getFailedDownloads()) {
+                if (vm.getMessagePointer().containsKey(localID)) {
+                    runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
+                    Log.e(TAG, "restartFailedDownloads: " + localID);
+                }
+            }
+            //TAPFileDownloadManager.getInstance().clearFailedDownloads();
+        }
+    }
+
     private void mergeSort(List<TAPMessageModel> messages, int sortDirection) {
         int messageListSize = messages.size();
         //merge proses divide
@@ -1092,19 +1110,22 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    BroadcastReceiver uploadReceiver = new BroadcastReceiver() {
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            if (null == action) {
+                return;
+            }
             String localID;
             switch (action) {
-                case UploadProgressLoading :
+                case UploadProgressLoading:
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
-                case UploadProgressFinish :
+                case UploadProgressFinish:
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID) &&
                             intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
@@ -1113,7 +1134,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
                     }
                     break;
-                case UploadFailed :
+                case UploadFailed:
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
@@ -1122,7 +1143,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
-                case UploadCancelled :
+                case UploadCancelled:
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         TAPMessageModel cancelledMessageModel = vm.getMessagePointer().get(localID);
@@ -1137,7 +1158,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.removeMessageAt(itemPos);
                     }
                     break;
-                case UploadRetried :
+                case UploadRetried:
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
@@ -1153,14 +1174,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
-                case DownloadProgressLoading :
+                case DownloadProgressLoading:
+                case DownloadFinish:
                     localID = intent.getStringExtra(DownloadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
-                    break;
-                case DownloadFinish :
+                case DownloadFailed:
                     localID = intent.getStringExtra(DownloadLocalID);
+                    TAPFileDownloadManager.getInstance().addFailedDownload(localID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }

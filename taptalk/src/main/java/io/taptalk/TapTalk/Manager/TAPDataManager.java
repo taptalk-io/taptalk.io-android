@@ -5,11 +5,11 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -462,7 +462,8 @@ public class TAPDataManager {
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
-        TAPDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages);
+        List<TAPMessageEntity> messageToBeSave = new ArrayList<>(messageEntities);
+        TAPDatabaseManager.getInstance().insert(messageToBeSave, isClearSaveMessages);
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
@@ -735,14 +736,8 @@ public class TAPDataManager {
 
     private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>
     getUploadSubscriber(String roomID, String localID, TapDefaultDataView<TAPUploadFileResponse> view) {
-        if (null == getUploadSubscribers().get(roomID)) {
-            getUploadSubscribers().put(roomID, new TAPDefaultSubscriber<>(view, localID));
-        }
+        getUploadSubscribers().put(roomID, new TAPDefaultSubscriber<>(view, localID));
         return getUploadSubscribers().get(roomID);
-    }
-
-    public void removeUploadSubscriber(String roomID) {
-        getUploadSubscribers().remove(roomID);
     }
 
     public void unSubscribeToUploadImage(String roomID) {

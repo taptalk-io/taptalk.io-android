@@ -195,6 +195,7 @@ public class TAPNotificationManager {
         TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
         TAPContactManager.getInstance().saveUserDataToDatabase(newMessageModel.getUser());
         TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
+        TAPContactManager.getInstance().updateUserDataMap(newMessageModel.getUser());
 
         if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
                 && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
