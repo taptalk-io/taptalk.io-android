@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
@@ -21,6 +22,7 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
@@ -47,6 +49,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
@@ -477,22 +480,26 @@ public class TapTalk {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
-    // FIXME: 28 January 2019
-    public static void openChatRoomWithUserID(Context context, String xcUserID, TapTalkOpenChatRoomInterface listener) {
+    /**
+     * @param quoteTitle is required to open room with predefined quote
+     * @param quoteImageURL quote will only contain text if Image URL is empty
+     * @param userInfo (requires quoteTitle) will be returned on click action after the next message is delivered
+     * @param listener returns onOpenRoomSuccess when room is successfully opened, returns onOpenRoomFailed when other user data is not obtained
+     */
+    public static void openChatRoomWithUserID(
+            Activity activity,
+            String xcUserID,
+            @Nullable String quoteTitle,
+            @Nullable String quoteContent,
+            @Nullable String quoteImageURL,
+            @Nullable HashMap<String, Object> userInfo,
+            TapTalkOpenChatRoomInterface listener) {
+        // Get user ID from Contact Manager
         TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity && null != entity.getUserID()) {
-                    TAPUtils.getInstance().startChatActivity(
-                            context,
-                            TAPChatManager.getInstance().arrangeRoomId(
-                                    TAPDataManager.getInstance().getActiveUser().getUserID(),
-                                    entity.getUserID()),
-                            entity.getName(),
-                            entity.getAvatarURL(),
-                            1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
-                            "");    // TODO: 28 January 2019 GET ROOM COLOR
-                    listener.onOpenRoomSuccess();
+                    startActivityFromUserResult(activity, entity, quoteTitle, quoteContent, quoteImageURL, userInfo, listener);
                 } else {
                     // Get user data from API
                     if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
@@ -501,16 +508,7 @@ public class TapTalk {
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
                                 TAPContactManager.getInstance().updateUserDataMap(userResponse);
-                                TAPUtils.getInstance().startChatActivity(
-                                        context,
-                                        TAPChatManager.getInstance().arrangeRoomId(
-                                                TAPDataManager.getInstance().getActiveUser().getUserID(),
-                                                userResponse.getUserID()),
-                                        userResponse.getName(),
-                                        userResponse.getAvatarURL(),
-                                        1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
-                                        "");    // TODO: 28 January 2019 GET ROOM COLOR
-                                listener.onOpenRoomSuccess();
+                                startActivityFromUserResult(activity, userResponse, quoteTitle, quoteContent, quoteImageURL, userInfo, listener);
                             }
 
                             @Override
@@ -523,15 +521,45 @@ public class TapTalk {
                                 if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
                                     TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
                                 } else {
-                                    listener.onOpenRoomFailed("Unable to fetch user data, please check your connection and try again.");
+                                    listener.onOpenRoomFailed(activity.getString(R.string.error_open_room_failed));
                                 }
                             }
                         });
                     } else {
-                        listener.onOpenRoomFailed("Unable to fetch user data, please check your connection and try again.");
+                        listener.onOpenRoomFailed(activity.getString(R.string.error_open_room_failed));
                     }
                 }
             }
         });
+    }
+
+    /**
+     * from openChatRoomWithUserID
+     */
+    private static void startActivityFromUserResult(Activity activity,
+                                             TAPUserModel user,
+                                             @Nullable String quoteTitle,
+                                             @Nullable String quoteContent,
+                                             @Nullable String quoteImageURL,
+                                             @Nullable HashMap<String, Object> userInfo,
+                                             TapTalkOpenChatRoomInterface listener) {
+        String roomID = TAPChatManager.getInstance().arrangeRoomId(
+                TAPDataManager.getInstance().getActiveUser().getUserID(),
+                user.getUserID());
+        if (null != quoteTitle && null != userInfo) {
+            // Save user info to Chat Manager
+            TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+        }
+        // Save quote to Chat Manager
+        TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
+        // Start activity
+        TAPUtils.getInstance().startChatActivity(
+                activity,
+                roomID,
+                user.getName(),
+                user.getAvatarURL(),
+                1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
+                "");    // TODO: 28 January 2019 GET ROOM COLOR
+        listener.onOpenRoomSuccess();
     }
 }

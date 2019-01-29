@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,6 +95,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_R
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
@@ -149,6 +151,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatViewModel vm;
 
     private TAPSocketListener socketListener;
+
+    private RequestManager glide;
 
     //enum Scrolling
     private enum STATE {
@@ -356,12 +360,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         getWindow().setBackgroundDrawable(null);
 
+        glide = Glide.with(this);
+
         // Set room name
         tvRoomName.setText(vm.getRoom().getRoomName());
 
         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
             // Load room image
-            Glide.with(this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civRoomImage);
+            glide.load(vm.getRoom().getRoomImage().getThumbnail()).into(civRoomImage);
         } else {
             // Use random color if image is empty
             civRoomImage.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
@@ -377,7 +383,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         //showUserOffline();
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(Glide.with(this), chatListener);
+        messageAdapter = new TAPMessageAdapter(glide, chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         messageLayoutManager.setStackFromEnd(true);
@@ -683,13 +689,22 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             clQuote.setVisibility(View.VISIBLE);
             tvQuoteTitle.setText(message.getUser().getName());
             tvQuoteContent.setText(message.getBody());
-            // TODO: 9 January 2019 HANDLE OTHER TYPES
+            // Add other quotable message type here
             if (message.getType() == TYPE_IMAGE && null != message.getData()) {
+                // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
+                // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
                 rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get("fileID")));
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
+            } else if (null != message.getData() && null != message.getData().get("imageURL")) {
+                // Unknown message type
+                glide.load((String) message.getData().get("imageURL")).into(rcivQuoteImage);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteContent.setMaxLines(1);
             } else {
+                // Show text quote
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
@@ -804,7 +819,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
-            Glide.with(this).load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+            glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
             tvRoomTypingStatus.setText(getString(R.string.typing));
         });
     }
@@ -1296,12 +1311,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
                         tvProfileDescription.setText(getResources().getString(R.string.empty_chat_text_to_see_product));
                         if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
-                            Glide.with(TAPChatActivity.this).load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
+                            glide.load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
                         } else {
                             civMyAvatar.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getMyUserModel().getName()), PorterDuff.Mode.SRC_IN));
                         }
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
-                            Glide.with(TAPChatActivity.this).load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
+                            glide.load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
                         } else {
                             civOtherUserAvatar.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
                         }

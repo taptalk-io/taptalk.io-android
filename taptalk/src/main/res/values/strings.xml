@@ -93,6 +93,7 @@
     <string name="no_internet_show_error">Oops! It seems like you are offline, please check your connection.</string>
     <string name="api_call_return_error">Oops! there is an error, please try again later.</string>
     <string name="init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
+    <string name="error_open_room_failed">Unable to fetch user data, please check your connection and try again.</string>
 
     <!--Attachment-->
     <string name="photo">Photo</string>

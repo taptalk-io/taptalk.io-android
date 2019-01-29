@@ -420,7 +420,7 @@ public class TAPChatManager {
                     TYPE_TEXT,
                     System.currentTimeMillis(),
                     user, getOtherUserIdFromRoom(room.getRoomID()),
-                    null,
+                    getUserInfo(),
                     quotedMessages.get(room.getRoomID())
             );
         }
@@ -450,6 +450,8 @@ public class TAPChatManager {
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
                     TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)));
         } else {
+            HashMap<String, Object> data = TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri));
+            data.putAll(getUserInfo());
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
                     activeRoom,
@@ -457,7 +459,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)),
+                    data,
                     getQuotedMessage());
         }
         return messageModel;
@@ -580,8 +582,11 @@ public class TAPChatManager {
         getUserInfoMap().put(roomID, info);
     }
 
-    public HashMap<String, Object> getUserInfo(String roomID) {
-        return getUserInfoMap().get(roomID);
+    public HashMap<String, Object> getUserInfo() {
+        if (null == activeRoom) {
+            return null;
+        }
+        return getUserInfoMap().get(activeRoom.getRoomID());
     }
 
     public void removeUserInfo(String roomID) {
@@ -600,13 +605,32 @@ public class TAPChatManager {
             return;
         }
         if (null == message) {
+            // Delete quoted message and user info in active room
             getQuotedMessages().remove(activeRoom.getRoomID());
+            removeUserInfo(activeRoom.getRoomID());
         } else {
             getQuotedMessages().put(activeRoom.getRoomID(), message);
         }
     }
 
+    public void setQuotedMessage(String roomID, String quoteTitle, String quoteContent, String quoteImageURL) {
+        // FIXME: 29 January 2019 CURRENTLY USING DUMMY MESSAGE MODEL TO SAVE QUOTED MESSAGE
+        if (null == quoteTitle) {
+            return;
+        }
+        TAPUserModel dummyUserWithName = new TAPUserModel();
+        dummyUserWithName.setName(quoteTitle);
+        HashMap<String, Object> quoteData = new HashMap<>();
+        quoteData.put("imageURL", quoteImageURL);
+        getQuotedMessages().put(roomID, TAPMessageModel.Builder(
+                // Dummy message model for quote
+                quoteContent, new TAPRoomModel(), -1, 0L, dummyUserWithName, "", quoteData));
+    }
+
     public TAPMessageModel getQuotedMessage() {
+        if (null == activeRoom) {
+            return null;
+        }
         return getQuotedMessages().get(activeRoom.getRoomID());
     }
 

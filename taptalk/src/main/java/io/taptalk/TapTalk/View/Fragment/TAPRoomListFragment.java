@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,9 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
+import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -252,11 +255,33 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void openNewChatActivity() {
-        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
-        startActivity(intent);
-        if (null != getActivity()) {
-            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
-        }
+//        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
+//        startActivity(intent);
+//        if (null != getActivity()) {
+//            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+//        }
+        // TODO: 29 January 2019 TESTING
+        HashMap<String, Object> testData = new HashMap<>();
+        testData.put("test", "testdataaaaa");
+        TapTalk.openChatRoomWithUserID(
+                getActivity(),
+                "3",
+                "Titel",
+                "Kontet",
+                "https://scontent.fcgk6-1.fna.fbcdn.net/v/t1.0-9/51311682_2271763299521488_8230039143166509056_n.jpg?_nc_cat=106&_nc_ht=scontent.fcgk6-1.fna&oh=e5092fecfdf599af84225573e185bd59&oe=5CC4E397",
+                testData,
+                new TapTalkOpenChatRoomInterface() {
+                    @Override
+                    public void onOpenRoomSuccess() {
+
+                    }
+
+                    @Override
+                    public void onOpenRoomFailed(String errorMessage) {
+                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 
     //ini adalah fungsi yang di panggil pertama kali pas onResume
