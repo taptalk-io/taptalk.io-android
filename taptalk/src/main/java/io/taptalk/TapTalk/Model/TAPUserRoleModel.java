@@ -8,19 +8,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class TAPUserRoleModel implements Parcelable {
-    @JsonProperty("userRoleCode") @JsonAlias("userRoleID")
-    private String userRoleCode;
+    @JsonProperty("code") @JsonAlias("userRoleID")
+    private String code;
     @JsonProperty("name") private String roleName;
     @JsonProperty("iconURL") private String roleIconURL;
 
-    public TAPUserRoleModel(String userRoleCode, String roleName, String roleIconURL) {
-        this.userRoleCode = userRoleCode;
+    public TAPUserRoleModel(String code, String roleName, String roleIconURL) {
+        this.code = code;
         this.roleName = roleName;
         this.roleIconURL = roleIconURL;
     }
 
-    public TAPUserRoleModel(String userRoleCode, String roleName) {
-        this.userRoleCode = userRoleCode;
+    public TAPUserRoleModel(String code, String roleName) {
+        this.code = code;
         this.roleName = roleName;
     }
 
@@ -31,12 +31,12 @@ public class TAPUserRoleModel implements Parcelable {
         return new TAPUserRoleModel(userRoleID, userRoleName);
     }
 
-    public String getUserRoleCode() {
-        return userRoleCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setUserRoleCode(String userRoleCode) {
-        this.userRoleCode = userRoleCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getRoleName() {
@@ -63,13 +63,13 @@ public class TAPUserRoleModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.userRoleCode);
+        dest.writeString(this.code);
         dest.writeString(this.roleName);
         dest.writeString(this.roleIconURL);
     }
 
     protected TAPUserRoleModel(Parcel in) {
-        this.userRoleCode = in.readString();
+        this.code = in.readString();
         this.roleName = in.readString();
         this.roleIconURL = in.readString();
     }
