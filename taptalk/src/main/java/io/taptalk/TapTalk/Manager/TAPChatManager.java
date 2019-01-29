@@ -63,7 +63,7 @@ public class TAPChatManager {
     private static TAPChatManager instance;
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, String> messageDrafts;
-    private Map<String, HashMap<String, Object>> userInfo; // TODO: 17 January 2019 DATA FROM USER WHEN OPENING ROOM FROM CLIENT APP, SAVE THIS TO DATA IN MESSAGE MODEL AS "userInfo" WHEN SENDING MESSAGE
+    private HashMap<String, HashMap<String, Object>> userInfo; // TODO: 17 January 2019 DATA FROM USER WHEN OPENING ROOM FROM CLIENT APP, SAVE THIS TO DATA IN MESSAGE MODEL AS "userInfo" WHEN SENDING MESSAGE
     private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
@@ -567,6 +567,25 @@ public class TAPChatManager {
 
     public void removeDraft() {
         messageDrafts.remove(getActiveRoom().getRoomID());
+    }
+
+    /**
+     * User Info
+     */
+    private HashMap<String, HashMap<String, Object>> getUserInfoMap() {
+        return userInfo == null ? userInfo = new HashMap<>() : userInfo;
+    }
+
+    public void saveUserInfo(String roomID, HashMap<String, Object> info) {
+        getUserInfoMap().put(roomID, info);
+    }
+
+    public HashMap<String, Object> getUserInfo(String roomID) {
+        return getUserInfoMap().get(roomID);
+    }
+
+    public void removeUserInfo(String roomID) {
+        getUserInfoMap().remove(roomID);
     }
 
     /**

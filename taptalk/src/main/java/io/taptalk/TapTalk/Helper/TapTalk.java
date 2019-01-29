@@ -28,11 +28,13 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
+import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
@@ -41,6 +43,7 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -429,7 +432,7 @@ public class TapTalk {
                 createAndSendProductRequestMessage(message, myUserModel, recipientUser, listener);
             } catch (Exception e) {
                 e.printStackTrace();
-                listener.sendFailed(new TAPErrorModel("", "Oops, Something Wrong Please Try Again Later", ""));
+                listener.sendFailed(new TAPErrorModel("", e.getMessage(), ""));
             }
         }).start();
     }
@@ -472,5 +475,63 @@ public class TapTalk {
      */
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
+    }
+
+    // FIXME: 28 January 2019
+    public static void openChatRoomWithUserID(Context context, String xcUserID, TapTalkOpenChatRoomInterface listener) {
+        TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(TAPUserModel entity) {
+                if (null != entity && null != entity.getUserID()) {
+                    TAPUtils.getInstance().startChatActivity(
+                            context,
+                            TAPChatManager.getInstance().arrangeRoomId(
+                                    TAPDataManager.getInstance().getActiveUser().getUserID(),
+                                    entity.getUserID()),
+                            entity.getName(),
+                            entity.getAvatarURL(),
+                            1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
+                            "");    // TODO: 28 January 2019 GET ROOM COLOR
+                    listener.onOpenRoomSuccess();
+                } else {
+                    // Get user data from API
+                    if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+                            @Override
+                            public void onSuccess(TAPGetUserResponse response) {
+                                TAPUserModel userResponse = response.getUser();
+                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                TAPUtils.getInstance().startChatActivity(
+                                        context,
+                                        TAPChatManager.getInstance().arrangeRoomId(
+                                                TAPDataManager.getInstance().getActiveUser().getUserID(),
+                                                userResponse.getUserID()),
+                                        userResponse.getName(),
+                                        userResponse.getAvatarURL(),
+                                        1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
+                                        "");    // TODO: 28 January 2019 GET ROOM COLOR
+                                listener.onOpenRoomSuccess();
+                            }
+
+                            @Override
+                            public void onError(TAPErrorModel error) {
+                                listener.onOpenRoomFailed(error.getMessage());
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                                    TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
+                                } else {
+                                    listener.onOpenRoomFailed("Unable to fetch user data, please check your connection and try again.");
+                                }
+                            }
+                        });
+                    } else {
+                        listener.onOpenRoomFailed("Unable to fetch user data, please check your connection and try again.");
+                    }
+                }
+            }
+        });
     }
 }
