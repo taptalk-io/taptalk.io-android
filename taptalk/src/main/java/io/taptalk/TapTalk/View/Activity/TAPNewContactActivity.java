@@ -245,7 +245,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private void showSearchResult() {
         // TODO: 25 October 2018 CHECK USER ROLE
-        if (null != vm.getSearchResult().getUserRole() && vm.getSearchResult().getUserRole().getUserRoleCode().equals("1")) {
+        if (null != vm.getSearchResult().getUserRole() && vm.getSearchResult().getUserRole().getCode().equals("1")) {
             showUserView();
         } else {
             showExpertView();
