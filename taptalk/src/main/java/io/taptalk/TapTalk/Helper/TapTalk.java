@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -62,6 +63,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_RE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
 
 public class TapTalk {
+    private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
     public static boolean isForeground;
@@ -429,6 +431,7 @@ public class TapTalk {
                 createAndSendProductRequestMessage(message, myUserModel, recipientUser, listener);
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.e(TAG, "getUserFromRecipientUserAndSendProductRequestMessage: ",e );
                 listener.sendFailed(new TAPErrorModel("", "Oops, Something Wrong Please Try Again Later", ""));
             }
         }).start();
