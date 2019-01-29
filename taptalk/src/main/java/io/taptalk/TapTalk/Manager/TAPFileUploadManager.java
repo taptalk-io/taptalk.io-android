@@ -201,6 +201,7 @@ public class TAPFileUploadManager {
 
                 messageModel.putData(imageData.toHashMap());
                 apiMessageModel.putData(imageData.toHashMapWithoutFileUri());
+                apiMessageModel.getData().remove("fileUri");
 
                 callUploadAPI(context, roomID, messageModel, apiMessageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
             }
