@@ -56,12 +56,13 @@ public class TAPDefaultConstant {
     }
 
     public static final class Extras {
-        public static final String ROOM_NAME = "kTAPRoomName";
-        public static final String MY_ID = "kTAPMyID";
-        public static final String GROUP_MEMBERS = "kTAPGroupMembers";
-        public static final String GROUP_NAME = "kTAPGroupName";
-        public static final String GROUP_IMAGE = "kTAPGroupImage";
-        public static final String IS_TYPING = "kTAPIsTyping";
+        public static final String ROOM_NAME = "kTAPExtraRoomName";
+        public static final String MY_ID = "kTAPExtraMyID";
+        public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
+        public static final String GROUP_NAME = "kTAPExtraGroupName";
+        public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
+        public static final String IS_TYPING = "kTAPExtraIsTyping";
+        public static final String QUOTE = "kTAPExtraQuote";
     }
 
     public static final class RequestCode {
@@ -155,6 +156,10 @@ public class TAPDefaultConstant {
         public static final String IMAGE_JPEG = "image/jpeg";
         public static final String IMAGE_PNG = "image/png";
         public static final String IMAGE_GIF = "image/gif";
+    }
+
+    public static final class ImageDetail {
+        public static final String IMAGE_FILE_ID = "kImageLocalID";
     }
 
     public static final class CustomHeaderKey {

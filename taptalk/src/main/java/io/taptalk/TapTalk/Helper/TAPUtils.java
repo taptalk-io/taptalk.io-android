@@ -262,7 +262,6 @@ public class TAPUtils {
         return "Rp " + str.replace(",", ".");
     }
 
-
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
         startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false);
     }

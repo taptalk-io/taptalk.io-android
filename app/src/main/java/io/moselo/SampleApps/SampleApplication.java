@@ -17,6 +17,7 @@ import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TaptalkSample.R;
@@ -59,8 +60,7 @@ public class SampleApplication extends Application {
                 expertToExpert.add(sendServices);
                 expertToExpert.add(createOrderCard);
                 return expertToExpert;
-            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("0") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("0")) {
+            } else {
                 List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
                 expertToExpert.add(seePriceList);
                 expertToExpert.add(readExpertNotes);
@@ -72,7 +72,6 @@ public class SampleApplication extends Application {
                 expertToExpert.add(createOrderCard);
                 return expertToExpert;
             }
-            return null;
         }
 
         @Override
@@ -90,6 +89,22 @@ public class SampleApplication extends Application {
                         Log.e("><><><", "sendFailed: ");
                     }
                 });
+            } else if (customKeyboardItemModel.getItemID().equals("3")) {
+                TAPProductModel prod1 = TAPProductModel.Builder("2eccad", "Button1",
+                        "2eccad", "Button2",
+                        "IDR", "", "4475",
+                        "http://bs-dev.moselo.com/images/product_s3/large/sv-4475-1-1543388256517",
+                        "A5 - lettering pieces", "75000", "0.0");
+
+                TAPProductModel prod2 = TAPProductModel.Builder("2eccad", "Button1",
+                        "2eccad", "Button2",
+                        "IDR", "", "4458",
+                        "http://bs-dev.moselo.com/images/product_s3/large/sv-4458-1-1548147156303",
+                        "Custom Mahar/Gift [3D frame]", "400000", "5.0");
+                List<TAPProductModel> productModels = new ArrayList<>();
+                productModels.add(prod1);
+                productModels.add(prod2);
+                TapTalk.sendProductMessage(productModels, otherUser);
             }
         }
 

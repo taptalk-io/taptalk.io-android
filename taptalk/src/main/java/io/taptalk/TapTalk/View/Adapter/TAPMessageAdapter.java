@@ -372,20 +372,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setImageDrawable(thumbnail);
             }
 
-            if (null != imageUri && !imageUri.isEmpty()) {
-                // Message is not sent to server, load image from URI
-                if (isMessageFromMySelf(item)) {
-                    flBubble.setForeground(bubbleOverlayRight);
-                } else {
-                    flBubble.setForeground(bubbleOverlayLeft);
-                }
-                glide.load(imageUri)
-                        .transition(DrawableTransitionOptions.withCrossFade(100))
-                        .apply(new RequestOptions()
-                                .placeholder(thumbnail)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(rcivImageBody);
-            } else if (null != fileID && !fileID.isEmpty()) {
+            if (null != fileID && !fileID.isEmpty()) {
                 Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
                     BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
@@ -429,6 +416,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         }
                     }
                 }).start();
+            } else if (null != imageUri && !imageUri.isEmpty()) {
+                // Message is not sent to server, load image from URI
+                if (isMessageFromMySelf(item)) {
+                    flBubble.setForeground(bubbleOverlayRight);
+                } else {
+                    flBubble.setForeground(bubbleOverlayLeft);
+                }
+                glide.load(imageUri)
+                        .transition(DrawableTransitionOptions.withCrossFade(100))
+                        .apply(new RequestOptions()
+                                .placeholder(thumbnail)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(rcivImageBody);
             }
         }
 
@@ -486,7 +486,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            Log.e(TAG, "onBind: "+TAPUtils.getInstance().toJsonString(item) );
             if (null == adapter) {
                 adapter = new TAPProductListAdapter(item, myUserModel, chatListener);
             }
@@ -774,7 +773,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent.setText(quote.getContent());
             String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();
-            if (!quoteImageURL.isEmpty()) {
+            if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 glide.load(quoteImageURL).into(rcivQuoteImage);
                 if (isMessageFromMySelf(item)) {
@@ -785,7 +784,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
-            } else if (!quoteFileID.isEmpty()) {
+            } else if (null != quoteFileID && !quoteFileID.isEmpty()) {
                 // Get quote image from file ID
                 // TODO: 9 January 2019 SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
                 rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteFileID));
