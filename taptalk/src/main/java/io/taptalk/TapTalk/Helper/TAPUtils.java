@@ -131,7 +131,12 @@ public class TAPUtils {
     }
 
     public <T> T convertObject(Object fromObject, TypeReference<T> toObjectType) {
-        return objectMapper.convertValue(fromObject, toObjectType);
+        try {
+            return objectMapper.convertValue(fromObject, toObjectType);
+        } catch (Exception e) {
+            Log.e(TAG, "convertObject: ",e );
+            return null;
+        }
     }
 
     /**
@@ -358,7 +363,6 @@ public class TAPUtils {
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     activity.startActivityForResult(intent, requestCode);
-                    Log.e(TAG, "takePicture: " + image.getAbsolutePath());
                     // TODO: 22 January 2019 TESTING
                     TAPFileUploadManager.getInstance().addImagePath(imageUri, image.getAbsolutePath());
                     return imageUri;

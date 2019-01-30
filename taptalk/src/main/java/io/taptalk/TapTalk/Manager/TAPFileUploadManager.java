@@ -152,7 +152,6 @@ public class TAPFileUploadManager {
             TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
             TAPMessageModel apiMessageModel = messageModel.copyMessageModel();
 
-            Log.e(TAG, "startUploadSequenceFromQueue: " + messageModel.getData());
             if (null == messageModel.getData() || null == apiMessageModel.getData()) {
                 // No data
                 Log.e(TAG, "File upload failed: data is required in MessageModel.");

@@ -24,7 +24,6 @@ public class TAPImageDetailPreview extends AppCompatActivity {
 
         new Thread(() -> {
             BitmapDrawable image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(localID);
-            Log.e("><><><", "onCreate: " + image);
             if (null != image)
                 runOnUiThread(() -> tivImageDetail.setImageDrawable(image));
         }).start();

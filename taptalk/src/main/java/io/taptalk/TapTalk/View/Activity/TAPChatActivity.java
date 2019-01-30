@@ -611,16 +611,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
+                messageAdapter.addMessage(newMessage);
+                vm.addMessagePointer(newMessage);
                 if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
-                    messageAdapter.addMessage(newMessage);
-                    vm.addMessagePointer(newMessage);
                     rvMessageList.scrollToPosition(0);
                 } else {
                     // Message from other people is received when recycler is scrolled up
-                    messageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
-                    vm.addMessagePointer(newMessage);
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
