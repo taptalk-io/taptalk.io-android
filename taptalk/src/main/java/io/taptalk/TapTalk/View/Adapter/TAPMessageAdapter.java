@@ -506,7 +506,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         , new TypeReference<List<TAPProductModel>>() {
                         });
             else items = new ArrayList<>();
-            Log.e(TAG, "items product: " + items.size());
             adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
 
             rvProductList.setAdapter(adapter);
