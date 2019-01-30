@@ -196,11 +196,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Load avatar
             if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
-                civAvatar.setBackground(null);
             } else {
-                civAvatar.setImageDrawable(null);
-                civAvatar.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-                civAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
+                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             }
 
             // Set room name with highlighted text
