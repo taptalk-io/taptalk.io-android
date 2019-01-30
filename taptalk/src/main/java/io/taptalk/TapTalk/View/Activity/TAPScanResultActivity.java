@@ -139,6 +139,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void validateScanResult(TAPUserModel userModel) {
+        TAPContactManager.getInstance().updateUserDataMap(userModel);
         cvResult.setVisibility(View.VISIBLE);
         pbLoading.setVisibility(View.GONE);
         contactModel = userModel;
