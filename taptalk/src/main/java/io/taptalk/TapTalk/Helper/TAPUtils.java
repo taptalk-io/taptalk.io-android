@@ -114,7 +114,8 @@ public class TAPUtils {
 
     public HashMap<String, Object> toHashMap(String jsonString) {
         try {
-            return objectMapper.readValue(jsonString, new TypeReference<HashMap<String, Object>>() {});
+            return objectMapper.readValue(jsonString, new TypeReference<HashMap<String, Object>>() {
+            });
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -223,13 +224,19 @@ public class TAPUtils {
     public List<List<TAPUserModel>> separateContactsByInitial(List<TAPUserModel> contacts) {
         List<List<TAPUserModel>> separatedContacts = new ArrayList<>();
         List<TAPUserModel> nonAlphabeticContacts = new ArrayList<>();
+        List<TAPUserModel> filteredContacts = new ArrayList<>();
+        for (TAPUserModel contact : contacts) {
+            if (null != contact.getName() && !contact.getName().isEmpty()) {
+                filteredContacts.add(contact);
+            }
+        }
         int previousInitialIndexStart = 0;
-        int size = contacts.size();
+        int size = filteredContacts.size();
         for (int i = 1; i <= size; i++) {
             if (i == size ||
-                    contacts.get(i).getName().charAt(0) !=
-                            contacts.get(i - 1).getName().charAt(0)) {
-                List<TAPUserModel> contactSubList = contacts.subList(previousInitialIndexStart, i);
+                    filteredContacts.get(i).getName().charAt(0) !=
+                            filteredContacts.get(i - 1).getName().charAt(0)) {
+                List<TAPUserModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
                 if (Character.isAlphabetic(contactSubList.get(0).getName().charAt(0))) {
                     separatedContacts.add(contactSubList);
                 } else {
@@ -316,7 +323,7 @@ public class TAPUtils {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         } else if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check read & write storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA);
         } else {
             // All permissions granted
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -467,10 +474,10 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 */
     public File createTempFile(String mimeType, Bitmap bitmap) {
         File file = new File(TapTalk.appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                , System.currentTimeMillis() +"."+mimeType);
+                , System.currentTimeMillis() + "." + mimeType);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG,50, bos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
         byte[] bitmapdata = bos.toByteArray();
         //write the bytes in file
 
@@ -487,7 +494,6 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     /**
      * Ini Untuk Search Position MessageModel dari Sebuah List berdasarkan LocalID
-     *
      */
     public int searchMessagePositionByLocalID(List<TAPMessageModel> messageModels, String localID) {
         for (int index = 0; index < messageModels.size(); index++) {
