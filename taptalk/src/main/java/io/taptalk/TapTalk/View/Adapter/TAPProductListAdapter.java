@@ -125,11 +125,11 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
         }
 
         private void buttonLeftClicked(TAPProductModel item) {
-            TapTalk.triggerListenerProductLeftButtonClicked(item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom().getRoomID());
+            TapTalk.triggerListenerProductLeftButtonClicked(item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
         }
 
         private void buttonRightClicked(TAPProductModel item) {
-            TapTalk.triggerListenerProductLeftButtonClicked(item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom().getRoomID());
+            TapTalk.triggerListenerProductLeftButtonClicked(item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
         }
     }
 }

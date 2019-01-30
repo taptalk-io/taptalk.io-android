@@ -10,6 +10,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkInterface;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public abstract class TAPListener implements TapTalkInterface {
@@ -32,12 +33,12 @@ public abstract class TAPListener implements TapTalkInterface {
     }
 
     @Override
-    public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, String roomID) {
+    public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
 
     }
 
     @Override
-    public void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, String roomID) {
+    public void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
 
     }
 }
