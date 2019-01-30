@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -319,6 +320,7 @@ public class TAPChatViewModel extends AndroidViewModel {
             String[] tempUserID = room.getRoomID().split("-");
             return tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
         } catch (Exception e) {
+            Log.e(TAG, "getOtherUserID: ",e );
             return "0";
         }
     }
