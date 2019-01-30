@@ -20,7 +20,6 @@ public class TapTalkEndAppService extends Service {
         super.onTaskRemoved(rootIntent);
         TAPNotificationManager.getInstance().saveNotificationMessageMapToPreference();
         TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
-        TAPChatManager.getInstance().deleteActiveRoom();
         stopSelf();
     }
 }

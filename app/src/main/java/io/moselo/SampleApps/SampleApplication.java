@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TaptalkSample.R;
@@ -119,12 +120,12 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, String roomID) {
-            Log.e("><><><", "onProductLeftButtonClicked: "+productModel.getName()+" "+recipientXcUserID+" "+roomID );
+        public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
+            Log.e("><><><", "onProductLeftButtonClicked: "+productModel.getName()+" "+recipientXcUserID+" "+room.getRoomID() );
         }
 
         @Override
-        public void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, String roomID) {
+        public void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
 
         }
     };
