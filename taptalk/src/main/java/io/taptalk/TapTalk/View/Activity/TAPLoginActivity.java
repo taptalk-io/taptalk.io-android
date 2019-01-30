@@ -344,8 +344,8 @@ public class TAPLoginActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onLoginFailed(String reason) {
-            showDialog("ERROR ", reason);
+        public void onLoginFailed(TAPErrorModel error) {
+            showDialog("ERROR ", error.getMessage());
         }
     };
 
