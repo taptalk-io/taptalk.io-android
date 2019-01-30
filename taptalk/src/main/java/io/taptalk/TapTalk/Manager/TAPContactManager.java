@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -37,12 +38,12 @@ public class TAPContactManager {
     }
 
     public TAPUserModel getUserData(String userID) {
-        Log.e(TAG, "getUserData: "+userID );
+        Log.e(TAG, "getUserData: "+ TAPUtils.getInstance().toJsonString(getUserDataMap()));
         return getUserDataMap().get(userID);
     }
 
     public void updateUserDataMap(TAPUserModel user) {
-        Log.e(TAG, "updateUserDataMap: "+ user.getUserID() );
+        Log.e(TAG, "updateUserDataMap: "+ TAPUtils.getInstance().toJsonString(user) );
         if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
             // Add new user to map
             user.setIsContact(0);
