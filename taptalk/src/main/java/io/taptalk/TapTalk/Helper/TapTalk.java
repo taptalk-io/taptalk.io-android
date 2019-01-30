@@ -471,7 +471,7 @@ public class TapTalk {
         List<TAPProductModel> tempProductModel = new ArrayList<>();
         for (int index = 1; index <= productSize; index++) {
             tempProductModel.add(productModels.get(index - 1));
-            if (index == productSize || index % 5 == 0) {
+            if (index == productSize || index % 20 == 0) {
                 HashMap<String, Object> productHashMap = new LinkedHashMap<>();
                 productHashMap.put("recipientXcUserID", recipientUserModel.getXcUserID());
                 productHashMap.put("items", tempProductModel);

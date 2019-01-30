@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -34,7 +35,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
     private final int TYPE_SELLER = 2;
 
     public TAPProductListAdapter(List<TAPProductModel> productModels, TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
-        setItems(productModels, true);
+        setItems(productModels);
         if (null != messageModel.getData()) this.recipientXcUserID = (String) messageModel.getData().get("recipientXcUserID");
         else this.recipientXcUserID = "0";
         this.messageModel = messageModel;
