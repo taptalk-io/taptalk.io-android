@@ -497,6 +497,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         protected void onBind(TAPMessageModel item, int position) {
             if (null == adapter) {
                 adapter = new TAPProductListAdapter(item, myUserModel, chatListener);
+            } else {
+                adapter.setItems(item);
             }
 
             rvProductList.setAdapter(adapter);

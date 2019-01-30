@@ -52,7 +52,6 @@ import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
-import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
@@ -194,7 +193,7 @@ public class TapTalk {
                 @Override
                 public void onError(String errorMessage) {
                     super.onError(errorMessage);
-                    loginInterface.onLoginFailed(new TAPErrorModel("500",errorMessage,""));
+                    loginInterface.onLoginFailed(new TAPErrorModel("500", errorMessage, ""));
                 }
             });
         }
@@ -437,9 +436,18 @@ public class TapTalk {
     }
 
     public static void sendProductMessage(List<TAPProductModel> productModels, TAPUserModel recipientUserModel) {
-        HashMap<String, Object> productHashMap = new LinkedHashMap<>();
-        productHashMap.put("items", productModels);
-        TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, recipientUserModel);
+        int productSize = productModels.size();
+        List<TAPProductModel> tempProductModel = new ArrayList<>();
+        for (int index = 1; index <= productSize; index++) {
+            tempProductModel.add(productModels.get(index - 1));
+            if (index == productSize || index % 5 == 0) {
+                HashMap<String, Object> productHashMap = new LinkedHashMap<>();
+                productHashMap.put("recipientXcUserID", recipientUserModel.getXcUserID());
+                productHashMap.put("items", tempProductModel);
+                TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, recipientUserModel);
+                tempProductModel.clear();
+            }
+        }
     }
 
     private void getUserFromRecipientUserAndSendProductRequestMessage(String message, @NonNull TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
@@ -450,7 +458,7 @@ public class TapTalk {
             } catch (Exception e) {
                 e.printStackTrace();
                 listener.sendFailed(new TAPErrorModel("", e.getMessage(), ""));
-                Log.e(TAG, "getUserFromRecipientUserAndSendProductRequestMessage: ",e );
+                Log.e(TAG, "getUserFromRecipientUserAndSendProductRequestMessage: ", e);
             }
         }).start();
     }
@@ -496,10 +504,10 @@ public class TapTalk {
     }
 
     /**
-     * @param quoteTitle is required to open room with predefined quote
+     * @param quoteTitle    is required to open room with predefined quote
      * @param quoteImageURL quote will only contain text if Image URL is empty
-     * @param userInfo (requires quoteTitle) will be returned on click action after the next message is delivered
-     * @param listener returns onOpenRoomSuccess when room is successfully opened, returns onOpenRoomFailed when other user data is not obtained
+     * @param userInfo      (requires quoteTitle) will be returned on click action after the next message is delivered
+     * @param listener      returns onOpenRoomSuccess when room is successfully opened, returns onOpenRoomFailed when other user data is not obtained
      */
     public static void openChatRoomWithUserID(
             Activity activity,
@@ -552,12 +560,12 @@ public class TapTalk {
      * from openChatRoomWithUserID
      */
     private static void startActivityFromUserResult(Activity activity,
-                                             TAPUserModel user,
-                                             @Nullable String quoteTitle,
-                                             @Nullable String quoteContent,
-                                             @Nullable String quoteImageURL,
-                                             @Nullable HashMap<String, Object> userInfo,
-                                             TapTalkOpenChatRoomInterface listener) {
+                                                    TAPUserModel user,
+                                                    @Nullable String quoteTitle,
+                                                    @Nullable String quoteContent,
+                                                    @Nullable String quoteImageURL,
+                                                    @Nullable HashMap<String, Object> userInfo,
+                                                    TapTalkOpenChatRoomInterface listener) {
         String roomID = TAPChatManager.getInstance().arrangeRoomId(
                 TAPDataManager.getInstance().getActiveUser().getUserID(),
                 user.getUserID());
