@@ -12,7 +12,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -53,6 +52,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
@@ -537,8 +537,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            Log.e(TAG, "onBind: "+TAPUtils.getInstance().toJsonString(item) );
-            tvLogMessage.setText(item.getBody());
+            if (BuildConfig.BUILD_TYPE.equals("dev")) {
+                tvLogMessage.setText(TAPUtils.getInstance().toJsonString(item));
+            } else
+                tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
         }
     }
