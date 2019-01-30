@@ -105,6 +105,10 @@ public class SampleApplication extends Application {
                 productModels.add(prod1);
                 productModels.add(prod1);
                 productModels.add(prod2);
+                productModels.add(prod2);
+                productModels.add(prod2);
+                productModels.add(prod2);
+                productModels.add(prod2);
                 TapTalk.sendProductMessage(productModels, otherUser);
             }
         }

@@ -26,32 +26,17 @@ import io.taptalk.Taptalk.R;
 
 public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 
-    private List<TAPProductModel> items;
     private TAPMessageModel messageModel;
     private TAPUserModel myUserModel;
     private TAPChatListener chatListener;
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
 
-    public TAPProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
-        if (null != messageModel.getData())
-            items = TAPUtils.getInstance().convertObject(messageModel.getData().get("items")
-                    , new TypeReference<List<TAPProductModel>>() {});
-        else items = new ArrayList<>();
-
-        setItems(items);
+    public TAPProductListAdapter(List<TAPProductModel> productModels , TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
+        setItems(productModels, true);
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;
-    }
-
-    public void setItems(TAPMessageModel messageModel) {
-        if (null != messageModel.getData())
-            items = TAPUtils.getInstance().convertObject(messageModel.getData().get("items")
-                    , new TypeReference<List<TAPProductModel>>() {});
-        else items = new ArrayList<>();
-
-        setItems(items);
     }
 
     @NonNull
