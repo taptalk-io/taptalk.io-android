@@ -432,24 +432,24 @@ public class TapTalk {
         }
     }
 
-    public static void triggerListenerProductLeftButtonClicked(TAPProductModel productModel
+    public static void triggerListenerProductLeftButtonClicked(Activity activity, TAPProductModel productModel
             , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductLeftButtonClicked(productModel, recipientXcUserID, room);
+                tapListener.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
             }
         }
     }
 
-    public static void triggerListenerProductRightButtonClicked(TAPProductModel productModel
+    public static void triggerListenerProductRightButtonClicked(Activity activity, TAPProductModel productModel
             , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductRightButtonClicked(productModel, recipientXcUserID, room);
+                tapListener.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
             }
         }
     }

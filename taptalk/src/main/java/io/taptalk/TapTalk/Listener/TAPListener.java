@@ -33,12 +33,12 @@ public abstract class TAPListener implements TapTalkInterface {
     }
 
     @Override
-    public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
+    public void onProductLeftButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
 
     }
 
     @Override
-    public void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
+    public void onProductRightButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
 
     }
 }
