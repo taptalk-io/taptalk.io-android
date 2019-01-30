@@ -38,7 +38,6 @@ import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
@@ -47,7 +46,6 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -399,18 +397,29 @@ public class TapTalk {
     }
 
     public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
-        TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener() {
+        TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
-            public void onSelectFinished(Object entity) {
-                if (entity instanceof TAPRoomModel) {
-                    TAPRoomModel roomModel = (TAPRoomModel) entity;
-                    Intent intent = new Intent(context, TAPProfileActivity.class);
-                    intent.putExtra(K_ROOM, roomModel);
-                    context.startActivity(intent);
-                    if (context instanceof Activity) {
-                        ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-                    }
+            public void onSelectFinished(TAPRoomModel roomModel) {
+                Intent intent = new Intent(context, TAPProfileActivity.class);
+                intent.putExtra(K_ROOM, roomModel);
+                context.startActivity(intent);
+                if (context instanceof Activity) {
+                    ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
                 }
+            }
+        });
+    }
+
+    public static void openTapTalkUserProfile(Context context, String xcUserID) {
+        TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(TAPUserModel userModel) {
+                openTapTalkUserProfile(context, userModel);
+            }
+
+            @Override
+            public void onSelectFailed(String errorMessage) {
+                Log.e(TAG, "openTapTalkUserProfile failed: " + errorMessage);
             }
         });
     }
@@ -517,72 +526,33 @@ public class TapTalk {
             @Nullable String quoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
             TapTalkOpenChatRoomInterface listener) {
-        // Get user ID from Contact Manager
-        TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+        TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
-            public void onSelectFinished(TAPUserModel entity) {
-                if (null != entity && null != entity.getUserID()) {
-                    startActivityFromUserResult(activity, entity, quoteTitle, quoteContent, quoteImageURL, userInfo, listener);
-                } else {
-                    // Get user data from API
-                    if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
-                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
-                            @Override
-                            public void onSuccess(TAPGetUserResponse response) {
-                                TAPUserModel userResponse = response.getUser();
-                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
-                                startActivityFromUserResult(activity, userResponse, quoteTitle, quoteContent, quoteImageURL, userInfo, listener);
-                            }
-
-                            @Override
-                            public void onError(TAPErrorModel error) {
-                                listener.onOpenRoomFailed(error.getMessage());
-                            }
-
-                            @Override
-                            public void onError(Throwable throwable) {
-                                if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
-                                    TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
-                                } else {
-                                    listener.onOpenRoomFailed(activity.getString(R.string.error_open_room_failed));
-                                }
-                            }
-                        });
-                    } else {
-                        listener.onOpenRoomFailed(activity.getString(R.string.error_open_room_failed));
-                    }
+            public void onSelectFinished(TAPUserModel user) {
+                String roomID = TAPChatManager.getInstance().arrangeRoomId(
+                        TAPDataManager.getInstance().getActiveUser().getUserID(),
+                        user.getUserID());
+                if (null != quoteTitle && null != userInfo) {
+                    // Save user info to Chat Manager
+                    TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
                 }
+                // Save quote to Chat Manager
+                TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
+                // Start activity
+                TAPUtils.getInstance().startChatActivity(
+                        activity,
+                        roomID,
+                        user.getName(),
+                        user.getAvatarURL(),
+                        1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
+                        "");    // TODO: 28 January 2019 GET ROOM COLOR
+                listener.onOpenRoomSuccess();
+            }
+
+            @Override
+            public void onSelectFailed(String errorMessage) {
+                listener.onOpenRoomFailed(errorMessage);
             }
         });
-    }
-
-    /**
-     * from openChatRoomWithUserID
-     */
-    private static void startActivityFromUserResult(Activity activity,
-                                                    TAPUserModel user,
-                                                    @Nullable String quoteTitle,
-                                                    @Nullable String quoteContent,
-                                                    @Nullable String quoteImageURL,
-                                                    @Nullable HashMap<String, Object> userInfo,
-                                                    TapTalkOpenChatRoomInterface listener) {
-        String roomID = TAPChatManager.getInstance().arrangeRoomId(
-                TAPDataManager.getInstance().getActiveUser().getUserID(),
-                user.getUserID());
-        if (null != quoteTitle && null != userInfo) {
-            // Save user info to Chat Manager
-            TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
-        }
-        // Save quote to Chat Manager
-        TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
-        // Start activity
-        TAPUtils.getInstance().startChatActivity(
-                activity,
-                roomID,
-                user.getName(),
-                user.getAvatarURL(),
-                1,      // TODO: 28 January 2019 GET 1-1 ROOM TYPE
-                "");    // TODO: 28 January 2019 GET ROOM COLOR
-        listener.onOpenRoomSuccess();
     }
 }
