@@ -632,9 +632,9 @@ public class TAPDataManager {
 
     //General
     public void deleteAllFromDatabase() {
-        new Thread(this::deleteAllMessage).start();
-        new Thread(this::deleteAllRecentSearch).start();
-        new Thread(this::deleteAllContact).start();
+        deleteAllMessage();
+        deleteAllRecentSearch();
+        deleteAllContact();
     }
 
     /**
