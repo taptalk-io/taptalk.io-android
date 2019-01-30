@@ -432,24 +432,24 @@ public class TapTalk {
         }
     }
 
-    public static void triggerListenerProductLeftButtonClicked(TAPProductModel productModel
+    public static void triggerListenerProductLeftButtonClicked(Activity activity, TAPProductModel productModel
             , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductLeftButtonClicked(productModel, recipientXcUserID, room);
+                tapListener.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
             }
         }
     }
 
-    public static void triggerListenerProductRightButtonClicked(TAPProductModel productModel
+    public static void triggerListenerProductRightButtonClicked(Activity activity, TAPProductModel productModel
             , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductRightButtonClicked(productModel, recipientXcUserID, room);
+                tapListener.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
             }
         }
     }
@@ -547,6 +547,7 @@ public class TapTalk {
             @Nullable String quoteContent,
             @Nullable String quoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
+            @Nullable String prefilledText,
             TapTalkOpenChatRoomInterface listener) {
         TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
@@ -554,12 +555,18 @@ public class TapTalk {
                 String roomID = TAPChatManager.getInstance().arrangeRoomId(
                         TAPDataManager.getInstance().getActiveUser().getUserID(),
                         user.getUserID());
-                if (null != quoteTitle && null != userInfo) {
-                    // Save user info to Chat Manager
-                    TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+                if (null != quoteTitle) {
+                    // Save quote to Chat Manager
+                    TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
+                    if (null != userInfo) {
+                        // Save user info to Chat Manager
+                        TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+                    }
                 }
-                // Save quote to Chat Manager
-                TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
+                if (null != prefilledText) {
+                    // Save pre-filled text as draft
+                    TAPChatManager.getInstance().saveMessageToDraft(roomID, prefilledText);
+                }
                 // Start activity
                 TAPUtils.getInstance().startChatActivity(
                         activity,

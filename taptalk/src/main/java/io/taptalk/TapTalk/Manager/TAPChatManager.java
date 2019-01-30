@@ -584,6 +584,10 @@ public class TAPChatManager {
         messageDrafts.put(getActiveRoom().getRoomID(), message);
     }
 
+    public void saveMessageToDraft(String roomID, String message) {
+        messageDrafts.put(roomID, message);
+    }
+
     public String getMessageFromDraft() {
         return messageDrafts.get(getActiveRoom().getRoomID());
     }

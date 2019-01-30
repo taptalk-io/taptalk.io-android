@@ -120,13 +120,13 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
-            Log.e("><><><", "onProductLeftButtonClicked: "+productModel.getName()+" "+recipientXcUserID+" "+room.getRoomID() );
+        public void onProductLeftButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
+            super.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
         }
 
         @Override
-        public void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
-
+        public void onProductRightButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
+            super.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
         }
     };
 

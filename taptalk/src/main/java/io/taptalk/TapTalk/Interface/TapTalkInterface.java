@@ -14,6 +14,6 @@ public interface TapTalkInterface {
     void onUserProfileClicked(Activity activity, TAPUserModel userModel);
     void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser);
     List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser);
-    void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room);
-    void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room);
+    void onProductLeftButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room);
+    void onProductRightButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room);
 }
