@@ -410,17 +410,17 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onSuccess(TAPCommonResponse response) {
+            // Add contact to database
+            TAPUserModel newContact = vm.getSearchResult().setUserAsContact();
+            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact);
+            TAPContactManager.getInstance().updateUserDataMap(newContact);
+
             // Change To Animation Page
             Intent intent = new Intent(TAPNewContactActivity.this, TAPScanResultActivity.class);
             intent.putExtra(ADDED_CONTACT, vm.getSearchResult());
             startActivity(intent);
             finish();
             overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
-
-            // Add contact to database
-            TAPUserModel newContact = vm.getSearchResult().setUserAsContact();
-            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact);
-            TAPContactManager.getInstance().updateUserDataMap(newContact);
         }
 
         @Override
