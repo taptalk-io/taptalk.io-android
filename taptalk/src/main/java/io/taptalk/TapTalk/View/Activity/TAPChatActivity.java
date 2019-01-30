@@ -321,6 +321,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
         vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+        Log.e(TAG, "initViewModel: "+TAPUtils.getInstance().toJsonString(vm.getOtherUserModel()) );
     }
 
     private void initView() {
