@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +13,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPContactManager {
 
+    private static final String TAG = TAPContactManager.class.getSimpleName();
     private static TAPContactManager instance;
     private HashMap<String, TAPUserModel> userDataMap;
 
@@ -34,10 +37,12 @@ public class TAPContactManager {
     }
 
     public TAPUserModel getUserData(String userID) {
+        Log.e(TAG, "getUserData: "+userID );
         return getUserDataMap().get(userID);
     }
 
     public void updateUserDataMap(TAPUserModel user) {
+        Log.e(TAG, "updateUserDataMap: "+ user.getUserID() );
         if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
             // Add new user to map
             user.setIsContact(0);
