@@ -7,6 +7,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkInterface;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public abstract class TAPListener implements TapTalkInterface {
@@ -26,5 +27,15 @@ public abstract class TAPListener implements TapTalkInterface {
     @Override
     public List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
         return null;
+    }
+
+    @Override
+    public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, String roomID) {
+
+    }
+
+    @Override
+    public void onProductRightButtonClicked(TAPProductModel productModel, String recipientXcUserID, String roomID) {
+
     }
 }
