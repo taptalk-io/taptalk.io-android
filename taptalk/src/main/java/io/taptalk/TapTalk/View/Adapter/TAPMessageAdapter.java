@@ -110,7 +110,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_BUBBLE_PRODUCT_LIST:
                 return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
             case TYPE_BUBBLE_ORDER_CARD:
-                //return new OrderVH(parent, R.layout.tap_cell_chat_order_card);
                 TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD);
                 return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
             case TYPE_EMPTY:

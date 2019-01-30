@@ -38,7 +38,7 @@ public class TAPDefaultConstant {
 
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
-        public static final int TYPE_ORDER_CARD = 2003;
+        public static final int TYPE_ORDER_CARD = 3001;
         public static final int TYPE_CONFIRM_MY_PAYMENT = 2004;
 
         public static final int TYPE_HIDDEN = 0x9196;
