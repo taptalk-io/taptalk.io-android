@@ -44,6 +44,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -88,6 +89,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener) {
         myUserModel = TAPDataManager.getInstance().getActiveUser();
+        if (null == myUserModel)
+            myUserModel = TAPChatManager.getInstance().getActiveUser();
         this.chatListener = chatListener;
         this.glide = glide;
     }

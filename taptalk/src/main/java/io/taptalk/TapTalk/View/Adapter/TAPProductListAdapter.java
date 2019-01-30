@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -10,9 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
@@ -37,7 +34,8 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
 
     public TAPProductListAdapter(List<TAPProductModel> productModels, TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
         setItems(productModels, true);
-        this.recipientXcUserID = (String) messageModel.getData().get("recipientXcUserID");
+        if (null != messageModel.getData()) this.recipientXcUserID = (String) messageModel.getData().get("recipientXcUserID");
+        else this.recipientXcUserID = "0";
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;
@@ -83,7 +81,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
         @Override
         protected void onBind(TAPProductModel item, int position) {
             tvButtonOne.setText(item.getButtonOption1Text());
-            tvButtonOne.setTextColor(Color.parseColor("#"+item.getButtonOption1Color()));
+            tvButtonOne.setTextColor(Color.parseColor("#" + item.getButtonOption1Color()));
             if (getItemViewType() == TYPE_SELLER) {
                 // My products
                 vButtonSeparator.setVisibility(View.GONE);
@@ -93,7 +91,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             } else {
                 // Other seller's products
                 tvButtonTwo.setText(item.getButtonOption2Text());
-                tvButtonTwo.setTextColor(Color.parseColor("#"+item.getButtonOption2Color()));
+                tvButtonTwo.setTextColor(Color.parseColor("#" + item.getButtonOption2Color()));
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonTwo.setVisibility(View.VISIBLE);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
