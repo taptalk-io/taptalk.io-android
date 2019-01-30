@@ -178,4 +178,5 @@
     <string name="cancel">Cancel</string>
     <string name="add_a_caption">Add a caption</string>
     <string name="empty_chat_text_to_see_product">Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!</string>
+    <string name="no_description">No Description</string>
 </resources>

@@ -100,9 +100,8 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             tvProductName.setText(item.getName());
             tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
             if ("".equals(item.getDescription()))
-                tvProductDescription.setVisibility(View.GONE);
+                tvProductDescription.setText(itemView.getResources().getString(R.string.no_description));
             else {
-                tvProductDescription.setVisibility(View.VISIBLE);
                 tvProductDescription.setText(item.getDescription());
             }
             if (!item.getRating().equals("0.0")) {
