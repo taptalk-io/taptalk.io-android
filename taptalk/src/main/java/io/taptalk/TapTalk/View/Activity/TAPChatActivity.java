@@ -80,6 +80,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
@@ -879,7 +880,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
-                        TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(response.getUser());
+                        TAPUserModel userResponse = response.getUser();
+                        TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                        TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(userResponse);
                         setChatRoomStatus(onlineStatus);
                         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(false);
                     }
