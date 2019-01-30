@@ -209,6 +209,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+
+            // TODO: 29 January 2019 TESTING
+            clContainer.setOnClickListener(v -> {
+                item.setHidden(true);
+                notifyItemChanged(position);
+            });
         }
 
         @Override
@@ -304,10 +310,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageData(item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> {
-                // TODO: 5 November 2018 VIEW IMAGE
-            });
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+
+            // TODO: 29 January 2019 TESTING
+            clContainer.setOnClickListener(v -> {
+                item.setHidden(true);
+                notifyItemChanged(position);
+            });
         }
 
         private void setProgress(TAPMessageModel item) {
