@@ -43,14 +43,22 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
+import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPConnectionManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
+import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
@@ -288,6 +296,21 @@ public class TAPUtils {
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(K_ROOM, roomModel);
         intent.putExtra(IS_TYPING, isTyping);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
+    }
+
+    public void openProfileActivity(Context context, TAPRoomModel room) {
+        Intent intent = new Intent(context, TAPProfileActivity.class);
+        intent.putExtra(K_ROOM, room);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         context.startActivity(intent);
         if (context instanceof Activity) {
             ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
@@ -356,6 +379,46 @@ public class TAPUtils {
             else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
         }
         return uris;
+    }
+
+    public void getUserFromXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
+        // Get user from Contact Manager
+        TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(TAPUserModel entity) {
+                if (null != entity) {
+                    listener.onSelectFinished(entity);
+                } else {
+                    // Get user data from API
+                    if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+                            @Override
+                            public void onSuccess(TAPGetUserResponse response) {
+                                TAPUserModel userResponse = response.getUser();
+                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                listener.onSelectFinished(entity);
+                            }
+
+                            @Override
+                            public void onError(TAPErrorModel error) {
+                                listener.onSelectFailed(error.getMessage());
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                                    TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
+                                } else {
+                                    listener.onSelectFailed(TapTalk.appContext.getString(R.string.error_open_room_failed));
+                                }
+                            }
+                        });
+                    } else {
+                        listener.onSelectFailed(TapTalk.appContext.getString(R.string.error_open_room_failed));
+                    }
+                }
+            }
+        });
     }
 
     /**
