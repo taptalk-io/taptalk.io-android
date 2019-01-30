@@ -11,4 +11,5 @@ public interface TapTalkDatabaseInterface<T> {
     void onCountedUnreadCount(String roomID, int unreadCount);
     void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap);
     void onContactCheckFinished(int isContact);
+    void onSelectFailed(String errorMessage);
 }

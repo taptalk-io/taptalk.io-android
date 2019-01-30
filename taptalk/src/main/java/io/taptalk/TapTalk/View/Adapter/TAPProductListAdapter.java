@@ -18,7 +18,9 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -27,13 +29,15 @@ import io.taptalk.Taptalk.R;
 public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 
     private TAPMessageModel messageModel;
+    private String recipientXcUserID;
     private TAPUserModel myUserModel;
     private TAPChatListener chatListener;
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
 
-    public TAPProductListAdapter(List<TAPProductModel> productModels , TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
+    public TAPProductListAdapter(List<TAPProductModel> productModels, TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
         setItems(productModels, true);
+        this.recipientXcUserID = (String) messageModel.getData().get("recipientXcUserID");
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;
@@ -118,16 +122,16 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             }
 
             flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            tvButtonOne.setOnClickListener(v -> viewProductDetail());
-            tvButtonTwo.setOnClickListener(v -> orderProduct());
+            tvButtonOne.setOnClickListener(v -> buttonLeftClicked(item));
+            tvButtonTwo.setOnClickListener(v -> buttonRightClicked(item));
         }
 
-        private void viewProductDetail() {
-            // TODO: 12 November 2018 viewProductDetail
+        private void buttonLeftClicked(TAPProductModel item) {
+            TapTalk.triggerListenerProductLeftButtonClicked(item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom().getRoomID());
         }
 
-        private void orderProduct() {
-            // TODO: 12 November 2018 orderProduct
+        private void buttonRightClicked(TAPProductModel item) {
+            TapTalk.triggerListenerProductLeftButtonClicked(item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom().getRoomID());
         }
     }
 }
