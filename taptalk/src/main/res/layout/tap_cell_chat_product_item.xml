@@ -98,14 +98,11 @@
         <TextView
             android:id="@+id/tv_rating"
             style="@style/HpProductDetail"
-            android:layout_width="0dp"
+            android:layout_width="106dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:paddingBottom="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_rating_icon"
-            app:layout_constraintTop_toBottomOf="@id/tv_price_label"
-            app:layout_goneMarginStart="8dp"
+            tools:layout_editor_absoluteX="156dp"
+            tools:layout_editor_absoluteY="222dp"
             tools:text="5.0" />
 
         <View
@@ -133,7 +130,6 @@
             android:minLines="3"
             android:lineSpacingExtra="3sp"
             android:padding="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_price"
             tools:text="Vestibulum rutrum quam vitae fringilla tincidunt. Suspendisse nec tortor urna. Ut laoreet sodales nisi, quis iaculis ullaadadas" />
