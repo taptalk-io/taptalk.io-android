@@ -395,7 +395,7 @@ public class TAPUtils {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPContactManager.getInstance().updateUserDataMap(response.getUser());
-                                listener.onSelectFinished(entity);
+                                listener.onSelectFinished(response.getUser());
                             }
 
                             @Override
