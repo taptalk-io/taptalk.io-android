@@ -443,7 +443,7 @@ public class TAPChatManager {
                                                       TAPUserModel recipientUserModel,
                                                       TAPRoomModel roomModel) {
         return TAPMessageModel.Builder(
-                "ProductList",
+                "Product List",
                 roomModel,
                 TYPE_PRODUCT,
                 System.currentTimeMillis(),

@@ -76,7 +76,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
     class ContactListHolder extends TAPBaseViewHolder<TAPUserModel> {
 
-        private CircleImageView ivAvatar;
+        private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivSelection;
         private TextView tvFullName;
         private View vSeparator;
@@ -84,7 +84,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
         ContactListHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
-            ivAvatar = itemView.findViewById(R.id.civ_avatar);
+            civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivSelection = itemView.findViewById(R.id.iv_selection);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
@@ -97,12 +97,9 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 Glide.with(itemView.getContext())
                         .load(item.getAvatarURL().getThumbnail())
                         .apply(new RequestOptions().centerCrop())
-                        .into(ivAvatar);
-                ivAvatar.setBackground(null);
+                        .into(civAvatar);
             } else {
-                ivAvatar.setImageDrawable(null);
-                ivAvatar.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-                ivAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
+                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             }
 
             // Change avatar icon and background

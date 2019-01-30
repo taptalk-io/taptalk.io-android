@@ -93,16 +93,21 @@ public class SampleApplication extends Application {
                 TAPProductModel prod1 = TAPProductModel.Builder("2eccad", "Button1",
                         "2eccad", "Button2",
                         "IDR", "", "4475",
-                        "http://bs-dev.moselo.com/images/product_s3/large/sv-4475-1-1543388256517",
+                        "https://pbs.twimg.com/profile_images/934765447144030211/kaK6qlJc_400x400.jpg",
                         "A5 - lettering pieces", "75000", "0.0");
 
                 TAPProductModel prod2 = TAPProductModel.Builder("2eccad", "Button1",
                         "2eccad", "Button2",
                         "IDR", "", "4458",
-                        "http://bs-dev.moselo.com/images/product_s3/large/sv-4458-1-1548147156303",
+                        "https://pbs.twimg.com/profile_images/934765447144030211/kaK6qlJc_400x400.jpg",
                         "Custom Mahar/Gift [3D frame]", "400000", "5.0");
                 List<TAPProductModel> productModels = new ArrayList<>();
                 productModels.add(prod1);
+                productModels.add(prod1);
+                productModels.add(prod2);
+                productModels.add(prod2);
+                productModels.add(prod2);
+                productModels.add(prod2);
                 productModels.add(prod2);
                 TapTalk.sendProductMessage(productModels, otherUser);
             }

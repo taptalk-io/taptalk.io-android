@@ -321,7 +321,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
         vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
-        Log.e(TAG, "initViewModel: "+TAPUtils.getInstance().toJsonString(vm.getOtherUserModel()) );
     }
 
     private void initView() {
@@ -613,8 +612,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     messageAdapter.addMessage(newMessage);
-                    rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
+                    rvMessageList.scrollToPosition(0);
                 } else {
                     // Message from other people is received when recycler is scrolled up
                     messageAdapter.addMessage(newMessage);
