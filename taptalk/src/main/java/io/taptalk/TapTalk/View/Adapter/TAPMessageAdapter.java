@@ -22,7 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -502,15 +501,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (null == adapter) {
-                if (null != item.getData())
-                    items = TAPUtils.getInstance().convertObject(item.getData().get("items")
-                            , new TypeReference<List<TAPProductModel>>() {
-                            });
-                else items = new ArrayList<>();
-                Log.e(TAG, "items product: "+items.size() );
-                adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
-            }
+            if (null != item.getData())
+                items = TAPUtils.getInstance().convertObject(item.getData().get("items")
+                        , new TypeReference<List<TAPProductModel>>() {
+                        });
+            else items = new ArrayList<>();
+            Log.e(TAG, "items product: " + items.size());
+            adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
 
             rvProductList.setAdapter(adapter);
             rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
