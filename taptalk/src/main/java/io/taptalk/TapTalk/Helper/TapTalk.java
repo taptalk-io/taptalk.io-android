@@ -433,23 +433,23 @@ public class TapTalk {
     }
 
     public static void triggerListenerProductLeftButtonClicked(TAPProductModel productModel
-            , String recipientXcUserID, String roomID) {
+            , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductLeftButtonClicked(productModel, recipientXcUserID, roomID);
+                tapListener.onProductLeftButtonClicked(productModel, recipientXcUserID, room);
             }
         }
     }
 
     public static void triggerListenerProductRightButtonClicked(TAPProductModel productModel
-            , String recipientXcUserID, String roomID) {
+            , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductRightButtonClicked(productModel, recipientXcUserID, roomID);
+                tapListener.onProductRightButtonClicked(productModel, recipientXcUserID, room);
             }
         }
     }
