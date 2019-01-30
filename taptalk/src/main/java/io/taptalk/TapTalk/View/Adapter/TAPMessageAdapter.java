@@ -12,6 +12,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -21,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -52,7 +54,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
@@ -505,6 +506,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             , new TypeReference<List<TAPProductModel>>() {
                             });
                 else items = new ArrayList<>();
+                Log.e(TAG, "onBind: " + TAPUtils.getInstance().toJsonString(item.getData()));
+                Toast.makeText(itemView.getContext(), TAPUtils.getInstance().toJsonString(item.getData()), Toast.LENGTH_LONG).show();
                 adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
             }
 
@@ -537,10 +540,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (BuildConfig.BUILD_TYPE.equals("dev")) {
-                tvLogMessage.setText(TAPUtils.getInstance().toJsonString(item));
-            } else
-                tvLogMessage.setText(item.getBody());
+            tvLogMessage.setText(TAPUtils.getInstance().toJsonString(item));
+            //tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
         }
     }
