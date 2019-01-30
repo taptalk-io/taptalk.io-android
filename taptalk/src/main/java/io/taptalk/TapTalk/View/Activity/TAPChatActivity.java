@@ -1321,8 +1321,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         } else {
                             civOtherUserAvatar.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
                         }
-                        // TODO: 1 October 2018 ONLY SHOW CUSTOM KEYBOARD WHEN AVAILABLE
-                        showCustomKeyboard();
+                        if (vm.isCustomKeyboardEnabled()) {
+                            showCustomKeyboard();
+                        }
                     } else {
                         // Message exists
                         vm.setMessageModels(models);
