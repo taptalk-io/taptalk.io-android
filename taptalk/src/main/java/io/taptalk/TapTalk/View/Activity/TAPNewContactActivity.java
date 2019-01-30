@@ -370,7 +370,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onSuccess(TAPGetUserResponse response) {
-            vm.setSearchResult(response.getUser());
+            TAPUserModel userResponse = response.getUser();
+            TAPContactManager.getInstance().updateUserDataMap(userResponse);
+            vm.setSearchResult(userResponse);
             showSearchResult();
         }
 

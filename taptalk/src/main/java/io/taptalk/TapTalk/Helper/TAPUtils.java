@@ -394,8 +394,7 @@ public class TAPUtils {
                         TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
-                                TAPUserModel userResponse = response.getUser();
-                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                TAPContactManager.getInstance().updateUserDataMap(response.getUser());
                                 listener.onSelectFinished(entity);
                             }
 
