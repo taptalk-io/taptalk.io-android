@@ -547,6 +547,7 @@ public class TapTalk {
             @Nullable String quoteContent,
             @Nullable String quoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
+            @Nullable String prefilledText,
             TapTalkOpenChatRoomInterface listener) {
         TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
@@ -554,12 +555,18 @@ public class TapTalk {
                 String roomID = TAPChatManager.getInstance().arrangeRoomId(
                         TAPDataManager.getInstance().getActiveUser().getUserID(),
                         user.getUserID());
-                if (null != quoteTitle && null != userInfo) {
-                    // Save user info to Chat Manager
-                    TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+                if (null != quoteTitle) {
+                    // Save quote to Chat Manager
+                    TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
+                    if (null != userInfo) {
+                        // Save user info to Chat Manager
+                        TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+                    }
                 }
-                // Save quote to Chat Manager
-                TAPChatManager.getInstance().setQuotedMessage(roomID, quoteTitle, quoteContent, quoteImageURL);
+                if (null != prefilledText) {
+                    // Save pre-filled text as draft
+                    TAPChatManager.getInstance().saveMessageToDraft(roomID, prefilledText);
+                }
                 // Start activity
                 TAPUtils.getInstance().startChatActivity(
                         activity,
