@@ -120,7 +120,7 @@ public class SampleApplication extends Application {
 
         @Override
         public void onProductLeftButtonClicked(TAPProductModel productModel, String recipientXcUserID, String roomID) {
-
+            Log.e("><><><", "onProductLeftButtonClicked: "+productModel.getName()+" "+recipientXcUserID+" "+roomID );
         }
 
         @Override

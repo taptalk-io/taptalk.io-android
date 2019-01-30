@@ -432,6 +432,28 @@ public class TapTalk {
         }
     }
 
+    public static void triggerListenerProductLeftButtonClicked(TAPProductModel productModel
+            , String recipientXcUserID, String roomID) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+                tapListener.onProductLeftButtonClicked(productModel, recipientXcUserID, roomID);
+            }
+        }
+    }
+
+    public static void triggerListenerProductRightButtonClicked(TAPProductModel productModel
+            , String recipientXcUserID, String roomID) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+                tapListener.onProductRightButtonClicked(productModel, recipientXcUserID, roomID);
+            }
+        }
+    }
+
     public static List<TAPListener> getTapTalkListeners() {
         return tapTalk.tapListeners;
     }
