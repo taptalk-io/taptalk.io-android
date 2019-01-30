@@ -12,7 +12,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -27,7 +26,9 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
+import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -48,6 +49,7 @@ import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
@@ -209,6 +211,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+
+            // TODO: 29 January 2019 TESTING
+            clContainer.setOnClickListener(v -> {
+                item.setHidden(true);
+                notifyItemChanged(position);
+            });
         }
 
         @Override
@@ -304,10 +312,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageData(item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> {
-                // TODO: 5 November 2018 VIEW IMAGE
-            });
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+
+            // TODO: 29 January 2019 TESTING
+            clContainer.setOnClickListener(v -> {
+                item.setHidden(true);
+                notifyItemChanged(position);
+            });
         }
 
         private void setProgress(TAPMessageModel item) {
@@ -341,10 +352,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageCaption = (String) item.getData().get("caption");
             String fileID = (String) item.getData().get("fileID");
             Drawable thumbnail = new BitmapDrawable(
-                        itemView.getContext().getResources(),
-                        TAPFileUtils.getInstance().decodeBase64(
-                                (String) (null == item.getData().get("thumbnail") ? "" :
-                                        item.getData().get("thumbnail"))));
+                    itemView.getContext().getResources(),
+                    TAPFileUtils.getInstance().decodeBase64(
+                            (String) (null == item.getData().get("thumbnail") ? "" :
+                                    item.getData().get("thumbnail"))));
             if (thumbnail.getIntrinsicHeight() <= 0) {
                 // Set placeholder image if thumbnail fails to laod
                 thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
@@ -478,6 +489,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         RecyclerView rvProductList;
         TAPProductListAdapter adapter;
+        private List<TAPProductModel> items;
 
         ProductVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -487,7 +499,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (null == adapter) {
-                adapter = new TAPProductListAdapter(item, myUserModel, chatListener);
+                if (null != item.getData())
+                    items = TAPUtils.getInstance().convertObject(item.getData().get("items")
+                            , new TypeReference<List<TAPProductModel>>() {
+                            });
+                else items = new ArrayList<>();
+                adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
             }
 
             rvProductList.setAdapter(adapter);

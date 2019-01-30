@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -25,17 +26,14 @@ import io.taptalk.Taptalk.R;
 
 public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 
-    private List<TAPProductModel> items;
     private TAPMessageModel messageModel;
     private TAPUserModel myUserModel;
     private TAPChatListener chatListener;
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
 
-    public TAPProductListAdapter(TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
-        items = TAPUtils.getInstance().convertObject(messageModel.getData().get("items")
-                , new TypeReference<List<TAPProductModel>>() {});
-        setItems(items);
+    public TAPProductListAdapter(List<TAPProductModel> productModels , TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
+        setItems(productModels, true);
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;
@@ -60,7 +58,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
 
         FrameLayout flContainer;
         TAPRoundedCornerImageView rcivProductImage;
-        TextView tvProductName, tvPrice, tvRating, tvProductDescription, tvButtonDetails, tvButtonOrder;
+        TextView tvProductName, tvPrice, tvRating, tvProductDescription, tvButtonOne, tvButtonTwo;
         ImageView ivRatingIcon;
         View vButtonSeparator;
 
@@ -72,24 +70,28 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvRating = itemView.findViewById(R.id.tv_rating);
             tvProductDescription = itemView.findViewById(R.id.tv_product_description);
-            tvButtonDetails = itemView.findViewById(R.id.tv_button_details);
-            tvButtonOrder = itemView.findViewById(R.id.tv_button_order);
+            tvButtonOne = itemView.findViewById(R.id.tv_button_one);
+            tvButtonTwo = itemView.findViewById(R.id.tv_button_two);
             ivRatingIcon = itemView.findViewById(R.id.iv_rating_icon);
             vButtonSeparator = itemView.findViewById(R.id.v_button_separator);
         }
 
         @Override
         protected void onBind(TAPProductModel item, int position) {
+            tvButtonOne.setText(item.getButtonOption1Text());
+            tvButtonOne.setTextColor(Color.parseColor("#"+item.getButtonOption1Color()));
             if (getItemViewType() == TYPE_SELLER) {
                 // My products
                 vButtonSeparator.setVisibility(View.GONE);
-                tvButtonOrder.setVisibility(View.GONE);
+                tvButtonTwo.setVisibility(View.GONE);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
             } else {
                 // Other seller's products
+                tvButtonTwo.setText(item.getButtonOption2Text());
+                tvButtonTwo.setTextColor(Color.parseColor("#"+item.getButtonOption2Color()));
                 vButtonSeparator.setVisibility(View.VISIBLE);
-                tvButtonOrder.setVisibility(View.VISIBLE);
+                tvButtonTwo.setVisibility(View.VISIBLE);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
@@ -97,8 +99,12 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             Glide.with(itemView.getContext()).load(item.getImageURL()).into(rcivProductImage);
             tvProductName.setText(item.getName());
             tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
-            tvProductDescription.setText(item.getDescription());
-            if (item.getRating().equals(0.0)) {
+            if ("".equals(item.getDescription()))
+                tvProductDescription.setText(itemView.getResources().getString(R.string.no_description));
+            else {
+                tvProductDescription.setText(item.getDescription());
+            }
+            if (!item.getRating().equals("0.0")) {
                 // Show rating
                 String ratingString = item.getRating();
                 ivRatingIcon.setVisibility(View.VISIBLE);
@@ -112,8 +118,8 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             }
 
             flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            tvButtonDetails.setOnClickListener(v -> viewProductDetail());
-            tvButtonOrder.setOnClickListener(v -> orderProduct());
+            tvButtonOne.setOnClickListener(v -> viewProductDetail());
+            tvButtonTwo.setOnClickListener(v -> orderProduct());
         }
 
         private void viewProductDetail() {

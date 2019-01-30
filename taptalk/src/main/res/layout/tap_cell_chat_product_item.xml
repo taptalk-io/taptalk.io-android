@@ -17,6 +17,7 @@
         <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
             android:id="@+id/rciv_product_image"
             android:layout_width="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:layout_height="140dp"
             android:scaleType="centerCrop"
             tools:background="@color/brightBlue" />
@@ -144,7 +145,7 @@
             app:layout_constraintBottom_toBottomOf="@id/tv_product_description" />
 
         <TextView
-            android:id="@+id/tv_button_details"
+            android:id="@+id/tv_button_one"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
@@ -152,7 +153,7 @@
             android:gravity="center_horizontal"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
-            android:text="@string/details"
+            tools:text="@string/details"
             android:textColor="@color/black_44"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -161,7 +162,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_product_description" />
 
         <TextView
-            android:id="@+id/tv_button_order"
+            android:id="@+id/tv_button_two"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
@@ -169,7 +170,7 @@
             android:gravity="center_horizontal"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
-            android:text="@string/order_now"
+            tools:text="@string/order_now"
             android:textColor="@color/tealish"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -182,10 +183,10 @@
             android:layout_width="1dp"
             android:layout_height="0dp"
             android:background="@color/grey_ea"
-            app:layout_constraintBottom_toBottomOf="@id/tv_button_details"
-            app:layout_constraintEnd_toStartOf="@id/tv_button_order"
-            app:layout_constraintStart_toEndOf="@id/tv_button_details"
-            app:layout_constraintTop_toTopOf="@id/tv_button_details" />
+            app:layout_constraintBottom_toBottomOf="@id/tv_button_one"
+            app:layout_constraintEnd_toStartOf="@id/tv_button_two"
+            app:layout_constraintStart_toEndOf="@id/tv_button_one"
+            app:layout_constraintTop_toTopOf="@id/tv_button_one" />
 
     </android.support.constraint.ConstraintLayout>
 
