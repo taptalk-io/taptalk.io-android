@@ -163,37 +163,41 @@ public class TapTalk {
     }
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPLoginInterface loginInterface) {
-        TAPDataManager.getInstance().saveAuthTicket(authTicket);
-        TAPDataManager.getInstance().getAccessTokenFromApi(new TapDefaultDataView<TAPGetAccessTokenResponse>() {
-            @Override
-            public void onSuccess(TAPGetAccessTokenResponse response) {
-                super.onSuccess(response);
-                TAPDataManager.getInstance().removeAuthTicket();
+        if (null == authTicket || "".equals(authTicket)) {
+            loginInterface.onLoginFailed(new TAPErrorModel("401", "Invalid Auth Ticket", ""));
+        } else {
+            TAPDataManager.getInstance().saveAuthTicket(authTicket);
+            TAPDataManager.getInstance().getAccessTokenFromApi(new TapDefaultDataView<TAPGetAccessTokenResponse>() {
+                @Override
+                public void onSuccess(TAPGetAccessTokenResponse response) {
+                    super.onSuccess(response);
+                    TAPDataManager.getInstance().removeAuthTicket();
 
-                TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
-                TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
-                TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
-                TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
-                registerFcmToken();
+                    TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
+                    TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
+                    TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
+                    TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
+                    registerFcmToken();
 
-                TAPDataManager.getInstance().saveActiveUser(response.getUser());
-                TAPApiManager.getInstance().setLogout(false);
-                TAPConnectionManager.getInstance().connect();
-                loginInterface.onLoginSuccess();
-            }
+                    TAPDataManager.getInstance().saveActiveUser(response.getUser());
+                    TAPApiManager.getInstance().setLogout(false);
+                    TAPConnectionManager.getInstance().connect();
+                    loginInterface.onLoginSuccess();
+                }
 
-            @Override
-            public void onError(TAPErrorModel error) {
-                super.onError(error);
-                loginInterface.onLoginFailed(error.getMessage());
-            }
+                @Override
+                public void onError(TAPErrorModel error) {
+                    super.onError(error);
+                    loginInterface.onLoginFailed(error);
+                }
 
-            @Override
-            public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                loginInterface.onLoginFailed(errorMessage);
-            }
-        });
+                @Override
+                public void onError(String errorMessage) {
+                    super.onError(errorMessage);
+                    loginInterface.onLoginFailed(new TAPErrorModel("500",errorMessage,""));
+                }
+            });
+        }
     }
 
     public static void checkActiveUserToShowPage(Activity activity) {
