@@ -811,7 +811,6 @@ public class TAPChatManager {
     private void receiveMessageFromSocket(HashMap<String, Object> newMessageMap, String eventName) {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
         Log.d(TAG, "receiveMessageFromSocket: " + TAPUtils.getInstance().toJsonString(newMessage));
-        Log.d(TAG, "receiveMessageFromSocket: active room" + activeRoom.getRoomID());
         Log.e(TAG, "receiveMessageFromSocket: event name "+eventName+" "+newMessage.getRoom().getRoomID()+" "+newMessage.getLocalID() );
 
         // Remove from waiting response hashmap
@@ -860,6 +859,16 @@ public class TAPChatManager {
                     chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
                 else if (kSocketDeleteMessage.equals(eventName))
                     chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+            }
+        } else if (null != chatListeners && !chatListeners.isEmpty() && null == activeRoom && null != getOpenRoom() && newMessage.getRoom().getRoomID().equals(getOpenRoom())) {
+            for (TAPChatListener chatListener : chatListeners) {
+                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                if (kSocketNewMessage.equals(eventName))
+                    chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
+                else if (kSocketUpdateMessage.equals(eventName))
+                    chatListener.onUpdateMessageInActiveRoom(tempNewMessage);
+                else if (kSocketDeleteMessage.equals(eventName))
+                    chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
             }
         }
 
