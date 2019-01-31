@@ -860,16 +860,6 @@ public class TAPChatManager {
                 else if (kSocketDeleteMessage.equals(eventName))
                     chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
             }
-        } else if (null != chatListeners && !chatListeners.isEmpty() && null == activeRoom && null != getOpenRoom() && newMessage.getRoom().getRoomID().equals(getOpenRoom())) {
-            for (TAPChatListener chatListener : chatListeners) {
-                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
-                else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInActiveRoom(tempNewMessage);
-                else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
-            }
         }
 
         // Add to list delivered message

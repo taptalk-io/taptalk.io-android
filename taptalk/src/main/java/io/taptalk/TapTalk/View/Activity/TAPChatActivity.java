@@ -547,6 +547,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
             // Message is added after transition finishes in containerTransitionListener
+            Log.e(TAG, "updateMessage: 1 "+newMessage.getLocalID() );
             vm.addPendingRecyclerMessage(newMessage);
         } else {
             // Message is added after transition finishes in containerTransitionListener
@@ -572,16 +573,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     TAPFileUploadManager.getInstance().removeUploadProgressMap(newMessage.getLocalID());
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.getMessagePointer().containsKey(newID)) {
+                    Log.e(TAG, "updateMessage: 2 "+newID );
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.isOnBottom() || ownMessage) {
+                    Log.e(TAG, "updateMessage: 3 "+newID );
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
                 } else {
                     // Message from other people is received when recycler is scrolled up
+                    Log.e(TAG, "updateMessage: 4 "+newID );
                     messageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
@@ -629,6 +633,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+            Log.e(TAG, "updateMessageFromSocket: "+position );
             if (-1 != position) {
                 new Thread(() -> vm.updateMessagePointer(message)).start();
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
@@ -1023,7 +1028,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
-            Log.e(TAG, "onDeleteMessageInActiveRoom: "+message.getLocalID() );
             updateMessageFromSocket(message);
         }
 
