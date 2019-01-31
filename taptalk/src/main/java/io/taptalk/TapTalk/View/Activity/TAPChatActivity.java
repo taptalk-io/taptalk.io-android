@@ -1115,7 +1115,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
-            TapTalk.triggerMessageQuoteClicked(message);
+            TapTalk.triggerMessageQuoteClicked(TAPChatActivity.this, message);
         }
 
         @Override
