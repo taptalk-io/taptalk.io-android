@@ -12,7 +12,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -107,7 +106,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_BUBBLE_IMAGE_LEFT:
                 return new ImageVH(parent, R.layout.tap_cell_chat_image_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
-                return new ProductVH(parent, R.layout.tap_cell_chat_product_list);
+                ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_product_list);
+                prodHolder.setIsRecyclable(false);
+                return prodHolder;
             case TYPE_BUBBLE_ORDER_CARD:
                 TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD);
                 return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
