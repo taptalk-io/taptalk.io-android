@@ -53,6 +53,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreview;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
@@ -66,6 +67,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImageDetail.IMAGE_FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -313,6 +315,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
+        private void openImageDetailPreview(String fileID) {
+            Intent intent = new Intent(itemView.getContext(), TAPImageDetailPreview.class);
+            intent.putExtra(IMAGE_FILE_ID, fileID);
+            itemView.getContext().startActivity(intent);
+        }
+
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
             Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
@@ -388,9 +396,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .placeholder(finalThumbnail)
                                             .centerCrop())
                                     .into(rcivImageBody);
+                            rcivImageBody.setOnClickListener(v -> openImageDetailPreview(fileID));
                             //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
+                        }));
                         if (null == TAPFileDownloadManager.getInstance()
                                 .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
                             // Download image
@@ -420,6 +431,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     }
                 }).start();
             } else if (null != imageUri && !imageUri.isEmpty()) {
+                rcivImageBody.setOnClickListener(v -> {
+                });
                 // Message is not sent to server, load image from URI
                 if (isMessageFromMySelf(item)) {
                     flBubble.setForeground(bubbleOverlayRight);

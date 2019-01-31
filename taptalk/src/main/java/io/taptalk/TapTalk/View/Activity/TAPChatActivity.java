@@ -674,6 +674,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
                     vm.addMessagePointer(newMessage);
+                    runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                 }).start();
             }
             //updateMessageDecoration();
