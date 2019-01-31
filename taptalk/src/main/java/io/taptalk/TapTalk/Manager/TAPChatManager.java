@@ -860,6 +860,8 @@ public class TAPChatManager {
                 else if (kSocketDeleteMessage.equals(eventName))
                     chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
             }
+        } else {
+            Log.e(TAG, "receiveMessageFromSocket: 2 "+newMessage.getLocalID() );
         }
 
         // Add to list delivered message
