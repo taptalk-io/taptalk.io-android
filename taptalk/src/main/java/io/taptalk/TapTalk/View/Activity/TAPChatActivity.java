@@ -686,6 +686,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
                     vm.addMessagePointer(newMessage);
+                    runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                 }).start();
             }
             //updateMessageDecoration();
@@ -1021,17 +1022,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+            Log.e(TAG, "onReceiveMessageInActiveRoom: " );
             updateMessage(message);
         }
 
         @Override
         public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+            Log.e(TAG, "onUpdateMessageInActiveRoom: " );
             updateMessageFromSocket(message);
         }
 
         @Override
         public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
             // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
+            Log.e(TAG, "onDeleteMessageInActiveRoom: " );
+            updateMessageFromSocket(message);
         }
 
         @Override
