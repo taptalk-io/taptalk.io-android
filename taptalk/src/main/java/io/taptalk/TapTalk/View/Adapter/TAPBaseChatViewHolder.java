@@ -3,7 +3,9 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.view.ViewGroup;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
@@ -30,5 +32,16 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
     protected void receiveReadEvent(TAPMessageModel message) {
 
+    }
+
+    protected void markUnreadForMessage(TAPMessageModel item, TAPUserModel myUserModel) {
+        if ((null == item.getIsRead() || !item.getIsRead()) && !myUserModel.getUserID().equals(item.getUser().getUserID())
+                && (null != item.getSending() && !item.getSending())) {
+            item.updateReadMessage();
+            new Thread(() -> {
+                TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
+                TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
+            }).start();
+        }
     }
 }

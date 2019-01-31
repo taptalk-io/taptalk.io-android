@@ -92,6 +92,8 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
         TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
         }, item.getBody());
 
+        markUnreadForMessage(item, myUserModel);
+
         // Set initial data
         tvOrderID.setText(order.getOrderID());
         tvDate.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "E dd MMM yyyy"));
