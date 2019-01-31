@@ -36,8 +36,9 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
 
     public TAPProductListAdapter(List<TAPProductModel> productModels, TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
         setItems(productModels);
-        if (null != messageModel.getData()) this.recipientXcUserID = (String) messageModel.getData().get("recipientXcUserID");
-        else this.recipientXcUserID = "0";
+        if (null != messageModel.getData() && null != messageModel.getData().get("recipientXcUserID"))
+            this.recipientXcUserID = (String) messageModel.getData().get("recipientXcUserID");
+        else this.recipientXcUserID = messageModel.getUser().getXcUserID();
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;
