@@ -489,25 +489,27 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (null != item.getData())
-                items = TAPUtils.getInstance().convertObject(item.getData().get("items")
-                        , new TypeReference<List<TAPProductModel>>() {
-                        });
-            else items = new ArrayList<>();
-            adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
+            if (null == adapter) {
+                if (null != item.getData())
+                    items = TAPUtils.getInstance().convertObject(item.getData().get("items")
+                            , new TypeReference<List<TAPProductModel>>() {
+                            });
+                else items = new ArrayList<>();
+                adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
 
-            rvProductList.setAdapter(adapter);
-            rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-            if (rvProductList.getItemDecorationCount() > 0) {
-                rvProductList.removeItemDecorationAt(0);
+                rvProductList.setAdapter(adapter);
+                rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                if (rvProductList.getItemDecorationCount() > 0) {
+                    rvProductList.removeItemDecorationAt(0);
+                }
+                rvProductList.addItemDecoration(new TAPHorizontalDecoration(
+                        0, 0,
+                        TAPUtils.getInstance().dpToPx(16),
+                        TAPUtils.getInstance().dpToPx(8),
+                        adapter.getItemCount(),
+                        0, 0));
+                OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
             }
-            rvProductList.addItemDecoration(new TAPHorizontalDecoration(
-                    0, 0,
-                    TAPUtils.getInstance().dpToPx(16),
-                    TAPUtils.getInstance().dpToPx(8),
-                    adapter.getItemCount(),
-                    0, 0));
-            OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         }
     }
 

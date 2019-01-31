@@ -114,13 +114,11 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 ivRatingIcon.setVisibility(View.VISIBLE);
                 tvRating.setText(ratingString);
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.purply));
-                TAPUtils.getInstance().setMargins(tvRating, 0, 0, 0, 0);
             } else {
                 // Product has no rating
                 ivRatingIcon.setVisibility(View.GONE);
                 tvRating.setText(itemView.getContext().getString(R.string.no_review_yet));
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
-                TAPUtils.getInstance().setMargins(tvRating, TAPUtils.getInstance().dpToPx(9), 0, 0, 0);
             }
 
             flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -133,7 +131,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
         }
 
         private void buttonRightClicked(TAPProductModel item) {
-            TapTalk.triggerListenerProductLeftButtonClicked(((Activity) itemView.getContext()), item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
+            TapTalk.triggerListenerProductRightButtonClicked(((Activity) itemView.getContext()), item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
         }
     }
 }
