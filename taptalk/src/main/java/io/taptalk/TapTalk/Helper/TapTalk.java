@@ -272,6 +272,24 @@ public class TapTalk {
         return null;
     }
 
+    public static void triggerMessageQuoteClicked(TAPMessageModel messageModel) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            try {
+                tapTalk.triggerMessageQuoteClicked(messageModel, messageModel.getData());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void triggerMessageQuoteClicked(TAPMessageModel messageModel, HashMap<String, Object> userInfo) {
+        for (TAPListener listener : tapListeners) {
+            listener.onMessageQuoteClicked(messageModel, userInfo);
+        }
+    }
+
     //Builder buat setting isi dari Notification chat
     public static class NotificationBuilder {
         public Context context;

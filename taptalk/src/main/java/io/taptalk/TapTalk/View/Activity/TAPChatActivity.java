@@ -204,7 +204,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onResume();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
-        showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage());
+        showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage(), false);
         addNetworkListener();
         callApiGetUserByUserID();
         if (vm.isInitialAPICallFinished()) {
@@ -681,7 +681,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    private void showQuoteLayout(@Nullable TAPMessageModel message) {
+    private void showQuoteLayout(@Nullable TAPMessageModel message, boolean showKeyboard) {
         if (null == message) {
             return;
         }
@@ -711,7 +711,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 tvQuoteContent.setMaxLines(2);
             }
             etChat.requestFocus();
-            TAPUtils.getInstance().showKeyboard(this, etChat);
+            if (showKeyboard) {
+                TAPUtils.getInstance().showKeyboard(this, etChat);
+            }
         });
     }
 
@@ -1056,7 +1058,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReplyMessage(TAPMessageModel message) {
-            showQuoteLayout(message);
+            showQuoteLayout(message, true);
             TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
         }
 
@@ -1091,15 +1093,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onBubbleExpanded() {
-            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
-                rvMessageList.smoothScrollToPosition(0);
-            }
+        public void onMessageQuoteClicked(TAPMessageModel message) {
+            TapTalk.triggerMessageQuoteClicked(message);
         }
 
         @Override
         public void onOutsideClicked() {
             hideKeyboards();
+        }
+
+        @Override
+        public void onBubbleExpanded() {
+            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                rvMessageList.smoothScrollToPosition(0);
+            }
         }
 
         @Override

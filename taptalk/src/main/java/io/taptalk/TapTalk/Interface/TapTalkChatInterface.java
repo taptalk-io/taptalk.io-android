@@ -20,8 +20,9 @@ public interface TapTalkChatInterface {
     void onLayoutLoaded(TAPMessageModel message);
     void onReceiveStartTyping(TAPTypingModel typingModel);
     void onReceiveStopTyping(TAPTypingModel typingModel);
-    void onBubbleExpanded();
+    void onMessageQuoteClicked(TAPMessageModel message);
     void onOutsideClicked();
+    void onBubbleExpanded();
     void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
     void onReadMessage(String roomID);
 }
