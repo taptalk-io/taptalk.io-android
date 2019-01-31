@@ -444,7 +444,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         };
 
         // Load items from database for the First Time (First Load)
-        vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+        if (vm.getMessageModels().size() == 0) {
+            vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Show/hide ivToBottom
