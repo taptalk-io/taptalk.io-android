@@ -94,6 +94,9 @@
     <string name="api_call_return_error">Oops! there is an error, please try again later.</string>
     <string name="init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
     <string name="error_open_room_failed">Unable to fetch user data, please check your connection and try again.</string>
+    <string name="error_room_not_found">Could not find room.</string>
+    <string name="error_my_user_not_found">Could not find your user data.</string>
+    <string name="error_other_user_not_found">Could not find other user\'s data.</string>
 
     <!--Attachment-->
     <string name="photo">Photo</string>

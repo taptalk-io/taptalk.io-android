@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -323,6 +324,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
         vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+
+        if (null == vm.getRoom()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (null == vm.getMyUserModel()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_my_user_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (null == vm.getOtherUserModel()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_other_user_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void initView() {
@@ -560,6 +572,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             });
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
+            Log.e(TAG, "updateMessage: 6 "+newID );
             //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
                     .getInstance().getActiveUser().getUserID());
@@ -568,6 +581,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TYPE_IMAGE == newMessage.getType() &&
                         TAPChatManager.getInstance().getActiveUser().getUserID()
                                 .equals(newMessage.getUser().getUserID())) {
+                    Log.e(TAG, "updateMessage: 5" +newID );
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
                     TAPFileUploadManager.getInstance().removeUploadProgressMap(newMessage.getLocalID());
@@ -633,7 +647,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            Log.e(TAG, "updateMessageFromSocket: "+position );
+            Log.e(TAG, "updateMessageFromSocket: "+position +" "+ message.getLocalID());
             if (-1 != position) {
                 new Thread(() -> vm.updateMessagePointer(message)).start();
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
@@ -1103,7 +1117,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
-            TapTalk.triggerMessageQuoteClicked(message);
+            TapTalk.triggerMessageQuoteClicked(TAPChatActivity.this, message);
         }
 
         @Override
