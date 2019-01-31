@@ -314,6 +314,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageData(item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            // TODO: 31 January 2019 TEMPORARILY DISABLED REPLY BUTTON
+            ivReply.setVisibility(View.GONE);
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -703,6 +705,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void expandOrShrinkBubble(TAPMessageModel item, View itemView, FrameLayout flBubble,
                                       TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                       ImageView ivReply, boolean animate) {
+        // TODO: 31 January 2019 TEMPORARILY DISABLED REPLY BUTTON
         if (item.isExpanded()) {
             // Expand bubble
             expandedBubble = item;
@@ -712,10 +715,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (animate) {
                     // Animate expand
                     animateFadeOutToBottom(ivMessageStatus);
-                    animateShowToLeft(ivReply);
+//                    animateShowToLeft(ivReply);
                 } else {
                     ivMessageStatus.setVisibility(View.GONE);
-                    ivReply.setVisibility(View.VISIBLE);
+//                    ivReply.setVisibility(View.VISIBLE);
                 }
                 if (null == bubbleOverlayRight) {
                     bubbleOverlayRight = itemView.getContext().getDrawable(R.drawable.tap_bg_transparent_black_8dp_1dp_8dp_8dp);
@@ -725,9 +728,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Left Bubble
                 if (animate) {
                     // Animate expand
-                    animateShowToRight(ivReply);
+//                    animateShowToRight(ivReply);
                 } else {
-                    ivReply.setVisibility(View.VISIBLE);
+//                    ivReply.setVisibility(View.VISIBLE);
                 }
                 if (null == bubbleOverlayRight) {
                     bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.tap_bg_transparent_black_1dp_8dp_8dp_8dp);
@@ -741,7 +744,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Right bubble
                 if ((null != item.getFailedSend() && item.getFailedSend())) {
                     // Message failed to send
-                    ivReply.setVisibility(View.GONE);
+//                    ivReply.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
                     ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_purple);
                     tvMessageStatus.setVisibility(View.VISIBLE);
@@ -758,26 +761,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     }
                     if (animate) {
                         // Animate shrink
-                        animateHideToRight(ivReply);
+//                        animateHideToRight(ivReply);
                         animateFadeInToTop(ivMessageStatus);
                         animateFadeOutToTop(tvMessageStatus);
                     } else {
-                        ivReply.setVisibility(View.GONE);
+//                        ivReply.setVisibility(View.GONE);
                         ivMessageStatus.setVisibility(View.VISIBLE);
                         tvMessageStatus.setVisibility(View.GONE);
                     }
                 } else if (null != item.getSending() && item.getSending()) {
                     // Message is sending
-                    ivReply.setVisibility(View.GONE);
+//                    ivReply.setVisibility(View.GONE);
                 }
             }
             // Message from others
             else if (animate) {
                 // Animate shrink
-                animateHideToLeft(ivReply);
+//                animateHideToLeft(ivReply);
                 animateFadeOutToTop(tvMessageStatus);
             } else {
-                ivReply.setVisibility(View.GONE);
+//                ivReply.setVisibility(View.GONE);
                 tvMessageStatus.setVisibility(View.GONE);
             }
         }
@@ -908,10 +911,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .start();
             }, 200L);
 
+            // TODO: 31 January 2019 TEMPORARILY DISABLED REPLY BUTTON
             // Animate reply button
-            if (null != ivReply) {
-                animateShowToLeft(ivReply);
-            }
+//            if (null != ivReply) {
+//                animateShowToLeft(ivReply);
+//            }
         }
     }
 

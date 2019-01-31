@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -323,6 +324,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
         vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+
+        if (null == vm.getRoom()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (null == vm.getMyUserModel()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_my_user_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (null == vm.getOtherUserModel()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_other_user_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void initView() {
@@ -1105,7 +1117,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
-            TapTalk.triggerMessageQuoteClicked(message);
+            TapTalk.triggerMessageQuoteClicked(TAPChatActivity.this, message);
         }
 
         @Override
