@@ -1038,6 +1038,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
+            Log.e(TAG, "onUpdateMessageInOtherRoom: "+message.getLocalID() );
             super.onUpdateMessageInOtherRoom(message);
         }
 
