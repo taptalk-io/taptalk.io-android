@@ -574,6 +574,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             });
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
+            Log.e(TAG, "updateMessage: 6 "+newID );
             //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
                     .getInstance().getActiveUser().getUserID());
@@ -582,6 +583,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TYPE_IMAGE == newMessage.getType() &&
                         TAPChatManager.getInstance().getActiveUser().getUserID()
                                 .equals(newMessage.getUser().getUserID())) {
+                    Log.e(TAG, "updateMessage: 5" +newID );
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
                     TAPFileUploadManager.getInstance().removeUploadProgressMap(newMessage.getLocalID());
@@ -647,7 +649,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            Log.e(TAG, "updateMessageFromSocket: "+position );
+            Log.e(TAG, "updateMessageFromSocket: "+position +" "+ message.getLocalID());
             if (-1 != position) {
                 new Thread(() -> vm.updateMessagePointer(message)).start();
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
