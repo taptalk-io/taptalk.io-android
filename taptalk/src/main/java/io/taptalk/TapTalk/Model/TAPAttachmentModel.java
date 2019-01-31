@@ -48,35 +48,37 @@ public class TAPAttachmentModel {
     }
 
     public static List<TAPAttachmentModel> createAttachMenu() {
+        // TODO: 31 January 2019 TEMPORARILY DISABLED FEATURE, REMOVED MENU FROM ATTACHMENT
         int[] imageResIds = {
-                R.drawable.tap_ic_documents_green_blue,
+//                R.drawable.tap_ic_documents_green_blue,
                 R.drawable.tap_ic_camera_green_blue,
                 R.drawable.tap_ic_gallery_green_blue,
-                R.drawable.tap_ic_audio_green_blue,
-                R.drawable.tap_ic_location_green_blue,
-                R.drawable.tap_ic_contact_green_blue
+//                R.drawable.tap_ic_audio_green_blue,
+//                R.drawable.tap_ic_location_green_blue,
+//                R.drawable.tap_ic_contact_green_blue
         };
 
         int[] titleResIds = {
-                R.string.document,
+//                R.string.document,
                 R.string.camera,
                 R.string.gallery,
-                R.string.audio,
-                R.string.location,
-                R.string.contact
+//                R.string.audio,
+//                R.string.location,
+//                R.string.contact
         };
 
         int[] ids = {
-                ID_DOCUMENT,
+//                ID_DOCUMENT,
                 ID_CAMERA,
                 ID_GALLERY,
-                ID_AUDIO,
-                ID_LOCATION,
-                ID_CONTACT
+//                ID_AUDIO,
+//                ID_LOCATION,
+//                ID_CONTACT
         };
 
         List<TAPAttachmentModel> attachMenus = new ArrayList<>();
-        for (int index = 0; index < 6; index++) {
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
             attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
         }
 
