@@ -1090,15 +1090,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onBubbleExpanded() {
-            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
-                rvMessageList.smoothScrollToPosition(0);
-            }
+        public void onMessageQuoteClicked(TAPMessageModel message) {
+            TapTalk.triggerMessageQuoteClicked(message);
         }
 
         @Override
         public void onOutsideClicked() {
             hideKeyboards();
+        }
+
+        @Override
+        public void onBubbleExpanded() {
+            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                rvMessageList.smoothScrollToPosition(0);
+            }
         }
 
         @Override
