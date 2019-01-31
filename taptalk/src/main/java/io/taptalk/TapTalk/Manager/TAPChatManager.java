@@ -639,7 +639,7 @@ public class TAPChatManager {
         }
     }
 
-    public void setQuotedMessage(String roomID, String quoteTitle, String quoteContent, String quoteImageURL) {
+    public void setQuotedMessage(String roomID, String quoteTitle, @Nullable String quoteContent, @Nullable String quoteImageURL) {
         // FIXME: 29 January 2019 CURRENTLY USING DUMMY MESSAGE MODEL TO SAVE QUOTED MESSAGE
         if (null == quoteTitle) {
             return;
@@ -647,10 +647,10 @@ public class TAPChatManager {
         TAPUserModel dummyUserWithName = new TAPUserModel();
         dummyUserWithName.setName(quoteTitle);
         HashMap<String, Object> quoteData = new HashMap<>();
-        quoteData.put("imageURL", quoteImageURL);
+        quoteData.put("imageURL", null == quoteImageURL ? "" : quoteImageURL);
         getQuotedMessages().put(roomID, TAPMessageModel.Builder(
                 // Dummy message model for quote
-                quoteContent, new TAPRoomModel(), -1, 0L, dummyUserWithName, "", quoteData));
+                null == quoteContent ? "" : quoteContent, new TAPRoomModel(), -1, 0L, dummyUserWithName, "", quoteData));
     }
 
     public TAPMessageModel getQuotedMessage() {

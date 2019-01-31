@@ -584,4 +584,30 @@ public class TapTalk {
             }
         });
     }
+
+    public static void openChatRoomWithUserID(
+            Activity activity,
+            String xcUserID,
+            TapTalkOpenChatRoomInterface listener) {
+        openChatRoomWithUserID(activity, xcUserID, null, null, null, null, null, listener);
+    }
+
+    public static void openChatRoomWithUserID(
+            Activity activity,
+            String xcUserID,
+            String prefilledText,
+            TapTalkOpenChatRoomInterface listener) {
+        openChatRoomWithUserID(activity, xcUserID, null, null, null, null, prefilledText, listener);
+    }
+
+    public static void openChatRoomWithUserID(
+            Activity activity,
+            String xcUserID,
+            String quoteTitle,
+            @Nullable String quoteContent,
+            @Nullable String quoteImageURL,
+            @Nullable HashMap<String, Object> userInfo,
+            TapTalkOpenChatRoomInterface listener) {
+        openChatRoomWithUserID(activity, xcUserID, quoteTitle, quoteContent, quoteImageURL, userInfo, null, listener);
+    }
 }
