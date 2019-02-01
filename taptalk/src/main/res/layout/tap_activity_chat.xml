@@ -132,6 +132,7 @@
             android:layout_marginEnd="14dp"
             android:layout_marginBottom="14dp"
             android:src="@drawable/tap_ic_verified"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
             app:layout_constraintEnd_toEndOf="@id/civ_room_image" />
 

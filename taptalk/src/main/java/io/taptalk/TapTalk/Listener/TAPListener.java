@@ -46,6 +46,5 @@ public abstract class TAPListener implements TapTalkInterface {
 
     @Override
     public void onMessageQuoteClicked(Activity activity, TAPMessageModel messageModel, HashMap<String, Object> userInfo) {
-        Log.e("TapListener", "onMessageQuoteClicked: " + userInfo.toString());
     }
 }

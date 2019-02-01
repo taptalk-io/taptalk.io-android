@@ -177,7 +177,6 @@ public class TAPApiManager {
         return hpRefresh.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
-                    Log.e(TAG, "call: retryWhen(), cause: 2 " + response.getStatus());
                     if (RESPONSE_SUCCESS == response.getStatus()) {
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));

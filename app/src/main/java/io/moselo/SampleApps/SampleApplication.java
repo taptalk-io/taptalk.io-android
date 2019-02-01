@@ -139,7 +139,6 @@ public class SampleApplication extends Application {
                 TAPListener);
         TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
         TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
-        TapTalk.setOpenTapTalkUserProfileByDefaultEnabled(false);
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

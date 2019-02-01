@@ -32,7 +32,6 @@ public class TAPOldDataManager {
                     });
             } else {
                 TAPDataManager.getInstance().saveLastDeleteTimestamp(currentTimestamp);
-                Log.e(TAG, "startAutoCleanProcess: updated");
             }
         }).start();
     }
@@ -65,7 +64,6 @@ public class TAPOldDataManager {
                 TAPDataManager.getInstance().deleteMessage(deleteMessageTempList, new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
-                        Log.e(TAG, "loopToCheckMessageAndExecuteDeleteQuery: deleted");
                         TAPDataManager.getInstance().saveLastDeleteTimestamp(System.currentTimeMillis());
                     }
                 });

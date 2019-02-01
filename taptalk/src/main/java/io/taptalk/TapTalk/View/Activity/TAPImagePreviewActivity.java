@@ -182,7 +182,6 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             }
 
             images.addAll(imageGalleryUris);
-            Log.e(TAG, "processImagesFromGallery: " );
 
             runOnUiThread(() -> {
                 pagerAdapter.notifyDataSetChanged();
