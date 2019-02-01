@@ -480,6 +480,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setOnBottom(true);
                     ivToBottom.setVisibility(View.INVISIBLE);
                     tvBadgeUnread.setVisibility(View.INVISIBLE);
+                    vm.clearUnreadMessages();
                 } else {
                     vm.setOnBottom(false);
                     ivToBottom.setVisibility(View.VISIBLE);
