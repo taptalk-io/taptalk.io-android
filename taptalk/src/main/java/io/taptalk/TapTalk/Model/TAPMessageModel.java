@@ -333,10 +333,16 @@ public class TAPMessageModel implements Parcelable {
         this.created = model.getCreated();
         this.user = model.getUser();
         this.data = model.getData();
+        this.quote = model.getQuote();
+        this.recipientID = model.getRecipientID();
+        this.replyTo = model.getReplyTo();
+        this.forwardFrom = model.getForwardFrom();
         this.isDeleted = model.getIsDeleted();
         this.isSending = model.getSending();
         this.isFailedSend = model.getFailedSend();
         this.updated = model.getUpdated();
+        this.deleted = model.getDeleted();
+        this.isHidden = model.getHidden();
         if (null != this.isDelivered && !this.isDelivered)
             this.isDelivered = model.getDelivered();
         if (null != this.isRead && !this.isRead)

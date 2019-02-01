@@ -210,7 +210,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvMessageBody.setText(item.getBody());
 
-            markUnreadForMessage(item);
+            markUnreadForMessage(item, myUserModel);
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
@@ -309,7 +309,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             }
 
-            markUnreadForMessage(item);
+            markUnreadForMessage(item, myUserModel);
             setProgress(item);
             setImageData(item);
 
@@ -514,6 +514,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             else items = new ArrayList<>();
             adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
 
+            markUnreadForMessage(item, myUserModel);
+
             rvProductList.setAdapter(adapter);
             rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
             if (rvProductList.getItemDecorationCount() > 0) {
@@ -546,6 +548,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvLogMessage.setText(TAPUtils.getInstance().toJsonString(item));
             //tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            markUnreadForMessage(item, myUserModel);
         }
     }
 
@@ -557,7 +560,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-
+            markUnreadForMessage(item, myUserModel);
         }
     }
 
@@ -1067,16 +1070,5 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         if (null == expandedBubble) return;
         expandedBubble.setExpanded(false);
         notifyItemChanged(getItems().indexOf(expandedBubble));
-    }
-
-    private void markUnreadForMessage(TAPMessageModel item) {
-        if ((null == item.getIsRead() || !item.getIsRead()) && !isMessageFromMySelf(item)
-                && (null != item.getSending() && !item.getSending())) {
-            item.updateReadMessage();
-            new Thread(() -> {
-                TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
-                TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
-            }).start();
-        }
     }
 }
