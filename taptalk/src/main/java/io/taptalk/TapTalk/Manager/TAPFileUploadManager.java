@@ -250,7 +250,6 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(String errorMessage, String localID) {
-                Log.e(TAG, "onError: " );
                 messageUploadFailed(context, messageModelWithUri, roomID);
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, localID);
@@ -333,7 +332,6 @@ public class TAPFileUploadManager {
         getUploadQueue(roomID).remove(0);
         //ini ngecek kalau kosong ga perlu jalanin lagi
         if (!isUploadQueueIsEmpty(roomID) || 0 < getUploadQueue(roomID).size()) {
-            Log.e(TAG, "uploadNextSequence: "+getUploadQueue(roomID).size() );
             uploadImage(context, roomID);
         }
     }

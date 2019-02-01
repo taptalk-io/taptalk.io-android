@@ -437,7 +437,6 @@ public class TapTalk {
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                Log.e(TAG, "openTapTalkUserProfile failed: " + errorMessage);
             }
         });
     }

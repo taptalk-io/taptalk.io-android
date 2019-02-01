@@ -38,12 +38,10 @@ public class TAPContactManager {
     }
 
     public TAPUserModel getUserData(String userID) {
-        Log.e(TAG, "getUserData: " + TAPUtils.getInstance().toJsonString(getUserDataMap().get(userID)));
         return getUserDataMap().get(userID);
     }
 
     public void updateUserDataMap(TAPUserModel user) {
-        Log.e(TAG, "updateUserDataMap: " + TAPUtils.getInstance().toJsonString(user));
         if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
             // Add new user to map
             user.setIsContact(0);
@@ -97,7 +95,6 @@ public class TAPContactManager {
     private TAPDatabaseListener<TAPUserModel> getAllUserDataListener = new TAPDatabaseListener<TAPUserModel>() {
         @Override
         public void onSelectFinished(List<TAPUserModel> entities) {
-            Log.e(TAG, "getAllUserData: " + entities.size());
             userDataMap = convertUserDataToMap(entities);
         }
     };
