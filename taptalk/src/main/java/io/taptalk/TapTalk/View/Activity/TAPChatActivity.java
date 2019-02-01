@@ -182,6 +182,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
+
+        bindViews();
         initRoom();
     }
 
@@ -299,12 +301,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void initRoom() {
         Log.e(TAG, "initRoom: ");
-        initViewModel();
-        initView();
-        initHelper();
-        initListener();
-        cancelNotificationWhenEnterRoom();
-        registerBroadcastManager();
+        if (initViewModel()) {
+            initView();
+            initHelper();
+            initListener();
+            cancelNotificationWhenEnterRoom();
+            registerBroadcastManager();
+        }
     }
 
     private void checkPermissions() {
@@ -326,28 +329,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    private boolean initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
-        if (null == vm.getRoom()) {
-            vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
-        }
-        if (null == vm.getMyUserModel()) {
-            vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
-        }
-        if (null == vm.getOtherUserModel()) {
-            vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
-        }
-
-        if (null == vm.getRoom()) {
-            Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
-            finish();
-            return false;
-        }
-        Log.e(TAG, "initViewModel room: " + TAPUtils.getInstance().toJsonString(vm.getRoom()));
-        return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
-    }
-
-    private void initView() {
+    private void bindViews() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
@@ -381,6 +363,30 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat = (EditText) findViewById(R.id.et_chat);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
+    }
+
+    private boolean initViewModel() {
+        vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
+        if (null == vm.getRoom()) {
+            vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
+        }
+        if (null == vm.getMyUserModel()) {
+            vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
+        }
+        if (null == vm.getOtherUserModel()) {
+            vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+        }
+
+        if (null == vm.getRoom()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+            return false;
+        }
+        Log.e(TAG, "initViewModel room: " + TAPUtils.getInstance().toJsonString(vm.getRoom()));
+        return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
+    }
+
+    private void initView() {
 
         getWindow().setBackgroundDrawable(null);
 
