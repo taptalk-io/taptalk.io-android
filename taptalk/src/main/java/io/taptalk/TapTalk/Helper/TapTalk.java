@@ -277,7 +277,7 @@ public class TapTalk {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             try {
-                tapTalk.triggerMessageQuoteClicked(activity, messageModel, messageModel.getData().get("userInfo"));
+                tapTalk.triggerMessageQuoteClicked(activity, messageModel, (HashMap<String, Object>) messageModel.getData().get("userInfo"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
