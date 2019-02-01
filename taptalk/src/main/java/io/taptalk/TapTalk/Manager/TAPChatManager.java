@@ -839,6 +839,9 @@ public class TAPChatManager {
             if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()))
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
+
+            Log.e(TAG, "receiveMessageFromSocket: "+newMessage.getBody()+" "+newMessage.getLocalID() );
+
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 
