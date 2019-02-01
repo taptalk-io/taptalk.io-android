@@ -299,15 +299,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void initRoom() {
         Log.e(TAG, "initRoom: ");
-        if (initViewModel()) {
-            // Do other methods if initViewModel succeeded
-            Log.e(TAG, "initRoom: initViewModel succeeded");
-            initView();
-            initHelper();
-            initListener();
-            cancelNotificationWhenEnterRoom();
-            registerBroadcastManager();
-        }
+        initViewModel();
+        initView();
+        initHelper();
+        initListener();
+        cancelNotificationWhenEnterRoom();
+        registerBroadcastManager();
     }
 
     private void checkPermissions() {
