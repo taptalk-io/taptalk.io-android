@@ -182,6 +182,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
+
+        bindViews();
         initRoom();
     }
 
@@ -299,12 +301,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void initRoom() {
         Log.e(TAG, "initRoom: ");
-        initViewModel();
-        initView();
-        initHelper();
-        initListener();
-        cancelNotificationWhenEnterRoom();
-        registerBroadcastManager();
+        if (initViewModel()) {
+            initView();
+            initHelper();
+            initListener();
+            cancelNotificationWhenEnterRoom();
+            registerBroadcastManager();
+        }
     }
 
     private void checkPermissions() {
@@ -326,28 +329,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    private boolean initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
-        if (null == vm.getRoom()) {
-            vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
-        }
-        if (null == vm.getMyUserModel()) {
-            vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
-        }
-        if (null == vm.getOtherUserModel()) {
-            vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
-        }
-
-        if (null == vm.getRoom()) {
-            Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
-            finish();
-            return false;
-        }
-        Log.e(TAG, "initViewModel room: " + TAPUtils.getInstance().toJsonString(vm.getRoom()));
-        return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
-    }
-
-    private void initView() {
+    private void bindViews() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
@@ -381,6 +363,30 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat = (EditText) findViewById(R.id.et_chat);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
+    }
+
+    private boolean initViewModel() {
+        vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
+        if (null == vm.getRoom()) {
+            vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
+        }
+        if (null == vm.getMyUserModel()) {
+            vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
+        }
+        if (null == vm.getOtherUserModel()) {
+            vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+        }
+
+        if (null == vm.getRoom()) {
+            Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
+            finish();
+            return false;
+        }
+        Log.e(TAG, "initViewModel room: " + TAPUtils.getInstance().toJsonString(vm.getRoom()));
+        return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
+    }
+
+    private void initView() {
 
         getWindow().setBackgroundDrawable(null);
 
@@ -635,6 +641,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
+                    Log.e(TAG, "rio:2 "+newID );
                     messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
@@ -689,8 +696,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            Log.e(TAG, "updateMessageFromSocket: "+message.getLocalID()+" "+message.getHidden() );
+            Log.e(TAG, "updateMessageFromSocket: "+position+" "+message.getLocalID()+" "+message.getHidden() );
             if (-1 != position) {
+                Log.e(TAG, "rio:1 "+message.getLocalID() );
                 vm.updateMessagePointer(message);
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
