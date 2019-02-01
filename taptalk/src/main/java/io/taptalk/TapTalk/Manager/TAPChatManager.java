@@ -819,7 +819,9 @@ public class TAPChatManager {
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
         // Receive message in active room
-        if (null != chatListeners && !chatListeners.isEmpty() && null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
+        if (null != chatListeners && !chatListeners.isEmpty() &&
+                ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
+                        || (newMessage.getRoom().getRoomID().equals(openRoom)))) {
             Log.e(TAG, "receiveMessageFromSocket: "+newMessage.getLocalID() );
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
