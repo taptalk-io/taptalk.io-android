@@ -8,8 +8,6 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -84,7 +82,6 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
-import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
@@ -103,7 +100,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_R
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
@@ -321,9 +317,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     .setPrimaryButtonTitle(getString(R.string.ok))
                     .setCancelable(false)
                     .setPrimaryButtonListener(v -> {
-                        ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK);
-                        TAPDataManager.getInstance().setWriteStoragePermissionRequested(true);
-                        }
+                                ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK);
+                                TAPDataManager.getInstance().setWriteStoragePermissionRequested(true);
+                            }
                     )
                     .show();
         }
@@ -480,7 +476,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Show/hide ivToBottom
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                if (messageLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
                     ivToBottom.setVisibility(View.INVISIBLE);
                 } else {
@@ -641,7 +637,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
-                    Log.e(TAG, "rio:2 "+newID );
+                    Log.e(TAG, "rio:2 " + newID);
                     messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
@@ -650,7 +646,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
-                    Log.e(TAG, "updateUnreadCount: 1" );
+                    Log.e(TAG, "updateUnreadCount: 1");
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -685,7 +681,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 } else {
                     // Message from other people is received when recycler is scrolled up
                     vm.addUnreadMessage(newMessage);
-                    Log.e(TAG, "updateUnreadCount: 2" );
+                    Log.e(TAG, "updateUnreadCount: 2");
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -696,9 +692,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            Log.e(TAG, "updateMessageFromSocket: "+position+" "+message.getLocalID()+" "+message.getHidden() );
+            Log.e(TAG, "updateMessageFromSocket: " + position + " " + message.getLocalID() + " " + message.getHidden());
             if (-1 != position) {
-                Log.e(TAG, "rio:1 "+message.getLocalID() );
+                Log.e(TAG, "rio:1 " + message.getLocalID());
                 vm.updateMessagePointer(message);
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
@@ -733,8 +729,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
     private void addAfterTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempAfterMessages) {
         String newID = newMessage.getLocalID();
+        int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID));
         runOnUiThread(() -> {
-            if (vm.getMessagePointer().containsKey(newID)) {
+            if (vm.getMessagePointer().containsKey(newID) || -1 != position) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
@@ -794,7 +791,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.INVISIBLE);
         vm.clearUnreadMessages();
-        Log.e(TAG, "updateUnreadCount: 3" );
+        Log.e(TAG, "updateUnreadCount: 3");
         updateUnreadCount();
     }
 
@@ -1166,7 +1163,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             message.setIsRead(true);
             vm.removeUnreadMessage(message.getLocalID());
-            Log.e(TAG, "updateUnreadCount: 4" );
+            Log.e(TAG, "updateUnreadCount: 4");
             updateUnreadCount();
         }
 
@@ -1412,7 +1409,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         }
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civOtherUserAvatar);
-                        }  else if (null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+                        } else if (null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civOtherUserAvatar);
                         } else {
                             civOtherUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
