@@ -635,6 +635,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
+                    Log.e(TAG, "rio:2 "+newID );
                     messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
@@ -689,8 +690,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            Log.e(TAG, "updateMessageFromSocket: "+message.getLocalID()+" "+message.getHidden() );
+            Log.e(TAG, "updateMessageFromSocket: "+position+" "+message.getLocalID()+" "+message.getHidden() );
             if (-1 != position) {
+                Log.e(TAG, "rio:1 "+message.getLocalID() );
                 vm.updateMessagePointer(message);
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
