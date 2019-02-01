@@ -575,6 +575,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             } else if (vm.getUnreadCount() > 0) {
                 tvBadgeUnread.setText(String.valueOf(vm.getUnreadCount()));
                 tvBadgeUnread.setVisibility(View.VISIBLE);
+            } else if (View.VISIBLE == ivToBottom.getVisibility()) {
+                ivToBottom.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -731,8 +733,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         String newID = newMessage.getLocalID();
         int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID));
         runOnUiThread(() -> {
-            if (vm.getMessagePointer().containsKey(newID) || -1 != position) {
+            if (vm.getMessagePointer().containsKey(newID)) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
+                Log.e(TAG, "addAfterTextMessage:2 "+newMessage.getCreated() );
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (!vm.getMessagePointer().containsKey(newID)) {
@@ -740,6 +743,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
                     vm.addMessagePointer(newMessage);
+                    Log.e(TAG, "addAfterTextMessage: "+newMessage.getCreated() );
                     //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                 }).start();
             }
