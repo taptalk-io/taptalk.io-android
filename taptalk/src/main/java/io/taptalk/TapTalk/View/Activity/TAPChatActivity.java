@@ -599,6 +599,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
+                    Log.e(TAG, "updateUnreadCount: 1" );
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -633,6 +634,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 } else {
                     // Message from other people is received when recycler is scrolled up
                     vm.addUnreadMessage(newMessage);
+                    Log.e(TAG, "updateUnreadCount: 2" );
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -740,6 +742,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.INVISIBLE);
         vm.clearUnreadMessages();
+        Log.e(TAG, "updateUnreadCount: 3" );
         updateUnreadCount();
     }
 
@@ -1104,6 +1107,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             message.setIsRead(true);
             vm.removeUnreadMessage(message.getLocalID());
+            Log.e(TAG, "updateUnreadCount: 4" );
             updateUnreadCount();
         }
 
