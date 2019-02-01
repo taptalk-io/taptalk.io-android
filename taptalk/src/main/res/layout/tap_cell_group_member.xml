@@ -27,6 +27,7 @@
         android:layout_height="22dp"
         android:layout_marginBottom="2dp"
         android:src="@drawable/tap_ic_close_red_circle"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
         app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
 

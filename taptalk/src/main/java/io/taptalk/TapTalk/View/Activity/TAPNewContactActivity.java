@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -53,6 +54,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private ProgressBar pbSearch, pbButton;
 
     private TAPNewContactViewModel vm;
+
+    private RequestManager glide;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +96,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         etSearch = findViewById(R.id.et_search);
         pbSearch = findViewById(R.id.pb_search);
         pbButton = findViewById(R.id.pb_button);
+
+        glide = Glide.with(this);
 
         etSearch.addTextChangedListener(contactSearchWatcher);
         etSearch.setOnEditorActionListener((textView, i, keyEvent) -> onSearchEditorClicked());
@@ -175,7 +180,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
+            glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
             civAvatar.setBackground(null);
         } else {
             civAvatar.setImageDrawable(null);
@@ -211,7 +216,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
+            glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
             civAvatar.setBackground(null);
         } else {
             civAvatar.setImageDrawable(null);
@@ -222,7 +227,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // Set cover image
         // TODO: 25 October 2018 CHECK AND LOAD COVER IMAGE
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getFullsize().isEmpty()) {
-            Glide.with(this).load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
+            glide.load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
             ivExpertCover.setBackground(null);
         } else {
             ivExpertCover.setImageDrawable(null);
@@ -233,8 +238,6 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         // TODO: 25 October 2018 SET CATEGORY
         if (null != vm.getSearchResult().getUserRole()) tvCategory.setText(vm.getSearchResult().getUserRole().getRoleName());
-        // TODO: 25 October 2018 TESTING
-        tvCategory.setText("Category");
 
         // Check if user is in my contacts
         tvButtonText.setVisibility(View.GONE);
@@ -245,10 +248,10 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private void showSearchResult() {
         // TODO: 25 October 2018 CHECK USER ROLE
-        if (null != vm.getSearchResult().getUserRole() && vm.getSearchResult().getUserRole().getCode().equals("1")) {
-            showUserView();
-        } else {
+        if (null != vm.getSearchResult().getUserRole() && vm.getSearchResult().getUserRole().getCode().equals("expert")) {
             showExpertView();
+        } else {
+            showUserView();
         }
     }
 
