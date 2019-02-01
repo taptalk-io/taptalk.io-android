@@ -391,6 +391,8 @@ public class TAPUtils {
             @Override
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity) {
+                    Log.e(TAG, "getUserFromXcUserID onDbSelectFinished: " + TAPUtils.getInstance().toJsonString(entity));
+                    TAPContactManager.getInstance().updateUserDataMap(entity);
                     listener.onSelectFinished(entity);
                 } else {
                     // Get user data from API
@@ -398,8 +400,10 @@ public class TAPUtils {
                         TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
-                                TAPContactManager.getInstance().updateUserDataMap(response.getUser());
-                                listener.onSelectFinished(response.getUser());
+                                TAPUserModel userResponse = response.getUser();
+                                Log.e(TAG, "getUserFromXcUserID onApiSuccess: " + TAPUtils.getInstance().toJsonString(userResponse));
+                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                listener.onSelectFinished(userResponse);
                             }
 
                             @Override
