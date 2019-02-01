@@ -72,7 +72,7 @@ public class TapTalk {
     public static TapTalk tapTalk;
     public static Context appContext;
     public static boolean isForeground;
-    public static boolean isOpenDefaultProfileEnabled = true;
+//    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
@@ -410,9 +410,9 @@ public class TapTalk {
         TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
     }
 
-    public static void setOpenTapTalkUserProfileByDefaultEnabled(boolean enabled) {
-        isOpenDefaultProfileEnabled = enabled;
-    }
+//    public static void setOpenTapTalkUserProfileByDefaultEnabled(boolean enabled) {
+//        isOpenDefaultProfileEnabled = enabled;
+//    }
 
     public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
         TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {

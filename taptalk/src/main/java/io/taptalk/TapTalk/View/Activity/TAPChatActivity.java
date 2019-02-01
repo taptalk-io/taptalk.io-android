@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -36,6 +37,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,15 +182,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
-
-        initViewModel();
-        initView();
-        initHelper();
-        initListener();
-        cancelNotificationWhenEnterRoom();
-        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
-                DownloadProgressLoading, DownloadFinish, DownloadFailed);
+        initRoom();
     }
 
     @Override
@@ -300,6 +297,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
      * =========================================================================================== *
      */
 
+    private void initRoom() {
+        Log.e(TAG, "initRoom: ");
+        if (initViewModel()) {
+            // Do other methods if initViewModel succeeded
+            Log.e(TAG, "initRoom: initViewModel succeeded");
+            initView();
+            initHelper();
+            initListener();
+            cancelNotificationWhenEnterRoom();
+            registerBroadcastManager();
+        }
+    }
+
     private void checkPermissions() {
         // Check and request write storage permission (only request once)
         if (!TAPDataManager.getInstance().isWriteStoragePermissionRequested() &&
@@ -319,22 +329,25 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    private void initViewModel() {
+    private boolean initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
-        vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
-        vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
-        vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+        if (null == vm.getRoom()) {
+            vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
+        }
+        if (null == vm.getMyUserModel()) {
+            vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
+        }
+        if (null == vm.getOtherUserModel()) {
+            vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+        }
 
         if (null == vm.getRoom()) {
             Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
             finish();
-        } else if (null == vm.getMyUserModel()) {
-            Toast.makeText(TapTalk.appContext, getString(R.string.error_my_user_not_found), Toast.LENGTH_SHORT).show();
-            finish();
-        } else if (null == vm.getOtherUserModel()) {
-            Toast.makeText(TapTalk.appContext, getString(R.string.error_other_user_not_found), Toast.LENGTH_SHORT).show();
-            finish();
+            return false;
         }
+        Log.e(TAG, "initViewModel room: " + TAPUtils.getInstance().toJsonString(vm.getRoom()));
+        return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
     }
 
     private void initView() {
@@ -381,10 +394,23 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
             // Load room image
-            glide.load(vm.getRoom().getRoomImage().getThumbnail()).into(civRoomImage);
+            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
+        } else if (null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+            // Load user avatar URL
+            // TODO: 1 February 2019 CHECK IF ROOM IS GROUP
+            loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage);
+            vm.getRoom().setRoomImage(vm.getOtherUserModel().getAvatarURL());
         } else {
-            // Use random color if image is empty
-            civRoomImage.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
+            // Use default profile picture if image is empty
+            civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+        }
+
+        // TODO: 1 February 2019 SET ROOM ICON FROM ROOM MODEL
+        if (null != vm.getOtherUserModel().getUserRole() && null != vm.getOtherUserModel().getUserRole().getRoleIconURL() && !vm.getOtherUserModel().getUserRole().getRoleIconURL().isEmpty()) {
+            glide.load(vm.getOtherUserModel().getUserRole().getRoleIconURL()).into(ivRoomIcon);
+            ivRoomIcon.setVisibility(View.VISIBLE);
+        } else {
+            ivRoomIcon.setVisibility(View.GONE);
         }
 
         // Set room status
@@ -498,6 +524,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
     }
 
+    private void registerBroadcastManager() {
+        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading
+                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
+                DownloadProgressLoading, DownloadFinish, DownloadFailed);
+    }
+
     private void closeActivity() {
         rvCustomKeyboard.setVisibility(View.GONE);
         onBackPressed();
@@ -520,6 +552,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 //            startActivity(intent);
 //            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
 //        }
+    }
+
+    private void loadProfilePicture(String image, ImageView imageView) {
+        glide.load(image).listener(new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                imageView.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                return false;
+            }
+        }).into(imageView);
     }
 
     private void updateUnreadCount() {
@@ -726,7 +773,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
             }
-            etChat.requestFocus();
             if (showKeyboard) {
                 TAPUtils.getInstance().showKeyboard(this, etChat);
             }
@@ -893,16 +939,23 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void callApiGetUserByUserID() {
+        Log.e(TAG, "callApiGetUserByUserID: ");
         new Thread(() -> {
             if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI())
                 TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
+                        Log.e(TAG, "callApiGetUserByUserID onSuccess: " + TAPUtils.getInstance().toJsonString(response.getUser()));
                         TAPUserModel userResponse = response.getUser();
                         TAPContactManager.getInstance().updateUserDataMap(userResponse);
                         TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(userResponse);
                         setChatRoomStatus(onlineStatus);
                         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(false);
+
+                        if (null == vm.getOtherUserModel()) {
+                            vm.setOtherUserModel(response.getUser());
+                            initRoom();
+                        }
                     }
                 });
         }).start();
@@ -1336,19 +1389,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.setMessages(models);
                     if (models.size() == 0) {
                         // Chat is empty
-                        // TODO: 24 September 2018 CHECK ROOM TYPE, PROFILE DESCRIPTION, CHANGE HIS/HER ACCORDING TO GENDER
+                        // TODO: 24 September 2018 CHECK ROOM TYPE
                         clEmptyChat.setVisibility(View.VISIBLE);
-                        tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an expert<br/>don't forget to check out his/her services!"));
-                        tvProfileDescription.setText(getResources().getString(R.string.empty_chat_text_to_see_product));
-                        if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
-                            glide.load(vm.getMyUserModel().getAvatarURL().getThumbnail()).into(civMyAvatar);
+                        // TODO: 1 February 2019 UPDATE WELCOME MESSAGE
+                        if (null != vm.getOtherUserModel().getUserRole() && vm.getOtherUserModel().getUserRole().getCode().equals("expert")) {
+                            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an Expert."));
+                            tvProfileDescription.setText("Hi, there! If you are looking for creative gifts for someone special, please check his/her services!");
                         } else {
-                            civMyAvatar.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getMyUserModel().getName()), PorterDuff.Mode.SRC_IN));
+                            tvChatEmptyGuide.setText("Are you looking for creative gifts?");
+                            tvProfileDescription.setText("Discuss with your friend and discover more about the creative gift in our lists.");
+                        }
+                        if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+                            loadProfilePicture(vm.getMyUserModel().getAvatarURL().getThumbnail(), civMyAvatar);
+                        } else {
+                            civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
                         }
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
-                            glide.load(vm.getRoom().getRoomImage().getThumbnail()).into(civOtherUserAvatar);
+                            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civOtherUserAvatar);
+                        }  else if (null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+                            loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civOtherUserAvatar);
                         } else {
-                            civOtherUserAvatar.setColorFilter(new PorterDuffColorFilter(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName()), PorterDuff.Mode.SRC_IN));
+                            civOtherUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
                         }
                         if (vm.isCustomKeyboardEnabled()) {
                             showCustomKeyboard();
