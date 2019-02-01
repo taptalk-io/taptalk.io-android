@@ -20,27 +20,58 @@ import io.taptalk.TapTalk.Helper.TapTalk;
  */
 
 public class TAPMessageModel implements Parcelable {
-    @Nullable @JsonProperty("messageID") @JsonAlias("id") private String messageID;
-    @NonNull @JsonProperty("localID") private String localID;
-    @Nullable @JsonProperty("filterID") private String filterID;
+    @Nullable
+    @JsonProperty("messageID")
+    @JsonAlias("id")
+    private String messageID;
+    @NonNull
+    @JsonProperty("localID")
+    private String localID;
+    @Nullable
+    @JsonProperty("filterID")
+    private String filterID;
     @JsonProperty("room") private TAPRoomModel room;
     @JsonProperty("type") private int type;
     @JsonProperty("body") private String body;
     @JsonProperty("created") private Long created;
     @JsonProperty("user") private TAPUserModel user;
     @JsonProperty("recipientID") private String recipientID;
-    @Nullable @JsonProperty("data") private HashMap<String, Object> data;
-    @Nullable @JsonProperty("quote") private TAPQuoteModel quote;
-    @Nullable @JsonProperty("replyTo") private TAPReplyToModel replyTo;
-    @Nullable @JsonProperty("forwardFrom") private TAPForwardFromModel forwardFrom;
-    @Nullable @JsonProperty("isRead") private Boolean isRead;
-    @Nullable @JsonProperty("isDelivered") private Boolean isDelivered;
-    @Nullable @JsonProperty("isHidden") private Boolean isHidden;
-    @Nullable @JsonProperty("isDeleted") private Boolean isDeleted;
-    @Nullable @JsonProperty("isSending") private Boolean isSending;
-    @Nullable @JsonProperty("isFailedSend") private Boolean isFailedSend;
-    @Nullable @JsonProperty("updated") private Long updated;
-    @Nullable @JsonProperty("deleted") private Long deleted;
+    @Nullable
+    @JsonProperty("data")
+    private HashMap<String, Object> data;
+    @Nullable
+    @JsonProperty("quote")
+    private TAPQuoteModel quote;
+    @Nullable
+    @JsonProperty("replyTo")
+    private TAPReplyToModel replyTo;
+    @Nullable
+    @JsonProperty("forwardFrom")
+    private TAPForwardFromModel forwardFrom;
+    @Nullable
+    @JsonProperty("isRead")
+    private Boolean isRead;
+    @Nullable
+    @JsonProperty("isDelivered")
+    private Boolean isDelivered;
+    @Nullable
+    @JsonProperty("isHidden")
+    private Boolean isHidden;
+    @Nullable
+    @JsonProperty("isDeleted")
+    private Boolean isDeleted;
+    @Nullable
+    @JsonProperty("isSending")
+    private Boolean isSending;
+    @Nullable
+    @JsonProperty("isFailedSend")
+    private Boolean isFailedSend;
+    @Nullable
+    @JsonProperty("updated")
+    private Long updated;
+    @Nullable
+    @JsonProperty("deleted")
+    private Long deleted;
     @JsonIgnore private String messageStatusText;
     @JsonIgnore private boolean isExpanded, isNeedAnimateSend, isAnimating;
 
@@ -83,7 +114,7 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel Builder(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data,null,null,null, false, true, false, false, false, false, created, null);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, null, null, null, false, true, false, false, false, false, created, null);
     }
 
     public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
@@ -342,7 +373,8 @@ public class TAPMessageModel implements Parcelable {
         this.isFailedSend = model.getFailedSend();
         this.updated = model.getUpdated();
         this.deleted = model.getDeleted();
-        this.isHidden = model.getHidden();
+        if ((null != this.isHidden && !this.isHidden) || null == this.isHidden)
+            this.isHidden = model.getHidden();
         if (null != this.isDelivered && !this.isDelivered)
             this.isDelivered = model.getDelivered();
         if (null != this.isRead && !this.isRead)
