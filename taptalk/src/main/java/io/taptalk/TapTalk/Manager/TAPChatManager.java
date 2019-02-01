@@ -894,6 +894,7 @@ public class TAPChatManager {
             return;
 
         insertToList(incomingMessages);
+        saveMessageToDatabase();
         incomingMessages.clear();
     }
 
