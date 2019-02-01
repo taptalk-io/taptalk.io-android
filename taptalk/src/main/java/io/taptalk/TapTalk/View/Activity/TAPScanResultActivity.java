@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -62,6 +63,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private TAPUserModel myUserModel;
     private TAPUserModel contactModel;
 
+    private RequestManager glide;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,8 +84,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         pbLoading = findViewById(R.id.pb_loading);
         pbAddLoading = findViewById(R.id.pb_add_loading);
         clContainer = findViewById(R.id.cl_container);
-        civMyUserAvatar = findViewById(R.id.civ_contact_avatar);
-        civTheirContactAvatar = findViewById(R.id.civ_my_avatar);
+        civMyUserAvatar = findViewById(R.id.civ_my_avatar);
+        civTheirContactAvatar = findViewById(R.id.civ_contact_avatar);
         llButton = findViewById(R.id.ll_button);
         llTextUsername = findViewById(R.id.ll_text_username);
         llAddSuccess = findViewById(R.id.ll_add_success);
@@ -94,6 +97,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         tvContactFullname = findViewById(R.id.tv_contact_fullname);
         tvContactUsername = findViewById(R.id.tv_contact_username);
         tvAddSuccess = findViewById(R.id.tv_add_success);
+
+        glide = Glide.with(this);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
 
@@ -109,18 +114,14 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         pbLoading.setVisibility(View.GONE);
         cvResult.setVisibility(View.VISIBLE);
         if (null != addedContactUserModel.getAvatarURL() && !addedContactUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
-            civTheirContactAvatar.setBackground(null);
+            glide.load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
         } else {
-            civTheirContactAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(addedContactUserModel.getName())));
+            civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
         if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
-            civMyUserAvatar.setBackground(null);
+            glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
         } else {
-            civMyUserAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(myUserModel.getName())));
+            civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
         tvContactFullname.setText(addedContactUserModel.getName());
         tvContactUsername.setText(addedContactUserModel.getUsername());
@@ -144,18 +145,14 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         pbLoading.setVisibility(View.GONE);
         contactModel = userModel;
         if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(userModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
-            civTheirContactAvatar.setBackground(null);
+            glide.load(userModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
         } else {
-            civTheirContactAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
+            civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
         if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(this).load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
-            civMyUserAvatar.setBackground(null);
+            glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
         } else {
-            civMyUserAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civTheirContactAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(myUserModel.getName())));
+            civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
         tvContactFullname.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());

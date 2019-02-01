@@ -14,7 +14,7 @@
         android:layout_marginTop="7dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:background="@drawable/tap_ic_documents_green_blue" />
+        tools:background="@drawable/tap_bg_circle_9b9b9b" />
 
     <LinearLayout
         android:id="@+id/ll_name_message"

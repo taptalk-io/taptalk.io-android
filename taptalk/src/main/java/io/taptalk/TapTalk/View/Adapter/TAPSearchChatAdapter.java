@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.View.Adapter;
 
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
