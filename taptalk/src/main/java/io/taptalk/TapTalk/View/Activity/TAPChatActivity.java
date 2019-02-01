@@ -731,11 +731,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
     private void addAfterTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempAfterMessages) {
         String newID = newMessage.getLocalID();
-        int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID));
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
-                Log.e(TAG, "addAfterTextMessage:2 "+newMessage.getCreated() );
+                Log.e(TAG, "addAfterTextMessage:2 "+newMessage.getCreated()+" "+newMessage.getBody()+" "+newID );
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (!vm.getMessagePointer().containsKey(newID)) {
@@ -743,7 +742,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
                     vm.addMessagePointer(newMessage);
-                    Log.e(TAG, "addAfterTextMessage: "+newMessage.getCreated() );
+                    Log.e(TAG, "addAfterTextMessage: "+newMessage.getCreated()+" "+newMessage.getBody()+" "+newID  );
                     //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                 }).start();
             }
