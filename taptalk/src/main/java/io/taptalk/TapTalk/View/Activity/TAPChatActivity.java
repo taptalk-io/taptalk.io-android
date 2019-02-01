@@ -689,8 +689,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
+            Log.e(TAG, "updateMessageFromSocket: "+message.getLocalID()+" "+message.getHidden() );
             if (-1 != position) {
-                new Thread(() -> vm.updateMessagePointer(message)).start();
+                vm.updateMessagePointer(message);
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
                 messageAdapter.notifyItemChanged(position);
