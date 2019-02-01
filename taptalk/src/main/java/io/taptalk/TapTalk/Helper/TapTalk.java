@@ -63,6 +63,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_D
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
@@ -277,7 +278,7 @@ public class TapTalk {
             throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
         } else {
             try {
-                tapTalk.triggerMessageQuoteClicked(activity, messageModel, (HashMap<String, Object>) messageModel.getData().get("userInfo"));
+                tapTalk.triggerMessageQuoteClicked(activity, messageModel, (HashMap<String, Object>) messageModel.getData().get(USER_INFO));
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -10,6 +10,15 @@ import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+
 public class TAPDataImageModel implements Parcelable {
     @Nullable @JsonProperty("fileID") private String fileID;
     @Nullable @JsonProperty("mediaType") private String mediaType;
@@ -42,14 +51,14 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     public TAPDataImageModel(HashMap<String, Object> imageDataMap) {
-        this.fileID = (String) imageDataMap.get("fileID");
-        this.mediaType = (String) imageDataMap.get("mediaType");
-        this.size = (Long) imageDataMap.get("size");
-        this.width = (Integer) imageDataMap.get("width");
-        this.height = (Integer) imageDataMap.get("height");
-        this.caption = (String) imageDataMap.get("caption");
-        this.fileUri = (String) imageDataMap.get("fileUri");
-        this.thumbnail = (String) imageDataMap.get("thumbnail");
+        this.fileID = (String) imageDataMap.get(FILE_ID);
+        this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
+        this.size = (Long) imageDataMap.get(IMAGE_SIZE);
+        this.width = (Integer) imageDataMap.get(IMAGE_WIDTH);
+        this.height = (Integer) imageDataMap.get(IMAGE_HEIGHT);
+        this.caption = (String) imageDataMap.get(CAPTION);
+        this.fileUri = (String) imageDataMap.get(FILE_URI);
+        this.thumbnail = (String) imageDataMap.get(THUMBNAIL);
     }
 
     public TAPDataImageModel() {
@@ -62,7 +71,7 @@ public class TAPDataImageModel implements Parcelable {
 
     public HashMap<String, Object> toHashMapWithoutFileUri() {
         HashMap<String, Object> dataMap = TAPUtils.getInstance().toHashMap(this);
-        dataMap.remove("fileUri");
+        dataMap.remove(FILE_URI);
         return dataMap;
     }
 

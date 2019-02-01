@@ -134,7 +134,7 @@ public class TAPUtils {
         try {
             return objectMapper.convertValue(fromObject, toObjectType);
         } catch (Exception e) {
-            Log.e(TAG, "convertObject: ",e );
+            Log.e(TAG, "convertObject: ", e);
             return null;
         }
     }

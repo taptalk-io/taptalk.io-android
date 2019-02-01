@@ -55,6 +55,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketStopTyping;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
@@ -65,7 +66,7 @@ public class TAPChatManager {
     private static TAPChatManager instance;
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, String> messageDrafts;
-    private HashMap<String, HashMap<String, Object>> userInfo; // TODO: 17 January 2019 DATA FROM USER WHEN OPENING ROOM FROM CLIENT APP, SAVE THIS TO DATA IN MESSAGE MODEL AS "userInfo" WHEN SENDING MESSAGE
+    private HashMap<String, HashMap<String, Object>> userInfo;
     private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
@@ -423,7 +424,7 @@ public class TAPChatManager {
         } else {
             HashMap<String, Object> data = new HashMap<>();
             if (null != getUserInfo()) {
-                data.put("userInfo", getUserInfo());
+                data.put(USER_INFO, getUserInfo());
             }
             return TAPMessageModel.BuilderWithQuotedMessage(
                     message,
@@ -480,7 +481,7 @@ public class TAPChatManager {
         } else {
             HashMap<String, Object> data = TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri));
             if (null != getUserInfo()) {
-                data.put("userInfo", getUserInfo());
+                data.put(USER_INFO, getUserInfo());
             }
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
