@@ -820,6 +820,7 @@ public class TAPChatManager {
 
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() && null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
+            Log.e(TAG, "receiveMessageFromSocket: "+newMessage.getLocalID() );
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
                 if (kSocketNewMessage.equals(eventName))
@@ -832,6 +833,7 @@ public class TAPChatManager {
         }
         // Receive message outside active room (not in room List)
         else if (null != chatListeners && !TAPNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+            Log.e(TAG, "receiveMessageFromSocket:2 "+newMessage.getLocalID() );
             if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()))
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
@@ -848,6 +850,7 @@ public class TAPChatManager {
         }
         // Receive message outside active room (in room List)
         else if (null != chatListeners && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+            Log.e(TAG, "receiveMessageFromSocket:3 "+newMessage.getLocalID() );
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 
