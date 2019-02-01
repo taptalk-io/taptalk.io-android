@@ -181,11 +181,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
-            civAvatar.setBackground(null);
         } else {
-            civAvatar.setImageDrawable(null);
-            civAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
+            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
 
         tvUserName.setText(vm.getSearchResult().getName());
@@ -201,7 +198,6 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.VISIBLE);
         civAvatar.setVisibility(View.VISIBLE);
-        ivAvatarIcon.setVisibility(View.VISIBLE);
         tvUserName.setVisibility(View.VISIBLE);
         tvCategory.setVisibility(View.VISIBLE);
         clButtonAction.setVisibility(View.VISIBLE);
@@ -217,22 +213,22 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
-            civAvatar.setBackground(null);
         } else {
-            civAvatar.setImageDrawable(null);
-            civAvatar.setBackground(getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-            civAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
+            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+        }
+
+        // Set avatar icon
+        if (null != vm.getSearchResult().getUserRole() && !vm.getSearchResult().getUserRole().getRoleIconURL().isEmpty()) {
+            glide.load(vm.getSearchResult().getUserRole().getRoleIconURL()).into(ivAvatarIcon);
+            ivAvatarIcon.setVisibility(View.VISIBLE);
+        } else {
+            ivAvatarIcon.setVisibility(View.GONE);
         }
 
         // Set cover image
         // TODO: 25 October 2018 CHECK AND LOAD COVER IMAGE
-        if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getFullsize().isEmpty()) {
-            glide.load(vm.getSearchResult().getAvatarURL().getFullsize()).into(ivExpertCover);
-            ivExpertCover.setBackground(null);
-        } else {
-            ivExpertCover.setImageDrawable(null);
-            ivExpertCover.setBackgroundColor(getResources().getColor(R.color.mediumPurple));
-        }
+        ivExpertCover.setImageDrawable(getDrawable(R.drawable.moselo_default_cover));
+        ivExpertCover.setBackground(null);
 
         tvUserName.setText(vm.getSearchResult().getName());
 
