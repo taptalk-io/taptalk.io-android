@@ -105,7 +105,7 @@ public class TAPFileDownloadManager {
                         saveImageToCacheAndCallListener(context, localID, fileID, bitmap, listener);
                     } catch (Exception e)  {
                         setDownloadFailed(localID, listener);
-                        Log.e(TAG, "onSuccess exception: " + e.getMessage());
+                        Log.e(TAG, "onSuccess exception: ", e);
                     }
                 }).start();
             }

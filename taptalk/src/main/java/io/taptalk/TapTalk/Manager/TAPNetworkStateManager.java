@@ -77,7 +77,7 @@ public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback 
     @Override
     public void onAvailable(Network network) {
         super.onAvailable(network);
-        Log.e("><<><", "onAvailable: " );
+        Log.e(TAG, "onAvailable: " );
         if (!listeners.isEmpty()) {
             for (TapTalkNetworkInterface listener : listeners) {
                 listener.onNetworkAvailable();
