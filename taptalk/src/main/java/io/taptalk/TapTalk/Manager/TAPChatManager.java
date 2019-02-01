@@ -810,8 +810,6 @@ public class TAPChatManager {
 
     private void receiveMessageFromSocket(HashMap<String, Object> newMessageMap, String eventName) {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
-        Log.d(TAG, "receiveMessageFromSocket: " + TAPUtils.getInstance().toJsonString(newMessage));
-        Log.e(TAG, "receiveMessageFromSocket: event name "+eventName+" "+newMessage.getRoom().getRoomID()+" "+newMessage.getLocalID() );
 
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
@@ -860,8 +858,6 @@ public class TAPChatManager {
                 else if (kSocketDeleteMessage.equals(eventName))
                     chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
             }
-        } else {
-            Log.e(TAG, "receiveMessageFromSocket: 2 "+newMessage.getLocalID() );
         }
 
         // Add to list delivered message

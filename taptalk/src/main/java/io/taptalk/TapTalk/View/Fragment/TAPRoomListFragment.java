@@ -526,7 +526,6 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
-            Log.e(TAG, "onError: " + error.getMessage());
             flSetupContainer.setVisibility(View.GONE);
             showNewChatButton();
         }
@@ -534,7 +533,6 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
-            Log.e(TAG, "onError: " + errorMessage);
             flSetupContainer.setVisibility(View.GONE);
             showNewChatButton();
         }

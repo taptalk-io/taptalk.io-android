@@ -37,7 +37,6 @@ public class MyFireMsgService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-        Log.e(TAG, "onNewToken: " + s);
         TapTalk.saveFirebaseToken(s);
     }
 }
