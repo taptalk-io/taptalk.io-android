@@ -18,9 +18,9 @@ android {
 
     buildTypes {
         release {
-            buildConfigField "String", "BASE_URL_API", '"https://hp-dev.moselo.com:8080/api/v1/"'
-            buildConfigField "String", "BASE_URL_SOCKET", '"https://hp-dev.moselo.com:8080/"'
-            buildConfigField "String", "BASE_WSS", '"wss://hp-dev.moselo.com:8080/pigeon"'
+            buildConfigField "String", "BASE_URL_API", '"https://hp-staging.moselo.com:8080/api/v1/"'
+            buildConfigField "String", "BASE_URL_SOCKET", '"https://hp-staging.moselo.com:8080/"'
+            buildConfigField "String", "BASE_WSS", '"wss://hp-staging.moselo.com:8080/pigeon"'
             minifyEnabled false
         }
         staging {
@@ -30,9 +30,9 @@ android {
             minifyEnabled false
         }
         dev {
-            buildConfigField "String", "BASE_URL_API", '"https://hp-dev.moselo.com:8080/api/v1/"'
-            buildConfigField "String", "BASE_URL_SOCKET", '"https://hp-dev.moselo.com:8080/"'
-            buildConfigField "String", "BASE_WSS", '"wss://hp-dev.moselo.com:8080/pigeon"'
+            buildConfigField "String", "BASE_URL_API", '"https://hp-staging.moselo.com:8080/api/v1/"'
+            buildConfigField "String", "BASE_URL_SOCKET", '"https://hp-staging.moselo.com:8080/"'
+            buildConfigField "String", "BASE_WSS", '"wss://hp-staging.moselo.com:8080/pigeon"'
             minifyEnabled false
         }
     }
