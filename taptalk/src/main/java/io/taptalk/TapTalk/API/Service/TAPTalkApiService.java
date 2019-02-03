@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.API.Service;
 
+import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
@@ -31,7 +32,6 @@ import retrofit2.http.POST;
 import rx.Observable;
 
 public interface TAPTalkApiService {
-    String BASE_URL = BuildConfig.BASE_URL_API;
     //String BASE_URL = "dev.taptalk.io:8080/api/v1/";
 
     @POST("server/auth_ticket/request")
