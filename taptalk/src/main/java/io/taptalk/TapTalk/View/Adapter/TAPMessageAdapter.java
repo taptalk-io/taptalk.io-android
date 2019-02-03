@@ -131,7 +131,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     public int getItemViewType(int position) {
         try {
             TAPMessageModel messageModel = getItemAt(position);
-            Log.e(TAG, "getItemViewType: " + messageModel.getHidden() + " " + messageModel.getLocalID());
             int messageType = 0;
             if (null != messageModel && null != messageModel.getHidden() && messageModel.getHidden()) {
                 // Return empty layout if item is hidden

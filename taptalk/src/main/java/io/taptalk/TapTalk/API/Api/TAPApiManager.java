@@ -16,7 +16,6 @@ import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
@@ -305,10 +304,8 @@ public class TAPApiManager {
     }
 
     public void downloadFile(String roomID, String localID, String fileID, Subscriber<ResponseBody> subscriber) {
-        new Thread(() -> {
-            TAPTalkDownloadApiService tapDownload = TAPApiConnection.getInstance().getTapDownload();
-            TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
-            executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
-        }).start();
+        TAPTalkDownloadApiService tapDownload = TAPApiConnection.getInstance().getTapDownload();
+        TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
+        executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }
 }
