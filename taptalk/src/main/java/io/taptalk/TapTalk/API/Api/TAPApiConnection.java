@@ -56,10 +56,14 @@ public class TAPApiConnection {
         OkHttpClient httpHpClientRefreshToken = buildHttpTapClient(USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientMultipartToken = buildHttpTapUploadClient(MULTIPART_CONTENT_TYPE);
 
-        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkApiService.BASE_URL);
-        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkSocketService.BASE_URL);
-        Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPTalkRefreshTokenService.BASE_URL);
-        Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPTalkMultipartApiService.BASE_URL);
+        //Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkApiService.BASE_URL);
+        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getBaseUrlApi());
+        //Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPTalkSocketService.BASE_URL);
+        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getBaseUrlSocket());
+        //Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPTalkRefreshTokenService.BASE_URL);
+        Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPApiManager.getBaseUrlApi());
+        //Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPTalkMultipartApiService.BASE_URL);
+        Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPApiManager.getBaseUrlApi());
 
         this.homingPigeon = homingPigeonAdapter.create(TAPTalkApiService.class);
         this.hpSocket = hpSocketAdapter.create(TAPTalkSocketService.class);
@@ -86,7 +90,8 @@ public class TAPApiConnection {
 
     public TAPTalkDownloadApiService getTapDownload() {
         OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN);
-        Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPTalkDownloadApiService.BASE_URL);
+        //Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPTalkDownloadApiService.BASE_URL);
+        Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPApiManager.getInstance().getBaseUrlApi());
         TAPTalkDownloadApiService tapDownload = tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
         return tapDownload;
     }
