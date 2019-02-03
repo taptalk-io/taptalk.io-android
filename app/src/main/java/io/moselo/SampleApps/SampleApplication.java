@@ -21,7 +21,12 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
+import io.taptalk.TaptalkSample.BuildConfig;
 import io.taptalk.TaptalkSample.R;
+
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentStaging;
 
 public class SampleApplication extends Application {
 
@@ -139,6 +144,13 @@ public class SampleApplication extends Application {
                 TAPListener);
         TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
         TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
+        if ("dev".equals(BuildConfig.BUILD_TYPE)) {
+            TapTalk.setTapTalkEnvironment(TapTalkEnvironmentDevelopment);
+        } else if ("staging".equals(BuildConfig.BUILD_TYPE)) {
+            TapTalk.setTapTalkEnvironment(TapTalkEnvironmentStaging);
+        } else {
+            TapTalk.setTapTalkEnvironment(TapTalkEnvironmentProduction);
+        }
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

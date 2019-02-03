@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -38,7 +39,7 @@ public class TAPConnectionManager {
     private String TAG = TAPConnectionManager.class.getSimpleName();
     private static TAPConnectionManager instance;
     private WebSocketClient webSocketClient;
-    private String webSocketEndpoint = BuildConfig.BASE_WSS;
+    @NonNull private String webSocketEndpoint = "wss://hp.moselo.com:8080/pigeon";
     //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
@@ -66,6 +67,15 @@ public class TAPConnectionManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @NonNull
+    public String getWebSocketEndpoint() {
+        return webSocketEndpoint;
+    }
+
+    public void setWebSocketEndpoint(@NonNull String webSocketEndpoint) {
+        this.webSocketEndpoint = webSocketEndpoint;
     }
 
     private void initWebSocketClient(URI webSocketUri, Map<String, String> header) {
@@ -173,7 +183,7 @@ public class TAPConnectionManager {
         if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
                 TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
             try {
-                webSocketUri = new URI(webSocketEndpoint);
+                webSocketUri = new URI(getWebSocketEndpoint());
                 Map<String, String> websocketHeader = new HashMap<>();
                 createHeaderForConnectWebSocket(websocketHeader);
                 initWebSocketClient(webSocketUri, websocketHeader);

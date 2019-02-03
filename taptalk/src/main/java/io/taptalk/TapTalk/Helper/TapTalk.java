@@ -30,6 +30,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
@@ -59,6 +60,15 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_API_DEVELOPMENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_API_PRODUCTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_API_STAGING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKET_DEVELOPMENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKET_PRODUCTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKET_STAGING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_DEVELOPMENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_PRODUCTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_STAGING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
@@ -66,6 +76,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentStaging;
 
 public class TapTalk {
     private static final String TAG = TapTalk.class.getSimpleName();
@@ -86,6 +99,12 @@ public class TapTalk {
             defaultUEH.uncaughtException(thread, throwable);
         }
     };
+
+    public enum TapTalkEnvironment {
+        TapTalkEnvironmentProduction,
+        TapTalkEnvironmentStaging,
+        TapTalkEnvironmentDevelopment
+    }
 
     public static TapTalk init(Context context, String appID, String appSecret, String userAgent, TAPListener tapListener) {
         return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, tapListener)) : tapTalk;
@@ -626,5 +645,21 @@ public class TapTalk {
             @Nullable HashMap<String, Object> userInfo,
             TapTalkOpenChatRoomInterface listener) {
         openChatRoomWithUserID(activity, xcUserID, quoteTitle, quoteContent, quoteImageURL, userInfo, null, listener);
+    }
+
+    public static void setTapTalkEnvironment(@NonNull TapTalkEnvironment environment) {
+        if (TapTalkEnvironmentProduction == environment) {
+            TAPApiManager.setBaseUrlApi(BASE_URL_API_PRODUCTION);
+            TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_PRODUCTION);
+            TAPConnectionManager.getInstance().setWebSocketEndpoint(BASE_WSS_PRODUCTION);
+        } else if (TapTalkEnvironmentStaging == environment) {
+            TAPApiManager.setBaseUrlApi(BASE_URL_API_STAGING);
+            TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_STAGING);
+            TAPConnectionManager.getInstance().setWebSocketEndpoint(BASE_WSS_STAGING);
+        } else if (TapTalkEnvironmentDevelopment == environment) {
+            TAPApiManager.setBaseUrlApi(BASE_URL_API_DEVELOPMENT);
+            TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_DEVELOPMENT);
+            TAPConnectionManager.getInstance().setWebSocketEndpoint(BASE_WSS_DEVELOPMENT);
+        }
     }
 }

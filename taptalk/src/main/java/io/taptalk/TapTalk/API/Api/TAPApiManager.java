@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.API.Api;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.File;
@@ -58,6 +59,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode
 
 public class TAPApiManager {
     private static final String TAG = TAPApiManager.class.getSimpleName();
+
+    //ini url buat api disimpen sesuai environment
+    @NonNull private static String BaseUrlApi = "https://hp.moselo.com:8080/api/v1/";
+    @NonNull private static String BaseUrlSocket = "https://hp.moselo.com:8080/";
+
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
@@ -86,6 +92,24 @@ public class TAPApiManager {
 
     public void setLogout(boolean logout) {
         isLogout = logout;
+    }
+
+    @NonNull
+    public static String getBaseUrlApi() {
+        return BaseUrlApi;
+    }
+
+    public static void setBaseUrlApi(@NonNull String baseUrlApi) {
+        BaseUrlApi = baseUrlApi;
+    }
+
+    @NonNull
+    public static String getBaseUrlSocket() {
+        return BaseUrlSocket;
+    }
+
+    public static void setBaseUrlSocket(@NonNull String baseUrlSocket) {
+        BaseUrlSocket = baseUrlSocket;
     }
 
     private Observable.Transformer ioToMainThreadSchedulerTransformer
