@@ -8,7 +8,6 @@ import retrofit2.http.GET;
 import rx.Observable;
 
 public interface TAPTalkSocketService {
-    String BASE_URL = TAPApiManager.getBaseUrlSocket();
 
     @GET("pigeon?check=1")
     Observable<TAPBaseResponse<TAPErrorModel>> validateAccessToken();

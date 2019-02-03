@@ -8,7 +8,6 @@ import retrofit2.http.POST;
 import rx.Observable;
 
 public interface TAPTalkRefreshTokenService {
-    String BASE_URL = TAPApiManager.getBaseUrlApi();
 
     @POST("auth/access_token/refresh")
     Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshAccessToken();

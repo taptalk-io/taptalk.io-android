@@ -10,7 +10,6 @@ import retrofit2.http.POST;
 import rx.Observable;
 
 public interface TAPTalkMultipartApiService {
-    String BASE_URL = TAPApiManager.getBaseUrlApi();
 
     @POST("chat/file/upload")
     Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Body RequestBody uploadFile);

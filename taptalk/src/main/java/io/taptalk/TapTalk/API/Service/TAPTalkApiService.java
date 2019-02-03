@@ -32,7 +32,6 @@ import retrofit2.http.POST;
 import rx.Observable;
 
 public interface TAPTalkApiService {
-    String BASE_URL = TAPApiManager.getBaseUrlApi();
     //String BASE_URL = "dev.taptalk.io:8080/api/v1/";
 
     @POST("server/auth_ticket/request")

@@ -10,7 +10,6 @@ import retrofit2.http.POST;
 import rx.Observable;
 
 public interface TAPTalkDownloadApiService {
-    String BASE_URL = TAPApiManager.getBaseUrlApi();
 
     @POST("chat/file/download")
     Observable<ResponseBody> downloadFile(@Body TAPFileDownloadRequest request,
