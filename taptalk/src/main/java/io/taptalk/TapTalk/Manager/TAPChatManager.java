@@ -815,7 +815,7 @@ public class TAPChatManager {
             waitingResponses.remove(newMessage.getLocalID());
 
         Log.e(TAG, "receiveMessageFromSocket: " + newMessage.getLocalID());
-        Log.e(TAG, "receiveMessageFromSocket: " + TAPUtils.getInstance().toJsonString(newMessage.getData()));
+        Log.e(TAG, "receiveMessageFromSocket: " + TAPUtils.getInstance().toJsonString(newMessage));
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
