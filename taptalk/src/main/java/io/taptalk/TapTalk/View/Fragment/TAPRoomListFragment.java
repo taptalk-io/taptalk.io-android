@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +31,6 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
-import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -265,12 +262,14 @@ public class TAPRoomListFragment extends Fragment {
 
     //ini adalah fungsi yang di panggil pertama kali pas onResume
     private void viewLoadedSequence() {
-        if (TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
+        if (TAPRoomListViewModel.isShouldNotLoadFromAPI() && null != TAPChatManager.getInstance().getActiveUser()) {
             //selama di apps (foreground) ga perlu panggil API, ambil local dari database aja
             TAPDataManager.getInstance().getRoomList(true, dbListener);
-        } else {
+        } else if (null != TAPChatManager.getInstance().getActiveUser()) {
             //kalau kita dari background atau pertama kali buka apps, kita baru jalanin full cycle
             runFullRefreshSequence();
+        } else {
+            TapTalk.refreshTokenExpired();
         }
     }
 
