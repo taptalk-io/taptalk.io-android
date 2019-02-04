@@ -296,7 +296,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
      */
 
     private void initRoom() {
-        Log.e(TAG, "initRoom: ");
+        glide = Glide.with(this);
         if (initViewModel()) {
             initView();
             initHelper();
@@ -385,8 +385,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void initView() {
 
         getWindow().setBackgroundDrawable(null);
-
-        glide = Glide.with(this);
 
         // Set room name
         tvRoomName.setText(vm.getRoom().getRoomName());
