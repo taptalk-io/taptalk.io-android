@@ -109,7 +109,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             else {
                 tvProductDescription.setText(item.getDescription());
             }
-            if (!item.getRating().equals("0.0")) {
+            if (!item.getRating().equals("0.0") && !item.getRating().equals("0") && !item.getRating().equals("")) {
                 // Show rating
                 String ratingString = item.getRating();
                 ivRatingIcon.setVisibility(View.VISIBLE);
