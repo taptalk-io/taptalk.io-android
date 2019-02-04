@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -165,38 +164,34 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
     }
 
     private void processImagesFromGallery(Intent data) {
-        new Thread(() -> {
-            if (null == data) {
-                return;
-            }
+        if (null == data) {
+            return;
+        }
 
-            ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
+        ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
 
-            ClipData clipData = data.getClipData();
-            if (null != clipData) {
-                //ini buat lebih dari 1 image selection
-                TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, false);
-            } else {
-                //ini buat 1 image selection
-                imageGalleryUris.add(TAPImagePreviewModel.Builder(data.getData(), false));
-            }
+        ClipData clipData = data.getClipData();
+        if (null != clipData) {
+            //ini buat lebih dari 1 image selection
+            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, false);
+        } else {
+            //ini buat 1 image selection
+            imageGalleryUris.add(TAPImagePreviewModel.Builder(data.getData(), false));
+        }
 
-            images.addAll(imageGalleryUris);
-
-            runOnUiThread(() -> {
-                pagerAdapter.notifyDataSetChanged();
-                if (1 < images.size()) {
-                    tvMultipleImageIndicator.setText((lastIndex + 1) + " of " + images.size());
-                    tvMultipleImageIndicator.setVisibility(View.VISIBLE);
-                    rvImageThumbnail.setVisibility(View.VISIBLE);
-                    rvImageThumbnail.setAdapter(adapter);
-                    rvImageThumbnail.setHasFixedSize(false);
-                    rvImageThumbnail.setLayoutManager(new LinearLayoutManager(TAPImagePreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
-                } else {
-                    adapter.notifyDataSetChanged();
-                }
-            });
-        }).start();
+        images.addAll(imageGalleryUris);
+            
+        pagerAdapter.notifyDataSetChanged();
+        if (1 < images.size()) {
+            tvMultipleImageIndicator.setText((lastIndex + 1) + " of " + images.size());
+            tvMultipleImageIndicator.setVisibility(View.VISIBLE);
+            rvImageThumbnail.setVisibility(View.VISIBLE);
+            rvImageThumbnail.setAdapter(adapter);
+            rvImageThumbnail.setHasFixedSize(false);
+            rvImageThumbnail.setLayoutManager(new LinearLayoutManager(TAPImagePreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
+        } else {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void deleteImageProcess(int position) {
