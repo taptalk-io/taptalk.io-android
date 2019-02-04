@@ -24,7 +24,9 @@ public class TAPRoomListViewModel extends AndroidViewModel {
 
     public TAPRoomListViewModel(@NonNull Application application) {
         super(application);
-        myUserID = TAPDataManager.getInstance().getActiveUser().getUserID();
+        myUserID = null != TAPDataManager.getInstance().getActiveUser() ?
+                TAPDataManager.getInstance().getActiveUser().getUserID()
+                : null;
     }
 
     public List<TAPRoomListModel> getRoomList() {
