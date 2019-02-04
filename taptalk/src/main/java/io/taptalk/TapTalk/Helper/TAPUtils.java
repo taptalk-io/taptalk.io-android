@@ -297,6 +297,7 @@ public class TAPUtils {
     }
 
     private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping) {
+        dismissKeyboard((Activity) context);
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(K_ROOM, roomModel);
