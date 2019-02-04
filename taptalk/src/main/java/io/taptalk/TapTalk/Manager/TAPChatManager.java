@@ -23,7 +23,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
-import io.taptalk.TapTalk.Helper.DiskLruCache.Utils;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -815,6 +814,8 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
+        Log.e(TAG, "receiveMessageFromSocket: " + newMessage.getLocalID());
+        Log.e(TAG, "receiveMessageFromSocket: " + TAPUtils.getInstance().toJsonString(newMessage.getData()));
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
@@ -822,7 +823,6 @@ public class TAPChatManager {
         if (null != chatListeners && !chatListeners.isEmpty() &&
                 ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
                         || (newMessage.getRoom().getRoomID().equals(openRoom)))) {
-            Log.e(TAG, "receiveMessageFromSocket: "+newMessage.getLocalID() );
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
                 if (kSocketNewMessage.equals(eventName))
@@ -839,9 +839,6 @@ public class TAPChatManager {
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
 
-            Log.e(TAG, "receiveMessageFromSocket2: "+newMessage.getBody()+" "+newMessage.getLocalID() );
-            Log.e(TAG, "receiveMessageFromSocket2: "+incomingMessages.containsKey(newMessage.getLocalID())+" "+incomingMessages.containsValue(newMessage) );
-
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 
@@ -855,7 +852,7 @@ public class TAPChatManager {
         }
         // Receive message outside active room (in room List)
         else if (null != chatListeners && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            Log.e(TAG, "receiveMessageFromSocket:3 "+newMessage.getLocalID() );
+            Log.e(TAG, "receiveMessageFromSocket:3 " + newMessage.getLocalID());
             for (TAPChatListener chatListener : chatListeners) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 
@@ -893,7 +890,7 @@ public class TAPChatManager {
         if (0 == incomingMessages.size())
             return;
 
-        insertToList(incomingMessages);
+        insertToList(new LinkedHashMap<>(incomingMessages));
         saveMessageToDatabase();
         incomingMessages.clear();
     }
@@ -908,7 +905,7 @@ public class TAPChatManager {
         if (0 == waitingResponses.size())
             return;
 
-        insertToList(waitingResponses);
+        insertToList(new LinkedHashMap<>(waitingResponses));
         waitingResponses.clear();
     }
 
@@ -916,7 +913,7 @@ public class TAPChatManager {
         if (0 == waitingUploadProgress.size())
             return;
 
-        insertToList(waitingUploadProgress);
+        insertToList(new LinkedHashMap<>(waitingUploadProgress));
         waitingUploadProgress.clear();
     }
 
@@ -952,7 +949,7 @@ public class TAPChatManager {
     public void saveMessageToDatabase() {
         if (0 == saveMessages.size()) return;
 
-        TAPDataManager.getInstance().insertToDatabase(saveMessages, true);
+        TAPDataManager.getInstance().insertToDatabase(new ArrayList<>(saveMessages), true);
     }
 
     public List<TAPMessageEntity> getSaveMessages() {
