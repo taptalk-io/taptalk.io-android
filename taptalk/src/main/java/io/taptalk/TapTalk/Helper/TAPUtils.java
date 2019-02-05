@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -134,7 +133,7 @@ public class TAPUtils {
         try {
             return objectMapper.convertValue(fromObject, toObjectType);
         } catch (Exception e) {
-            Log.e(TAG, "convertObject: ",e );
+            Log.e(TAG, "convertObject: ", e);
             return null;
         }
     }
@@ -297,7 +296,9 @@ public class TAPUtils {
     }
 
     private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping) {
-        dismissKeyboard((Activity) context);
+        Activity activity = (Activity) context;
+
+        activity.runOnUiThread(() -> dismissKeyboard((Activity) context));
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(K_ROOM, roomModel);
@@ -307,7 +308,7 @@ public class TAPUtils {
         }
         context.startActivity(intent);
         if (context instanceof Activity) {
-            ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+            activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         }
     }
 
