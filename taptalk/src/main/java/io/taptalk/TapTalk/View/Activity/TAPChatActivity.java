@@ -1417,7 +1417,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         } else {
                             civOtherUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
                         }
-                        if (vm.isCustomKeyboardEnabled()) {
+                        if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
                             showCustomKeyboard();
                         }
                     } else {
