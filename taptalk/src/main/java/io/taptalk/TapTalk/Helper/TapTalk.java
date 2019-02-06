@@ -30,7 +30,6 @@ import java.util.List;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
@@ -88,6 +87,7 @@ public class TapTalk {
     public static Context appContext;
     public static boolean isForeground;
 //    public static boolean isOpenDefaultProfileEnabled = true;
+    private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
 
@@ -106,6 +106,12 @@ public class TapTalk {
         TapTalkEnvironmentProduction,
         TapTalkEnvironmentStaging,
         TapTalkEnvironmentDevelopment
+    }
+
+    public enum TapTalkScreenOrientation {
+        TapTalkOrientationDefault,
+        TapTalkOrientationPortrait,
+        TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
     public static TapTalk init(Context context, String appID, String appSecret, String userAgent, TAPListener tapListener) {
@@ -434,6 +440,14 @@ public class TapTalk {
 //    public static void setOpenTapTalkUserProfileByDefaultEnabled(boolean enabled) {
 //        isOpenDefaultProfileEnabled = enabled;
 //    }
+
+    public static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
+        TapTalk.screenOrientation = orientation;
+    }
+
+    public static TapTalkScreenOrientation getTapTalkScreenOrientation() {
+        return TapTalk.screenOrientation;
+    }
 
     public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
         TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
