@@ -454,6 +454,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
+        // TODO: 1 February 2019 UPDATE WELCOME MESSAGE
+        if (null != vm.getOtherUserModel().getUserRole() && vm.getOtherUserModel().getUserRole().getCode().equals("expert")) {
+            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an Expert."));
+            tvProfileDescription.setText("Hi, there! If you are looking for creative gifts for someone special, please check his/her services!");
+        } else {
+            tvChatEmptyGuide.setText("Are you looking for creative gifts?");
+            tvProfileDescription.setText("Discuss with your friend and discover more about the creative gift in our lists.");
+        }
+
         //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
             @Override
@@ -1396,14 +1405,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         // Chat is empty
                         // TODO: 24 September 2018 CHECK ROOM TYPE
                         clEmptyChat.setVisibility(View.VISIBLE);
-                        // TODO: 1 February 2019 UPDATE WELCOME MESSAGE
-                        if (null != vm.getOtherUserModel().getUserRole() && vm.getOtherUserModel().getUserRole().getCode().equals("expert")) {
-                            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an Expert."));
-                            tvProfileDescription.setText("Hi, there! If you are looking for creative gifts for someone special, please check his/her services!");
-                        } else {
-                            tvChatEmptyGuide.setText("Are you looking for creative gifts?");
-                            tvProfileDescription.setText("Discuss with your friend and discover more about the creative gift in our lists.");
-                        }
+
                         if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getMyUserModel().getAvatarURL().getThumbnail(), civMyAvatar);
                         } else {
