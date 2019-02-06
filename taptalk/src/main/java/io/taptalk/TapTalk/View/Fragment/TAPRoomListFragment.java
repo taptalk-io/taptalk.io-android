@@ -1,12 +1,15 @@
 package io.taptalk.TapTalk.View.Fragment;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -26,8 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
@@ -54,6 +59,8 @@ import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 
 public class TAPRoomListFragment extends Fragment {
 
@@ -107,6 +114,7 @@ public class TAPRoomListFragment extends Fragment {
         TAPChatManager.getInstance().saveMessageToDatabase();
         updateQueryRoomListFromBackground();
         addNetworkListener();
+        TAPBroadcastManager.register(getContext(), receiver, REFRESH_TOKEN_RENEWED);
         new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
     }
 
@@ -114,6 +122,7 @@ public class TAPRoomListFragment extends Fragment {
     public void onPause() {
         super.onPause();
         TAPNotificationManager.getInstance().setRoomListAppear(false);
+        TAPBroadcastManager.unregister(getContext(), receiver);
         removeNetworkListener();
     }
 
@@ -652,4 +661,16 @@ public class TAPRoomListFragment extends Fragment {
             }
         }).start();
     }
+
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            switch (action) {
+                case REFRESH_TOKEN_RENEWED :
+                    viewLoadedSequence();
+                    break;
+            }
+        }
+    };
 }
