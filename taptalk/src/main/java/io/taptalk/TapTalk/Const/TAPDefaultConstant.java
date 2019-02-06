@@ -55,6 +55,20 @@ public class TAPDefaultConstant {
         public static final int TYPE_EMPTY = 9999;
     }
 
+    public static final class MessageData {
+        public static final String ITEMS = "items";
+        public static final String FILE_ID = "fileID";
+        public static final String IMAGE_URL = "imageURL";
+        public static final String MEDIA_TYPE = "mediaType";
+        public static final String IMAGE_SIZE = "size";
+        public static final String IMAGE_WIDTH = "width";
+        public static final String IMAGE_HEIGHT = "height";
+        public static final String CAPTION = "caption";
+        public static final String THUMBNAIL = "thumbnail";
+        public static final String FILE_URI = "fileUri";
+        public static final String USER_INFO = "userInfo";
+    }
+
     public static final class Extras {
         public static final String ROOM_NAME = "kTAPExtraRoomName";
         public static final String MY_ID = "kTAPExtraMyID";
@@ -182,10 +196,6 @@ public class TAPDefaultConstant {
         public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com:8080/pigeon";
     }
 
-    public static final class MessageData {
-        public static final String ITEMS = "items";
-    }
-
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kTAPAccessToken";
@@ -221,4 +231,5 @@ public class TAPDefaultConstant {
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
+    public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
 }
