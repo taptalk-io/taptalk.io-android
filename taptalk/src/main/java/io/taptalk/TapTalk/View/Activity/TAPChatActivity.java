@@ -99,6 +99,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -378,7 +380,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             finish();
             return false;
         }
-        Log.e(TAG, "initViewModel room: " + TAPUtils.getInstance().toJsonString(vm.getRoom()));
         return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
     }
 
@@ -764,12 +765,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get("fileID")));
+                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID)));
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get("imageURL")) {
+            } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
                 // Unknown message type
-                glide.load((String) message.getData().get("imageURL")).into(rcivQuoteImage);
+                glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(1);
@@ -945,13 +946,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void callApiGetUserByUserID() {
-        Log.e(TAG, "callApiGetUserByUserID: ");
         new Thread(() -> {
             if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI())
                 TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
-                        Log.e(TAG, "callApiGetUserByUserID onSuccess: " + TAPUtils.getInstance().toJsonString(response.getUser()));
                         TAPUserModel userResponse = response.getUser();
                         TAPContactManager.getInstance().updateUserDataMap(userResponse);
                         TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(userResponse);
