@@ -136,7 +136,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 case CHAT:
                     if (!myID.equals(item.getUserID())) {
                         // Save user data to contact manager
-                        TAPContactManager.getInstance().updateUserDataMap(item);
+                        //TAPContactManager.getInstance().updateUserDataMap(item);
 
                         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
                         TAPUtils.getInstance().startChatActivity(
