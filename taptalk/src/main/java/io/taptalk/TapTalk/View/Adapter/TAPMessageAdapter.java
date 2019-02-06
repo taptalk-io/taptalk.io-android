@@ -632,6 +632,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setVisibility(View.GONE);
         } else if (null != ivReply) {
             tvMessageStatus.setVisibility(View.VISIBLE);
+            tvMessageStatus.post(() -> chatListener.onLayoutLoaded(item));
             ivReply.setVisibility(View.VISIBLE);
         }
         animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
