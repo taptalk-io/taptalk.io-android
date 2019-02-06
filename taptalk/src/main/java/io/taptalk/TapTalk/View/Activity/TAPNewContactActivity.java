@@ -377,19 +377,11 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            if (error.getCode().equals(String.valueOf(API_PARAMETER_VALIDATION_FAILED))) {
+//            if (error.getCode().equals(String.valueOf(API_PARAMETER_VALIDATION_FAILED))) {
                 // User not found
                 showResultNotFound();
                 endLoading();
-            } else {
-                // Other errors
-                new TapTalkDialog.Builder(TAPNewContactActivity.this)
-                        .setTitle(getString(R.string.error))
-                        .setMessage(error.getMessage())
-                        .setPrimaryButtonTitle(getString(R.string.ok))
-                        .setPrimaryButtonListener(true, v -> endLoading())
-                        .show();
-            }
+//            }
         }
 
         @Override
