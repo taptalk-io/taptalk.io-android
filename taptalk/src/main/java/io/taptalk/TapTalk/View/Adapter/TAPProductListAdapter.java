@@ -37,8 +37,13 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
     public TAPProductListAdapter(List<TAPProductModel> productModels, TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
         setItems(productModels);
 
-        this.recipientXcUserID = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
-                .getOtherUserIdFromRoom(TAPChatManager.getInstance().getActiveRoom().getRoomID())).getXcUserID();
+        if (null == TAPChatManager.getInstance().getActiveRoom()) {
+            this.recipientXcUserID = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
+                    .getOtherUserIdFromRoom(TAPChatManager.getInstance().getOpenRoom())).getXcUserID();
+        } else {
+            this.recipientXcUserID = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
+                    .getOtherUserIdFromRoom(TAPChatManager.getInstance().getActiveRoom().getRoomID())).getXcUserID();
+        }
 
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;

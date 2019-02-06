@@ -475,7 +475,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Show/hide ivToBottom
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                if (messageLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
                     ivToBottom.setVisibility(View.INVISIBLE);
                     tvBadgeUnread.setVisibility(View.INVISIBLE);
@@ -1188,10 +1188,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onLayoutLoaded(TAPMessageModel message) {
-            if (message.getUser().getUserID().equals(vm.getMyUserModel().getUserID())
-                    || messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+            if (/*message.getUser().getUserID().equals(vm.getMyUserModel().getUserID()) ||*/
+                    messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                 // Scroll recycler to bottom when image finished loading if message is sent by user or recycler is on bottom
-                rvMessageList.scrollToPosition(0);
+                rvMessageList.smoothScrollToPosition(0);
             }
         }
 
