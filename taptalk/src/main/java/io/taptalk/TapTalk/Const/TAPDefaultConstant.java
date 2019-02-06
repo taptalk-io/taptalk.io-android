@@ -231,4 +231,5 @@ public class TAPDefaultConstant {
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
+    public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
 }

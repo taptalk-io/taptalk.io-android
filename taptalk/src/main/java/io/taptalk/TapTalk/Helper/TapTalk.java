@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
@@ -46,6 +47,7 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -72,10 +74,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_D
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
@@ -86,10 +89,11 @@ public class TapTalk {
     public static TapTalk tapTalk;
     public static Context appContext;
     public static boolean isForeground;
-//    public static boolean isOpenDefaultProfileEnabled = true;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
+    //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
+    private static boolean isRefreshTokenExpired;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
     private List<TAPListener> tapListeners = new ArrayList<>();
@@ -207,6 +211,12 @@ public class TapTalk {
                     TAPApiManager.getInstance().setLogout(false);
                     TAPConnectionManager.getInstance().connect();
                     loginInterface.onLoginSuccess();
+
+                    if (isRefreshTokenExpired) {
+                        isRefreshTokenExpired = false;
+                        Intent intent = new Intent(REFRESH_TOKEN_RENEWED);
+                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                    }
                 }
 
                 @Override
@@ -250,6 +260,7 @@ public class TapTalk {
             TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
             TAPDataManager.getInstance().deleteAllPreference();
             TAPDataManager.getInstance().deleteAllFromDatabase();
+            isRefreshTokenExpired = true;
 
             for (TAPListener listener : getTapTalkListeners()) {
                 listener.onRefreshTokenExpiredOrInvalid();
@@ -676,5 +687,19 @@ public class TapTalk {
             TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_DEVELOPMENT);
             TAPConnectionManager.getInstance().setWebSocketEndpoint(BASE_WSS_DEVELOPMENT);
         }
+    }
+
+    public static void refreshActiveUser() {
+        new Thread(() -> {
+            if (null != TAPChatManager.getInstance().getActiveUser()) {
+                TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
+                    @Override
+                    public void onSuccess(TAPGetUserResponse response) {
+                        TAPDataManager.getInstance().saveActiveUser(response.getUser());
+                    }
+                });
+            }
+        }).start();
+
     }
 }
