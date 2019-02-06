@@ -32,6 +32,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
@@ -69,6 +70,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImageDetail.IMAGE_FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -349,16 +356,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item.getData()) {
                 return;
             }
-            Integer widthDimension = (Integer) item.getData().get("width");
-            Integer heightDimension = (Integer) item.getData().get("height");
-            String imageUri = (String) item.getData().get("fileUri");
-            String imageCaption = (String) item.getData().get("caption");
-            String fileID = (String) item.getData().get("fileID");
+            Integer widthDimension = (Integer) item.getData().get(IMAGE_WIDTH);
+            Integer heightDimension = (Integer) item.getData().get(IMAGE_HEIGHT);
+            String imageUri = (String) item.getData().get(FILE_URI);
+            String imageCaption = (String) item.getData().get(CAPTION);
+            String fileID = (String) item.getData().get(FILE_ID);
             Drawable thumbnail = new BitmapDrawable(
                     itemView.getContext().getResources(),
                     TAPFileUtils.getInstance().decodeBase64(
-                            (String) (null == item.getData().get("thumbnail") ? "" :
-                                    item.getData().get("thumbnail"))));
+                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                    item.getData().get(THUMBNAIL))));
             if (thumbnail.getIntrinsicHeight() <= 0) {
                 // Set placeholder image if thumbnail fails to laod
                 thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
