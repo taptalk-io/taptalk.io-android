@@ -182,6 +182,10 @@ public class TAPDefaultConstant {
         public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com:8080/pigeon";
     }
 
+    public static final class MessageData {
+        public static final String ITEMS = "items";
+    }
+
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kTAPAccessToken";

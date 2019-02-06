@@ -73,6 +73,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_D
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
@@ -509,8 +510,7 @@ public class TapTalk {
             tempProductModel.add(productModels.get(index - 1));
             if (index == productSize || index % 20 == 0) {
                 HashMap<String, Object> productHashMap = new LinkedHashMap<>();
-                productHashMap.put("recipientXcUserID", recipientUserModel.getXcUserID());
-                productHashMap.put("items", new ArrayList<>(tempProductModel));
+                productHashMap.put(ITEMS, new ArrayList<>(tempProductModel));
                 TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, recipientUserModel);
                 tempProductModel.clear();
             }
