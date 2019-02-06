@@ -43,11 +43,13 @@ public class TAPContactManager {
 
     public void updateUserDataMap(TAPUserModel user) {
         if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
+            Log.e(TAG, "updateUserDataMap: 1 "+user.getUserRole().getRoleName() );
             // Add new user to map
             user.setIsContact(0);
             getUserDataMap().put(user.getUserID(), user);
         } else if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             // Update user data in map
+            Log.e(TAG, "updateUserDataMap: 2 "+user.getUserRole().getRoleName() );
             getUserDataMap().get(user.getUserID()).updateValue(user);
         }
     }

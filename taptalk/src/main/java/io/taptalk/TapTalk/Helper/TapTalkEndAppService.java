@@ -18,7 +18,7 @@ public class TapTalkEndAppService extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        TAPNotificationManager.getInstance().saveNotificationMessageMapToPreference();
+        new Thread(() -> TAPNotificationManager.getInstance().saveNotificationMessageMapToPreference()).start();
         TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
         stopSelf();
     }
