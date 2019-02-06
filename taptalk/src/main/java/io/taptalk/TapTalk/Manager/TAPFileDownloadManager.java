@@ -24,6 +24,7 @@ import io.taptalk.Taptalk.R;
 import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 
 public class TAPFileDownloadManager {
 
@@ -91,7 +92,7 @@ public class TAPFileDownloadManager {
             return;
         }
         String localID = message.getLocalID();
-        String fileID = (String) message.getData().get("fileID");
+        String fileID = (String) message.getData().get(FILE_ID);
 
         TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 0);
 

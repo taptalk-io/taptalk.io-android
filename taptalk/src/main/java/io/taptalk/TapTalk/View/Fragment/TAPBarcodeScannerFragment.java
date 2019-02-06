@@ -1,6 +1,8 @@
 package io.taptalk.TapTalk.View.Fragment;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -38,6 +40,8 @@ public class TAPBarcodeScannerFragment extends Fragment {
     private CameraSource cameraSource;
     private BarcodeDetector barcodeDetector;
 
+    private Activity activity;
+
     public interface ScanListener {
         void onScanSuccess(String textValue);
     }
@@ -54,12 +58,18 @@ public class TAPBarcodeScannerFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.activity = (Activity) context;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.tap_fragment_barcode_scanner, container, false);
     }
@@ -68,21 +78,23 @@ public class TAPBarcodeScannerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        barcodeDetector = new BarcodeDetector.Builder(getContext())
+        barcodeDetector = new BarcodeDetector.Builder(activity)
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
         ScanListener scanListener = (String textValue) -> {
-            Intent intent = new Intent(getContext(), TAPScanResultActivity.class);
-            intent.putExtra(SCAN_RESULT, textValue);
-            startActivity(intent);
-            getActivity().finish();
-            getActivity().overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
+            if (!activity.isFinishing()) {
+                Intent intent = new Intent(activity, TAPScanResultActivity.class);
+                intent.putExtra(SCAN_RESULT, textValue);
+                startActivity(intent);
+                activity.finish();
+                activity.overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
+            }
         };
 
-        barcodeDetector.setProcessor(new TAPQRDetection(getActivity(), scanListener));
+        barcodeDetector.setProcessor(new TAPQRDetection(activity, scanListener));
 
-        cameraSource = new CameraSource.Builder(getContext(), barcodeDetector)
+        cameraSource = new CameraSource.Builder(activity, barcodeDetector)
                 .setAutoFocusEnabled(true)
                 .build();
 
@@ -112,7 +124,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
 
         btnShowQRCode.setOnClickListener(v -> {
             try {
-                ((TAPBarcodeScannerActivity) getActivity()).showQR();
+                ((TAPBarcodeScannerActivity) activity).showQR();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -120,7 +132,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     }
 
     public void startCameraSource() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         } else {
             try {
