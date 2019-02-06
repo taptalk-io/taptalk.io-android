@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -20,6 +19,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -36,9 +36,10 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
 
     public TAPProductListAdapter(List<TAPProductModel> productModels, TAPMessageModel messageModel, TAPUserModel myUserModel, TAPChatListener chatListener) {
         setItems(productModels);
-        if (null != messageModel.getData() && null != messageModel.getData().get("recipientXcUserID"))
-            this.recipientXcUserID = (String) messageModel.getData().get("recipientXcUserID");
-        else this.recipientXcUserID = messageModel.getUser().getXcUserID();
+
+        this.recipientXcUserID = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
+                .getOtherUserIdFromRoom(TAPChatManager.getInstance().getActiveRoom().getRoomID())).getXcUserID();
+
         this.messageModel = messageModel;
         this.myUserModel = myUserModel;
         this.chatListener = chatListener;
@@ -128,7 +129,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
         }
 
         private void buttonLeftClicked(TAPProductModel item) {
-            TapTalk.triggerListenerProductLeftButtonClicked(((Activity) itemView.getContext()) ,item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
+            TapTalk.triggerListenerProductLeftButtonClicked(((Activity) itemView.getContext()), item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
         }
 
         private void buttonRightClicked(TAPProductModel item) {

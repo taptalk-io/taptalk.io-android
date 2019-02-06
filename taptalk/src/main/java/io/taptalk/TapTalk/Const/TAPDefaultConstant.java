@@ -56,6 +56,7 @@ public class TAPDefaultConstant {
     }
 
     public static final class MessageData {
+        public static final String ITEMS = "items";
         public static final String FILE_ID = "fileID";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
