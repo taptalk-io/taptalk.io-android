@@ -10,8 +10,8 @@ import android.support.annotation.Nullable;
 @Entity(tableName = "Message_Table", indices = @Index(value = "roomID"))
 public class TAPMessageEntity {
 
-    @Nullable @ColumnInfo(name = "messageID") private String messageID;
     @PrimaryKey() @NonNull @ColumnInfo(name = "localID") private String localID;
+    @Nullable @ColumnInfo(name = "messageID") private String messageID;
     @Nullable @ColumnInfo(name = "filterID") private String filterID;
     @ColumnInfo(name = "body") private String body;
     @ColumnInfo(name = "recipientID") private String recipientID;

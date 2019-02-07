@@ -456,7 +456,7 @@ public class TAPDataManager {
 
     // Message
     public void deleteMessage(List<TAPMessageEntity> messageEntities, TAPDatabaseListener listener) {
-        TAPDatabaseManager.getInstance().deleteMessage(messageEntities, listener);
+        TAPDatabaseManager.getInstance().deleteMessage(new ArrayList<>(messageEntities), listener);
     }
 
     public void insertToDatabase(TAPMessageEntity messageEntity) {
@@ -465,11 +465,11 @@ public class TAPDataManager {
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         List<TAPMessageEntity> messageToBeSave = new ArrayList<>(messageEntities);
-        TAPDatabaseManager.getInstance().insert(messageToBeSave, isClearSaveMessages);
+        TAPDatabaseManager.getInstance().insert(new ArrayList<>(messageToBeSave), isClearSaveMessages);
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
-        TAPDatabaseManager.getInstance().insert(messageEntities, isClearSaveMessages, listener);
+        TAPDatabaseManager.getInstance().insert(new ArrayList<>(messageEntities), isClearSaveMessages, listener);
     }
 
     public void deleteFromDatabase(String messageLocalID) {
