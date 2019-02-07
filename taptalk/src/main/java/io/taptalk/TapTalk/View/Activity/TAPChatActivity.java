@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -87,6 +88,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
+import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -147,6 +149,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvQuoteTitle,
             tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
     private View vStatusBadge, vQuoteDecoration;
+    private TAPConnectionStatusFragment fConnectionStatus;
 
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
@@ -181,6 +184,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
 
+        glide = Glide.with(this);
         bindViews();
         initRoom();
     }
@@ -298,7 +302,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
      */
 
     private void initRoom() {
-        glide = Glide.with(this);
         if (initViewModel()) {
             initView();
             initHelper();
@@ -361,6 +364,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat = (EditText) findViewById(R.id.et_chat);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
+        fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
     }
 
     private boolean initViewModel() {
@@ -1511,11 +1515,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPAttachmentListener attachmentListener = new TAPAttachmentListener() {
         @Override
         public void onCameraSelected() {
+            fConnectionStatus.hideUntilNextConnect(true);
             vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
         }
 
         @Override
         public void onGallerySelected() {
+            fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
         }
     };
