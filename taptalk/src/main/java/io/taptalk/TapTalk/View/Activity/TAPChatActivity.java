@@ -1541,7 +1541,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addAfterTextMessage(message, messageAfterModels);
-                    new Thread(() -> {
+//                    new Thread(() -> {
                         responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
 
                         //ini buat update last update timestamp yang ada di preference
@@ -1550,7 +1550,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                                 TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
                             TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
                         }
-                    }).start();
+//                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
