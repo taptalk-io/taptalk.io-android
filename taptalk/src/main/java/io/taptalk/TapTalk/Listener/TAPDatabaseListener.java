@@ -12,6 +12,7 @@ public abstract class TAPDatabaseListener<T> implements TapTalkDatabaseInterface
     @Override public void onDeleteFinished() {}
     @Override public void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap) {}
     @Override public void onCountedUnreadCount(String roomID, int unreadCount) {}
+    @Override public void onCountedUnreadCount(int unreadCount) {}
     @Override public void onContactCheckFinished(int isContact) {}
     @Override public void onSelectFailed(String errorMessage) {}
 }

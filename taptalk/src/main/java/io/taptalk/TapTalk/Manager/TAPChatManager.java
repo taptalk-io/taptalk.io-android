@@ -820,6 +820,9 @@ public class TAPChatManager {
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
+        // Query Unread Message
+        TAPNotificationManager.getInstance().updateUnreadCount();
+
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() &&
                 ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))

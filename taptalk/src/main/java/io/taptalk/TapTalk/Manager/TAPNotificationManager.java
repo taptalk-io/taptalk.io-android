@@ -16,8 +16,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 
@@ -235,5 +237,14 @@ public class TAPNotificationManager {
             setNotifMessagesMap(tempNotifMessage);
             TAPDataManager.getInstance().clearNotificationMessageMap();
         }
+    }
+
+    public void updateUnreadCount() {
+        new Thread(() -> TAPDataManager.getInstance().getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onCountedUnreadCount(int unreadCount) {
+                TapTalk.triggerUpdateUnreadCountListener(unreadCount);
+            }
+        })).start();
     }
 }

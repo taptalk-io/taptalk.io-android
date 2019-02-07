@@ -178,6 +178,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getUnreadCount(String myID, final TAPDatabaseListener listener) {
+        new Thread(() -> {
+            int unreadCount = messageDao.getUnreadCount(myID);
+            listener.onCountedUnreadCount(unreadCount);
+        }).start();
+    }
+
     public void delete(final String localID) {
         new Thread(() -> messageDao.delete(localID)).start();
     }

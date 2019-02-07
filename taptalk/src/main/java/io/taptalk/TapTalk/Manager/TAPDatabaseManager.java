@@ -175,6 +175,12 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
+    public void getUnreadCount(String myID, final TAPDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.getUnreadCount(myID, listener);
+        else throw new IllegalStateException("Message Repository was not initialized");
+    }
+
     public void updatePendingStatus() {
         if (null != messageRepository)
             messageRepository.updatePendingStatus();
