@@ -821,7 +821,7 @@ public class TAPChatManager {
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
         // Query Unread Message
-        TAPNotificationManager.getInstance().updateUnreadCount();
+        //TAPNotificationManager.getInstance().updateUnreadCount();
 
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() &&

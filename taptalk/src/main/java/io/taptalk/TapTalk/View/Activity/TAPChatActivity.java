@@ -224,7 +224,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
-            TAPNotificationManager.getInstance().updateUnreadCount();
+            //TAPNotificationManager.getInstance().updateUnreadCount();
             TAPChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
