@@ -301,6 +301,10 @@ public class TAPFileUploadManager {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(180);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(270);
