@@ -517,6 +517,16 @@ public class TapTalk {
         }
     }
 
+    public static void triggerUpdateUnreadCountListener(int unreadCount) {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+        } else {
+            for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+                tapListener.onUpdateUnreadCount(unreadCount);
+            }
+        }
+    }
+
     public static List<TAPListener> getTapTalkListeners() {
         return tapTalk.tapListeners;
     }
@@ -700,6 +710,9 @@ public class TapTalk {
                 });
             }
         }).start();
+    }
 
+    public static void callUpdateUnreadCount() {
+        TAPNotificationManager.getInstance().updateUnreadCount();
     }
 }
