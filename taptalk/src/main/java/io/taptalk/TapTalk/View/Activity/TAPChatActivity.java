@@ -1310,12 +1310,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0 && s.toString().trim().length() > 0) {
+            if (null != TAPChatActivity.this.getCurrentFocus() && TAPChatActivity.this.getCurrentFocus().getId() == etChat.getId()
+                    && s.length() > 0 && s.toString().trim().length() > 0) {
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
-            } else if (s.length() > 0) {
+            } else if (null != TAPChatActivity.this.getCurrentFocus() && TAPChatActivity.this.getCurrentFocus().getId() == etChat.getId()
+                    && s.length() > 0) {
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+            } else if (s.length() > 0 && s.toString().trim().length() > 0) {
+                if (vm.isCustomKeyboardEnabled()) {
+                    ivButtonChatMenu.setVisibility(View.VISIBLE);
+                }
+                ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
             } else {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
@@ -1337,6 +1344,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
+
+                if (0 < etChat.getText().toString().length()) {
+                    ivButtonChatMenu.setVisibility(View.GONE);
+                }
             } else if (hasFocus) {
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
             }
