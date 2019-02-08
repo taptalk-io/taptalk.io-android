@@ -29,6 +29,8 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     private ImageView ivConnectionStatus;
     private ProgressBar pbConnecting;
 
+    private boolean hideUntilNextConnect;
+
     public TAPConnectionStatusFragment() {
     }
 
@@ -43,13 +45,23 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        TAPConnectionManager.getInstance().removeSocketListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         initConnectionStatus();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        TAPConnectionManager.getInstance().removeSocketListener(this);
     }
 
     @Override
@@ -98,21 +110,27 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
         if (TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTED) {
             return;
         }
-        activity.runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
-            tvConnectionStatus.setText(getString(R.string.connected));
-            ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
-            ivConnectionStatus.setVisibility(View.VISIBLE);
-            pbConnecting.setVisibility(View.GONE);
-            llConnectionStatus.setVisibility(View.VISIBLE);
 
-            new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
-        });
+        if (hideUntilNextConnect) {
+            this.hideUntilNextConnect = false;
+        } else {
+            activity.runOnUiThread(() -> {
+                llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
+                tvConnectionStatus.setText(getString(R.string.connected));
+                ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
+                ivConnectionStatus.setVisibility(View.VISIBLE);
+                pbConnecting.setVisibility(View.GONE);
+                llConnectionStatus.setVisibility(View.VISIBLE);
+
+                new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
+            });
+        }
     }
 
     private void setStatusConnecting() {
         if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()) ||
-                TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTING) {
+                TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTING ||
+                hideUntilNextConnect) {
             return;
         }
 
@@ -126,7 +144,9 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusWaitingForNetwork() {
-        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) return;
+        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
+            return;
+        }
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_offline);
@@ -135,5 +155,11 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             pbConnecting.setVisibility(View.VISIBLE);
             llConnectionStatus.setVisibility(View.VISIBLE);
         });
+
+        this.hideUntilNextConnect = false;
+    }
+
+    public void hideUntilNextConnect(boolean hide) {
+        this.hideUntilNextConnect = hide;
     }
 }

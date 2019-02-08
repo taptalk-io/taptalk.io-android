@@ -42,10 +42,11 @@ public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback 
 
     public boolean hasNetworkConnection(Context context) {
         ConnectivityManager connectivityManager = getConnectivityManager(context);
-        if (null != connectivityManager && null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) &&
-                null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                && NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() ||
-                NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState()) {
+        if (null != connectivityManager &&
+                null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE) &&
+                null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI) &&
+                (NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() ||
+                NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState())) {
             return true;
         } else {
 //            Toast.makeText(context, "No Network Available.", Toast.LENGTH_SHORT).show();

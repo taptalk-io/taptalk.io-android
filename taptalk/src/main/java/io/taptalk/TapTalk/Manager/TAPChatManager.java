@@ -1005,7 +1005,9 @@ public class TAPChatManager {
 
     public void updateUnreadCountInRoomList(String roomID) {
         new Thread(() -> {
-            for (TAPChatListener chatListener : chatListeners) {
+            // Copy to prevent concurrent modification
+            List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
+            for (TAPChatListener chatListener : chatListenersCopy) {
                 chatListener.onReadMessage(roomID);
             }
         }).start();
