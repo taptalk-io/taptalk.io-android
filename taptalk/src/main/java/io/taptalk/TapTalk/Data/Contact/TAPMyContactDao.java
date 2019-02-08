@@ -32,31 +32,21 @@ public interface TAPMyContactDao {
     @Update
     void update(TAPUserModel userModel);
 
-    @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
-            "code, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated from MyContact where isContact = 1 order by name asc")
+    @Query("select * from MyContact where isContact = 1 order by name asc")
     List<TAPUserModel> getAllMyContact();
 
-    @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
-            "code, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated from MyContact where isContact = 1 order by name asc")
+    @Query("select * from MyContact where isContact = 1 order by name asc")
     LiveData<List<TAPUserModel>> getAllMyContactLive();
 
-    @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
-            "code, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated from MyContact where name like :keyword and isContact = 1 order by name asc")
+    @Query("select * from MyContact where name like :keyword and isContact = 1 order by name asc")
     List<TAPUserModel> searchAllMyContacts(String keyword);
 
     @Query("select count(userID) from MyContact where userID like :userID and isContact = 1 ")
     Integer checkUserInMyContacts(String userID);
 
-    @Query("select userID, name, thumbnail, fullsize, username, " +
-            "code, roleName, roleIconURL, lastLogin, lastActivity " +
-            "from MyContact where xcUserID = :xcUserID")
+    @Query("select * from MyContact where xcUserID = :xcUserID")
     TAPUserModel checkUserWithXcUserID(String xcUserID);
 
-    @Query("select userID, xcUserID, name, thumbnail, fullsize, username, email, phoneNumber, " +
-            "code, roleName, roleIconURL, lastLogin, lastActivity, requireChangePassword, " +
-            "created, updated, isContact from MyContact")
+    @Query("select * from MyContact")
     List<TAPUserModel> getAllUserData();
 }
