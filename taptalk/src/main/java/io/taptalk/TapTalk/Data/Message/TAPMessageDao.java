@@ -59,8 +59,10 @@ public interface TAPMessageDao {
     TAPMessageEntity getRoom(String roomID);
 
     @Query("select count(isRead) from Message_Table where isRead = 0 and RoomID like :roomID and userID not like :userID")
-//    @Query("select count(isSending) from message_table where isSending = 0 and RoomID like :roomID and userID not like :userID")
     Integer getUnreadCount(String userID, String roomID);
+
+    @Query("select count(isRead) from Message_Table where isRead = 0 and userID not like :userID")
+    Integer getUnreadCount(String userID);
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();

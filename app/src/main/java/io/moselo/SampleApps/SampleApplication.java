@@ -133,6 +133,11 @@ public class SampleApplication extends Application {
         public void onProductRightButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
             super.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
         }
+
+        @Override
+        public void onUpdateUnreadCount(int unreadCount) {
+            Log.e("><><><", "onUpdateUnreadCount: "+unreadCount );
+        }
     };
 
     @Override

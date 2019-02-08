@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -87,6 +88,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
+import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -147,6 +149,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvQuoteTitle,
             tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
     private View vStatusBadge, vQuoteDecoration;
+    private TAPConnectionStatusFragment fConnectionStatus;
 
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
@@ -181,6 +184,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_chat);
 
+        glide = Glide.with(this);
         bindViews();
         initRoom();
     }
@@ -224,6 +228,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
+            //TAPNotificationManager.getInstance().updateUnreadCount();
             TAPChatManager.getInstance().putUnsentMessageToList();
             super.onBackPressed();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
@@ -298,7 +303,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
      */
 
     private void initRoom() {
-        glide = Glide.with(this);
         if (initViewModel()) {
             initView();
             initHelper();
@@ -361,6 +365,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat = (EditText) findViewById(R.id.et_chat);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
+        fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
     }
 
     private boolean initViewModel() {
@@ -1309,12 +1314,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0 && s.toString().trim().length() > 0) {
+            if (null != TAPChatActivity.this.getCurrentFocus() && TAPChatActivity.this.getCurrentFocus().getId() == etChat.getId()
+                    && s.length() > 0 && s.toString().trim().length() > 0) {
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
-            } else if (s.length() > 0) {
+            } else if (null != TAPChatActivity.this.getCurrentFocus() && TAPChatActivity.this.getCurrentFocus().getId() == etChat.getId()
+                    && s.length() > 0) {
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+            } else if (s.length() > 0 && s.toString().trim().length() > 0) {
+                if (vm.isCustomKeyboardEnabled()) {
+                    ivButtonChatMenu.setVisibility(View.VISIBLE);
+                }
+                ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
             } else {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
@@ -1336,6 +1348,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
+
+                if (0 < etChat.getText().toString().length()) {
+                    ivButtonChatMenu.setVisibility(View.GONE);
+                }
             } else if (hasFocus) {
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
             }
@@ -1511,11 +1527,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPAttachmentListener attachmentListener = new TAPAttachmentListener() {
         @Override
         public void onCameraSelected() {
+            fConnectionStatus.hideUntilNextConnect(true);
             vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
         }
 
         @Override
         public void onGallerySelected() {
+            fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
         }
     };
@@ -1541,7 +1559,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addAfterTextMessage(message, messageAfterModels);
-                    new Thread(() -> {
+//                    new Thread(() -> {
                         responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
 
                         //ini buat update last update timestamp yang ada di preference
@@ -1550,7 +1568,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                                 TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
                             TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
                         }
-                    }).start();
+//                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -820,6 +820,9 @@ public class TAPChatManager {
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
+        // Query Unread Message
+        //TAPNotificationManager.getInstance().updateUnreadCount();
+
         // Receive message in active room
         if (null != chatListeners && !chatListeners.isEmpty() &&
                 ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
@@ -1002,7 +1005,9 @@ public class TAPChatManager {
 
     public void updateUnreadCountInRoomList(String roomID) {
         new Thread(() -> {
-            for (TAPChatListener chatListener : chatListeners) {
+            // Copy to prevent concurrent modification
+            List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
+            for (TAPChatListener chatListener : chatListenersCopy) {
                 chatListener.onReadMessage(roomID);
             }
         }).start();

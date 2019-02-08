@@ -543,6 +543,13 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getUnreadCountPerRoom(getActiveUser().getUserID(), roomID, listener);
     }
 
+    public void getUnreadCount(final TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
+        TAPDatabaseManager.getInstance().getUnreadCount(getActiveUser().getUserID(), listener);
+    }
+
     public void deleteAllMessage() {
         TAPDatabaseManager.getInstance().deleteAllMessage();
     }

@@ -19,4 +19,5 @@ public interface TapTalkInterface {
     void onProductLeftButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room);
     void onProductRightButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room);
     void onMessageQuoteClicked(Activity activity, TAPMessageModel messageModel, HashMap<String, Object> userInfo);
+    void onUpdateUnreadCount(int unreadCount);
 }
