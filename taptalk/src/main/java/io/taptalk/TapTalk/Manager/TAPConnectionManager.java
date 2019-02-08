@@ -85,9 +85,11 @@ public class TAPConnectionManager {
                 Log.e(TAG, "onOpen: ");
                 connectionStatus = ConnectionStatus.CONNECTED;
                 reconnectAttempt = 0;
-                if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (TapTalkSocketInterface listener : socketListeners)
+                List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
+                if (null != socketListeners && !socketListenersCopy.isEmpty()) {
+                    for (TapTalkSocketInterface listener : socketListenersCopy) {
                         listener.onSocketConnected();
+                    }
                 }
             }
 
@@ -118,9 +120,11 @@ public class TAPConnectionManager {
                 Log.e(TAG, "onClose: " + reason);
                 connectionStatus = DISCONNECTED;
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-                if (null != socketListeners && !socketListeners.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
-                    for (TapTalkSocketInterface listener : socketListeners)
+                List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
+                if (null != socketListeners && !socketListenersCopy.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
+                    for (TapTalkSocketInterface listener : socketListenersCopy) {
                         listener.onSocketDisconnected();
+                    }
                 }
             }
 
@@ -129,8 +133,9 @@ public class TAPConnectionManager {
                 Log.e(TAG, "onError: ", ex);
                 connectionStatus = DISCONNECTED;
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-                if (null != socketListeners && !socketListeners.isEmpty()) {
-                    for (TapTalkSocketInterface listener : socketListeners)
+                List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
+                if (null != socketListeners && !socketListenersCopy.isEmpty()) {
+                    for (TapTalkSocketInterface listener : socketListenersCopy)
                         listener.onSocketError();
                 }
             }
@@ -228,8 +233,9 @@ public class TAPConnectionManager {
                 if (DISCONNECTED == connectionStatus && !TAPChatManager.getInstance().isFinishChatFlow()) {
                     connectionStatus = CONNECTING;
                     try {
-                        if (null != socketListeners && !socketListeners.isEmpty()) {
-                            for (TapTalkSocketInterface listener : socketListeners)
+                        List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
+                        if (null != socketListeners && !socketListenersCopy.isEmpty()) {
+                            for (TapTalkSocketInterface listener : socketListenersCopy)
                                 listener.onSocketConnecting();
                         }
                         TAPDataManager.getInstance().validateAccessToken(new TapDefaultDataView<TAPErrorModel>() {
