@@ -151,9 +151,8 @@ public class TAPFileUploadManager {
             }
 
             TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
-            TAPMessageModel apiMessageModel = messageModel.copyMessageModel();
 
-            if (null == messageModel.getData() || null == apiMessageModel.getData()) {
+            if (null == messageModel.getData()) {
                 // No data
                 Log.e(TAG, "File upload failed: data is required in MessageModel.");
                 getUploadQueue(roomID).remove(0);
@@ -200,15 +199,12 @@ public class TAPFileUploadManager {
                 imageData.setThumbnail(thumbBase64);
 
                 messageModel.putData(imageData.toHashMap());
-                apiMessageModel.putData(imageData.toHashMapWithoutFileUri());
-                apiMessageModel.getData().remove(FILE_URI);
-
-                callUploadAPI(context, roomID, messageModel, apiMessageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
+                callUploadAPI(context, roomID, messageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
             }
         }).start();
     }
 
-    private void callUploadAPI(Context context, String roomID, TAPMessageModel messageModelWithUri, TAPMessageModel messageModel, File imageFile,
+    private void callUploadAPI(Context context, String roomID, TAPMessageModel messageModel, File imageFile,
                                Bitmap bitmap, String encodedThumbnail, String mimeType,
                                TAPDataImageModel imageData) {
 
@@ -242,7 +238,7 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(TAPErrorModel error, String localID) {
-                messageUploadFailed(context, messageModelWithUri, roomID);
+                messageUploadFailed(context, messageModel, roomID);
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, error.getMessage());
@@ -251,7 +247,7 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(String errorMessage, String localID) {
-                messageUploadFailed(context, messageModelWithUri, roomID);
+                messageUploadFailed(context, messageModel, roomID);
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, errorMessage);
@@ -304,6 +300,10 @@ public class TAPFileUploadManager {
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(180);
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
                 Matrix matrix = new Matrix();
@@ -372,6 +372,7 @@ public class TAPFileUploadManager {
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
             if (null != messageModel.getData()) {
                 messageModel.putData(imageDataMap);
+                messageModel.getData().remove(FILE_URI);
             } else {
                 messageModel.setData(imageDataMap);
             }

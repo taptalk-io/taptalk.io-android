@@ -113,6 +113,7 @@ public class TAPChatManager {
     private TAPSocketMessageListener socketMessageListener = new TAPSocketMessageListener() {
         @Override
         public void onReceiveNewEmit(String eventName, String emitData) {
+            List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             switch (eventName) {
                 case kEventOpenRoom:
                     break;
@@ -133,7 +134,7 @@ public class TAPChatManager {
                     TAPEmitModel<TAPTypingModel> startTypingEmit = TAPUtils.getInstance()
                             .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
                             }, emitData);
-                    for (TAPChatListener listener : chatListeners) {
+                    for (TAPChatListener listener : chatListenersCopy) {
                         listener.onReceiveStartTyping(startTypingEmit.getData());
                     }
                     break;
@@ -141,7 +142,7 @@ public class TAPChatManager {
                     TAPEmitModel<TAPTypingModel> stopTypingEmit = TAPUtils.getInstance()
                             .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
                             }, emitData);
-                    for (TAPChatListener listener : chatListeners) {
+                    for (TAPChatListener listener : chatListenersCopy) {
                         listener.onReceiveStopTyping(stopTypingEmit.getData());
                     }
                     break;
@@ -152,7 +153,7 @@ public class TAPChatManager {
                             .fromJSON(new TypeReference<TAPEmitModel<TAPOnlineStatusModel>>() {
                             }, emitData);
                     TAPOnlineStatusModel onlineStatus = onlineStatusEmit.getData();
-                    for (TAPChatListener listener : chatListeners) {
+                    for (TAPChatListener listener : chatListenersCopy) {
                         listener.onUserOnlineStatusUpdate(onlineStatus);
                     }
                     break;
@@ -558,8 +559,9 @@ public class TAPChatManager {
     }
 
     private void triggerSendMessageListener(TAPMessageModel messageModel) {
-        if (null != chatListeners && !chatListeners.isEmpty()) {
-            for (TAPChatListener chatListener : chatListeners) {
+        List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
+        if (!chatListenersCopy.isEmpty()) {
+            for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
                 chatListener.onSendTextMessage(tempNewMessage);
             }
@@ -569,8 +571,9 @@ public class TAPChatManager {
     // Previously sendMessage
     private void triggerListenerAndSendMessage(TAPMessageModel messageModel, boolean isNotifyChatListener) {
         // Call listener
-        if (null != chatListeners && !chatListeners.isEmpty() && isNotifyChatListener) {
-            for (TAPChatListener chatListener : chatListeners) {
+        List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
+        if (!chatListenersCopy.isEmpty() && isNotifyChatListener) {
+            for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
                 chatListener.onSendTextMessage(tempNewMessage);
             }
@@ -824,10 +827,11 @@ public class TAPChatManager {
         //TAPNotificationManager.getInstance().updateUnreadCount();
 
         // Receive message in active room
-        if (null != chatListeners && !chatListeners.isEmpty() &&
+        List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
+        if (!chatListenersCopy.isEmpty() &&
                 ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
                         || (newMessage.getRoom().getRoomID().equals(openRoom)))) {
-            for (TAPChatListener chatListener : chatListeners) {
+            for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
@@ -838,14 +842,13 @@ public class TAPChatManager {
             }
         }
         // Receive message outside active room (not in room List)
-        else if (null != chatListeners && !TAPNotificationManager.getInstance().isRoomListAppear() && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()))
+        else if (!TAPNotificationManager.getInstance().isRoomListAppear() && !chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+            if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
-
-            for (TAPChatListener chatListener : chatListeners) {
+            }
+            for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
                 else if (kSocketUpdateMessage.equals(eventName))
@@ -855,9 +858,9 @@ public class TAPChatManager {
             }
         }
         // Receive message outside active room (in room List)
-        else if (null != chatListeners && !chatListeners.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+        else if (!chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
             Log.e(TAG, "receiveMessageFromSocket:3 " + newMessage.getLocalID());
-            for (TAPChatListener chatListener : chatListeners) {
+            for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 
                 if (kSocketNewMessage.equals(eventName))
@@ -1005,7 +1008,6 @@ public class TAPChatManager {
 
     public void updateUnreadCountInRoomList(String roomID) {
         new Thread(() -> {
-            // Copy to prevent concurrent modification
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             for (TAPChatListener chatListener : chatListenersCopy) {
                 chatListener.onReadMessage(roomID);
