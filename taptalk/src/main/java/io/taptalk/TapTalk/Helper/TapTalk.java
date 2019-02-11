@@ -576,15 +576,20 @@ public class TapTalk {
     private static void registerFcmToken() {
         new Thread(() -> {
             if (!TAPDataManager.getInstance().checkFirebaseToken()) {
-                FirebaseInstanceId.getInstance().getInstanceId()
-                        .addOnCompleteListener(task -> {
-                            if (null != task.getResult()) {
-                                String fcmToken = task.getResult().getToken();
-                                TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TapDefaultDataView<TAPCommonResponse>() {
-                                });
-                                TAPDataManager.getInstance().saveFirebaseToken(fcmToken);
-                            }
-                        });
+                try {
+                    FirebaseInstanceId.getInstance().getInstanceId()
+                            .addOnCompleteListener(task -> {
+                                if (null != task.getResult()) {
+                                    String fcmToken = task.getResult().getToken();
+                                    TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TapDefaultDataView<TAPCommonResponse>() {
+                                    });
+                                    TAPDataManager.getInstance().saveFirebaseToken(fcmToken);
+                                }
+                            });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "registerFcmToken: ",e );
+                }
             } else {
                 TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
                 });
