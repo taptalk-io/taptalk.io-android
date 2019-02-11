@@ -160,7 +160,7 @@
                         android:layout_marginBottom="41dp"
                         android:fontFamily="@font/tap_font_neueeinstellungregular"
                         android:gravity="center_horizontal"
-                        android:text="@string/you_have_added"
+                        android:text="@string/tap_you_have_added"
                         android:textColor="@color/mediumPurple"
                         android:textSize="13sp" />
 
@@ -175,7 +175,7 @@
                     android:alpha="0"
                     android:fontFamily="@font/tap_font_neueeinstellungregular"
                     android:gravity="center_horizontal"
-                    android:text="@string/is_already_in_your_contacts"
+                    android:text="@string/tap_is_already_in_your_contacts"
                     android:textAlignment="center"
                     android:textColor="@color/mediumPurple"
                     android:visibility="gone" />
@@ -217,7 +217,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/tap_font_neueeinstellungbold"
-                    android:text="@string/add_to_contacts"
+                    android:text="@string/tap_add_to_contacts"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
@@ -230,7 +230,7 @@
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
                 android:letterSpacing="0.01"
-                android:text="@string/this_is_you"
+                android:text="@string/tap_this_is_you"
                 android:textColor="@color/black_44"
                 android:textSize="13sp"
                 android:visibility="gone"

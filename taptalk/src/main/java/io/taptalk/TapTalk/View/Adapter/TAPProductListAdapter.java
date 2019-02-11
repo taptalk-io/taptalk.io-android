@@ -111,7 +111,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             tvProductName.setText(item.getName());
             tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
             if ("".equals(item.getDescription()))
-                tvProductDescription.setText(itemView.getResources().getString(R.string.no_description));
+                tvProductDescription.setText(itemView.getResources().getString(R.string.tap_no_description));
             else {
                 tvProductDescription.setText(item.getDescription());
             }
@@ -124,7 +124,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             } else {
                 // Product has no rating
                 ivRatingIcon.setVisibility(View.GONE);
-                tvRating.setText(itemView.getContext().getString(R.string.no_review_yet));
+                tvRating.setText(itemView.getContext().getString(R.string.tap_no_review_yet));
                 tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
             }
 

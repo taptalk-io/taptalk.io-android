@@ -19,7 +19,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPImageURL;
@@ -102,8 +101,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
         if (vm.getRoom().getRoomType() != 1) {
             ivBlockOrView.setImageResource(R.drawable.tap_ic_members_grey);
             ivDelete.setImageResource(R.drawable.tap_ic_exit_red);
-            tvBlockOrView.setText(getString(R.string.view_members));
-            tvDelete.setText(getString(R.string.exit_group));
+            tvBlockOrView.setText(getString(R.string.tap_view_members));
+            tvDelete.setText(getString(R.string.tap_exit_group));
         }
 
         tvFullName.setText(vm.getRoom().getRoomName());
@@ -152,7 +151,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
         if (vm.getSharedMedias().size() > 0) {
             // Has shared media
-            tvSharedMediaLabel.setText(getString(R.string.shared_media));
+            tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
             sharedMediaAdapter = new TAPImageListAdapter(vm.getSharedMedias());
             rvProfile.setAdapter(sharedMediaAdapter);
             rvProfile.setLayoutManager(new GridLayoutManager(this, 3));

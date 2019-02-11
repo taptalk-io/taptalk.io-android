@@ -32,7 +32,7 @@
             style="@style/HomingPigeonToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/new_chat"
+            android:text="@string/tap_new_chat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/iv_button_search"
             app:layout_constraintStart_toEndOf="@id/iv_button_close"
@@ -84,7 +84,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/new_contact" />
+                    android:text="@string/tap_new_contact" />
 
             </LinearLayout>
 
@@ -113,7 +113,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/scan_qr_code" />
+                    android:text="@string/tap_scan_qr_code" />
 
             </LinearLayout>
 
@@ -142,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/new_group" />
+                    android:text="@string/tap_new_group" />
 
             </LinearLayout>
 
@@ -169,7 +169,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/tap_font_neueeinstellungregular"
                     android:gravity="center"
-                    android:text="@string/cant_find_contact"
+                    android:text="@string/tap_cant_find_contact"
                     android:textColor="@color/grey_9b"
                     android:textSize="13sp" />
 
@@ -178,7 +178,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/tap_font_neueeinstellungbold"
                     android:gravity="center"
-                    android:text="@string/view_blocked_contacts"
+                    android:text="@string/tap_view_blocked_contacts"
                     android:textColor="@color/grey_9b"
                     android:textSize="13sp" />
 

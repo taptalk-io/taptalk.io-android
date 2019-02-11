@@ -138,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/notifications"
+                    android:text="@string/tap_notifications"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_notifications"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -182,7 +182,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/conversation_color" />
+                    android:text="@string/tap_conversation_color" />
 
             </LinearLayout>
 
@@ -215,7 +215,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/block_user" />
+                    android:text="@string/tap_block_user" />
 
             </LinearLayout>
 
@@ -248,7 +248,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/clear_chat"
+                    android:text="@string/tap_clear_chat"
                     android:textColor="@color/tomato" />
 
             </LinearLayout>

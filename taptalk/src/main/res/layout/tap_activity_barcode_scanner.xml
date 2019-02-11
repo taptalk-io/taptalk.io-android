@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            tools:text="@string/scan_qr_code" />
+            tools:text="@string/tap_scan_qr_code" />
     </FrameLayout>
 
     <fragment

@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
@@ -39,7 +38,6 @@ import io.taptalk.TapTalk.ViewModel.TAPNewContactViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ADDED_CONTACT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.API_PARAMETER_VALIDATION_FAILED;
 
 public class TAPNewContactActivity extends TAPBaseActivity {
 
@@ -332,7 +330,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                     ivButtonImage.setVisibility(View.GONE);
                     tvButtonText.setVisibility(View.VISIBLE);
                     pbButton.setVisibility(View.GONE);
-                    tvButtonText.setText(getString(R.string.add_to_contacts));
+                    tvButtonText.setText(getString(R.string.tap_add_to_contacts));
                     clButtonAction.setOnClickListener(v -> addToContact());
                 });
             } else {
@@ -341,7 +339,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                     ivButtonImage.setVisibility(View.VISIBLE);
                     tvButtonText.setVisibility(View.VISIBLE);
                     pbButton.setVisibility(View.GONE);
-                    tvButtonText.setText(getString(R.string.chat_now));
+                    tvButtonText.setText(getString(R.string.tap_chat_now));
                     clButtonAction.setOnClickListener(v -> openChatRoom());
                 });
             }
@@ -420,16 +418,16 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         public void onError(TAPErrorModel error) {
             enableInput();
             new TapTalkDialog.Builder(TAPNewContactActivity.this)
-                    .setTitle(getString(R.string.error))
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle(getString(R.string.ok))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .show();
         }
 
         @Override
         public void onError(String errorMessage) {
             enableInput();
-            Toast.makeText(TAPNewContactActivity.this, getString(R.string.error_message_general), Toast.LENGTH_SHORT).show();
+            Toast.makeText(TAPNewContactActivity.this, getString(R.string.tap_error_message_general), Toast.LENGTH_SHORT).show();
         }
     };
 

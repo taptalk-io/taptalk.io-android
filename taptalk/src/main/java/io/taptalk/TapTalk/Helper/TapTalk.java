@@ -253,7 +253,7 @@ public class TapTalk {
     // TODO: 15/10/18 saat integrasi harus di ilangin
     public static void refreshTokenExpired() {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             TAPApiManager.getInstance().setLogout(true);
             TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
@@ -289,7 +289,7 @@ public class TapTalk {
 
     public static List<TAPCustomKeyboardItemModel> requestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             try {
                 return tapTalk.requestCustomKeyboardItemsFromClient(activeUser, otherUser);
@@ -312,7 +312,7 @@ public class TapTalk {
 
     public static void triggerMessageQuoteClicked(Activity activity, TAPMessageModel messageModel) {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             try {
                 tapTalk.triggerMessageQuoteClicked(activity, messageModel, (HashMap<String, Object>) messageModel.getData().get(USER_INFO));
@@ -489,7 +489,7 @@ public class TapTalk {
 
     public static void addTapTalkListener(TAPListener listener) {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             tapTalk.tapListeners.add(listener);
         }
@@ -498,7 +498,7 @@ public class TapTalk {
     public static void triggerListenerProductLeftButtonClicked(Activity activity, TAPProductModel productModel
             , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
                 tapListener.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
@@ -509,7 +509,7 @@ public class TapTalk {
     public static void triggerListenerProductRightButtonClicked(Activity activity, TAPProductModel productModel
             , String recipientXcUserID, TAPRoomModel room) {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
                 tapListener.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
@@ -519,7 +519,7 @@ public class TapTalk {
 
     public static void triggerUpdateUnreadCountListener(int unreadCount) {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
                 tapListener.onUpdateUnreadCount(unreadCount);
@@ -533,7 +533,7 @@ public class TapTalk {
 
     public static void sendTextMessageWithRecipientUser(String message, TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.init_taptalk));
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             tapTalk.getUserFromRecipientUserAndSendProductRequestMessage(message, recipientUser, listener);
         }

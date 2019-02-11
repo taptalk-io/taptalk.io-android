@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.View.Adapter;
 
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -109,7 +108,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             if (item.isTyping()) {
                 // Set message to Typing
-                tvLastMessage.setText(itemView.getContext().getString(R.string.typing_1));
+                tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
                 typingAnimationTimer.start();
                 typingIndicatorTimeOutTimer.cancel();
                 typingIndicatorTimeOutTimer.start();
@@ -162,7 +161,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else if (unreadCount >= 100) {
-                tvBadgeUnread.setText(R.string.over_99);
+                tvBadgeUnread.setText(R.string.tap_over_99);
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else {
@@ -203,13 +202,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             public void onFinish() {
                 switch (tvLastMessage.length()) {
                     case 7:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.typing_2));
+                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_2));
                         break;
                     case 8:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.typing_3));
+                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_3));
                         break;
                     default:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.typing_1));
+                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
                 }
                 start();
             }

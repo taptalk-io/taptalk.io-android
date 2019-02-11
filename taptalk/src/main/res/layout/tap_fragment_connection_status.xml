@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/tap_font_latobold"
-        android:text="@string/connecting"
+        android:text="@string/tap_connecting"
         android:textColor="@color/white"
         android:textSize="12dp" />
 

@@ -31,7 +31,7 @@
             style="@style/HomingPigeonSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:hint="@string/search_chat_placeholder"
+            android:hint="@string/tap_search_chat_placeholder"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"

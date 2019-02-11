@@ -134,7 +134,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
                 0, 0));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
-        tvMemberCount.setText(String.format(getString(R.string.group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
+        tvMemberCount.setText(String.format(getString(R.string.tap_group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
         btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp);
         loadGroupName();
         loadGroupImage();
@@ -155,7 +155,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 civGroupImage.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
-                Toast.makeText(TAPGroupSubjectActivity.this, R.string.failed_to_load_image, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TAPGroupSubjectActivity.this, R.string.tap_failed_to_load_image, Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -179,7 +179,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             finish();
             overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         } else {
-            Toast.makeText(this, R.string.error_message_group_name_empty, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.tap_error_message_group_name_empty, Toast.LENGTH_SHORT).show();
         }
     }
 

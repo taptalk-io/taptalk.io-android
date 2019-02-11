@@ -18,7 +18,6 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
@@ -188,7 +187,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             // Set name
             String fullName = item.getName();
             if (item.getUserID().equals(myID)) {
-                tvFullName.setText(R.string.you);
+                tvFullName.setText(R.string.tap_you);
             } else if (fullName.contains(" ")) {
                 tvFullName.setText(fullName.substring(0, fullName.indexOf(' ')));
             } else tvFullName.setText(fullName);
