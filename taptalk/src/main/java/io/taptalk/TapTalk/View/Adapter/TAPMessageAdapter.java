@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -338,7 +339,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void openImageDetailPreview(String fileID) {
             Intent intent = new Intent(itemView.getContext(), TAPImageDetailPreview.class);
             intent.putExtra(IMAGE_FILE_ID, fileID);
-            itemView.getContext().startActivity(intent);
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    ((Activity) itemView.getContext()),
+                    rcivImageBody,
+                    itemView.getContext().getString(R.string.tap_transition_view_image));
+            itemView.getContext().startActivity(intent, options.toBundle());
         }
 
         private void setProgress(TAPMessageModel item) {
@@ -864,9 +869,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void onBubbleClicked(TAPMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, ImageView ivMessageStatus, ImageView ivReply) {
         if (null != item.getFailedSend() && item.getFailedSend()) {
             resendMessage(item);
-        } else if ((null != item.getSending() && !item.getSending()) ||
+        } else if (item.getType() == TYPE_TEXT &&
+                ((null != item.getSending() && !item.getSending()) ||
                 (null != item.getDelivered() && item.getDelivered()) ||
-                (null != item.getIsRead() && item.getIsRead())) {
+                (null != item.getIsRead() && item.getIsRead()))) {
             if (item.isExpanded()) {
                 // Shrink bubble
                 item.setExpanded(false);
