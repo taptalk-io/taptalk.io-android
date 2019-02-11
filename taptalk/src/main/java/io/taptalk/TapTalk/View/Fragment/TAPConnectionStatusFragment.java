@@ -116,7 +116,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
         } else {
             activity.runOnUiThread(() -> {
                 llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
-                tvConnectionStatus.setText(getString(R.string.connected));
+                tvConnectionStatus.setText(getString(R.string.tap_connected));
                 ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
                 ivConnectionStatus.setVisibility(View.VISIBLE);
                 pbConnecting.setVisibility(View.GONE);
@@ -136,7 +136,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
-            tvConnectionStatus.setText(R.string.connecting);
+            tvConnectionStatus.setText(R.string.tap_connecting);
             ivConnectionStatus.setVisibility(View.GONE);
             pbConnecting.setVisibility(View.VISIBLE);
             llConnectionStatus.setVisibility(View.VISIBLE);
@@ -150,7 +150,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_offline);
-            tvConnectionStatus.setText(R.string.waiting_for_network);
+            tvConnectionStatus.setText(R.string.tap_waiting_for_network);
             ivConnectionStatus.setVisibility(View.GONE);
             pbConnecting.setVisibility(View.VISIBLE);
             llConnectionStatus.setVisibility(View.VISIBLE);

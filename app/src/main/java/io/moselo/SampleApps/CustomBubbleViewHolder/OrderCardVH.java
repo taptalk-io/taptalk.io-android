@@ -126,17 +126,17 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 if (isCustomer(order)) {
                     showOrderPrice(order, false);
-                    showActionButton(c.getString(io.taptalk.Taptalk.R.string.review_and_confirm));
+                    showActionButton("Review and Confirm");
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, true);
-                    showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.waiting_user_confirmation), c.getResources().getColor(io.taptalk.Taptalk.R.color.orangeish));
+                    showOrderStatus("Waiting User Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
             case 2:
                 // Order is canceled
-                showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_canceled), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
+                showOrderStatus("Order Canceled", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -153,17 +153,17 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 if (isCustomer(order)) {
                     showOrderPrice(order, true);
-                    showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.waiting_confirmation), c.getResources().getColor(io.taptalk.Taptalk.R.color.orangeish));
+                    showOrderStatus("Waiting Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, false);
-                    showActionButton(c.getString(io.taptalk.Taptalk.R.string.review_and_confirm));
+                    showActionButton("Review and Confirm");
                     tvOrderStatus.setVisibility(View.GONE);
                 }
                 break;
             case 4:
                 // Order is canceled
-                showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_declined), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
+                showOrderStatus("Order Declined", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -181,17 +181,17 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 if (isCustomer(order)) {
                     showOrderPrice(order, false);
-                    showActionButton(c.getString(io.taptalk.Taptalk.R.string.pay_now));
+                    showActionButton("Pay Now");
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, true);
-                    showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.waiting_payment), c.getResources().getColor(io.taptalk.Taptalk.R.color.orangeish));
+                    showOrderStatus("Waiting Payment", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
             case 7:
                 // Order is canceled
-                showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.user_disagreed), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
+                showOrderStatus("User Disagreed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -208,11 +208,11 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 if (isCustomer(order)) {
                     showOrderPrice(order, false);
-                    showActionButton(c.getString(io.taptalk.Taptalk.R.string.pay_now));
+                    showActionButton("Pay Now");
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, true);
-                    showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.payment_incomplete), c.getResources().getColor(io.taptalk.Taptalk.R.color.orangeish));
+                    showOrderStatus("Payment Incomplete", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
@@ -225,16 +225,16 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 clCourier.setVisibility(View.GONE);
                 llOrderStatusGuide.setVisibility(View.GONE);
                 if (isCustomer(order)) {
-                    showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.payment_confirmed), c.getResources().getColor(io.taptalk.Taptalk.R.color.tealish));
+                    showOrderStatus("Payment Confirmed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 } else {
-                    showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.active_order), c.getResources().getColor(io.taptalk.Taptalk.R.color.tealish));
-                    showActionButton(c.getString(io.taptalk.Taptalk.R.string.mark_as_finished));
+                    showOrderStatus("Active Order", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
+                    showActionButton("Mark as Finished");
                 }
                 break;
             case 10:
                 // Order is canceled
-                showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_overpaid), c.getResources().getColor(io.taptalk.Taptalk.R.color.tomato));
+                showOrderStatus("Order Overpaid", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -250,17 +250,17 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 clNotes.setVisibility(View.GONE);
                 clCourier.setVisibility(View.GONE);
                 if (isCustomer(order)) {
-                    showActionButton(c.getString(io.taptalk.Taptalk.R.string.write_review));
+                    showActionButton("Write Review");
                     llOrderStatusGuide.setVisibility(View.VISIBLE);
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
-                    showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_completed), c.getResources().getColor(io.taptalk.Taptalk.R.color.tealish));
+                    showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
                     llOrderStatusGuide.setVisibility(View.GONE);
                 }
                 break;
             case 12:
                 // Order is completed for both sides
-                showOrderStatus(c.getString(io.taptalk.Taptalk.R.string.order_completed), c.getResources().getColor(io.taptalk.Taptalk.R.color.tealish));
+                showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -365,7 +365,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
             int size = order.getProducts().size();
             if (1 < size) {
                 // Show more items layout if there are more than 1 product
-                tvButtonMoreItems.setText(String.format(Locale.getDefault(), itemView.getContext().getString(io.taptalk.Taptalk.R.string.order_more_items), size));
+                tvButtonMoreItems.setText(String.format(Locale.getDefault(), "And %d More Items", size));
                 clButtonMoreItems.setVisibility(View.VISIBLE);
             } else {
                 clButtonMoreItems.setVisibility(View.GONE);

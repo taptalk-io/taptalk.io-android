@@ -236,7 +236,7 @@ public class TAPSearchChatFragment extends Fragment {
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
-                sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.chats_and_contacts));
+                sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 for (TAPMessageEntity entity : entities) {
                     TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
@@ -271,7 +271,7 @@ public class TAPSearchChatFragment extends Fragment {
             if (entities.size() > 0) {
                 if (vm.getSearchResults().size() == 0) {
                     TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
-                    sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.chats_and_contacts));
+                    sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                     vm.addSearchResult(sectionTitleChatsAndContacts);
                 }
                 for (TAPUserModel contact : entities) {
@@ -308,7 +308,7 @@ public class TAPSearchChatFragment extends Fragment {
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleMessages = new TAPSearchChatModel(SECTION_TITLE);
-                sectionTitleMessages.setSectionTitle(getString(R.string.messages));
+                sectionTitleMessages.setSectionTitle(getString(R.string.tap_messages));
                 vm.addSearchResult(sectionTitleMessages);
                 for (TAPMessageEntity entity : entities) {
                     TAPSearchChatModel result = new TAPSearchChatModel(MESSAGE_ITEM);

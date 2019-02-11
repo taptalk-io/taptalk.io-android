@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_f3"
+    android:background="@color/tap_white_f3"
     tools:context=".View.Activity.TAPSearchContactActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/tap_white"
         android:elevation="2dp"
         android:transitionName="searchBar"
         android:foreground="?attr/selectableItemBackground">
@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/greenBlue"
+            android:tint="@color/tap_greenBlue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +34,7 @@
             style="@style/HomingPigeonSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:hint="@string/search_for_contacts"
+            android:hint="@string/tap_search_for_contacts"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -90,8 +90,8 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/tap_font_neueeinstellungregular"
                     android:gravity="center"
-                    android:text="@string/cant_find_person"
-                    android:textColor="@color/black_44"
+                    android:text="@string/tap_cant_find_person"
+                    android:textColor="@color/tap_black_44"
                     android:textSize="13sp" />
 
                 <TextView
@@ -99,8 +99,8 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/tap_font_neueeinstellungbold"
                     android:gravity="center"
-                    android:text="@string/add_new_contact"
-                    android:textColor="@color/greenBlue"
+                    android:text="@string/tap_add_new_contact"
+                    android:textColor="@color/tap_greenBlue"
                     android:textSize="13sp" />
 
             </LinearLayout>

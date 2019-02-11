@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_f3"
+    android:background="@color/tap_white_f3"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPProfileActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -17,7 +17,7 @@
             android:id="@+id/collapsing_toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="@color/white"
+            app:contentScrim="@color/tap_white"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:scrimAnimationDuration="200"
             app:title=" ">
@@ -31,7 +31,7 @@
                     android:id="@+id/iv_profile"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:background="@color/white"
+                    android:background="@color/tap_white"
                     android:scaleType="centerCrop"
                     app:layout_constraintDimensionRatio="H,1:1"
                     tools:src="@color/colorAccent" />
@@ -66,7 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:alpha="0"
-        android:background="@color/white"
+        android:background="@color/tap_white"
         android:elevation="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -80,7 +80,7 @@
             android:layout_marginStart="64dp"
             android:layout_marginEnd="64dp"
             android:alpha="0"
-            android:background="@color/white"
+            android:background="@color/tap_white"
             tools:text="Arsya Nafisa" />
 
     </LinearLayout>
@@ -111,14 +111,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:alpha="0"
-                android:background="@color/grey_ea"
+                android:background="@color/tap_grey_ea"
                 android:elevation="2dp" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_notifications"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white"
+                android:background="@color/tap_white"
                 android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:orientation="horizontal">
@@ -138,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/notifications"
+                    android:text="@string/tap_notifications"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_notifications"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -158,14 +158,14 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/grey_ea"
+                android:background="@color/tap_grey_ea"
                 android:elevation="2dp" />
 
             <LinearLayout
                 android:id="@+id/ll_button_conversation_color"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white"
+                android:background="@color/tap_white"
                 android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
@@ -182,21 +182,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/conversation_color" />
+                    android:text="@string/tap_conversation_color" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/grey_ea"
+                android:background="@color/tap_grey_ea"
                 android:elevation="2dp" />
 
             <LinearLayout
                 android:id="@+id/ll_button_block_or_view"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white"
+                android:background="@color/tap_white"
                 android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
@@ -215,21 +215,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/block_user" />
+                    android:text="@string/tap_block_user" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/grey_ea"
+                android:background="@color/tap_grey_ea"
                 android:elevation="2dp" />
 
             <LinearLayout
                 android:id="@+id/ll_button_clear_chat"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white"
+                android:background="@color/tap_white"
                 android:elevation="2dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
@@ -248,8 +248,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/clear_chat"
-                    android:textColor="@color/tomato" />
+                    android:text="@string/tap_clear_chat"
+                    android:textColor="@color/tap_tomato" />
 
             </LinearLayout>
 

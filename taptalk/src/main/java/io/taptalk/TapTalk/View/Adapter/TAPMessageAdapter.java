@@ -585,7 +585,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         // Message failed to send
         if (null != item.getFailedSend() && item.getFailedSend()) {
-            tvMessageStatus.setText(itemView.getContext().getString(R.string.message_send_failed));
+            tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
             if (null != ivMessageStatus) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_purple);
                 ivMessageStatus.setVisibility(View.VISIBLE);
@@ -602,7 +602,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         // Message is sending
         else if (null != item.getSending() && item.getSending()) {
             item.setNeedAnimateSend(true);
-            tvMessageStatus.setText(itemView.getContext().getString(R.string.sending));
+            tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_sending));
 
             flBubble.setTranslationX(initialTranslationX);
             if (null != ivSending) {

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:animateLayoutChanges="true"
-        android:background="@color/white"
+        android:background="@color/tap_white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
 
@@ -31,7 +31,7 @@
             style="@style/HomingPigeonSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:hint="@string/search_chat_placeholder"
+            android:hint="@string/tap_search_chat_placeholder"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -56,7 +56,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/white_f3"
+        android:background="@color/tap_white_f3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 

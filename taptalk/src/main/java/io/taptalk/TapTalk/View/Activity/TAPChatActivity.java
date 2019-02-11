@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -318,9 +317,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 !TAPUtils.getInstance().hasPermissions(
                         TAPChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             new TapTalkDialog.Builder(TAPChatActivity.this)
-                    .setTitle(getString(R.string.permission_request))
-                    .setMessage(getString(R.string.write_storage_permission))
-                    .setPrimaryButtonTitle(getString(R.string.ok))
+                    .setTitle(getString(R.string.tap_permission_request))
+                    .setMessage(getString(R.string.tap_write_storage_permission))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setCancelable(false)
                     .setPrimaryButtonListener(v -> {
                                 ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK);
@@ -381,7 +380,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         if (null == vm.getRoom()) {
-            Toast.makeText(TapTalk.appContext, getString(R.string.error_room_not_found), Toast.LENGTH_SHORT).show();
+            Toast.makeText(TapTalk.appContext, getString(R.string.tap_error_room_not_found), Toast.LENGTH_SHORT).show();
             finish();
             return false;
         }
@@ -867,7 +866,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
             vStatusBadge.setVisibility(View.VISIBLE);
             vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
-            tvRoomStatus.setText(getString(R.string.active_now));
+            tvRoomStatus.setText(getString(R.string.tap_active_now));
             vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         });
     }
@@ -907,7 +906,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
             glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
-            tvRoomTypingStatus.setText(getString(R.string.typing));
+            tvRoomTypingStatus.setText(getString(R.string.tap_typing));
         });
     }
 

@@ -49,7 +49,7 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
 
     public void showScanner() {
         state = ScanState.SCAN;
-        tvToolbarTitle.setText(getResources().getText(R.string.scan_qr_code));
+        tvToolbarTitle.setText(getResources().getText(R.string.tap_scan_qr_code));
         flToolbar.setVisibility(View.VISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
@@ -60,7 +60,7 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
 
     public void showQR() {
         state = ScanState.SHOW;
-        tvToolbarTitle.setText(getResources().getText(R.string.show_qr_code));
+        tvToolbarTitle.setText(getResources().getText(R.string.tap_show_qr_code));
         flToolbar.setVisibility(View.VISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()

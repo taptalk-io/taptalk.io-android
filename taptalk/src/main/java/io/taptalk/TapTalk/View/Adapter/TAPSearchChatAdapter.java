@@ -117,9 +117,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             tvUserName.setText(message.getRoomName());
 
             // Set message body with highlighted text
-            String highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.highlighted_string), "$1"));
+            String highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
             tvLastMessage.setText(TAPDataManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
-                    Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.you), highlightedText)) : Html.fromHtml(highlightedText));
+                    Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
 
             // Set message timestamp
             // TODO: 17 October 2018 PROCESS DATE OUTSIDE BIND
@@ -200,7 +200,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             // Set room name with highlighted text
-            String highlightedText = room.getRoomName().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.highlighted_string), "$1"));
+            String highlightedText = room.getRoomName().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
             // Change avatar icon
@@ -215,7 +215,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 tvBadgeUnread.setText(room.getUnreadCount() + "");
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else if (unreadCount >= 100) {
-                tvBadgeUnread.setText(R.string.over_99);
+                tvBadgeUnread.setText(R.string.tap_over_99);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else {
                 tvBadgeUnread.setVisibility(View.GONE);

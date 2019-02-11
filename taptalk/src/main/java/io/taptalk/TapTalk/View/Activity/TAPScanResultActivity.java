@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -229,7 +228,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             // TODO: 31/10/18 ini textnya masih dummy
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setTitle("Error")
-                    .setMessage(getString(R.string.api_call_return_error))
+                    .setMessage(getString(R.string.tap_api_call_return_error))
                     .setPrimaryButtonTitle("OK")
                     .setPrimaryButtonListener(v -> {
                     }).show();
@@ -261,7 +260,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             // TODO: 31/10/18 ini textnya masih dummy
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setTitle("Error")
-                    .setMessage(getString(R.string.api_call_return_error))
+                    .setMessage(getString(R.string.tap_api_call_return_error))
                     .setPrimaryButtonTitle("OK")
                     .setPrimaryButtonListener(v -> {
                         onBackPressed();
@@ -284,7 +283,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
                     contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad"));
             tvAlreadyContact.setText(Html.fromHtml("<b>" + contactModel.getName() + "</b> "
-                    + getResources().getString(R.string.is_already_in_your_contacts)));
+                    + getResources().getString(R.string.tap_is_already_in_your_contacts)));
             cvResult.animate().alpha(1f).withEndAction(() -> {
                 llButton.animate().alpha(0f).start();
                 llTextUsername.animate().alpha(0f).withEndAction(() -> {
@@ -322,9 +321,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     public void animateAddSuccess(TAPUserModel contactModel) {
         runOnUiThread(() -> {
-            tvAddSuccess.setText(Html.fromHtml(getResources().getString(R.string.you_have_added)
-                    + " <b>" + contactModel.getName() + "</b> "
-                    + getResources().getString(R.string.to_your_contacts)));
+            tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.you_have_added_to_your_contacts), contactModel.getName())));
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             cvResult.animate().alpha(1f).withEndAction(() -> {

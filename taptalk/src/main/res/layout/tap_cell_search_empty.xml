@@ -29,8 +29,8 @@
             android:fontFamily="@font/tap_font_neueeinstellungbold"
             android:gravity="center_horizontal"
             android:letterSpacing="-0.02"
-            android:text="@string/oops"
-            android:textColor="@color/black_44"
+            android:text="@string/tap_oops"
+            android:textColor="@color/tap_black_44"
             android:textSize="15sp" />
 
         <TextView
@@ -39,8 +39,8 @@
             android:fontFamily="@font/tap_font_neueeinstellungregular"
             android:gravity="center_horizontal"
             android:letterSpacing="-0.02"
-            android:text="@string/could_not_find_any_results"
-            android:textColor="@color/black_44"
+            android:text="@string/tap_could_not_find_any_results"
+            android:textColor="@color/tap_black_44"
             android:textSize="15sp" />
 
     </LinearLayout>

@@ -25,9 +25,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
@@ -119,8 +117,8 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         new TapTalkDialog.Builder(TAPCreateNewGroupActivity.this)
-                                .setTitle(getString(R.string.cannot_add_more_people))
-                                .setMessage(getString(R.string.group_limit_reached))
+                                .setTitle(getString(R.string.tap_cannot_add_more_people))
+                                .setMessage(getString(R.string.tap_group_limit_reached))
                                 .setPrimaryButtonTitle("OK")
                                 .setPrimaryButtonListener(v -> {
 
@@ -142,7 +140,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                tvMemberCount.setText(String.format(getString(R.string.tap_group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
                 return true;
             }
 
@@ -157,7 +155,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                tvMemberCount.setText(String.format(getString(R.string.tap_group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
             }
         };
     }
