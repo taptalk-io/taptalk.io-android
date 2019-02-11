@@ -183,17 +183,17 @@ public class TAPDefaultConstant {
     }
 
     public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://engine.taptalk.io:8080/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://engine.taptalk.io:8080/";
-        public static final String BASE_WSS_PRODUCTION = "wss://engine.taptalk.io:8080/pigeon";
+        public static final String BASE_URL_API_PRODUCTION = "https://hp.moselo.com:8080/api/v1/";
+        public static final String BASE_URL_SOCKET_PRODUCTION = "https://hp.moselo.com:8080/";
+        public static final String BASE_WSS_PRODUCTION = "wss://hp.moselo.com:8080/pigeon";
 
-        public static final String BASE_URL_API_STAGING = "https://engine-staging.taptalk.io:8080/api/v1/";
-        public static final String BASE_URL_SOCKET_STAGING = "https://engine-staging.taptalk.io:8080/";
-        public static final String BASE_WSS_STAGING = "wss://engine-staging.taptalk.io:8080/pigeon";
+        public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com:8080/api/v1/";
+        public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com:8080/";
+        public static final String BASE_WSS_STAGING = "wss://hp-staging.moselo.com:8080/pigeon";
 
-        public static final String BASE_URL_API_DEVELOPMENT = "https://engine-dev.taptalk.io:8080/api/v1/";
-        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://engine-dev.taptalk.io:8080/";
-        public static final String BASE_WSS_DEVELOPMENT = "wss://engine-dev.taptalk.io:8080/pigeon";
+        public static final String BASE_URL_API_DEVELOPMENT = "https://hp-dev.moselo.com:8080/api/v1/";
+        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://hp-dev.moselo.com:8080/";
+        public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com:8080/pigeon";
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
