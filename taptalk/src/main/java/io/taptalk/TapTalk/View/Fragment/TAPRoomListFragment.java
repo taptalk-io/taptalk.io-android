@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
@@ -111,7 +109,7 @@ public class TAPRoomListFragment extends Fragment {
         super.onResume();
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
-        TAPChatManager.getInstance().saveMessageToDatabase();
+        new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
         updateQueryRoomListFromBackground();
         addNetworkListener();
         TAPBroadcastManager.register(getContext(), receiver, REFRESH_TOKEN_RENEWED);
@@ -667,7 +665,7 @@ public class TAPRoomListFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             switch (action) {
-                case REFRESH_TOKEN_RENEWED :
+                case REFRESH_TOKEN_RENEWED:
                     viewLoadedSequence();
                     break;
             }
