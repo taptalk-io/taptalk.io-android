@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_f8"
+    android:background="@color/tap_white_f8"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/tap_white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
 
@@ -68,7 +68,7 @@
                 android:id="@+id/ll_button_new_contact"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white"
+                android:background="@color/tap_white"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
                 android:orientation="horizontal">
@@ -91,13 +91,13 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/grey_ea" />
+                android:background="@color/tap_grey_ea" />
 
             <LinearLayout
                 android:id="@+id/ll_button_scan_qr"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white"
+                android:background="@color/tap_white"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
                 android:orientation="horizontal">
@@ -120,13 +120,13 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/grey_ea" />
+                android:background="@color/tap_grey_ea" />
 
             <LinearLayout
                 android:id="@+id/ll_button_new_group"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/white"
+                android:background="@color/tap_white"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical"
                 android:orientation="horizontal">
@@ -170,7 +170,7 @@
                     android:fontFamily="@font/tap_font_neueeinstellungregular"
                     android:gravity="center"
                     android:text="@string/tap_cant_find_contact"
-                    android:textColor="@color/grey_9b"
+                    android:textColor="@color/tap_grey_9b"
                     android:textSize="13sp" />
 
                 <TextView
@@ -179,7 +179,7 @@
                     android:fontFamily="@font/tap_font_neueeinstellungbold"
                     android:gravity="center"
                     android:text="@string/tap_view_blocked_contacts"
-                    android:textColor="@color/grey_9b"
+                    android:textColor="@color/tap_grey_9b"
                     android:textSize="13sp" />
 
             </LinearLayout>

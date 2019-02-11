@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:animateLayoutChanges="true"
-        android:background="@color/white"
+        android:background="@color/tap_white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
 
@@ -22,7 +22,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/greenBlue"
+            android:tint="@color/tap_greenBlue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +46,7 @@
             android:id="@+id/pb_search"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
-            android:indeterminateTint="@color/greenBlue"
+            android:indeterminateTint="@color/tap_greenBlue"
             android:padding="18dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -79,7 +79,7 @@
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="4sp"
         android:text="@string/tap_search_username_welcome_message"
-        android:textColor="@color/black_44"
+        android:textColor="@color/tap_black_44"
         android:textSize="15sp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
@@ -105,13 +105,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@color/white">
+            android:background="@color/tap_white">
 
             <ImageView
                 android:id="@+id/iv_expert_cover"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@color/mediumPurple"
+                android:background="@color/tap_mediumPurple"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
                 app:layout_constraintDimensionRatio="W, 7:25"
@@ -125,7 +125,7 @@
                 android:layout_height="64dp"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
-                app:civ_border_color="@color/white"
+                app:civ_border_color="@color/tap_white"
                 app:civ_border_width="4dp"
                 app:layout_constraintBottom_toBottomOf="@id/iv_expert_cover"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -156,7 +156,7 @@
                 android:gravity="center_horizontal"
                 android:letterSpacing="-0.01"
                 android:maxLines="2"
-                android:textColor="@color/black_44"
+                android:textColor="@color/tap_black_44"
                 android:textSize="14sp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -177,7 +177,7 @@
                 android:letterSpacing="-0.01"
                 android:lineSpacingExtra="3sp"
                 android:maxLines="1"
-                android:textColor="@color/grey_9b"
+                android:textColor="@color/tap_grey_9b"
                 android:textSize="13sp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -227,7 +227,7 @@
                     android:id="@+id/pb_button"
                     android:layout_width="22dp"
                     android:layout_height="22dp"
-                    android:indeterminateTint="@color/white"
+                    android:indeterminateTint="@color/tap_white"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -265,7 +265,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="-0.02"
             android:text="@string/tap_oops"
-            android:textColor="@color/black_44"
+            android:textColor="@color/tap_black_44"
             android:textSize="15sp" />
 
         <TextView
@@ -275,7 +275,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="-0.02"
             android:text="@string/tap_could_not_find_any_results"
-            android:textColor="@color/black_44"
+            android:textColor="@color/tap_black_44"
             android:textSize="15sp" />
 
     </LinearLayout>
@@ -284,7 +284,7 @@
         android:id="@+id/cl_connection_lost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cream_white"
+        android:background="@color/tap_cream_white"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
@@ -327,7 +327,7 @@
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/tap_font_neueeinstellungregular"
             android:text="@string/tap_please_check_your_connection"
-            android:textColor="@color/black_44"
+            android:textColor="@color/tap_black_44"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

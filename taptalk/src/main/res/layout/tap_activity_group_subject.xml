@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/tap_white"
     tools:context=".View.Activity.TAPGroupSubjectActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/tap_white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
 
@@ -22,7 +22,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/greenBlue"
+            android:tint="@color/tap_greenBlue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
-        android:background="@color/grey_d9"
+        android:background="@color/tap_grey_d9"
         app:layout_constraintTop_toBottomOf="@id/rv_group_members" />
 
     <TextView
@@ -111,7 +111,7 @@
         android:fontFamily="@font/tap_font_latoregular"
         android:letterSpacing="-0.02"
         android:text="@string/tap_change_group_image_guide"
-        android:textColor="@color/black_44"
+        android:textColor="@color/tap_black_44"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -143,8 +143,8 @@
         android:inputType="text"
         android:letterSpacing="-0.02"
         android:maxLines="1"
-        android:textColor="@color/black_44"
-        android:textColorHint="@color/grey_9b"
+        android:textColor="@color/tap_black_44"
+        android:textColorHint="@color/tap_grey_9b"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

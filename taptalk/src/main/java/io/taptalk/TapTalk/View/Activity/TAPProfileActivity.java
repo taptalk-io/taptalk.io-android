@@ -111,10 +111,10 @@ public class TAPProfileActivity extends TAPBaseActivity {
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
-                        getResources().getColor(R.color.transparent_black_40),
-                        getResources().getColor(R.color.transparent_black_18),
-                        getResources().getColor(R.color.transparent_black),
-                        getResources().getColor(R.color.transparent_black_40)}));
+                        getResources().getColor(R.color.tap_transparent_black_40),
+                        getResources().getColor(R.color.tap_transparent_black_18),
+                        getResources().getColor(R.color.tap_transparent_black),
+                        getResources().getColor(R.color.tap_transparent_black_40)}));
 
         swNotifications.setChecked(!vm.getRoom().isMuted());
         swNotifications.setOnCheckedChangeListener(notificationCheckListener);
@@ -248,8 +248,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionGreen() {
             if (null == transitionToGreen) {
                 transitionToGreen = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.white),
-                        getResources().getColor(R.color.greenBlue));
+                        getResources().getColor(R.color.tap_white),
+                        getResources().getColor(R.color.tap_greenBlue));
                 transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToGreen.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -260,8 +260,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionWhite() {
             if (null == transitionToWhite) {
                 transitionToWhite = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.greenBlue),
-                        getResources().getColor(R.color.white));
+                        getResources().getColor(R.color.tap_greenBlue),
+                        getResources().getColor(R.color.tap_white));
                 transitionToWhite.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToWhite.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -291,8 +291,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionGreen() {
             if (null == transitionToGreen) {
                 transitionToGreen = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.grey_9b),
-                        getResources().getColor(R.color.greenBlue));
+                        getResources().getColor(R.color.tap_grey_9b),
+                        getResources().getColor(R.color.tap_greenBlue));
                 transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToGreen.addUpdateListener(valueAnimator -> ivNotifications.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -303,8 +303,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionGrey() {
             if (null == transitionToGrey) {
                 transitionToGrey = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.greenBlue),
-                        getResources().getColor(R.color.grey_9b));
+                        getResources().getColor(R.color.tap_greenBlue),
+                        getResources().getColor(R.color.tap_grey_9b));
                 transitionToGrey.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToGrey.addUpdateListener(valueAnimator -> ivNotifications.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));

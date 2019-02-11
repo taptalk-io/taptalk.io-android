@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/tap_white"
     tools:context=".View.Fragment.TAPShowQRFragment">
 
     <ImageView
@@ -42,7 +42,7 @@
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="4sp"
         android:text="@string/tap_scan_qr_code_guide"
-        android:textColor="@color/grey_9b"
+        android:textColor="@color/tap_grey_9b"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
         app:layout_constraintEnd_toEndOf="parent"

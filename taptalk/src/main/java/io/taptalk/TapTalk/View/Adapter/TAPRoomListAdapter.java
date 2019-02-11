@@ -89,14 +89,14 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Change avatar icon and background
             if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
                 // Item is selected
-                clContainer.setBackgroundColor(resource.getColor(R.color.transparent_black_18));
+                clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_black_18));
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_select));
                 ivAvatarIcon.setVisibility(View.VISIBLE);
                 vSeparator.setVisibility(View.GONE);
             } else {
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-                clContainer.setBackgroundColor(resource.getColor(R.color.transparent_white));
+                clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_white));
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
                 ivAvatarIcon.setVisibility(View.GONE);
                 vSeparator.setVisibility(View.VISIBLE);

@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/white"
+    android:background="@color/tap_white"
     android:orientation="vertical">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_button_search"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/tap_white"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
 
@@ -33,7 +33,7 @@
             android:layout_marginEnd="72dp"
             android:fontFamily="@font/tap_font_latoregular"
             android:text="@string/tap_search"
-            android:textColor="@color/grey_9b"
+            android:textColor="@color/tap_grey_9b"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
         android:id="@+id/cl_selection"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/greenBlue"
+        android:background="@color/tap_greenBlue"
         android:transitionName="searchBar">
 
         <ImageView
@@ -68,7 +68,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/tap_font_latoregular"
             android:maxLines="1"
-            android:textColor="@color/white"
+            android:textColor="@color/tap_white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_mute"
@@ -125,7 +125,7 @@
         android:id="@+id/ll_room_empty"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/white_f3"
+        android:background="@color/tap_white_f3"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
@@ -147,7 +147,7 @@
             android:fontFamily="@font/tap_font_neueeinstellungbold"
             android:gravity="center"
             android:text="@string/tap_no_chats"
-            android:textColor="@color/black_44"
+            android:textColor="@color/tap_black_44"
             android:textSize="16sp" />
 
         <TextView
@@ -161,7 +161,7 @@
             android:gravity="center_horizontal"
             android:lineSpacingExtra="6sp"
             android:text="@string/tap_new_chat_guide"
-            android:textColor="@color/black_44"
+            android:textColor="@color/tap_black_44"
             android:textSize="13sp" />
 
     </LinearLayout>

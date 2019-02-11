@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/charcoal"
+    android:background="@color/tap_charcoal"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity">
 
     <android.support.v4.view.ViewPager
@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_cancel_btn"
         app:layout_constraintVertical_bias="0.0"
-        tools:background="@color/amethyst" />
+        tools:background="@color/tap_amethyst" />
 
     <TextView
         android:id="@+id/tv_cancel_btn"
@@ -31,7 +31,7 @@
         android:paddingEnd="16dp"
         android:paddingBottom="12dp"
         android:text="@string/tap_cancel"
-        android:textColor="@color/white"
+        android:textColor="@color/tap_white"
         android:textSize="17sp"
         app:layout_constraintEnd_toStartOf="@id/tv_multiple_image_indicator"
         app:layout_constraintHorizontal_bias="0.0"
@@ -46,7 +46,7 @@
         android:layout_marginEnd="16dp"
         android:gravity="end"
         android:letterSpacing="-0.02"
-        android:textColor="@color/white"
+        android:textColor="@color/tap_white"
         android:textSize="17sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,7 +95,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="10dp"
             android:text="@string/tap_send"
-            android:textColor="@color/white"
+            android:textColor="@color/tap_white"
             android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

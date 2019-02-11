@@ -4,7 +4,7 @@
     android:id="@+id/fl_setup_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/transparent_charcoal"
+    android:background="@color/tap_transparent_charcoal"
     android:elevation="4dp">
 
     <android.support.constraint.ConstraintLayout
@@ -55,7 +55,7 @@
             android:lineSpacingExtra="6sp"
             android:maxLines="1"
             android:text="@string/tap_make_sure_you_have_a_stable_connection"
-            android:textColor="@color/black_44"
+            android:textColor="@color/tap_black_44"
             android:textSize="13sp"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -69,7 +69,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginEnd="16dp"
-            android:indeterminateTint="@color/amethyst"
+            android:indeterminateTint="@color/tap_amethyst"
             app:layout_constraintBottom_toBottomOf="@id/tv_setup_chat_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_setup_chat_description"
