@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Activity;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPTouchImageView;
@@ -12,6 +11,7 @@ import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.Taptalk.R;
 
 public class TAPImageDetailPreview extends AppCompatActivity {
+
     TAPTouchImageView tivImageDetail;
     String localID;
 
@@ -22,11 +22,21 @@ public class TAPImageDetailPreview extends AppCompatActivity {
         initView();
         getIntentFromOtherPage();
 
+        supportPostponeEnterTransition();
         new Thread(() -> {
             BitmapDrawable image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(localID);
-            if (null != image)
-                runOnUiThread(() -> tivImageDetail.setImageDrawable(image));
+            if (null != image) {
+                runOnUiThread(() -> {
+                    tivImageDetail.setImageDrawable(image);
+                    supportStartPostponedEnterTransition();
+                });
+            }
         }).start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        supportFinishAfterTransition();
     }
 
     private void initView() {

@@ -125,6 +125,7 @@
     <!--Intent-->
     <string name="tap_intent_pick_image">image/*</string>
     <string name="tap_intent_select_picture">Select Picture</string>
+    <string name="tap_transition_view_image">tap_view_image</string>
 
     <!--General-->
     <string name="tap_add_a_caption">Add a caption</string>
