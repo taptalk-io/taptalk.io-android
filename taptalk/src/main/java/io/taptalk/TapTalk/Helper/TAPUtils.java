@@ -334,11 +334,11 @@ public class TAPUtils {
         } else {
             // Permission granted
             Intent intent = new Intent();
-            intent.setType(activity.getString(R.string.intent_pick_image));
+            intent.setType(activity.getString(R.string.tap_intent_pick_image));
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
             intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.intent_select_picture)), requestCode);
+                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_select_picture)), requestCode);
             }
         }
     }
@@ -418,12 +418,12 @@ public class TAPUtils {
                                 if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
                                     TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
                                 } else {
-                                    listener.onSelectFailed(TapTalk.appContext.getString(R.string.error_open_room_failed));
+                                    listener.onSelectFailed(TapTalk.appContext.getString(R.string.tap_error_open_room_failed));
                                 }
                             }
                         });
                     } else {
-                        listener.onSelectFailed(TapTalk.appContext.getString(R.string.error_open_room_failed));
+                        listener.onSelectFailed(TapTalk.appContext.getString(R.string.tap_error_open_room_failed));
                     }
                 }
             }
@@ -524,7 +524,7 @@ public class TAPUtils {
         // TODO: 31/10/18 ini textnya masih dummy
         new TapTalkDialog.Builder(context)
                 .setTitle("Error")
-                .setMessage(context.getString(R.string.no_internet_show_error))
+                .setMessage(context.getString(R.string.tap_no_internet_show_error))
                 .setPrimaryButtonTitle("OK")
                 .setPrimaryButtonListener(v -> {
                 }).show();

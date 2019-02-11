@@ -60,8 +60,8 @@ public class TAPAttachmentModel {
 
         int[] titleResIds = {
 //                R.string.document,
-                R.string.camera,
-                R.string.gallery,
+                R.string.tap_camera,
+                R.string.tap_gallery,
 //                R.string.audio,
 //                R.string.location,
 //                R.string.contact

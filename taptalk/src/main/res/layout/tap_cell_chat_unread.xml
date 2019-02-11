@@ -12,10 +12,10 @@
         style="@style/HomingPigeonMessageLog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/grey_e4"
+        android:background="@color/tap_grey_e4"
         android:gravity="center"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:text="@string/unread_messages" />
+        android:text="@string/tap_unread_messages" />
 
 </android.support.constraint.ConstraintLayout>

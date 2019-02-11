@@ -111,7 +111,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             tvProductName.setText(item.getName());
             tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
             if ("".equals(item.getDescription()))
-                tvProductDescription.setText(itemView.getResources().getString(R.string.no_description));
+                tvProductDescription.setText(itemView.getResources().getString(R.string.tap_no_description));
             else {
                 tvProductDescription.setText(item.getDescription());
             }
@@ -120,12 +120,12 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 String ratingString = item.getRating();
                 ivRatingIcon.setVisibility(View.VISIBLE);
                 tvRating.setText(ratingString);
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.purply));
+                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tap_purply));
             } else {
                 // Product has no rating
                 ivRatingIcon.setVisibility(View.GONE);
-                tvRating.setText(itemView.getContext().getString(R.string.no_review_yet));
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.grey_9b));
+                tvRating.setText(itemView.getContext().getString(R.string.tap_no_review_yet));
+                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tap_grey_9b));
             }
 
             flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());

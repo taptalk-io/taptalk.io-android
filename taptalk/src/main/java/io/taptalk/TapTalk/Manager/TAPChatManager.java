@@ -471,7 +471,7 @@ public class TAPChatManager {
         TAPMessageModel messageModel;
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
-                    TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
+                    TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
@@ -484,7 +484,7 @@ public class TAPChatManager {
                 data.put(USER_INFO, getUserInfo());
             }
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                    TapTalk.appContext.getString(R.string.emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.photo) : caption),
+                    TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
