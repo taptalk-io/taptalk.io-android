@@ -401,7 +401,7 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel(
                 getMessageID(),
                 getLocalID(),
-                getLocalID(),
+                getFilterID(),
                 getBody(),
                 getRoom(),
                 getType(),
