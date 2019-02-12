@@ -552,12 +552,14 @@ public class TAPRoomListFragment extends Fragment {
                 if (null == response.getContacts() || response.getContacts().isEmpty()) {
                     return;
                 }
-                List<TAPUserModel> users = new ArrayList<>();
-                for (TAPContactModel contact : response.getContacts()) {
-                    users.add(contact.getUser().setUserAsContact());
-                }
-                TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                TAPContactManager.getInstance().updateUserDataMap(users);
+                new Thread(() -> {
+                    List<TAPUserModel> users = new ArrayList<>();
+                    for (TAPContactModel contact : response.getContacts()) {
+                        users.add(contact.getUser().setUserAsContact());
+                    }
+                    TAPDataManager.getInstance().insertMyContactToDatabase(users);
+                    TAPContactManager.getInstance().updateUserDataMap(users);
+                }).start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -570,7 +572,7 @@ public class TAPRoomListFragment extends Fragment {
             if (null == response || response.getUsers().isEmpty()) {
                 return;
             }
-            TAPContactManager.getInstance().updateUserDataMap(response.getUsers());
+            new Thread(() -> TAPContactManager.getInstance().updateUserDataMap(response.getUsers())).start();
         }
     };
 
