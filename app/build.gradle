@@ -65,9 +65,23 @@ android {
             applicationIdSuffix '.staging'
             versionNameSuffix '-STAGING'
         }
+        stagingUpload {
+            signingConfig signingConfigs.release
+            debuggable false
+            minifyEnabled false
+            applicationIdSuffix '.staging'
+            versionNameSuffix '-STAGING'
+        }
         dev {
             signingConfig signingConfigs.debug
             debuggable true
+            minifyEnabled false
+            applicationIdSuffix '.dev'
+            versionNameSuffix '-DEV'
+        }
+        devUpload {
+            signingConfig signingConfigs.release
+            debuggable false
             minifyEnabled false
             applicationIdSuffix '.dev'
             versionNameSuffix '-DEV'
@@ -109,7 +123,7 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.3.0'
 
     //FireBase
-    implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-core:16.0.7'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
 
     //Glide
