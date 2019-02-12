@@ -464,8 +464,7 @@ public class TAPDataManager {
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
-        List<TAPMessageEntity> messageToBeSave = new ArrayList<>(messageEntities);
-        TAPDatabaseManager.getInstance().insert(new ArrayList<>(messageToBeSave), isClearSaveMessages);
+        TAPDatabaseManager.getInstance().insert(new ArrayList<>(messageEntities), isClearSaveMessages);
     }
 
     public void insertToDatabase(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {

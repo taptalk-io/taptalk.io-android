@@ -59,7 +59,6 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
-import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -74,7 +73,6 @@ import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
-import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -122,6 +120,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
+import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 
 public class TAPChatActivity extends TAPBaseChatActivity {
 
@@ -206,9 +205,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage(), false);
-        addNetworkListener();
         callApiGetUserByUserID();
-        if (vm.isInitialAPICallFinished()) {
+        if (vm.isInitialAPICallFinished() && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
             callApiAfter();
         }
     }
@@ -217,7 +215,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     protected void onPause() {
         super.onPause();
         saveDraftToManager();
-        removeNetworkListener();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
     }
@@ -228,7 +225,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             hideKeyboards();
         } else {
             //TAPNotificationManager.getInstance().updateUnreadCount();
-            TAPChatManager.getInstance().putUnsentMessageToList();
+            new Thread(() -> TAPChatManager.getInstance().putUnsentMessageToList()).start();
             super.onBackPressed();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
@@ -529,8 +526,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
                     callApiGetUserByUserID();
-                    callApiAfter();
                 }
+                callApiAfter();
                 restartFailedDownloads();
             }
         };
@@ -882,7 +879,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void sendTypingEmit(boolean isTyping) {
-        if (TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTED) {
+        if (TAPConnectionManager.getInstance().getConnectionStatus() != CONNECTED) {
             return;
         }
         String currentRoomID = vm.getRoom().getRoomID();
@@ -926,14 +923,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             TAPChatManager.getInstance().removeDraft();
         }
-    }
-
-    private void addNetworkListener() {
-        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
-    }
-
-    private void removeNetworkListener() {
-        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 
     private void openImagePreviewPage(ArrayList<TAPImagePreviewModel> imageUris) {
@@ -993,7 +982,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (vm.getMessageModels().size() > 0 && !TAPDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
                 TAPDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
-                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), messageAfterView);
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
+                        messageAfterView);
             } else if (vm.getMessageModels().size() > 0) {
                 TAPDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
@@ -1006,7 +996,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void restartFailedDownloads() {
         if (TAPFileDownloadManager.getInstance().hasFailedDownloads() &&
                 TAPConnectionManager.getInstance().getConnectionStatus() ==
-                        TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                        CONNECTED) {
             // Notify chat bubbles with failed download
             for (String localID : TAPFileDownloadManager.getInstance().getFailedDownloads()) {
                 if (vm.getMessagePointer().containsKey(localID)) {
@@ -1534,12 +1524,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onGallerySelected() {
             fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
-        }
-    };
-
-    private TapTalkNetworkInterface networkListener = () -> {
-        if (vm.isInitialAPICallFinished()) {
-            callApiAfter();
         }
     };
 
