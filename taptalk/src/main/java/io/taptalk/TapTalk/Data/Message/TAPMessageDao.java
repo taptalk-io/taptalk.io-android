@@ -58,10 +58,10 @@ public interface TAPMessageDao {
     @Query("select localID, roomName, roomImage, roomType, roomColor from Message_Table where roomID = :roomID")
     TAPMessageEntity getRoom(String roomID);
 
-    @Query("select count(isRead) from Message_Table where isRead = 0 and RoomID like :roomID and userID not like :userID and isHidden = 0")
+    @Query("select count(isRead) from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID")
     Integer getUnreadCount(String userID, String roomID);
 
-    @Query("select count(isRead) from Message_Table where isRead = 0 and userID not like :userID and isHidden = 0")
+    @Query("select count(isRead) from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and userID not like :userID")
     Integer getUnreadCount(String userID);
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")
