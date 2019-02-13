@@ -76,7 +76,8 @@ public class TAPEncryptorManager {
     }
 
     public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel) {
-        HashMap<String, Object> encryptedMessageMap = TAPUtils.getInstance().toHashMap(messageModel);
+//        HashMap<String, Object> encryptedMessageMap = TAPUtils.getInstance().toHashMap(messageModel);
+        HashMap<String, Object> encryptedMessageMap = messageModel.convertToHashMap();
         try {
             String localID = messageModel.getLocalID();
             // Encrypt message body
