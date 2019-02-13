@@ -206,8 +206,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage(), false);
         callApiGetUserByUserID();
-        if (vm.isInitialAPICallFinished() && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
+        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
             callApiAfter();
+        } else if (vm.isInitialAPICallFinished() && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
+            fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     }
 
@@ -527,7 +529,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     // Call Message List API
                     callApiGetUserByUserID();
                 }
-                callApiAfter();
+                if (vm.getMessageModels().size() > 0) {
+                    callApiAfter();
+                } else {
+                    fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+                }
                 restartFailedDownloads();
             }
         };
@@ -1205,7 +1211,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReceiveStartTyping(TAPTypingModel typingModel) {
-            showTypingIndicator();
+            if (typingModel.getRoomID().equals(vm.getRoom().getRoomID())) {
+                showTypingIndicator();
+            }
         }
 
         @Override
