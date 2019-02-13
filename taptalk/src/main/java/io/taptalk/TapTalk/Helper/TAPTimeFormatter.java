@@ -103,7 +103,7 @@ public class TAPTimeFormatter {
         if (timestamp == 0) {
             return "";
         } else if (midnightTimeGap > timeGap && timeGap < times.get(5)) {
-            return context.getString(R.string.tap_last_seen_recently);
+            return context.getString(R.string.tap_active_recently);
         } else if (midnightTimeGap > timeGap && timeGap < times.get(4) && timeGap < TimeUnit.MINUTES.toMillis(2)) {
             long numberOfMinutes = timeGap / times.get(5);
             return String.format(Locale.getDefault(), context.getString(R.string.tap_minute_ago), numberOfMinutes);
@@ -117,10 +117,10 @@ public class TAPTimeFormatter {
             long numberOfHour = timeGap / times.get(4);
             return String.format(Locale.getDefault(), context.getString(R.string.tap_hours_ago), numberOfHour);
         } else if ((times.get(3)) + midnightTimeGap > timeGap) {
-            Date yesterdayTime = new Date(timestamp);
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            String time = sdf.format(yesterdayTime);
-            return String.format(context.getString(R.string.tap_last_seen_yesterday_at), time);
+//            Date yesterdayTime = new Date(timestamp);
+//            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+//            String time = sdf.format(yesterdayTime);
+            return context.getString(R.string.tap_active_yesterday);
         } else if ((TAPTimeFormatter.times.get(3) * 6) + midnightTimeGap >= timeGap && timeGap < TimeUnit.DAYS.toMillis(2)) {
             long numberOfDays = timeGap / times.get(3);
             return String.format(Locale.getDefault(), context.getString(R.string.tap_day_ago), numberOfDays);
@@ -128,12 +128,12 @@ public class TAPTimeFormatter {
             long numberOfDays = timeGap / times.get(3);
             return String.format(Locale.getDefault(), context.getString(R.string.tap_days_ago), numberOfDays);
         } else if (timeGap <= times.get(2)) {
-            return context.getString(R.string.tap_last_seen_a_week_ago);
+            return context.getString(R.string.tap_active_a_week_ago);
         } else {
             Date date = new Date(timestamp);
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
             String dateString = sdf.format(date);
-            return String.format(context.getString(R.string.tap_last_seen), dateString);
+            return String.format(context.getString(R.string.tap_last_active), dateString);
         }
     }
 
