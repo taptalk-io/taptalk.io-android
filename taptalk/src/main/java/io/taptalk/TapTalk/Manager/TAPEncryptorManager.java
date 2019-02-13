@@ -104,7 +104,8 @@ public class TAPEncryptorManager {
             String localID = (String) messageMap.get(K_LOCAL_ID);
             // Decrypt message body
             messageMap.put(K_BODY, decrypt((String) messageMap.get(K_BODY), localID));
-            if (null != messageMap.get(K_DATA) && !((String) messageMap.get(K_DATA)).isEmpty()) {
+            String data = (String) messageMap.get(K_DATA);
+            if (null != data && !data.isEmpty()) {
                 // Decrypt message data
                 messageMap.put(K_DATA, TAPUtils.getInstance().toHashMap(decrypt((String) messageMap.get(K_DATA), localID)));
             } else {
@@ -120,6 +121,8 @@ public class TAPEncryptorManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return TAPUtils.getInstance().convertObject(messageMap, new TypeReference<TAPMessageModel>() {});
+        TAPMessageModel decryptedMessage = TAPUtils.getInstance().convertObject(messageMap, new TypeReference<TAPMessageModel>() {});
+        decryptedMessage.updateMessageStatusText();
+        return decryptedMessage;
     }
 }
