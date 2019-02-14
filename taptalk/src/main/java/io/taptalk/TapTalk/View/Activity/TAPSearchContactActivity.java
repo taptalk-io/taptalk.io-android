@@ -93,8 +93,8 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             vm.getFilteredContacts().clear();
-            String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
-            if (searchKeyword.isEmpty()) {
+            String searchKeyword = etSearch.getText().toString().toLowerCase();
+            if (searchKeyword.trim().isEmpty()) {
                 vm.getFilteredContacts().clear();
             } else {
                 for (TAPUserModel user : vm.getContactList()) {

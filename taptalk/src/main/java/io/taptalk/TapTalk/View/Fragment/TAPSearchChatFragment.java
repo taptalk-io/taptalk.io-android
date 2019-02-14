@@ -203,9 +203,9 @@ public class TAPSearchChatFragment extends Fragment {
         }
 
         vm.clearSearchResults();
-        vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().trim().replaceAll("[^A-Za-z0-9 ]", ""));
+        vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().replaceAll("[^A-Za-z0-9 ]", ""));
         adapter.setSearchKeyword(vm.getSearchKeyword());
-        if (vm.getSearchKeyword().isEmpty()) {
+        if (vm.getSearchKeyword().trim().isEmpty()) {
             showRecentSearches();
         } else {
             TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
