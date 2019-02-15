@@ -20,7 +20,6 @@ public class TAPRoomListActivity extends TAPBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_room_list);
         initView();
-        TAPAutoStartPermission.getInstance().showPermissionRequest(this);
     }
 
     private void initView() {
