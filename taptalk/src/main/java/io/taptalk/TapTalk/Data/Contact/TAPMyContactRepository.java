@@ -85,7 +85,10 @@ public class TAPMyContactRepository {
 
     public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         new Thread(() -> {
-            String queryKeyword = "%" + keyword + '%';
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
             List<TAPUserModel> myContactList = myContactDao.searchAllMyContacts(queryKeyword);
             listener.onSelectFinished(myContactList);
         }).start();

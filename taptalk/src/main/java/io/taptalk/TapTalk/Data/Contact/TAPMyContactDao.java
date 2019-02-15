@@ -38,7 +38,7 @@ public interface TAPMyContactDao {
     @Query("select * from MyContact where isContact = 1 order by name asc")
     LiveData<List<TAPUserModel>> getAllMyContactLive();
 
-    @Query("select * from MyContact where name like :keyword and isContact = 1 order by name asc")
+    @Query("select * from MyContact where name like :keyword escape '\\' and isContact = 1 order by name asc")
     List<TAPUserModel> searchAllMyContacts(String keyword);
 
     @Query("select count(userID) from MyContact where userID like :userID and isContact = 1 ")

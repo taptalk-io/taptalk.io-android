@@ -104,7 +104,10 @@ public class TAPMessageRepository {
 
     public void searchAllMessages(String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            String queryKeyword = "%" + keyword + '%';
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
             List<TAPMessageEntity> entities = messageDao.searchAllMessages(queryKeyword);
             listener.onSelectFinished(entities);
         }).start();
@@ -130,11 +133,15 @@ public class TAPMessageRepository {
 
     public void searchAllChatRooms(String myID, String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            String queryKeyword = "%" + keyword + '%';
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
             List<TAPMessageEntity> entities = messageDao.searchAllChatRooms(queryKeyword);
             Map<String, Integer> unreadMap = new LinkedHashMap<>();
-            for (TAPMessageEntity entity : entities)
+            for (TAPMessageEntity entity : entities) {
                 unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+            }
             listener.onSelectedRoomList(entities, unreadMap);
         }).start();
     }
