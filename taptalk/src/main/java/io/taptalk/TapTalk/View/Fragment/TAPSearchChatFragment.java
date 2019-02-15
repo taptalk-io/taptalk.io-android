@@ -203,7 +203,7 @@ public class TAPSearchChatFragment extends Fragment {
         }
 
         vm.clearSearchResults();
-        vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().trim().replaceAll("[^A-Za-z0-9 ]", ""));
+        vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().trim());
         adapter.setSearchKeyword(vm.getSearchKeyword());
         if (vm.getSearchKeyword().isEmpty()) {
             showRecentSearches();

@@ -12,8 +12,8 @@ import io.taptalk.Taptalk.R;
 
 public class TAPImageDetailPreview extends AppCompatActivity {
 
-    TAPTouchImageView tivImageDetail;
-    String localID;
+    private TAPTouchImageView tivImageDetail;
+    private String localID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +36,7 @@ public class TAPImageDetailPreview extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        tivImageDetail.setZoom(1f);
         supportFinishAfterTransition();
     }
 

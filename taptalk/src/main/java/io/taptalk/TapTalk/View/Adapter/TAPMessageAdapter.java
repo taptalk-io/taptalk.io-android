@@ -213,7 +213,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (item.isAnimating()) {
                 return;
             }
+
             tvMessageBody.setText(item.getBody());
+            tvMessageStatus.setText(item.getMessageStatusText());
 
             markUnreadForMessage(item, myUserModel);
 
@@ -299,6 +301,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
+
             setImageViewButtonProgress(item);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             // Fix layout when quote exists
@@ -331,8 +334,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
             if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
                 clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
-            } else {
-                clQuote.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
             }
         }
 
@@ -691,10 +692,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                              @Nullable CircleImageView civAvatar,
                                              @Nullable TextView tvUsername) {
         if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
-            // Set timestamp text on non-text or expanded bubble
-            if (item.getType() != TYPE_TEXT || item.isExpanded()) {
-                tvMessageStatus.setText(item.getMessageStatusText());
-            }
             // Message has been read
             if (null != item.getIsRead() && item.getIsRead()) {
                 vh.receiveReadEvent(item);
@@ -733,14 +730,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         if (item.isExpanded()) {
             // Expand bubble
             expandedBubble = item;
-            animateFadeInToBottom(tvMessageStatus);
             if (isMessageFromMySelf(item) && null != ivMessageStatus) {
                 // Right Bubble
                 if (animate) {
                     // Animate expand
+                    animateFadeInToBottom(tvMessageStatus);
                     animateFadeOutToBottom(ivMessageStatus);
                     animateShowToLeft(ivReply);
                 } else {
+                    tvMessageStatus.setVisibility(View.VISIBLE);
                     ivMessageStatus.setVisibility(View.GONE);
                     ivReply.setVisibility(View.VISIBLE);
                 }
@@ -752,8 +750,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Left Bubble
                 if (animate) {
                     // Animate expand
+                    animateFadeInToBottom(tvMessageStatus);
                     animateShowToRight(ivReply);
                 } else {
+                    tvMessageStatus.setVisibility(View.VISIBLE);
                     ivReply.setVisibility(View.VISIBLE);
                 }
                 if (null == bubbleOverlayRight) {
@@ -878,7 +878,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 item.setExpanded(false);
             } else {
                 // Expand clicked bubble
-                tvMessageStatus.setText(item.getMessageStatusText());
                 shrinkExpandedBubble();
                 item.setExpanded(true);
             }

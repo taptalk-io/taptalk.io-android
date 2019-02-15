@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
@@ -117,7 +119,15 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             tvUserName.setText(message.getRoomName());
 
             // Set message body with highlighted text
-            String highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+            String highlightedText;
+            try {
+                highlightedText = message.getBody().replaceAll("(?i)([" + searchKeyword + "])", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+            } catch (PatternSyntaxException e) {
+                // Replace regex special characters with Pattern.quote()
+                highlightedText = message.getBody().replaceAll("(?i)(" + Pattern.quote(searchKeyword) + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+            } catch (Exception e) {
+                highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword.replaceAll("[^A-Za-z0-9 ]", "") + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+            }
             tvLastMessage.setText(TAPDataManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
                     Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
 

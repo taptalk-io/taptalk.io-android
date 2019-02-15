@@ -129,8 +129,8 @@ public class TAPMessageModel implements Parcelable {
     }
 
 
-    private void updateMessageStatusText() {
-        if (created > 0L) {
+    public void updateMessageStatusText() {
+        if (created > 0L && (null == messageStatusText || messageStatusText.isEmpty())) {
             messageStatusText = TAPTimeFormatter.getInstance().durationChatString(TapTalk.appContext, created);
         }
     }
@@ -420,8 +420,35 @@ public class TAPMessageModel implements Parcelable {
                 getHidden(),
                 getUpdated(),
                 getDeleted());
+        // Update when adding fields to model
     }
 
+    public HashMap<String, Object> convertToHashMap() {
+        HashMap<String, Object> messageMap = new HashMap<>();
+        messageMap.put("messageID", messageID);
+        messageMap.put("localID", localID);
+        messageMap.put("filterID", filterID);
+        messageMap.put("body", body);
+        messageMap.put("room", room);
+        messageMap.put("type", type);
+        messageMap.put("created", created);
+        messageMap.put("user", user);
+        messageMap.put("recipientID", recipientID);
+        messageMap.put("data", data);
+        messageMap.put("quote", quote);
+        messageMap.put("replyTo", replyTo);
+        messageMap.put("forwardFrom", forwardFrom);
+        messageMap.put("isDeleted", isDeleted);
+        messageMap.put("isSending", isSending);
+        messageMap.put("isFailedSend", isFailedSend);
+        messageMap.put("isDelivered", isDelivered);
+        messageMap.put("isRead", isRead);
+        messageMap.put("isHidden", isHidden);
+        messageMap.put("updated", updated);
+        messageMap.put("deleted", deleted);
+        // Update when adding fields to model
+        return messageMap;
+    }
 
     @Override
     public int describeContents() {
