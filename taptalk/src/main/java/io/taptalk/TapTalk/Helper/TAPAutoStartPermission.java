@@ -27,7 +27,7 @@ public class TAPAutoStartPermission {
                         .setTitle("Enable AutoStart")
                         .setMessage("Please allow auto start in settings to receive chat notifications from Moselo.")
                         .setPrimaryButtonTitle("Allow")
-                        .setPrimaryButtonListener(true, v -> {
+                        .setPrimaryButtonListener(v -> {
                             try {
                                 context.startActivity(intent);
                             } catch (Exception e) {
@@ -36,6 +36,7 @@ public class TAPAutoStartPermission {
                             }
                         })
                         .show();
+                break;
             }
     }
 }
