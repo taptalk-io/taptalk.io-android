@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.os.Bundle;
 
+import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
@@ -19,6 +20,7 @@ public class TAPRoomListActivity extends TAPBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_room_list);
         initView();
+        TAPAutoStartPermission.getInstance().showPermissionRequest(this);
     }
 
     private void initView() {
