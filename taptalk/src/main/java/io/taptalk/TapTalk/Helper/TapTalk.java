@@ -94,6 +94,7 @@ public class TapTalk {
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
     private static boolean isRefreshTokenExpired;
+    private Intent intent;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
     private List<TAPListener> tapListeners = new ArrayList<>();
@@ -165,12 +166,16 @@ public class TapTalk {
 
         tapListeners.add(tapListener);
 
+        if (null == intent) {
+            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
+            appContext.startService(intent);
+        }
+
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
                 isForeground = true;
                 TAPChatManager.getInstance().setFinishChatFlow(false);
-                appContext.startService(new Intent(TapTalk.appContext, TapTalkEndAppService.class));
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
@@ -588,7 +593,7 @@ public class TapTalk {
                             });
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "registerFcmToken: ",e );
+                    Log.e(TAG, "registerFcmToken: ", e);
                 }
             } else {
                 TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
