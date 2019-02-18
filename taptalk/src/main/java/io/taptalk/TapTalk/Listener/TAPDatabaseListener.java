@@ -15,4 +15,5 @@ public abstract class TAPDatabaseListener<T> implements TapTalkDatabaseInterface
     @Override public void onCountedUnreadCount(int unreadCount) {}
     @Override public void onContactCheckFinished(int isContact) {}
     @Override public void onSelectFailed(String errorMessage) {}
+    @Override public void onInsertFailed(String errorMessage) {}
 }

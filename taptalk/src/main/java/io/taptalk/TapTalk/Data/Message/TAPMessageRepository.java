@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,21 +60,29 @@ public class TAPMessageRepository {
 
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         new Thread(() -> {
+            messageEntities.removeAll(Collections.singleton(null)); // Remove null objects from list
+            if (messageEntities.isEmpty()) {
+                return;
+            }
             messageDao.insert(messageEntities);
-
-            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
+            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages) {
                 TAPChatManager.getInstance().clearSaveMessages();
-
+            }
         }).start();
     }
 
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
         new Thread(() -> {
-            messageDao.insert(messageEntities);
-            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
-                TAPChatManager.getInstance().clearSaveMessages();
-
-            listener.onInsertFinished();
+            messageEntities.removeAll(Collections.singleton(null)); // Remove null objects from list
+            if (messageEntities.isEmpty()) {
+                listener.onInsertFailed("Could not save messages, inserted list is either empty or null.");
+            } else {
+                messageDao.insert(messageEntities);
+                if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages) {
+                    TAPChatManager.getInstance().clearSaveMessages();
+                }
+                listener.onInsertFinished();
+            }
         }).start();
     }
 
