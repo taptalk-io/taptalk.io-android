@@ -255,11 +255,11 @@ public class TapTalk {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
+            TAPDataManager.getInstance().deleteAllPreference();
+            TAPDataManager.getInstance().deleteAllFromDatabase();
             TAPApiManager.getInstance().setLogout(true);
             TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
             TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
-            TAPDataManager.getInstance().deleteAllPreference();
-            TAPDataManager.getInstance().deleteAllFromDatabase();
             isRefreshTokenExpired = true;
 
             for (TAPListener listener : getTapTalkListeners()) {
