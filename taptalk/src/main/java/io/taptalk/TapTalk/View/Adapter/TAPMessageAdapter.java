@@ -95,7 +95,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private RequestManager glide;
 
     public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener) {
-        myUserModel = TAPDataManager.getInstance().getActiveUser();
+        myUserModel = TAPChatManager.getInstance().getActiveUser();
         if (null == myUserModel)
             myUserModel = TAPChatManager.getInstance().getActiveUser();
         this.chatListener = chatListener;

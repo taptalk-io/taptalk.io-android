@@ -279,7 +279,7 @@ public class TAPSearchChatFragment extends Fragment {
                     // Convert contact to room model
                     // TODO: 18 October 2018 LENGKAPIN DATA
                     TAPRoomModel room = new TAPRoomModel(
-                            TAPChatManager.getInstance().arrangeRoomId(TAPDataManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
+                            TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
                             /* 1 ON 1 ROOM TYPE */ 1,
                             contact.getAvatarURL(),

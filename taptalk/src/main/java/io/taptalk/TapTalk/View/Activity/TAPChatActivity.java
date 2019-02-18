@@ -372,7 +372,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
         }
         if (null == vm.getMyUserModel()) {
-            vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
+            vm.setMyUserModel(TAPChatManager.getInstance().getActiveUser());
         }
         if (null == vm.getOtherUserModel()) {
             vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
@@ -639,7 +639,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
             //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
-            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
+            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
                 if (vm.getMessagePointer().containsKey(newID) &&
@@ -689,7 +689,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
             });
             //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
-            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
+            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
                 messageAdapter.addMessage(newMessage);

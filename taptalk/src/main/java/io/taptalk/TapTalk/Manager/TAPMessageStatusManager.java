@@ -180,7 +180,7 @@ public class TAPMessageStatusManager {
 
     public void updateMessageStatusToDeliveredFromNotification(List<TAPMessageModel> newMessageModels) {
         new Thread(() -> {
-            TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
+            TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
                 if (!model.getUser().getUserID().equals(myUser.getUserID())

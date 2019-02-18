@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
@@ -91,7 +92,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
+        TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
 
         // Add self as selected group member

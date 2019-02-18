@@ -38,14 +38,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
     public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
-        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
     }
 
     public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
-        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
     }
 
     // Constructor for selectable contacts
@@ -53,7 +53,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
         setItems(contactList, false);
         this.viewType = SELECT;
         this.selectedContacts = selectedContacts;
-        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
         this.listener = listener;
     }
 

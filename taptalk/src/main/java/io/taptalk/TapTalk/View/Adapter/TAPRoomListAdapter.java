@@ -226,7 +226,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Return if logged out (active user is null)
                 return;
             }
-            TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
+            TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
 
             String myUserID = myUser.getUserID();
             String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?

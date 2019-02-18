@@ -42,11 +42,11 @@ public class TAPContactManager {
     }
 
     public void updateUserDataMap(TAPUserModel user) {
-        if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
+        if (!user.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
             // Add new user to map
             user.setIsContact(0);
             getUserDataMap().put(user.getUserID(), user);
-        } else if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+        } else if (!user.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
             // Update user data in map
             getUserDataMap().get(user.getUserID()).updateValue(user);
         }
@@ -59,7 +59,7 @@ public class TAPContactManager {
     }
 
     public void saveUserDataToDatabase(TAPUserModel userModel) {
-        if (!userModel.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+        if (!userModel.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
             TAPDataManager.getInstance().checkContactAndInsertToDatabase(userModel);
         }
     }

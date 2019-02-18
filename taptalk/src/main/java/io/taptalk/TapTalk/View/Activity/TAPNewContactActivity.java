@@ -257,7 +257,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
         TAPUtils.getInstance().startChatActivity(
                 this,
-                TAPChatManager.getInstance().arrangeRoomId(TAPDataManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
+                TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
                 1,

@@ -630,7 +630,7 @@ public class TapTalk {
             @Override
             public void onSelectFinished(TAPUserModel user) {
                 String roomID = TAPChatManager.getInstance().arrangeRoomId(
-                        TAPDataManager.getInstance().getActiveUser().getUserID(),
+                        TAPChatManager.getInstance().getActiveUser().getUserID(),
                         user.getUserID());
                 if (null != quoteTitle) {
                     // Save quote to Chat Manager

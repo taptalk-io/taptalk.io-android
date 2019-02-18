@@ -302,7 +302,7 @@ public class TAPRoomListFragment extends Fragment {
         if (vm.isDoneFirstApiSetup()) {
             TAPDataManager.getInstance().getNewAndUpdatedMessage(roomListView);
         } else {
-            TAPDataManager.getInstance().getMessageRoomListAndUnread(TAPDataManager.getInstance().getActiveUser().getUserID(), roomListView);
+            TAPDataManager.getInstance().getMessageRoomListAndUnread(TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
         }
     }
 
@@ -357,7 +357,7 @@ public class TAPRoomListFragment extends Fragment {
 
                 // Add unread count by 1 if sender is not self
                 if (!roomList.getLastMessage().getUser().getUserID()
-                        .equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+                        .equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
                     roomList.setUnreadCount(roomList.getUnreadCount() + 1);
                 }
 
@@ -381,7 +381,7 @@ public class TAPRoomListFragment extends Fragment {
             //TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);
             TAPRoomListModel newRoomList = TAPRoomListModel.buildWithLastMessage(message);
             if (!newRoomList.getLastMessage().getUser().getUserID()
-                    .equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+                    .equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
                 newRoomList.setUnreadCount(1);
             }
 
@@ -493,7 +493,7 @@ public class TAPRoomListFragment extends Fragment {
                             deliveredMessages.add(message);
                         }
 
-                        if (message.getUser().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+                        if (message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
                             // User is self, get other user data from API
                             userIds.add(TAPChatManager.getInstance().getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                         } else {

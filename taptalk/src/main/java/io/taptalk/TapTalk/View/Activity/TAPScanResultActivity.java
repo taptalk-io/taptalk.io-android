@@ -103,7 +103,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         addedContactUserModel = getIntent().getParcelableExtra(ADDED_CONTACT);
         scanResult = getIntent().getStringExtra(SCAN_RESULT);
-        myUserModel = TAPDataManager.getInstance().getActiveUser();
+        myUserModel = TAPChatManager.getInstance().getActiveUser();
 
         if (null != addedContactUserModel) setUpFromNewContact();
         else if (null != scanResult) setUpFromScanQR();
