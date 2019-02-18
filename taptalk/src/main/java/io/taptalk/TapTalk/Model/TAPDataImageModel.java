@@ -51,14 +51,26 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     public TAPDataImageModel(HashMap<String, Object> imageDataMap) {
-        this.fileID = (String) imageDataMap.get(FILE_ID);
-        this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
-        this.size = (Long) imageDataMap.get(IMAGE_SIZE);
-        this.width = (Integer) imageDataMap.get(IMAGE_WIDTH);
-        this.height = (Integer) imageDataMap.get(IMAGE_HEIGHT);
-        this.caption = (String) imageDataMap.get(CAPTION);
-        this.fileUri = (String) imageDataMap.get(FILE_URI);
-        this.thumbnail = (String) imageDataMap.get(THUMBNAIL);
+        try {
+            Number tempSize = (Number) imageDataMap.get(IMAGE_SIZE);
+            this.fileID = (String) imageDataMap.get(FILE_ID);
+            this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
+            this.size = null == tempSize ? 0L : tempSize.longValue();
+            this.width = (Integer) imageDataMap.get(IMAGE_WIDTH);
+            this.height = (Integer) imageDataMap.get(IMAGE_HEIGHT);
+            this.caption = (String) imageDataMap.get(CAPTION);
+            this.fileUri = (String) imageDataMap.get(FILE_URI);
+            this.thumbnail = (String) imageDataMap.get(THUMBNAIL);
+        } catch (Exception e) {
+            this.fileID = null == fileID ? "" : fileID;
+            this.mediaType = null == mediaType ? "" : mediaType;
+            this.size = null == size ? 0L : size;
+            this.width = null == width ? 0 : width;
+            this.height = null == height ? 0 : height;
+            this.caption = null == caption ? "" : caption;
+            this.fileUri = null == fileUri ? "" : fileUri;
+            this.thumbnail = null == thumbnail ? "" : thumbnail;
+        }
     }
 
     public TAPDataImageModel() {
@@ -76,8 +88,7 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     public HashMap<String, Object> toHashMap() {
-        HashMap<String, Object> dataMap = TAPUtils.getInstance().toHashMap(this);
-        return dataMap;
+        return TAPUtils.getInstance().toHashMap(this);
     }
 
     @Nullable
