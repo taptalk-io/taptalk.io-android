@@ -13,7 +13,9 @@ import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchDao;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-@Database(entities = {TAPMessageEntity.class, TAPRecentSearchEntity.class, TAPUserModel.class}, version = TAPDefaultConstant.RoomDatabase.kDatabaseVersion, exportSchema = false)
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomDatabase.kDatabaseVersion;
+
+@Database(entities = {TAPMessageEntity.class, TAPRecentSearchEntity.class, TAPUserModel.class}, version = kDatabaseVersion, exportSchema = false)
 public abstract class TapTalkDatabase extends RoomDatabase{
 
     private static TapTalkDatabase database;

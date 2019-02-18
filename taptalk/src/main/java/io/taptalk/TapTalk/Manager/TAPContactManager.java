@@ -19,7 +19,7 @@ public class TAPContactManager {
     private HashMap<String, TAPUserModel> userDataMap;
 
     private TAPContactManager() {
-        loadAllUserDataFromDatabase();
+        //loadAllUserDataFromDatabase();
         TAPConnectionManager.getInstance().addSocketListener(new TAPSocketListener() {
             @Override
             public void onSocketConnected() {
@@ -46,7 +46,7 @@ public class TAPContactManager {
             // Add new user to map
             user.setIsContact(0);
             getUserDataMap().put(user.getUserID(), user);
-        } else if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+        } else if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null != getUserDataMap().get(user.getUserID())) {
             // Update user data in map
             getUserDataMap().get(user.getUserID()).updateValue(user);
         }
@@ -64,7 +64,7 @@ public class TAPContactManager {
         }
     }
 
-    private void loadAllUserDataFromDatabase() {
+    public void loadAllUserDataFromDatabase() {
         TAPDataManager.getInstance().getAllUserData(getAllUserDataListener);
     }
 
