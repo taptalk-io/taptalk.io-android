@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.DiffCallback.TAPRoomListDiffCallback;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
@@ -221,6 +222,10 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             onRoomSelected(item, position);
         } else {
             // Open chat room on click
+            if (TAPApiManager.getInstance().isLogout()) {
+                // Return if logged out (active user is null)
+                return;
+            }
             TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
 
             String myUserID = myUser.getUserID();
