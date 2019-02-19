@@ -458,12 +458,12 @@ public class TAPChatManager {
     /**
      * Construct Image Message Model
      */
-    private TAPMessageModel createImageMessageModel(TAPImagePreviewModel image, String caption) {
-        String imageUri = image.getImageUri().toString();
+    private TAPMessageModel createImageMessageModel(Uri fileUri, String caption) {
+        String imageUri = fileUri.toString();
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(new File(image.getImageUri().getPath()).getAbsolutePath(), options);
+        BitmapFactory.decodeFile(new File(fileUri.getPath()).getAbsolutePath(), options);
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
 
@@ -499,9 +499,9 @@ public class TAPChatManager {
     /**
      * Create image message model and call upload api
      */
-    private void createImageMessageModelAndAddToQueueUpload(Context context, String roomID, TAPImagePreviewModel image,
+    private void createImageMessageModelAndAddToQueueUpload(Context context, String roomID, Uri fileUri,
                                                             String caption) {
-        TAPMessageModel messageModel = createImageMessageModel(image, caption);
+        TAPMessageModel messageModel = createImageMessageModel(fileUri, caption);
 
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
@@ -546,9 +546,13 @@ public class TAPChatManager {
     public void sendImageMessage(Context context, String roomID, ArrayList<TAPImagePreviewModel> images) {
         new Thread(() -> {
             for (TAPImagePreviewModel imagePreview : images) {
-                createImageMessageModelAndAddToQueueUpload(context, roomID, imagePreview, imagePreview.getImageCaption());
+                createImageMessageModelAndAddToQueueUpload(context, roomID, imagePreview.getImageUri(), imagePreview.getImageCaption());
             }
         }).start();
+    }
+
+    public void sendImageMessage(Context context, String roomID, Uri imageUri, String caption) {
+        new Thread(() -> createImageMessageModelAndAddToQueueUpload(context, roomID, imageUri, caption)).start();
     }
 
     public void sendImageMessage(Context context, String roomID, TAPMessageModel imageModel) {

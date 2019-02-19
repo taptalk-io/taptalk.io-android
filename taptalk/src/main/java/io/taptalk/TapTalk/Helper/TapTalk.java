@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -537,6 +538,21 @@ public class TapTalk {
 
     public static List<TAPListener> getTapTalkListeners() {
         return tapTalk.tapListeners;
+    }
+
+    public static void sendImageMessage(Context context, Uri imageUri, String recipientXcUserID, String caption) {
+        TAPUtils.getInstance().getUserFromXcUserID(recipientXcUserID, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(TAPUserModel user) {
+                TAPChatManager.getInstance().sendImageMessage(
+                        context,
+                        TAPChatManager.getInstance().arrangeRoomId(
+                                TAPChatManager.getInstance().getActiveUser().getUserID(),
+                                user.getUserID()),
+                        imageUri,
+                        caption);
+            }
+        });
     }
 
     public static void sendTextMessageWithRecipientUser(String message, TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
