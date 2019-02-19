@@ -213,9 +213,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             pbAddLoading.setVisibility(View.GONE);
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle("Error")
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setPrimaryButtonListener(v -> {
                     }).show();
         }
@@ -229,9 +229,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             // TODO: 31/10/18 ini textnya masih dummy
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle("Error")
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_api_call_return_error))
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setPrimaryButtonListener(v -> {
                     }).show();
         }
@@ -249,9 +249,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             super.onError(error);
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle("Error")
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setPrimaryButtonListener(v -> onBackPressed()).show();
         }
 
@@ -261,9 +261,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             // TODO: 31/10/18 ini textnya masih dummy
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle("Error")
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_api_call_return_error))
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setPrimaryButtonListener(v -> onBackPressed()).show();
         }
     };

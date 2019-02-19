@@ -354,7 +354,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setTitle(title)
                 .setMessage(message)
-                .setPrimaryButtonTitle("OK")
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
                 .setPrimaryButtonListener(view -> {
                     progressBar.setVisibility(View.GONE);
                     tvSignIn.setVisibility(View.VISIBLE);

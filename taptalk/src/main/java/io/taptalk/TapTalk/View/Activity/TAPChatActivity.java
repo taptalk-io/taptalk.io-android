@@ -1609,8 +1609,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (BuildConfig.DEBUG) {
                 new TapTalkDialog.Builder(TAPChatActivity.this)
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle("Error")
+                        .setTitle(getString(R.string.tap_error))
                         .setMessage(error.getMessage())
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
                         .show();
             }
 
@@ -1625,6 +1626,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setTitle("Error")
                         .setMessage(errorMessage)
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
                         .show();
             }
 

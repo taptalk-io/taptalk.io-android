@@ -121,7 +121,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setTitle(getString(R.string.tap_cannot_add_more_people))
                                 .setMessage(getString(R.string.tap_group_limit_reached))
-                                .setPrimaryButtonTitle("OK")
+                                .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                 .setPrimaryButtonListener(v -> {
 
                                 })
