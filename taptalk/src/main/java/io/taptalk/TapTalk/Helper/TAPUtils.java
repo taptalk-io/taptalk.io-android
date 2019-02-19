@@ -524,7 +524,7 @@ public class TAPUtils {
         // TODO: 31/10/18 ini textnya masih dummy
         new TapTalkDialog.Builder(context)
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                .setPrimaryButtonTitle(context.getString(R.string.tap_ok))
+                .setTitle(context.getString(R.string.tap_error))
                 .setMessage(context.getString(R.string.tap_no_internet_show_error))
                 .setPrimaryButtonTitle(context.getString(R.string.tap_ok))
                 .setPrimaryButtonListener(v -> {
