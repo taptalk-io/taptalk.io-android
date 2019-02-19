@@ -418,6 +418,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         public void onError(TAPErrorModel error) {
             enableInput();
             new TapTalkDialog.Builder(TAPNewContactActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))

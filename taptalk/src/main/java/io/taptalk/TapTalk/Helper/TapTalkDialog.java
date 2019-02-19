@@ -1,7 +1,9 @@
 package io.taptalk.TapTalk.Helper;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,7 +20,10 @@ public class TapTalkDialog extends Dialog {
 
     private static final String TAG = TapTalkDialog.class.getSimpleName();
     protected final Builder mBuilder;
+    protected Context context;
     protected TextView title, message, primary, secondary;
+
+    public enum DialogType {DEFAULT, ERROR_DIALOG}
 
     public TapTalkDialog(Builder builder) {
         super(builder.context);
@@ -29,9 +34,9 @@ public class TapTalkDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        try {
+
+        if (null != getWindow()) {
             getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        } catch (Exception e) {
         }
 
         setContentView(R.layout.tap_dialog);
@@ -40,8 +45,10 @@ public class TapTalkDialog extends Dialog {
         primary = findViewById(R.id.tv_primary_btn);
         secondary = findViewById(R.id.tv_secondary_btn);
 
+        context = mBuilder.context;
         setTextInTextView(title, mBuilder.dialogTitle);
         setTextInTextView(message, mBuilder.dialogMessage);
+        setComponentLayouts(mBuilder.dialogType);
 
         switch (mBuilder.layout) {
             case 1:
@@ -54,10 +61,17 @@ public class TapTalkDialog extends Dialog {
                 initiateButton(R.id.tv_primary_btn, mBuilder.textPrimary);
                 break;
         }
-
     }
 
-    private class OnClickListener implements View.OnClickListener{
+    @Override
+    public void show() {
+        if (context instanceof Activity && ((Activity) context).isFinishing()) {
+            return;
+        }
+        super.show();
+    }
+
+    private class OnClickListener implements View.OnClickListener {
         private View.OnClickListener listener;
         private boolean isDismissOnClick;
 
@@ -70,8 +84,9 @@ public class TapTalkDialog extends Dialog {
         public void onClick(View v) {
             listener.onClick(v);
 
-            if (isDismissOnClick)
+            if (isDismissOnClick) {
                 dismiss();
+            }
         }
     }
 
@@ -80,27 +95,48 @@ public class TapTalkDialog extends Dialog {
         if (!text.equals("")) {
             view.setText(text);
 
-            if (view.getId() == R.id.tv_primary_btn && null != mBuilder.primaryListener)
+            if (view.getId() == R.id.tv_primary_btn && null != mBuilder.primaryListener) {
                 view.setOnClickListener(new OnClickListener(mBuilder.primaryListener, mBuilder.primaryIsDismiss));
-            else if (view.getId() == R.id.tv_secondary_btn && null != mBuilder.primaryListener)
+            } else if (view.getId() == R.id.tv_secondary_btn && null != mBuilder.primaryListener) {
                 view.setOnClickListener(new OnClickListener(mBuilder.secondaryListener, mBuilder.secondaryIsDismiss));
+            }
         }
     }
 
     private void setTextInTextView(TextView view, String text) {
-        if (text.trim().equals("")) view.setVisibility(View.GONE);
-        else view.setText(text);
+        if (text.trim().equals("")) {
+            view.setVisibility(View.GONE);
+        } else {
+            view.setText(text);
+        }
+    }
+
+    private void setComponentLayouts(DialogType dialogType) {
+        Resources res = getContext().getResources();
+        switch (dialogType) {
+            case ERROR_DIALOG:
+                primary.setBackground(res.getDrawable(R.drawable.tap_bg_coral_pink_rounded_4dp));
+                secondary.setBackground(res.getDrawable(R.drawable.tap_bg_white_stroke_grey9b_1dp_rounded_4dp));
+                secondary.setTextColor(res.getColor(R.color.tap_grey_9b));
+                break;
+            case DEFAULT:
+            default:
+                primary.setBackground(res.getDrawable(R.drawable.tap_bg_tealish_rounded_4dp));
+                secondary.setBackground(res.getDrawable(R.drawable.tap_bg_white_stroke_tealish_1dp_rounded_4dp));
+                secondary.setTextColor(res.getColor(R.color.tap_tealish));
+                break;
+        }
     }
 
     public static class Builder {
         protected Context context;
-
         protected String dialogTitle = "", dialogMessage = "", textSecondary = "", textPrimary = "";
-        protected int layout = 1; //1 one Button, 2 two button
+        protected int layout = 1; // 1 for single button (default), 2 for two buttons
         protected boolean cancelable;
+        protected DialogType dialogType = DialogType.DEFAULT;
         protected TapTalkDialog dialog;
 
-        //listener
+        // Listener
         protected View.OnClickListener emptyListener = v -> dialog.dismiss();
         protected View.OnClickListener primaryListener = emptyListener;
         protected View.OnClickListener secondaryListener = emptyListener;
@@ -129,6 +165,11 @@ public class TapTalkDialog extends Dialog {
         public Builder setSecondaryButtonTitle(String textSecondary) {
             this.textSecondary = textSecondary;
             layout = 2;
+            return this;
+        }
+
+        public Builder setDialogType(DialogType type) {
+            this.dialogType = type;
             return this;
         }
 
@@ -173,9 +214,7 @@ public class TapTalkDialog extends Dialog {
         public TapTalkDialog show() {
             TapTalkDialog dialog = build();
             dialog.show();
-
             setDialogSize();
-
             return dialog;
         }
 

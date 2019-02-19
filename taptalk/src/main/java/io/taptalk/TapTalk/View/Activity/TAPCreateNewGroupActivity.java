@@ -118,6 +118,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         new TapTalkDialog.Builder(TAPCreateNewGroupActivity.this)
+                                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setTitle(getString(R.string.tap_cannot_add_more_people))
                                 .setMessage(getString(R.string.tap_group_limit_reached))
                                 .setPrimaryButtonTitle("OK")

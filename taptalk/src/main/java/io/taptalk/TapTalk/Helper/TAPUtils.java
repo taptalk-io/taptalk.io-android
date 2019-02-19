@@ -523,6 +523,7 @@ public class TAPUtils {
     public void showNoInternetErrorDialog(Context context) {
         // TODO: 31/10/18 ini textnya masih dummy
         new TapTalkDialog.Builder(context)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setTitle("Error")
                 .setMessage(context.getString(R.string.tap_no_internet_show_error))
                 .setPrimaryButtonTitle("OK")

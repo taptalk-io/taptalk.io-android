@@ -351,6 +351,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
     private void showDialog(String title, String message) {
         new TapTalkDialog.Builder(this)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setTitle(title)
                 .setMessage(message)
                 .setPrimaryButtonTitle("OK")
