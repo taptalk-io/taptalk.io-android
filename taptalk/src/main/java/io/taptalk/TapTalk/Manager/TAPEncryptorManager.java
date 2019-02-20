@@ -1,11 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.AESCrypt;
