@@ -95,6 +95,6 @@ dependencies {
     implementation "com.orhanobut:hawk:2.0.1"
 
     //Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-core:16.0.7'
     GoogleServicesPlugin.config.disableVersionCheck = true
 }
