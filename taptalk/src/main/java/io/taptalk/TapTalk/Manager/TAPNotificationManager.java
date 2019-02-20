@@ -195,8 +195,6 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
-        //Log.e(TAG, "createAndShowBackgroundNotification: "+newMessageModel.getLocalID() );
-        //TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(newMessageModel));
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
         TAPContactManager.getInstance().saveUserDataToDatabase(newMessageModel.getUser());
         TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);

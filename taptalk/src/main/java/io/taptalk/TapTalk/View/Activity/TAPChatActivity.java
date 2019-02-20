@@ -1568,7 +1568,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //sorting message balikan dari api after
             //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
             if (0 < messageAfterModels.size()) {
-                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(messageAfterModels);
+                TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(messageAfterModels);
                 mergeSort(messageAfterModels, ASCENDING);
             }
 

@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -505,7 +504,7 @@ public class TAPRoomListFragment extends Fragment {
 
                 // Update status to delivered
                 if (deliveredMessages.size() > 0) {
-                    TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(deliveredMessages);
+                    TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(deliveredMessages);
                 }
 
                 // Get updated other user data from API
