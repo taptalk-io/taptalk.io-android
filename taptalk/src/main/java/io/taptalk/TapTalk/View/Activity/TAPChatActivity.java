@@ -656,7 +656,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
-                    Log.e(TAG, "rio:2 " + newID);
                     messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
@@ -665,7 +664,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
-                    Log.e(TAG, "updateUnreadCount: 1");
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -700,7 +698,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 } else {
                     // Message from other people is received when recycler is scrolled up
                     vm.addUnreadMessage(newMessage);
-                    Log.e(TAG, "updateUnreadCount: 2");
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -711,9 +708,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            Log.e(TAG, "updateMessageFromSocket: " + position + " " + message.getLocalID() + " " + message.getHidden());
             if (-1 != position) {
-                Log.e(TAG, "rio:1 " + message.getLocalID());
                 vm.updateMessagePointer(message);
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
@@ -751,7 +746,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
-                Log.e(TAG, "addAfterTextMessage:2 "+newMessage.getCreated()+" "+newMessage.getBody()+" "+newID );
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (!vm.getMessagePointer().containsKey(newID)) {
@@ -759,7 +753,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //kalau belom ada masukin kedalam list dan hash map
                     tempAfterMessages.add(newMessage);
                     vm.addMessagePointer(newMessage);
-                    Log.e(TAG, "addAfterTextMessage: "+newMessage.getCreated()+" "+newMessage.getBody()+" "+newID  );
                     //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                 }).start();
             }
@@ -811,7 +804,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.INVISIBLE);
         vm.clearUnreadMessages();
-        Log.e(TAG, "updateUnreadCount: 3");
         updateUnreadCount();
     }
 
@@ -1174,7 +1166,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             message.setIsRead(true);
             vm.removeUnreadMessage(message.getLocalID());
-            Log.e(TAG, "updateUnreadCount: 4");
             updateUnreadCount();
         }
 
@@ -1550,16 +1541,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addAfterTextMessage(message, messageAfterModels);
-//                    new Thread(() -> {
-                        responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
-
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
+                    new Thread(() -> {
                         //ini buat update last update timestamp yang ada di preference
                         //ini di taruh di new Thread biar ga bkin scrollingnya lag
                         if (null != message.getUpdated() &&
                                 TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
                             TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
                         }
-//                    }).start();
+                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1647,8 +1637,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addBeforeTextMessage(message, messageBeforeModels);
-
-                    new Thread(() -> responseMessages.add(TAPChatManager.getInstance().convertToEntity(message))).start();
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1712,8 +1701,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addBeforeTextMessage(message, messageBeforeModels);
-
-                    new Thread(() -> responseMessages.add(TAPChatManager.getInstance().convertToEntity(message))).start();
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
