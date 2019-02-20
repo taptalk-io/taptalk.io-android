@@ -528,8 +528,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
                     callApiGetUserByUserID();
-                }
-                if (vm.getMessageModels().size() > 0) {
+                } else if (vm.getMessageModels().size() > 0) {
                     callApiAfter();
                 } else {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
@@ -729,11 +728,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                new Thread(() -> {
-                    //kalau belom ada masukin kedalam list dan hash map
-                    tempBeforeMessages.add(newMessage);
-                    vm.addMessagePointer(newMessage);
-                }).start();
+                //kalau belom ada masukin kedalam list dan hash map
+                tempBeforeMessages.add(newMessage);
+                vm.addMessagePointer(newMessage);
             }
             //updateMessageDecoration();
         });
@@ -749,12 +746,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (!vm.getMessagePointer().containsKey(newID)) {
-                new Thread(() -> {
-                    //kalau belom ada masukin kedalam list dan hash map
-                    tempAfterMessages.add(newMessage);
-                    vm.addMessagePointer(newMessage);
-                    //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
-                }).start();
+                //kalau belom ada masukin kedalam list dan hash map
+                tempAfterMessages.add(newMessage);
+                vm.addMessagePointer(newMessage);
+                //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
             }
             //updateMessageDecoration();
         });
