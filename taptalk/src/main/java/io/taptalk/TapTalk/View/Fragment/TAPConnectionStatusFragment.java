@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,12 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     @Override
     public void onPause() {
         super.onPause();
+        TAPConnectionManager.getInstance().removeSocketListener(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
         TAPConnectionManager.getInstance().removeSocketListener(this);
     }
 
