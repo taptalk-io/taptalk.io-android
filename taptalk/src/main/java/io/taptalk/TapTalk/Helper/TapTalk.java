@@ -167,6 +167,12 @@ public class TapTalk {
 
         tapListeners.add(tapListener);
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
+        
+        //di kasih selection biar dy cuman akan buat 1x selama apps belom di kill
+        if (null == intent) {
+            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
+            appContext.startService(intent);
+        }
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
@@ -177,12 +183,6 @@ public class TapTalk {
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-                //Ini buat bkin endAppService (kalau di taro di luar akan crash di Api >= 26)
-                //di kasih selection biar dy cuman akan buat 1x selama apps belom di kill
-                if (null == intent) {
-                    intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
-                    appContext.startService(intent);
-                }
             }
 
             @Override
