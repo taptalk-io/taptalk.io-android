@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.List;
 
-import io.taptalk.TapTalk.Model.TAPMessageModel;
-
 public class TAPGetRoomListResponse {
     @JsonProperty("messages") private List<HashMap<String, Object>> messages;
 

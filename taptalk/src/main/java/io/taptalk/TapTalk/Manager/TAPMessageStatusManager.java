@@ -178,12 +178,12 @@ public class TAPMessageStatusManager {
         }).start();
     }
 
-    public void updateMessageStatusToDeliveredFromNotification(List<TAPMessageModel> newMessageModels) {
+    public void updateMessageStatusToDelivered(List<TAPMessageModel> newMessageModels) {
         new Thread(() -> {
             TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
-                if (!model.getUser().getUserID().equals(myUser.getUserID())
+                if (null != myUser && !model.getUser().getUserID().equals(myUser.getUserID())
                         && null != model.getSending() && !model.getSending()
                         && null != model.getDelivered() && !model.getDelivered()
                         && null != model.getIsRead() && !model.getIsRead())

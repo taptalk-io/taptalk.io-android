@@ -8,7 +8,6 @@ import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Contact.TAPMyContactDao;
 import io.taptalk.TapTalk.Data.Message.TAPMessageDao;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;

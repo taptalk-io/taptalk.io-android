@@ -3,16 +3,24 @@ package io.taptalk.TapTalk.Helper;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.JobIntentService;
+import android.util.Log;
 
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 
-public class TapTalkEndAppService extends Service {
+public class TapTalkEndAppService extends JobIntentService {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    protected void onHandleWork(@NonNull Intent intent) {
+
     }
 
     @Override

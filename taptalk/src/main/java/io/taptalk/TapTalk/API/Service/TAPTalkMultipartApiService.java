@@ -1,9 +1,7 @@
 package io.taptalk.TapTalk.API.Service;
 
-import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
-import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.POST;

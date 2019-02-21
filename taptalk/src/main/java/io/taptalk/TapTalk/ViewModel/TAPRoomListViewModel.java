@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 
 public class TAPRoomListViewModel extends AndroidViewModel {
