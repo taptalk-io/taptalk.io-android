@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -540,6 +541,7 @@ public class TapTalk {
         return tapTalk.tapListeners;
     }
 
+    // TODO: 20 February 2019 ADD LISTENER TO DETECT FAILURE?
     public static void sendImageMessage(Context context, Uri imageUri, String recipientXcUserID, String caption) {
         TAPUtils.getInstance().getUserFromXcUserID(recipientXcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
@@ -550,6 +552,21 @@ public class TapTalk {
                                 TAPChatManager.getInstance().getActiveUser().getUserID(),
                                 user.getUserID()),
                         imageUri,
+                        caption);
+            }
+        });
+    }
+
+    public static void sendImageMessage(Context context, Bitmap bitmap, String recipientXcUserID, String caption) {
+        TAPUtils.getInstance().getUserFromXcUserID(recipientXcUserID, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(TAPUserModel user) {
+                TAPChatManager.getInstance().sendImageMessage(
+                        context,
+                        TAPChatManager.getInstance().arrangeRoomId(
+                                TAPChatManager.getInstance().getActiveUser().getUserID(),
+                                user.getUserID()),
+                        bitmap,
                         caption);
             }
         });

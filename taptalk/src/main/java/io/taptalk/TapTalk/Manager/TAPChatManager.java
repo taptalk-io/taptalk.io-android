@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -464,27 +465,27 @@ public class TAPChatManager {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(new File(fileUri.getPath()).getAbsolutePath(), options);
-        int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
+        int imageHeight = options.outHeight;
 
         // Build message model
         TAPMessageModel messageModel;
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
-                    TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption),
+                    generateImageCaption(caption),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri)));
+                    new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri).toHashMap());
         } else {
-            HashMap<String, Object> data = TAPUtils.getInstance().toHashMap(new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri));
+            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri).toHashMap();
             if (null != getUserInfo()) {
                 data.put(USER_INFO, getUserInfo());
             }
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                    TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption),
+                    generateImageCaption(caption),
                     activeRoom,
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
@@ -496,26 +497,78 @@ public class TAPChatManager {
         return messageModel;
     }
 
+    private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption) {
+        int imageWidth = bitmap.getWidth();
+        int imageHeight = bitmap.getHeight();
+
+        // Build message model
+        TAPMessageModel messageModel;
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    generateImageCaption(caption),
+                    activeRoom,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    new TAPDataImageModel(imageWidth, imageHeight, caption, null, null).toHashMap());
+        } else {
+            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, caption, null, null).toHashMap();
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    generateImageCaption(caption),
+                    activeRoom,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    data,
+                    getQuotedMessage());
+        }
+        return messageModel;
+    }
+
+    private String generateImageCaption(String caption) {
+        return TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " +
+                (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption);
+    }
+
     /**
      * Create image message model and call upload api
      */
-    private void createImageMessageModelAndAddToQueueUpload(Context context, String roomID, Uri fileUri,
-                                                            String caption) {
+    private void createImageMessageModelAndAddToQueueUpload(Context context, String roomID,
+                                                            Uri fileUri, String caption) {
         TAPMessageModel messageModel = createImageMessageModel(fileUri, caption);
 
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
 
         addUploadingMessageToHashMap(messageModel);
-        messageModel = showDummyImageMessage(messageModel);
+        messageModel = fixOrientationAndShowImagePreviewBubble(messageModel);
 
         TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel);
+    }
+
+    private void createImageMessageModelAndAddToQueueUpload(Context context, String roomID,
+                                                            Bitmap bitmap, String caption) {
+        TAPMessageModel messageModel = createImageMessageModel(bitmap, caption);
+
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
+
+        addUploadingMessageToHashMap(messageModel);
+        triggerSendMessageListener(messageModel);
+
+        TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel, bitmap);
     }
 
     /**
      * Returns Message Model with original image width & height data
      */
-    private TAPMessageModel showDummyImageMessage(TAPMessageModel imageMessage) {
+    // Previously showDummyImageMessage
+    private TAPMessageModel fixOrientationAndShowImagePreviewBubble(TAPMessageModel imageMessage) {
         if (null == imageMessage.getData()) {
             return imageMessage;
         }
@@ -553,6 +606,10 @@ public class TAPChatManager {
 
     public void sendImageMessage(Context context, String roomID, Uri imageUri, String caption) {
         new Thread(() -> createImageMessageModelAndAddToQueueUpload(context, roomID, imageUri, caption)).start();
+    }
+
+    public void sendImageMessage(Context context, String roomID, Bitmap bitmap, String caption) {
+        new Thread(() -> createImageMessageModelAndAddToQueueUpload(context, roomID, bitmap, caption)).start();
     }
 
     public void sendImageMessage(Context context, String roomID, TAPMessageModel imageModel) {
