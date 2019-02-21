@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.util.Linkify;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -215,6 +217,24 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageBody.setText(item.getBody());
+            Linkify.addLinks(tvMessageBody, Linkify.PHONE_NUMBERS | Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
+
+            Linkify.TransformFilter filter = (match, url) -> url.replaceAll("/", "");
+            Pattern pattern = Pattern.compile("[0-9/]+");
+            Linkify.addLinks(tvMessageBody, pattern, "tel:", (s, start, end) -> {
+                int digitCount = 0;
+
+                for (int i = start; i < end; i++) {
+                    if (Character.isDigit(s.charAt(i))) {
+                        digitCount++;
+                        if (digitCount >= 7) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }, filter);
+
             tvMessageStatus.setText(item.getMessageStatusText());
 
             markUnreadForMessage(item, myUserModel);
@@ -393,6 +413,23 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 tvMessageBody.setText(imageCaption);
+                Linkify.addLinks(tvMessageBody, Linkify.PHONE_NUMBERS | Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
+
+                Linkify.TransformFilter filter = (match, url) -> url.replaceAll("/", "");
+                Pattern pattern = Pattern.compile("[0-9/]+");
+                Linkify.addLinks(tvMessageBody, pattern, "tel:", (s, start, end) -> {
+                    int digitCount = 0;
+
+                    for (int i = start; i < end; i++) {
+                        if (Character.isDigit(s.charAt(i))) {
+                            digitCount++;
+                            if (digitCount >= 7) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }, filter);
             } else {
                 rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
                 rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
