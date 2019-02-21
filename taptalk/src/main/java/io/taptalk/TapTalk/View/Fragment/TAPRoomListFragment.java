@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -594,9 +595,14 @@ public class TAPRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID)) {
-                vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
-                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+            try {
+                if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) && null != vm.getRoomPointer().get(roomID)) {
+                    vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "onCountedUnreadCount: ", e);
             }
         }
 
