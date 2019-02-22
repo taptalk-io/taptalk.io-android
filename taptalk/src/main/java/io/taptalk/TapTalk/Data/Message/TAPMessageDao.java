@@ -8,6 +8,7 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import java.util.List;
+
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 
 @Dao

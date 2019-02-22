@@ -54,6 +54,12 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        TAPConnectionManager.getInstance().removeSocketListener(this);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         initConnectionStatus();

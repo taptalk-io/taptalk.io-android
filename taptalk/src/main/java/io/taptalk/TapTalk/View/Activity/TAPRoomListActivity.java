@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.os.Bundle;
 
-import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;

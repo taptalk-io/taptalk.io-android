@@ -505,7 +505,7 @@ public class TAPRoomListFragment extends Fragment {
 
                 // Update status to delivered
                 if (deliveredMessages.size() > 0) {
-                    TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(deliveredMessages);
+                    TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(deliveredMessages);
                 }
 
                 // Get updated other user data from API
@@ -595,9 +595,14 @@ public class TAPRoomListFragment extends Fragment {
 
         @Override
         public void onCountedUnreadCount(String roomID, int unreadCount) {
-            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID)) {
-                vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
-                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+            try {
+                if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) && null != vm.getRoomPointer().get(roomID)) {
+                    vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "onCountedUnreadCount: ", e);
             }
         }
 
