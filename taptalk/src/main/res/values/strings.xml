@@ -99,6 +99,7 @@
     <string name="tap_error_other_user_not_found">Could not find other user\'s data.</string>
     <string name="tap_error_image_data_empty">File upload failed: data is required in MessageModel.</string>
     <string name="tap_error_image_uri_empty">File upload failed: URI is required in MessageModel data.</string>
+    <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -142,6 +143,7 @@
     <string name="tap_details">Details</string>
     <string name="tap_edit">Edit</string>
     <string name="tap_highlighted_string"><![CDATA[<font color=\'#2eccad\'>%s</font>]]></string>
+    <string name="tap_image_saved">Image Saved</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_no_chats">No Chats</string>
     <string name="tap_no_description">No Description</string>
@@ -149,6 +151,7 @@
     <string name="tap_oops">Oops…</string>
     <string name="tap_permission_request">Permission Request</string>
     <string name="tap_reply">Reply</string>
+    <string name="tap_saving">Saving…</string>
     <string name="tap_search">Search</string>
     <string name="tap_send">Send</string>
     <string name="tap_sending">Sending…</string>

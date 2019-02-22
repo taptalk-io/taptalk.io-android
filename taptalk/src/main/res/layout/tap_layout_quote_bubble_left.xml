@@ -31,7 +31,7 @@
 
     <TextView
         android:id="@+id/tv_quote_title"
-        style="@style/HomingPigeonReplySenderName"
+        style="@style/TapQuoteTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -50,7 +50,7 @@
 
     <TextView
         android:id="@+id/tv_quote_content"
-        style="@style/HomingPigeonReplyBody"
+        style="@style/TapQuoteBody"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

@@ -19,7 +19,7 @@
 
     <Button
         android:id="@+id/btn_scan_qr_code"
-        style="@style/HomingPigeonButton"
+        style="@style/TapButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"

@@ -74,7 +74,7 @@
 
         <TextView
             android:id="@+id/tv_collapsed_name"
-            style="@style/HomingPigeonToolbarTitle"
+            style="@style/TapToolbarTitle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginStart="64dp"
@@ -134,7 +134,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    style="@style/HomingPigeonMenuLabel"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -178,7 +178,7 @@
                     android:src="@drawable/tap_ic_color_grey" />
 
                 <TextView
-                    style="@style/HomingPigeonMenuLabel"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -211,7 +211,7 @@
 
                 <TextView
                     android:id="@+id/tv_block_or_view"
-                    style="@style/HomingPigeonMenuLabel"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -244,7 +244,7 @@
 
                 <TextView
                     android:id="@+id/tv_delete"
-                    style="@style/HomingPigeonMenuLabel"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"

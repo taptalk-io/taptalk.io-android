@@ -47,7 +47,7 @@
 
             <TextView
                 android:id="@+id/tv_user_name"
-                style="@style/HomingPigeonMessageUserName"
+                style="@style/TapMessageUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
@@ -79,7 +79,7 @@
 
             <TextView
                 android:id="@+id/tv_message_body"
-                style="@style/HomingPigeonMessageBody"
+                style="@style/TapMessageBody"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"

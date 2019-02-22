@@ -32,7 +32,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/HomingPigeonToolbarTitle"
+            style="@style/TapToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/tap_new_group"
@@ -43,7 +43,7 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/HomingPigeonSearchBar"
+            style="@style/TapSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="@string/tap_search_for_contacts"
@@ -92,7 +92,7 @@
 
         <TextView
             android:id="@+id/tv_member_count"
-            style="@style/HomingPigeonSectionLabel"
+            style="@style/TapSectionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -107,7 +107,7 @@
 
         <Button
             android:id="@+id/btn_continue"
-            style="@style/HomingPigeonButton"
+            style="@style/TapButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"

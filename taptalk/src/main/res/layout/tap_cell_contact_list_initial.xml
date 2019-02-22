@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/tv_initial"
-        style="@style/HomingPigeonSectionLabel"
+        style="@style/TapSectionLabel"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:background="@color/tap_white_f8"
