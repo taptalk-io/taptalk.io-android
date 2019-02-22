@@ -31,6 +31,7 @@
     <color name="tap_aquaMarine">#3de1c1</color>
     <color name="tap_lightTeal">#a7ebde</color>
     <color name="tap_brightBlue">#007aff</color>
+    <color name="tap_clear_blue">#188cff</color>
 
     <color name="tap_cream_white">#fffdea</color>
     <color name="tap_lightBlueGrey">#cce7e2</color>

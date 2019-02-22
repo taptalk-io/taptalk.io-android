@@ -120,6 +120,7 @@
                 android:paddingEnd="12dp"
                 android:paddingBottom="12dp"
                 android:textColor="@color/tap_black_2c"
+                android:textColorLink="@color/tap_clear_blue"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"

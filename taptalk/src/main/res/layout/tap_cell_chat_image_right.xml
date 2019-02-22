@@ -134,6 +134,7 @@
                 android:paddingEnd="12dp"
                 android:paddingBottom="12dp"
                 android:textColor="@color/tap_white"
+                android:textColorLink="@color/tap_white"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
