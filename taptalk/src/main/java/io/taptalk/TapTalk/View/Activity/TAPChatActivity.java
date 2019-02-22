@@ -24,7 +24,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1783,4 +1782,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             hideTypingIndicator();
         }
     };
+
+    @Override
+    public void startActivity(Intent intent) {
+        String data = intent.getDataString();
+        String action = intent.getAction();
+
+        if (null != action && null != data && action.equals(Intent.ACTION_VIEW) && data.contains("mailto:")) {
+            Toast.makeText(TAPChatActivity.this, "Email", Toast.LENGTH_SHORT).show();
+        } else if (null != action && null != data && action.equals(Intent.ACTION_VIEW) && data.contains("tel:")) {
+            Toast.makeText(TAPChatActivity.this, "Phone Number", Toast.LENGTH_SHORT).show();
+        } else if (null != action && null != data && action.equals(Intent.ACTION_VIEW)) {
+            Toast.makeText(TAPChatActivity.this, "Link Url", Toast.LENGTH_SHORT).show();
+        } else {
+            super.startActivity(intent);
+        }
+    }
 }
