@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
@@ -43,6 +45,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -58,6 +61,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
@@ -575,5 +579,24 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
             }
         }
         return -1;
+    }
+
+    /**
+     * This is a function to open Custom Tab Layout
+     */
+    public void openCustomTabLayout(Activity activity, String url) {
+        CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tap_purply_two));
+        intentBuilder.setShowTitle(true);
+        intentBuilder.setStartAnimations(activity, R.anim.tap_slide_left, R.anim.tap_stay);
+        intentBuilder.setExitAnimations(activity, R.anim.tap_stay,
+                R.anim.tap_slide_right);
+
+        TAPCustomTabActivityHelper.openCustomTab(activity,
+                intentBuilder.build(), Uri.parse(url), (activity1, uri) -> {
+                    Intent intent = new Intent(activity1, TAPWebBrowserActivity.class);
+                    intent.putExtra(TAPWebBrowserActivity.EXTRA_URL, uri.toString());
+                    activity1.startActivity(intent);
+                });
     }
 }

@@ -1,18 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity">
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/tap_purply_two"
+        android:elevation="2dp"
+        app:layout_scrollFlags="scroll|snap|enterAlways">
+
+        <TextView
+            android:id="@+id/tv_toolbar_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="24dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/tap_font_neueeinstellungbold"
+            android:maxLines="1"
+            android:textColor="@color/tap_white"
+            android:textSize="20sp"
+            android:visibility="visible"
+            tools:text="Banner Section 1" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <ProgressBar
+        android:id="@+id/pb_loading_webview"
+        style="@style/TapMyProgressBarNoPadding"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@color/tap_purply_two"
+        android:max="100"
+        android:progress="0" />
 
     <WebView
-        android:id="@+id/wv_browser"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

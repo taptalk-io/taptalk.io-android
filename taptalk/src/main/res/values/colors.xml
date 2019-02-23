@@ -6,6 +6,7 @@
     <color name="colorAccentLight">@color/tap_lightTeal</color>
 
     <color name="tap_darkPurple">#51276c</color>
+    <color name="tap_purply_two">#673ab7</color>
     <color name="tap_warmPurple">#6d3492</color>
     <color name="tap_purply">#793da0</color>
     <color name="tap_mediumPurple">#784198</color>

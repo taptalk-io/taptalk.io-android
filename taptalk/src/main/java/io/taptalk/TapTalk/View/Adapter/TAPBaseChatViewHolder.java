@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -60,10 +61,6 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
     }
 
     protected void setLinkDetection(Context context, TextView tvMessageBody) {
-        CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(Color.parseColor("#2eccad"));
-        intentBuilder.setSecondaryToolbarColor(Color.RED);
-
         TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
                 .setOnLinkClickListener((textView, url) -> {
                     if (null != url && url.contains("mailto:")) {
@@ -74,12 +71,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                         return false;
                     } else if (null != url) {
                         //For Url
-                        TAPCustomTabActivityHelper.openCustomTab((Activity) itemView.getContext(),
-                                intentBuilder.build(), Uri.parse(url), (activity, uri) -> {
-                                    Intent intent = new Intent(activity, TAPWebBrowserActivity.class);
-                                    intent.putExtra(TAPWebBrowserActivity.EXTRA_URL, uri.toString());
-                                    activity.startActivity(intent);
-                                });
+                        TAPUtils.getInstance().openCustomTabLayout((Activity) itemView.getContext(), url);
                         return true;
                     }
                     return false;
