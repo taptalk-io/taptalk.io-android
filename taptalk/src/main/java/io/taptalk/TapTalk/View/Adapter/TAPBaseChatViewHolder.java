@@ -1,6 +1,11 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
 import android.text.util.Linkify;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -8,11 +13,13 @@ import android.widget.Toast;
 
 import java.util.regex.Pattern;
 
+import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 
 public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
@@ -53,6 +60,10 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
     }
 
     protected void setLinkDetection(Context context, TextView tvMessageBody) {
+        CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
+        intentBuilder.setToolbarColor(Color.parseColor("#2eccad"));
+        intentBuilder.setSecondaryToolbarColor(Color.RED);
+
         TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
                 .setOnLinkClickListener((textView, url) -> {
                     if (null != url && url.contains("mailto:")) {
@@ -63,7 +74,12 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                         return false;
                     } else if (null != url) {
                         //For Url
-                        Toast.makeText(context, "Link Url", Toast.LENGTH_SHORT).show();
+                        TAPCustomTabActivityHelper.openCustomTab((Activity) itemView.getContext(),
+                                intentBuilder.build(), Uri.parse(url), (activity, uri) -> {
+                                    Intent intent = new Intent(activity, TAPWebBrowserActivity.class);
+                                    intent.putExtra(TAPWebBrowserActivity.EXTRA_URL, uri.toString());
+                                    activity.startActivity(intent);
+                                });
                         return true;
                     }
                     return false;
