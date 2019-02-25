@@ -100,6 +100,8 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                 });
 
         tvMessageBody.setMovementMethod(movementMethod);
+        tvMessageBody.setClickable(false);
+        tvMessageBody.setLongClickable(false);
 
         Linkify.addLinks(tvMessageBody, Linkify.PHONE_NUMBERS | Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
 
