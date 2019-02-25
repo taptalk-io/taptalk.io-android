@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
@@ -28,6 +30,10 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
         setItems(createAttachMenu(), false);
+    }
+
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items) {
+        setItems(items);
     }
 
     @NonNull

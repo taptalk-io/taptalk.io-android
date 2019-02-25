@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.v7.app.AppCompatActivity;
 import android.text.util.Linkify;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -21,6 +22,9 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
+
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
 
 public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
@@ -87,6 +91,8 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                         return true;
                     } else if (null != url) {
                         //For Url
+                        TAPLongPressActionBottomSheet bottomSheet = new TAPLongPressActionBottomSheet(LINK_TYPE);
+                        bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), "");
                         Toast.makeText(context, "Link Url Long Click", Toast.LENGTH_SHORT).show();
                         return true;
                     }
