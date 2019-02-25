@@ -63,6 +63,8 @@
     <string name="tap_days_ago">Active %d days ago</string>
     <string name="tap_active_a_week_ago">Active a week ago</string>
     <string name="tap_last_active">Last active %s</string>
+    <string name="tap_loading_new_messages">Loading New Messages</string>
+    <string name="tap_loading_older_messages">Loading Older Messages</string>
 
     <!--Group Chat-->
     <string name="tap_group_member_count">Group Members (%d/%d)</string>

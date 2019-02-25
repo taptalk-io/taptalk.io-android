@@ -211,12 +211,38 @@
     </android.support.constraint.ConstraintLayout>
 
     <FrameLayout
+        android:id="@+id/fl_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
+
+        <fragment
+            android:id="@+id/f_loading_older"
+            class="io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <fragment
+            android:id="@+id/f_loading_newer"
+            class="io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <fragment
+            android:id="@+id/f_connection_status"
+            class="io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment"
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/fl_message_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        app:layout_constraintTop_toBottomOf="@id/fl_loading"
         tools:background="@color/tap_charcoal_alpha_40">
 
         <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
@@ -228,13 +254,6 @@
             android:scrollbars="vertical" />
 
     </FrameLayout>
-
-    <fragment
-        android:id="@+id/f_connection_status"
-        class="io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/cl_action_bar" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_chat_composer"
