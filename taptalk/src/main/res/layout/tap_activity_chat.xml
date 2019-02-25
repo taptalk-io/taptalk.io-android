@@ -15,7 +15,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/tap_white"
         android:elevation="2dp"
-        android:foreground="?attr/selectableItemBackground">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_button_back"
@@ -57,7 +57,9 @@
                 android:id="@+id/cl_room_online_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="visible">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <View
                     android:id="@+id/v_room_status_badge"
@@ -76,8 +78,10 @@
                     style="@style/TapRoomMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/v_room_status_badge"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Active Now" />
 
             </android.support.constraint.ConstraintLayout>
@@ -86,7 +90,10 @@
                 android:id="@+id/cl_room_typing_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/iv_room_typing_indicator"
@@ -103,7 +110,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Typing" />
 
             </android.support.constraint.ConstraintLayout>
@@ -272,7 +281,8 @@
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:visibility="gone">
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/v_composer_separator">
 
             <ImageView
                 android:id="@+id/iv_cancel_reply"
@@ -414,18 +424,22 @@
             app:layout_constraintStart_toEndOf="@id/et_chat" />
 
         <View
+            android:id="@+id/v_composer_separator"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginBottom="8dp"
             android:background="@color/tap_grey_e4"
             app:layout_constraintBottom_toTopOf="@+id/et_chat"
-            app:layout_constraintTop_toBottomOf="@id/cl_quote" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:background="@color/tap_grey_e4"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -469,9 +483,9 @@
         android:textSize="11dp"
         android:translationY="-14dp"
         android:visibility="invisible"
-
         app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
         app:layout_constraintStart_toStartOf="@id/iv_to_bottom"
         app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
         tools:text="1" />
+
 </android.support.constraint.ConstraintLayout>
