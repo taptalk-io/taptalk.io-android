@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -140,10 +141,10 @@ public class TAPFileDownloadManager {
         return bitmap;
     }
 
-    private void writeImageFileToDisk(Long timestamp, Bitmap bitmap) {
+    public void writeImageFileToDisk(Long timestamp, Bitmap bitmap, TapTalkActionInterface listener) {
         new Thread(() -> {
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + ".jpeg";
-            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name));
+            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Images");
             dir.mkdirs();
             File file = new File(dir, filename);
             if (file.exists()) {
@@ -156,7 +157,9 @@ public class TAPFileDownloadManager {
                 out.close();
             } catch (Exception e) {
                 e.printStackTrace();
+                listener.onFailure(e.getMessage());
             }
+            listener.onSuccess("Successfully saved " + filename);
         }).start();
     }
 

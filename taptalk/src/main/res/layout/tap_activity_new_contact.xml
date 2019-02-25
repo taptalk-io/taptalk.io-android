@@ -30,7 +30,7 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/HomingPigeonSearchBar"
+            style="@style/TapSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="@string/tap_search_by_username"
@@ -187,7 +187,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_action"
-                style="@style/HomingPigeonButton"
+                style="@style/TapButton"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
                 android:layout_marginStart="8dp"
@@ -203,7 +203,7 @@
 
                 <TextView
                     android:id="@+id/tv_button_text"
-                    style="@style/HomingPigeonButtonText"
+                    style="@style/TapButtonText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tap_chat_now"
@@ -306,7 +306,7 @@
 
         <TextView
             android:id="@+id/tv_connection_lost"
-            style="@style/HomingPigeonRoomName"
+            style="@style/TapRoomName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

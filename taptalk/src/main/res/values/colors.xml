@@ -61,7 +61,7 @@
     <color name="tap_transparent_black">#00000000</color>
     <color name="tap_transparent_black_18">#2d000000</color>
     <color name="tap_transparent_black_40">#66000000</color>
-    <color name="tap_transparent_charcoal">#6604040f</color>
+    <color name="tap_transparent_charcoal">#0004040f</color>
 
     <color name="color0">#fdc3a7</color>
     <color name="color1">#d0e69d</color>

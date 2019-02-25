@@ -60,7 +60,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreview;
+import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
@@ -74,7 +74,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImageDetail.IMAGE_FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -345,9 +345,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
 
-        private void openImageDetailPreview(String fileID) {
-            Intent intent = new Intent(itemView.getContext(), TAPImageDetailPreview.class);
-            intent.putExtra(IMAGE_FILE_ID, fileID);
+        private void openImageDetailPreview(TAPMessageModel message) {
+            Intent intent = new Intent(itemView.getContext(), TAPImageDetailPreviewActivity.class);
+            intent.putExtra(MESSAGE, message);
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     ((Activity) itemView.getContext()),
                     rcivImageBody,
@@ -431,7 +431,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .placeholder(finalThumbnail)
                                             .centerCrop())
                                     .into(rcivImageBody);
-                            rcivImageBody.setOnClickListener(v -> openImageDetailPreview(fileID));
+                            rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
                             //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {

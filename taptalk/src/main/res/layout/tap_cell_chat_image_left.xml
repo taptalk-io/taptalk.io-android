@@ -111,7 +111,7 @@
 
             <TextView
                 android:id="@+id/tv_message_body"
-                style="@style/HomingPigeonMessageBody"
+                style="@style/TapMessageBody"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/tap_bg_white_rounded_0dp_0dp_8dp_8dp_stroke_eaeaea_1dp"

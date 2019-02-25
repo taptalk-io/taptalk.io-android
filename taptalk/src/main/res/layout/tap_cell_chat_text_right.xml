@@ -82,7 +82,7 @@
 
             <TextView
                 android:id="@+id/tv_message_body"
-                style="@style/HomingPigeonMessageBody"
+                style="@style/TapMessageBody"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/tap_white"

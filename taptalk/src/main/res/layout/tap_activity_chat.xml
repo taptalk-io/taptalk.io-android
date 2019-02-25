@@ -32,7 +32,7 @@
 
         <TextView
             android:id="@+id/tv_room_name"
-            style="@style/HomingPigeonRoomName"
+            style="@style/TapRoomName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -73,7 +73,7 @@
 
                 <TextView
                     android:id="@+id/tv_room_status"
-                    style="@style/HomingPigeonRoomMessage"
+                    style="@style/TapRoomMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +99,7 @@
 
                 <TextView
                     android:id="@+id/tv_room_typing_status"
-                    style="@style/HomingPigeonRoomMessage"
+                    style="@style/TapRoomMessage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -217,7 +217,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        tools:background="@color/tap_transparent_charcoal">
+        tools:background="@color/tap_charcoal_alpha_40">
 
         <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
             android:id="@+id/rv_message_list"
@@ -293,7 +293,7 @@
 
             <TextView
                 android:id="@+id/tv_quote_title"
-                style="@style/HomingPigeonReplySenderName"
+                style="@style/TapQuoteTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -310,7 +310,7 @@
 
             <TextView
                 android:id="@+id/tv_quote_content"
-                style="@style/HomingPigeonReplyBody"
+                style="@style/TapQuoteBody"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

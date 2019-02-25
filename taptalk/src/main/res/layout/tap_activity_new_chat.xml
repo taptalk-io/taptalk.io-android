@@ -29,12 +29,12 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/HomingPigeonToolbarTitle"
+            style="@style/TapToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/tap_new_chat"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/iv_button_search"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_search"
             app:layout_constraintStart_toEndOf="@id/iv_button_close"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -80,7 +80,7 @@
                     android:src="@drawable/tap_ic_new_contact_green" />
 
                 <TextView
-                    style="@style/HomingPigeonMenuLabel"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -109,7 +109,7 @@
                     android:src="@drawable/tap_ic_scan_green" />
 
                 <TextView
-                    style="@style/HomingPigeonMenuLabel"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
@@ -138,7 +138,7 @@
                     android:src="@drawable/tap_ic_new_group_green" />
 
                 <TextView
-                    style="@style/HomingPigeonMenuLabel"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"

@@ -15,7 +15,7 @@
     <application android:theme="@style/AppTheme">
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:launchMode="singleTask"/>
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreview" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity" />
 
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"

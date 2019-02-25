@@ -31,7 +31,7 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/HomingPigeonSearchBar"
+            style="@style/TapSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="@string/tap_search_for_contacts"
