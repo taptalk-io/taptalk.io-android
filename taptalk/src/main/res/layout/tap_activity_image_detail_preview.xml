@@ -90,7 +90,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/tap_charcoal_alpha_40"
+            android:maxHeight="220dp"
             android:padding="16dp"
+            android:scrollbars="vertical"
             android:textColor="@color/tap_white"
             tools:text="Lorem ipsum" />
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -102,10 +103,11 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
         tvTitle.setText(title);
         tvMessageStatus.setText(messageStatus);
-        tvCaption.setText(caption);
 
         if (!caption.isEmpty()) {
             llCaption.setVisibility(View.VISIBLE);
+            tvCaption.setText(caption);
+            tvCaption.setMovementMethod(new ScrollingMovementMethod());
         }
 
         gestureDetector = new GestureDetector(this, new TapGestureListener());
