@@ -23,12 +23,16 @@ class TAPWebBrowserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_web_browser)
         var url: String = intent.getStringExtra(EXTRA_URL)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.title = ""
 
-        tv_toolbar_title.text = "Browser"
+        iv_close_btn.setOnClickListener { v: View? ->
+            run {
+                finish()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+            }
+        }
+
+        tv_title.visibility = View.GONE
+        tv_url.text = url
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
@@ -48,9 +52,16 @@ class TAPWebBrowserActivity : AppCompatActivity() {
             }
         }
 
-        webView.webViewClient = WebViewClient()
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                if (null != view) {
+                    tv_title.visibility = View.VISIBLE
+                    tv_title.text = view.title
+                }
+            }
+        }
 
-        val webSettings : WebSettings = webView.settings
+        val webSettings: WebSettings = webView.settings
         webSettings.javaScriptEnabled = true
         webView.loadUrl(url)
     }
@@ -70,6 +81,7 @@ class TAPWebBrowserActivity : AppCompatActivity() {
             webView.goBack()
         } else {
             super.onBackPressed()
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
         }
     }
 }

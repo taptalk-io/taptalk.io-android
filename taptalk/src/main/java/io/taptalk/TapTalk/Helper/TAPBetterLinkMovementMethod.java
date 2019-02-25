@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.text.Layout;
 import android.text.Selection;
@@ -339,7 +340,7 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     int spanStart = text.getSpanStart(clickableSpan);
     int spanEnd = text.getSpanEnd(clickableSpan);
-    BackgroundColorSpan highlightSpan = new BackgroundColorSpan(textView.getHighlightColor());
+    BackgroundColorSpan highlightSpan = new BackgroundColorSpan(Color.parseColor("#5AC8FA"));
     text.setSpan(highlightSpan, spanStart, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
     textView.setTag(R.id.tap_link_bettermovementmethod_highlight_background_span, highlightSpan);
