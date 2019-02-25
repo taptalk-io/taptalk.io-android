@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/tap_purply_two"
+        android:elevation="2dp"
+        app:layout_scrollFlags="scroll|snap|enterAlways">
+
+        <ImageView
+            android:id="@+id/iv_close_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:paddingStart="21dp"
+            android:paddingEnd="21dp"
+            android:src="@drawable/tap_ic_close_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ll_title_url"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/ll_title_url"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:animateLayoutChanges="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_close_btn"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/tap_font_latobold"
+                android:lineSpacingExtra="10sp"
+                android:maxLines="1"
+                android:textColor="@color/tap_white"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                tools:text="A place to find unique products, services,…" />
+
+            <TextView
+                android:id="@+id/tv_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/tap_font_latoregular"
+                android:lineSpacingExtra="4sp"
+                android:maxLines="1"
+                android:textColor="@color/tap_white"
+                android:textSize="12sp"
+                android:textStyle="normal"
+                tools:text="www.moselo.com" />
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_loading_webview"
+        style="@style/TapMyProgressBarNoPadding"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@color/tap_purply_two"
+        android:max="100"
+        android:progress="0" />
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

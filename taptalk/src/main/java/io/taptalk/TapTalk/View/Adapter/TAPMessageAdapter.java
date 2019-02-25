@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,9 +12,11 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -23,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -37,6 +41,7 @@ import java.util.regex.Pattern;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
+import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
@@ -217,24 +222,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageBody.setText(item.getBody());
-            Linkify.addLinks(tvMessageBody, Linkify.PHONE_NUMBERS | Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
-
-            Linkify.TransformFilter filter = (match, url) -> url.replaceAll("/", "");
-            Pattern pattern = Pattern.compile("[0-9/]+");
-            Linkify.addLinks(tvMessageBody, pattern, "tel:", (s, start, end) -> {
-                int digitCount = 0;
-
-                for (int i = start; i < end; i++) {
-                    if (Character.isDigit(s.charAt(i))) {
-                        digitCount++;
-                        if (digitCount >= 7) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }, filter);
-
+            setLinkDetection(itemView.getContext(), tvMessageBody);
             tvMessageStatus.setText(item.getMessageStatusText());
 
             markUnreadForMessage(item, myUserModel);
@@ -413,23 +401,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 tvMessageBody.setText(imageCaption);
-                Linkify.addLinks(tvMessageBody, Linkify.PHONE_NUMBERS | Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
-
-                Linkify.TransformFilter filter = (match, url) -> url.replaceAll("/", "");
-                Pattern pattern = Pattern.compile("[0-9/]+");
-                Linkify.addLinks(tvMessageBody, pattern, "tel:", (s, start, end) -> {
-                    int digitCount = 0;
-
-                    for (int i = start; i < end; i++) {
-                        if (Character.isDigit(s.charAt(i))) {
-                            digitCount++;
-                            if (digitCount >= 7) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }, filter);
+                setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivImageBody.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
                 rcivImageBody.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
@@ -908,8 +880,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             resendMessage(item);
         } else if (item.getType() == TYPE_TEXT &&
                 ((null != item.getSending() && !item.getSending()) ||
-                (null != item.getDelivered() && item.getDelivered()) ||
-                (null != item.getIsRead() && item.getIsRead()))) {
+                        (null != item.getDelivered() && item.getDelivered()) ||
+                        (null != item.getIsRead() && item.getIsRead()))) {
             if (item.isExpanded()) {
                 // Shrink bubble
                 item.setExpanded(false);

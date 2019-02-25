@@ -25,4 +25,6 @@
         <attr name="minHeight" format="dimension" />
         <attr name="dimensionRatio" format="float" />
     </declare-styleable>
+
+    <item name="tap_link_bettermovementmethod_highlight_background_span" type="id" />
 </resources>

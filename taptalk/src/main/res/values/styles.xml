@@ -193,4 +193,10 @@
         <item name="colorControlActivated">@color/tap_white</item>
     </style>
 
+    <style name="TapMyProgressBarNoPadding" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressTint">@color/tap_white</item>
+        <item name="android:progressBackgroundTint">@color/tap_purply_two</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
 </resources>

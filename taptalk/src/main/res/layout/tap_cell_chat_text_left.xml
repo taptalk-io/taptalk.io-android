@@ -84,6 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:textColor="@color/tap_black_2c"
+                android:textColorLink="@color/tap_clear_blue"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 tools:text="Hey there, love your work!" />

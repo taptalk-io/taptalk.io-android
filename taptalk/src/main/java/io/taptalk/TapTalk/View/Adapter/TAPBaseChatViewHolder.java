@@ -1,11 +1,26 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
+import android.text.util.Linkify;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.regex.Pattern;
+
+import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
+import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 
 public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
@@ -43,5 +58,59 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                 TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
             }).start();
         }
+    }
+
+    protected void setLinkDetection(Context context, TextView tvMessageBody) {
+        TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
+                .setOnLinkClickListener((textView, url) -> {
+                    if (null != url && url.contains("mailto:")) {
+                        //for Email
+                        return false;
+                    } else if (null != url && url.contains("tel:")) {
+                        //For Phone Number
+                        return false;
+                    } else if (null != url) {
+                        //For Url
+                        TAPUtils.getInstance().openCustomTabLayout((Activity) itemView.getContext(), url);
+                        return true;
+                    }
+                    return false;
+                }).setOnLinkLongClickListener((textView, url) -> {
+
+                    if (null != url && url.contains("mailto:")) {
+                        //for Email
+                        Toast.makeText(context, "Email Long Click", Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else if (null != url && url.contains("tel:")) {
+                        //For Phone Number
+                        Toast.makeText(context, "Phone Long Click", Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else if (null != url) {
+                        //For Url
+                        Toast.makeText(context, "Link Url Long Click", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                    return true;
+                });
+
+        tvMessageBody.setMovementMethod(movementMethod);
+
+        Linkify.addLinks(tvMessageBody, Linkify.PHONE_NUMBERS | Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
+
+        Linkify.TransformFilter filter = (match, url) -> url.replaceAll("/", "");
+        Pattern pattern = Pattern.compile("[0-9/]+");
+        Linkify.addLinks(tvMessageBody, pattern, "tel:", (s, start, end) -> {
+            int digitCount = 0;
+
+            for (int i = start; i < end; i++) {
+                if (Character.isDigit(s.charAt(i))) {
+                    digitCount++;
+                    if (digitCount >= 7) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }, filter);
     }
 }
