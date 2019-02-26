@@ -156,6 +156,13 @@ public class TAPDefaultConstant {
         public static final String DownloadFailed = "kTAPDownloadFailed";
     }
 
+    public static final class LongPressBroadcastEvent {
+        public static final String LongPressChatBubble = "kTAPLongPressChatBubble";
+        public static final String LongPressLink = "kTAPLongPressLink";
+        public static final String LongPressEmail = "kTAPLongPressEmail";
+        public static final String LongPressPhone = "kTAPLongPressPhone";
+    }
+
     public static final class TokenHeaderConst {
         public static final int NOT_USE_REFRESH_TOKEN = 1;
         public static final int USE_REFRESH_TOKEN = 2;

@@ -3,24 +3,27 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.util.Linkify;
+import android.view.HapticFeedbackConstants;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.regex.Pattern;
 
-import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 
 public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
@@ -60,6 +63,16 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         }
     }
 
+    protected void enableLongPress(Context context, View view, TAPMessageModel message) {
+        view.setOnLongClickListener(v -> {
+            Intent intent = new Intent(LongPressChatBubble);
+            intent.putExtra(MESSAGE, message);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            return true;
+        });
+    }
+
     protected void setLinkDetection(Context context, TextView tvMessageBody) {
         TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
                 .setOnLinkClickListener((textView, url) -> {
@@ -76,24 +89,28 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     }
                     return false;
                 }).setOnLinkLongClickListener((textView, url) -> {
-
                     if (null != url && url.contains("mailto:")) {
                         //for Email
-                        Toast.makeText(context, "Email Long Click", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LongPressEmail);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url && url.contains("tel:")) {
                         //For Phone Number
-                        Toast.makeText(context, "Phone Long Click", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LongPressPhone);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url) {
                         //For Url
-                        Toast.makeText(context, "Link Url Long Click", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LongPressLink);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     }
                     return true;
                 });
 
         tvMessageBody.setMovementMethod(movementMethod);
+        tvMessageBody.setClickable(false);
+        tvMessageBody.setLongClickable(false);
 
         Linkify.addLinks(tvMessageBody, Linkify.PHONE_NUMBERS | Linkify.EMAIL_ADDRESSES | Linkify.WEB_URLS);
 

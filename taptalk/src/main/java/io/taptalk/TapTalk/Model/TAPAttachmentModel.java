@@ -16,6 +16,13 @@ public class TAPAttachmentModel {
     public static final int ID_AUDIO = 4;
     public static final int ID_LOCATION = 5;
     public static final int ID_CONTACT = 6;
+    public static final int ID_REPLY = 7;
+    public static final int ID_FORWARD = 8;
+    public static final int ID_COPY = 9;
+    public static final int ID_OPEN = 10;
+    public static final int ID_COMPOSE = 11;
+    public static final int ID_CALL = 12;
+    public static final int ID_SEND_SMS = 13;
 
     public TAPAttachmentModel(int icon, int titleIds, int id) {
         this.icon = icon;
@@ -82,6 +89,108 @@ public class TAPAttachmentModel {
             attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
         }
 
+        return attachMenus;
+    }
+
+    public static List<TAPAttachmentModel> createChatBubbleLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_reply_green_blue,
+                R.drawable.tap_ic_forward_green_blue,
+                R.drawable.tap_ic_copy_green_blue
+        };
+
+        int[] titleResIds = {
+                R.string.tap_reply,
+                R.string.tap_forward,
+                R.string.tap_copy
+        };
+
+        int[] ids = {
+                ID_REPLY,
+                ID_FORWARD,
+                ID_COPY
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    public static List<TAPAttachmentModel> createLinkLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_open_link_green_blue,
+                R.drawable.tap_ic_copy_green_blue
+        };
+
+        int[] titleResIds = {
+                R.string.tap_open,
+                R.string.tap_copy
+        };
+
+        int[] ids = {
+                ID_OPEN,
+                ID_COPY
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    public static List<TAPAttachmentModel> createEmailLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_mail_green_blue,
+                R.drawable.tap_ic_copy_green_blue
+        };
+
+        int[] titleResIds = {
+                R.string.tap_compose,
+                R.string.tap_copy
+        };
+
+        int[] ids = {
+                ID_COMPOSE,
+                ID_COPY
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    public static List<TAPAttachmentModel> createPhoneLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_call_green_blue,
+                R.drawable.tap_ic_sms_green_blue,
+                R.drawable.tap_ic_copy_green_blue
+        };
+
+        int[] titleResIds = {
+                R.string.tap_call,
+                R.string.tap_send_sms,
+                R.string.tap_copy
+        };
+
+        int[] ids = {
+                ID_CALL,
+                ID_SEND_SMS,
+                ID_COPY
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
         return attachMenus;
     }
 }
