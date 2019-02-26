@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -20,6 +21,7 @@ import java.util.Map;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -82,7 +84,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         ivButtonBack.setOnClickListener(v -> showActionBar());
         ivButtonCancel.setOnClickListener(v -> clearSearch());
 
-        adapter = new TAPSearchChatAdapter(vm.getSearchResults());
+        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), roomListInterface);
         rvForwardList.setAdapter(adapter);
         rvForwardList.setHasFixedSize(false);
         rvForwardList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -185,6 +187,14 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         @Override
         public void afterTextChanged(Editable s) {
 
+        }
+    };
+
+    private TapTalkRoomListInterface roomListInterface = new TapTalkRoomListInterface() {
+        @Override
+        public void onRoomSelected(TAPRoomModel roomModel) {
+            // TODO: 26 February 2019 FORWARD MESSAGE HERE
+            Toast.makeText(TAPForwardPickerActivity.this, roomModel.getRoomName(), Toast.LENGTH_SHORT).show();
         }
     };
 

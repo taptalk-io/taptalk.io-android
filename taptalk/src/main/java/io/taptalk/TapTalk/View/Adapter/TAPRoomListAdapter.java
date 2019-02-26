@@ -265,7 +265,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Room deselected
             vm.getSelectedRooms().remove(roomID);
         }
-        tapTalkRoomListInterface.onRoomSelected();
+        tapTalkRoomListInterface.onRoomSelected(item.getLastMessage().getRoom());
         notifyItemChanged(position);
     }
 
