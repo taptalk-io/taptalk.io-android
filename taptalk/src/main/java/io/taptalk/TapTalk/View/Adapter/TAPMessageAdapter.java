@@ -223,6 +223,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             tvMessageBody.setText(item.getBody());
             setLinkDetection(itemView.getContext(), tvMessageBody);
+            enableLongPress(itemView.getContext(), flBubble, item);
             tvMessageStatus.setText(item.getMessageStatusText());
 
             markUnreadForMessage(item, myUserModel);
@@ -544,7 +545,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         });
             else items = new ArrayList<>();
             adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
-
             markUnreadForMessage(item, myUserModel);
 
             rvProductList.setAdapter(adapter);

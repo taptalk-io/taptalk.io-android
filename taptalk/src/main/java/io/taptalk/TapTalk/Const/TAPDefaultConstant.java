@@ -76,6 +76,8 @@ public class TAPDefaultConstant {
     public static final class Extras {
         public static final String ROOM_NAME = "kTAPExtraRoomName";
         public static final String MESSAGE = "kTAPMessage";
+        public static final String URL_MESSAGE = "kTAPUrlMessage";
+        public static final String COPY_MESSAGE = "kTAPCopyMessage";
         public static final String MY_ID = "kTAPExtraMyID";
         public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
         public static final String GROUP_NAME = "kTAPExtraGroupName";
@@ -154,6 +156,13 @@ public class TAPDefaultConstant {
         public static final String DownloadLocalID = "kTAPDownloadLocalID";
         public static final String DownloadFinish = "kTAPDownloadFinish";
         public static final String DownloadFailed = "kTAPDownloadFailed";
+    }
+
+    public static final class LongPressBroadcastEvent {
+        public static final String LongPressChatBubble = "kTAPLongPressChatBubble";
+        public static final String LongPressLink = "kTAPLongPressLink";
+        public static final String LongPressEmail = "kTAPLongPressEmail";
+        public static final String LongPressPhone = "kTAPLongPressPhone";
     }
 
     public static final class TokenHeaderConst {

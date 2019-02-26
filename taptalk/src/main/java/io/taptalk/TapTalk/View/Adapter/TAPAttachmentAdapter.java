@@ -6,28 +6,58 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_AUDIO;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CALL;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CAMERA;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COMPOSE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CONTACT;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COPY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DOCUMENT;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_LOCATION;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_OPEN;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_REPLY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SEND_SMS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createAttachMenu;
 
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
     private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
+    private String messageToCopy = "", linkifyresult = "";
+    private TAPMessageModel message;
 
     public TAPAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
         setItems(createAttachMenu(), false);
+    }
+
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String linkifyresult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.messageToCopy = messageToCopy;
+        this.onClickListener = onClickListener;
+        this.linkifyresult = linkifyresult;
+    }
+
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.onClickListener = onClickListener;
+        if (null != message) {
+            this.message = message;
+            this.messageToCopy = message.getBody();
+        }
     }
 
     @NonNull
@@ -90,6 +120,27 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case ID_CONTACT:
                     attachmentListener.onContactSelected();
+                    break;
+                case ID_REPLY:
+                    attachmentListener.onReplySelected(message);
+                    break;
+                case ID_FORWARD:
+                    attachmentListener.onForwardSelected(message);
+                    break;
+                case ID_COPY:
+                    attachmentListener.onCopySelected(messageToCopy);
+                    break;
+                case ID_OPEN:
+                    attachmentListener.onOpenLinkSelected(linkifyresult);
+                    break;
+                case ID_COMPOSE:
+                    attachmentListener.onComposeSelected(linkifyresult);
+                    break;
+                case ID_CALL:
+                    attachmentListener.onPhoneCallSelected(linkifyresult);
+                    break;
+                case ID_SEND_SMS:
+                    attachmentListener.onPhoneSmsSelected(messageToCopy);
                     break;
             }
             onClickListener.onClick(itemView);

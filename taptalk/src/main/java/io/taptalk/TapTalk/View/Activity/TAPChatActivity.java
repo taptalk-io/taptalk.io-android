@@ -2,9 +2,11 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.animation.LayoutTransition;
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -84,6 +86,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -93,10 +96,17 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -120,6 +130,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
 
 public class TAPChatActivity extends TAPBaseChatActivity {
 
@@ -541,7 +555,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void registerBroadcastManager() {
         TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading
                 , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
-                DownloadProgressLoading, DownloadFinish, DownloadFailed);
+                DownloadProgressLoading, DownloadFinish, DownloadFailed, LongPressChatBubble,
+                LongPressEmail, LongPressLink, LongPressPhone);
     }
 
     private void closeActivity() {
@@ -1284,6 +1299,35 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
+
+                case LongPressChatBubble:
+                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof  TAPMessageModel) {
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
+                        chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
+                case LongPressLink:
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        linkBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
+                case LongPressEmail:
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        emailBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
+                case LongPressPhone:
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        phoneBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
             }
         }
     };
@@ -1517,6 +1561,43 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onGallerySelected() {
             fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+        }
+
+        @Override
+        public void onCopySelected(String text) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(text, text);
+            clipboard.setPrimaryClip(clip);
+        }
+
+        @Override
+        public void onReplySelected(TAPMessageModel message) {
+            super.onReplySelected(message);
+        }
+
+        @Override
+        public void onForwardSelected(TAPMessageModel message) {
+            super.onForwardSelected(message);
+        }
+
+        @Override
+        public void onOpenLinkSelected(String url) {
+            TAPUtils.getInstance().openCustomTabLayout(TAPChatActivity.this, url);
+        }
+
+        @Override
+        public void onComposeSelected(String emailRecipient) {
+            TAPUtils.getInstance().composeEmail(TAPChatActivity.this, emailRecipient);
+        }
+
+        @Override
+        public void onPhoneCallSelected(String phoneNumber) {
+            TAPUtils.getInstance().openDialNumber(TAPChatActivity.this, phoneNumber);
+        }
+
+        @Override
+        public void onPhoneSmsSelected(String phoneNumber) {
+            TAPUtils.getInstance().composeSMS(TAPChatActivity.this, phoneNumber);
         }
     };
 
