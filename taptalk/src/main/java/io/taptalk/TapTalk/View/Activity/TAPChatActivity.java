@@ -528,8 +528,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
                     callApiGetUserByUserID();
-                }
-                if (vm.getMessageModels().size() > 0) {
+                } else if (vm.getMessageModels().size() > 0) {
                     callApiAfter();
                 } else {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
@@ -734,11 +733,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else {
-                new Thread(() -> {
-                    //kalau belom ada masukin kedalam list dan hash map
-                    tempBeforeMessages.add(newMessage);
-                    vm.addMessagePointer(newMessage);
-                }).start();
+                //kalau belom ada masukin kedalam list dan hash map
+                tempBeforeMessages.add(newMessage);
+                vm.addMessagePointer(newMessage);
             }
             //updateMessageDecoration();
         });
@@ -751,17 +748,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             if (vm.getMessagePointer().containsKey(newID)) {
                 //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
-                Log.e(TAG, "addAfterTextMessage:2 "+newMessage.getCreated()+" "+newMessage.getBody()+" "+newID );
                 vm.updateMessagePointer(newMessage);
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
             } else if (!vm.getMessagePointer().containsKey(newID)) {
-                new Thread(() -> {
-                    //kalau belom ada masukin kedalam list dan hash map
-                    tempAfterMessages.add(newMessage);
-                    vm.addMessagePointer(newMessage);
-                    Log.e(TAG, "addAfterTextMessage: "+newMessage.getCreated()+" "+newMessage.getBody()+" "+newID  );
-                    //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
-                }).start();
+                //kalau belom ada masukin kedalam list dan hash map
+                tempAfterMessages.add(newMessage);
+                vm.addMessagePointer(newMessage);
+                //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
             }
             //updateMessageDecoration();
         });
@@ -1551,14 +1544,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addAfterTextMessage(message, messageAfterModels);
 //                    new Thread(() -> {
-                        responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
 
-                        //ini buat update last update timestamp yang ada di preference
-                        //ini di taruh di new Thread biar ga bkin scrollingnya lag
-                        if (null != message.getUpdated() &&
-                                TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
-                            TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
-                        }
+                    //ini buat update last update timestamp yang ada di preference
+                    //ini di taruh di new Thread biar ga bkin scrollingnya lag
+                    if (null != message.getUpdated() &&
+                            TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
+                        TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
+                    }
 //                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
