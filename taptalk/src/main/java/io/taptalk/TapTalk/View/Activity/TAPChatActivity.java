@@ -96,6 +96,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
@@ -1301,20 +1303,28 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
 
                 case LongPressChatBubble:
-                    TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE);
-                    chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof  TAPMessageModel) {
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE));
+                        chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                    }
                     break;
                 case LongPressLink:
-                    TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE);
-                    linkBottomSheet.show(getSupportFragmentManager(), "");
+                    if (null != intent.getStringExtra(URL_MESSAGE)) {
+                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(URL_MESSAGE));
+                        linkBottomSheet.show(getSupportFragmentManager(), "");
+                    }
                     break;
                 case LongPressEmail:
-                    TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE);
-                    emailBottomSheet.show(getSupportFragmentManager(), "");
+                    if (null != intent.getStringExtra(URL_MESSAGE)) {
+                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(URL_MESSAGE));
+                        emailBottomSheet.show(getSupportFragmentManager(), "");
+                    }
                     break;
                 case LongPressPhone:
-                    TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE);
-                    phoneBottomSheet.show(getSupportFragmentManager(), "");
+                    if (null != intent.getStringExtra(URL_MESSAGE)) {
+                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(URL_MESSAGE));
+                        phoneBottomSheet.show(getSupportFragmentManager(), "");
+                    }
                     break;
             }
         }
@@ -1549,6 +1559,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onGallerySelected() {
             fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+        }
+
+        @Override
+        public void onForwardSelected(TAPMessageModel message) {
+            super.onForwardSelected(message);
         }
     };
 

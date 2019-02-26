@@ -76,6 +76,7 @@ public class TAPDefaultConstant {
     public static final class Extras {
         public static final String ROOM_NAME = "kTAPExtraRoomName";
         public static final String MESSAGE = "kTAPMessage";
+        public static final String URL_MESSAGE = "kTAPUrlMessage";
         public static final String MY_ID = "kTAPExtraMyID";
         public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
         public static final String GROUP_NAME = "kTAPExtraGroupName";
