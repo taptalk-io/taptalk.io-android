@@ -42,6 +42,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
+import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -79,7 +80,7 @@ public class TAPUtils {
 
 
     public TAPUtils() {
-        objectMapper = new ObjectMapper();
+        objectMapper = TAPApiConnection.getInstance().createObjectMapper();
     }
 
     public String toJsonString(Object object) {
