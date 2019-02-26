@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
+import io.taptalk.TapTalk.Model.TAPMessageModel;
+
 public interface TapTalkAttachmentInterface {
     void onDocumentSelected();
     void onCameraSelected();
@@ -8,10 +10,11 @@ public interface TapTalkAttachmentInterface {
     void onLocationSelected();
     void onContactSelected();
     void onCopySelected(String text);
-    void onReplySelected();
-    void onForwardSelected();
+    void onReplySelected(TAPMessageModel message);
+    void onForwardSelected(TAPMessageModel message);
     void onOpenLinkSelected();
     void onComposeSelected();
     void onPhoneCallSelected();
     void onPhoneSmsSelected();
+
 }

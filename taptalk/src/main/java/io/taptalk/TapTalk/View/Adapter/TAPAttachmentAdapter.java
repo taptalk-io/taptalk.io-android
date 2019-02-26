@@ -15,12 +15,18 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_AUDIO;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CALL;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CAMERA;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COMPOSE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CONTACT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COPY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DOCUMENT;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_LOCATION;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_OPEN;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_REPLY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SEND_SMS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createAttachMenu;
 
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
@@ -114,8 +120,26 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case ID_CONTACT:
                     attachmentListener.onContactSelected();
                     break;
+                case ID_REPLY:
+                    attachmentListener.onReplySelected(message);
+                    break;
+                case ID_FORWARD:
+                    attachmentListener.onForwardSelected(message);
+                    break;
                 case ID_COPY:
                     attachmentListener.onCopySelected(messageToCopy);
+                    break;
+                case ID_OPEN:
+                    attachmentListener.onOpenLinkSelected();
+                    break;
+                case ID_COMPOSE:
+                    attachmentListener.onComposeSelected();
+                    break;
+                case ID_CALL:
+                    attachmentListener.onPhoneCallSelected();
+                    break;
+                case ID_SEND_SMS:
+                    attachmentListener.onPhoneSmsSelected();
                     break;
             }
             onClickListener.onClick(itemView);
