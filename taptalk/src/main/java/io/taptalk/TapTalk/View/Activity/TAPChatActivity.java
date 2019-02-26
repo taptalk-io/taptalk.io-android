@@ -1304,24 +1304,28 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof  TAPMessageModel) {
                         TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
                         chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
                 case LongPressLink:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
                         TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         linkBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
                 case LongPressEmail:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
                         TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         emailBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
                 case LongPressPhone:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
                         TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         phoneBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
             }
