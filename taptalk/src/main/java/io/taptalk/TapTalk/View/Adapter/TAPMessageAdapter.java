@@ -56,6 +56,7 @@ import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
@@ -183,24 +184,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class TextVH extends TAPBaseChatViewHolder {
 
-        private ConstraintLayout clContainer, clQuote;
+        private ConstraintLayout clContainer, clForwarded, clQuote;
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus, ivReply, ivSending;
         private TAPRoundedCornerImageView rcivQuoteImage;
-        private TextView tvUsername, tvMessageBody, tvMessageStatus, tvQuoteTitle, tvQuoteContent;
+        private TextView tvUsername, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
             clQuote = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             ivReply = itemView.findViewById(R.id.iv_reply);
             rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
             tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
@@ -229,6 +232,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -266,12 +270,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class ImageVH extends TAPBaseChatViewHolder {
 
-        private ConstraintLayout clContainer, clQuote;
+        private ConstraintLayout clContainer, clQuote, clForwarded;
         private FrameLayout flBubble, flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody, rcivQuoteImage;
         private ImageView ivMessageStatus, ivReply, ivSending, ivButtonProgress;
-        private TextView tvMessageBody, tvMessageStatus, tvQuoteTitle, tvQuoteContent;
+        private TextView tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
@@ -280,6 +284,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             clContainer = itemView.findViewById(R.id.cl_container);
             clQuote = itemView.findViewById(R.id.cl_quote);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
@@ -288,6 +293,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivButtonProgress = itemView.findViewById(R.id.iv_button_progress);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
             tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
@@ -311,9 +317,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setText(item.getMessageStatusText());
 
             setImageViewButtonProgress(item);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            // Fix layout when quote exists
-            if (null != item.getQuote() && !item.getQuote().getTitle().isEmpty()) {
+            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
+                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+                // Fix layout when quote/forward exists
                 rcivImageBody.getLayoutParams().width = 0;
                 rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
                 rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -819,12 +827,23 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
+    private void showForwardedFrom(TAPMessageModel item, ConstraintLayout clForwardedFrom, TextView tvForwardedFrom) {
+        TAPForwardFromModel forwardFrom = item.getForwardFrom();
+        if (null != forwardFrom && null != forwardFrom.getFullname() && !forwardFrom.getFullname().isEmpty()) {
+            // Show forwarded layout
+            clForwardedFrom.setVisibility(View.VISIBLE);
+            tvForwardedFrom.setText(forwardFrom.getFullname());
+        } else {
+            clForwardedFrom.setVisibility(View.GONE);
+        }
+    }
+
     private void showOrHideQuote(TAPMessageModel item, View itemView,
                                  ConstraintLayout clQuote, TextView tvQuoteTitle,
                                  TextView tvQuoteContent, TAPRoundedCornerImageView rcivQuoteImage,
                                  View vQuoteBackground, View vQuoteDecoration) {
         TAPQuoteModel quote = item.getQuote();
-        if (null != quote && !quote.getTitle().isEmpty()) {
+        if (null != quote && null != quote.getTitle() && !quote.getTitle().isEmpty()) {
             // Show quote
             clQuote.setVisibility(View.VISIBLE);
             vQuoteBackground.setVisibility(View.VISIBLE);
