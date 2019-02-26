@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
@@ -76,7 +77,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
     protected void setLinkDetection(Context context, TextView tvMessageBody) {
         TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
-                .setOnLinkClickListener((textView, url) -> {
+                .setOnLinkClickListener((textView, url, originalText) -> {
                     if (null != url && url.contains("mailto:")) {
                         //for Email
                         return false;
@@ -89,23 +90,26 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                         return true;
                     }
                     return false;
-                }).setOnLinkLongClickListener((textView, url) -> {
+                }).setOnLinkLongClickListener((textView, url, originalText) -> {
                     if (null != url && url.contains("mailto:")) {
                         //for Email
                         Intent intent = new Intent(LongPressEmail);
                         intent.putExtra(URL_MESSAGE, url.replace("mailto:",""));
+                        intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url && url.contains("tel:")) {
                         //For Phone Number
                         Intent intent = new Intent(LongPressPhone);
                         intent.putExtra(URL_MESSAGE, url.replace("tel:",""));
+                        intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url) {
                         //For Url
                         Intent intent = new Intent(LongPressLink);
                         intent.putExtra(URL_MESSAGE, url);
+                        intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     }

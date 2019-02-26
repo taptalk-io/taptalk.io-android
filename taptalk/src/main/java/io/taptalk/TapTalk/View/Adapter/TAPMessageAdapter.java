@@ -545,7 +545,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         });
             else items = new ArrayList<>();
             adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
-
             markUnreadForMessage(item, myUserModel);
 
             rvProductList.setAdapter(adapter);
