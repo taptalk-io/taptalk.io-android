@@ -470,7 +470,6 @@ public class TAPRoomListFragment extends Fragment {
             super.onSuccess(response);
             //sebagai tanda kalau udah manggil api (Get message from API)
             vm.setDoneFirstSetup(true);
-
             //save preference kalau kita udah munculin setup dialog
             if (!vm.isDoneFirstApiSetup()) {
                 vm.setDoneFirstApiSetup(true);

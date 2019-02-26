@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.animation.LayoutTransition;
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -1301,7 +1300,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
 
                 case LongPressChatBubble:
-                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof  TAPMessageModel) {
+                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
                         chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
