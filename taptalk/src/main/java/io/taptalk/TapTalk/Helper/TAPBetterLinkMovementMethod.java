@@ -226,14 +226,11 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
                 }
 
                 if (touchStartedOverAClickableSpan && onLinkLongClickListener != null) {
-                    LongPressTimer.OnTimerReachedListener longClickListener = new LongPressTimer.OnTimerReachedListener() {
-                        @Override
-                        public void onTimerReached() {
-                            wasLongPressRegistered = true;
-                            textView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                            removeUrlHighlightColor(textView);
-                            dispatchUrlLongClick(textView, clickableSpanUnderTouch);
-                        }
+                    LongPressTimer.OnTimerReachedListener longClickListener = () -> {
+                        wasLongPressRegistered = true;
+                        textView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                        removeUrlHighlightColor(textView);
+                        dispatchUrlLongClick(textView, clickableSpanUnderTouch);
                     };
                     startTimerForRegisteringLongClick(textView, longClickListener);
                 }

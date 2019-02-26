@@ -29,8 +29,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     }
 
     companion object {
-        fun newInstance(): TAPLongPressActionBottomSheet {
-            val fragment: TAPLongPressActionBottomSheet = TAPLongPressActionBottomSheet()
+        fun newInstance(longPressType: LongPressType): TAPLongPressActionBottomSheet {
+            val fragment: TAPLongPressActionBottomSheet = TAPLongPressActionBottomSheet(longPressType)
             val args: Bundle = Bundle()
             fragment.arguments = args
             return fragment
