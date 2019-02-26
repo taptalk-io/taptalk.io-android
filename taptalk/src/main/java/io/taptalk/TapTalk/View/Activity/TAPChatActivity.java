@@ -80,6 +80,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
@@ -99,10 +100,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
@@ -115,6 +116,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
@@ -284,6 +286,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom().getRoomID(), images);
                         }
                         break;
+                    case FORWARD_MESSAGE:
+                        TAPRoomModel room = intent.getParcelableExtra(ROOM);
+                        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE));
+                        TAPUtils.getInstance().startChatActivity(TAPChatActivity.this, room);
+                        finish();
+                        break;
                 }
         }
     }
@@ -385,7 +393,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private boolean initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
         if (null == vm.getRoom()) {
-            vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
+            vm.setRoom(getIntent().getParcelableExtra(ROOM));
         }
         if (null == vm.getMyUserModel()) {
             vm.setMyUserModel(TAPChatManager.getInstance().getActiveUser());
@@ -1577,7 +1585,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onForwardSelected(TAPMessageModel message) {
-            super.onForwardSelected(message);
+            Intent intent = new Intent(TAPChatActivity.this, TAPForwardPickerActivity.class);
+            intent.putExtra(MESSAGE, message);
+            startActivityForResult(intent, FORWARD_MESSAGE);
+            overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }
 
         @Override

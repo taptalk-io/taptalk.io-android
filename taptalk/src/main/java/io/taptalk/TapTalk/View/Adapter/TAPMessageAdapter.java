@@ -271,7 +271,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class ImageVH extends TAPBaseChatViewHolder {
 
-        private ConstraintLayout clContainer, clQuote, clForwarded;
+        private ConstraintLayout clContainer, clForwardedQuote, clQuote, clForwarded;
         private FrameLayout flBubble, flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody, rcivQuoteImage;
@@ -284,6 +284,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
+            clForwardedQuote = itemView.findViewById(R.id.cl_forwarded_quote); // Container for quote and forwarded layouts
             clQuote = itemView.findViewById(R.id.cl_quote);
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
             flBubble = itemView.findViewById(R.id.fl_bubble);
@@ -328,6 +329,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivImageBody.setTopLeftRadius(0);
                 rcivImageBody.setTopRightRadius(0);
+                clForwardedQuote.setVisibility(View.VISIBLE);
             } else {
                 rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
                 rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
@@ -339,6 +341,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(1));
                     rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
                 }
+                clForwardedQuote.setVisibility(View.GONE);
             }
 
             markUnreadForMessage(item, myUserModel);

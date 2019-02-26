@@ -703,6 +703,16 @@ public class TAPChatManager {
         }
     }
 
+    public void setQuotedMessage(String roomID, @Nullable TAPMessageModel message) {
+        if (null == message) {
+            // Delete quoted message and user info in active room
+            getQuotedMessages().remove(roomID);
+            removeUserInfo(roomID);
+        } else {
+            getQuotedMessages().put(roomID, message);
+        }
+    }
+
     public void setQuotedMessage(String roomID, String quoteTitle, @Nullable String quoteContent, @Nullable String quoteImageURL) {
         // FIXME: 29 January 2019 CURRENTLY USING DUMMY MESSAGE MODEL TO SAVE QUOTED MESSAGE
         if (null == quoteTitle) {

@@ -76,7 +76,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_STAGI
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
@@ -414,7 +414,7 @@ public class TapTalk {
         private void addPendingIntentWhenClicked() {
             Intent intent = new Intent(context, aClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra(K_ROOM, roomModel);
+            intent.putExtra(ROOM, roomModel);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
             notificationBuilder.setContentIntent(pendingIntent);
         }
@@ -475,7 +475,7 @@ public class TapTalk {
             @Override
             public void onSelectFinished(TAPRoomModel roomModel) {
                 Intent intent = new Intent(context, TAPProfileActivity.class);
-                intent.putExtra(K_ROOM, roomModel);
+                intent.putExtra(ROOM, roomModel);
                 context.startActivity(intent);
                 if (context instanceof Activity) {
                     ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -11,7 +12,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -33,6 +33,8 @@ import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPSearchChatViewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.EMPTY_STATE;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
@@ -65,6 +67,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPSearchChatViewModel.class);
+        vm.setSelectedMessage(getIntent().getParcelableExtra(MESSAGE));
     }
 
     private void initView() {
@@ -193,8 +196,11 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     private TapTalkRoomListInterface roomListInterface = new TapTalkRoomListInterface() {
         @Override
         public void onRoomSelected(TAPRoomModel roomModel) {
-            // TODO: 26 February 2019 FORWARD MESSAGE HERE
-            Toast.makeText(TAPForwardPickerActivity.this, roomModel.getRoomName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            intent.putExtra(MESSAGE, vm.getSelectedMessage());
+            intent.putExtra(ROOM, roomModel);
+            setResult(RESULT_OK, intent);
+            finish();
         }
     };
 
