@@ -250,6 +250,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
+        android:descendantFocusability="blocksDescendants"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintTop_toBottomOf="@id/fl_loading"
         tools:background="@color/tap_charcoal_alpha_40">

@@ -1,8 +1,5 @@
 package io.taptalk.TapTalk.View.BottomSheet
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context.CLIPBOARD_SERVICE
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialogFragment
 import android.support.v7.widget.LinearLayoutManager
@@ -29,66 +26,36 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     constructor() : super()
 
-    constructor(longPressType: LongPressType, urlMessage: String) {
+    constructor(longPressType: LongPressType, urlMessage: String, bottomSheetListener: TAPAttachmentListener) {
         this.longPressType = longPressType
         this.urlMessage = urlMessage
-
+        this.bottomSheetListener = bottomSheetListener
     }
 
-    constructor(longPressType: LongPressType, message: TAPMessageModel) {
+    constructor(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
         this.longPressType = longPressType
         this.message = message
+        this.bottomSheetListener = bottomSheetListener
     }
 
     var message: TAPMessageModel? = null
     var urlMessage = ""
     val onClickListener = View.OnClickListener { dismiss() }
+    var bottomSheetListener: TAPAttachmentListener? = null
 
     companion object {
-        fun newInstance(longPressType: LongPressType, url: String): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(longPressType, url)
+        fun newInstance(longPressType: LongPressType, url: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(longPressType, url, bottomSheetListener)
             val args: Bundle = Bundle()
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(longPressType: LongPressType, message: TAPMessageModel): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(longPressType, message)
+        fun newInstance(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(longPressType, message, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
-        }
-    }
-
-    val bottomSheetListener = object : TAPAttachmentListener() {
-        override fun onCopySelected(text: String) {
-            val clipboard = activity?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText(text, text)
-            clipboard.primaryClip = clip
-        }
-
-        override fun onReplySelected() {
-            super.onReplySelected()
-        }
-
-        override fun onForwardSelected() {
-            super.onForwardSelected()
-        }
-
-        override fun onOpenLinkSelected() {
-            super.onOpenLinkSelected()
-        }
-
-        override fun onComposeSelected() {
-            super.onComposeSelected()
-        }
-
-        override fun onPhoneCallSelected() {
-            super.onPhoneCallSelected()
-        }
-
-        override fun onPhoneSmsSelected() {
-            super.onPhoneSmsSelected()
         }
     }
 

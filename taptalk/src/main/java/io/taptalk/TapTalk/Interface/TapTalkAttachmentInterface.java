@@ -16,4 +16,5 @@ public interface TapTalkAttachmentInterface {
     void onComposeSelected();
     void onPhoneCallSelected();
     void onPhoneSmsSelected();
+
 }

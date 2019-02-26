@@ -12,6 +12,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,18 +45,20 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
         /**
          * @param textView The TextView on which a click was registered.
          * @param url      The clicked URL.
+         * @param originalText    The TextView original text that being highlighted
          * @return True if this click was handled. False to let Android handle the URL.
          */
-        boolean onClick(TextView textView, String url);
+        boolean onClick(TextView textView, String url, String originalText);
     }
 
     public interface OnLinkLongClickListener {
         /**
          * @param textView The TextView on which a long-click was registered.
          * @param url      The long-clicked URL.
+         * @param originalText    The TextView original text that being highlighted
          * @return True if this long-click was handled. False to let Android handle the URL (as a short-click).
          */
-        boolean onLongClick(TextView textView, String url);
+        boolean onLongClick(TextView textView, String url, String originalText);
     }
 
     /**
@@ -379,7 +382,7 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     protected void dispatchUrlClick(TextView textView, ClickableSpan clickableSpan) {
         ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
-        boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, clickableSpanWithText.text());
+        boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, clickableSpanWithText.text(), clickableSpanWithText.originalText());
 
         if (!handled) {
             // Let Android handle this click.
@@ -389,7 +392,7 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     protected void dispatchUrlLongClick(TextView textView, ClickableSpan clickableSpan) {
         ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
-        boolean handled = onLinkLongClickListener != null && onLinkLongClickListener.onLongClick(textView, clickableSpanWithText.text());
+        boolean handled = onLinkLongClickListener != null && onLinkLongClickListener.onLongClick(textView, clickableSpanWithText.text(), clickableSpanWithText.originalText);
 
         if (!handled) {
             // Let Android handle this long click as a short-click.
@@ -420,23 +423,31 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
     protected static class ClickableSpanWithText {
         private ClickableSpan span;
         private String text;
+        private String originalText;
 
         protected static ClickableSpanWithText ofSpan(TextView textView, ClickableSpan span) {
-            Spanned s = (Spanned) textView.getText();
+            CharSequence oriCharSequence = textView.getText();
+            Spanned s = (Spanned) oriCharSequence;
             String text;
+            String originalText;
             if (span instanceof URLSpan) {
                 text = ((URLSpan) span).getURL();
+                int start = s.getSpanStart(span);
+                int end = s.getSpanEnd(span);
+                originalText = s.subSequence(start, end).toString();
             } else {
                 int start = s.getSpanStart(span);
                 int end = s.getSpanEnd(span);
                 text = s.subSequence(start, end).toString();
+                originalText = text;
             }
-            return new ClickableSpanWithText(span, text);
+            return new ClickableSpanWithText(span, text, originalText);
         }
 
-        protected ClickableSpanWithText(ClickableSpan span, String text) {
+        protected ClickableSpanWithText(ClickableSpan span, String text, String originalText) {
             this.span = span;
             this.text = text;
+            this.originalText = originalText;
         }
 
         protected ClickableSpan span() {
@@ -445,6 +456,10 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
         protected String text() {
             return text;
+        }
+
+        public String originalText() {
+            return originalText;
         }
     }
 }
