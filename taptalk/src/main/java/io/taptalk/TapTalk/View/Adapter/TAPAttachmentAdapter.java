@@ -11,11 +11,13 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_AUDIO;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CONTACT;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COPY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DOCUMENT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_LOCATION;
@@ -25,6 +27,8 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
 
     private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
+    private String messageToCopy = "";
+    private TAPMessageModel message;
 
     public TAPAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.attachmentListener = attachmentListener;
@@ -32,8 +36,21 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         setItems(createAttachMenu(), false);
     }
 
-    public TAPAttachmentAdapter(List<TAPAttachmentModel> items) {
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.messageToCopy = messageToCopy;
+        this.onClickListener = onClickListener;
+    }
+
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.onClickListener = onClickListener;
+        if (null != message) {
+            this.message = message;
+            this.messageToCopy = message.getBody();
+        }
     }
 
     @NonNull
@@ -96,6 +113,9 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case ID_CONTACT:
                     attachmentListener.onContactSelected();
+                    break;
+                case ID_COPY:
+                    attachmentListener.onCopySelected(messageToCopy);
                     break;
             }
             onClickListener.onClick(itemView);

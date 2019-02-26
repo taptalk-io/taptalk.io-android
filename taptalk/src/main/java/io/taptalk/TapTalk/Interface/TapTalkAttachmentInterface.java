@@ -7,4 +7,11 @@ public interface TapTalkAttachmentInterface {
     void onAudioSelected();
     void onLocationSelected();
     void onContactSelected();
+    void onCopySelected(String text);
+    void onReplySelected();
+    void onForwardSelected();
+    void onOpenLinkSelected();
+    void onComposeSelected();
+    void onPhoneCallSelected();
+    void onPhoneSmsSelected();
 }

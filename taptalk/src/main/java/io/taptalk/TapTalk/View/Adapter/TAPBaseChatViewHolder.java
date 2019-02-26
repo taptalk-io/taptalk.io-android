@@ -20,6 +20,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
@@ -92,16 +93,19 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     if (null != url && url.contains("mailto:")) {
                         //for Email
                         Intent intent = new Intent(LongPressEmail);
+                        intent.putExtra(URL_MESSAGE, url.replace("mailto:",""));
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url && url.contains("tel:")) {
                         //For Phone Number
                         Intent intent = new Intent(LongPressPhone);
+                        intent.putExtra(URL_MESSAGE, url.replace("tel:",""));
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url) {
                         //For Url
                         Intent intent = new Intent(LongPressLink);
+                        intent.putExtra(URL_MESSAGE, url);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     }
