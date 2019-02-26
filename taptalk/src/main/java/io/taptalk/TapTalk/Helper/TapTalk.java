@@ -94,6 +94,7 @@ public class TapTalk {
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
     private static boolean isRefreshTokenExpired;
+    private Intent intent;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
     private List<TAPListener> tapListeners = new ArrayList<>();
@@ -170,11 +171,14 @@ public class TapTalk {
             public void onAppGotoForeground() {
                 isForeground = true;
                 TAPChatManager.getInstance().setFinishChatFlow(false);
-                appContext.startService(new Intent(TapTalk.appContext, TapTalkEndAppService.class));
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+                if (null == intent) {
+                    intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
+                    appContext.startService(intent);
+                }
             }
 
             @Override
@@ -255,11 +259,11 @@ public class TapTalk {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
+            TAPDataManager.getInstance().deleteAllPreference();
+            TAPDataManager.getInstance().deleteAllFromDatabase();
             TAPApiManager.getInstance().setLogout(true);
             TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
             TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();
-            TAPDataManager.getInstance().deleteAllPreference();
-            TAPDataManager.getInstance().deleteAllFromDatabase();
             isRefreshTokenExpired = true;
 
             for (TAPListener listener : getTapTalkListeners()) {
@@ -588,7 +592,7 @@ public class TapTalk {
                             });
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "registerFcmToken: ",e );
+                    Log.e(TAG, "registerFcmToken: ", e);
                 }
             } else {
                 TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {

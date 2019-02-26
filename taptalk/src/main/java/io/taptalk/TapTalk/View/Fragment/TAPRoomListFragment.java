@@ -465,19 +465,15 @@ public class TAPRoomListFragment extends Fragment {
         }
 
         @Override
-        public void endLoading() {
+        public void onSuccess(TAPGetRoomListResponse response) {
+            super.onSuccess(response);
+            //sebagai tanda kalau udah manggil api (Get message from API)
+            vm.setDoneFirstSetup(true);
             //save preference kalau kita udah munculin setup dialog
             if (!vm.isDoneFirstApiSetup()) {
                 vm.setDoneFirstApiSetup(true);
                 TAPDataManager.getInstance().setRoomListSetupFinished();
             }
-        }
-
-        @Override
-        public void onSuccess(TAPGetRoomListResponse response) {
-            super.onSuccess(response);
-            //sebagai tanda kalau udah manggil api (Get message from API)
-            vm.setDoneFirstSetup(true);
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
