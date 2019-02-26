@@ -33,7 +33,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
 
     private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
-    private String messageToCopy = "";
+    private String messageToCopy = "", originalLink = "";
     private TAPMessageModel message;
 
     public TAPAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -42,11 +42,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         setItems(createAttachMenu(), false);
     }
 
-    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String originalLink, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         setItems(items);
         this.attachmentListener = attachmentListener;
         this.messageToCopy = messageToCopy;
         this.onClickListener = onClickListener;
+        this.originalLink = originalLink;
     }
 
     public TAPAttachmentAdapter(List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -130,7 +131,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onCopySelected(messageToCopy);
                     break;
                 case ID_OPEN:
-                    attachmentListener.onOpenLinkSelected();
+                    attachmentListener.onOpenLinkSelected(originalLink);
                     break;
                 case ID_COMPOSE:
                     attachmentListener.onComposeSelected();

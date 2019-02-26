@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.animation.LayoutTransition;
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -1306,20 +1307,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                     break;
                 case LongPressLink:
-                    if (null != intent.getStringExtra(URL_MESSAGE)) {
-                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         linkBottomSheet.show(getSupportFragmentManager(), "");
                     }
                     break;
                 case LongPressEmail:
-                    if (null != intent.getStringExtra(URL_MESSAGE)) {
-                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         emailBottomSheet.show(getSupportFragmentManager(), "");
                     }
                     break;
                 case LongPressPhone:
-                    if (null != intent.getStringExtra(URL_MESSAGE)) {
-                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         phoneBottomSheet.show(getSupportFragmentManager(), "");
                     }
                     break;
@@ -1576,8 +1577,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onOpenLinkSelected() {
-            super.onOpenLinkSelected();
+        public void onOpenLinkSelected(String url) {
+            TAPUtils.getInstance().openCustomTabLayout(TAPChatActivity.this, url);
         }
 
         @Override
