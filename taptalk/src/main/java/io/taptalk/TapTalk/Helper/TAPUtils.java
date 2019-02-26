@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -598,5 +597,11 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
                     intent.putExtra(TAPWebBrowserActivity.EXTRA_URL, uri.toString());
                     activity1.startActivity(intent);
                 });
+    }
+
+    public void composeEmail(Activity activity, String emailRecipient) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse(emailRecipient));
+        activity.startActivity(Intent.createChooser(intent, "Send mail"));
     }
 }

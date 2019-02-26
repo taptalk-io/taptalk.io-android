@@ -15,7 +15,7 @@ public interface TapTalkAttachmentInterface {
     void onReplySelected(TAPMessageModel message);
     void onForwardSelected(TAPMessageModel message);
     void onOpenLinkSelected(String url);
-    void onComposeSelected();
+    void onComposeSelected(String emailRecipient);
     void onPhoneCallSelected();
     void onPhoneSmsSelected();
 

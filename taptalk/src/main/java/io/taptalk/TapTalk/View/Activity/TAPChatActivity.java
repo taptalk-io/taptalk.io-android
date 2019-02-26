@@ -1302,7 +1302,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 case LongPressChatBubble:
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof  TAPMessageModel) {
-                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener);
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
                         chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                     }
                     break;
@@ -1582,8 +1582,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onComposeSelected() {
-            super.onComposeSelected();
+        public void onComposeSelected(String emailRecipient) {
+            TAPUtils.getInstance().composeEmail(TAPChatActivity.this, emailRecipient);
         }
 
         @Override
