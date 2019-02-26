@@ -604,4 +604,17 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         intent.setData(Uri.parse(emailRecipient));
         activity.startActivity(Intent.createChooser(intent, "Send mail"));
     }
+
+    public void openDialNumber(Activity activity, String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse(phoneNumber));
+        activity.startActivity(intent);
+    }
+
+    public void composeSMS(Activity activity, String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setType("vnd.android-dir/mms-sms");
+        intent.putExtra("address", phoneNumber);
+        activity.startActivity(intent);
+    }
 }

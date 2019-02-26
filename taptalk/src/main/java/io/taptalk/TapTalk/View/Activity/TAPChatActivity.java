@@ -1587,13 +1587,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onPhoneCallSelected() {
-            super.onPhoneCallSelected();
+        public void onPhoneCallSelected(String phoneNumber) {
+            TAPUtils.getInstance().openDialNumber(TAPChatActivity.this, phoneNumber);
         }
 
         @Override
-        public void onPhoneSmsSelected() {
-            super.onPhoneSmsSelected();
+        public void onPhoneSmsSelected(String phoneNumber) {
+            TAPUtils.getInstance().composeSMS(TAPChatActivity.this, phoneNumber);
         }
     };
 

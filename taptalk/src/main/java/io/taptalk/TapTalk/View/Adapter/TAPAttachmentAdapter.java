@@ -137,10 +137,10 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onComposeSelected(linkifyresult);
                     break;
                 case ID_CALL:
-                    attachmentListener.onPhoneCallSelected();
+                    attachmentListener.onPhoneCallSelected(linkifyresult);
                     break;
                 case ID_SEND_SMS:
-                    attachmentListener.onPhoneSmsSelected();
+                    attachmentListener.onPhoneSmsSelected(messageToCopy);
                     break;
             }
             onClickListener.onClick(itemView);

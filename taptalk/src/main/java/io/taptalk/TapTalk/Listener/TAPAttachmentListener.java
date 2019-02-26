@@ -17,6 +17,6 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     @Override public void onForwardSelected(TAPMessageModel message) {}
     @Override public void onOpenLinkSelected(String url) {}
     @Override public void onComposeSelected(String emailRecipient) {}
-    @Override public void onPhoneCallSelected() {}
-    @Override public void onPhoneSmsSelected() {}
+    @Override public void onPhoneCallSelected(String phoneNumber) {}
+    @Override public void onPhoneSmsSelected(String phoneNumber) {}
 }
