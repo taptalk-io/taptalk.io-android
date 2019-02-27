@@ -392,8 +392,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item.getData()) {
                 return;
             }
-            Integer widthDimension = (Integer) item.getData().get(IMAGE_WIDTH);
-            Integer heightDimension = (Integer) item.getData().get(IMAGE_HEIGHT);
+            Number widthDimension = (Number) item.getData().get(IMAGE_WIDTH);
+            Number heightDimension = (Number) item.getData().get(IMAGE_HEIGHT);
             String imageUri = (String) item.getData().get(FILE_URI);
             String imageCaption = (String) item.getData().get(CAPTION);
             String fileID = (String) item.getData().get(FILE_ID);
@@ -422,7 +422,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             // TODO: 18 January 2019 TEMP CHECK
             if (null != widthDimension && null != heightDimension) {
-                rcivImageBody.setImageDimensions(widthDimension, heightDimension);
+                rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
             }
 
             // Load thumbnail when download is not in progress

@@ -116,6 +116,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
@@ -220,7 +222,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onResume();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
-        showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage(), false);
+        showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
         callApiGetUserByUserID();
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
             callApiAfter();
@@ -283,12 +285,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_IMAGE_FROM_PREVIEW:
                         ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
                         if (null != images && 0 < images.size()) {
-                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom().getRoomID(), images);
+                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom(), images);
                         }
                         break;
                     case FORWARD_MESSAGE:
                         TAPRoomModel room = intent.getParcelableExtra(ROOM);
-                        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE));
+                        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
                         TAPUtils.getInstance().startChatActivity(TAPChatActivity.this, room);
                         finish();
                         break;
@@ -643,6 +645,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             TAPChatManager.getInstance().sendTextMessage(message);
             //scroll to Bottom
             rvMessageList.scrollToPosition(0);
+        } else {
+            TAPChatManager.getInstance().checkAndSendForwardedMessage(vm.getRoom());
+            ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
         }
     }
 
@@ -781,11 +786,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    private void showQuoteLayout(@Nullable TAPMessageModel message, boolean showKeyboard) {
+    private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
         if (null == message) {
             return;
         }
-        vm.setQuotedMessage(message);
+        vm.setQuotedMessage(message, quoteAction);
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
             tvQuoteTitle.setText(message.getUser().getName());
@@ -817,7 +822,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideQuoteLayout() {
-        vm.setQuotedMessage(null);
+        vm.setQuotedMessage(null, 0);
         runOnUiThread(() -> clQuote.setVisibility(View.GONE));
     }
 
@@ -1156,7 +1161,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReplyMessage(TAPMessageModel message) {
-            showQuoteLayout(message, true);
+            showQuoteLayout(message, REPLY, true);
             TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
         }
 
@@ -1369,7 +1374,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
                 }
-                ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+                if (vm.getQuoteAction() == FORWARD) {
+                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
+                } else {
+                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+                }
             }
         }
 
@@ -1584,7 +1593,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReplySelected(TAPMessageModel message) {
-            super.onReplySelected(message);
+            showQuoteLayout(message, REPLY, true);
+            TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
         }
 
         @Override

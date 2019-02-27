@@ -39,6 +39,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
+    private Integer quoteAction;
     private long lastTimestamp = 0;
     private int numUsers, containerAnimationState;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished;
@@ -215,12 +216,17 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public TAPMessageModel getQuotedMessage() {
-        return quotedMessage;
+        return null == quotedMessage ? TAPChatManager.getInstance().getQuotedMessage() : quotedMessage;
     }
 
-    public void setQuotedMessage(TAPMessageModel quotedMessage) {
+    public Integer getQuoteAction() {
+        return null == quoteAction ? null == TAPChatManager.getInstance().getQuoteAction() ? -1 : TAPChatManager.getInstance().getQuoteAction() : quoteAction;
+    }
+
+    public void setQuotedMessage(TAPMessageModel quotedMessage, int quoteAction) {
         this.quotedMessage = quotedMessage;
-        TAPChatManager.getInstance().setQuotedMessage(quotedMessage);
+        this.quoteAction = quoteAction;
+        TAPChatManager.getInstance().setQuotedMessage(quotedMessage, quoteAction);
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {

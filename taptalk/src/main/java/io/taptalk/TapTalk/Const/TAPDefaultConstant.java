@@ -187,6 +187,11 @@ public class TAPDefaultConstant {
         public static final String IMAGE_GIF = "image/gif";
     }
 
+    public static final class QuoteAction {
+        public static final int REPLY = 1;
+        public static final int FORWARD = 2;
+    }
+
     public static final class CustomHeaderKey {
         public static final String USER_AGENT = "kTAPUserAgent";
         public static final String APP_ID = "kTAPApplicationID";
