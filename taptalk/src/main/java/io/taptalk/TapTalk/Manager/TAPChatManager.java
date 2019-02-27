@@ -640,7 +640,6 @@ public class TAPChatManager {
             TAPMessageModel messageModel = buildForwardedMessage(getQuotedMessages().get(roomID), roomModel);
             triggerListenerAndSendMessage(messageModel, true);
             setQuotedMessage(roomID, null, 0);
-            Log.e(TAG, "checkAndSendForwardedMessage: ");
             return true;
         } else {
             return false;
