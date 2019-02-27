@@ -151,15 +151,20 @@ public class SampleApplication extends Application {
         TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
         if ("dev".equals(BuildConfig.BUILD_TYPE)) {
             TapTalk.setTapTalkEnvironment(TapTalkEnvironmentDevelopment);
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                            .build());
         } else if ("staging".equals(BuildConfig.BUILD_TYPE)) {
             TapTalk.setTapTalkEnvironment(TapTalkEnvironmentStaging);
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                            .build());
         } else {
             TapTalk.setTapTalkEnvironment(TapTalkEnvironmentProduction);
         }
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                        .build());
     }
 }
