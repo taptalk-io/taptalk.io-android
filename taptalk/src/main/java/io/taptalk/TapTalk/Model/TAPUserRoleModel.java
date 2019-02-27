@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Model;
 
+import android.arch.persistence.room.Ignore;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,12 +14,14 @@ public class TAPUserRoleModel implements Parcelable {
     @JsonProperty("name") private String roleName;
     @JsonProperty("iconURL") private String roleIconURL;
 
+    @Ignore
     public TAPUserRoleModel(String code, String roleName, String roleIconURL) {
         this.code = code;
         this.roleName = roleName;
         this.roleIconURL = roleIconURL;
     }
 
+    @Ignore
     public TAPUserRoleModel(String code, String roleName) {
         this.code = code;
         this.roleName = roleName;
