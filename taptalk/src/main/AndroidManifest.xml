@@ -13,16 +13,18 @@
     <uses-permission android:name="oppo.permission.OPPO_COMPONENT_SAFE" />
 
     <application android:theme="@style/AppTheme">
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
-            android:launchMode="singleTask"/>
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"></activity>
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
+            android:launchMode="singleTask" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity" />
 
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
-
-        <service android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
-            android:exported="true"/>
+        <service
+            android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
+            android:exported="true" />
 
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity" />
         <activity
