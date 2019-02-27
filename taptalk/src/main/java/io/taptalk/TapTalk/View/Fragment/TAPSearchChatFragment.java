@@ -191,8 +191,9 @@ public class TAPSearchChatFragment extends Fragment {
         TAPSearchChatModel emptyItem = new TAPSearchChatModel(EMPTY_STATE);
         vm.clearSearchResults();
         vm.addSearchResult(emptyItem);
-        if (null != getActivity())
+        if (null != getActivity()) {
             getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+        }
     }
 
     private void startSearch() {

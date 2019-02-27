@@ -59,12 +59,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 
 public class TAPChatManager {
 
     private final String TAG = TAPChatManager.class.getSimpleName();
     private static TAPChatManager instance;
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
+    private Map<String, Integer> quotedActions;
     private Map<String, String> messageDrafts;
     private HashMap<String, HashMap<String, Object>> userInfo;
     private List<TAPChatListener> chatListeners;
@@ -351,6 +354,9 @@ public class TAPChatManager {
 
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
         Integer startIndex;
+
+        checkAndSendForwardedMessage(roomModel);
+
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
             List<TAPMessageEntity> messageEntities = new ArrayList<>();
@@ -365,6 +371,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
+            Log.e(TAG, "sendTextMessageWithRoomModel: send default message");
             TAPMessageModel messageModel = buildTextMessage(textMessage, roomModel, getActiveUser());
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
@@ -413,7 +420,7 @@ public class TAPChatManager {
 
     private TAPMessageModel buildTextMessage(String message, TAPRoomModel room, TAPUserModel user) {
         // Create new TAPMessageModel based on text
-        if (null == quotedMessages.get(room.getRoomID())) {
+        if (null == getQuotedMessages().get(room.getRoomID())) {
             return TAPMessageModel.Builder(
                     message,
                     room,
@@ -434,7 +441,7 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     user, getOtherUserIdFromRoom(room.getRoomID()),
                     data,
-                    quotedMessages.get(room.getRoomID())
+                    getQuotedMessages().get(room.getRoomID())
             );
         }
     }
@@ -596,10 +603,11 @@ public class TAPChatManager {
         return imageMessage;
     }
 
-    public void sendImageMessage(Context context, String roomID, ArrayList<TAPImagePreviewModel> images) {
+    public void sendImageMessage(Context context, TAPRoomModel room, ArrayList<TAPImagePreviewModel> images) {
         new Thread(() -> {
+            checkAndSendForwardedMessage(room);
             for (TAPImagePreviewModel imagePreview : images) {
-                createImageMessageModelAndAddToQueueUpload(context, roomID, imagePreview.getImageUri(), imagePreview.getImageCaption());
+                createImageMessageModelAndAddToQueueUpload(context, room.getRoomID(), imagePreview.getImageUri(), imagePreview.getImageCaption());
             }
         }).start();
     }
@@ -617,6 +625,36 @@ public class TAPChatManager {
             addUploadingMessageToHashMap(imageModel);
             TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, imageModel);
         }).start();
+    }
+
+    /**
+     * @return
+     * true if forwarded message is sent
+     * false if forwarded message does not exist
+     */
+    public boolean checkAndSendForwardedMessage(TAPRoomModel roomModel) {
+        String roomID = roomModel.getRoomID();
+        if (null != getQuoteActions().get(roomID) &&
+                getQuoteActions().get(roomID) == FORWARD) {
+            // Send forwarded message
+            TAPMessageModel messageModel = buildForwardedMessage(getQuotedMessages().get(roomID), roomModel);
+            triggerListenerAndSendMessage(messageModel, true);
+            setQuotedMessage(roomID, null, 0);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private TAPMessageModel buildForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room) {
+        if (null == getQuotedMessages().get(room.getRoomID())) {
+            return null;
+        }
+        return TAPMessageModel.BuilderForwardedMessage(
+                messageToForward,
+                room,
+                System.currentTimeMillis(),
+                getOtherUserIdFromRoom(room.getRoomID()));
     }
 
     private void triggerSendMessageListener(TAPMessageModel messageModel) {
@@ -690,16 +728,35 @@ public class TAPChatManager {
         return null == quotedMessages ? quotedMessages = new LinkedHashMap<>() : quotedMessages;
     }
 
-    public void setQuotedMessage(@Nullable TAPMessageModel message) {
+    private Map<String, Integer> getQuoteActions() {
+        return null == quotedActions ? quotedActions = new LinkedHashMap<>() : quotedActions;
+    }
+
+    public void setQuotedMessage(@Nullable TAPMessageModel message, int quoteAction) {
         if (null == activeRoom) {
             return;
         }
+        String roomID = activeRoom.getRoomID();
         if (null == message) {
             // Delete quoted message and user info in active room
-            getQuotedMessages().remove(activeRoom.getRoomID());
-            removeUserInfo(activeRoom.getRoomID());
+            getQuotedMessages().remove(roomID);
+            getQuoteActions().remove(roomID);
+            removeUserInfo(roomID);
         } else {
-            getQuotedMessages().put(activeRoom.getRoomID(), message);
+            getQuotedMessages().put(roomID, message);
+            getQuoteActions().put(roomID, quoteAction);
+        }
+    }
+
+    public void setQuotedMessage(String roomID, @Nullable TAPMessageModel message, int quoteAction) {
+        if (null == message) {
+            // Delete quoted message and user info
+            getQuotedMessages().remove(roomID);
+            getQuoteActions().remove(roomID);
+            removeUserInfo(roomID);
+        } else {
+            getQuotedMessages().put(roomID, message);
+            getQuoteActions().put(roomID, quoteAction);
         }
     }
 
@@ -712,9 +769,12 @@ public class TAPChatManager {
         dummyUserWithName.setName(quoteTitle);
         HashMap<String, Object> quoteData = new HashMap<>();
         quoteData.put("imageURL", null == quoteImageURL ? "" : quoteImageURL);
-        getQuotedMessages().put(roomID, TAPMessageModel.Builder(
-                // Dummy message model for quote
-                null == quoteContent ? "" : quoteContent, new TAPRoomModel(), -1, 0L, dummyUserWithName, "", quoteData));
+        // Dummy message model for quote
+        TAPMessageModel dummyMessage = TAPMessageModel.Builder(
+                null == quoteContent ? "" : quoteContent, new TAPRoomModel(),
+                -1, 0L, dummyUserWithName, "", quoteData);
+        getQuotedMessages().put(roomID, dummyMessage);
+        getQuoteActions().put(roomID, REPLY);
     }
 
     public TAPMessageModel getQuotedMessage() {
@@ -722,6 +782,13 @@ public class TAPChatManager {
             return null;
         }
         return getQuotedMessages().get(activeRoom.getRoomID());
+    }
+
+    public Integer getQuoteAction() {
+        if (null == activeRoom) {
+            return -1;
+        }
+        return getQuoteActions().get(activeRoom.getRoomID());
     }
 
     /**

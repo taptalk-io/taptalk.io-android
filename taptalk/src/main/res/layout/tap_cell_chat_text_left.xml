@@ -53,9 +53,19 @@
                 android:layout_marginBottom="2dp"
                 android:textColor="@color/tap_mediumPurple"
                 android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="User Name" />
+
+            <include
+                android:id="@+id/cl_forwarded"
+                layout="@layout/tap_layout_forwarded_bubble_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toTopOf="@id/cl_quote"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:id="@+id/v_quote_background"
@@ -85,6 +95,7 @@
                 android:layout_marginTop="2dp"
                 android:textColor="@color/tap_black_2c"
                 android:textColorLink="@color/tap_clear_blue"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 tools:text="Hey there, love your work!" />

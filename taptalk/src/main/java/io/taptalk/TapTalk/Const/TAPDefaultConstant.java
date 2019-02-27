@@ -74,10 +74,10 @@ public class TAPDefaultConstant {
     }
 
     public static final class Extras {
-        public static final String ROOM_NAME = "kTAPExtraRoomName";
-        public static final String MESSAGE = "kTAPMessage";
-        public static final String URL_MESSAGE = "kTAPUrlMessage";
-        public static final String COPY_MESSAGE = "kTAPCopyMessage";
+        public static final String MESSAGE = "kTAPExtraMessage";
+        public static final String ROOM = "kTAPExtraRoom";
+        public static final String URL_MESSAGE = "kTAPExtraUrlMessage";
+        public static final String COPY_MESSAGE = "kTAPExtraCopyMessage";
         public static final String MY_ID = "kTAPExtraMyID";
         public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
         public static final String GROUP_NAME = "kTAPExtraGroupName";
@@ -92,6 +92,7 @@ public class TAPDefaultConstant {
         public static final int SEND_IMAGE_FROM_CAMERA = 12;
         public static final int SEND_IMAGE_FROM_GALLERY = 13;
         public static final int SEND_IMAGE_FROM_PREVIEW = 14;
+        public static final int FORWARD_MESSAGE = 15;
     }
 
     public static final class PermissionRequest {
@@ -186,6 +187,11 @@ public class TAPDefaultConstant {
         public static final String IMAGE_GIF = "image/gif";
     }
 
+    public static final class QuoteAction {
+        public static final int REPLY = 1;
+        public static final int FORWARD = 2;
+    }
+
     public static final class CustomHeaderKey {
         public static final String USER_AGENT = "kTAPUserAgent";
         public static final String APP_ID = "kTAPApplicationID";
@@ -193,17 +199,17 @@ public class TAPDefaultConstant {
     }
 
     public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://hp.moselo.com:8080/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://hp.moselo.com:8080/";
-        public static final String BASE_WSS_PRODUCTION = "wss://hp.moselo.com:8080/pigeon";
+        public static final String BASE_URL_API_PRODUCTION = "https://hp.moselo.com/api/v1/";
+        public static final String BASE_URL_SOCKET_PRODUCTION = "https://hp.moselo.com/";
+        public static final String BASE_WSS_PRODUCTION = "wss://hp.moselo.com/pigeon";
 
-        public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com:8080/api/v1/";
-        public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com:8080/";
-        public static final String BASE_WSS_STAGING = "wss://hp-staging.moselo.com:8080/pigeon";
+        public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com/api/v1/";
+        public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com/";
+        public static final String BASE_WSS_STAGING = "wss://hp-staging.moselo.com/pigeon";
 
-        public static final String BASE_URL_API_DEVELOPMENT = "https://hp-dev.moselo.com:8080/api/v1/";
-        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://hp-dev.moselo.com:8080/";
-        public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com:8080/pigeon";
+        public static final String BASE_URL_API_DEVELOPMENT = "https://hp-dev.moselo.com/api/v1/";
+        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://hp-dev.moselo.com/";
+        public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com/pigeon";
     }
 
     public static final Intent[] AUTO_START_INTENTS = {
@@ -231,7 +237,6 @@ public class TAPDefaultConstant {
     public static final String K_MY_USERNAME = "kTAPMyUsername";
     public static final String K_USER = "kTAPUser";
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
-    public static final String K_ROOM = "kTAPRoom";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
     public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";

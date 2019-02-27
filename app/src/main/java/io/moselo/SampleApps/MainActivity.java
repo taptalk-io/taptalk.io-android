@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.orhanobut.hawk.Hawk;
+
+import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TaptalkSample.R;
 

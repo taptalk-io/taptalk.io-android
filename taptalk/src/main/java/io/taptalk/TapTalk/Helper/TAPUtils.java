@@ -65,8 +65,8 @@ import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
@@ -305,7 +305,7 @@ public class TAPUtils {
         activity.runOnUiThread(() -> dismissKeyboard(activity));
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);
-        intent.putExtra(K_ROOM, roomModel);
+        intent.putExtra(ROOM, roomModel);
         intent.putExtra(IS_TYPING, isTyping);
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -318,7 +318,7 @@ public class TAPUtils {
 
     public void openProfileActivity(Context context, TAPRoomModel room) {
         Intent intent = new Intent(context, TAPProfileActivity.class);
-        intent.putExtra(K_ROOM, room);
+        intent.putExtra(ROOM, room);
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
