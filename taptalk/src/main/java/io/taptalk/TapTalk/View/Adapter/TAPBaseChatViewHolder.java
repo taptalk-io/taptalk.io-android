@@ -94,14 +94,14 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     if (null != url && url.contains("mailto:")) {
                         //for Email
                         Intent intent = new Intent(LongPressEmail);
-                        intent.putExtra(URL_MESSAGE, url.replace("mailto:",""));
+                        intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url && url.contains("tel:")) {
                         //For Phone Number
                         Intent intent = new Intent(LongPressPhone);
-                        intent.putExtra(URL_MESSAGE, url.replace("tel:",""));
+                        intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;

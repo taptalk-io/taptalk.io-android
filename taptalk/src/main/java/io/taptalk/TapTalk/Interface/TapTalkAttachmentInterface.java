@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
+import android.content.Context;
+
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 public interface TapTalkAttachmentInterface {
@@ -12,9 +14,9 @@ public interface TapTalkAttachmentInterface {
     void onCopySelected(String text);
     void onReplySelected(TAPMessageModel message);
     void onForwardSelected(TAPMessageModel message);
-    void onOpenLinkSelected();
-    void onComposeSelected();
-    void onPhoneCallSelected();
-    void onPhoneSmsSelected();
+    void onOpenLinkSelected(String url);
+    void onComposeSelected(String emailRecipient);
+    void onPhoneCallSelected(String phoneNumber);
+    void onPhoneSmsSelected(String phoneNumber);
 
 }

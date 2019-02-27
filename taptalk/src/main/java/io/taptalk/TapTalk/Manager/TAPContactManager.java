@@ -43,7 +43,7 @@ public class TAPContactManager {
             // Add new user to map
             user.setIsContact(0);
             getUserDataMap().put(user.getUserID(), user);
-        } else if (!user.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) && null != getUserDataMap().get(user.getUserID())) {
+        } else if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null != getUserDataMap().get(user.getUserID())) {
             // Update user data in map
             getUserDataMap().get(user.getUserID()).updateValue(user);
         }

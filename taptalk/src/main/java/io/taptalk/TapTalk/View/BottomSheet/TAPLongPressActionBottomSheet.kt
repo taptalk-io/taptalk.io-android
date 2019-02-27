@@ -26,10 +26,11 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     constructor() : super()
 
-    constructor(longPressType: LongPressType, urlMessage: String, bottomSheetListener: TAPAttachmentListener) {
+    constructor(longPressType: LongPressType, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
         this.longPressType = longPressType
         this.urlMessage = urlMessage
         this.bottomSheetListener = bottomSheetListener
+        this.linkifyResult = linkifyResult
     }
 
     constructor(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
@@ -40,12 +41,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     var message: TAPMessageModel? = null
     var urlMessage = ""
+    var linkifyResult = ""
     val onClickListener = View.OnClickListener { dismiss() }
     var bottomSheetListener: TAPAttachmentListener? = null
 
     companion object {
-        fun newInstance(longPressType: LongPressType, url: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(longPressType, url, bottomSheetListener)
+        fun newInstance(longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(longPressType, url, linkifyResult, bottomSheetListener)
             val args: Bundle = Bundle()
             fragment.arguments = args
             return fragment
@@ -71,15 +73,15 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 bottomSheetListener, onClickListener)
         when (longPressType) {
             LongPressType.EMAIL_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createEmailLongPressMenu(), urlMessage,
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createEmailLongPressMenu(), urlMessage, linkifyResult,
                         bottomSheetListener, onClickListener)
             }
             LongPressType.LINK_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLinkLongPressMenu(), urlMessage,
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLinkLongPressMenu(), urlMessage, linkifyResult,
                         bottomSheetListener, onClickListener)
             }
             LongPressType.PHONE_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createPhoneLongPressMenu(), urlMessage,
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createPhoneLongPressMenu(), urlMessage, linkifyResult,
                         bottomSheetListener, onClickListener)
             }
         }

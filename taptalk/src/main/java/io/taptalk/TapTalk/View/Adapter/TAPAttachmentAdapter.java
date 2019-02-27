@@ -33,7 +33,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
 
     private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
-    private String messageToCopy = "";
+    private String messageToCopy = "", linkifyresult = "";
     private TAPMessageModel message;
 
     public TAPAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -42,11 +42,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         setItems(createAttachMenu(), false);
     }
 
-    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String linkifyresult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         setItems(items);
         this.attachmentListener = attachmentListener;
         this.messageToCopy = messageToCopy;
         this.onClickListener = onClickListener;
+        this.linkifyresult = linkifyresult;
     }
 
     public TAPAttachmentAdapter(List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -130,16 +131,16 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onCopySelected(messageToCopy);
                     break;
                 case ID_OPEN:
-                    attachmentListener.onOpenLinkSelected();
+                    attachmentListener.onOpenLinkSelected(linkifyresult);
                     break;
                 case ID_COMPOSE:
-                    attachmentListener.onComposeSelected();
+                    attachmentListener.onComposeSelected(linkifyresult);
                     break;
                 case ID_CALL:
-                    attachmentListener.onPhoneCallSelected();
+                    attachmentListener.onPhoneCallSelected(linkifyresult);
                     break;
                 case ID_SEND_SMS:
-                    attachmentListener.onPhoneSmsSelected();
+                    attachmentListener.onPhoneSmsSelected(messageToCopy);
                     break;
             }
             onClickListener.onClick(itemView);

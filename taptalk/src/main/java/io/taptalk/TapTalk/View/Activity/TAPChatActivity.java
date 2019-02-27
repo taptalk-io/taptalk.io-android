@@ -1313,27 +1313,31 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
 
                 case LongPressChatBubble:
-                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof  TAPMessageModel) {
-                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener);
+                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
                         chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
                 case LongPressLink:
-                    if (null != intent.getStringExtra(URL_MESSAGE)) {
-                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         linkBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
                 case LongPressEmail:
-                    if (null != intent.getStringExtra(URL_MESSAGE)) {
-                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         emailBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
                 case LongPressPhone:
-                    if (null != intent.getStringExtra(URL_MESSAGE)) {
-                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         phoneBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
             }
@@ -1592,23 +1596,23 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onOpenLinkSelected() {
-            super.onOpenLinkSelected();
+        public void onOpenLinkSelected(String url) {
+            TAPUtils.getInstance().openCustomTabLayout(TAPChatActivity.this, url);
         }
 
         @Override
-        public void onComposeSelected() {
-            super.onComposeSelected();
+        public void onComposeSelected(String emailRecipient) {
+            TAPUtils.getInstance().composeEmail(TAPChatActivity.this, emailRecipient);
         }
 
         @Override
-        public void onPhoneCallSelected() {
-            super.onPhoneCallSelected();
+        public void onPhoneCallSelected(String phoneNumber) {
+            TAPUtils.getInstance().openDialNumber(TAPChatActivity.this, phoneNumber);
         }
 
         @Override
-        public void onPhoneSmsSelected() {
-            super.onPhoneSmsSelected();
+        public void onPhoneSmsSelected(String phoneNumber) {
+            TAPUtils.getInstance().composeSMS(TAPChatActivity.this, phoneNumber);
         }
     };
 
