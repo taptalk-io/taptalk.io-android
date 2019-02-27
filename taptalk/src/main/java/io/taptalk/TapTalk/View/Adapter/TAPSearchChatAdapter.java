@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
@@ -33,8 +34,15 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
     private String searchKeyword;
 
+    private TapTalkRoomListInterface roomListInterface;
+
     public TAPSearchChatAdapter(List<TAPSearchChatModel> items) {
         setItems(items, true);
+    }
+
+    public TAPSearchChatAdapter(List<TAPSearchChatModel> items, TapTalkRoomListInterface roomListInterface) {
+        setItems(items, true);
+        this.roomListInterface = roomListInterface;
     }
 
     @NonNull
@@ -240,15 +248,21 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             clContainer.setOnClickListener(v -> {
-                TAPUtils.getInstance().startChatActivity(itemView.getContext(),
-                        room.getRoomID(),
-                        room.getRoomName(),
-                        room.getRoomImage(),
-                        room.getRoomType(),
-                        room.getRoomColor());
+                if (null == roomListInterface) {
+                    // Open chat room
+                    TAPUtils.getInstance().startChatActivity(itemView.getContext(),
+                            room.getRoomID(),
+                            room.getRoomName(),
+                            room.getRoomImage(),
+                            room.getRoomType(),
+                            room.getRoomColor());
 
-                TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
-                TAPDataManager.getInstance().insertToDatabase(recentItem);
+                    TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
+                    TAPDataManager.getInstance().insertToDatabase(recentItem);
+                } else {
+                    // Trigger listener
+                    roomListInterface.onRoomSelected(item.getRoom());
+                }
             });
         }
     }

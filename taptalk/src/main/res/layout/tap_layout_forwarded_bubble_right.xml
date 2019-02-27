@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_forwarded"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_label_forwarded"
+        style="@style/TapQuoteBody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forwarded"
+        android:textColor="@color/tap_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_label_from"
+        style="@style/TapQuoteBody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From: "
+        android:textColor="@color/tap_white"
+        app:layout_constraintBottom_toBottomOf="@id/tv_forwarded_from"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_forwarded_from" />
+
+    <TextView
+        android:id="@+id/tv_forwarded_from"
+        style="@style/TapQuoteTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/tap_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_label_from"
+        app:layout_constraintTop_toBottomOf="@id/tv_label_forwarded"
+        tools:text="Rob Janoff" />
+
+</android.support.constraint.ConstraintLayout>

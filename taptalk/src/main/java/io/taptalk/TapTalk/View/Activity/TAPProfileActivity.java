@@ -27,7 +27,7 @@ import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 
 
 public class TAPProfileActivity extends TAPBaseActivity {
@@ -63,7 +63,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPProfileViewModel.class);
-        vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
+        vm.setRoom(getIntent().getParcelableExtra(ROOM));
     }
 
     private void initView() {

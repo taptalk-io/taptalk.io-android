@@ -122,10 +122,15 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        // TODO: 9 January 2019 HANDLE NON-TEXT MESSAGES
         TAPQuoteModel quote = new TAPQuoteModel(quotedMessage.getUser().getName(), quotedMessage.getBody(), null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID), null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(IMAGE_URL), "");
         TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID(), quotedMessage.getLocalID(), quotedMessage.getType());
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null);
+    }
+
+    public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, String recipientID) {
+        String localID = TAPUtils.getInstance().generateRandomString(32);
+        TAPForwardFromModel forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getName(), messageToForward.getMessageID(), messageToForward.getLocalID());
+        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, messageToForward.getUser(), recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null);
     }
 
 

@@ -10,7 +10,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 
 public class TAPRoomListActivity extends TAPBaseActivity {
 
@@ -33,7 +33,7 @@ public class TAPRoomListActivity extends TAPBaseActivity {
     }
 
     private void redirectToChatActivityFromNotification() {
-        TAPRoomModel roomModel = getIntent().getParcelableExtra(K_ROOM);
+        TAPRoomModel roomModel = getIntent().getParcelableExtra(ROOM);
         if (null != roomModel) {
             TAPUtils.getInstance().startChatActivity(this, roomModel);
         }
