@@ -654,6 +654,7 @@ public class TAPChatManager {
                 messageToForward,
                 room,
                 System.currentTimeMillis(),
+                getActiveUser(),
                 getOtherUserIdFromRoom(room.getRoomID()));
     }
 
