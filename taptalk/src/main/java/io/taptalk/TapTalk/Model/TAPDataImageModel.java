@@ -53,7 +53,7 @@ public class TAPDataImageModel implements Parcelable {
     public TAPDataImageModel(HashMap<String, Object> imageDataMap) {
         this.fileID = (String) imageDataMap.get(FILE_ID);
         this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
-        this.width = (Number) imageDataMap.get(IMAGE_SIZE);
+        this.size = (Number) imageDataMap.get(IMAGE_SIZE);
         this.width = (Number) imageDataMap.get(IMAGE_WIDTH);
         this.height = (Number) imageDataMap.get(IMAGE_HEIGHT);
         this.caption = (String) imageDataMap.get(CAPTION);
@@ -64,8 +64,8 @@ public class TAPDataImageModel implements Parcelable {
     public TAPDataImageModel() {
     }
 
-    public static TAPDataImageModel Builder(String fileID, @Nullable String thumbnail, String mediaType, Long size,
-                                            Integer width, Integer height, String caption) {
+    public static TAPDataImageModel Builder(String fileID, @Nullable String thumbnail, String mediaType, Number size,
+                                            Number width, Number height, String caption) {
         return new TAPDataImageModel(fileID, thumbnail, mediaType, size, width, height, caption);
     }
 
@@ -102,7 +102,7 @@ public class TAPDataImageModel implements Parcelable {
         return size;
     }
 
-    public void setSize(@Nullable Long size) {
+    public void setSize(@Nullable Number size) {
         this.size = size;
     }
 
@@ -111,7 +111,7 @@ public class TAPDataImageModel implements Parcelable {
         return width;
     }
 
-    public void setWidth(@Nullable Integer width) {
+    public void setWidth(@Nullable Number width) {
         this.width = width;
     }
 
@@ -120,7 +120,7 @@ public class TAPDataImageModel implements Parcelable {
         return height;
     }
 
-    public void setHeight(@Nullable Integer height) {
+    public void setHeight(@Nullable Number height) {
         this.height = height;
     }
 
