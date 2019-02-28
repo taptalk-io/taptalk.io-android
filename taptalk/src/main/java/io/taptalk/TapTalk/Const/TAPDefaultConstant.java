@@ -50,10 +50,12 @@ public class TAPDefaultConstant {
 
     public static final class BubbleType {
         public static final int TYPE_LOG = 0;
-        public static final int TYPE_BUBBLE_TEXT_RIGHT = 1001;
-        public static final int TYPE_BUBBLE_TEXT_LEFT = 1002;
-        public static final int TYPE_BUBBLE_IMAGE_RIGHT = 1011;
-        public static final int TYPE_BUBBLE_IMAGE_LEFT = 1012;
+        public static final int TYPE_BUBBLE_TEXT_RIGHT = 10011;
+        public static final int TYPE_BUBBLE_TEXT_LEFT = 10012;
+        public static final int TYPE_BUBBLE_IMAGE_RIGHT = 10021;
+        public static final int TYPE_BUBBLE_IMAGE_LEFT = 10022;
+        public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
+        public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_EMPTY = 9999;
