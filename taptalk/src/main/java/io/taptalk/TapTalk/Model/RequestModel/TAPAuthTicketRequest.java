@@ -13,10 +13,18 @@ public class TAPAuthTicketRequest {
     @JsonProperty("fullName") private String fullName;
     @JsonProperty("email") private String email;
     @JsonProperty("phone") private String phone;
-    @Nullable @JsonProperty("username") private String username;
-    @Nullable @JsonProperty("photoThumbnailURL") private String photoThumbnailURL;
-    @Nullable @JsonProperty("photoFullsizeURL") private String photoFullsizeURL;
-    @Nullable @JsonProperty("userRoleCode") private String userRoleCode;
+    @Nullable
+    @JsonProperty("username")
+    private String username;
+    @Nullable
+    @JsonProperty("photoThumbnailURL")
+    private String photoThumbnailURL;
+    @Nullable
+    @JsonProperty("photoFullsizeURL")
+    private String photoFullsizeURL;
+    @Nullable
+    @JsonProperty("userRoleCode")
+    private String userRoleCode;
 
     public TAPAuthTicketRequest(String userIPAddress, String userAgent, String userPlatform,
                                 String userDeviceID, String xcUserID, String fullName, String email,
@@ -30,8 +38,13 @@ public class TAPAuthTicketRequest {
         this.email = email;
         this.phone = phone;
         this.username = username;
-        setPhotoFullsizeURL("https://s3-ap-southeast-1.amazonaws.com/taptalk-dev/images/"+username+"_1542363733889f.jpg");
-        setPhotoThumbnailURL("https://s3-ap-southeast-1.amazonaws.com/taptalk-dev/images/"+username+"_1542363733889t.jpg");
+        if (39 <= Integer.valueOf(xcUserID) && 43 >= Integer.valueOf(xcUserID)) {
+            setPhotoThumbnailURL("");
+            setPhotoFullsizeURL("");
+        } else {
+            setPhotoFullsizeURL("https://s3-ap-southeast-1.amazonaws.com/taptalk-dev/images/" + username + "_1542363733889f.jpg");
+            setPhotoThumbnailURL("https://s3-ap-southeast-1.amazonaws.com/taptalk-dev/images/" + username + "_1542363733889t.jpg");
+        }
         setUserRoleCode("user");
     }
 
@@ -40,7 +53,7 @@ public class TAPAuthTicketRequest {
 
     public static TAPAuthTicketRequest toBuilder(String userIPAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID, String fullName, String email, String phone, String username) {
         return new TAPAuthTicketRequest(userIPAddress, userAgent, userPlatform, userDeviceID, xcUserID, fullName, email
-        , phone, username);
+                , phone, username);
     }
 
     public String getUserIPAddress() {

@@ -7,7 +7,6 @@ import android.support.design.widget.TextInputEditText;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.net.URL;
 
@@ -17,11 +16,9 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
-import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
 public class TAPLoginActivity extends TAPBaseActivity {
@@ -132,6 +129,11 @@ public class TAPLoginActivity extends TAPBaseActivity {
             case "ervin":
             case "fauzi":
             case "lucas":
+            case "dewi":
+            case "hana":
+            case "jessica":
+            case "reynald":
+            case "ivan":
                 return true;
 
             default:
@@ -218,6 +220,16 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 return 37;
             case "lucas":
                 return 38;
+            case "dewi":
+                return 39;
+            case "hana":
+                return 40;
+            case "jessica":
+                return 41;
+            case "reynald":
+                return 42;
+            case "ivan":
+                return 43;
             default:
                 return 0;
         }
@@ -302,6 +314,16 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 return "Fauzi";
             case "38":
                 return "Lucas";
+            case "39":
+                return "Dewi Kurnia";
+            case "40":
+                return "Hana Afifah";
+            case "41":
+                return "Jessica Ivana";
+            case "42":
+                return "Reynald";
+            case "43":
+                return "Ivan Reinaldo";
             default:
                 return "";
         }

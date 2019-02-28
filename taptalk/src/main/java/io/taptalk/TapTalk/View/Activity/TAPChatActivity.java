@@ -508,7 +508,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         sblChat.setSwipeInterface(swipeInterface);
 
-        civRoomImage.setOnClickListener(v -> openRoomProfile());
+        //civRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> closeActivity());
         ivButtonCancelReply.setOnClickListener(v -> hideQuoteLayout());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
