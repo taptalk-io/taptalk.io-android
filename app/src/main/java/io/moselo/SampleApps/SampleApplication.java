@@ -67,16 +67,7 @@ public class SampleApplication extends Application {
                 expertToExpert.add(createOrderCard);
                 return expertToExpert;
             } else {
-                List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
-                expertToExpert.add(seePriceList);
-                expertToExpert.add(readExpertNotes);
-                expertToExpert.add(sendServices);
-                expertToExpert.add(createOrderCard);
-                expertToExpert.add(seePriceList);
-                expertToExpert.add(readExpertNotes);
-                expertToExpert.add(sendServices);
-                expertToExpert.add(createOrderCard);
-                return expertToExpert;
+                return null;
             }
         }
 
