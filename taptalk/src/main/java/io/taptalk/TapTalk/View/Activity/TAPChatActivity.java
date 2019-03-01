@@ -25,6 +25,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -123,6 +124,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
@@ -297,6 +299,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
                         TAPUtils.getInstance().startChatActivity(TAPChatActivity.this, room);
                         finish();
+                        break;
+                    case PICK_LOCATION:
+                        Log.e(TAG, "onActivityResult: 1 "+intent.getDoubleExtra(LATITUDE, 0.0) );
+                        Log.e(TAG, "onActivityResult: 2 "+intent.getDoubleExtra(LONGITUDE, 0.0) );
+                        Log.e(TAG, "onActivityResult: 3 "+intent.getStringExtra(LOCATION_NAME) );
                         break;
                 }
         }
