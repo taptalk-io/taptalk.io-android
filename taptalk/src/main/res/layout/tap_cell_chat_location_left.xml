@@ -41,7 +41,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_forwarded_quote"
-                android:layout_width="279dp"
+                android:layout_width="234dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/tap_bg_white_rounded_1dp_8dp_0dp_0dp_stroke_eaeaea_1dp"
                 android:visibility="gone"
@@ -96,7 +96,7 @@
 
             <io.taptalk.TapTalk.Helper.TAPMapView
                 android:id="@+id/map_view"
-                android:layout_width="279dp"
+                android:layout_width="234dp"
                 android:layout_height="177dp"
                 android:clickable="false"
                 app:layout_constraintEnd_toEndOf="parent"

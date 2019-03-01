@@ -75,6 +75,9 @@ public class TAPDefaultConstant {
         public static final String THUMBNAIL = "thumbnail";
         public static final String FILE_URI = "fileUri";
         public static final String USER_INFO = "userInfo";
+        public static final String ADDRESS = "address";
+        public static final String LATITUDE = "latitude";
+        public static final String LONGITUDE = "longitude";
     }
 
     public static final class Extras {

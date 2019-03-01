@@ -33,8 +33,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -81,11 +86,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -732,8 +740,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             }
 
-            // TODO: 1 March 2019 SET MAP DATA & ADDRESS TEXT
-            //tvMessageBody.setText((String) item.getData().get("address"));
+            setMapData(item.getData());
 
             tvMessageStatus.setText(item.getMessageStatusText());
 
@@ -769,6 +776,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
                 clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
             }
+        }
+
+        private void setMapData(HashMap<String, Object> mapData) {
+            if (null == mapData || null == mapData.get(ADDRESS) || null == mapData.get(LATITUDE) || null == mapData.get(LONGITUDE)) {
+                return;
+            }
+            tvMessageBody.setText((String) mapData.get(ADDRESS));
+            mapView.getMapAsync(googleMap -> googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(
+                    ((Number) mapData.get(LATITUDE)).doubleValue(),
+                    ((Number) mapData.get(LONGITUDE)).doubleValue()))));
         }
 
         // TODO: 1 March 2019
