@@ -102,7 +102,7 @@
                 android:adjustViewBounds="true"
                 android:maxWidth="234dp"
                 android:maxHeight="300dp"
-                android:src="@drawable/tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp"
+                android:src="@drawable/tap_bg_grey_e4"
                 android:transitionName="@string/tap_transition_view_image"
                 app:cornerRadius="9dp"
                 app:dimensionRatio="0.78"

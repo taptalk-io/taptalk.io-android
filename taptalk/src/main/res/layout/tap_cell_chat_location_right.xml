@@ -70,7 +70,6 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="4dp"
-                    android:visibility="gone"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toTopOf="@id/v_quote_background"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -85,7 +84,6 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/tap_bg_mediumpurple_rounded_4dp"
-                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -100,7 +98,6 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
-                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -109,53 +106,55 @@
 
             </android.support.constraint.ConstraintLayout>
 
-            <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
-                android:id="@+id/rciv_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:maxWidth="234dp"
-                android:maxHeight="300dp"
-                android:src="@drawable/tap_bg_grey_e4"
-                android:transitionName="@string/tap_transition_view_image"
-                app:cornerRadius="9dp"
-                app:dimensionRatio="0.78"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
-                app:minHeight="100dp"
-                app:minWidth="78dp"
-                app:topRightRadius="2dp" />
+            <MapView
 
-            <FrameLayout
-                android:id="@+id/fl_progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_circle_66000000"
-                app:layout_constraintBottom_toBottomOf="@+id/rciv_image"
-                app:layout_constraintEnd_toEndOf="@id/rciv_image"
-                app:layout_constraintStart_toStartOf="@id/rciv_image"
-                app:layout_constraintTop_toTopOf="@+id/rciv_image">
+            <!--<io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView-->
+                <!--android:id="@+id/rciv_image"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:adjustViewBounds="true"-->
+                <!--android:maxWidth="234dp"-->
+                <!--android:maxHeight="300dp"-->
+                <!--android:src="@drawable/tap_img_chat_empty"-->
+                <!--android:transitionName="@string/tap_transition_view_image"-->
+                <!--app:cornerRadius="9dp"-->
+                <!--app:dimensionRatio="0.78"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent"-->
+                <!--app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"-->
+                <!--app:minHeight="100dp"-->
+                <!--app:minWidth="78dp"-->
+                <!--app:topRightRadius="2dp" />-->
 
-                <ProgressBar
-                    android:id="@+id/pb_progress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:indeterminate="false"
-                    android:max="100"
-                    android:padding="4dp"
-                    android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
-                    tools:progress="65" />
+            <!--<FrameLayout-->
+                <!--android:id="@+id/fl_progress"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="@drawable/tap_bg_circle_66000000"-->
+                <!--app:layout_constraintBottom_toBottomOf="@+id/rciv_image"-->
+                <!--app:layout_constraintEnd_toEndOf="@id/rciv_image"-->
+                <!--app:layout_constraintStart_toStartOf="@id/rciv_image"-->
+                <!--app:layout_constraintTop_toTopOf="@+id/rciv_image">-->
 
-                <ImageView
-                    android:id="@+id/iv_button_progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    tools:src="@drawable/tap_ic_cancel_white" />
+                <!--<ProgressBar-->
+                    <!--android:id="@+id/pb_progress"-->
+                    <!--style="?android:attr/progressBarStyleHorizontal"-->
+                    <!--android:layout_width="48dp"-->
+                    <!--android:layout_height="48dp"-->
+                    <!--android:indeterminate="false"-->
+                    <!--android:max="100"-->
+                    <!--android:padding="4dp"-->
+                    <!--android:progressDrawable="@drawable/tap_circular_progress_white_3dp"-->
+                    <!--tools:progress="65" />-->
 
-            </FrameLayout>
+                <!--<ImageView-->
+                    <!--android:id="@+id/iv_button_progress"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--tools:src="@drawable/tap_ic_cancel_white" />-->
+
+            <!--</FrameLayout>-->
 
             <TextView
                 android:id="@+id/tv_message_body"
@@ -169,7 +168,6 @@
                 android:paddingBottom="10dp"
                 android:textColor="@color/tap_white"
                 android:textColorLink="@color/tap_white"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
                 app:layout_constraintTop_toBottomOf="@id/rciv_image"
@@ -188,7 +186,6 @@
         android:fontFamily="@font/tap_font_latoregular"
         android:textColor="@color/tap_grey_9b"
         android:textSize="12sp"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/fl_bubble"
         app:layout_constraintTop_toBottomOf="@id/fl_bubble"
