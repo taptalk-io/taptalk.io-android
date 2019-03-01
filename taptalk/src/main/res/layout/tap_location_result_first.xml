@@ -23,8 +23,8 @@
         android:textSize="13sp"
         tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Lama"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/separator"/>
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1dp"-->
+        <!--android:background="@color/separator"/>-->
 </LinearLayout>

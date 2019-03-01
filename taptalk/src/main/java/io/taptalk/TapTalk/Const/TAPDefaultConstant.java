@@ -56,6 +56,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_IMAGE_LEFT = 10022;
         public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
         public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
+        public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
+        public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_EMPTY = 9999;
