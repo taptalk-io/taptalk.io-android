@@ -185,4 +185,5 @@
     <string name="tap_set_location">Set Location</string>
     <string name="tap_search_address">Search Address</string>
     <string name="tap_searching_for_address">Searching for address</string>
+    <string name="tap_location_not_found">Location not found</string>
 </resources>

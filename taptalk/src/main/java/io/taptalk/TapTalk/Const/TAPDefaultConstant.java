@@ -100,6 +100,7 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 2;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
+        public static final int PERMISSION_LOCATION = 5;
     }
 
     public static final class Sorting {
@@ -196,6 +197,12 @@ public class TAPDefaultConstant {
         public static final String USER_AGENT = "kTAPUserAgent";
         public static final String APP_ID = "kTAPApplicationID";
         public static final String APP_SECRET = "kTAPApplicationSecret";
+    }
+    public static final class Location {
+        public static final String LONGITUDE = "kTAPlongitude";
+        public static final String LATITUDE = "kTAPlatitude";
+        public static final String LOCATION_NAME = "kTAPlocationName";
+        public static final String POSTAL_CODE = "kTAPPostalCode";
     }
 
     public static final class BaseUrl {
