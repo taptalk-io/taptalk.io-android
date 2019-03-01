@@ -120,6 +120,16 @@
                 app:topRightRadius="1dp"
                 tools:background="@color/tap_cream_white" />
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/tap_ic_location_marker"
+                app:layout_constraintBottom_toBottomOf="@id/map_view"
+                app:layout_constraintEnd_toEndOf="@id/map_view"
+                app:layout_constraintStart_toStartOf="@id/map_view"
+                app:layout_constraintTop_toTopOf="@id/map_view"
+                app:layout_constraintVertical_bias="0.385" />
+
             <View
                 android:id="@+id/v_map_border"
                 android:layout_width="0dp"

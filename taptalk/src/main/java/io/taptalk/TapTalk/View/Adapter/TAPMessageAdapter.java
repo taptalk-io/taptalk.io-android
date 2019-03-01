@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -725,6 +726,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             vMapBorder = itemView.findViewById(R.id.v_map_border);
             mapView = itemView.findViewById(R.id.map_view);
+            mapView.onCreate(new Bundle());
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -783,9 +785,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return;
             }
             tvMessageBody.setText((String) mapData.get(ADDRESS));
-            mapView.getMapAsync(googleMap -> googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(
-                    ((Number) mapData.get(LATITUDE)).doubleValue(),
-                    ((Number) mapData.get(LONGITUDE)).doubleValue()))));
+            mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    Log.e(TAG, "setMapData: " + mapData.get(LATITUDE) + mapData.get(LONGITUDE));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                            ((Number) mapData.get(LATITUDE)).doubleValue(),
+                            ((Number) mapData.get(LONGITUDE)).doubleValue()), 16f));
+                    googleMap.getUiSettings().setAllGesturesEnabled(false);
+                    mapView.onResume();
+                }
+            });
         }
 
         // TODO: 1 March 2019
