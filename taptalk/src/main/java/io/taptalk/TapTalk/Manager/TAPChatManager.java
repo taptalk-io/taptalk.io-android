@@ -896,7 +896,7 @@ public class TAPChatManager {
         // TODO: 05/09/18 nnti cek file manager upload queue juga
         isPendingMessageExist = false;
         isFileUploadExist = false;
-        Log.e(TAG, "checkPendingBackgroundTask: "+waitingUploadProgress.size() );
+        
         if (0 < pendingMessages.size())
             isPendingMessageExist = true;
         if (0 < waitingUploadProgress.size())
