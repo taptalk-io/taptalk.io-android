@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,8 +34,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -44,6 +50,7 @@ import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
+import io.taptalk.TapTalk.Helper.TAPMapView;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -64,8 +71,12 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_LEFT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_LEFT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
@@ -76,14 +87,19 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
@@ -122,6 +138,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return new ImageVH(parent, R.layout.tap_cell_chat_image_right, viewType);
             case TYPE_BUBBLE_IMAGE_LEFT:
                 return new ImageVH(parent, R.layout.tap_cell_chat_image_left, viewType);
+            case TYPE_BUBBLE_FILE_RIGHT:
+                return new FileVH(parent, R.layout.tap_cell_chat_file_right, viewType);
+            case TYPE_BUBBLE_FILE_LEFT:
+                return new FileVH(parent, R.layout.tap_cell_chat_file_left, viewType);
+            case TYPE_BUBBLE_LOCATION_RIGHT:
+                return new LocationVH(parent, R.layout.tap_cell_chat_location_right, viewType);
+            case TYPE_BUBBLE_LOCATION_LEFT:
+                return new LocationVH(parent, R.layout.tap_cell_chat_location_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
                 ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_product_list);
                 prodHolder.setIsRecyclable(false);
@@ -165,6 +189,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         return TYPE_BUBBLE_IMAGE_RIGHT;
                     } else {
                         return TYPE_BUBBLE_IMAGE_LEFT;
+                    }
+                case TYPE_FILE:
+                    if (isMessageFromMySelf(messageModel)) {
+                        return TYPE_BUBBLE_FILE_RIGHT;
+                    } else {
+                        return TYPE_BUBBLE_FILE_LEFT;
+                    }
+                case TYPE_LOCATION:
+                    if (isMessageFromMySelf(messageModel)) {
+                        return TYPE_BUBBLE_LOCATION_RIGHT;
+                    } else {
+                        return TYPE_BUBBLE_LOCATION_LEFT;
                     }
                 case TYPE_PRODUCT:
                     return TYPE_BUBBLE_PRODUCT_LIST;
@@ -336,9 +372,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 if (isMessageFromMySelf(item)) {
                     rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(1));
+                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
                 } else {
-                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(1));
+                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
                     rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
                 }
                 clForwardedQuote.setVisibility(View.GONE);
@@ -570,6 +606,221 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     adapter.getItemCount(),
                     0, 0));
             OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        }
+    }
+
+    public class FileVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer, clForwarded, clQuote;
+        private FrameLayout flBubble, flFileIcon;
+        private CircleImageView civAvatar;
+        private ImageView ivFileIcon, ivMessageStatus, ivReply, ivSending;
+        private TAPRoundedCornerImageView rcivQuoteImage;
+        private TextView tvUsername, tvFileName, tvFileInfo, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
+        private View vQuoteBackground, vQuoteDecoration;
+
+        protected FileVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
+            clQuote = itemView.findViewById(R.id.cl_quote);
+            flBubble = itemView.findViewById(R.id.fl_bubble);
+            flFileIcon = itemView.findViewById(R.id.fl_file_icon);
+            ivFileIcon = itemView.findViewById(R.id.iv_file_icon);
+            ivReply = itemView.findViewById(R.id.iv_reply);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
+            tvFileName = itemView.findViewById(R.id.tv_file_name);
+            tvFileInfo = itemView.findViewById(R.id.tv_file_info);
+            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+
+            if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
+                civAvatar = itemView.findViewById(R.id.civ_avatar);
+                tvUsername = itemView.findViewById(R.id.tv_user_name);
+            } else {
+                ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+                ivSending = itemView.findViewById(R.id.iv_sending);
+            }
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (item.isAnimating()) {
+                return;
+            }
+
+            tvMessageStatus.setText(item.getMessageStatusText());
+
+            markUnreadForMessage(item, myUserModel);
+
+            checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
+            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
+            ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+
+            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
+            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
+                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
+            } else {
+                clQuote.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
+            }
+        }
+
+        @Override
+        protected void receiveReadEvent(TAPMessageModel message) {
+            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveDeliveredEvent(TAPMessageModel message) {
+            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveSentEvent(TAPMessageModel message) {
+            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void setMessage(TAPMessageModel message) {
+            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+    }
+
+    public class LocationVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer, clForwardedQuote, clQuote, clForwarded;
+        private FrameLayout flBubble;
+        private CircleImageView civAvatar;
+        private TAPRoundedCornerImageView rcivQuoteImage;
+        private ImageView ivMessageStatus, ivReply, ivSending;
+        private TextView tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
+        private View vQuoteBackground, vQuoteDecoration, vMapBorder;
+        private TAPMapView mapView;
+
+        LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            clForwardedQuote = itemView.findViewById(R.id.cl_forwarded_quote); // Container for quote and forwarded layouts
+            clQuote = itemView.findViewById(R.id.cl_quote);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
+            flBubble = itemView.findViewById(R.id.fl_bubble);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
+            ivReply = itemView.findViewById(R.id.iv_reply);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
+            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vMapBorder = itemView.findViewById(R.id.v_map_border);
+            mapView = itemView.findViewById(R.id.map_view);
+            mapView.onCreate(new Bundle());
+
+            if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
+                civAvatar = itemView.findViewById(R.id.civ_avatar);
+            } else {
+                ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+                ivSending = itemView.findViewById(R.id.iv_sending);
+            }
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (!item.isAnimating()) {
+                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+            }
+
+            setMapData(item.getData());
+
+            tvMessageStatus.setText(item.getMessageStatusText());
+
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
+                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+                // Fix layout when quote/forward exists
+                mapView.setTopLeftRadius(0);
+                mapView.setTopRightRadius(0);
+                clForwardedQuote.setVisibility(View.VISIBLE);
+                vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_stroke_e4e4e4_1dp));
+            } else {
+                if (isMessageFromMySelf(item)) {
+                    mapView.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                    mapView.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
+                    vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_0dp_0dpstroke_e4e4e4_1dp));
+                } else {
+                    mapView.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
+                    mapView.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                    vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_0dp_0dpstroke_e4e4e4_1dp));
+                }
+                clForwardedQuote.setVisibility(View.GONE);
+            }
+
+            markUnreadForMessage(item, myUserModel);
+
+            vMapBorder.setOnClickListener(v -> openMapDetail());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+
+            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
+            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
+                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
+            }
+        }
+
+        private void setMapData(HashMap<String, Object> mapData) {
+            if (null == mapData || null == mapData.get(ADDRESS) || null == mapData.get(LATITUDE) || null == mapData.get(LONGITUDE)) {
+                return;
+            }
+            tvMessageBody.setText((String) mapData.get(ADDRESS));
+            mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    Log.e(TAG, "setMapData: " + mapData.get(LATITUDE) + mapData.get(LONGITUDE));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                            ((Number) mapData.get(LATITUDE)).doubleValue(),
+                            ((Number) mapData.get(LONGITUDE)).doubleValue()), 16f));
+                    googleMap.getUiSettings().setAllGesturesEnabled(false);
+                    mapView.onResume();
+                }
+            });
+        }
+
+        // TODO: 1 March 2019
+        private void openMapDetail() {
+
+        }
+
+        @Override
+        protected void receiveReadEvent(TAPMessageModel message) {
+            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveDeliveredEvent(TAPMessageModel message) {
+            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveSentEvent(TAPMessageModel message) {
+            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void setMessage(TAPMessageModel message) {
+            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
     }
 

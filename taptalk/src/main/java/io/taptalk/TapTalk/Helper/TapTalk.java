@@ -576,6 +576,26 @@ public class TapTalk {
         });
     }
 
+    public static void sendImageMessage(Context context, Uri imageUri, TAPUserModel recipientUserModel, String caption) {
+        TAPChatManager.getInstance().sendImageMessage(
+                context,
+                TAPChatManager.getInstance().arrangeRoomId(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(),
+                        recipientUserModel.getUserID()),
+                imageUri,
+                caption);
+    }
+
+    public static void sendImageMessage(Context context, Bitmap bitmap, TAPUserModel recipientUserModel, String caption) {
+        TAPChatManager.getInstance().sendImageMessage(
+                context,
+                TAPChatManager.getInstance().arrangeRoomId(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(),
+                        recipientUserModel.getUserID()),
+                bitmap,
+                caption);
+    }
+
     public static void sendTextMessageWithRecipientUser(String message, TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
