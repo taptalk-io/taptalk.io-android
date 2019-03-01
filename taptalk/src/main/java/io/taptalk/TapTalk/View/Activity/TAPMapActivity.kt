@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.location.*
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -14,6 +15,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.style.StyleSpan
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -21,22 +24,23 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.data.DataBufferUtils
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.RectangularBounds
-import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
 import com.google.android.libraries.places.api.net.PlacesClient
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
@@ -171,6 +175,32 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
 
     }
 
+    private val generalListener = object : TAPGeneralListener<TAPLocationItem>() {
+        override fun onClick(position: Int, item: TAPLocationItem?) {
+            TAPUtils.getInstance().dismissKeyboard(this@TAPMapActivity)
+            if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(et_keyword.text.toString()))
+                isSameKeyword = true
+            et_keyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
+            val placeID : String = item?.prediction?.placeId ?: "0"
+            val placeFields : MutableList<Place.Field> = Arrays.asList(Place.Field.LAT_LNG)
+            val request : FetchPlaceRequest = FetchPlaceRequest.builder(placeID, placeFields).build()
+            placesClient.fetchPlace(request).addOnSuccessListener(this@TAPMapActivity) { p0 ->
+                val place = p0?.place
+                latitude = place?.latLng?.latitude ?: 0.0
+                longitude = place?.latLng?.longitude ?: 0.0
+                centerOfMap = place?.latLng
+                val curr : LatLng = LatLng(latitude, longitude)
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
+                getGeocoderAddress()
+                iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
+                tv_location.setTextColor(resources.getColor(R.color.tap_black_44))
+                recycler_view.visibility = View.GONE
+                if (et_keyword.isFocused)
+                    et_keyword.clearFocus()
+            }
+        }
+    }
+
     private lateinit var placesClient: PlacesClient
     private var longitude: Double = 0.0
     private var latitude: Double = 0.0
@@ -236,7 +266,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
             }
         })
 
-        adapter = TAPSearchLocationAdapter(locationList)
+        adapter = TAPSearchLocationAdapter(locationList, generalListener)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = adapter
         if (TAPUtils.getInstance().hasPermissions(this, PERMISSIONS[0])) {

@@ -6,21 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
+import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.Model.TAPLocationItem.MyReturnType.*
 import io.taptalk.Taptalk.R
 
 class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHolder<TAPLocationItem>> {
-    constructor(items: List<TAPLocationItem>) {
+    var generalListener: TAPGeneralListener<TAPLocationItem>? = null
+
+    constructor(items: List<TAPLocationItem>, generalListener: TAPGeneralListener<TAPLocationItem>) {
         setItems(items)
+        this.generalListener = generalListener
     }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): TAPBaseViewHolder<TAPLocationItem> {
         return when (TAPLocationItem.MyReturnType.values()[p1]) {
-            FIRST -> BasicViewHolder(p0, R.layout.tap_location_result_first)
-            MIDDLE -> BasicViewHolder(p0, R.layout.tap_location_result_middle)
-            LAST -> BasicViewHolder(p0, R.layout.tap_location_result_bottom)
-            else -> BasicViewHolder(p0, R.layout.tap_location_result_only_one)
+            FIRST -> BasicViewHolder(p0, R.layout.tap_location_result_first, generalListener)
+            MIDDLE -> BasicViewHolder(p0, R.layout.tap_location_result_middle, generalListener)
+            LAST -> BasicViewHolder(p0, R.layout.tap_location_result_bottom, generalListener)
+            else -> BasicViewHolder(p0, R.layout.tap_location_result_only_one, generalListener)
         }
     }
 
@@ -29,18 +33,21 @@ class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHold
     }
 
     class BasicViewHolder : TAPBaseViewHolder<TAPLocationItem>, View.OnClickListener {
-        var tvLocation : TextView? = null
+        var tvLocation: TextView? = null
+        var generalListener :TAPGeneralListener<TAPLocationItem>? = null
 
-        constructor(parent: ViewGroup?, itemLayoutId: Int) : super(parent, itemLayoutId) {
+        constructor(parent: ViewGroup?, itemLayoutId: Int, generalListener: TAPGeneralListener<TAPLocationItem>?) : super(parent, itemLayoutId) {
             tvLocation = itemView.findViewById(R.id.tv_location)
+            this.generalListener = generalListener
         }
 
         override fun onBind(item: TAPLocationItem?, position: Int) {
             tvLocation?.text = item?.prediction?.getFullText(StyleSpan(Typeface.NORMAL))
+            itemView.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            generalListener?.onClick(position, item)
         }
 
     }
