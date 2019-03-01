@@ -21,6 +21,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
@@ -133,6 +135,8 @@ public class TapTalk {
         if (BuildConfig.BUILD_TYPE.equals("dev"))
             Hawk.init(appContext).setEncryption(new NoEncryption()).build();
         else Hawk.init(appContext).build();
+
+        Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
 
         TAPCacheManager.getInstance(appContext).initAllCache();
 
@@ -570,6 +574,26 @@ public class TapTalk {
                         caption);
             }
         });
+    }
+
+    public static void sendImageMessage(Context context, Uri imageUri, TAPUserModel recipientUserModel, String caption) {
+        TAPChatManager.getInstance().sendImageMessage(
+                context,
+                TAPChatManager.getInstance().arrangeRoomId(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(),
+                        recipientUserModel.getUserID()),
+                imageUri,
+                caption);
+    }
+
+    public static void sendImageMessage(Context context, Bitmap bitmap, TAPUserModel recipientUserModel, String caption) {
+        TAPChatManager.getInstance().sendImageMessage(
+                context,
+                TAPChatManager.getInstance().arrangeRoomId(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(),
+                        recipientUserModel.getUserID()),
+                bitmap,
+                caption);
     }
 
     public static void sendTextMessageWithRecipientUser(String message, TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {

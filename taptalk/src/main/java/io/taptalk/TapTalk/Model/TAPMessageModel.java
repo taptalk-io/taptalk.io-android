@@ -127,10 +127,15 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null);
     }
 
-    public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, String recipientID) {
+    public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel user, String recipientID) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        TAPForwardFromModel forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getName(), messageToForward.getMessageID(), messageToForward.getLocalID());
-        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, messageToForward.getUser(), recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null);
+        TAPForwardFromModel forwardFrom;
+        if (null == messageToForward.getForwardFrom() || null == messageToForward.getForwardFrom().getFullname() || messageToForward.getForwardFrom().getFullname().isEmpty()) {
+            forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getName(), messageToForward.getMessageID(), messageToForward.getLocalID());
+        } else {
+            forwardFrom = messageToForward.getForwardFrom();
+        }
+        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null);
     }
 
 

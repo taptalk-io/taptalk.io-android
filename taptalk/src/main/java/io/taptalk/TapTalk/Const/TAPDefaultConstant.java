@@ -50,10 +50,14 @@ public class TAPDefaultConstant {
 
     public static final class BubbleType {
         public static final int TYPE_LOG = 0;
-        public static final int TYPE_BUBBLE_TEXT_RIGHT = 1001;
-        public static final int TYPE_BUBBLE_TEXT_LEFT = 1002;
-        public static final int TYPE_BUBBLE_IMAGE_RIGHT = 1011;
-        public static final int TYPE_BUBBLE_IMAGE_LEFT = 1012;
+        public static final int TYPE_BUBBLE_TEXT_RIGHT = 10011;
+        public static final int TYPE_BUBBLE_TEXT_LEFT = 10012;
+        public static final int TYPE_BUBBLE_IMAGE_RIGHT = 10021;
+        public static final int TYPE_BUBBLE_IMAGE_LEFT = 10022;
+        public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
+        public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
+        public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
+        public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_EMPTY = 9999;
@@ -71,6 +75,9 @@ public class TAPDefaultConstant {
         public static final String THUMBNAIL = "thumbnail";
         public static final String FILE_URI = "fileUri";
         public static final String USER_INFO = "userInfo";
+        public static final String ADDRESS = "address";
+        public static final String LATITUDE = "latitude";
+        public static final String LONGITUDE = "longitude";
     }
 
     public static final class Extras {
@@ -93,6 +100,7 @@ public class TAPDefaultConstant {
         public static final int SEND_IMAGE_FROM_GALLERY = 13;
         public static final int SEND_IMAGE_FROM_PREVIEW = 14;
         public static final int FORWARD_MESSAGE = 15;
+        public static final int PICK_LOCATION = 16;
     }
 
     public static final class PermissionRequest {
@@ -100,6 +108,7 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 2;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
+        public static final int PERMISSION_LOCATION = 5;
     }
 
     public static final class Sorting {
@@ -196,6 +205,12 @@ public class TAPDefaultConstant {
         public static final String USER_AGENT = "kTAPUserAgent";
         public static final String APP_ID = "kTAPApplicationID";
         public static final String APP_SECRET = "kTAPApplicationSecret";
+    }
+    public static final class Location {
+        public static final String LONGITUDE = "kTAPlongitude";
+        public static final String LATITUDE = "kTAPlatitude";
+        public static final String LOCATION_NAME = "kTAPlocationName";
+        public static final String POSTAL_CODE = "kTAPPostalCode";
     }
 
     public static final class BaseUrl {

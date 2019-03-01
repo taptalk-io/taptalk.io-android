@@ -13,6 +13,7 @@ public class TAPProductModel implements Parcelable {
     @JsonProperty("buttonOption1Text") private String buttonOption1Text;
     @JsonProperty("buttonOption2Color") private String buttonOption2Color;
     @JsonProperty("buttonOption2Text") private String buttonOption2Text;
+    @JsonProperty("weight") private String productWeight;
     @JsonProperty("currency") private String currency;
     @JsonProperty("description") private String description;
     @JsonProperty("id") private String id;
@@ -29,6 +30,24 @@ public class TAPProductModel implements Parcelable {
         this.buttonOption1Text = buttonOption1Text;
         this.buttonOption2Color = buttonOption2Color;
         this.buttonOption2Text = buttonOption2Text;
+        this.currency = currency;
+        this.description = description;
+        this.id = id;
+        this.imageURL = imageURL;
+        this.name = name;
+        this.price = price;
+        this.rating = rating;
+    }
+
+    public TAPProductModel(String buttonOption1Color, String buttonOption1Text
+            , String buttonOption2Color, String buttonOption2Text, String productWeight, String currency
+            , String description, String id, String imageURL, String name
+            , String price, String rating) {
+        this.buttonOption1Color = buttonOption1Color;
+        this.buttonOption1Text = buttonOption1Text;
+        this.buttonOption2Color = buttonOption2Color;
+        this.buttonOption2Text = buttonOption2Text;
+        this.productWeight = productWeight;
         this.currency = currency;
         this.description = description;
         this.id = id;
@@ -79,6 +98,14 @@ public class TAPProductModel implements Parcelable {
 
     public void setButtonOption2Text(String buttonOption2Text) {
         this.buttonOption2Text = buttonOption2Text;
+    }
+
+    public String getProductWeight() {
+        return productWeight;
+    }
+
+    public void setProductWeight(String productWeight) {
+        this.productWeight = productWeight;
     }
 
     public String getCurrency() {
@@ -149,6 +176,7 @@ public class TAPProductModel implements Parcelable {
         dest.writeString(this.buttonOption1Text);
         dest.writeString(this.buttonOption2Color);
         dest.writeString(this.buttonOption2Text);
+        dest.writeString(this.productWeight);
         dest.writeString(this.currency);
         dest.writeString(this.description);
         dest.writeString(this.id);
@@ -163,6 +191,7 @@ public class TAPProductModel implements Parcelable {
         this.buttonOption1Text = in.readString();
         this.buttonOption2Color = in.readString();
         this.buttonOption2Text = in.readString();
+        this.productWeight = in.readString();
         this.currency = in.readString();
         this.description = in.readString();
         this.id = in.readString();

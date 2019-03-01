@@ -53,8 +53,8 @@
                 android:layout_marginBottom="2dp"
                 android:textColor="@color/tap_mediumPurple"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="User Name" />
 
@@ -65,7 +65,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_goneMarginBottom="10dp" />
 
             <View
                 android:id="@+id/v_quote_background"
@@ -82,22 +83,88 @@
                 layout="@layout/tap_layout_quote_bubble_left"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toTopOf="@id/tv_message_body"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toTopOf="@id/cl_file"
                 app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
 
-            <TextView
-                android:id="@+id/tv_message_body"
-                style="@style/TapMessageBody"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_file"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/tap_black_2c"
-                android:textColorLink="@color/tap_clear_blue"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="6dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
-                tools:text="Hey there, love your work!" />
+                app:layout_goneMarginTop="0dp">
+
+                <FrameLayout
+                    android:id="@+id/fl_file_icon"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/tap_bg_purple_circle_ripple"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ProgressBar
+                        android:id="@+id/pb_file_download"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                        tools:progress="65" />
+
+                    <ImageView
+                        android:id="@+id/iv_file_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:tint="@color/tap_white"
+                        tools:src="@drawable/tap_ic_download_white" />
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tv_file_name"
+                    style="@style/TapQuoteTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/tap_black_4a"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintBottom_toTopOf="@id/tv_file_info"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/fl_file_icon"
+                    app:layout_constraintTop_toTopOf="@id/fl_file_icon"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="File Name" />
+
+                <TextView
+                    android:id="@+id/tv_file_info"
+                    style="@style/TapQuoteBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/tap_black_4a"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/fl_file_icon"
+                    app:layout_constraintTop_toBottomOf="@id/tv_file_name"
+                    tools:text="285 KB PDF" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
 

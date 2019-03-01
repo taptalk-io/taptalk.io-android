@@ -61,7 +61,7 @@ public class TAPAttachmentModel {
                 R.drawable.tap_ic_camera_green_blue,
                 R.drawable.tap_ic_gallery_green_blue,
 //                R.drawable.tap_ic_audio_green_blue,
-//                R.drawable.tap_ic_location_green_blue,
+                R.drawable.tap_ic_location_green_blue,
 //                R.drawable.tap_ic_contact_green_blue
         };
 
@@ -70,7 +70,7 @@ public class TAPAttachmentModel {
                 R.string.tap_camera,
                 R.string.tap_gallery,
 //                R.string.audio,
-//                R.string.location,
+                R.string.tap_location,
 //                R.string.contact
         };
 
@@ -79,7 +79,7 @@ public class TAPAttachmentModel {
                 ID_CAMERA,
                 ID_GALLERY,
 //                ID_AUDIO,
-//                ID_LOCATION,
+                ID_LOCATION,
 //                ID_CONTACT
         };
 

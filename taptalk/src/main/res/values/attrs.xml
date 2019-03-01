@@ -15,15 +15,29 @@
 
     <attr name="SwipeBackLayoutStyle" format="reference"/>
 
+    <attr name="topLeftRadius" format="dimension" />
+    <attr name="topRightRadius" format="dimension" />
+    <attr name="bottomLeftRadius" format="dimension" />
+    <attr name="bottomRightRadius" format="dimension" />
+    <attr name="cornerRadius" format="dimension" />
+
     <declare-styleable name="TAPRoundedCornerImageView">
-        <attr name="topLeftRadius" format="dimension" />
-        <attr name="topRightRadius" format="dimension" />
-        <attr name="bottomLeftRadius" format="dimension" />
-        <attr name="bottomRightRadius" format="dimension" />
-        <attr name="cornerRadius" format="dimension" />
+        <attr name="topLeftRadius" />
+        <attr name="topRightRadius" />
+        <attr name="bottomLeftRadius" />
+        <attr name="bottomRightRadius" />
+        <attr name="cornerRadius" />
         <attr name="minWidth" format="dimension" />
         <attr name="minHeight" format="dimension" />
         <attr name="dimensionRatio" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="TAPMapView">
+        <attr name="topLeftRadius" />
+        <attr name="topRightRadius" />
+        <attr name="bottomLeftRadius" />
+        <attr name="bottomRightRadius" />
+        <attr name="cornerRadius" />
     </declare-styleable>
 
     <item name="tap_link_bettermovementmethod_highlight_background_span" type="id" />
