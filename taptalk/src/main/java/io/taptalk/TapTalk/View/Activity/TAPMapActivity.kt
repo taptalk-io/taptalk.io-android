@@ -205,7 +205,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
 
         latitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LATITUDE, 0.0)
         longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
-        currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME)
+        currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME) ?: ""
 
         geoCoder = Geocoder(this, Locale.getDefault())
         filter = AutocompleteFilter.Builder().setCountry("id").build()

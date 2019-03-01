@@ -104,6 +104,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
@@ -1582,6 +1585,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onGallerySelected() {
             fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+        }
+
+        @Override
+        public void onLocationSelected() {
+            Intent intent = new Intent(TAPChatActivity.this, TAPMapActivity.class);
+            startActivity(intent);
         }
 
         @Override
