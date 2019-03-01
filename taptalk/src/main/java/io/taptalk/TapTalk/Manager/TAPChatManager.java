@@ -371,7 +371,6 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
-            Log.e(TAG, "sendTextMessageWithRoomModel: send default message");
             TAPMessageModel messageModel = buildTextMessage(textMessage, roomModel, getActiveUser());
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
@@ -897,9 +896,11 @@ public class TAPChatManager {
         // TODO: 05/09/18 nnti cek file manager upload queue juga
         isPendingMessageExist = false;
         isFileUploadExist = false;
-
+        Log.e(TAG, "checkPendingBackgroundTask: "+waitingUploadProgress.size() );
         if (0 < pendingMessages.size())
             isPendingMessageExist = true;
+        if (0 < waitingUploadProgress.size())
+            isFileUploadExist = true;
 
         if (isCheckPendingArraySequenceActive)
             return;
@@ -920,7 +921,6 @@ public class TAPChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-
         TAPConnectionManager.getInstance().close();
         saveUnsentMessage();
         if (null != scheduler && !scheduler.isShutdown())
@@ -946,8 +946,6 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
-        Log.e(TAG, "receiveMessageFromSocket: " + newMessage.getLocalID());
-        Log.e(TAG, "receiveMessageFromSocket: " + TAPUtils.getInstance().toJsonString(newMessage));
         // Insert decrypted message to database
         incomingMessages.put(newMessage.getLocalID(), newMessage);
 
@@ -1049,7 +1047,6 @@ public class TAPChatManager {
             return;
 
         insertToList(new LinkedHashMap<>(waitingUploadProgress));
-        waitingUploadProgress.clear();
     }
 
     public void triggerSaveNewMessage() {
