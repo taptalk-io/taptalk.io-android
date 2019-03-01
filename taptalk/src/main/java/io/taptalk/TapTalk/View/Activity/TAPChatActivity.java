@@ -290,9 +290,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         break;
                     case FORWARD_MESSAGE:
                         TAPRoomModel room = intent.getParcelableExtra(ROOM);
-                        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
-                        TAPUtils.getInstance().startChatActivity(TAPChatActivity.this, room);
-                        finish();
+                        if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
+                            // Show message in composer
+                            showQuoteLayout(intent.getParcelableExtra(MESSAGE), FORWARD, false);
+                        } else {
+                            // Open selected chat room
+                            TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
+                            TAPUtils.getInstance().startChatActivity(TAPChatActivity.this, room);
+                            finish();
+                        }
                         break;
                 }
         }
