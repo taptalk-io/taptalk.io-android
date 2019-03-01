@@ -618,4 +618,8 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         intent.putExtra("address", phoneNumber);
         activity.startActivity(intent);
     }
+
+    public boolean isListEmpty(List t) {
+        return null == t || 0 >= t.size();
+    }
 }

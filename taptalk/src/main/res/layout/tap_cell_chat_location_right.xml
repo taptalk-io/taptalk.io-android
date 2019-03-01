@@ -106,8 +106,6 @@
 
             </android.support.constraint.ConstraintLayout>
 
-            <MapView
-
             <!--<io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView-->
                 <!--android:id="@+id/rciv_image"-->
                 <!--android:layout_width="wrap_content"-->
