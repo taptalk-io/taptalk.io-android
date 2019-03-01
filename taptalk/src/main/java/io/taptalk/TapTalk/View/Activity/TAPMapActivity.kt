@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.LatLngBounds
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
 import io.taptalk.Taptalk.R
@@ -79,10 +81,22 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         latitude = centerOfMap?.latitude ?: 0.0
         longitude = centerOfMap?.longitude ?: 0.0
         ll_set_location.visibility = View.GONE
+        iv_location.setImageResource(R.drawable.tap_ic_pin_location_grey)
+        tv_location.setTextColor(resources.getColor(R.color.tap_grey_aa))
+        tv_location.setHint(R.string.tap_searching_for_address)
+        tv_location.text = ""
+        recycler_view.visibility = View.GONE
+        if (et_keyword.isFocused) {
+            et_keyword.clearFocus()
+        }
     }
 
     override fun onCameraIdle() {
-
+        getGeocoderAddress()
+        iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
+        tv_location.setTextColor(resources.getColor(R.color.tap_black_44))
+        recycler_view.visibility = View.GONE
+        isSearch = !isSameKeyword
     }
 
     override fun onClick(v: View?) {
@@ -118,11 +132,27 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-
+        if (!isFinishing) {
+            TapTalkDialog.Builder(this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
+                    getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
+                    .setPrimaryButtonTitle("OK")
+                    .show()
+        }
     }
 
     override fun onLocationChanged(location: Location?) {
-
+        count = 0
+        if (3 >= count) {
+            currentLatitude = location?.latitude ?: currentLatitude
+            currentLongitude = location?.longitude ?: currentLongitude
+            count++
+            if (count == 3) {
+                locationManager?.removeUpdates(this)
+            }
+        }
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
