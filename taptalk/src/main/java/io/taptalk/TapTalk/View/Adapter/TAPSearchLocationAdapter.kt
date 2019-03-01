@@ -10,14 +10,17 @@ import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.Model.TAPLocationItem.MyReturnType.*
 import io.taptalk.Taptalk.R
 
-class TAPSearchLocationAdapter(items: List<TAPLocationItem>) : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHolder<TAPLocationItem>>() {
+class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHolder<TAPLocationItem>> {
+    constructor(items: List<TAPLocationItem>) {
+        setItems(items)
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): TAPBaseViewHolder<TAPLocationItem> {
-        when (TAPLocationItem.MyReturnType.values()[p1]) {
-            FIRST -> return BasicViewHolder(p0, R.layout.tap_location_result_first)
-            MIDDLE -> return BasicViewHolder(p0, R.layout.tap_location_result_middle)
-            LAST -> return BasicViewHolder(p0, R.layout.tap_location_result_bottom)
-            else -> return BasicViewHolder(p0, R.layout.tap_location_result_only_one)
+        return when (TAPLocationItem.MyReturnType.values()[p1]) {
+            FIRST -> BasicViewHolder(p0, R.layout.tap_location_result_first)
+            MIDDLE -> BasicViewHolder(p0, R.layout.tap_location_result_middle)
+            LAST -> BasicViewHolder(p0, R.layout.tap_location_result_bottom)
+            else -> BasicViewHolder(p0, R.layout.tap_location_result_only_one)
         }
     }
 

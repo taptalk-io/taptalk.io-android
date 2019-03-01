@@ -21,14 +21,18 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.common.data.DataBufferUtils
-import com.google.android.gms.location.places.AutocompleteFilter
-import com.google.android.gms.location.places.AutocompletePredictionBuffer
-import com.google.android.gms.location.places.Places
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.RectangularBounds
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
+import com.google.android.libraries.places.api.net.PlacesClient
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -137,7 +141,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
-                    getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
+                        getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
                     .setPrimaryButtonTitle("OK")
                     .show()
         }
@@ -167,6 +171,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
 
     }
 
+    private lateinit var placesClient: PlacesClient
     private var longitude: Double = 0.0
     private var latitude: Double = 0.0
     private var count: Int = 0
@@ -180,8 +185,6 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
     private var centerOfMap: LatLng? = null
     private var googleMap: GoogleMap? = null
     private var geoCoder: Geocoder? = null
-    private var filter: AutocompleteFilter? = null
-    protected lateinit var googleApiClient: GoogleApiClient
     private var addresses = mutableListOf<Address>()
     private var locationList = mutableListOf<TAPLocationItem>()
     private var adapter: TAPSearchLocationAdapter? = null
@@ -207,12 +210,8 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
         currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME) ?: ""
 
+        placesClient = Places.createClient(this)
         geoCoder = Geocoder(this, Locale.getDefault())
-        filter = AutocompleteFilter.Builder().setCountry("id").build()
-        googleApiClient = GoogleApiClient.Builder(this)
-                .enableAutoManage(this, 0, this)
-                .addApi(Places.GEO_DATA_API)
-                .build()
 
         val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -255,7 +254,9 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            android.R.id.home -> onBackPressed()
+            android.R.id.home -> {
+                finish()
+            }
         }
         return false
     }
@@ -337,40 +338,41 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
             timer = object : CountDownTimer(300, 1000) {
                 override fun onFinish() {
                     if (!"".equals(et_keyword.text.toString().trim())) {
-                        Places.GeoDataApi.getAutocompletePredictions(googleApiClient
-                                , et_keyword.text.toString(), WORLD, filter).setResultCallback(object : ResultCallback<AutocompletePredictionBuffer> {
-                            override fun onResult(p0: AutocompletePredictionBuffer) {
-                                if (!p0.status.isSuccess) {
-                                    p0.release()
-                                } else {
-                                    if (!TAPUtils.getInstance().isListEmpty(locationList))
-                                        locationList.clear()
+                        val token = AutocompleteSessionToken.newInstance()
+                        val bounds = RectangularBounds.newInstance(WORLD)
+                        val request = FindAutocompletePredictionsRequest.builder()
+                                .setLocationBias(bounds)
+                                .setCountry("id")
+                                .setSessionToken(token)
+                                .setQuery(et_keyword.text.toString())
+                                .build()
+                        placesClient.findAutocompletePredictions(request).addOnSuccessListener { p0 ->
+                            if (!TAPUtils.getInstance().isListEmpty(locationList))
+                                locationList.clear()
 
-                                    DataBufferUtils.freezeAndClose(p0).forEach { prediction ->
-                                        var item = TAPLocationItem()
-                                        item.prediction = prediction
-                                        item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
-                                        locationList.add(item)
-                                    }
+                            p0?.autocompletePredictions?.forEach { prediction ->
+                                var item = TAPLocationItem()
+                                item.prediction = prediction
+                                item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
+                                locationList.add(item)
 
-                                    if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
-                                        locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
-                                        adapter?.items = locationList
-                                        recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
-                                    } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
-                                        locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.FIRST
-                                        locationList.get(locationList.size - 1).myReturnType = TAPLocationItem.MyReturnType.LAST
-
-                                        if (5 < locationList.size) {
-                                            locationList.subList(0, 5)
-                                        }
-                                        adapter?.items = locationList
-                                        recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
-                                    }
-                                }
                             }
 
-                        })
+                            if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
+                                locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
+                                adapter?.items = locationList
+                                recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
+                            } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
+                                locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.FIRST
+                                locationList.get(locationList.size - 1).myReturnType = TAPLocationItem.MyReturnType.LAST
+
+                                if (5 < locationList.size) {
+                                    locationList.subList(0, 5)
+                                }
+                                adapter?.items = locationList
+                                recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
+                            }
+                        }
                     }
                 }
 
