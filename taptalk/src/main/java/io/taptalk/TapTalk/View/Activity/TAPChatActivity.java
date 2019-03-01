@@ -104,6 +104,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
@@ -113,6 +116,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
@@ -319,6 +323,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (null != messageAdapter) {
                         messageAdapter.notifyDataSetChanged();
                     }
+                    break;
+                case PERMISSION_LOCATION:
+                    TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
                     break;
             }
         }
@@ -1588,6 +1595,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onGallerySelected() {
             fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+        }
+
+        @Override
+        public void onLocationSelected() {
+            TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
         }
 
         @Override

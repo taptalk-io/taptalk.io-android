@@ -1,6 +1,6 @@
 package io.taptalk.TapTalk.Model;
 
-import com.google.android.gms.location.places.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
 
 /**
  * Created by Rionaldo on 26/02/18.
