@@ -307,9 +307,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         }
                         break;
                     case PICK_LOCATION:
-                        Log.e(TAG, "onActivityResult: 1 " + intent.getDoubleExtra(LATITUDE, 0.0));
-                        Log.e(TAG, "onActivityResult: 2 " + intent.getDoubleExtra(LONGITUDE, 0.0));
-                        Log.e(TAG, "onActivityResult: 3 " + intent.getStringExtra(LOCATION_NAME));
                         String address = intent.getStringExtra(LOCATION_NAME) == null ? "" : intent.getStringExtra(LOCATION_NAME);
                         Double latitude = intent.getDoubleExtra(LATITUDE, 0.0);
                         Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);

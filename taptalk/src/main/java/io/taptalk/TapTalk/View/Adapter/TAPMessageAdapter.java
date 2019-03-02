@@ -770,7 +770,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markUnreadForMessage(item, myUserModel);
 
-            vMapBorder.setOnClickListener(v -> openMapDetail());
+            vMapBorder.setOnClickListener(v -> openMapDetail(item.getData()));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
 
@@ -785,22 +785,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return;
             }
             tvMessageBody.setText((String) mapData.get(ADDRESS));
-            mapView.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    Log.e(TAG, "setMapData: " + mapData.get(LATITUDE) + mapData.get(LONGITUDE));
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                            ((Number) mapData.get(LATITUDE)).doubleValue(),
-                            ((Number) mapData.get(LONGITUDE)).doubleValue()), 16f));
-                    googleMap.getUiSettings().setAllGesturesEnabled(false);
-                    mapView.onResume();
-                }
+            mapView.getMapAsync(googleMap -> {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                        ((Number) mapData.get(LATITUDE)).doubleValue(),
+                        ((Number) mapData.get(LONGITUDE)).doubleValue()), 16f));
+                googleMap.getUiSettings().setAllGesturesEnabled(false);
+                mapView.onResume();
             });
         }
 
         // TODO: 1 March 2019
-        private void openMapDetail() {
-
+        private void openMapDetail(HashMap<String, Object> mapData) {
+            Number latitude = null != mapData.get(LATITUDE) ?  ((Number) mapData.get(LATITUDE)).doubleValue() : 0.0;
+            Number longitude = null != mapData.get(LONGITUDE) ?  ((Number) mapData.get(LONGITUDE)).doubleValue() : 0.0;
+            TAPUtils.getInstance().openMaps((Activity) itemView.getContext(), latitude.doubleValue(), longitude.doubleValue());
         }
 
         @Override

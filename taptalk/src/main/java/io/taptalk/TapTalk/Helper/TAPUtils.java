@@ -45,7 +45,6 @@ import java.util.Random;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -630,6 +629,13 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         intent.setType("vnd.android-dir/mms-sms");
         intent.putExtra("address", phoneNumber);
         activity.startActivity(intent);
+    }
+
+    public void openMaps(Activity activity, Double latitude, Double longitude) {
+        Uri gmmIntentUri = Uri.parse("geo:" + latitude + "," + longitude + "?q=" + latitude+","+longitude + "&z=16");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        activity.startActivity(mapIntent);
     }
 
     public boolean isListEmpty(List t) {
