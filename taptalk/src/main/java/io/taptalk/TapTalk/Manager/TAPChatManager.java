@@ -31,6 +31,7 @@ import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
+import io.taptalk.TapTalk.Model.TAPDataLocationModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
@@ -57,6 +58,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
@@ -352,6 +354,10 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(createProductMessageModel(productList, recipientUserModel, roomModel), true);
     }
 
+    public void sendLocationMessage(String address, Double latitude, Double longitude) {
+        triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), true);
+    }
+
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
         Integer startIndex;
 
@@ -363,7 +369,7 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                TAPMessageModel messageModel = buildTextMessage(substr, roomModel, getActiveUser());
+                TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
                 messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
@@ -371,7 +377,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
-            TAPMessageModel messageModel = buildTextMessage(textMessage, roomModel, getActiveUser());
+            TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
         }
@@ -390,7 +396,7 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                TAPMessageModel messageModel = buildTextMessage(substr, roomModel, TAPDataManager.getInstance().getActiveUser());
+                TAPMessageModel messageModel = createTextMessage(substr, roomModel, TAPDataManager.getInstance().getActiveUser());
                 // Add entity to list
                 messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
@@ -403,7 +409,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
-            TAPMessageModel messageModel = buildTextMessage(textMessage, roomModel, TAPDataManager.getInstance().getActiveUser());
+            TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, TAPDataManager.getInstance().getActiveUser());
 
             // save LocalID to list of Reply Local IDs
             // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
@@ -417,7 +423,7 @@ public class TAPChatManager {
         //checkAndSendPendingMessages();
     }
 
-    private TAPMessageModel buildTextMessage(String message, TAPRoomModel room, TAPUserModel user) {
+    private TAPMessageModel createTextMessage(String message, TAPRoomModel room, TAPUserModel user) {
         // Create new TAPMessageModel based on text
         if (null == getQuotedMessages().get(room.getRoomID())) {
             return TAPMessageModel.Builder(
@@ -460,6 +466,36 @@ public class TAPChatManager {
                 recipientUserModel.getUserID(),
                 product
         );
+    }
+
+    /**
+     * Construct Location Message Model
+     */
+    private TAPMessageModel createLocationMessageModel(String address, Double latitude, Double longitude) {
+        if (null == getQuotedMessage()) {
+            return TAPMessageModel.Builder(
+                    TapTalk.appContext.getString(R.string.tap_location_body),
+                    activeRoom,
+                    TYPE_LOCATION,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    new TAPDataLocationModel(address, latitude, longitude).toHashMap());
+        } else {
+            HashMap<String, Object> data = new TAPDataLocationModel(address, latitude, longitude).toHashMap();
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            return TAPMessageModel.BuilderWithQuotedMessage(
+                    TapTalk.appContext.getString(R.string.tap_location_body),
+                    activeRoom,
+                    TYPE_LOCATION,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    data,
+                    getQuotedMessage());
+        }
     }
 
     /**
@@ -627,8 +663,7 @@ public class TAPChatManager {
     }
 
     /**
-     * @return
-     * true if forwarded message is sent
+     * @return true if forwarded message is sent
      * false if forwarded message does not exist
      */
     public boolean checkAndSendForwardedMessage(TAPRoomModel roomModel) {
@@ -897,7 +932,7 @@ public class TAPChatManager {
         // TODO: 05/09/18 nnti cek file manager upload queue juga
         isPendingMessageExist = false;
         isFileUploadExist = false;
-        
+
         if (0 < pendingMessages.size())
             isPendingMessageExist = true;
         if (0 < waitingUploadProgress.size())
