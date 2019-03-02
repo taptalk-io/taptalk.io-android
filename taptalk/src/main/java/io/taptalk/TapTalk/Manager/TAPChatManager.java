@@ -355,7 +355,7 @@ public class TAPChatManager {
     }
 
     public void sendLocationMessage(String address, Double latitude, Double longitude) {
-        triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), false);
+        triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), true);
     }
 
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
