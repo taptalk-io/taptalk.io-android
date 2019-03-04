@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
@@ -46,6 +48,8 @@ import java.util.Random;
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.MaterialFilePicker;
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -647,11 +651,8 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_FILE);
         } else {
             // Permission granted
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("*/*");
-            if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivityForResult(intent, SEND_FILE);
-            }
+            Intent intent = new Intent(activity, FilePickerActivity.class);
+            activity.startActivityForResult(intent, 1);
         }
     }
 

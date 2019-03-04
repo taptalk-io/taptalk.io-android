@@ -41,6 +41,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,6 +127,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
@@ -312,6 +314,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         Double latitude = intent.getDoubleExtra(LATITUDE, 0.0);
                         Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);
                         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
+                        break;
+                    case SEND_FILE:
+                        //File file = new File(TAPUtils.getInstance().getPath(TAPChatActivity.this, intent.getData()));
+                        //Log.e(TAG, "onActivityResult: " + file.getName());
+                        //Log.e(TAG, "onActivityResult2: " + file.length());
                         break;
                 }
         }
@@ -1616,7 +1623,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onDocumentSelected() {
-            Log.e(TAG, "onDocumentSelected: " );
             TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
         }
 
