@@ -21,7 +21,7 @@ public class FileTypeUtils {
         CERTIFICATE(R.drawable.tap_cfp_ic_certificate_box, R.string.tap_cfp_type_certificate, "cer", "der", "pfx", "p12", "arm", "pem"),
         DRAWING(R.drawable.tap_cfp_ic_drawing_box, R.string.tap_cfp_type_drawing, "ai", "cdr", "dfx", "eps", "svg", "stl", "wmf", "emf", "art", "xar"),
         EXCEL(R.drawable.tap_cfp_ic_excel_box, R.string.tap_cfp_type_excel, "xls", "xlk", "xlsb", "xlsm", "xlsx", "xlr", "xltm", "xlw", "numbers", "ods", "ots"),
-        IMAGE(R.drawable.tap_cfp_ic_image_box, R.string.tap_cfp_type_image, "bmp", "gif", "ico", "jpeg", "jpg", "pcx", "png", "psd", "tga", "tiff", "tif", "xcf"),
+        IMAGE(R.drawable.tap_cfp_ic_image_box, R.string.tap_cfp_type_image, "bmp", "gif", "ico", "jpeg", "jpg", "pcx", "png", "psd", "tga", "tiff", "tif", "xcf", "webp"),
         MUSIC(R.drawable.tap_cfp_ic_music_box, R.string.tap_cfp_type_music, "aiff", "aif", "wav", "flac", "m4a", "wma", "amr", "mp2", "mp3", "wma", "aac", "mid", "m3u"),
         VIDEO(R.drawable.tap_cfp_ic_video_box, R.string.tap_cfp_type_video, "avi", "mov", "wmv", "mkv", "3gp", "f4v", "flv", "mp4", "mpeg", "webm"),
         PDF(R.drawable.tap_cfp_ic_pdf_box, R.string.tap_cfp_type_pdf, "pdf"),

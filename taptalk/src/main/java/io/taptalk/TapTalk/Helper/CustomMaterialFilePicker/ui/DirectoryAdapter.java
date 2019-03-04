@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.io.File;
 import java.util.List;
 
@@ -71,7 +74,13 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
         File currentFile = mFiles.get(position);
 
         FileTypeUtils.FileType fileType = FileTypeUtils.getFileType(currentFile);
-        holder.mFileImage.setImageResource(fileType.getIcon());
+        if (FileTypeUtils.FileType.IMAGE != fileType && FileTypeUtils.FileType.VIDEO != fileType) {
+            holder.mFileImage.setImageResource(fileType.getIcon());
+            holder.mFileImage.setAlpha(0.6f);
+        } else {
+            Glide.with(holder.itemView.getContext()).load(currentFile).apply(new RequestOptions().centerCrop()).into(holder.mFileImage);
+            holder.mFileImage.setAlpha(1.0f);
+        }
         holder.mFileSubtitle.setText(fileType.getDescription());
         holder.mFileTitle.setText(currentFile.getName());
     }
