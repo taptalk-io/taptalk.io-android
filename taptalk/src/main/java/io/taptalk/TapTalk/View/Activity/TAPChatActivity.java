@@ -107,9 +107,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressTextBubble;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressDefaultBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
@@ -140,9 +139,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
-import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.TEXT_BUBBLE_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
-import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.DEFAULT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
 
@@ -589,10 +587,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void registerBroadcastManager() {
-        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
-                DownloadProgressLoading, DownloadFinish, DownloadFailed, LongPressTextBubble,
-                LongPressDefaultBubble, LongPressEmail, LongPressLink, LongPressPhone);
+        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
+                UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
+                DownloadProgressLoading, DownloadFinish, DownloadFailed, LongPressChatBubble,
+                LongPressEmail, LongPressLink, LongPressPhone);
     }
 
     private void closeActivity() {
@@ -1338,17 +1336,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
-                case LongPressTextBubble:
+                case LongPressChatBubble:
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(TEXT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
                         chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
-                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
-                    }
-                    break;
-                case LongPressDefaultBubble:
-                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet imageBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(DEFAULT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
-                        imageBubbleBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
                     }
                     break;
