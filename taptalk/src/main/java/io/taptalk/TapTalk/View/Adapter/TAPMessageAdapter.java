@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,11 +12,8 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.util.Linkify;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -27,7 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -35,22 +30,18 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
-import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
-import io.taptalk.TapTalk.Helper.TAPMapView;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -705,7 +696,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivMessageStatus, ivReply, ivSending;
         private TextView tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration, vMapBorder;
-        private TAPMapView mapView;
+        private MapView mapView;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -751,18 +742,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
                     (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
                 // Fix layout when quote/forward exists
-                mapView.setTopLeftRadius(0);
-                mapView.setTopRightRadius(0);
+                mapView.setOutlineProvider(null);
                 clForwardedQuote.setVisibility(View.VISIBLE);
                 vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_stroke_e4e4e4_1dp));
             } else {
                 if (isMessageFromMySelf(item)) {
-                    mapView.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                    mapView.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
+                    TAPUtils.getInstance().clipToRoundedRectangle(mapView, TAPUtils.getInstance().dpToPx(12), TAPUtils.ClipType.TOP_LEFT);
                     vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_0dp_0dpstroke_e4e4e4_1dp));
                 } else {
-                    mapView.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
-                    mapView.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                    TAPUtils.getInstance().clipToRoundedRectangle(mapView, TAPUtils.getInstance().dpToPx(12), TAPUtils.ClipType.TOP_RIGHT);
                     vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_0dp_0dpstroke_e4e4e4_1dp));
                 }
                 clForwardedQuote.setVisibility(View.GONE);
@@ -794,10 +782,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             });
         }
 
-        // TODO: 1 March 2019
         private void openMapDetail(HashMap<String, Object> mapData) {
-            Number latitude = null != mapData.get(LATITUDE) ?  ((Number) mapData.get(LATITUDE)).doubleValue() : 0.0;
-            Number longitude = null != mapData.get(LONGITUDE) ?  ((Number) mapData.get(LONGITUDE)).doubleValue() : 0.0;
+            Number latitude = null != mapData.get(LATITUDE) ? ((Number) mapData.get(LATITUDE)).doubleValue() : 0.0;
+            Number longitude = null != mapData.get(LONGITUDE) ? ((Number) mapData.get(LONGITUDE)).doubleValue() : 0.0;
             TAPUtils.getInstance().openMaps((Activity) itemView.getContext(), latitude.doubleValue(), longitude.doubleValue());
         }
 

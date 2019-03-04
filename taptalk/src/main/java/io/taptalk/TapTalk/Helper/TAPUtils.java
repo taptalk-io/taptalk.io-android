@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Outline;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,6 +21,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.inputmethod.InputMethodManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -286,6 +288,51 @@ public class TAPUtils {
     public String formatCurrencyRp(long value) {
         String str = String.format(Locale.getDefault(), "%,d", value);
         return "Rp " + str.replace(",", ".");
+    }
+
+    public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
+    public void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
+        view.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                int left = 0;
+                int top = 0;
+                int right = view.getWidth();
+                int bottom = view.getHeight();
+                switch (clipType) {
+                    case TOP:
+                        bottom += cornerRadius;
+                        break;
+                    case BOTTOM:
+                        top -= cornerRadius;
+                        break;
+                    case LEFT:
+                        right += cornerRadius;
+                        break;
+                    case RIGHT:
+                        left -= cornerRadius;
+                        break;
+                    case TOP_LEFT:
+                        bottom += cornerRadius;
+                        right += cornerRadius;
+                        break;
+                    case TOP_RIGHT:
+                        bottom += cornerRadius;
+                        left -= cornerRadius;
+                        break;
+                    case BOTTOM_LEFT:
+                        top -= cornerRadius;
+                        right += cornerRadius;
+                        break;
+                    case BOTTOM_RIGHT:
+                        top -= cornerRadius;
+                        left -= cornerRadius;
+                        break;
+                }
+                outline.setRoundRect(left, top, right, bottom, cornerRadius);
+            }
+        });
+        view.setClipToOutline(true);
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {

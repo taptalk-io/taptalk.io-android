@@ -94,7 +94,7 @@
 
             </android.support.constraint.ConstraintLayout>
 
-            <io.taptalk.TapTalk.Helper.TAPMapView
+            <com.google.android.gms.maps.MapView
                 android:id="@+id/map_view"
                 android:layout_width="234dp"
                 android:layout_height="177dp"
