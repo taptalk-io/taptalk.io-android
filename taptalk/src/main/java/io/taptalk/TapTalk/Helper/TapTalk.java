@@ -22,7 +22,6 @@ import android.util.Log;
 
 import com.facebook.stetho.Stetho;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
@@ -223,7 +222,8 @@ public class TapTalk {
 
                     TAPDataManager.getInstance().saveActiveUser(response.getUser());
                     TAPApiManager.getInstance().setLogout(false);
-                    TAPConnectionManager.getInstance().connect();
+                    if (isForeground)
+                        TAPConnectionManager.getInstance().connect();
                     loginInterface.onLoginSuccess();
 
                     if (isRefreshTokenExpired) {
