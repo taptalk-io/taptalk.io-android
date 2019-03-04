@@ -75,10 +75,6 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         when (longPressType) {
             LongPressType.CHAT_BUBBLE_TYPE -> {
                 when (message?.type) {
-                    TYPE_TEXT -> {
-                        longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(),
-                                message, bottomSheetListener, onClickListener)
-                    }
                     TYPE_IMAGE -> {
                         longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(message),
                                 message, bottomSheetListener, onClickListener)
@@ -89,6 +85,10 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                     }
                     TYPE_LOCATION -> {
                         longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLocationBubbleLongPressMenu(),
+                                message, bottomSheetListener, onClickListener)
+                    }
+                    else -> {
+                        longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(),
                                 message, bottomSheetListener, onClickListener)
                     }
                 }
