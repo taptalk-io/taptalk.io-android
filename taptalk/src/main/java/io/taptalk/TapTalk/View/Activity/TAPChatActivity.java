@@ -118,6 +118,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
@@ -334,6 +335,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case PERMISSION_LOCATION:
                     TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
+                    break;
+                case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
+                    TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
                     break;
             }
         }
@@ -1608,6 +1612,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onLocationSelected() {
             TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
+        }
+
+        @Override
+        public void onDocumentSelected() {
+            Log.e(TAG, "onDocumentSelected: " );
+            TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
         }
 
         @Override

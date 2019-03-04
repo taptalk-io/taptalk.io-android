@@ -101,6 +101,7 @@ public class TAPDefaultConstant {
         public static final int SEND_IMAGE_FROM_PREVIEW = 14;
         public static final int FORWARD_MESSAGE = 15;
         public static final int PICK_LOCATION = 16;
+        public static final int SEND_FILE = 17;
     }
 
     public static final class PermissionRequest {
@@ -109,6 +110,7 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
         public static final int PERMISSION_LOCATION = 5;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_FILE = 6;
     }
 
     public static final class Sorting {
