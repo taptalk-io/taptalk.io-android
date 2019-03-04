@@ -169,7 +169,8 @@ public class TAPDefaultConstant {
     }
 
     public static final class LongPressBroadcastEvent {
-        public static final String LongPressChatBubble = "kTAPLongPressChatBubble";
+        public static final String LongPressTextBubble = "kTAPLongPressTextBubble";
+        public static final String LongPressDefaultBubble = "kTAPLongPressDefaultBubble";
         public static final String LongPressLink = "kTAPLongPressLink";
         public static final String LongPressEmail = "kTAPLongPressEmail";
         public static final String LongPressPhone = "kTAPLongPressPhone";

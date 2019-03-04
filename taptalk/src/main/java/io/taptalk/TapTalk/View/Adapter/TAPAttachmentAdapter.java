@@ -14,6 +14,10 @@ import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_AUDIO;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CALL;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CAMERA;
@@ -56,7 +60,22 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.onClickListener = onClickListener;
         if (null != message) {
             this.message = message;
-            this.messageToCopy = message.getBody();
+            switch (message.getType()) {
+                case TYPE_IMAGE:
+                    // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE
+                    if (null != message.getData()) {
+                        this.messageToCopy = (String) message.getData().get(CAPTION);
+                    }
+                    break;
+                case TYPE_LOCATION:
+                    if (null != message.getData()) {
+                        this.messageToCopy = (String) message.getData().get(ADDRESS);
+                    }
+                    break;
+                default:
+                    this.messageToCopy = message.getBody();
+                    break;
+            }
         }
     }
 

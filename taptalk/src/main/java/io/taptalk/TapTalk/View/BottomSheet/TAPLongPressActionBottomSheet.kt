@@ -16,13 +16,14 @@ import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_shee
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     enum class LongPressType {
-        CHAT_BUBBLE_TYPE,
+        DEFAULT_BUBBLE_TYPE,
+        TEXT_BUBBLE_TYPE,
         LINK_TYPE,
         EMAIL_TYPE,
         PHONE_TYPE
     }
 
-    var longPressType: LongPressType = LongPressType.CHAT_BUBBLE_TYPE
+    var longPressType: LongPressType = LongPressType.TEXT_BUBBLE_TYPE
 
     constructor() : super()
 
@@ -69,9 +70,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createChatBubbleLongPressMenu(), message,
+        var longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createBubbleLongPressMenu(), message,
                 bottomSheetListener, onClickListener)
         when (longPressType) {
+            LongPressType.TEXT_BUBBLE_TYPE -> {
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(), message,
+                        bottomSheetListener, onClickListener)
+            }
             LongPressType.EMAIL_TYPE -> {
                 longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createEmailLongPressMenu(), urlMessage, linkifyResult,
                         bottomSheetListener, onClickListener)

@@ -92,7 +92,7 @@ public class TAPAttachmentModel {
         return attachMenus;
     }
 
-    public static List<TAPAttachmentModel> createChatBubbleLongPressMenu() {
+    public static List<TAPAttachmentModel> createTextBubbleLongPressMenu() {
         int[] imageResIds = {
                 R.drawable.tap_ic_reply_green_blue,
                 R.drawable.tap_ic_forward_green_blue,
@@ -109,6 +109,30 @@ public class TAPAttachmentModel {
                 ID_REPLY,
                 ID_FORWARD,
                 ID_COPY
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    public static List<TAPAttachmentModel> createBubbleLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_reply_green_blue,
+                R.drawable.tap_ic_forward_green_blue,
+        };
+
+        int[] titleResIds = {
+                R.string.tap_reply,
+                R.string.tap_forward,
+        };
+
+        int[] ids = {
+                ID_REPLY,
+                ID_FORWARD,
         };
 
         List<TAPAttachmentModel> attachMenus = new ArrayList<>();

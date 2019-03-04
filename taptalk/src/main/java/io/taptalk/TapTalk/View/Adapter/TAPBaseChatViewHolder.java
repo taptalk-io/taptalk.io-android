@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.util.regex.Pattern;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -22,10 +23,15 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressTextBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressDefaultBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 
 public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
@@ -67,7 +73,17 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
     protected void enableLongPress(Context context, View view, TAPMessageModel message) {
         view.setOnLongClickListener(v -> {
-            Intent intent = new Intent(LongPressChatBubble);
+            Intent intent;
+            if (message.getType() == TYPE_TEXT ||
+                    (message.getType() == TYPE_IMAGE && null != message.getData() &&
+                            null != message.getData().get(CAPTION) &&
+                            !((String) message.getData().get(CAPTION)).isEmpty()) ||
+                    message.getType() == TYPE_LOCATION) {
+                // Show Copy option in bottom sheet for text, image with caption, and location
+                intent = new Intent(LongPressTextBubble);
+            } else {
+                intent = new Intent(LongPressDefaultBubble);
+            }
             intent.putExtra(MESSAGE, message);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
