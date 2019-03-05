@@ -32,13 +32,5 @@
         <attr name="dimensionRatio" format="float" />
     </declare-styleable>
 
-    <declare-styleable name="TAPMapView">
-        <attr name="topLeftRadius" />
-        <attr name="topRightRadius" />
-        <attr name="bottomLeftRadius" />
-        <attr name="bottomRightRadius" />
-        <attr name="cornerRadius" />
-    </declare-styleable>
-
     <item name="tap_link_bettermovementmethod_highlight_background_span" type="id" />
 </resources>

@@ -603,8 +603,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void registerBroadcastManager() {
-        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
+        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
+                UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
                 DownloadProgressLoading, DownloadFinish, DownloadFailed, LongPressChatBubble,
                 LongPressEmail, LongPressLink, LongPressPhone);
     }
@@ -1352,7 +1352,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
-
                 case LongPressChatBubble:
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);

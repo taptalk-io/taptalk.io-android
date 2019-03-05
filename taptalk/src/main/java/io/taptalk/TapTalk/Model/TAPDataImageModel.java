@@ -14,7 +14,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
@@ -53,7 +53,7 @@ public class TAPDataImageModel implements Parcelable {
     public TAPDataImageModel(HashMap<String, Object> imageDataMap) {
         this.fileID = (String) imageDataMap.get(FILE_ID);
         this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
-        this.size = (Number) imageDataMap.get(IMAGE_SIZE);
+        this.size = (Number) imageDataMap.get(SIZE);
         this.width = (Number) imageDataMap.get(IMAGE_WIDTH);
         this.height = (Number) imageDataMap.get(IMAGE_HEIGHT);
         this.caption = (String) imageDataMap.get(CAPTION);

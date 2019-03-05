@@ -94,7 +94,7 @@
 
             </android.support.constraint.ConstraintLayout>
 
-            <io.taptalk.TapTalk.Helper.TAPMapView
+            <com.google.android.gms.maps.MapView
                 android:id="@+id/map_view"
                 android:layout_width="234dp"
                 android:layout_height="177dp"
@@ -121,7 +121,7 @@
                 android:id="@+id/v_map_border"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_rounded_1dp_8dp_0dp_0dpstroke_e4e4e4_1dp"
+                android:background="@drawable/tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp"
                 app:layout_constraintBottom_toBottomOf="@id/map_view"
                 app:layout_constraintEnd_toEndOf="@id/map_view"
                 app:layout_constraintStart_toStartOf="@id/map_view"

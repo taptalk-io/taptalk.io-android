@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,11 +12,8 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.util.Linkify;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -27,7 +23,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -35,22 +30,18 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
-import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
-import io.taptalk.TapTalk.Helper.TAPMapView;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -90,11 +81,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -261,9 +255,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageBody.setText(item.getBody());
+            tvMessageStatus.setText(item.getMessageStatusText());
             setLinkDetection(itemView.getContext(), tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
-            tvMessageStatus.setText(item.getMessageStatusText());
 
             markUnreadForMessage(item, myUserModel);
 
@@ -353,6 +347,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
+            setLinkDetection(itemView.getContext(), tvMessageBody);
+            enableLongPress(itemView.getContext(), flBubble, item);
+            enableLongPress(itemView.getContext(), rcivImageBody, item);
 
             setImageViewButtonProgress(item);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
@@ -573,42 +570,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    public class ProductVH extends TAPBaseChatViewHolder {
-
-        RecyclerView rvProductList;
-        TAPProductListAdapter adapter;
-        private List<TAPProductModel> items;
-
-        ProductVH(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-            rvProductList = itemView.findViewById(R.id.rv_product_list);
-        }
-
-        @Override
-        protected void onBind(TAPMessageModel item, int position) {
-            if (null != item.getData())
-                items = TAPUtils.getInstance().convertObject(item.getData().get("items")
-                        , new TypeReference<List<TAPProductModel>>() {
-                        });
-            else items = new ArrayList<>();
-            adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
-            markUnreadForMessage(item, myUserModel);
-
-            rvProductList.setAdapter(adapter);
-            rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-            if (rvProductList.getItemDecorationCount() > 0) {
-                rvProductList.removeItemDecorationAt(0);
-            }
-            rvProductList.addItemDecoration(new TAPHorizontalDecoration(
-                    0, 0,
-                    TAPUtils.getInstance().dpToPx(16),
-                    TAPUtils.getInstance().dpToPx(8),
-                    adapter.getItemCount(),
-                    0, 0));
-            OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
-        }
-    }
-
     public class FileVH extends TAPBaseChatViewHolder {
 
         private ConstraintLayout clContainer, clForwarded, clQuote;
@@ -618,6 +579,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TAPRoundedCornerImageView rcivQuoteImage;
         private TextView tvUsername, tvFileName, tvFileInfo, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration;
+        private ProgressBar pbProgress;
 
         protected FileVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -638,6 +600,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -656,6 +619,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             tvMessageStatus.setText(item.getMessageStatusText());
 
+            setFileData(item);
+            setProgress(item);
+
             markUnreadForMessage(item, myUserModel);
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
@@ -664,7 +630,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
+            flBubble.setOnClickListener(v -> flFileIcon.performClick());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
 
             // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
@@ -694,6 +660,98 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         protected void setMessage(TAPMessageModel message) {
             setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
+
+        private void setFileData(TAPMessageModel item) {
+            HashMap<String, Object> data = item.getData();
+            if (null == data) {
+                return;
+            }
+            String fileName = (String) data.get(FILE_NAME);
+            String mediaType = (String) data.get(MEDIA_TYPE);
+            Number size = (Number) data.get(SIZE);
+
+            if (null != fileName) {
+                tvFileName.setText(!fileName.contains(".") ? fileName :
+                        fileName.substring(0, fileName.lastIndexOf('.')));
+            }
+            if (null != mediaType && null != size) {
+                tvFileInfo.setText(String.format("%s %s",
+                        TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
+                        !mediaType.contains("/") ? mediaType :
+                                mediaType.substring(0, mediaType.lastIndexOf('/'))).toUpperCase());
+            }
+        }
+
+        // FIXME: 5 March 2019 CHECK FLOW
+        private void setProgress(TAPMessageModel item) {
+            String localID = item.getLocalID();
+            Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(localID);
+
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                // Message failed to send
+                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                pbProgress.setVisibility(View.GONE);
+                if (isMessageFromMySelf(item)) {
+                    retryUpload(item);
+                } else {
+                    retryDownload(item);
+                }
+            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
+                    && !((String) item.getData().get(FILE_URI)).isEmpty()) {
+                // File has finished downloading or uploading
+                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
+                pbProgress.setVisibility(View.GONE);
+                flFileIcon.setOnClickListener(v -> openFile(item));
+            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue)) {
+                // File is not downloaded
+                if (TAPFileDownloadManager.getInstance().getFailedDownloads().contains(item.getLocalID())) {
+                    ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                } else {
+                    ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                }
+                pbProgress.setVisibility(View.GONE);
+                flFileIcon.setOnClickListener(v -> downloadFile(item));
+            } else {
+                // File is downloading or uploading
+                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                pbProgress.setVisibility(View.VISIBLE);
+                pbProgress.setMax(100);
+                if (null != uploadProgressValue) {
+                    pbProgress.setProgress(uploadProgressValue);
+                    flFileIcon.setOnClickListener(v -> cancelUpload(item));
+                } else {
+                    pbProgress.setProgress(downloadProgressValue);
+                    flFileIcon.setOnClickListener(v -> cancelDownload(item));
+                }
+            }
+        }
+
+        private void downloadFile(TAPMessageModel item) {
+
+        }
+
+        private void cancelDownload(TAPMessageModel item) {
+
+        }
+
+        private void cancelUpload(TAPMessageModel item) {
+
+        }
+
+        private void openFile(TAPMessageModel item) {
+
+        }
+
+        private void retryDownload(TAPMessageModel item) {
+
+        }
+
+        private void retryUpload(TAPMessageModel item) {
+
+        }
     }
 
     public class LocationVH extends TAPBaseChatViewHolder {
@@ -705,7 +763,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivMessageStatus, ivReply, ivSending;
         private TextView tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration, vMapBorder;
-        private TAPMapView mapView;
+        private MapView mapView;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -746,24 +804,24 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             tvMessageStatus.setText(item.getMessageStatusText());
 
+            enableLongPress(itemView.getContext(), flBubble, item);
+            enableLongPress(itemView.getContext(), vMapBorder, item);
+
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
                     (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
                 // Fix layout when quote/forward exists
-                mapView.setTopLeftRadius(0);
-                mapView.setTopRightRadius(0);
+                mapView.setOutlineProvider(null);
                 clForwardedQuote.setVisibility(View.VISIBLE);
-                vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_stroke_e4e4e4_1dp));
+                vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_stroke_e4e4e4_1dp_insettop_insetbottom_1dp));
             } else {
                 if (isMessageFromMySelf(item)) {
-                    mapView.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                    mapView.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
-                    vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_0dp_0dpstroke_e4e4e4_1dp));
+                    TAPUtils.getInstance().clipToRoundedRectangle(mapView, TAPUtils.getInstance().dpToPx(12), TAPUtils.ClipType.TOP_LEFT);
+                    vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp));
                 } else {
-                    mapView.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
-                    mapView.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
-                    vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_0dp_0dpstroke_e4e4e4_1dp));
+                    TAPUtils.getInstance().clipToRoundedRectangle(mapView, TAPUtils.getInstance().dpToPx(12), TAPUtils.ClipType.TOP_RIGHT);
+                    vMapBorder.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp));
                 }
                 clForwardedQuote.setVisibility(View.GONE);
             }
@@ -794,10 +852,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             });
         }
 
-        // TODO: 1 March 2019
         private void openMapDetail(HashMap<String, Object> mapData) {
-            Number latitude = null != mapData.get(LATITUDE) ?  ((Number) mapData.get(LATITUDE)).doubleValue() : 0.0;
-            Number longitude = null != mapData.get(LONGITUDE) ?  ((Number) mapData.get(LONGITUDE)).doubleValue() : 0.0;
+            Number latitude = null != mapData.get(LATITUDE) ? ((Number) mapData.get(LATITUDE)).doubleValue() : 0.0;
+            Number longitude = null != mapData.get(LONGITUDE) ? ((Number) mapData.get(LONGITUDE)).doubleValue() : 0.0;
             TAPUtils.getInstance().openMaps((Activity) itemView.getContext(), latitude.doubleValue(), longitude.doubleValue());
         }
 
@@ -819,6 +876,42 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void setMessage(TAPMessageModel message) {
             setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+    }
+
+    public class ProductVH extends TAPBaseChatViewHolder {
+
+        RecyclerView rvProductList;
+        TAPProductListAdapter adapter;
+        private List<TAPProductModel> items;
+
+        ProductVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+            rvProductList = itemView.findViewById(R.id.rv_product_list);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (null != item.getData())
+                items = TAPUtils.getInstance().convertObject(item.getData().get("items")
+                        , new TypeReference<List<TAPProductModel>>() {
+                        });
+            else items = new ArrayList<>();
+            adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
+            markUnreadForMessage(item, myUserModel);
+
+            rvProductList.setAdapter(adapter);
+            rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+            if (rvProductList.getItemDecorationCount() > 0) {
+                rvProductList.removeItemDecorationAt(0);
+            }
+            rvProductList.addItemDecoration(new TAPHorizontalDecoration(
+                    0, 0,
+                    TAPUtils.getInstance().dpToPx(16),
+                    TAPUtils.getInstance().dpToPx(8),
+                    adapter.getItemCount(),
+                    0, 0));
+            OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         }
     }
 
