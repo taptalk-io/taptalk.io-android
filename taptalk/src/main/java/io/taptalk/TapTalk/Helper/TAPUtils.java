@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
@@ -70,6 +74,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -649,6 +654,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         } else {
             // Permission granted
             Intent intent = new Intent(activity, FilePickerActivity.class);
+            intent.putExtra(FilePickerActivity.ARG_HIDDEN, true);
             activity.startActivityForResult(intent, SEND_FILE);
         }
     }
@@ -673,13 +679,13 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
 
         if(size < sizeMb)
-            return df.format(size / sizeKb)+ " Kb";
+            return df.format(size / sizeKb)+ " KB";
         else if(size < sizeGb)
-            return df.format(size / sizeMb) + " Mb";
+            return df.format(size / sizeMb) + " MB";
         else if(size < sizeTerra)
-            return df.format(size / sizeGb) + " Gb";
+            return df.format(size / sizeGb) + " GB";
 
-        return size + "b";
+        return size + "B";
     }
 
     /**
@@ -695,5 +701,14 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         }
 
         return "";
+    }
+
+    /**
+     * Untuk Dapetin file mime type seperti image/jpg, dll
+     * @param file yang mau di dapatkan mimeTypenya
+     * @return
+     */
+    public String getFileMimeType(Activity activity, File file) {
+        return URLConnection.guessContentTypeFromName(file.getName());
     }
 }
