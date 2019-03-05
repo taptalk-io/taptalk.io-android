@@ -570,42 +570,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    public class ProductVH extends TAPBaseChatViewHolder {
-
-        RecyclerView rvProductList;
-        TAPProductListAdapter adapter;
-        private List<TAPProductModel> items;
-
-        ProductVH(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-            rvProductList = itemView.findViewById(R.id.rv_product_list);
-        }
-
-        @Override
-        protected void onBind(TAPMessageModel item, int position) {
-            if (null != item.getData())
-                items = TAPUtils.getInstance().convertObject(item.getData().get("items")
-                        , new TypeReference<List<TAPProductModel>>() {
-                        });
-            else items = new ArrayList<>();
-            adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
-            markUnreadForMessage(item, myUserModel);
-
-            rvProductList.setAdapter(adapter);
-            rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
-            if (rvProductList.getItemDecorationCount() > 0) {
-                rvProductList.removeItemDecorationAt(0);
-            }
-            rvProductList.addItemDecoration(new TAPHorizontalDecoration(
-                    0, 0,
-                    TAPUtils.getInstance().dpToPx(16),
-                    TAPUtils.getInstance().dpToPx(8),
-                    adapter.getItemCount(),
-                    0, 0));
-            OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
-        }
-    }
-
     public class FileVH extends TAPBaseChatViewHolder {
 
         private ConstraintLayout clContainer, clForwarded, clQuote;
@@ -666,7 +630,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
+            flBubble.setOnClickListener(v -> flFileIcon.performClick());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
 
             // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
@@ -702,12 +666,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == data) {
                 return;
             }
-            String fileID = (String) data.get(FILE_ID);
             String fileName = (String) data.get(FILE_NAME);
             String mediaType = (String) data.get(MEDIA_TYPE);
             Number size = (Number) data.get(SIZE);
 
-            tvFileName.setText(fileName);
+            if (null != fileName) {
+                tvFileName.setText(!fileName.contains(".") ? fileName :
+                        fileName.substring(0, fileName.lastIndexOf('.')));
+            }
             if (null != mediaType && null != size) {
                 tvFileInfo.setText(String.format("%s %s",
                         TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
@@ -716,23 +682,38 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
 
+        // FIXME: 5 March 2019 CHECK FLOW
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
             Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(localID);
+
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
                 pbProgress.setVisibility(View.GONE);
-            } else if ((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressValue) {
+                if (isMessageFromMySelf(item)) {
+                    retryUpload(item);
+                } else {
+                    retryDownload(item);
+                }
+            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
+                    && !((String) item.getData().get(FILE_URI)).isEmpty()) {
                 // File has finished downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
-
-                // TODO: 5 March 2019 CHECK IF FILE IS DOWNLOADED
+                flFileIcon.setOnClickListener(v -> openFile(item));
+            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue)) {
                 // File is not downloaded
-                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                if (TAPFileDownloadManager.getInstance().getFailedDownloads().contains(item.getLocalID())) {
+                    ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                } else {
+                    ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                }
+                pbProgress.setVisibility(View.GONE);
+                flFileIcon.setOnClickListener(v -> downloadFile(item));
             } else {
                 // File is downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
@@ -740,10 +721,36 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 pbProgress.setMax(100);
                 if (null != uploadProgressValue) {
                     pbProgress.setProgress(uploadProgressValue);
+                    flFileIcon.setOnClickListener(v -> cancelUpload(item));
                 } else {
                     pbProgress.setProgress(downloadProgressValue);
+                    flFileIcon.setOnClickListener(v -> cancelDownload(item));
                 }
             }
+        }
+
+        private void downloadFile(TAPMessageModel item) {
+
+        }
+
+        private void cancelDownload(TAPMessageModel item) {
+
+        }
+
+        private void cancelUpload(TAPMessageModel item) {
+
+        }
+
+        private void openFile(TAPMessageModel item) {
+
+        }
+
+        private void retryDownload(TAPMessageModel item) {
+
+        }
+
+        private void retryUpload(TAPMessageModel item) {
+
         }
     }
 
@@ -869,6 +876,42 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void setMessage(TAPMessageModel message) {
             setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+    }
+
+    public class ProductVH extends TAPBaseChatViewHolder {
+
+        RecyclerView rvProductList;
+        TAPProductListAdapter adapter;
+        private List<TAPProductModel> items;
+
+        ProductVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+            rvProductList = itemView.findViewById(R.id.rv_product_list);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (null != item.getData())
+                items = TAPUtils.getInstance().convertObject(item.getData().get("items")
+                        , new TypeReference<List<TAPProductModel>>() {
+                        });
+            else items = new ArrayList<>();
+            adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
+            markUnreadForMessage(item, myUserModel);
+
+            rvProductList.setAdapter(adapter);
+            rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
+            if (rvProductList.getItemDecorationCount() > 0) {
+                rvProductList.removeItemDecorationAt(0);
+            }
+            rvProductList.addItemDecoration(new TAPHorizontalDecoration(
+                    0, 0,
+                    TAPUtils.getInstance().dpToPx(16),
+                    TAPUtils.getInstance().dpToPx(8),
+                    adapter.getItemCount(),
+                    0, 0));
+            OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         }
     }
 
