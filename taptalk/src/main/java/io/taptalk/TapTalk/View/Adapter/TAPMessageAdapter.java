@@ -81,11 +81,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -612,6 +615,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TAPRoundedCornerImageView rcivQuoteImage;
         private TextView tvUsername, tvFileName, tvFileInfo, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration;
+        private ProgressBar pbProgress;
 
         protected FileVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -632,6 +636,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -649,6 +654,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
+
+            setFileData(item);
+            setProgress(item);
 
             markUnreadForMessage(item, myUserModel);
 
@@ -687,6 +695,55 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void setMessage(TAPMessageModel message) {
             setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        private void setFileData(TAPMessageModel item) {
+            HashMap<String, Object> data = item.getData();
+            if (null == data) {
+                return;
+            }
+            String fileID = (String) data.get(FILE_ID);
+            String fileName = (String) data.get(FILE_NAME);
+            String mediaType = (String) data.get(MEDIA_TYPE);
+            Number size = (Number) data.get(SIZE);
+
+            tvFileName.setText(fileName);
+            if (null != mediaType && null != size) {
+                tvFileInfo.setText(String.format("%s %s",
+                        TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
+                        !mediaType.contains("/") ? mediaType :
+                                mediaType.substring(0, mediaType.lastIndexOf('/'))).toUpperCase());
+            }
+        }
+
+        private void setProgress(TAPMessageModel item) {
+            String localID = item.getLocalID();
+            Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(localID);
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                // Message failed to send
+                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                pbProgress.setVisibility(View.GONE);
+            } else if ((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue) {
+                // File has finished downloading or uploading
+                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
+                pbProgress.setVisibility(View.GONE);
+
+                // TODO: 5 March 2019 CHECK IF FILE IS DOWNLOADED
+                // File is not downloaded
+                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+            } else {
+                // File is downloading or uploading
+                ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                pbProgress.setVisibility(View.VISIBLE);
+                pbProgress.setMax(100);
+                if (null != uploadProgressValue) {
+                    pbProgress.setProgress(uploadProgressValue);
+                } else {
+                    pbProgress.setProgress(downloadProgressValue);
+                }
+            }
         }
     }
 

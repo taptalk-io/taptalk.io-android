@@ -111,7 +111,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ProgressBar
-                        android:id="@+id/pb_file_download"
+                        android:id="@+id/pb_progress"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
