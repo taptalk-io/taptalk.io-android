@@ -60,7 +60,7 @@ public class TAPAttachmentModel {
     public static List<TAPAttachmentModel> createAttachMenu() {
         // TODO: 31 January 2019 TEMPORARILY DISABLED FEATURE, REMOVED MENU FROM ATTACHMENT
         int[] imageResIds = {
-//                R.drawable.tap_ic_documents_green_blue,
+                R.drawable.tap_ic_documents_green_blue,
                 R.drawable.tap_ic_camera_green_blue,
                 R.drawable.tap_ic_gallery_green_blue,
 //                R.drawable.tap_ic_audio_green_blue,
@@ -69,7 +69,7 @@ public class TAPAttachmentModel {
         };
 
         int[] titleResIds = {
-//                R.string.document,
+                R.string.tap_document,
                 R.string.tap_camera,
                 R.string.tap_gallery,
 //                R.string.audio,
@@ -78,7 +78,7 @@ public class TAPAttachmentModel {
         };
 
         int[] ids = {
-//                ID_DOCUMENT,
+                ID_DOCUMENT,
                 ID_CAMERA,
                 ID_GALLERY,
 //                ID_AUDIO,

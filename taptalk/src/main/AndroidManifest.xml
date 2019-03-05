@@ -26,6 +26,7 @@
             android:value="AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA" />
 
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity" />
+        <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"/>
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity" />

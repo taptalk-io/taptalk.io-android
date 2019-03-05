@@ -40,6 +40,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,7 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
@@ -117,6 +119,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
@@ -124,6 +127,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
@@ -311,6 +315,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);
                         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
                         break;
+                    case SEND_FILE:
+                        Log.e(TAG, "onActivityResult: "+intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH) );
+                        if (null != intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)) {
+                            File tempFile = new File(intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
+                            Log.e(TAG, "onActivityResult1: "+tempFile.getName() +" "+ TAPUtils.getInstance().getFileExtension(tempFile));
+                            Log.e(TAG, "onActivityResult2: "+TAPUtils.getInstance().getStringSizeLengthFile(tempFile.length()));
+                        }
+                        break;
                 }
         }
     }
@@ -333,6 +345,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case PERMISSION_LOCATION:
                     TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
+                    break;
+                case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
+                    TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
                     break;
             }
         }
@@ -1606,6 +1621,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onLocationSelected() {
             TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
+        }
+
+        @Override
+        public void onDocumentSelected() {
+            TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
         }
 
         @Override
