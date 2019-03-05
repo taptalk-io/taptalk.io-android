@@ -30,17 +30,17 @@ import io.taptalk.Taptalk.R;
  * Created by Dimorinny on 24.10.15.
  */
 public class FilePickerActivity extends AppCompatActivity implements DirectoryFragment.FileClickListener {
-    public static final String ARG_START_PATH = "arg_start_path";
-    public static final String ARG_CURRENT_PATH = "arg_current_path";
+    public static final String ARG_START_PATH = "tap_arg_start_path";
+    public static final String ARG_CURRENT_PATH = "tap_arg_current_path";
 
-    public static final String ARG_FILTER = "arg_filter";
-    public static final String ARG_CLOSEABLE = "arg_closeable";
-    public static final String ARG_TITLE = "arg_title";
+    public static final String ARG_FILTER = "tap_arg_filter";
+    public static final String ARG_CLOSEABLE = "tap_arg_closeable";
+    public static final String ARG_TITLE = "tap_arg_title";
 
-    public static final String STATE_START_PATH = "state_start_path";
-    private static final String STATE_CURRENT_PATH = "state_current_path";
+    public static final String STATE_START_PATH = "tap_state_start_path";
+    private static final String STATE_CURRENT_PATH = "tap_state_current_path";
 
-    public static final String RESULT_FILE_PATH = "result_file_path";
+    public static final String RESULT_FILE_PATH = "tap_result_file_path";
     private static final int HANDLE_CLICK_DELAY = 150;
 
     private Toolbar mToolbar;

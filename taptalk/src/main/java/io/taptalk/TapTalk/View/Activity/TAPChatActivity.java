@@ -50,6 +50,7 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
@@ -316,9 +317,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
                         break;
                     case SEND_FILE:
-                        //File file = new File(TAPUtils.getInstance().getPath(TAPChatActivity.this, intent.getData()));
-                        //Log.e(TAG, "onActivityResult: " + file.getName());
-                        //Log.e(TAG, "onActivityResult2: " + file.length());
+                        Log.e(TAG, "onActivityResult: "+intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH) );
+                        if (null != intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)) {
+                            File tempFile = new File(intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
+                            Log.e(TAG, "onActivityResult1: "+tempFile.getName() +" "+ TAPUtils.getInstance().getFileExtension(tempFile));
+                            Log.e(TAG, "onActivityResult2: "+TAPUtils.getInstance().getStringSizeLengthFile(tempFile.length()));
+                        }
                         break;
                 }
         }
