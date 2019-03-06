@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -25,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -447,6 +449,27 @@ public class TAPUtils {
             }
         }
         return null;
+    }
+
+    public void openFile(Context context, Uri uri, String mimeType) {
+        context.grantUriPermission(context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Log.e(TAG, "openFile: " + uri);
+        Log.e(TAG, "openFile: " + mimeType);
+        Intent intent = new Intent(Intent.ACTION_VIEW)
+                .setDataAndType(uri, mimeType)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            try {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setDataAndType(uri, "file/*");
+                context.startActivity(Intent.createChooser(intent, "Open folder"));
+            } catch (ActivityNotFoundException e2) {
+                e2.printStackTrace();
+                Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {

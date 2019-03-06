@@ -681,7 +681,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvFileInfo.setText(String.format("%s %s",
                         TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
                         !mediaType.contains("/") ? mediaType :
-                                mediaType.substring(0, mediaType.lastIndexOf('/'))).toUpperCase());
+                                mediaType.substring(mediaType.lastIndexOf('/') + 1)).toUpperCase());
             }
         }
 
@@ -702,7 +702,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
-                    && !(((Uri) item.getData().get(FILE_URI)).toString().isEmpty())) {
+                    && !(((String) item.getData().get(FILE_URI)).isEmpty())) {
                 // File has finished downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
@@ -765,7 +765,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openFile(TAPMessageModel item) {
-
+            if (null == item.getData() || null == item.getData().get(FILE_URI) || null == item.getData().get(MEDIA_TYPE)) {
+                return;
+            }
+            TAPUtils.getInstance().openFile(itemView.getContext(), Uri.parse((String) item.getData().get(FILE_URI)), (String) item.getData().get(MEDIA_TYPE));
         }
 
         private void retryDownload(TAPMessageModel item) {

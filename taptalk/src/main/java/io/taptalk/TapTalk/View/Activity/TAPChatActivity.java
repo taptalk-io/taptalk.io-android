@@ -322,11 +322,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
                         break;
                     case SEND_FILE:
-                        Log.e(TAG, "onActivityResult: "+intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH) );
+                        Log.e(TAG, "onActivityResult: " + intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
                         if (null != intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)) {
                             File tempFile = new File(intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
-                            Log.e(TAG, "onActivityResult1: "+tempFile.getName() +" "+ TAPUtils.getInstance().getFileExtension(tempFile));
-                            Log.e(TAG, "onActivityResult2: "+TAPUtils.getInstance().getStringSizeLengthFile(tempFile.length()));
+                            Log.e(TAG, "onActivityResult1: " + tempFile.getName() + " " + TAPUtils.getInstance().getFileExtension(tempFile));
+                            Log.e(TAG, "onActivityResult2: " + TAPUtils.getInstance().getStringSizeLengthFile(tempFile.length()));
                         }
                         break;
                 }
@@ -1399,18 +1399,22 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Request storage permission
             vm.setPendingDownloadMessage(message);
-            ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
+            ActivityCompat.requestPermissions(
+                    TAPChatActivity.this, new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(message, new TAPDownloadListener() {
+            TAPFileDownloadManager.getInstance().downloadFile(TAPChatActivity.this, message, new TAPDownloadListener() {
                 @Override
                 public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
                     if (null != message.getData()) {
-                        message.getData().put(FILE_URI, fileUri);
+                        message.getData().put(FILE_URI, fileUri.toString());
                     }
                     if (vm.getMessagePointer().containsKey(localID)) {
-                       runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
+                        runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
                     }
                 }
 

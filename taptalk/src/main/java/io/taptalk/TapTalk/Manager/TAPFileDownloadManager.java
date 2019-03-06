@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
@@ -94,7 +96,7 @@ public class TAPFileDownloadManager {
         getFailedDownloads().remove(localID);
     }
 
-    public void downloadFile(TAPMessageModel message, TAPDownloadListener listener) {
+    public void downloadFile(Context context, TAPMessageModel message, TAPDownloadListener listener) {
         // Return if message data is null
         if (null == message.getData()) {
             return;
@@ -107,7 +109,7 @@ public class TAPFileDownloadManager {
         TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, new TapDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
-                writeFileToDiskAndCallListener(message, response, listener);
+                writeFileToDiskAndCallListener(context, message, response, listener);
             }
 
             @Override
@@ -178,7 +180,7 @@ public class TAPFileDownloadManager {
         return bitmap;
     }
 
-    private void writeFileToDiskAndCallListener(TAPMessageModel message, ResponseBody responseBody, TAPDownloadListener listener) {
+    private void writeFileToDiskAndCallListener(Context context, TAPMessageModel message, ResponseBody responseBody, TAPDownloadListener listener) {
         new Thread(() -> {
             String localID = message.getLocalID();
             String filename;
@@ -221,7 +223,7 @@ public class TAPFileDownloadManager {
                     removeFailedDownload(localID);
                 }
                 // Trigger download success on listener
-                listener.onFileDownloadProcessFinished(localID, Uri.parse(file.getAbsolutePath()));
+                listener.onFileDownloadProcessFinished(localID, FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file));
             } catch (Exception e) {
                 e.printStackTrace();
                 setDownloadFailed(localID, listener);
