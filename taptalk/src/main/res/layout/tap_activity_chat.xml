@@ -220,6 +220,26 @@
     </android.support.constraint.ConstraintLayout>
 
     <FrameLayout
+        android:id="@+id/fl_message_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:descendantFocusability="blocksDescendants"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        tools:background="@color/tap_charcoal_alpha_40">
+
+        <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
+            android:id="@+id/rv_message_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:overScrollMode="never"
+            android:scrollbars="vertical" />
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/fl_loading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -242,26 +262,6 @@
             class="io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment"
             android:layout_width="match_parent"
             android:layout_height="20dp" />
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/fl_message_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        android:descendantFocusability="blocksDescendants"
-        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
-        app:layout_constraintTop_toBottomOf="@id/fl_loading"
-        tools:background="@color/tap_charcoal_alpha_40">
-
-        <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
-            android:id="@+id/rv_message_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:overScrollMode="never"
-            android:scrollbars="vertical" />
 
     </FrameLayout>
 

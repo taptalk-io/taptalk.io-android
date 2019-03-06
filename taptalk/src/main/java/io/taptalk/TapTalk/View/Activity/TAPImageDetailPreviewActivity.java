@@ -186,7 +186,10 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
         @Override
         public void onFailure(String errorMessage) {
-            runOnUiThread(() -> Toast.makeText(TAPImageDetailPreviewActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> {
+                hideLoading();
+                Toast.makeText(TAPImageDetailPreviewActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+            });
         }
     };
 

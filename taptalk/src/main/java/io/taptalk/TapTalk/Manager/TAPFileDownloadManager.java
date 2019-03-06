@@ -4,12 +4,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,11 +25,15 @@ import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.Taptalk.R;
 import okhttp3.ResponseBody;
+import okio.BufferedSink;
+import okio.Okio;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 
 public class TAPFileDownloadManager {
 
@@ -86,6 +94,35 @@ public class TAPFileDownloadManager {
         getFailedDownloads().remove(localID);
     }
 
+    public void downloadFile(TAPMessageModel message, TAPDownloadListener listener) {
+        // Return if message data is null
+        if (null == message.getData()) {
+            return;
+        }
+        String localID = message.getLocalID();
+        String fileID = (String) message.getData().get(FILE_ID);
+
+        addDownloadProgressMap(localID, 0);
+
+        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, new TapDefaultDataView<ResponseBody>() {
+            @Override
+            public void onSuccess(ResponseBody response) {
+                writeFileToDiskAndCallListener(message, response, listener);
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                setDownloadFailed(localID, listener);
+                Log.e(TAG, "onError: " + error.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                setDownloadFailed(localID, listener);
+                Log.e(TAG, "onError: " + throwable.getMessage());
+            }
+        });
+    }
 
     public void downloadImage(Context context, TAPMessageModel message, TAPDownloadListener listener) {
         // Return if message data is null
@@ -95,7 +132,7 @@ public class TAPFileDownloadManager {
         String localID = message.getLocalID();
         String fileID = (String) message.getData().get(FILE_ID);
 
-        TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 0);
+        addDownloadProgressMap(localID, 0);
 
         // Download image
         TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, new TapDefaultDataView<ResponseBody>() {
@@ -141,6 +178,59 @@ public class TAPFileDownloadManager {
         return bitmap;
     }
 
+    private void writeFileToDiskAndCallListener(TAPMessageModel message, ResponseBody responseBody, TAPDownloadListener listener) {
+        new Thread(() -> {
+            String localID = message.getLocalID();
+            String filename;
+            if (null != message.getData()) {
+                filename = (String) message.getData().get(FILE_NAME);
+            } else {
+                filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
+            }
+            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Files");
+            dir.mkdirs();
+            File file = new File(dir, filename);
+            Log.e(TAG, "writeFileToDiskAndCallListener file: " + file);
+            if (file.exists()) {
+                file.delete();
+            }
+            try {
+                // Write file to disk
+                // TODO: 5 March 2019 CHECK STORAGE PERMISSION
+//                BufferedSink sink = Okio.buffer(Okio.sink(file));
+//                sink.writeAll(responseBody.source());
+//                sink.close();
+
+                BufferedInputStream is = new BufferedInputStream(responseBody.byteStream());
+                OutputStream os = new FileOutputStream(file);
+                byte[] data = new byte[1024];
+//                long total = 0;
+                int count;
+
+                while ((count = is.read(data)) != -1) {
+//                    total += count;
+                    os.write(data, 0, count);
+                }
+
+                os.flush();
+                os.close();
+                is.close();
+
+                // Remove message from progress map
+                removeDownloadProgressMap(localID);
+                if (hasFailedDownloads()) {
+                    removeFailedDownload(localID);
+                }
+                // Trigger download success on listener
+                listener.onFileDownloadProcessFinished(localID, Uri.parse(file.getAbsolutePath()));
+            } catch (Exception e) {
+                e.printStackTrace();
+                setDownloadFailed(localID, listener);
+                Log.e(TAG, "writeFileToDiskAndCallListener: " + e);
+            }
+        }).start();
+    }
+
     public void writeImageFileToDisk(Long timestamp, Bitmap bitmap, TapTalkActionInterface listener) {
         new Thread(() -> {
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + ".jpeg";
@@ -155,11 +245,11 @@ public class TAPFileDownloadManager {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
                 out.flush();
                 out.close();
+                listener.onSuccess("Successfully saved " + filename);
             } catch (Exception e) {
                 e.printStackTrace();
                 listener.onFailure(e.getMessage());
             }
-            listener.onSuccess("Successfully saved " + filename);
         }).start();
     }
 
@@ -177,7 +267,6 @@ public class TAPFileDownloadManager {
     }
 
     private void setDownloadFailed(String localID, TAPDownloadListener listener) {
-        Log.e(TAG, "setDownloadFailed: " + localID);
         removeDownloadProgressMap(localID);
         listener.onDownloadFailed(localID);
     }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -699,7 +701,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
-                    && !((String) item.getData().get(FILE_URI)).isEmpty()) {
+                    && !(((Uri) item.getData().get(FILE_URI)).toString().isEmpty())) {
                 // File has finished downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
@@ -730,7 +732,24 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void downloadFile(TAPMessageModel item) {
+            TAPFileDownloadManager.getInstance().downloadFile(item, new TAPDownloadListener() {
+                @Override
+                public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
+                    if (null != item.getData()) {
+                        item.getData().put(FILE_URI, fileUri);
+                    }
+                    Intent intent = new Intent(DownloadFinish);
+                    intent.putExtra(DownloadLocalID, localID);
+                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                }
 
+                @Override
+                public void onDownloadFailed(String localID) {
+                    Intent intent = new Intent(DownloadFailed);
+                    intent.putExtra(DownloadLocalID, localID);
+                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                }
+            });
         }
 
         private void cancelDownload(TAPMessageModel item) {
