@@ -24,7 +24,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -77,6 +76,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -623,6 +623,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             setFileData(item);
             setProgress(item);
+            enableLongPress(itemView.getContext(), flBubble, item);
 
             markUnreadForMessage(item, myUserModel);
 
@@ -732,24 +733,27 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void downloadFile(TAPMessageModel item) {
-            TAPFileDownloadManager.getInstance().downloadFile(item, new TAPDownloadListener() {
-                @Override
-                public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
-                    if (null != item.getData()) {
-                        item.getData().put(FILE_URI, fileUri);
-                    }
-                    Intent intent = new Intent(DownloadFinish);
-                    intent.putExtra(DownloadLocalID, localID);
-                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                }
-
-                @Override
-                public void onDownloadFailed(String localID) {
-                    Intent intent = new Intent(DownloadFailed);
-                    intent.putExtra(DownloadLocalID, localID);
-                    LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                }
-            });
+            Intent intent = new Intent(DownloadFile);
+            intent.putExtra(MESSAGE, item);
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+//                TAPFileDownloadManager.getInstance().downloadFile(item, new TAPDownloadListener() {
+//                    @Override
+//                    public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
+//                        if (null != item.getData()) {
+//                            item.getData().put(FILE_URI, fileUri);
+//                        }
+//                        Intent intent = new Intent(DownloadFinish);
+//                        intent.putExtra(DownloadLocalID, localID);
+//                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+//                    }
+//
+//                    @Override
+//                    public void onDownloadFailed(String localID) {
+//                        Intent intent = new Intent(DownloadFailed);
+//                        intent.putExtra(DownloadLocalID, localID);
+//                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+//                    }
+//                });
         }
 
         private void cancelDownload(TAPMessageModel item) {

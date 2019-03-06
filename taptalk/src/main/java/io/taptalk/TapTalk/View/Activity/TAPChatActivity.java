@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -65,6 +66,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -97,6 +99,7 @@ import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
@@ -115,6 +118,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEven
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
@@ -123,7 +127,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
@@ -339,16 +344,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
                     TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
                     break;
-                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK:
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE:
                     if (null != messageAdapter) {
                         messageAdapter.notifyDataSetChanged();
                     }
                     break;
-                case PERMISSION_LOCATION:
-                    TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
-                    break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
                     TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
+                    break;
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE:
+                    startFileDownload(vm.getPendingDownloadMessage());
+                    break;
+                case PERMISSION_LOCATION:
+                    TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
                     break;
             }
         }
@@ -381,7 +389,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setCancelable(false)
                     .setPrimaryButtonListener(v -> {
-                                ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK);
+                                ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
                                 TAPDataManager.getInstance().setWriteStoragePermissionRequested(true);
                             }
                     )
@@ -605,8 +613,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void registerBroadcastManager() {
         TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
                 UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
-                DownloadProgressLoading, DownloadFinish, DownloadFailed, LongPressChatBubble,
-                LongPressEmail, LongPressLink, LongPressPhone);
+                DownloadProgressLoading, DownloadFinish, DownloadFailed, DownloadFile,
+                LongPressChatBubble, LongPressEmail, LongPressLink, LongPressPhone);
     }
 
     private void closeActivity() {
@@ -1352,6 +1360,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
+                case DownloadFile:
+                    startFileDownload(intent.getParcelableExtra(MESSAGE));
+                    break;
                 case LongPressChatBubble:
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
@@ -1383,6 +1394,36 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
         }
     };
+
+    private void startFileDownload(TAPMessageModel message) {
+        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request storage permission
+            vm.setPendingDownloadMessage(message);
+            ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
+        } else {
+            // Download file
+            vm.setPendingDownloadMessage(null);
+            TAPFileDownloadManager.getInstance().downloadFile(message, new TAPDownloadListener() {
+                @Override
+                public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
+                    if (null != message.getData()) {
+                        message.getData().put(FILE_URI, fileUri);
+                    }
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                       runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
+                    }
+                }
+
+                @Override
+                public void onDownloadFailed(String localID) {
+                    TAPFileDownloadManager.getInstance().addFailedDownload(localID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
+                    }
+                }
+            });
+        }
+    }
 
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override

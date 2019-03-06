@@ -106,12 +106,13 @@ public class TAPDefaultConstant {
     }
 
     public static final class PermissionRequest {
-        public static final int PERMISSION_CAMERA_CAMERA = 1;
-        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 2;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
-        public static final int PERMISSION_LOCATION = 5;
-        public static final int PERMISSION_READ_EXTERNAL_STORAGE_FILE = 6;
+        public static final int PERMISSION_CAMERA_CAMERA = 11;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 21;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_FILE = 22;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 31;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE = 32;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 33;
+        public static final int PERMISSION_LOCATION = 41;
     }
 
     public static final class Sorting {
@@ -169,6 +170,7 @@ public class TAPDefaultConstant {
         public static final String DownloadLocalID = "kTAPDownloadLocalID";
         public static final String DownloadFinish = "kTAPDownloadFinish";
         public static final String DownloadFailed = "kTAPDownloadFailed";
+        public static final String DownloadFile = "kTAPDownloadFile";
     }
 
     public static final class LongPressBroadcastEvent {

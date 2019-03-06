@@ -1,10 +1,14 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -19,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.taptalk.TapTalk.Helper.TAPTouchImageView;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -29,6 +34,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 
 public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
@@ -72,6 +78,17 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
     public void onBackPressed() {
         tivImageDetail.setZoom(1f);
         supportFinishAfterTransition();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE:
+                    saveImage();
+                    break;
+            }
+        }
     }
 
     private void getIntentFromOtherPage() {
@@ -136,8 +153,13 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         if (null == image) {
             return;
         }
-        showLoading();
-        TAPFileDownloadManager.getInstance().writeImageFileToDisk(System.currentTimeMillis(), image.getBitmap(), saveImageListener);
+        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request storage permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
+        } else {
+            showLoading();
+            TAPFileDownloadManager.getInstance().writeImageFileToDisk(System.currentTimeMillis(), image.getBitmap(), saveImageListener);
+        }
     }
 
     private void showLoading() {

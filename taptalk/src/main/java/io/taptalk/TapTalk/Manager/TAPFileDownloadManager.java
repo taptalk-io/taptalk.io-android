@@ -190,31 +190,30 @@ public class TAPFileDownloadManager {
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Files");
             dir.mkdirs();
             File file = new File(dir, filename);
-            Log.e(TAG, "writeFileToDiskAndCallListener file: " + file);
             if (file.exists()) {
                 file.delete();
             }
             try {
                 // Write file to disk
                 // TODO: 5 March 2019 CHECK STORAGE PERMISSION
-//                BufferedSink sink = Okio.buffer(Okio.sink(file));
-//                sink.writeAll(responseBody.source());
-//                sink.close();
+                BufferedSink sink = Okio.buffer(Okio.sink(file));
+                sink.writeAll(responseBody.source());
+                sink.close();
 
-                BufferedInputStream is = new BufferedInputStream(responseBody.byteStream());
-                OutputStream os = new FileOutputStream(file);
-                byte[] data = new byte[1024];
-//                long total = 0;
-                int count;
-
-                while ((count = is.read(data)) != -1) {
-//                    total += count;
-                    os.write(data, 0, count);
-                }
-
-                os.flush();
-                os.close();
-                is.close();
+//                BufferedInputStream is = new BufferedInputStream(responseBody.byteStream());
+//                OutputStream os = new FileOutputStream(file);
+//                byte[] data = new byte[1024];
+////                long total = 0;
+//                int count;
+//
+//                while ((count = is.read(data)) != -1) {
+////                    total += count;
+//                    os.write(data, 0, count);
+//                }
+//
+//                os.flush();
+//                os.close();
+//                is.close();
 
                 // Remove message from progress map
                 removeDownloadProgressMap(localID);

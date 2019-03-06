@@ -35,7 +35,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel quotedMessage;
+    private TAPMessageModel quotedMessage, pendingDownloadMessage;
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
@@ -227,6 +227,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.quotedMessage = quotedMessage;
         this.quoteAction = quoteAction;
         TAPChatManager.getInstance().setQuotedMessage(quotedMessage, quoteAction);
+    }
+
+    public TAPMessageModel getPendingDownloadMessage() {
+        return pendingDownloadMessage;
+    }
+
+    public void setPendingDownloadMessage(TAPMessageModel pendingDownloadMessage) {
+        this.pendingDownloadMessage = pendingDownloadMessage;
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {
