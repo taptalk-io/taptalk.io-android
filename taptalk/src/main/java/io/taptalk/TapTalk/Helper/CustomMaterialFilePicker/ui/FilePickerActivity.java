@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.CompositeFilter;
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.HiddenFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.PatternFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.utils.FileUtils;
 import io.taptalk.Taptalk.R;
@@ -34,6 +35,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     public static final String ARG_CURRENT_PATH = "tap_arg_current_path";
 
     public static final String ARG_FILTER = "tap_arg_filter";
+    public static final String ARG_HIDDEN = "tap_arg_hidden";
     public static final String ARG_CLOSEABLE = "tap_arg_closeable";
     public static final String ARG_TITLE = "tap_arg_title";
 
@@ -66,17 +68,23 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
 
     @SuppressWarnings("unchecked")
     private void initArguments(Bundle savedInstanceState) {
+        ArrayList<FileFilter> filters = new ArrayList<>();
+        if (getIntent().hasExtra(ARG_HIDDEN)) {
+            filters.add(new HiddenFilter());
+        }
+
         if (getIntent().hasExtra(ARG_FILTER)) {
             Serializable filter = getIntent().getSerializableExtra(ARG_FILTER);
-
             if (filter instanceof Pattern) {
-                ArrayList<FileFilter> filters = new ArrayList<>();
                 filters.add(new PatternFilter((Pattern) filter, false));
                 mFilter = new CompositeFilter(filters);
             } else {
                 mFilter = (CompositeFilter) filter;
             }
         }
+
+        if (null == mFilter)
+            mFilter = new CompositeFilter(filters);
 
         if (savedInstanceState != null) {
             mStartPath = savedInstanceState.getString(STATE_START_PATH);

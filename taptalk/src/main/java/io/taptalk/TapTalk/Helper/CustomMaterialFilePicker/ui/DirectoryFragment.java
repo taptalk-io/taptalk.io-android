@@ -65,7 +65,7 @@ public class DirectoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tap_fragment_directory, container, false);
-        mDirectoryRecyclerView = (EmptyRecyclerView) view.findViewById(R.id.directory_recycler_view);
+        mDirectoryRecyclerView = view.findViewById(R.id.directory_recycler_view);
         mEmptyView = view.findViewById(R.id.directory_empty_view);
         return view;
     }
@@ -81,12 +81,9 @@ public class DirectoryFragment extends Fragment {
         mDirectoryAdapter = new DirectoryAdapter(getActivity(),
                 FileUtils.getFileListByDirPath(mPath, mFilter));
 
-        mDirectoryAdapter.setOnItemClickListener(new DirectoryAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (mFileClickListener != null) {
-                    mFileClickListener.onFileClicked(mDirectoryAdapter.getModel(position));
-                }
+        mDirectoryAdapter.setOnItemClickListener((view, position) -> {
+            if (mFileClickListener != null) {
+                mFileClickListener.onFileClicked(mDirectoryAdapter.getModel(position));
             }
         });
 
