@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -376,7 +377,12 @@ public class TAPMessageModel implements Parcelable {
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
-        this.data = model.getData();
+
+        if (null == this.data)
+            this.data = model.getData();
+        else if (null != model.data)
+            this.data.putAll(model.data);
+
         this.quote = model.getQuote();
         this.recipientID = model.getRecipientID();
         this.replyTo = model.getReplyTo();
@@ -408,6 +414,8 @@ public class TAPMessageModel implements Parcelable {
     }
 
     public TAPMessageModel copyMessageModel() {
+        if (null != getData()) setData(new HashMap<>(getData()));
+
         return new TAPMessageModel(
                 getMessageID(),
                 getLocalID(),

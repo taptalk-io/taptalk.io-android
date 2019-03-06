@@ -143,6 +143,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFileData;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
@@ -322,11 +323,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
                         break;
                     case SEND_FILE:
-                        Log.e(TAG, "onActivityResult: " + intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
                         if (null != intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)) {
                             File tempFile = new File(intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
-                            Log.e(TAG, "onActivityResult1: " + tempFile.getName() + " " + TAPUtils.getInstance().getFileExtension(tempFile));
-                            Log.e(TAG, "onActivityResult2: " + TAPUtils.getInstance().getStringSizeLengthFile(tempFile.length()));
+                            TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
                         }
                         break;
                 }
@@ -1300,10 +1299,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case UploadProgressFinish:
                     localID = intent.getStringExtra(UploadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID) &&
+                    if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadImageData) &&
                             intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
                         TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
                         messageModel.setData((HashMap<String, Object>) intent.getSerializableExtra(UploadImageData));
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
+                    } else if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadFileData) &&
+                            intent.getSerializableExtra(UploadFileData) instanceof HashMap) {
+                        TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                        messageModel.putData((HashMap<String, Object>) intent.getSerializableExtra(UploadFileData));
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
                     }
                     break;

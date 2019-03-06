@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPDataLocationModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
@@ -57,6 +58,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -348,6 +350,11 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(messageModel, false);
     }
 
+    public void sendFileMessageToServer(TAPMessageModel messageModel) {
+        removeUploadingMessageFromHashMap(messageModel.getLocalID());
+        triggerListenerAndSendMessage(messageModel, false);
+    }
+
     public void sendProductMessageToServer(HashMap<String, Object> productList, TAPUserModel recipientUserModel) {
         TAPRoomModel roomModel = TAPRoomModel.Builder(TAPChatManager.getInstance().arrangeRoomId(getActiveUser().getUserID(), recipientUserModel.getUserID()),
                 recipientUserModel.getName(), 1, recipientUserModel.getAvatarURL(), "#FFFFFF");
@@ -499,6 +506,73 @@ public class TAPChatManager {
     }
 
     /**
+     * Construct File Message Model
+     */
+    private TAPMessageModel createFileMessageModel(File file) {
+        String fileName = file.getName();
+        Number fileSize = file.length();
+        String fileMimeType = null != TAPUtils.getInstance().getFileMimeType(file) ?
+                TAPUtils.getInstance().getFileMimeType(file) : "application/octet-stream";
+
+        // Build message model
+        TAPMessageModel messageModel;
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    generateFileMessageBody(fileName),
+                    activeRoom,
+                    TYPE_FILE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    new TAPDataFileModel(fileName, fileMimeType, file.getAbsolutePath(), fileSize).toHashMap());
+        } else {
+            HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, file.getAbsolutePath(), fileSize).toHashMap();
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    generateFileMessageBody(fileName),
+                    activeRoom,
+                    TYPE_FILE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    data,
+                    getQuotedMessage());
+        }
+        return messageModel;
+    }
+
+    /**
+     * Create file message model and call upload api
+     */
+    private void createFileMessageModelAndAddToQueueUpload(Context context, String roomID,
+                                                            File file) {
+        TAPMessageModel messageModel = createFileMessageModel(file);
+
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
+
+        addUploadingMessageToHashMap(messageModel);
+        triggerSendMessageListener(messageModel);
+
+        TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel);
+    }
+
+    public void sendFileMessage(Context context, String roomID, File file) {
+        new Thread(() -> createFileMessageModelAndAddToQueueUpload(context, roomID, file)).start();
+    }
+
+    public void sendFileMessage(Context context, File file) {
+        new Thread(() -> createFileMessageModelAndAddToQueueUpload(context, getOpenRoom(), file)).start();
+    }
+
+    private String generateFileMessageBody(String fileName) {
+        return TapTalk.appContext.getString(R.string.tap_emoji_file) + " " +
+                (fileName.isEmpty() ? TapTalk.appContext.getString(R.string.tap_file) : fileName);
+    }
+
+    /**
      * Construct Image Message Model
      */
     private TAPMessageModel createImageMessageModel(Uri fileUri, String caption) {
@@ -593,6 +667,14 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel);
     }
 
+    /**
+     * Create Image Message with Bitmap Model and Call Upload API
+     *
+     * @param context
+     * @param roomID
+     * @param bitmap
+     * @param caption
+     */
     private void createImageMessageModelAndAddToQueueUpload(Context context, String roomID,
                                                             Bitmap bitmap, String caption) {
         TAPMessageModel messageModel = createImageMessageModel(bitmap, caption);
@@ -1021,7 +1103,6 @@ public class TAPChatManager {
         }
         // Receive message outside active room (in room List)
         else if (!chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            Log.e(TAG, "receiveMessageFromSocket:3 " + newMessage.getLocalID());
             for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
 
