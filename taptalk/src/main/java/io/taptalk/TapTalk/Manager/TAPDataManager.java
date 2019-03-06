@@ -732,13 +732,19 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getMultipleUserByID(ids, new TAPDefaultSubscriber<>(view));
     }
 
-    // Upload Image
+    // Upload File
     private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>> uploadSubscribers;
 
     public void uploadImage(String localID, File imageFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             TapDefaultDataView<TAPUploadFileResponse> view) {
         TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
+    }
+
+    public void uploadFile(String localID, File file, String roomID, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadFile(file, roomID, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 
     private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>

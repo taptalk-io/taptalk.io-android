@@ -678,7 +678,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvFileInfo.setText(String.format("%s %s",
                         TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
                         !mediaType.contains("/") ? mediaType :
-                                mediaType.substring(0, mediaType.lastIndexOf('/'))).toUpperCase());
+                                mediaType.substring(mediaType.lastIndexOf('/'), mediaType.length() - 1)).toUpperCase());
             }
         }
 

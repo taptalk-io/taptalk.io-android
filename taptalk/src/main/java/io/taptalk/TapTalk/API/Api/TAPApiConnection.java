@@ -87,8 +87,7 @@ public class TAPApiConnection {
     public TAPTalkDownloadApiService getTapDownload() {
         OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN);
         Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPApiManager.getBaseUrlApi());
-        TAPTalkDownloadApiService tapDownload = tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
-        return tapDownload;
+        return tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
     }
 
     public ObjectMapper createObjectMapper() {

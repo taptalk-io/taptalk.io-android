@@ -157,6 +157,7 @@ public class TAPDefaultConstant {
         public static final String UploadProgressLoading = "kTAPUploadProgressLading";
         public static final String UploadProgressFinish = "kTAPUploadProgressFinish";
         public static final String UploadImageData = "kTAPUploadImageData";
+        public static final String UploadFileData = "kTAPUploadFileData";
         public static final String UploadLocalID = "kTAPUploadLocalID";
         public static final String UploadFailed = "kTAPUploadFailed";
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";

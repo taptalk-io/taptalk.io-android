@@ -108,6 +108,7 @@
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
+    <string name="tap_file">File</string>
     <string name="tap_document">Document</string>
     <string name="tap_camera">Camera</string>
     <string name="tap_gallery">Gallery</string>
@@ -115,6 +116,7 @@
     <string name="tap_location">Location</string>
     <string name="tap_contact">Contact</string>
     <string name="tap_emoji_photo">🖼</string>
+    <string name="tap_emoji_file">📎</string>
     <string name="tap_location_body">📍 Location</string>
 
     <!--Long Press-->

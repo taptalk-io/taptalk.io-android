@@ -5,14 +5,34 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashMap;
+
 import javax.annotation.Nullable;
 
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+
 public class TAPDataFileModel implements Parcelable {
-    @Nullable @JsonProperty("fileID") private String fileID;
-    @Nullable @JsonProperty("fileName") private String fileName;
-    @Nullable @JsonProperty("mediaType") private String mediaType;
-    @Nullable @JsonProperty("fileUri") private String fileUri;
-    @Nullable @JsonProperty("size") private Number size;
+    @Nullable
+    @JsonProperty("fileID")
+    private String fileID;
+    @Nullable
+    @JsonProperty("fileName")
+    private String fileName;
+    @Nullable
+    @JsonProperty("mediaType")
+    private String mediaType;
+    @Nullable
+    @JsonProperty("fileUri")
+    private String fileUri;
+    @Nullable
+    @JsonProperty("size")
+    private Number size;
 
     public TAPDataFileModel(@Nullable String fileID, @Nullable String fileName, @Nullable String mediaType, @Nullable String fileUri, @Nullable Number size) {
         this.fileID = fileID;
@@ -22,7 +42,38 @@ public class TAPDataFileModel implements Parcelable {
         this.size = size;
     }
 
+    public TAPDataFileModel(@Nullable String fileName, @Nullable String mediaType, @Nullable String fileUri, @Nullable Number size) {
+        this.fileName = fileName;
+        this.mediaType = mediaType;
+        this.fileUri = fileUri;
+        this.size = size;
+    }
+
     public TAPDataFileModel() {
+    }
+
+    public static TAPDataFileModel Builder(String fileID, String fileName,
+                                           String mediaType, String fileUri,
+                                           Number size) {
+        return new TAPDataFileModel(fileID, fileName, mediaType, fileUri, size);
+    }
+
+    public TAPDataFileModel(HashMap<String, Object> imageDataMap) {
+        this.fileID = (String) imageDataMap.get(FILE_ID);
+        this.fileName = (String) imageDataMap.get(FILE_NAME);
+        this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
+        this.size = (Number) imageDataMap.get(SIZE);
+        this.fileUri = (String) imageDataMap.get(FILE_URI);
+    }
+
+    public HashMap<String, Object> toHashMapWithoutFileUri() {
+        HashMap<String, Object> dataMap = TAPUtils.getInstance().toHashMap(this);
+        dataMap.remove(FILE_URI);
+        return dataMap;
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.getInstance().toHashMap(this);
     }
 
     @Nullable

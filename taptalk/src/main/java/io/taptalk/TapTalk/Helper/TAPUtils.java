@@ -755,7 +755,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
      * @param file yang mau di dapatkan mimeTypenya
      * @return
      */
-    public String getFileMimeType(Activity activity, File file) {
+    public String getFileMimeType(File file) {
         return URLConnection.guessContentTypeFromName(file.getName());
     }
 }

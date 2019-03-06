@@ -10,6 +10,6 @@ import rx.Observable;
 public interface TAPTalkMultipartApiService {
 
     @POST("chat/file/upload")
-    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadImage(@Body RequestBody uploadFile);
+    Observable<TAPBaseResponse<TAPUploadFileResponse>> uploadFile(@Body RequestBody uploadFile);
 
 }
