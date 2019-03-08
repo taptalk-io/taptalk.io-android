@@ -556,7 +556,7 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         triggerSendMessageListener(messageModel);
 
-        TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel);
+        TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
     }
 
     public void sendFileMessage(Context context, String roomID, File file) {
@@ -664,7 +664,7 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         messageModel = fixOrientationAndShowImagePreviewBubble(messageModel);
 
-        TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel);
+        TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
     }
 
     /**
@@ -685,7 +685,7 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         triggerSendMessageListener(messageModel);
 
-        TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, messageModel, bitmap);
+        TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel, bitmap);
     }
 
     /**
@@ -740,7 +740,7 @@ public class TAPChatManager {
     public void sendImageMessage(Context context, String roomID, TAPMessageModel imageModel) {
         new Thread(() -> {
             addUploadingMessageToHashMap(imageModel);
-            TAPFileUploadManager.getInstance().addQueueUploadImage(context, roomID, imageModel);
+            TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, imageModel);
         }).start();
     }
 

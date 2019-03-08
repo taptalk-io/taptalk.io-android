@@ -451,7 +451,8 @@ public class TAPUtils {
         return null;
     }
 
-    public void openFile(Context context, Uri uri, String mimeType) {
+    public boolean openFile(Context context, Uri uri, String mimeType) {
+        // TODO: 8 March 2019 CHECK IF FILE EXISTS 
         context.grantUriPermission(context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Log.e(TAG, "openFile: " + uri);
         Log.e(TAG, "openFile: " + mimeType);
@@ -460,14 +461,17 @@ public class TAPUtils {
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
             context.startActivity(intent);
+            return true;
         } catch (ActivityNotFoundException e) {
             try {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setDataAndType(uri, "file/*");
                 context.startActivity(Intent.createChooser(intent, "Open folder"));
+                return true;
             } catch (ActivityNotFoundException e2) {
                 e2.printStackTrace();
                 Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
+                return false;
             }
         }
     }

@@ -143,7 +143,8 @@ public class TAPFileUploadManager {
      * @param roomID
      * @param messageModel
      */
-    public void addQueueUploadImage(Context context, String roomID, TAPMessageModel messageModel) {
+    // Previously addQueueUploadImage
+    public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel) {
         addUploadQueue(messageModel);
         if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
             uploadImage(context, roomID);
@@ -152,9 +153,9 @@ public class TAPFileUploadManager {
         }
     }
 
-    public void addQueueUploadImage(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap) {
+    public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
-        addQueueUploadImage(context, roomID, messageModel);
+        addUploadQueue(context, roomID, messageModel);
     }
 
     // TODO: 14 January 2019 HANDLE OTHER FILE TYPES

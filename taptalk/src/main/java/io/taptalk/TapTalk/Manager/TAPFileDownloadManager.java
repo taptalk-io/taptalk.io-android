@@ -123,6 +123,11 @@ public class TAPFileDownloadManager {
                 setDownloadFailed(localID, listener);
                 Log.e(TAG, "onError: " + throwable.getMessage());
             }
+
+            @Override
+            public void endLoading() {
+                TAPDataManager.getInstance().removeDownloadSubscriber(localID);
+            }
         });
     }
 
@@ -161,6 +166,11 @@ public class TAPFileDownloadManager {
             public void onError(Throwable throwable) {
                 setDownloadFailed(localID, listener);
                 Log.e(TAG, "onError: " + throwable.getMessage());
+            }
+
+            @Override
+            public void endLoading() {
+                TAPDataManager.getInstance().removeDownloadSubscriber(localID);
             }
         });
     }
