@@ -75,6 +75,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
@@ -99,6 +100,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCAT
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
@@ -628,7 +630,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markUnreadForMessage(item, myUserModel);
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
-            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
@@ -673,16 +674,34 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String mediaType = (String) data.get(MEDIA_TYPE);
             Number size = (Number) data.get(SIZE);
 
-            if (null != fileName) {
-                tvFileName.setText(!fileName.contains(".") ? fileName :
-                        fileName.substring(0, fileName.lastIndexOf('.')));
+            String displayName = "", displaySize = "", displayExtension = "";
+            if (null != size) {
+                displaySize = TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
             }
-            if (null != mediaType && null != size) {
-                tvFileInfo.setText(String.format("%s %s",
-                        TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
-                        !mediaType.contains("/") ? mediaType :
-                                mediaType.substring(mediaType.lastIndexOf('/') + 1)).toUpperCase());
+            if (null != fileName && fileName.contains(".") && null != size) {
+                displayName = fileName.substring(0, fileName.lastIndexOf('.'));
+                displayExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+            } else if (null != fileName && null != mediaType && mediaType.contains("/")) {
+                displayName = fileName;
+                displayExtension = mediaType.substring(mediaType.lastIndexOf('/') + 1);
+            } else if (null != fileName && null != mediaType) {
+                displayName = fileName;
+                displayExtension = mediaType;
             }
+            tvFileName.setText(displayName);
+            tvFileInfo.setText(String.format("%s %s", displaySize, displayExtension).toUpperCase());
+
+//            if (null != fileName) {
+//                tvFileName.setText(!fileName.contains(".") ? fileName :
+//                        fileName.substring(0, fileName.lastIndexOf('.')));
+//            }
+//            if (null != mediaType && null != size) {
+//                if (fileName.contains("."))
+//                tvFileInfo.setText(String.format("%s %s",
+//                        TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
+//                        !mediaType.contains("/") ? mediaType :
+//                                mediaType.substring(mediaType.lastIndexOf('/') + 1)).toUpperCase());
+//            }
         }
 
         // FIXME: 5 March 2019 CHECK FLOW
@@ -698,7 +717,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (isMessageFromMySelf(item)) {
                     retryUpload(item);
                 } else {
-                    retryDownload(item);
+                    downloadFile(item);
                 }
             } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
@@ -736,32 +755,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Intent intent = new Intent(DownloadFile);
             intent.putExtra(MESSAGE, item);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-//                TAPFileDownloadManager.getInstance().downloadFile(item, new TAPDownloadListener() {
-//                    @Override
-//                    public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
-//                        if (null != item.getData()) {
-//                            item.getData().put(FILE_URI, fileUri);
-//                        }
-//                        Intent intent = new Intent(DownloadFinish);
-//                        intent.putExtra(DownloadLocalID, localID);
-//                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-//                    }
-//
-//                    @Override
-//                    public void onDownloadFailed(String localID) {
-//                        Intent intent = new Intent(DownloadFailed);
-//                        intent.putExtra(DownloadLocalID, localID);
-//                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-//                    }
-//                });
         }
 
         private void cancelDownload(TAPMessageModel item) {
-
+            Intent intent = new Intent(CancelDownload);
+            intent.putExtra(DownloadLocalID, item.getLocalID());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
         private void cancelUpload(TAPMessageModel item) {
-
+            Intent intent = new Intent(UploadCancelled);
+            intent.putExtra(UploadLocalID, item.getLocalID());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
         private void openFile(TAPMessageModel item) {
@@ -771,9 +776,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             TAPUtils.getInstance().openFile(itemView.getContext(), Uri.parse((String) item.getData().get(FILE_URI)), (String) item.getData().get(MEDIA_TYPE));
         }
 
-        private void retryDownload(TAPMessageModel item) {
-
-        }
+//        private void retryDownload(TAPMessageModel item) {
+//
+//        }
 
         private void retryUpload(TAPMessageModel item) {
 

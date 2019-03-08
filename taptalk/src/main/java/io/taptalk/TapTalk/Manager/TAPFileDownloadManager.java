@@ -165,6 +165,12 @@ public class TAPFileDownloadManager {
         });
     }
 
+    public void cancelFileDownload(String localID) {
+        TAPDataManager.getInstance().cancelFileDownload(localID);
+        removeFailedDownload(localID);
+        removeDownloadProgressMap(localID);
+    }
+
     private void saveDownloadedThumbnailAndCallListener(ResponseBody responseBody, String fileID, TAPDownloadListener listener) {
         Bitmap bmp = BitmapFactory.decodeStream(responseBody.byteStream());
         listener.onThumbnailDownloaded(fileID, bmp);
@@ -202,26 +208,12 @@ public class TAPFileDownloadManager {
                 sink.writeAll(responseBody.source());
                 sink.close();
 
-//                BufferedInputStream is = new BufferedInputStream(responseBody.byteStream());
-//                OutputStream os = new FileOutputStream(file);
-//                byte[] data = new byte[1024];
-////                long total = 0;
-//                int count;
-//
-//                while ((count = is.read(data)) != -1) {
-////                    total += count;
-//                    os.write(data, 0, count);
-//                }
-//
-//                os.flush();
-//                os.close();
-//                is.close();
-
                 // Remove message from progress map
                 removeDownloadProgressMap(localID);
                 if (hasFailedDownloads()) {
                     removeFailedDownload(localID);
                 }
+
                 // Trigger download success on listener
                 listener.onFileDownloadProcessFinished(localID, FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file));
             } catch (Exception e) {

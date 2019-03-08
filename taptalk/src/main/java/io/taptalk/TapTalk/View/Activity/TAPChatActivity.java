@@ -98,6 +98,7 @@ import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
@@ -613,7 +614,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
                 UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
                 DownloadProgressLoading, DownloadFinish, DownloadFailed, DownloadFile,
-                LongPressChatBubble, LongPressEmail, LongPressLink, LongPressPhone);
+                CancelDownload, LongPressChatBubble, LongPressEmail, LongPressLink, LongPressPhone);
     }
 
     private void closeActivity() {
@@ -1357,6 +1358,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
+                    break;
                 case DownloadFailed:
                     localID = intent.getStringExtra(DownloadLocalID);
                     TAPFileDownloadManager.getInstance().addFailedDownload(localID);
@@ -1366,6 +1368,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case DownloadFile:
                     startFileDownload(intent.getParcelableExtra(MESSAGE));
+                    break;
+                case CancelDownload:
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    TAPFileDownloadManager.getInstance().cancelFileDownload(localID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
                     break;
                 case LongPressChatBubble:
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
@@ -1420,14 +1429,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (vm.getMessagePointer().containsKey(localID)) {
                         runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
                     }
+                    TAPDataManager.getInstance().removeDownloadSubscriber(localID);
                 }
 
                 @Override
                 public void onDownloadFailed(String localID) {
-                    TAPFileDownloadManager.getInstance().addFailedDownload(localID);
+                    Log.e(TAG, "File Download Listener: onDownloadFailed");
                     if (vm.getMessagePointer().containsKey(localID)) {
                         runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
                     }
+                    TAPDataManager.getInstance().removeDownloadSubscriber(localID);
                 }
             });
         }

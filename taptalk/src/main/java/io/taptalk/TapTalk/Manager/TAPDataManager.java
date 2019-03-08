@@ -772,8 +772,31 @@ public class TAPDataManager {
     }
 
     // File Download
+    private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
+
     public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
+        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, getNewDownloadSubscriber(localID, view));
+    }
+
+    public void cancelFileDownload(String localID) {
+        TAPBaseSubscriber downloadSubscriber = getDownloadSubscribers().get(localID);
+        if (null != downloadSubscriber) {
+            downloadSubscriber.unsubscribe();
+            removeDownloadSubscriber(localID);
+        }
+    }
+
+    public void removeDownloadSubscriber(String localID) {
+        getDownloadSubscribers().remove(localID);
+    }
+
+    private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> getDownloadSubscribers() {
+        return null == downloadSubscribers ? downloadSubscribers = new HashMap<>() : downloadSubscribers;
+    }
+
+    private TAPBaseSubscriber<TapDefaultDataView<ResponseBody>> getNewDownloadSubscriber(String localID, TapDefaultDataView<ResponseBody> view) {
+        getDownloadSubscribers().put(localID, new TAPBaseSubscriber<>(view));
+        return getDownloadSubscribers().get(localID);
     }
 
     // FIXME: 25 October 2018
