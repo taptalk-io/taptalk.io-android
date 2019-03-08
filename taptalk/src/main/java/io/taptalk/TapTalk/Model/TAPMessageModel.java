@@ -12,12 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -123,7 +125,18 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        TAPQuoteModel quote = new TAPQuoteModel(quotedMessage.getUser().getName(), quotedMessage.getBody(), null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID), null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(IMAGE_URL), "");
+        String quoteTitle, quoteContent;
+        if (quotedMessage.getType() == TYPE_FILE) {
+            quoteTitle = TAPUtils.getInstance().getFileDisplayName(quotedMessage);
+            quoteContent = TAPUtils.getInstance().getFileDisplayInfo(quotedMessage);
+        } else {
+            quoteTitle = quotedMessage.getUser().getName();
+            quoteContent = quotedMessage.getBody();
+        }
+        String quoteFileID = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID);
+        String quoteImageURL = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(IMAGE_URL);
+        String quoteFileType = String.valueOf(quotedMessage.getType()); // TODO: 8 March 2019 CHANGE FILE TYPE
+        TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, quoteFileID, quoteImageURL, quoteFileType);
         TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID(), quotedMessage.getLocalID(), quotedMessage.getType());
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null);
     }

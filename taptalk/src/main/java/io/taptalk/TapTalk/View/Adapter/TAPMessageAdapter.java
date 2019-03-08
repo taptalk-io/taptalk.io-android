@@ -666,30 +666,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void setFileData(TAPMessageModel item) {
-            HashMap<String, Object> data = item.getData();
-            if (null == data) {
-                return;
-            }
-            String fileName = (String) data.get(FILE_NAME);
-            String mediaType = (String) data.get(MEDIA_TYPE);
-            Number size = (Number) data.get(SIZE);
-
-            String displayName = "", displaySize = "", displayExtension = "";
-            if (null != size) {
-                displaySize = TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
-            }
-            if (null != fileName && fileName.contains(".") && null != size) {
-                displayName = fileName.substring(0, fileName.lastIndexOf('.'));
-                displayExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
-            } else if (null != fileName && null != mediaType && mediaType.contains("/")) {
-                displayName = fileName;
-                displayExtension = mediaType.substring(mediaType.lastIndexOf('/') + 1);
-            } else if (null != fileName && null != mediaType) {
-                displayName = fileName;
-                displayExtension = mediaType;
-            }
-            tvFileName.setText(displayName);
-            tvFileInfo.setText(String.format("%s %s", displaySize, displayExtension).toUpperCase());
+            tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
+            tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
 
 //            if (null != fileName) {
 //                tvFileName.setText(!fileName.contains(".") ? fileName :
@@ -1230,6 +1208,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 glide.load(quoteImageURL).into(rcivQuoteImage);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 if (isMessageFromMySelf(item)) {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 } else {
@@ -1240,8 +1220,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvQuoteContent.setMaxLines(1);
             } else if (null != quoteFileID && !quoteFileID.isEmpty()) {
                 // Get quote image from file ID
-                // TODO: 9 January 2019 SET DEFAULT IMAGES FOR FILES ACCORDING TO FILE TYPE
-                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteFileID));
+                // TODO: 8 March 2019 FIX QUOTE FILE TYPE
+                if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
+                    // Load file icon
+                    rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
+                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_purply));
+                    rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
+                } else {
+                    // Load image from file ID
+                    // TODO: 8 March 2019 IMAGE MIGHT NOT EXIST IN CACHE
+                    rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteFileID));
+                    rcivQuoteImage.setBackground(null);
+                    rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                }
                 if (isMessageFromMySelf(item)) {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
                 } else {

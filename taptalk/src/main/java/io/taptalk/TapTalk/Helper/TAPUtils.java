@@ -79,6 +79,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -452,7 +455,7 @@ public class TAPUtils {
     }
 
     public boolean openFile(Context context, Uri uri, String mimeType) {
-        // TODO: 8 March 2019 CHECK IF FILE EXISTS 
+        // TODO: 8 March 2019 CHECK IF FILE EXISTS
         context.grantUriPermission(context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Log.e(TAG, "openFile: " + uri);
         Log.e(TAG, "openFile: " + mimeType);
@@ -474,6 +477,45 @@ public class TAPUtils {
                 return false;
             }
         }
+    }
+
+    public String getFileDisplayName(TAPMessageModel message) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        String fileName = (String) data.get(FILE_NAME);
+
+        if (null != fileName && fileName.contains(".")) {
+            return fileName.substring(0, fileName.lastIndexOf('.'));
+        } else if (null != fileName) {
+            return fileName;
+        } else {
+            return "";
+        }
+    }
+
+    public String getFileDisplayInfo(TAPMessageModel message) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        String fileName = (String) data.get(FILE_NAME);
+        String mediaType = (String) data.get(MEDIA_TYPE);
+        Number size = (Number) data.get(SIZE);
+
+        String displaySize = "", displayExtension = "";
+        if (null != size) {
+            displaySize = TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
+        }
+        if (null != fileName && fileName.contains(".") && null != size) {
+            displayExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+        } else if (null != fileName && null != mediaType && mediaType.contains("/")) {
+            displayExtension = mediaType.substring(mediaType.lastIndexOf('/') + 1);
+        } else if (null != mediaType) {
+            displayExtension = mediaType;
+        }
+        return String.format("%s %s", displaySize, displayExtension).toUpperCase();
     }
 
     public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {

@@ -119,8 +119,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEven
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -837,26 +839,44 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.setQuotedMessage(message, quoteAction);
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
-            tvQuoteTitle.setText(message.getUser().getName());
-            tvQuoteContent.setText(message.getBody());
             // Add other quotable message type here
             if (message.getType() == TYPE_IMAGE && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
                 rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID)));
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteTitle.setText(message.getUser().getName());
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+            } else if (message.getType() == TYPE_FILE && null != message.getData()) {
+                // Show file quote
+                vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setImageDrawable(getDrawable(R.drawable.tap_ic_documents_white));
+                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_circle_purply));
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));
+                tvQuoteContent.setText(TAPUtils.getInstance().getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
             } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
                 // Unknown message type
                 glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteTitle.setText(message.getUser().getName());
+                tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
             } else {
                 // Show text quote
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteTitle.setText(message.getUser().getName());
+                tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
             }
             if (showKeyboard) {
