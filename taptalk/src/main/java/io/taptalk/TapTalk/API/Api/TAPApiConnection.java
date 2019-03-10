@@ -8,7 +8,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import io.taptalk.TapTalk.API.Interceptor.TAPDownloadRequestInterceptor;
+import io.taptalk.TapTalk.API.Interceptor.TAPDownloadHeaderRequestInterceptor;
 import io.taptalk.TapTalk.API.Interceptor.TAPHeaderRequestInterceptor;
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkDownloadApiService;
@@ -132,17 +132,16 @@ public class TAPApiConnection {
 
     private OkHttpClient buildHttpTapDownloadClient(int headerAuth) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        //loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         return new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
+                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(headerAuth))
                 .connectTimeout(10, TimeUnit.MINUTES)
                 .readTimeout(10, TimeUnit.MINUTES)
                 .writeTimeout(10, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
-                .addInterceptor(new TAPDownloadRequestInterceptor())
                 .build();
     }
 

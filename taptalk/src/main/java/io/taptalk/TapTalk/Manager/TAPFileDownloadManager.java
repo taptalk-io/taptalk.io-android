@@ -121,7 +121,7 @@ public class TAPFileDownloadManager {
             @Override
             public void onError(Throwable throwable) {
                 setDownloadFailed(localID, listener);
-                Log.e(TAG, "onError: " + throwable.getMessage());
+                Log.e(TAG, "onError: ", throwable);
             }
 
             @Override
@@ -197,7 +197,7 @@ public class TAPFileDownloadManager {
     }
 
     private void writeFileToDiskAndCallListener(Context context, TAPMessageModel message, ResponseBody responseBody, TAPDownloadListener listener) {
-        new Thread(() -> {
+        //new Thread(() -> {
             String localID = message.getLocalID();
             String filename;
             if (null != message.getData()) {
@@ -231,7 +231,7 @@ public class TAPFileDownloadManager {
                 setDownloadFailed(localID, listener);
                 Log.e(TAG, "writeFileToDiskAndCallListener: " + e);
             }
-        }).start();
+        //}).start();
     }
 
     public void writeImageFileToDisk(Long timestamp, Bitmap bitmap, TapTalkActionInterface listener) {
