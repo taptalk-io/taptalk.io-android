@@ -14,7 +14,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <application android:theme="@style/AppTheme">
+    <application android:theme="@style/AppTheme"
+        android:largeHeap="true">
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
@@ -26,6 +27,7 @@
             android:value="AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA" />
 
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity" />
+        <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"/>
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity" />

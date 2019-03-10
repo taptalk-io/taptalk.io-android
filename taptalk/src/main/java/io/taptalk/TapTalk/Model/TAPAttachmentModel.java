@@ -3,7 +3,10 @@ package io.taptalk.TapTalk.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.Taptalk.R;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 
 public class TAPAttachmentModel {
     private int icon;
@@ -57,7 +60,7 @@ public class TAPAttachmentModel {
     public static List<TAPAttachmentModel> createAttachMenu() {
         // TODO: 31 January 2019 TEMPORARILY DISABLED FEATURE, REMOVED MENU FROM ATTACHMENT
         int[] imageResIds = {
-//                R.drawable.tap_ic_documents_green_blue,
+                R.drawable.tap_ic_documents_green_blue,
                 R.drawable.tap_ic_camera_green_blue,
                 R.drawable.tap_ic_gallery_green_blue,
 //                R.drawable.tap_ic_audio_green_blue,
@@ -66,7 +69,7 @@ public class TAPAttachmentModel {
         };
 
         int[] titleResIds = {
-//                R.string.document,
+                R.string.tap_document,
                 R.string.tap_camera,
                 R.string.tap_gallery,
 //                R.string.audio,
@@ -75,7 +78,7 @@ public class TAPAttachmentModel {
         };
 
         int[] ids = {
-//                ID_DOCUMENT,
+                ID_DOCUMENT,
                 ID_CAMERA,
                 ID_GALLERY,
 //                ID_AUDIO,
@@ -92,7 +95,111 @@ public class TAPAttachmentModel {
         return attachMenus;
     }
 
-    public static List<TAPAttachmentModel> createChatBubbleLongPressMenu() {
+    public static List<TAPAttachmentModel> createTextBubbleLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_reply_green_blue,
+                R.drawable.tap_ic_forward_green_blue,
+                R.drawable.tap_ic_copy_green_blue
+        };
+
+        int[] titleResIds = {
+                R.string.tap_reply,
+                R.string.tap_forward,
+                R.string.tap_copy
+        };
+
+        int[] ids = {
+                ID_REPLY,
+                ID_FORWARD,
+                ID_COPY
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
+    public static List<TAPAttachmentModel> createImageBubbleLongPressMenu(TAPMessageModel messageModel) {
+
+        int[] imageResIds, titleResIds, ids;
+
+        if (null != messageModel.getData() &&
+                null != messageModel.getData().get(CAPTION) &&
+                !((String) messageModel.getData().get(CAPTION)).isEmpty()) {
+            // Show Copy option to copy caption
+            imageResIds = new int[]{
+                    R.drawable.tap_ic_reply_green_blue,
+//                    R.drawable.tap_ic_forward_green_blue,
+                    R.drawable.tap_ic_copy_green_blue
+            };
+
+            titleResIds = new int[]{
+                    R.string.tap_reply,
+//                    R.string.tap_forward,
+                    R.string.tap_copy
+            };
+
+            ids = new int[]{
+                    ID_REPLY,
+//                    ID_FORWARD,
+                    ID_COPY
+            };
+        } else {
+            // Show only forward and reply
+            imageResIds = new int[]{
+                    R.drawable.tap_ic_reply_green_blue,
+//                    R.drawable.tap_ic_forward_green_blue,
+            };
+
+            titleResIds = new int[]{
+                    R.string.tap_reply,
+//                    R.string.tap_forward,
+            };
+
+            ids = new int[]{
+                    ID_REPLY,
+//                    ID_FORWARD,
+            };
+        }
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
+    public static List<TAPAttachmentModel> createFileBubbleLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_reply_green_blue,
+//                R.drawable.tap_ic_forward_green_blue,
+        };
+
+        int[] titleResIds = {
+                R.string.tap_reply,
+//                R.string.tap_forward,
+        };
+
+        int[] ids = {
+                ID_REPLY,
+//                ID_FORWARD,
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    public static List<TAPAttachmentModel> createLocationBubbleLongPressMenu() {
         int[] imageResIds = {
                 R.drawable.tap_ic_reply_green_blue,
                 R.drawable.tap_ic_forward_green_blue,

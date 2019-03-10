@@ -109,7 +109,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ProgressBar
-                        android:id="@+id/pb_file_download"
+                        android:id="@+id/pb_progress"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
@@ -153,6 +153,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/tap_black_4a"
@@ -179,7 +180,6 @@
         android:fontFamily="@font/tap_font_latoregular"
         android:textColor="@color/tap_grey_9b"
         android:textSize="12sp"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/fl_bubble"
         app:layout_constraintTop_toBottomOf="@id/fl_bubble"
@@ -193,7 +193,6 @@
         android:layout_marginBottom="2dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/tap_ic_reply_circle_white"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
 

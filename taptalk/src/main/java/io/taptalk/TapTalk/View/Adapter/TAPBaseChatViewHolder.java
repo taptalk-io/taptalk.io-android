@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
             intent.putExtra(MESSAGE, message);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.getInstance().toJsonString(message));
             return true;
         });
     }

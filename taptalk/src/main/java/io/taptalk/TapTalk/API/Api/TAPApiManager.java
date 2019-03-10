@@ -288,8 +288,8 @@ public class TAPApiManager {
     }
 
     public void uploadImage(File imageFile, String roomID, String caption, String mimeType,
-                            ProgressRequestBody.UploadCallbacks uploadCallback,
-                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+                             ProgressRequestBody.UploadCallbacks uploadCallback,
+                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
 
@@ -300,7 +300,21 @@ public class TAPApiManager {
                 .addFormDataPart("caption", caption)
                 .addFormDataPart("fileType", "image")
                 .build();
-        execute(tapMultipart.uploadImage(requestBody), subscriber);
+        execute(tapMultipart.uploadFile(requestBody), subscriber);
+    }
+
+    public void uploadFile(File file, String roomID, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("roomID", roomID)
+                .addFormDataPart("file", file.getName(), reqFile)
+                .addFormDataPart("fileType", "file")
+                .build();
+        execute(tapMultipart.uploadFile(requestBody), subscriber);
     }
 
     public void downloadFile(String roomID, String localID, String fileID, Subscriber<ResponseBody> subscriber) {

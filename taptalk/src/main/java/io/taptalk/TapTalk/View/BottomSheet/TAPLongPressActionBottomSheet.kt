@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Model.TAPAttachmentModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
@@ -69,20 +70,40 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createChatBubbleLongPressMenu(), message,
+        var longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(), message,
                 bottomSheetListener, onClickListener)
         when (longPressType) {
+            LongPressType.CHAT_BUBBLE_TYPE -> {
+                when (message?.type) {
+                    TYPE_IMAGE -> {
+                        longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(message),
+                                message, bottomSheetListener, onClickListener)
+                    }
+                    TYPE_FILE -> {
+                        longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFileBubbleLongPressMenu(),
+                                message, bottomSheetListener, onClickListener)
+                    }
+                    TYPE_LOCATION -> {
+                        longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLocationBubbleLongPressMenu(),
+                                message, bottomSheetListener, onClickListener)
+                    }
+                    else -> {
+                        longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(),
+                                message, bottomSheetListener, onClickListener)
+                    }
+                }
+            }
             LongPressType.EMAIL_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createEmailLongPressMenu(), urlMessage, linkifyResult,
-                        bottomSheetListener, onClickListener)
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createEmailLongPressMenu(),
+                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
             LongPressType.LINK_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLinkLongPressMenu(), urlMessage, linkifyResult,
-                        bottomSheetListener, onClickListener)
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLinkLongPressMenu(),
+                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
             LongPressType.PHONE_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createPhoneLongPressMenu(), urlMessage, linkifyResult,
-                        bottomSheetListener, onClickListener)
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createPhoneLongPressMenu(),
+                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
         }
         rv_long_press.adapter = longPressAdapter

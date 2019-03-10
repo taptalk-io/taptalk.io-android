@@ -66,9 +66,10 @@ public class TAPDefaultConstant {
     public static final class MessageData {
         public static final String ITEMS = "items";
         public static final String FILE_ID = "fileID";
+        public static final String FILE_NAME = "fileName";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
-        public static final String IMAGE_SIZE = "size";
+        public static final String SIZE = "size";
         public static final String IMAGE_WIDTH = "width";
         public static final String IMAGE_HEIGHT = "height";
         public static final String CAPTION = "caption";
@@ -101,14 +102,17 @@ public class TAPDefaultConstant {
         public static final int SEND_IMAGE_FROM_PREVIEW = 14;
         public static final int FORWARD_MESSAGE = 15;
         public static final int PICK_LOCATION = 16;
+        public static final int SEND_FILE = 17;
     }
 
     public static final class PermissionRequest {
-        public static final int PERMISSION_CAMERA_CAMERA = 1;
-        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 2;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
-        public static final int PERMISSION_LOCATION = 5;
+        public static final int PERMISSION_CAMERA_CAMERA = 11;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 21;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_FILE = 22;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 31;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE = 32;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 33;
+        public static final int PERMISSION_LOCATION = 41;
     }
 
     public static final class Sorting {
@@ -154,6 +158,7 @@ public class TAPDefaultConstant {
         public static final String UploadProgressLoading = "kTAPUploadProgressLading";
         public static final String UploadProgressFinish = "kTAPUploadProgressFinish";
         public static final String UploadImageData = "kTAPUploadImageData";
+        public static final String UploadFileData = "kTAPUploadFileData";
         public static final String UploadLocalID = "kTAPUploadLocalID";
         public static final String UploadFailed = "kTAPUploadFailed";
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
@@ -166,6 +171,8 @@ public class TAPDefaultConstant {
         public static final String DownloadLocalID = "kTAPDownloadLocalID";
         public static final String DownloadFinish = "kTAPDownloadFinish";
         public static final String DownloadFailed = "kTAPDownloadFailed";
+        public static final String DownloadFile = "kTAPDownloadFile";
+        public static final String CancelDownload = "kTAPCancelDownload";
     }
 
     public static final class LongPressBroadcastEvent {

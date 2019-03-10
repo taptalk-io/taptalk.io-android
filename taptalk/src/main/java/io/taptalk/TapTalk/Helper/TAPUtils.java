@@ -3,12 +3,15 @@ package io.taptalk.TapTalk.Helper;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.ActivityNotFoundException;
 import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Outline;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,7 +23,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,15 +42,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -68,11 +78,17 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 
 public class TAPUtils {
 
@@ -288,6 +304,51 @@ public class TAPUtils {
         return "Rp " + str.replace(",", ".");
     }
 
+    public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
+    public void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
+        view.setOutlineProvider(new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                int left = 0;
+                int top = 0;
+                int right = view.getWidth();
+                int bottom = view.getHeight();
+                switch (clipType) {
+                    case TOP:
+                        bottom += cornerRadius;
+                        break;
+                    case BOTTOM:
+                        top -= cornerRadius;
+                        break;
+                    case LEFT:
+                        right += cornerRadius;
+                        break;
+                    case RIGHT:
+                        left -= cornerRadius;
+                        break;
+                    case TOP_LEFT:
+                        bottom += cornerRadius;
+                        right += cornerRadius;
+                        break;
+                    case TOP_RIGHT:
+                        bottom += cornerRadius;
+                        left -= cornerRadius;
+                        break;
+                    case BOTTOM_LEFT:
+                        top -= cornerRadius;
+                        right += cornerRadius;
+                        break;
+                    case BOTTOM_RIGHT:
+                        top -= cornerRadius;
+                        left -= cornerRadius;
+                        break;
+                }
+                outline.setRoundRect(left, top, right, bottom, cornerRadius);
+            }
+        });
+        view.setClipToOutline(true);
+    }
+
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
         startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false);
     }
@@ -391,6 +452,70 @@ public class TAPUtils {
             }
         }
         return null;
+    }
+
+    public boolean openFile(Context context, Uri uri, String mimeType) {
+        // TODO: 8 March 2019 CHECK IF FILE EXISTS
+        context.grantUriPermission(context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        Log.e(TAG, "openFile: " + uri);
+        Log.e(TAG, "openFile: " + mimeType);
+        Intent intent = new Intent(Intent.ACTION_VIEW)
+                .setDataAndType(uri, mimeType)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            context.startActivity(intent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            try {
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setDataAndType(uri, "file/*");
+                context.startActivity(Intent.createChooser(intent, "Open folder"));
+                return true;
+            } catch (ActivityNotFoundException e2) {
+                e2.printStackTrace();
+                Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+    }
+
+    public String getFileDisplayName(TAPMessageModel message) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        String fileName = (String) data.get(FILE_NAME);
+
+        if (null != fileName && fileName.contains(".")) {
+            return fileName.substring(0, fileName.lastIndexOf('.'));
+        } else if (null != fileName) {
+            return fileName;
+        } else {
+            return "";
+        }
+    }
+
+    public String getFileDisplayInfo(TAPMessageModel message) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        String fileName = (String) data.get(FILE_NAME);
+        String mediaType = (String) data.get(MEDIA_TYPE);
+        Number size = (Number) data.get(SIZE);
+
+        String displaySize = "", displayExtension = "";
+        if (null != size) {
+            displaySize = TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
+        }
+        if (null != fileName && fileName.contains(".") && null != size) {
+            displayExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+        } else if (null != fileName && null != mediaType && mediaType.contains("/")) {
+            displayExtension = mediaType.substring(mediaType.lastIndexOf('/') + 1);
+        } else if (null != mediaType) {
+            displayExtension = mediaType;
+        }
+        return String.format("%s %s", displaySize, displayExtension).toUpperCase();
     }
 
     public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
@@ -638,7 +763,68 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         activity.startActivity(mapIntent);
     }
 
+    public void openDocumentPicker(Activity activity) {
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Check read storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_FILE);
+        } else {
+            // Permission granted
+            Intent intent = new Intent(activity, FilePickerActivity.class);
+            intent.putExtra(FilePickerActivity.ARG_HIDDEN, true);
+            activity.startActivityForResult(intent, SEND_FILE);
+        }
+    }
+
     public boolean isListEmpty(List t) {
         return null == t || 0 >= t.size();
+    }
+
+    /**
+     * Buat ngubah file length jadi format kb/mb/gb
+     * @param size = file.length
+     * @return
+     */
+    public String getStringSizeLengthFile(long size) {
+
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        float sizeKb = 1024.0f;
+        float sizeMb = sizeKb * sizeKb;
+        float sizeGb = sizeMb * sizeKb;
+        float sizeTerra = sizeGb * sizeKb;
+
+
+        if(size < sizeMb)
+            return df.format(size / sizeKb)+ " KB";
+        else if(size < sizeGb)
+            return df.format(size / sizeMb) + " MB";
+        else if(size < sizeTerra)
+            return df.format(size / sizeGb) + " GB";
+
+        return size + "B";
+    }
+
+    /**
+     * Untuk Dapetin file Extension seperti jpg, png, webp, apk, dll
+     * @param file yang mau di dapatkan extensionnya
+     * @return
+     */
+    public String getFileExtension(File file) {
+        if (null != file) {
+            String fileName = file.getName();
+            int dotIndex = fileName.lastIndexOf('.');
+            return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
+        }
+
+        return "";
+    }
+
+    /**
+     * Untuk Dapetin file mime type seperti image/jpg, dll
+     * @param file yang mau di dapatkan mimeTypenya
+     * @return
+     */
+    public String getFileMimeType(File file) {
+        return URLConnection.guessContentTypeFromName(file.getName());
     }
 }
