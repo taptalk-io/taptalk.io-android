@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.IOException;
 
@@ -30,7 +29,7 @@ import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
     public static final String TAG = TAPDownloadHeaderRequestInterceptor.class.getSimpleName();
     private int headerAuth;
-    TapTalkDownloadProgressInterface listener = new TapTalkDownloadProgressInterface() {
+    private TapTalkDownloadProgressInterface listener = new TapTalkDownloadProgressInterface() {
         @Override
         public void update(int percentage, String localID) {
             TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, percentage);
@@ -111,7 +110,7 @@ public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
         return response.newBuilder()
                 .body(new TAPDownloadProgressResponseBody(
                         response.body(),
-                        original.header("localID"),
+                        request.header("localID"),
                         listener))
                 .build();
     }

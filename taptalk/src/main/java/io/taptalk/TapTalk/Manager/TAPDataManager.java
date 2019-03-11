@@ -742,8 +742,8 @@ public class TAPDataManager {
     }
 
     public void uploadFile(String localID, File file, String roomID, String mimeType,
-                            ProgressRequestBody.UploadCallbacks uploadCallback,
-                            TapDefaultDataView<TAPUploadFileResponse> view) {
+                           ProgressRequestBody.UploadCallbacks uploadCallback,
+                           TapDefaultDataView<TAPUploadFileResponse> view) {
         TAPApiManager.getInstance().uploadFile(file, roomID, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 

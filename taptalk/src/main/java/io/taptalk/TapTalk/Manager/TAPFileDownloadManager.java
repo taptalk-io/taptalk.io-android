@@ -4,17 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,7 +22,6 @@ import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.Taptalk.R;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
@@ -78,6 +73,7 @@ public class TAPFileDownloadManager {
         }
         return getFailedDownloads().size() > 0;
     }
+
     public void clearFailedDownloads() {
         if (null == failedDownloads) {
             return;
@@ -149,7 +145,7 @@ public class TAPFileDownloadManager {
                     try {
                         Bitmap bitmap = getBitmapFromResponse(response);
                         saveImageToCacheAndCallListener(context, localID, fileID, bitmap, listener);
-                    } catch (Exception e)  {
+                    } catch (Exception e) {
                         setDownloadFailed(localID, listener);
                         Log.e(TAG, "onSuccess exception: ", e);
                     }
@@ -198,39 +194,39 @@ public class TAPFileDownloadManager {
 
     private void writeFileToDiskAndCallListener(Context context, TAPMessageModel message, ResponseBody responseBody, TAPDownloadListener listener) {
         //new Thread(() -> {
-            String localID = message.getLocalID();
-            String filename;
-            if (null != message.getData()) {
-                filename = (String) message.getData().get(FILE_NAME);
-            } else {
-                filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
-            }
-            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Files");
-            dir.mkdirs();
-            File file = new File(dir, filename);
-            if (file.exists()) {
-                file.delete();
-            }
-            try {
-                // Write file to disk
-                // TODO: 5 March 2019 CHECK STORAGE PERMISSION
-                BufferedSink sink = Okio.buffer(Okio.sink(file));
-                sink.writeAll(responseBody.source());
-                sink.close();
+        String localID = message.getLocalID();
+        String filename;
+        if (null != message.getData()) {
+            filename = (String) message.getData().get(FILE_NAME);
+        } else {
+            filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
+        }
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Files");
+        dir.mkdirs();
+        File file = new File(dir, filename);
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            // Write file to disk
+            // TODO: 5 March 2019 CHECK STORAGE PERMISSION
+            BufferedSink sink = Okio.buffer(Okio.sink(file));
+            sink.writeAll(responseBody.source());
+            sink.close();
 
-                // Remove message from progress map
-                removeDownloadProgressMap(localID);
-                if (hasFailedDownloads()) {
-                    removeFailedDownload(localID);
-                }
-
-                // Trigger download success on listener
-                listener.onFileDownloadProcessFinished(localID, FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file));
-            } catch (Exception e) {
-                e.printStackTrace();
-                setDownloadFailed(localID, listener);
-                Log.e(TAG, "writeFileToDiskAndCallListener: " + e);
+            // Remove message from progress map
+            removeDownloadProgressMap(localID);
+            if (hasFailedDownloads()) {
+                removeFailedDownload(localID);
             }
+
+            // Trigger download success on listener
+            listener.onFileDownloadProcessFinished(localID, FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file));
+        } catch (Exception e) {
+            e.printStackTrace();
+            setDownloadFailed(localID, listener);
+            Log.e(TAG, "writeFileToDiskAndCallListener: " + e);
+        }
         //}).start();
     }
 

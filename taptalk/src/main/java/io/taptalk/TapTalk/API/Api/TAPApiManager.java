@@ -288,8 +288,8 @@ public class TAPApiManager {
     }
 
     public void uploadImage(File imageFile, String roomID, String caption, String mimeType,
-                             ProgressRequestBody.UploadCallbacks uploadCallback,
-                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
 
@@ -304,8 +304,8 @@ public class TAPApiManager {
     }
 
     public void uploadFile(File file, String roomID, String mimeType,
-                            ProgressRequestBody.UploadCallbacks uploadCallback,
-                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+                           ProgressRequestBody.UploadCallbacks uploadCallback,
+                           Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
 
         RequestBody requestBody = new MultipartBody.Builder()
