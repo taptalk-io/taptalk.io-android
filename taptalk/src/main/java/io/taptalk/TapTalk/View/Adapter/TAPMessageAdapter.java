@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -83,12 +84,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -694,9 +697,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     downloadFile(item);
                 }
-            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending())) &&
-                    null == downloadProgressValue) && null != item.getData() &&
-                    null != TAPCacheManager.getInstance(itemView.getContext()).getUri((String) item.getData().get(FILE_ID))) {
+            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
+                    && !(((String) item.getData().get(FILE_URI)).isEmpty())) {
                 // File has finished downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
@@ -745,15 +748,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openFile(TAPMessageModel item) {
-            if (null == item.getData() || null == item.getData().get(FILE_ID) || null == item.getData().get(MEDIA_TYPE)) {
+            if (null == item.getData() || null == item.getData().get(FILE_URI) || null == item.getData().get(MEDIA_TYPE)) {
                 return;
             }
-            TAPUtils.getInstance().openFile(
-                    itemView.getContext(),
-                    TAPCacheManager.getInstance(itemView.getContext())
-                            .getUri((String) item.getData().get(FILE_ID)),
-                    (String) item.getData().get(MEDIA_TYPE));
+            TAPUtils.getInstance().openFile(itemView.getContext(), Uri.parse((String) item.getData().get(FILE_URI)), (String) item.getData().get(MEDIA_TYPE));
         }
+
+//        private void retryDownload(TAPMessageModel item) {
+//
+//        }
 
         private void retryUpload(TAPMessageModel item) {
 
