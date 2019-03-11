@@ -133,15 +133,15 @@ public class TAPApiConnection {
     private OkHttpClient buildHttpTapDownloadClient(int headerAuth) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         //loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
 
         return new OkHttpClient.Builder()
-                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(headerAuth))
+                .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(10, TimeUnit.MINUTES)
                 .readTimeout(10, TimeUnit.MINUTES)
                 .writeTimeout(10, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
-                .addInterceptor(loggingInterceptor)
+                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(headerAuth))
                 .build();
     }
 

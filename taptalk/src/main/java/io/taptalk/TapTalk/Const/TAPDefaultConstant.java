@@ -213,6 +213,7 @@ public class TAPDefaultConstant {
         public static final String APP_ID = "kTAPApplicationID";
         public static final String APP_SECRET = "kTAPApplicationSecret";
     }
+
     public static final class Location {
         public static final String LONGITUDE = "kTAPlongitude";
         public static final String LATITUDE = "kTAPlatitude";
