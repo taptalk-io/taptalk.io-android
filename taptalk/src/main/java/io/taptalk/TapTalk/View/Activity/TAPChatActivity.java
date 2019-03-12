@@ -153,6 +153,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
+import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
@@ -327,9 +328,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
                         break;
                     case SEND_FILE:
-                        if (null != intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)) {
-                            File tempFile = new File(intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
-                            TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
+                        File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
+                        if (null != tempFile) {
+                            if (TAPFileUploadManager.getInstance().isSizeBelowUploadMaximum(tempFile.length()))
+                                TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
+                            else {
+                                new TapTalkDialog.Builder(TAPChatActivity.this)
+                                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                                        .setTitle("Sorry")
+                                        .setMessage("Maximum file size is 25 MB.")
+                                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                        .show();
+                            }
                         }
                         break;
                 }

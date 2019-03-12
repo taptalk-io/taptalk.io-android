@@ -17,6 +17,7 @@ import android.webkit.MimeTypeMap;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -56,12 +57,22 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMap;
     private HashMap<String, String> imagePathMap;
+    //max Size for upload file message
+    private long maxSize = 25 * 1024 * 1024;
 
     private TAPFileUploadManager() {
     }
 
     public static TAPFileUploadManager getInstance() {
         return null == instance ? instance = new TAPFileUploadManager() : instance;
+    }
+
+    public long getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(long maxSize) {
+        this.maxSize = maxSize;
     }
 
     private HashMap<String, Integer> getUploadProgressMap() {
@@ -568,4 +579,12 @@ public class TAPFileUploadManager {
         }
     }
 
+    /**
+     * Buat ngubah file length jadi format kb/mb/gb
+     * @param size = file.length
+     * @return
+     */
+    public boolean isSizeBelowUploadMaximum(long size) {
+        return maxSize >= size;
+    }
 }
