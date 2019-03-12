@@ -279,9 +279,12 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
-            llButton.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
-                    TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
-                    contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad"));
+            llButton.setOnClickListener(v -> {
+                TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
+                        TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
+                        contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad");
+                finish();
+            });
             tvAlreadyContact.setText(Html.fromHtml("<b>" + contactModel.getName() + "</b> "
                     + getResources().getString(R.string.tap_is_already_in_your_contacts)));
             cvResult.animate().alpha(1f).withEndAction(() -> {
