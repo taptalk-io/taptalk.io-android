@@ -30,6 +30,7 @@ public class MyFireMsgService extends FirebaseMessagingService {
                     TAPRoomListActivity.class,
                     TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
         } catch (Exception e) {
+            Log.e(TAG, "onMessageReceived: ",e );
             e.printStackTrace();
         }
     }
