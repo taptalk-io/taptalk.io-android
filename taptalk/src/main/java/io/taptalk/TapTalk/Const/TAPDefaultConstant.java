@@ -173,6 +173,7 @@ public class TAPDefaultConstant {
         public static final String DownloadFailed = "kTAPDownloadFailed";
         public static final String DownloadFile = "kTAPDownloadFile";
         public static final String CancelDownload = "kTAPCancelDownload";
+        public static final String OpenFile = "kTAPOpenFile";
     }
 
     public static final class LongPressBroadcastEvent {
