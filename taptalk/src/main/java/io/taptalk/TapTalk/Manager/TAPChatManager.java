@@ -525,9 +525,9 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    new TAPDataFileModel(fileName, fileMimeType, file.getAbsolutePath(), fileSize).toHashMap());
+                    new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap());
         } else {
-            HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, file.getAbsolutePath(), fileSize).toHashMap();
+            HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
             if (null != getUserInfo()) {
                 data.put(USER_INFO, getUserInfo());
             }
@@ -541,6 +541,8 @@ public class TAPChatManager {
                     data,
                     getQuotedMessage());
         }
+        // Save file Uri
+        saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), Uri.parse(file.getAbsolutePath()));
         return messageModel;
     }
 
@@ -566,6 +568,13 @@ public class TAPChatManager {
 
     public void sendFileMessage(Context context, File file) {
         new Thread(() -> createFileMessageModelAndAddToQueueUpload(context, getOpenRoom(), file)).start();
+    }
+
+    public void sendFileMessage(Context context, TAPMessageModel fileModel) {
+        new Thread(() -> {
+            addUploadingMessageToHashMap(fileModel);
+            TAPFileUploadManager.getInstance().addUploadQueue(context, fileModel.getRoom().getRoomID(), fileModel);
+        }).start();
     }
 
     private String generateFileMessageBody(String fileName) {
