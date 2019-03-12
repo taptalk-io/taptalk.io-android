@@ -248,21 +248,21 @@ public class TAPFileUploadManager {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 return;
             }
-            //TAPDataImageModel imageData = new TAPDataImageModel(messageModel.getData());
             TAPDataFileModel fileData = new TAPDataFileModel(messageModel.getData());
-            File tempFile = new File(fileData.getFileUri());
+            Uri fileUri = TAPChatManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
 
-            if (null == fileData.getFileUri() || fileData.getFileUri().isEmpty()) {
-                // Image data does not contain URI
+            if (null == fileUri) {
+                // File URI not found
                 getUploadQueue(roomID).remove(0);
                 getBitmapQueue().remove(messageModel.getLocalID());
                 Intent intent = new Intent(UploadFailed);
                 intent.putExtra(UploadLocalID, messageModel.getLocalID());
-                intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_image_uri_empty));
+                intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_image_uri_not_found));
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 return;
             }
 
+            File tempFile = new File(fileUri.toString());
             callFileUploadAPI(context, roomID, messageModel, tempFile, fileData.getMediaType());
         }).start();
     }
@@ -545,11 +545,10 @@ public class TAPFileUploadManager {
             addUploadProgressMap(localID, 100);
 
             TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(response.getId(), fileName,
-                    mimetype, fileUri, response.getSize());
-            HashMap<String, Object> fileDataMap = fileDataModel.toHashMapWithoutFileUri();
+                    mimetype, response.getSize());
+            HashMap<String, Object> fileDataMap = fileDataModel.toHashMap();
             if (null != messageModel.getData()) {
                 messageModel.putData(fileDataMap);
-                messageModel.getData().remove(FILE_URI);
             } else {
                 messageModel.setData(fileDataMap);
             }

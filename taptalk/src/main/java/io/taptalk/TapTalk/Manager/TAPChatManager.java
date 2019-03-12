@@ -74,6 +74,7 @@ public class TAPChatManager {
     private Map<String, Integer> quotedActions;
     private Map<String, String> messageDrafts;
     private HashMap<String, HashMap<String, Object>> userInfo;
+    private HashMap<String /*roomID*/, HashMap<String /*localID*/, String /*stringUri*/>> fileMessageUriMap;
     private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
@@ -524,9 +525,9 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    new TAPDataFileModel(fileName, fileMimeType, file.getAbsolutePath(), fileSize).toHashMap());
+                    new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap());
         } else {
-            HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, file.getAbsolutePath(), fileSize).toHashMap();
+            HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
             if (null != getUserInfo()) {
                 data.put(USER_INFO, getUserInfo());
             }
@@ -540,6 +541,8 @@ public class TAPChatManager {
                     data,
                     getQuotedMessage());
         }
+        // Save file Uri
+        saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), Uri.parse(file.getAbsolutePath()));
         return messageModel;
     }
 
@@ -565,6 +568,13 @@ public class TAPChatManager {
 
     public void sendFileMessage(Context context, File file) {
         new Thread(() -> createFileMessageModelAndAddToQueueUpload(context, getOpenRoom(), file)).start();
+    }
+
+    public void sendFileMessage(Context context, TAPMessageModel fileModel) {
+        new Thread(() -> {
+            addUploadingMessageToHashMap(fileModel);
+            TAPFileUploadManager.getInstance().addUploadQueue(context, fileModel.getRoom().getRoomID(), fileModel);
+        }).start();
     }
 
     private String generateFileMessageBody(String fileName) {
@@ -1255,5 +1265,40 @@ public class TAPChatManager {
                 chatListener.onReadMessage(roomID);
             }
         }).start();
+    }
+
+    private HashMap<String, HashMap<String, String>> getFileMessageUriMap() {
+        return null == fileMessageUriMap ? fileMessageUriMap = new LinkedHashMap<>() : fileMessageUriMap;
+    }
+
+    public void getFileMessageUriFromPreference() {
+        HashMap<String, HashMap<String, String>> fileUriMap = TAPDataManager.getInstance().getFileMessageUriMap();
+        if (null != fileUriMap) {
+            getFileMessageUriMap().putAll(fileUriMap);
+        }
+    }
+
+    public void saveFileMessageUriToPreference() {
+        TAPDataManager.getInstance().saveFileMessageUriMap(getFileMessageUriMap());
+    }
+
+    public Uri getFileMessageUri(String roomID, String localID) {
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap && null != roomUriMap.get(localID)) {
+            return Uri.parse(roomUriMap.get(localID));
+        } else {
+            return null;
+        }
+    }
+
+    public void saveFileMessageUri(String roomID, String localID, Uri fileUri) {
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap) {
+            roomUriMap.put(localID, fileUri.toString());
+        } else {
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put(localID, fileUri.toString());
+            getFileMessageUriMap().put(roomID, hashMap);
+        }
     }
 }
