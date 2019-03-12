@@ -585,6 +585,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
+        private Uri fileUri;
+
         protected FileVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
@@ -687,6 +689,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String localID = item.getLocalID();
             Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(localID);
+            fileUri = TAPChatManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
@@ -698,8 +701,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     downloadFile(item);
                 }
             } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
-                    && !(((String) item.getData().get(FILE_URI)).isEmpty())) {
+                    && null == downloadProgressValue) && null != fileUri) {
                 // File has finished downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
@@ -748,15 +750,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openFile(TAPMessageModel item) {
-            if (null == item.getData() || null == item.getData().get(FILE_URI) || null == item.getData().get(MEDIA_TYPE)) {
+            if (null == fileUri || null == item.getData() || null == item.getData().get(MEDIA_TYPE)) {
                 return;
             }
-            TAPUtils.getInstance().openFile(itemView.getContext(), Uri.parse((String) item.getData().get(FILE_URI)), (String) item.getData().get(MEDIA_TYPE));
+            TAPUtils.getInstance().openFile(itemView.getContext(), fileUri, (String) item.getData().get(MEDIA_TYPE));
         }
-
-//        private void retryDownload(TAPMessageModel item) {
-//
-//        }
 
         private void retryUpload(TAPMessageModel item) {
 

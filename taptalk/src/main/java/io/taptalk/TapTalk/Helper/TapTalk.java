@@ -180,6 +180,7 @@ public class TapTalk {
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
+                TAPChatManager.getInstance().getFileMessageUriFromPreference();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
@@ -199,6 +200,7 @@ public class TapTalk {
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+                TAPChatManager.getInstance().saveFileMessageUriToPreference();
             }
         });
     }
