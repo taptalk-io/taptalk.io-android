@@ -65,7 +65,7 @@ public class TAPContactManager {
         TAPDataManager.getInstance().getAllUserData(getAllUserDataListener);
     }
 
-    private void saveUserDataMapToDatabase() {
+    public void saveUserDataMapToDatabase() {
         TAPDataManager.getInstance().insertMyContactToDatabase(convertUserDataToList(userDataMap));
     }
 
