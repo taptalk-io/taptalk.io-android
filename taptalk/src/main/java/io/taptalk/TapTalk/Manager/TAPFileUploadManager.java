@@ -259,7 +259,7 @@ public class TAPFileUploadManager {
                 return;
             }
             TAPDataFileModel fileData = new TAPDataFileModel(messageModel.getData());
-            Uri fileUri = TAPChatManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
+            Uri fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
 
             if (null == fileUri) {
                 // File URI not found

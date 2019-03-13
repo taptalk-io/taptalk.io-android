@@ -675,7 +675,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String localID = item.getLocalID();
             Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(localID);
-            fileUri = TAPChatManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
+            fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
