@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
@@ -75,10 +72,10 @@ import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
@@ -305,6 +302,7 @@ public class TAPUtils {
     }
 
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
+
     public void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
         view.setOutlineProvider(new ViewOutlineProvider() {
             @Override
@@ -443,7 +441,7 @@ public class TAPUtils {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     activity.startActivityForResult(intent, requestCode);
                     // TODO: 22 January 2019 TESTING
-                    TAPFileUploadManager.getInstance().addImagePath(imageUri, image.getAbsolutePath());
+                    TAPFileUploadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -456,26 +454,19 @@ public class TAPUtils {
 
     public boolean openFile(Context context, Uri uri, String mimeType) {
         // TODO: 8 March 2019 CHECK IF FILE EXISTS
-        context.grantUriPermission(context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.grantUriPermission(context.getPackageName(), uri, FLAG_GRANT_READ_URI_PERMISSION);
         Log.e(TAG, "openFile: " + uri);
         Log.e(TAG, "openFile: " + mimeType);
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setDataAndType(uri, mimeType)
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                .addFlags(FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            context.startActivity(intent);
+            context.startActivity(Intent.createChooser(intent, "Open folder"));
             return true;
         } catch (ActivityNotFoundException e) {
-            try {
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setDataAndType(uri, "file/*");
-                context.startActivity(Intent.createChooser(intent, "Open folder"));
-                return true;
-            } catch (ActivityNotFoundException e2) {
-                e2.printStackTrace();
-                Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
-                return false;
-            }
+            e.printStackTrace();
+            Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 
@@ -757,9 +748,8 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
     }
 
     public void openMaps(Activity activity, Double latitude, Double longitude) {
-        Uri gmmIntentUri = Uri.parse("geo:" + latitude + "," + longitude + "?q=" + latitude+","+longitude + "&z=16");
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
+        Uri googleMapUrl = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + latitude + "," + longitude + "&z=16");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, googleMapUrl);
         activity.startActivity(mapIntent);
     }
 
@@ -781,6 +771,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     /**
      * Buat ngubah file length jadi format kb/mb/gb
+     *
      * @param size = file.length
      * @return
      */
@@ -794,11 +785,11 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         float sizeTerra = sizeGb * sizeKb;
 
 
-        if(size < sizeMb)
-            return df.format(size / sizeKb)+ " KB";
-        else if(size < sizeGb)
+        if (size < sizeMb)
+            return df.format(size / sizeKb) + " KB";
+        else if (size < sizeGb)
             return df.format(size / sizeMb) + " MB";
-        else if(size < sizeTerra)
+        else if (size < sizeTerra)
             return df.format(size / sizeGb) + " GB";
 
         return size + "B";
@@ -806,6 +797,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     /**
      * Untuk Dapetin file Extension seperti jpg, png, webp, apk, dll
+     *
      * @param file yang mau di dapatkan extensionnya
      * @return
      */
@@ -821,6 +813,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     /**
      * Untuk Dapetin file mime type seperti image/jpg, dll
+     *
      * @param file yang mau di dapatkan mimeTypenya
      * @return
      */

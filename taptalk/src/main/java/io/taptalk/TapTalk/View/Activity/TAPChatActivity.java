@@ -104,6 +104,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -119,9 +120,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEven
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
@@ -152,6 +153,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
+import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
@@ -326,9 +328,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
                         break;
                     case SEND_FILE:
-                        if (null != intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)) {
-                            File tempFile = new File(intent.getStringExtra(FilePickerActivity.RESULT_FILE_PATH));
-                            TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
+                        File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
+                        if (null != tempFile) {
+                            if (TAPFileUploadManager.getInstance().isSizeBelowUploadMaximum(tempFile.length()))
+                                TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
+                            else {
+                                new TapTalkDialog.Builder(TAPChatActivity.this)
+                                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                                        .setTitle("Sorry")
+                                        .setMessage("Maximum file size is 25 MB.")
+                                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                        .show();
+                            }
                         }
                         break;
                 }
@@ -615,7 +626,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void registerBroadcastManager() {
         TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
                 UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
-                DownloadProgressLoading, DownloadFinish, DownloadFailed, DownloadFile,
+                DownloadProgressLoading, DownloadFinish, DownloadFailed, DownloadFile, OpenFile,
                 CancelDownload, LongPressChatBubble, LongPressEmail, LongPressLink, LongPressPhone);
     }
 
@@ -1366,8 +1377,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         failedMessageModel.setFailedSend(false);
                         failedMessageModel.setSending(true);
                         new Thread(() -> {
-                            TAPMessageModel imageMessageRetry = failedMessageModel.copyMessageModel();
-                            TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), imageMessageRetry);
+                            TAPMessageModel retryMessage = failedMessageModel.copyMessageModel();
+                            if (retryMessage.getType() == TYPE_IMAGE) {
+                                TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), retryMessage);
+                            } else if (retryMessage.getType() == TYPE_FILE) {
+                                TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, retryMessage);
+                            }
                         }).start();
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
@@ -1394,6 +1409,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     TAPFileDownloadManager.getInstance().cancelFileDownload(localID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case OpenFile:
+                    TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
+                    Uri fileUri = intent.getParcelableExtra(FILE_URI);
+                    if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+                        TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE));
                     }
                     break;
                 case LongPressChatBubble:
@@ -1444,9 +1466,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 @Override
                 public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
                     if (null != message.getData()) {
-                        // Put file URI to message data and save to database
-                        message.getData().put(FILE_URI, fileUri.toString());
-                        TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(message));
+                        // Save file Uri to manager
+                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), localID, fileUri);
                     }
                     if (vm.getMessagePointer().containsKey(localID)) {
                         runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));

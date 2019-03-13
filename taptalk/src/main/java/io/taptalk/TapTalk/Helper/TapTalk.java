@@ -45,6 +45,7 @@ import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -107,6 +108,8 @@ public class TapTalk {
         @Override
         public void uncaughtException(Thread thread, Throwable throwable) {
             TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+            TAPContactManager.getInstance().saveUserDataMapToDatabase();
+            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             defaultUEH.uncaughtException(thread, throwable);
         }
     };
@@ -138,6 +141,7 @@ public class TapTalk {
         Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
 
         TAPCacheManager.getInstance(appContext).initAllCache();
+        TAPFileDownloadManager.getInstance(); // Get file message URI from preference
 
         //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
         TAPDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);

@@ -28,24 +28,19 @@ public class TAPDataFileModel implements Parcelable {
     @JsonProperty("mediaType")
     private String mediaType;
     @Nullable
-    @JsonProperty("fileUri")
-    private String fileUri;
-    @Nullable
     @JsonProperty("size")
     private Number size;
 
-    public TAPDataFileModel(@Nullable String fileID, @Nullable String fileName, @Nullable String mediaType, @Nullable String fileUri, @Nullable Number size) {
+    public TAPDataFileModel(@Nullable String fileID, @Nullable String fileName, @Nullable String mediaType, @Nullable Number size) {
         this.fileID = fileID;
         this.fileName = fileName;
         this.mediaType = mediaType;
-        this.fileUri = fileUri;
         this.size = size;
     }
 
-    public TAPDataFileModel(@Nullable String fileName, @Nullable String mediaType, @Nullable String fileUri, @Nullable Number size) {
+    public TAPDataFileModel(@Nullable String fileName, @Nullable String mediaType, @Nullable Number size) {
         this.fileName = fileName;
         this.mediaType = mediaType;
-        this.fileUri = fileUri;
         this.size = size;
     }
 
@@ -53,9 +48,8 @@ public class TAPDataFileModel implements Parcelable {
     }
 
     public static TAPDataFileModel Builder(String fileID, String fileName,
-                                           String mediaType, String fileUri,
-                                           Number size) {
-        return new TAPDataFileModel(fileID, fileName, mediaType, fileUri, size);
+                                           String mediaType, Number size) {
+        return new TAPDataFileModel(fileID, fileName, mediaType, size);
     }
 
     public TAPDataFileModel(HashMap<String, Object> imageDataMap) {
@@ -63,13 +57,6 @@ public class TAPDataFileModel implements Parcelable {
         this.fileName = (String) imageDataMap.get(FILE_NAME);
         this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
         this.size = (Number) imageDataMap.get(SIZE);
-        this.fileUri = (String) imageDataMap.get(FILE_URI);
-    }
-
-    public HashMap<String, Object> toHashMapWithoutFileUri() {
-        HashMap<String, Object> dataMap = TAPUtils.getInstance().toHashMap(this);
-        dataMap.remove(FILE_URI);
-        return dataMap;
     }
 
     public HashMap<String, Object> toHashMap() {
@@ -104,15 +91,6 @@ public class TAPDataFileModel implements Parcelable {
     }
 
     @Nullable
-    public String getFileUri() {
-        return fileUri;
-    }
-
-    public void setFileUri(@Nullable String fileUri) {
-        this.fileUri = fileUri;
-    }
-
-    @Nullable
     public Number getSize() {
         return size;
     }
@@ -132,7 +110,6 @@ public class TAPDataFileModel implements Parcelable {
         dest.writeString(this.fileID);
         dest.writeString(this.fileName);
         dest.writeString(this.mediaType);
-        dest.writeString(this.fileUri);
         dest.writeSerializable(this.size);
     }
 
@@ -140,7 +117,6 @@ public class TAPDataFileModel implements Parcelable {
         this.fileID = in.readString();
         this.fileName = in.readString();
         this.mediaType = in.readString();
-        this.fileUri = in.readString();
         this.size = (Number) in.readSerializable();
     }
 

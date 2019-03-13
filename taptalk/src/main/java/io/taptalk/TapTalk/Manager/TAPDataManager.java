@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.orhanobut.hawk.Hawk;
@@ -45,6 +46,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_A
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
@@ -303,6 +305,17 @@ public class TAPDataManager {
 
     public void removeWriteStoragePermissionRequested() {
         removePreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
+    }
+
+    /**
+     * FILE URI CACHE
+     */
+    public HashMap<String, HashMap<String, String>> getFileMessageUriMap() {
+        return Hawk.get(K_FILE_URI_MAP, null);
+    }
+
+    public void saveFileMessageUriMap(HashMap<String, HashMap<String, String>> fileUriMap) {
+        Hawk.put(K_FILE_URI_MAP, fileUriMap);
     }
 
     // TODO: 14/09/18 TEMP

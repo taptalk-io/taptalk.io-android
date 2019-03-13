@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -80,18 +81,16 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -585,6 +584,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
+        private Uri fileUri;
+
         protected FileVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
@@ -668,38 +669,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void setFileData(TAPMessageModel item) {
             tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
             tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
-
-//            if (null != fileName) {
-//                tvFileName.setText(!fileName.contains(".") ? fileName :
-//                        fileName.substring(0, fileName.lastIndexOf('.')));
-//            }
-//            if (null != mediaType && null != size) {
-//                if (fileName.contains("."))
-//                tvFileInfo.setText(String.format("%s %s",
-//                        TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()),
-//                        !mediaType.contains("/") ? mediaType :
-//                                mediaType.substring(mediaType.lastIndexOf('/') + 1)).toUpperCase());
-//            }
         }
 
-        // FIXME: 5 March 2019 CHECK FLOW
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
             Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(localID);
+            fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
                 pbProgress.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
-                    retryUpload(item);
+                    flFileIcon.setOnClickListener(v -> retryUpload(item));
                 } else {
-                    downloadFile(item);
+                    flFileIcon.setOnClickListener(v -> downloadFile(item));
                 }
             } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressValue) && null != item.getData() && item.getData().containsKey(FILE_URI)
-                    && !(((String) item.getData().get(FILE_URI)).isEmpty())) {
+                    && null == downloadProgressValue) && null != fileUri) {
                 // File has finished downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
@@ -748,18 +736,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openFile(TAPMessageModel item) {
-            if (null == item.getData() || null == item.getData().get(FILE_URI) || null == item.getData().get(MEDIA_TYPE)) {
-                return;
-            }
-            TAPUtils.getInstance().openFile(itemView.getContext(), Uri.parse((String) item.getData().get(FILE_URI)), (String) item.getData().get(MEDIA_TYPE));
+            Intent intent = new Intent(OpenFile);
+            intent.putExtra(MESSAGE, item);
+            intent.putExtra(FILE_URI, fileUri);
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
-//        private void retryDownload(TAPMessageModel item) {
-//
-//        }
-
         private void retryUpload(TAPMessageModel item) {
-
+            Intent intent = new Intent(UploadRetried);
+            intent.putExtra(UploadLocalID, item.getLocalID());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
     }
 
