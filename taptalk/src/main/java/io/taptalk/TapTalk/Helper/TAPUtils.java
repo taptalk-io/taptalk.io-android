@@ -72,6 +72,7 @@ import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -453,28 +454,19 @@ public class TAPUtils {
 
     public boolean openFile(Context context, Uri uri, String mimeType) {
         // TODO: 8 March 2019 CHECK IF FILE EXISTS
-        context.grantUriPermission(context.getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.grantUriPermission(context.getPackageName(), uri, FLAG_GRANT_READ_URI_PERMISSION);
         Log.e(TAG, "openFile: " + uri);
         Log.e(TAG, "openFile: " + mimeType);
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setDataAndType(uri, mimeType)
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                .addFlags(FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            context.startActivity(intent);
+            context.startActivity(Intent.createChooser(intent, "Open folder"));
             return true;
         } catch (ActivityNotFoundException e) {
-            try {
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                //intent.setDataAndType(uri, "file/*");
-                intent.setData(uri);
-                intent.setType("application/*");
-                context.startActivity(Intent.createChooser(intent, "Open folder"));
-                return true;
-            } catch (ActivityNotFoundException e2) {
-                e2.printStackTrace();
-                Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
-                return false;
-            }
+            e.printStackTrace();
+            Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 
