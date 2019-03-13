@@ -17,7 +17,6 @@ import android.webkit.MimeTypeMap;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -485,8 +484,14 @@ public class TAPFileUploadManager {
     public void uploadNextSequence(Context context, String roomID) {
         getUploadQueue(roomID).remove(0);
         //ini ngecek kalau kosong ga perlu jalanin lagi
-        if (!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) {
+        if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
+                && null != getUploadQueue(roomID).get(0)
+                && TAPDefaultConstant.MessageType.TYPE_IMAGE == getUploadQueue(roomID).get(0).getType()) {
             uploadImage(context, roomID);
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
+                && null != getUploadQueue(roomID).get(0)
+                && TAPDefaultConstant.MessageType.TYPE_FILE == getUploadQueue(roomID).get(0).getType()) {
+            uploadFile(context, roomID);
         }
     }
 
@@ -549,8 +554,8 @@ public class TAPFileUploadManager {
     }
 
     private void sendFileMessageAfterUploadSuccess(Context context, String roomID, String fileName, String fileUri,
-                                                String mimetype, TAPMessageModel messageModel,
-                                                TAPUploadFileResponse response) {
+                                                   String mimetype, TAPMessageModel messageModel,
+                                                   TAPUploadFileResponse response) {
         try {
             String localID = messageModel.getLocalID();
             addUploadProgressMap(localID, 100);
@@ -581,6 +586,7 @@ public class TAPFileUploadManager {
 
     /**
      * Buat ngubah file length jadi format kb/mb/gb
+     *
      * @param size = file.length
      * @return
      */
