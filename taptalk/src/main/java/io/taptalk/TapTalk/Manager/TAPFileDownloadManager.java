@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
@@ -38,6 +39,7 @@ public class TAPFileDownloadManager {
     private static TAPFileDownloadManager instance;
     private HashMap<String, Integer> downloadProgressMap;
     private ArrayList<String> failedDownloads;
+    private HashMap<String /*roomID*/, HashMap<String /*localID*/, String /*stringUri*/>> fileMessageUriMap;
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;
@@ -268,5 +270,40 @@ public class TAPFileDownloadManager {
     private void setDownloadFailed(String localID, TAPDownloadListener listener) {
         removeDownloadProgressMap(localID);
         listener.onDownloadFailed(localID);
+    }
+
+    private HashMap<String, HashMap<String, String>> getFileMessageUriMap() {
+        return null == fileMessageUriMap ? fileMessageUriMap = new LinkedHashMap<>() : fileMessageUriMap;
+    }
+
+    public void getFileMessageUriFromPreference() {
+        HashMap<String, HashMap<String, String>> fileUriMap = TAPDataManager.getInstance().getFileMessageUriMap();
+        if (null != fileUriMap) {
+            getFileMessageUriMap().putAll(fileUriMap);
+        }
+    }
+
+    public void saveFileMessageUriToPreference() {
+        TAPDataManager.getInstance().saveFileMessageUriMap(getFileMessageUriMap());
+    }
+
+    public Uri getFileMessageUri(String roomID, String localID) {
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap && null != roomUriMap.get(localID)) {
+            return Uri.parse(roomUriMap.get(localID));
+        } else {
+            return null;
+        }
+    }
+
+    public void saveFileMessageUri(String roomID, String localID, Uri fileUri) {
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap) {
+            roomUriMap.put(localID, fileUri.toString());
+        } else {
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put(localID, fileUri.toString());
+            getFileMessageUriMap().put(roomID, hashMap);
+        }
     }
 }
