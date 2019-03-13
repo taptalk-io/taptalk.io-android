@@ -137,7 +137,7 @@ public class TAPFileUtils {
                 return uri.getLastPathSegment();
             } else if (isFileProviderUri(uri)) {
                 // FIXME: 23 January 2019
-                return TAPFileUploadManager.getInstance().getImagePath(uri);
+                return TAPFileUploadManager.getInstance().getFileProviderPath(uri);
             }
             return getDataColumn(context, uri, null, null);
         }
