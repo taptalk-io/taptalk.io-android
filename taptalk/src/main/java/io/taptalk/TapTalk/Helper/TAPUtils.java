@@ -301,6 +301,7 @@ public class TAPUtils {
     }
 
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
+
     public void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
         view.setOutlineProvider(new ViewOutlineProvider() {
             @Override
@@ -464,7 +465,9 @@ public class TAPUtils {
         } catch (ActivityNotFoundException e) {
             try {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setDataAndType(uri, "file/*");
+                //intent.setDataAndType(uri, "file/*");
+                intent.setData(uri);
+                intent.setType("application/*");
                 context.startActivity(Intent.createChooser(intent, "Open folder"));
                 return true;
             } catch (ActivityNotFoundException e2) {
@@ -753,9 +756,8 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
     }
 
     public void openMaps(Activity activity, Double latitude, Double longitude) {
-        Uri gmmIntentUri = Uri.parse("geo:" + latitude + "," + longitude + "?q=" + latitude+","+longitude + "&z=16");
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
+        Uri googleMapUrl = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + latitude + "," + longitude + "&z=16");
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, googleMapUrl);
         activity.startActivity(mapIntent);
     }
 
@@ -777,6 +779,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     /**
      * Buat ngubah file length jadi format kb/mb/gb
+     *
      * @param size = file.length
      * @return
      */
@@ -790,11 +793,11 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         float sizeTerra = sizeGb * sizeKb;
 
 
-        if(size < sizeMb)
-            return df.format(size / sizeKb)+ " KB";
-        else if(size < sizeGb)
+        if (size < sizeMb)
+            return df.format(size / sizeKb) + " KB";
+        else if (size < sizeGb)
             return df.format(size / sizeMb) + " MB";
-        else if(size < sizeTerra)
+        else if (size < sizeTerra)
             return df.format(size / sizeGb) + " GB";
 
         return size + "B";
@@ -802,6 +805,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     /**
      * Untuk Dapetin file Extension seperti jpg, png, webp, apk, dll
+     *
      * @param file yang mau di dapatkan extensionnya
      * @return
      */
@@ -817,6 +821,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     /**
      * Untuk Dapetin file mime type seperti image/jpg, dll
+     *
      * @param file yang mau di dapatkan mimeTypenya
      * @return
      */
