@@ -21,6 +21,7 @@ import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
+import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
@@ -40,6 +41,20 @@ public class TAPFileDownloadManager {
     private HashMap<String, Integer> downloadProgressMap;
     private ArrayList<String> failedDownloads;
     private HashMap<String /*roomID*/, HashMap<String /*localID*/, String /*stringUri*/>> fileMessageUriMap;
+
+    public TAPFileDownloadManager() {
+        TAPConnectionManager.getInstance().addSocketListener(new TAPSocketListener() {
+            @Override
+            public void onSocketConnected() {
+                getFileMessageUriFromPreference();
+            }
+
+            @Override
+            public void onSocketDisconnected() {
+                saveFileMessageUriToPreference();
+            }
+        });
+    }
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;

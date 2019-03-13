@@ -55,9 +55,9 @@ public class TAPFileUploadManager {
     private HashMap<String, List<TAPMessageModel>> uploadQueuePerRoom;
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMap;
-    private HashMap<String, String> imagePathMap;
     //max Size for upload file message
     private long maxSize = 25 * 1024 * 1024;
+    private HashMap<String, String> fileProviderPathMap;
 
     private TAPFileUploadManager() {
     }
@@ -135,16 +135,16 @@ public class TAPFileUploadManager {
         return getUploadQueue(roomID).isEmpty();
     }
 
-    private HashMap<String, String> getImagePathMap() {
-        return null == imagePathMap ? imagePathMap = new HashMap<>() : imagePathMap;
+    private HashMap<String, String> getFileProviderPathMap() {
+        return null == fileProviderPathMap ? fileProviderPathMap = new HashMap<>() : fileProviderPathMap;
     }
 
-    public void addImagePath(Uri uri, String path) {
-        getImagePathMap().put(uri.toString(), path);
+    public void addFileProviderPath(Uri fileProviderUri, String path) {
+        getFileProviderPathMap().put(fileProviderUri.toString(), path);
     }
 
-    public String getImagePath(Uri uri) {
-        return getImagePathMap().get(uri.toString());
+    public String getFileProviderPath(Uri fileProviderUri) {
+        return getFileProviderPathMap().get(fileProviderUri.toString());
     }
 
     /**
@@ -260,6 +260,7 @@ public class TAPFileUploadManager {
             }
             TAPDataFileModel fileData = new TAPDataFileModel(messageModel.getData());
             Uri fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
+            Log.e(TAG, "uploadFile: " + fileUri);
 
             if (null == fileUri) {
                 // File URI not found
@@ -272,7 +273,9 @@ public class TAPFileUploadManager {
                 return;
             }
 
-            File tempFile = new File(fileUri.toString());
+            String pathName = TAPFileUtils.getInstance().getFilePath(context, fileUri);
+            Log.e(TAG, "uploadFile: " + pathName);
+            File tempFile = new File(pathName);
             callFileUploadAPI(context, roomID, messageModel, tempFile, fileData.getMediaType());
         }).start();
     }

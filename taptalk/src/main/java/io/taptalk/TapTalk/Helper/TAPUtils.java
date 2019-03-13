@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
@@ -78,7 +75,6 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
@@ -443,7 +439,7 @@ public class TAPUtils {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     activity.startActivityForResult(intent, requestCode);
                     // TODO: 22 January 2019 TESTING
-                    TAPFileUploadManager.getInstance().addImagePath(imageUri, image.getAbsolutePath());
+                    TAPFileUploadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
                     e.printStackTrace();
