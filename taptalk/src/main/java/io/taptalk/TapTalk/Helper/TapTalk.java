@@ -34,6 +34,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
+import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
@@ -788,5 +789,31 @@ public class TapTalk {
 
     public static void callUpdateUnreadCount() {
         TAPNotificationManager.getInstance().updateUnreadCount();
+    }
+
+    public static void getTaptalkUserWithClientUserID(String clientUserID, TAPGetUserInterface getUserInterface) {
+        TAPDataManager.getInstance().getUserByXcUserIdFromApi(clientUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+            @Override
+            public void onSuccess(TAPGetUserResponse response) {
+                getUserInterface.getUserSuccess(response.getUser());
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                getUserInterface.getUserFailed(error.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                getUserInterface.getUserFailed(throwable);
+            }
+        });
+    }
+
+    public static TAPUserModel getTaptalkActiveUser() {
+        if (null == TAPDataManager.getInstance().getActiveUser())
+            return null;
+
+        return TAPDataManager.getInstance().getActiveUser();
     }
 }

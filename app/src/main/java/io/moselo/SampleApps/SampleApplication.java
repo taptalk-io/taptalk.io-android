@@ -74,11 +74,11 @@ public class SampleApplication extends Application {
         @Override
         public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             if (customKeyboardItemModel.getItemID().equals("1")) {
-                String message = "Hi "+ otherUser.getName() + ", I want to see services & pricing";
+                String message = "Hi " + otherUser.getName() + ", I want to see services & pricing";
                 TapTalk.sendTextMessageWithRecipientUser(message, otherUser, new TAPSendMessageWithIDListener() {
                     @Override
                     public void sendSuccess() {
-                        Log.e("><><><", "sendSuccess: " );
+                        Log.e("><><><", "sendSuccess: ");
                     }
 
                     @Override
@@ -127,7 +127,7 @@ public class SampleApplication extends Application {
 
         @Override
         public void onUpdateUnreadCount(int unreadCount) {
-            Log.e("><><><", "onUpdateUnreadCount: "+unreadCount );
+            Log.e("><><><", "onUpdateUnreadCount: " + unreadCount);
         }
     };
 
