@@ -57,8 +57,8 @@ public class TAPDownloadProgressResponseBody extends ResponseBody {
 
                 if (bytesRead != -1) {
                     int percentage = (int) (100 * totalBytesRead / responseBody.contentLength());
-                    progressListener.update(percentage, localID);
-                } else progressListener.finish(localID);
+                    progressListener.update(localID, percentage, totalBytesRead);
+                } else progressListener.finish(localID, totalBytesRead);
                 return bytesRead;
             }
         };

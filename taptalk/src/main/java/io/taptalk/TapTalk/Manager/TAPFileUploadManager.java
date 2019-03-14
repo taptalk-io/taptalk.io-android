@@ -39,6 +39,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUAL
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage;
@@ -54,12 +55,14 @@ public class TAPFileUploadManager {
     private static TAPFileUploadManager instance;
     private HashMap<String, List<TAPMessageModel>> uploadQueuePerRoom;
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
-    private HashMap<String, Integer> uploadProgressMap;
+    private HashMap<String, Integer> uploadProgressMapPercent;
+    private HashMap<String, Long> uploadProgressMapBytes;
     //max Size for upload file message
     private long maxSize = 105 * 1024 * 1024;
     private HashMap<String, String> fileProviderPathMap;
 
     private TAPFileUploadManager() {
+
     }
 
     public static TAPFileUploadManager getInstance() {
@@ -74,24 +77,38 @@ public class TAPFileUploadManager {
         this.maxSize = maxSize;
     }
 
-    private HashMap<String, Integer> getUploadProgressMap() {
-        return null == uploadProgressMap ? uploadProgressMap = new LinkedHashMap<>() : uploadProgressMap;
+    private HashMap<String, Integer> getUploadProgressMapPercent() {
+        return null == uploadProgressMapPercent ? uploadProgressMapPercent = new LinkedHashMap<>() : uploadProgressMapPercent;
     }
 
-    public Integer getUploadProgressMapProgressPerLocalID(String localID) {
-        if (!getUploadProgressMap().containsKey(localID)) {
+    private HashMap<String, Long> getUploadProgressMapBytes() {
+        return null == uploadProgressMapBytes ? uploadProgressMapBytes = new LinkedHashMap<>() : uploadProgressMapBytes;
+    }
+
+    public Integer getUploadProgressPercent(String localID) {
+        if (!getUploadProgressMapPercent().containsKey(localID)) {
             return null;
         } else {
-            return getUploadProgressMap().get(localID);
+            return getUploadProgressMapPercent().get(localID);
         }
     }
 
-    public void addUploadProgressMap(String localID, int progress) {
-        getUploadProgressMap().put(localID, progress);
+    public Long getUploadProgressBytes(String localID) {
+        if (!getUploadProgressMapBytes().containsKey(localID)) {
+            return null;
+        } else {
+            return getUploadProgressMapBytes().get(localID);
+        }
+    }
+
+    public void addUploadProgressMap(String localID, int percent, long bytes) {
+        getUploadProgressMapPercent().put(localID, percent);
+        getUploadProgressMapBytes().put(localID, bytes);
     }
 
     public void removeUploadProgressMap(String localID) {
-        getUploadProgressMap().remove(localID);
+        getUploadProgressMapPercent().remove(localID);
+        getUploadProgressMapBytes().remove(localID);
     }
 
     private HashMap<String, List<TAPMessageModel>> getUploadQueuePerRoom() {
@@ -299,8 +316,8 @@ public class TAPFileUploadManager {
 
         ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
             @Override
-            public void onProgressUpdate(int percentage) {
-                addUploadProgressMap(localID, percentage);
+            public void onProgressUpdate(int percentage, long bytes) {
+                addUploadProgressMap(localID, percentage, bytes);
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -355,8 +372,8 @@ public class TAPFileUploadManager {
 
         ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
             @Override
-            public void onProgressUpdate(int percentage) {
-                addUploadProgressMap(localID, percentage);
+            public void onProgressUpdate(int percentage, long bytes) {
+                addUploadProgressMap(localID, percentage, bytes);
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -376,8 +393,7 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
-                sendFileMessageAfterUploadSuccess(context, roomID, file.getName(),
-                        file.getAbsolutePath(), mimeType, messageModel.copyMessageModel(), response);
+                sendFileMessageAfterUploadSuccess(context, roomID, file.getName(), mimeType, messageModel.copyMessageModel(), response);
             }
 
             @Override
@@ -537,7 +553,11 @@ public class TAPFileUploadManager {
             }).start();
 
             String localID = messageModel.getLocalID();
-            addUploadProgressMap(localID, 100);
+            long size = 0L;
+            if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
+                size = ((Number) messageModel.getData().get(SIZE)).longValue();
+            }
+            addUploadProgressMap(localID, 100, size);
             TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(), encodedThumbnail,
                     response.getMediaType(), response.getSize(), response.getWidth(),
                     response.getHeight(), response.getCaption());
@@ -565,12 +585,16 @@ public class TAPFileUploadManager {
         }
     }
 
-    private void sendFileMessageAfterUploadSuccess(Context context, String roomID, String fileName, String fileUri,
+    private void sendFileMessageAfterUploadSuccess(Context context, String roomID, String fileName,
                                                    String mimetype, TAPMessageModel messageModel,
                                                    TAPUploadFileResponse response) {
         try {
             String localID = messageModel.getLocalID();
-            addUploadProgressMap(localID, 100);
+            long size = 0L;
+            if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
+                size = ((Number) messageModel.getData().get(SIZE)).longValue();
+            }
+            addUploadProgressMap(localID, 100, size);
 
             TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(response.getId(), fileName,
                     mimetype, response.getSize());
