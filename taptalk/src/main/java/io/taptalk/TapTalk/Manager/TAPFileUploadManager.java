@@ -56,7 +56,7 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMap;
     //max Size for upload file message
-    private long maxSize = 105 * 1024 * 1024;
+    private long maxSize = 25 * 1024 * 1024;
     private HashMap<String, String> fileProviderPathMap;
 
     private TAPFileUploadManager() {
