@@ -61,10 +61,6 @@ public class TAPFileUploadManager {
     private long maxSize = 105 * 1024 * 1024;
     private HashMap<String, String> fileProviderPathMap;
 
-    private TAPFileUploadManager() {
-
-    }
-
     public static TAPFileUploadManager getInstance() {
         return null == instance ? instance = new TAPFileUploadManager() : instance;
     }
@@ -156,12 +152,16 @@ public class TAPFileUploadManager {
         return null == fileProviderPathMap ? fileProviderPathMap = new HashMap<>() : fileProviderPathMap;
     }
 
+    public String getFileProviderPath(Uri fileProviderUri) {
+        return getFileProviderPathMap().get(fileProviderUri.toString());
+    }
+
     public void addFileProviderPath(Uri fileProviderUri, String path) {
         getFileProviderPathMap().put(fileProviderUri.toString(), path);
     }
 
-    public String getFileProviderPath(Uri fileProviderUri) {
-        return getFileProviderPathMap().get(fileProviderUri.toString());
+    public void removeFileProviderPath(Uri fileProviderUri) {
+        getFileProviderPathMap().remove(fileProviderUri.toString());
     }
 
     /**
@@ -277,7 +277,6 @@ public class TAPFileUploadManager {
             }
             TAPDataFileModel fileData = new TAPDataFileModel(messageModel.getData());
             Uri fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
-            Log.e(TAG, "uploadFile: " + fileUri);
 
             if (null == fileUri) {
                 // File URI not found
@@ -291,7 +290,6 @@ public class TAPFileUploadManager {
             }
 
             String pathName = TAPFileUtils.getInstance().getFilePath(context, fileUri);
-            Log.e(TAG, "uploadFile: " + pathName);
 
             if (null == pathName) {
                 getUploadQueue(roomID).remove(0);
@@ -577,6 +575,12 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadImageData, imageDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
+            // Remove file provider path from map when uploading from camera
+            Uri fileProviderUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, localID);
+            if (null != fileProviderUri) {
+                removeFileProviderPath(fileProviderUri);
+            }
+
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
             getBitmapQueue().remove(messageModel.getLocalID());
@@ -613,6 +617,9 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadFileData, fileDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
+            // Remove file provider path from map
+            removeFileProviderPath(TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, localID));
+
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
         } catch (Exception e) {
@@ -628,5 +635,18 @@ public class TAPFileUploadManager {
      */
     public boolean isSizeBelowUploadMaximum(long size) {
         return maxSize >= size;
+    }
+
+    public void getFileProviderPathFromPreference() {
+        HashMap<String, String> filePathMap = TAPDataManager.getInstance().getFileProviderPathMap();
+        if (null != filePathMap) {
+            getFileProviderPathMap().putAll(filePathMap);
+        }
+    }
+
+    public void saveFileProviderPathToPreference() {
+        if (getFileProviderPathMap().size() > 0) {
+            TAPDataManager.getInstance().saveFileProviderPathMap(getFileProviderPathMap());
+        }
     }
 }

@@ -266,6 +266,7 @@ public class TAPDefaultConstant {
     public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
+    public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
