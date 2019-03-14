@@ -299,6 +299,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, true);
                         } else {
                             //ini buat 1 image selection
+                            Log.e(TAG, "onActivityResult: " + intent.getData());
                             imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
                         }
                         openImagePreviewPage(imageGalleryUris);

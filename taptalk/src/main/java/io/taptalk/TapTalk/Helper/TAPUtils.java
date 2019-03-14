@@ -408,12 +408,13 @@ public class TAPUtils {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
-            Intent intent = new Intent();
-            intent.setType(activity.getString(R.string.tap_intent_pick_image));
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
-            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType(activity.getString(R.string.tap_intent_type_all));
+            String[] mimeTypes = {activity.getString(R.string.tap_intent_type_image), activity.getString(R.string.tap_intent_type_video)};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_select_picture)), requestCode);
+                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_gallery)), requestCode);
             }
         }
     }
@@ -440,7 +441,7 @@ public class TAPUtils {
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     activity.startActivityForResult(intent, requestCode);
-                    // TODO: 22 January 2019 TESTING
+                    // Save file path to map
                     TAPFileUploadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
@@ -461,7 +462,7 @@ public class TAPUtils {
                 .setDataAndType(uri, mimeType)
                 .addFlags(FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            context.startActivity(Intent.createChooser(intent, "Open folder"));
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.tap_intent_title_open_file)));
             return true;
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();

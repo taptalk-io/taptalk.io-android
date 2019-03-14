@@ -144,8 +144,11 @@
     <string name="tap_no_review_yet">No review yet</string>
 
     <!--Intent-->
-    <string name="tap_intent_pick_image">image/*</string>
-    <string name="tap_intent_select_picture">Select Picture</string>
+    <string name="tap_intent_type_all">*/*</string>
+    <string name="tap_intent_type_image">image/*</string>
+    <string name="tap_intent_type_video">video/*</string>
+    <string name="tap_intent_title_gallery">Gallery</string>
+    <string name="tap_intent_title_open_file">Open File</string>
     <string name="tap_transition_view_image">tap_view_image</string>
 
     <!--General-->
