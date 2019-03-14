@@ -557,7 +557,7 @@ public class TAPChatManager {
         TAPMessageModel messageModel = createFileMessageModel(context, file);
 
         // Set Start Point for Progress
-        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
 
         addUploadingMessageToHashMap(messageModel);
         triggerSendMessageListener(messageModel);
@@ -672,7 +672,7 @@ public class TAPChatManager {
         TAPMessageModel messageModel = createImageMessageModel(fileUri, caption);
 
         // Set Start Point for Progress
-        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
 
         addUploadingMessageToHashMap(messageModel);
         messageModel = fixOrientationAndShowImagePreviewBubble(messageModel);
@@ -693,7 +693,7 @@ public class TAPChatManager {
         TAPMessageModel messageModel = createImageMessageModel(bitmap, caption);
 
         // Set Start Point for Progress
-        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0);
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
 
         addUploadingMessageToHashMap(messageModel);
         triggerSendMessageListener(messageModel);

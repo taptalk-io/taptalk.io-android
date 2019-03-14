@@ -47,6 +47,7 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -110,6 +111,7 @@ public class TapTalk {
         public void uncaughtException(Thread thread, Throwable throwable) {
             TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
             TAPContactManager.getInstance().saveUserDataMapToDatabase();
+            TAPFileUploadManager.getInstance().saveFileProviderPathToPreference();
             TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             defaultUEH.uncaughtException(thread, throwable);
         }
@@ -142,6 +144,7 @@ public class TapTalk {
         Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
 
         TAPCacheManager.getInstance(appContext).initAllCache();
+        TAPFileUploadManager.getInstance(); // Get pending file message path from preference
         TAPFileDownloadManager.getInstance(); // Get file message URI from preference
 
         //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
@@ -185,6 +188,8 @@ public class TapTalk {
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
+                TAPFileUploadManager.getInstance().getFileProviderPathFromPreference();
+                TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
@@ -204,6 +209,8 @@ public class TapTalk {
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+                TAPFileUploadManager.getInstance().saveFileProviderPathToPreference();
+                TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             }
         });
     }
