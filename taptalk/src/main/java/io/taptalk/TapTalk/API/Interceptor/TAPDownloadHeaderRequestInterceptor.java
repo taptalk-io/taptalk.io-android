@@ -30,17 +30,18 @@ public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
     public static final String TAG = TAPDownloadHeaderRequestInterceptor.class.getSimpleName();
     private int headerAuth;
     private TapTalkDownloadProgressInterface listener = new TapTalkDownloadProgressInterface() {
+
         @Override
-        public void update(int percentage, String localID) {
-            TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, percentage);
+        public void update(String localID, int percentage, long bytes) {
+            TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, percentage, bytes);
             Intent intent = new Intent(DownloadProgressLoading);
             intent.putExtra(DownloadLocalID, localID);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
         @Override
-        public void finish(String localID) {
-            TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 100);
+        public void finish(String localID, long bytes) {
+            TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 100, bytes);
             Intent intent = new Intent(DownloadProgressLoading);
             intent.putExtra(DownloadLocalID, localID);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);

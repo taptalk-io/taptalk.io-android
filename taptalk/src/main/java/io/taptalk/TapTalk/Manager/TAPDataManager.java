@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.orhanobut.hawk.Hawk;
@@ -46,6 +45,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_A
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
@@ -305,6 +305,17 @@ public class TAPDataManager {
 
     public void removeWriteStoragePermissionRequested() {
         removePreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
+    }
+
+    /**
+     * FILE PROVIDER PATH
+     */
+    public HashMap<String, String> getFileProviderPathMap() {
+        return Hawk.get(K_FILE_PATH_MAP, null);
+    }
+
+    public void saveFileProviderPathMap(HashMap<String, String> fileProviderPathMap) {
+        Hawk.put(K_FILE_PATH_MAP, fileProviderPathMap);
     }
 
     /**
