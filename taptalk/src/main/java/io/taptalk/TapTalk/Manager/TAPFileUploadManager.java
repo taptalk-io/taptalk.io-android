@@ -56,7 +56,7 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMap;
     //max Size for upload file message
-    private long maxSize = 25 * 1024 * 1024;
+    private long maxSize = 105 * 1024 * 1024;
     private HashMap<String, String> fileProviderPathMap;
 
     private TAPFileUploadManager() {
@@ -275,6 +275,17 @@ public class TAPFileUploadManager {
 
             String pathName = TAPFileUtils.getInstance().getFilePath(context, fileUri);
             Log.e(TAG, "uploadFile: " + pathName);
+
+            if (null == pathName) {
+                getUploadQueue(roomID).remove(0);
+                getBitmapQueue().remove(messageModel.getLocalID());
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, messageModel.getLocalID());
+                intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_image_uri_not_found));
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                return;
+            }
+
             File tempFile = new File(pathName);
             callFileUploadAPI(context, roomID, messageModel, tempFile, fileData.getMediaType());
         }).start();
@@ -396,16 +407,14 @@ public class TAPFileUploadManager {
     }
 
     private void messageUploadFailed(Context context, TAPMessageModel messageModelWithUri, String roomID) {
-        new Thread(() -> {
-            if (TAPChatManager.getInstance().checkMessageIsUploading(messageModelWithUri.getLocalID())) {
-                TAPChatManager.getInstance().removeUploadingMessageFromHashMap(messageModelWithUri.getLocalID());
-                getBitmapQueue().remove(messageModelWithUri.getLocalID());
-                cancelUpload(context, messageModelWithUri, roomID);
-                messageModelWithUri.setSending(false);
-                messageModelWithUri.setFailedSend(true);
-                TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(messageModelWithUri));
-            }
-        }).start();
+        if (TAPChatManager.getInstance().checkMessageIsUploading(messageModelWithUri.getLocalID())) {
+            TAPChatManager.getInstance().removeUploadingMessageFromHashMap(messageModelWithUri.getLocalID());
+            getBitmapQueue().remove(messageModelWithUri.getLocalID());
+            cancelUpload(context, messageModelWithUri, roomID);
+            messageModelWithUri.setSending(false);
+            messageModelWithUri.setFailedSend(true);
+            TAPDataManager.getInstance().insertToDatabase(TAPChatManager.getInstance().convertToEntity(messageModelWithUri));
+        }
     }
 
     /**
