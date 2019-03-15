@@ -36,7 +36,7 @@ import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPDataLocationModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
@@ -733,11 +733,11 @@ public class TAPChatManager {
         return imageMessage;
     }
 
-    public void sendImageMessage(Context context, TAPRoomModel room, ArrayList<TAPImagePreviewModel> images) {
+    public void sendImageMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> images) {
         new Thread(() -> {
             checkAndSendForwardedMessage(room);
-            for (TAPImagePreviewModel imagePreview : images) {
-                createImageMessageModelAndAddToQueueUpload(context, room.getRoomID(), imagePreview.getImageUri(), imagePreview.getImageCaption());
+            for (TAPMediaPreviewModel imagePreview : images) {
+                createImageMessageModelAndAddToQueueUpload(context, room.getRoomID(), imagePreview.getUri(), imagePreview.getCaption());
             }
         }).start();
     }

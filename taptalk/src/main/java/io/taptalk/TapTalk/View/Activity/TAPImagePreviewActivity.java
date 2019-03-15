@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.content.ClipData;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -17,14 +18,14 @@ import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPImagePreviewPagerAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPImagePreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
 
 public class TAPImagePreviewActivity extends AppCompatActivity {
 
@@ -38,19 +39,19 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
     private TAPImagePreviewPagerAdapter pagerAdapter;
 
     //Intent
-    private ArrayList<TAPImagePreviewModel> images;
+    private ArrayList<TAPMediaPreviewModel> images;
     //private ArrayList<String> imageCaptions;
 
     //ImagePreview RecyclerView Data
     private int lastIndex = 0;
 
     public interface ImageThumbnailPreviewInterface {
-        void onThumbnailTap(int position, TAPImagePreviewModel model);
+        void onThumbnailTap(int position, TAPMediaPreviewModel model);
     }
 
     ImageThumbnailPreviewInterface thumbInterface = new ImageThumbnailPreviewInterface() {
         @Override
-        public void onThumbnailTap(int position, TAPImagePreviewModel model) {
+        public void onThumbnailTap(int position, TAPMediaPreviewModel model) {
             if (!model.isSelected())
                 vpImagePreview.setCurrentItem(position, true);
             else deleteImageProcess(position);
@@ -111,7 +112,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             finish();
         });
 
-        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPImagePreviewActivity.this, SEND_IMAGE_FROM_GALLERY, true));
+        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPImagePreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
     }
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {
@@ -126,7 +127,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
                 tvMultipleImageIndicator.setText((i + 1) + " of " + images.size());
 
             new Thread(() -> {
-                for (TAPImagePreviewModel recyclerItem : adapter.getItems()) {
+                for (TAPMediaPreviewModel recyclerItem : adapter.getItems()) {
                     recyclerItem.setSelected(false);
                 }
                 adapter.getItemAt(i).setSelected(true);
@@ -155,7 +156,7 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
         switch (resultCode) {
             case RESULT_OK:
                 switch (requestCode) {
-                    case SEND_IMAGE_FROM_GALLERY:
+                    case SEND_MEDIA_FROM_GALLERY:
                         processImagesFromGallery(data);
                         break;
                 }
@@ -168,15 +169,16 @@ public class TAPImagePreviewActivity extends AppCompatActivity {
             return;
         }
 
-        ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
+        ArrayList<TAPMediaPreviewModel> imageGalleryUris = new ArrayList<>();
 
         ClipData clipData = data.getClipData();
         if (null != clipData) {
             //ini buat lebih dari 1 image selection
-            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, false);
+            imageGalleryUris = TAPUtils.getInstance().getUrisFromClipData(this, clipData, false);
         } else {
             //ini buat 1 image selection
-            imageGalleryUris.add(TAPImagePreviewModel.Builder(data.getData(), false));
+            Uri uri = data.getData();
+            imageGalleryUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(this, uri), false));
         }
 
         images.addAll(imageGalleryUris);

@@ -12,25 +12,25 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity;
 import io.taptalk.Taptalk.R;
 
-public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePreviewModel, TAPBaseViewHolder<TAPImagePreviewModel>> {
+public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPreviewModel, TAPBaseViewHolder<TAPMediaPreviewModel>> {
 
     TAPImagePreviewActivity.ImageThumbnailPreviewInterface thumbInterface;
 
-    public TAPImagePreviewRecyclerAdapter(ArrayList<TAPImagePreviewModel> images, TAPImagePreviewActivity.ImageThumbnailPreviewInterface thumbInterface) {
+    public TAPImagePreviewRecyclerAdapter(ArrayList<TAPMediaPreviewModel> images, TAPImagePreviewActivity.ImageThumbnailPreviewInterface thumbInterface) {
         setItems(images);
         this.thumbInterface = thumbInterface;
     }
 
     @Override
-    public TAPBaseViewHolder<TAPImagePreviewModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public TAPBaseViewHolder<TAPMediaPreviewModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new ImagePreviewVH(viewGroup, R.layout.tap_image_preview_recycler);
     }
 
-    class ImagePreviewVH extends TAPBaseViewHolder<TAPImagePreviewModel> {
+    class ImagePreviewVH extends TAPBaseViewHolder<TAPMediaPreviewModel> {
         ImageView ivImagePreview;
         FrameLayout flImagePreview;
         FrameLayout flDelete;
@@ -43,8 +43,8 @@ public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPImagePrevi
         }
 
         @Override
-        protected void onBind(TAPImagePreviewModel item, int position) {
-            Glide.with(itemView.getContext()).load(item.getImageUri()).apply(new RequestOptions().centerCrop()).into(ivImagePreview);
+        protected void onBind(TAPMediaPreviewModel item, int position) {
+            Glide.with(itemView.getContext()).load(item.getUri()).apply(new RequestOptions().centerCrop()).into(ivImagePreview);
 
             if (item.isSelected()) {
                 flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_greenblue_2dp));

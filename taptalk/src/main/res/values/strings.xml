@@ -151,6 +151,7 @@
     <string name="tap_intent_type_image">image/*</string>
     <string name="tap_intent_type_video">video/*</string>
     <string name="tap_intent_title_gallery">Gallery</string>
+    <string name="tap_intent_title_select_picture">Select Picture</string>
     <string name="tap_intent_title_open_file">Open File</string>
     <string name="tap_transition_view_image">tap_view_image</string>
 

@@ -98,8 +98,8 @@ public class TAPDefaultConstant {
         public static final int CREATE_GROUP = 10;
         public static final int PICK_GROUP_IMAGE = 11;
         public static final int SEND_IMAGE_FROM_CAMERA = 12;
-        public static final int SEND_IMAGE_FROM_GALLERY = 13;
-        public static final int SEND_IMAGE_FROM_PREVIEW = 14;
+        public static final int SEND_MEDIA_FROM_GALLERY = 13;
+        public static final int SEND_MEDIA_FROM_PREVIEW = 14;
         public static final int FORWARD_MESSAGE = 15;
         public static final int PICK_LOCATION = 16;
         public static final int SEND_FILE = 17;

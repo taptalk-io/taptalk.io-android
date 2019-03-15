@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,17 +17,20 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.Taptalk.R;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPImagePreviewPagerAdapter extends PagerAdapter {
 
-    private ArrayList<TAPImagePreviewModel> images;
-    private Context mContext;
+    private ArrayList<TAPMediaPreviewModel> images;
+    private Context context;
     private int maxCharacter = 100;
 
-    public TAPImagePreviewPagerAdapter(Context mContext, ArrayList<TAPImagePreviewModel> images) {
-        this.mContext = mContext;
+    public TAPImagePreviewPagerAdapter(Context context, ArrayList<TAPMediaPreviewModel> images) {
+        this.context = context;
         this.images = images;
     }
 
@@ -43,22 +47,31 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        TAPImagePreviewModel imageUri = images.get(position);
-        ViewGroup layout = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.tap_image_preview, container, false);
+        TAPMediaPreviewModel mediaPreview = images.get(position);
+        ViewGroup layout = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.tap_image_preview, container, false);
 
         ImageView ivImagePreview = layout.findViewById(R.id.iv_image);
-        Glide.with(mContext).load(imageUri.getImageUri()).into(ivImagePreview);
-
+        ImageView ivVideoIcon = layout.findViewById(R.id.iv_video_icon);
         EditText etCaption = layout.findViewById(R.id.et_caption);
         TextView tvTypingIndicator = layout.findViewById(R.id.tv_typing_indicator);
 
-        String imageCaption = imageUri.getImageCaption();
+        Glide.with(context).load(mediaPreview.getUri()).into(ivImagePreview);
 
-        if (null != imageCaption) {
-            etCaption.setText(imageCaption);
-            etCaption.setSelection(imageCaption.length());
+        String caption = mediaPreview.getCaption();
+
+        if (mediaPreview.getType() == TYPE_VIDEO) {
+            ivVideoIcon.setVisibility(View.VISIBLE);
+            ivImagePreview.setOnClickListener(v -> TAPUtils.getInstance().openVideoPreview(context, mediaPreview.getUri()));
+        } else {
+            ivVideoIcon.setVisibility(View.GONE);
+            ivImagePreview.setOnClickListener(null);
+        }
+
+        if (null != caption) {
+            etCaption.setText(caption);
+            etCaption.setSelection(caption.length());
             tvTypingIndicator.setVisibility(View.VISIBLE);
-            tvTypingIndicator.setText(imageCaption.length() + "/" + maxCharacter);
+            tvTypingIndicator.setText(caption.length() + "/" + maxCharacter);
         }
 
         etCaption.addTextChangedListener(new TextWatcher() {
@@ -78,7 +91,7 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
 
             @Override
             public void afterTextChanged(Editable s) {
-                imageUri.setImageCaption(s.toString());
+                mediaPreview.setCaption(s.toString());
             }
         });
 

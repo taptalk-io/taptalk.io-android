@@ -61,7 +61,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -79,6 +79,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -409,6 +411,24 @@ public class TAPUtils {
         } else {
             // Permission granted
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType(activity.getString(R.string.tap_intent_type_image));
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
+            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_select_picture)), requestCode);
+            }
+        }
+    }
+
+    /**
+     * Reminder: Handle onRequestPermissionsResult in activity
+     */
+    public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            // Check read storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
+        } else {
+            // Permission granted
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType(activity.getString(R.string.tap_intent_type_all));
             String[] mimeTypes = {activity.getString(R.string.tap_intent_type_image), activity.getString(R.string.tap_intent_type_video)};
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
@@ -468,6 +488,19 @@ public class TAPUtils {
             e.printStackTrace();
             Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
             return false;
+        }
+    }
+
+    // Preview video with external app
+    public void openVideoPreview(Context context, Uri uri) {
+        Log.e(TAG, "openVideoPreview: " + uri);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.setDataAndType(uri, context.getString(R.string.tap_intent_type_video));
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -540,14 +573,31 @@ public class TAPUtils {
         return fileDisplayInfo;
     }
 
-    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
+    public ArrayList<TAPMediaPreviewModel> getUrisFromClipData(Context context, ClipData clipData, boolean isFirstSelected) {
+        ArrayList<TAPMediaPreviewModel> uris = new ArrayList<>();
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
-            if (count == 0 && isFirstSelected)
-                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
-            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
+            Uri uri = clipData.getItemAt(count).getUri();
+            if (count == 0 && isFirstSelected) {
+                uris.add(TAPMediaPreviewModel.Builder(uri, getMessageTypeFromFileUri(context, uri), true));
+            } else {
+                uris.add(TAPMediaPreviewModel.Builder(uri, getMessageTypeFromFileUri(context, uri), false));
+            }
         }
         return uris;
+    }
+
+    public int getMessageTypeFromFileUri(Context context, Uri uri) {
+        String type = context.getContentResolver().getType(uri);
+        Log.e(TAG, "getMessageTypeFromFileUri: " + type);
+        // Add message types here
+        if (null != type && type.contains("image")) {
+            return TYPE_IMAGE;
+        } else if (null != type && type.contains("video")) {
+            return TYPE_VIDEO;
+        } else {
+            return -1;
+        }
     }
 
     public void getUserFromXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
