@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -405,8 +404,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
-            Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
-            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID());
+            Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID());
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setVisibility(View.GONE);
@@ -462,7 +461,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             // Load thumbnail when download is not in progress
-            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                 rcivImageBody.setImageDrawable(thumbnail);
             }
 
@@ -486,7 +485,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         ((Activity) itemView.getContext()).runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
                         }));
                         if (null == TAPFileDownloadManager.getInstance()
-                                .getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+                                .getDownloadProgressPercent(item.getLocalID())) {
                             // Download image
                             if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
                                 TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
@@ -539,9 +538,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     intent.putExtra(UploadLocalID, item.getLocalID());
                     LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
                 });
-            } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(item.getLocalID())
-                    && null == TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID()))
-                    || null != TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(item.getLocalID())) {
+            } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressPercent(item.getLocalID())
+                    && null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID()))
+                    || null != TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_download_white);
                 flProgress.setOnClickListener(v -> {
                 });
@@ -580,7 +579,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private CircleImageView civAvatar;
         private ImageView ivFileIcon, ivMessageStatus, ivReply, ivSending;
         private TAPRoundedCornerImageView rcivQuoteImage;
-        private TextView tvUsername, tvFileName, tvFileInfo, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
+        private TextView tvUsername, tvFileName, tvFileInfo, tvFileInfoDummy, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
@@ -599,6 +598,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             tvFileName = itemView.findViewById(R.id.tv_file_name);
             tvFileInfo = itemView.findViewById(R.id.tv_file_info);
+            tvFileInfoDummy = itemView.findViewById(R.id.tv_file_info_dummy);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
             tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
@@ -624,8 +624,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             tvMessageStatus.setText(item.getMessageStatusText());
 
-            setFileData(item);
-            setProgress(item);
+            setFileProgress(item);
             enableLongPress(itemView.getContext(), flBubble, item);
 
             markUnreadForMessage(item, myUserModel);
@@ -666,19 +665,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
-        private void setFileData(TAPMessageModel item) {
-            tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
-            tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
-        }
-
-        private void setProgress(TAPMessageModel item) {
+        private void setFileProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
-            Integer uploadProgressValue = TAPFileUploadManager.getInstance().getUploadProgressMapProgressPerLocalID(localID);
-            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressMapProgressPerLocalID(localID);
+            Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
             fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
+
+            tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
+            tvFileInfoDummy.setText(TAPUtils.getInstance().getFileDisplayDummyInfo(item));
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
+                tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
                 pbProgress.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
@@ -686,15 +684,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     flFileIcon.setOnClickListener(v -> downloadFile(item));
                 }
-            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressValue) && null != fileUri) {
                 // File has finished downloading or uploading
+                tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
                 flFileIcon.setOnClickListener(v -> openFile(item));
-            } else if (((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressValue)) {
                 // File is not downloaded
+                tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 if (TAPFileDownloadManager.getInstance().getFailedDownloads().contains(item.getLocalID())) {
                     ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
                 } else {
@@ -707,10 +707,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
                 pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
-                if (null != uploadProgressValue) {
-                    pbProgress.setProgress(uploadProgressValue);
+                if (null != uploadProgressPercent) {
+                    Long uploadProgressBytes = TAPFileUploadManager.getInstance().getUploadProgressBytes(localID);
+                    tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, uploadProgressBytes));
+                    pbProgress.setProgress(uploadProgressPercent);
                     flFileIcon.setOnClickListener(v -> cancelUpload(item));
                 } else {
+                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(localID);
+                    tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
                     pbProgress.setProgress(downloadProgressValue);
                     flFileIcon.setOnClickListener(v -> cancelDownload(item));
                 }

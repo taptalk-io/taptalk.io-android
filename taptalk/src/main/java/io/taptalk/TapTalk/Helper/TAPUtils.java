@@ -498,7 +498,7 @@ public class TAPUtils {
 
         String displaySize = "", displayExtension = "";
         if (null != size) {
-            displaySize = TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
+            displaySize = getStringSizeLengthFile(size.longValue());
         }
         if (null != fileName && fileName.contains(".") && null != size) {
             displayExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
@@ -508,6 +508,36 @@ public class TAPUtils {
             displayExtension = mediaType;
         }
         return String.format("%s %s", displaySize, displayExtension).toUpperCase();
+    }
+
+    public String getFileDisplayProgress(TAPMessageModel message, Long progressBytes) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        Number size = (Number) data.get(SIZE);
+        if (null != size) {
+            return String.format("%s / %s", getStringSizeLengthFile(progressBytes), getStringSizeLengthFile(size.longValue()));
+        } else {
+            return getStringSizeLengthFile(progressBytes);
+        }
+    }
+
+    public String getFileDisplayDummyInfo(TAPMessageModel message) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        String fileDisplayInfo = getFileDisplayInfo(message);
+        Number size = (Number) data.get(SIZE);
+
+        if (null != size) {
+            String dummyProgress = String.format(TapTalk.appContext.getString(R.string.tap_file_info_progress_dummy), getStringSizeLengthFile(size.longValue()));
+            if (dummyProgress.length() > fileDisplayInfo.length()) {
+                return dummyProgress;
+            }
+        }
+        return fileDisplayInfo;
     }
 
     public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {

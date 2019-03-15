@@ -1375,7 +1375,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
                         TAPDataManager.getInstance().updateFailedMessageToSending(localID);
                         // Set Start Point for Progress
-                        TAPFileUploadManager.getInstance().addUploadProgressMap(failedMessageModel.getLocalID(), 0);
+                        TAPFileUploadManager.getInstance().addUploadProgressMap(failedMessageModel.getLocalID(), 0, 0);
                         failedMessageModel.setFailedSend(false);
                         failedMessageModel.setSending(true);
                         new Thread(() -> {

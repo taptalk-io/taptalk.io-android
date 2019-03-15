@@ -21,7 +21,6 @@ import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPDownloadListener;
-import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
@@ -38,46 +37,47 @@ public class TAPFileDownloadManager {
 
     private final String TAG = TAPFileDownloadManager.class.getSimpleName();
     private static TAPFileDownloadManager instance;
-    private HashMap<String, Integer> downloadProgressMap;
+    private HashMap<String, Integer> downloadProgressMapPercent;
+    private HashMap<String, Long> downloadProgressMapBytes;
     private ArrayList<String> failedDownloads;
     private HashMap<String /*roomID*/, HashMap<String /*localID*/, String /*stringUri*/>> fileMessageUriMap;
-
-    public TAPFileDownloadManager() {
-        TAPConnectionManager.getInstance().addSocketListener(new TAPSocketListener() {
-            @Override
-            public void onSocketConnected() {
-                getFileMessageUriFromPreference();
-            }
-
-            @Override
-            public void onSocketDisconnected() {
-                saveFileMessageUriToPreference();
-            }
-        });
-    }
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;
     }
 
-    private HashMap<String, Integer> getDownloadProgressMap() {
-        return null == downloadProgressMap ? downloadProgressMap = new LinkedHashMap<>() : downloadProgressMap;
+    private HashMap<String, Integer> getDownloadProgressMapPercent() {
+        return null == downloadProgressMapPercent ? downloadProgressMapPercent = new LinkedHashMap<>() : downloadProgressMapPercent;
     }
 
-    public Integer getDownloadProgressMapProgressPerLocalID(String localID) {
-        if (!getDownloadProgressMap().containsKey(localID)) {
+    private HashMap<String, Long> getDownloadProgressMapBytes() {
+        return null == downloadProgressMapBytes ? downloadProgressMapBytes = new LinkedHashMap<>() : downloadProgressMapBytes;
+    }
+
+    public Integer getDownloadProgressPercent(String localID) {
+        if (!getDownloadProgressMapPercent().containsKey(localID)) {
             return null;
         } else {
-            return getDownloadProgressMap().get(localID);
+            return getDownloadProgressMapPercent().get(localID);
         }
     }
 
-    public void addDownloadProgressMap(String localID, int progress) {
-        getDownloadProgressMap().put(localID, progress);
+    public Long getDownloadProgressBytes(String localID) {
+        if (!getDownloadProgressMapBytes().containsKey(localID)) {
+            return null;
+        } else {
+            return getDownloadProgressMapBytes().get(localID);
+        }
+    }
+
+    public void addDownloadProgressMap(String localID, int progress, long bytes) {
+        getDownloadProgressMapPercent().put(localID, progress);
+        getDownloadProgressMapBytes().put(localID, bytes);
     }
 
     public void removeDownloadProgressMap(String localID) {
-        getDownloadProgressMap().remove(localID);
+        getDownloadProgressMapPercent().remove(localID);
+        getDownloadProgressMapBytes().remove(localID);
     }
 
     public ArrayList<String> getFailedDownloads() {
@@ -117,7 +117,7 @@ public class TAPFileDownloadManager {
         String localID = message.getLocalID();
         String fileID = (String) message.getData().get(FILE_ID);
 
-        addDownloadProgressMap(localID, 0);
+        addDownloadProgressMap(localID, 0, 0);
 
         TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, new TapDefaultDataView<ResponseBody>() {
             @Override
@@ -152,7 +152,7 @@ public class TAPFileDownloadManager {
         String localID = message.getLocalID();
         String fileID = (String) message.getData().get(FILE_ID);
 
-        addDownloadProgressMap(localID, 0);
+        addDownloadProgressMap(localID, 0, 0);
 
         // Download image
         TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, new TapDefaultDataView<ResponseBody>() {
