@@ -1821,7 +1821,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 updateMessageDecoration();
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
-                if (vm.isOnBottom()) rvMessageList.scrollToPosition(0);
+                if (vm.isOnBottom() && 0 < messageAfterModels.size()) rvMessageList.scrollToPosition(0);
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
 
