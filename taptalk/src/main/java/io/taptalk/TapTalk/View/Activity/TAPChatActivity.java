@@ -1817,13 +1817,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 flMessageList.setVisibility(View.VISIBLE);
                 //masukin datanya ke dalem recyclerView
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
-                messageAdapter.addMessage(0, messageAfterModels);
                 updateMessageDecoration();
+                messageAdapter.addMessage(0, messageAfterModels);
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
                 if (vm.isOnBottom() && 0 < messageAfterModels.size()) rvMessageList.scrollToPosition(0);
-                //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
-                new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
