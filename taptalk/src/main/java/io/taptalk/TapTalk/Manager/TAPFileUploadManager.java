@@ -58,7 +58,7 @@ public class TAPFileUploadManager {
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
     //max Size for upload file message
-    private long maxSize = 105 * 1024 * 1024;
+    private long maxSize = 25 * 1024 * 1024;
     private HashMap<String, String> fileProviderPathMap;
 
     public static TAPFileUploadManager getInstance() {
