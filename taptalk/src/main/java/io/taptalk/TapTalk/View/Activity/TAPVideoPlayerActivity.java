@@ -149,7 +149,8 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         });
         videoView.setOnCompletionListener(mediaPlayer -> {
             pauseVideo();
-            videoView.seekTo(duration);
+            tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(duration, duration));
+            pausedPosition = 0;
         });
     }
 
