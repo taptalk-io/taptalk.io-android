@@ -512,6 +512,51 @@ public class TAPUtils {
         }
     }
 
+    /**
+     * Current and maxDuration are in milliseconds
+     */
+    public String getMediaDurationString(int current, int maxDuration) {
+        int secondMs = 1000;
+        int minuteMs = 1000 * 60;
+        int hourMs = 1000 * 60 * 60;
+
+        String minute = String.valueOf((current % hourMs) / minuteMs);
+        if (minute.length() < 2) {
+            minute = String.format("0%s", minute);
+        }
+
+        String second = current == 0? "00" : String.valueOf((current % minuteMs) / secondMs);
+        if (second.length() < 2) {
+            second = String.format("0%s", second);
+        }
+
+        String maxMinute = String.valueOf((maxDuration % hourMs) / minuteMs);
+        if (maxMinute.length() < 2) {
+            maxMinute = String.format("0%s", maxMinute);
+        }
+
+        String maxSecond = String.valueOf((maxDuration % minuteMs) / secondMs);
+        if (maxSecond.length() < 2) {
+            maxSecond = String.format("0%s", maxSecond);
+        }
+
+        if (maxDuration > hourMs) {
+            String hour = String.valueOf(current / hourMs);
+            if (hour.length() < 2) {
+                hour = String.format("0%s", hour);
+            }
+
+            String maxHour = String.valueOf(maxDuration / hourMs);
+            if (maxHour.length() < 2) {
+                maxHour = String.format("0%s", maxHour);
+            }
+
+            return String.format("%s:%s:%s / %s:%s:%s", hour, minute, second, maxHour, maxMinute, maxSecond);
+        } else {
+            return String.format("%s:%s / %s:%s", minute, second, maxMinute, maxSecond);
+        }
+    }
+
     public String getFileDisplayName(TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {

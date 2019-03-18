@@ -112,7 +112,8 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE_FILE = 22;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 31;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE = 32;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 33;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO = 34;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 35;
         public static final int PERMISSION_LOCATION = 41;
     }
 

@@ -144,8 +144,6 @@ public class TapTalk {
         Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
 
         TAPCacheManager.getInstance(appContext).initAllCache();
-        TAPFileUploadManager.getInstance(); // Get pending file message path from preference
-        TAPFileDownloadManager.getInstance(); // Get file message URI from preference
 
         //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
         TAPDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
