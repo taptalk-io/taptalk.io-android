@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -27,7 +26,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_R
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
 
-public class TAPImagePreviewActivity extends AppCompatActivity {
+public class TAPImagePreviewActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPImagePreviewActivity.class.getSimpleName();
     //View
