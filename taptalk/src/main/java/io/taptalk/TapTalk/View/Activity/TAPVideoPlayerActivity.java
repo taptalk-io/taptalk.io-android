@@ -141,6 +141,9 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
                     pausedPosition = 0;
                 } else {
                     pausedPosition = videoView.getCurrentPosition();
+                    if (pausedPosition >= duration) {
+                        pausedPosition = 0;
+                    }
                 }
             });
         });
