@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -132,7 +133,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             duration = videoView.getDuration();
             isVideoPlaying = true;
             startProgressTimer();
-
+            mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING);
             mediaPlayer.setOnSeekCompleteListener(mediaPlayer1 -> {
                 tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(videoView.getCurrentPosition(), duration));
                 if (!isSeeking && isVideoPlaying) {

@@ -765,6 +765,12 @@ public class TAPDataManager {
         TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 
+    public void uploadVideo(String localID, File videoFile, String roomID, String caption, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadVideo(videoFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
+    }
+
     public void uploadFile(String localID, File file, String roomID, String mimeType,
                            ProgressRequestBody.UploadCallbacks uploadCallback,
                            TapDefaultDataView<TAPUploadFileResponse> view) {

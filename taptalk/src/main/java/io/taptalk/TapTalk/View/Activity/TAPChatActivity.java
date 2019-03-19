@@ -306,9 +306,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         openImagePreviewPage(imageGalleryUris);
                         break;
                     case SEND_MEDIA_FROM_PREVIEW:
-                        ArrayList<TAPMediaPreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
-                        if (null != images && 0 < images.size()) {
-                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom(), images);
+                        ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
+                        if (null != medias && 0 < medias.size()) {
+                            TAPChatManager.getInstance().sendImageOrVideoMessage(TapTalk.appContext, vm.getRoom(), medias);
                         }
                         break;
                     case FORWARD_MESSAGE:

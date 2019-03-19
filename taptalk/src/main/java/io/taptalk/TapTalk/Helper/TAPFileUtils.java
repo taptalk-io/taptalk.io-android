@@ -16,10 +16,12 @@ import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 
@@ -34,7 +36,7 @@ public class TAPFileUtils {
     public String encodeToBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
 
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
@@ -148,7 +150,25 @@ public class TAPFileUtils {
         return null;
     }
 
+    public File getFileFromContentUri(Context context, Uri contentUri) {
+        try {
+            InputStream is = context.getContentResolver().openInputStream(contentUri);
+            if (null != is) {
+                byte[] buffer = new byte[is.available()];
+                is.read(buffer);
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + context.getString(R.string.app_name) + "/Files/TMP_" + contentUri.toString().substring(contentUri.toString().lastIndexOf("/") + 1));
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(buffer);
+                fos.flush();
+                fos.close();
 
+                return file;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
@@ -180,10 +200,10 @@ public class TAPFileUtils {
             if (getFilePath(activity, imageUri) != null) {
                 exif = new ExifInterface(getFilePath(activity, imageUri));
             } else {
-                return rotateBitmap(image,0);
+                return rotateBitmap(image, 0);
             }
         } catch (IOException e) {
-            return rotateBitmap(image,0);
+            return rotateBitmap(image, 0);
         }
         int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
         return rotateBitmap(image, orientation);
@@ -256,7 +276,7 @@ public class TAPFileUtils {
                 column
         };
 
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,null)) {
+        try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(index);
