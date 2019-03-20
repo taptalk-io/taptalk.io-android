@@ -58,7 +58,7 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"

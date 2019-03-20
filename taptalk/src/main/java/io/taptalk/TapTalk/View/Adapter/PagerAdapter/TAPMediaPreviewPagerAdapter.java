@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +22,13 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
-public class TAPImagePreviewPagerAdapter extends PagerAdapter {
+public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
 
     private ArrayList<TAPMediaPreviewModel> images;
     private Context context;
     private int maxCharacter = 100;
 
-    public TAPImagePreviewPagerAdapter(Context context, ArrayList<TAPMediaPreviewModel> images) {
+    public TAPMediaPreviewPagerAdapter(Context context, ArrayList<TAPMediaPreviewModel> images) {
         this.context = context;
         this.images = images;
     }
@@ -48,7 +47,7 @@ public class TAPImagePreviewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         TAPMediaPreviewModel mediaPreview = images.get(position);
-        ViewGroup layout = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.tap_image_preview, container, false);
+        ViewGroup layout = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.tap_cell_media_preview, container, false);
 
         ImageView ivImagePreview = layout.findViewById(R.id.iv_image);
         ImageView ivVideoIcon = layout.findViewById(R.id.iv_video_icon);

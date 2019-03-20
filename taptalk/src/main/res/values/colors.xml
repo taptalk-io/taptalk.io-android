@@ -62,6 +62,8 @@
     <color name="tap_charcoal_alpha_40">#6604040f</color>
 
     <color name="tap_transparent_white">#00ffffff</color>
+    <color name="tap_transparent_white_20">#33ffffff</color>
+    <color name="tap_transparent_white_40">#66ffffff</color>
     <color name="tap_transparent_black">#00000000</color>
     <color name="tap_transparent_black_18">#2d000000</color>
     <color name="tap_transparent_black_40">#66000000</color>

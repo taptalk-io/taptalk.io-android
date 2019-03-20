@@ -88,7 +88,7 @@
             android:indeterminateTint="@color/tap_white"
             android:max="100"
             android:progressBackgroundTint="@color/tap_white"
-            android:progressTint="@color/tap_white"
+            android:progressTint="@color/tap_transparent_white_40"
             android:thumbTint="@color/tap_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_duration"

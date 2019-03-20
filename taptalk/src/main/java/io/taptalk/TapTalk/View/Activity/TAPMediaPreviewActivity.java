@@ -18,27 +18,26 @@ import java.util.ArrayList;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
-import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPImagePreviewPagerAdapter;
-import io.taptalk.TapTalk.View.Adapter.TAPImagePreviewRecyclerAdapter;
+import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPMediaPreviewPagerAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPMediaPreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
 
-public class TAPImagePreviewActivity extends TAPBaseActivity {
+public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
-    private static final String TAG = TAPImagePreviewActivity.class.getSimpleName();
+    private static final String TAG = TAPMediaPreviewActivity.class.getSimpleName();
     //View
     private ViewPager vpImagePreview;
     private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn;
     private RecyclerView rvImageThumbnail;
     private ImageView ivAddMoreImage;
-    private TAPImagePreviewRecyclerAdapter adapter;
-    private TAPImagePreviewPagerAdapter pagerAdapter;
+    private TAPMediaPreviewRecyclerAdapter adapter;
+    private TAPMediaPreviewPagerAdapter pagerAdapter;
 
     //Intent
-    private ArrayList<TAPMediaPreviewModel> images;
+    private ArrayList<TAPMediaPreviewModel> medias;
     //private ArrayList<String> imageCaptions;
 
     //ImagePreview RecyclerView Data
@@ -66,9 +65,11 @@ public class TAPImagePreviewActivity extends TAPBaseActivity {
     }
 
     private void receiveIntent() {
-        images = getIntent().getParcelableArrayListExtra(K_IMAGE_URLS);
+        medias = getIntent().getParcelableArrayListExtra(MEDIA_PREVIEWS);
 
-        if (null == images) images = new ArrayList<>();
+        if (null == medias) {
+            medias = new ArrayList<>();
+        }
     }
 
     private void initView() {
@@ -79,20 +80,20 @@ public class TAPImagePreviewActivity extends TAPBaseActivity {
         rvImageThumbnail = findViewById(R.id.rv_image_thumbnail);
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
-        adapter = new TAPImagePreviewRecyclerAdapter(images, thumbInterface);
-        pagerAdapter = new TAPImagePreviewPagerAdapter(this, images);
+        adapter = new TAPMediaPreviewRecyclerAdapter(medias, thumbInterface);
+        pagerAdapter = new TAPMediaPreviewPagerAdapter(this, medias);
         vpImagePreview.setAdapter(pagerAdapter);
         vpImagePreview.addOnPageChangeListener(vpPreviewListener);
 
-        if (1 < images.size()) {
+        if (1 < medias.size()) {
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
-            tvMultipleImageIndicator.setText(1 + " of " + images.size());
+            tvMultipleImageIndicator.setText(1 + " of " + medias.size());
 
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(adapter);
             rvImageThumbnail.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvImageThumbnail.setHasFixedSize(false);
-            rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, images.size(), 0, 0));
+            rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, medias.size(), 0, 0));
 
             SimpleItemAnimator thumbnailItemAnimator = (SimpleItemAnimator) rvImageThumbnail.getItemAnimator();
             if (null != thumbnailItemAnimator)
@@ -106,12 +107,12 @@ public class TAPImagePreviewActivity extends TAPBaseActivity {
 
         tvSendBtn.setOnClickListener(v -> {
             Intent sendIntent = new Intent();
-            sendIntent.putParcelableArrayListExtra(K_IMAGE_RES_CODE, images);
+            sendIntent.putParcelableArrayListExtra(MEDIA_PREVIEWS, medias);
             setResult(RESULT_OK, sendIntent);
             finish();
         });
 
-        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPImagePreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
+        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
     }
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {
@@ -123,7 +124,7 @@ public class TAPImagePreviewActivity extends TAPBaseActivity {
         @Override
         public void onPageSelected(int i) {
             if (View.VISIBLE == tvMultipleImageIndicator.getVisibility())
-                tvMultipleImageIndicator.setText((i + 1) + " of " + images.size());
+                tvMultipleImageIndicator.setText((i + 1) + " of " + medias.size());
 
             new Thread(() -> {
                 for (TAPMediaPreviewModel recyclerItem : adapter.getItems()) {
@@ -180,16 +181,16 @@ public class TAPImagePreviewActivity extends TAPBaseActivity {
             imageGalleryUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(this, uri), false));
         }
 
-        images.addAll(imageGalleryUris);
+        medias.addAll(imageGalleryUris);
             
         pagerAdapter.notifyDataSetChanged();
-        if (1 < images.size()) {
-            tvMultipleImageIndicator.setText((lastIndex + 1) + " of " + images.size());
+        if (1 < medias.size()) {
+            tvMultipleImageIndicator.setText((lastIndex + 1) + " of " + medias.size());
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(adapter);
             rvImageThumbnail.setHasFixedSize(false);
-            rvImageThumbnail.setLayoutManager(new LinearLayoutManager(TAPImagePreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
+            rvImageThumbnail.setLayoutManager(new LinearLayoutManager(TAPMediaPreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
         } else {
             adapter.notifyDataSetChanged();
         }
@@ -198,17 +199,17 @@ public class TAPImagePreviewActivity extends TAPBaseActivity {
     private void deleteImageProcess(int position) {
         int tempPosition;
 
-        if (0 != position && position == images.size() - 1) tempPosition = position - 1;
+        if (0 != position && position == medias.size() - 1) tempPosition = position - 1;
         else tempPosition = position;
 
-        images.remove(position);
-        if (0 < images.size())
-            images.get(tempPosition).setSelected(true);
+        medias.remove(position);
+        if (0 < medias.size())
+            medias.get(tempPosition).setSelected(true);
         pagerAdapter.notifyDataSetChanged();
         adapter.notifyDataSetChanged();
-        tvMultipleImageIndicator.setText((tempPosition + 1) + " of " + images.size());
+        tvMultipleImageIndicator.setText((tempPosition + 1) + " of " + medias.size());
 
-        if (1 == images.size()) {
+        if (1 == medias.size()) {
             rvImageThumbnail.setVisibility(View.GONE);
             tvMultipleImageIndicator.setVisibility(View.GONE);
         }

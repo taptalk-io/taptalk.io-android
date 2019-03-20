@@ -93,6 +93,7 @@ public class TAPDefaultConstant {
         public static final String IS_TYPING = "kTAPExtraIsTyping";
         public static final String QUOTE = "kTAPExtraQuote";
         public static final String URI = "kTAPExtraUri";
+        public static final String MEDIA_PREVIEWS = "kTAPExtraMediaPreviews";
     }
 
     public static final class RequestCode {
@@ -193,11 +194,6 @@ public class TAPDefaultConstant {
 
     public static final class OldDataConst {
         public static final String K_LAST_DELETE_TIMESTAMP = "kTAPLastDeleteTimestamp";
-    }
-
-    public static final class ImagePreview {
-        public static final String K_IMAGE_RES_CODE = "kTAPImageResultCode";
-        public static final String K_IMAGE_URLS = "kTAPImageUrls";
     }
 
     public static final class MediaType {

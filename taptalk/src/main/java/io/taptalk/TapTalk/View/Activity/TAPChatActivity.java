@@ -106,11 +106,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
@@ -285,7 +284,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         }
                         ArrayList<TAPMediaPreviewModel> imageCameraUris = new ArrayList<>();
                         imageCameraUris.add(TAPMediaPreviewModel.Builder(vm.getCameraImageUri(), TYPE_IMAGE, true));
-                        openImagePreviewPage(imageCameraUris);
+                        openMediaPreviewPage(imageCameraUris);
                         break;
                     case SEND_MEDIA_FROM_GALLERY:
                         if (null == intent) {
@@ -303,10 +302,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             Log.e(TAG, "onActivityResult: " + uri);
                             imageGalleryUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
                         }
-                        openImagePreviewPage(imageGalleryUris);
+                        openMediaPreviewPage(imageGalleryUris);
                         break;
                     case SEND_MEDIA_FROM_PREVIEW:
-                        ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
+                        ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
                         if (null != medias && 0 < medias.size()) {
                             TAPChatManager.getInstance().sendImageOrVideoMessage(TapTalk.appContext, vm.getRoom(), medias);
                         }
@@ -1027,9 +1026,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    private void openImagePreviewPage(ArrayList<TAPMediaPreviewModel> imageUris) {
-        Intent intent = new Intent(TAPChatActivity.this, TAPImagePreviewActivity.class);
-        intent.putExtra(K_IMAGE_URLS, imageUris);
+    private void openMediaPreviewPage(ArrayList<TAPMediaPreviewModel> mediaPreviews) {
+        Intent intent = new Intent(TAPChatActivity.this, TAPMediaPreviewActivity.class);
+        intent.putExtra(MEDIA_PREVIEWS, mediaPreviews);
         startActivityForResult(intent, SEND_MEDIA_FROM_PREVIEW);
     }
 

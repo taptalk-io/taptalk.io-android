@@ -13,21 +13,21 @@ import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
-import io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity;
+import io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity;
 import io.taptalk.Taptalk.R;
 
-public class TAPImagePreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPreviewModel, TAPBaseViewHolder<TAPMediaPreviewModel>> {
+public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPreviewModel, TAPBaseViewHolder<TAPMediaPreviewModel>> {
 
-    TAPImagePreviewActivity.ImageThumbnailPreviewInterface thumbInterface;
+    TAPMediaPreviewActivity.ImageThumbnailPreviewInterface thumbInterface;
 
-    public TAPImagePreviewRecyclerAdapter(ArrayList<TAPMediaPreviewModel> images, TAPImagePreviewActivity.ImageThumbnailPreviewInterface thumbInterface) {
+    public TAPMediaPreviewRecyclerAdapter(ArrayList<TAPMediaPreviewModel> images, TAPMediaPreviewActivity.ImageThumbnailPreviewInterface thumbInterface) {
         setItems(images);
         this.thumbInterface = thumbInterface;
     }
 
     @Override
     public TAPBaseViewHolder<TAPMediaPreviewModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ImagePreviewVH(viewGroup, R.layout.tap_image_preview_recycler);
+        return new ImagePreviewVH(viewGroup, R.layout.tap_cell_media_preview_thumbnail);
     }
 
     class ImagePreviewVH extends TAPBaseViewHolder<TAPMediaPreviewModel> {
