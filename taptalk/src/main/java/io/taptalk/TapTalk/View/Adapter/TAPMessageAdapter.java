@@ -127,23 +127,23 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     public TAPBaseChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
-                return new TextVH(parent, R.layout.tap_cell_chat_text_right, viewType);
+                return new TextVH(parent, R.layout.tap_cell_chat_bubble_text_right, viewType);
             case TYPE_BUBBLE_TEXT_LEFT:
-                return new TextVH(parent, R.layout.tap_cell_chat_text_left, viewType);
+                return new TextVH(parent, R.layout.tap_cell_chat_bubble_text_left, viewType);
             case TYPE_BUBBLE_IMAGE_RIGHT:
-                return new ImageVH(parent, R.layout.tap_cell_chat_image_right, viewType);
+                return new ImageVH(parent, R.layout.tap_cell_chat_bubble_image_right, viewType);
             case TYPE_BUBBLE_IMAGE_LEFT:
-                return new ImageVH(parent, R.layout.tap_cell_chat_image_left, viewType);
+                return new ImageVH(parent, R.layout.tap_cell_chat_bubble_image_left, viewType);
             case TYPE_BUBBLE_FILE_RIGHT:
-                return new FileVH(parent, R.layout.tap_cell_chat_file_right, viewType);
+                return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_right, viewType);
             case TYPE_BUBBLE_FILE_LEFT:
-                return new FileVH(parent, R.layout.tap_cell_chat_file_left, viewType);
+                return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_left, viewType);
             case TYPE_BUBBLE_LOCATION_RIGHT:
-                return new LocationVH(parent, R.layout.tap_cell_chat_location_right, viewType);
+                return new LocationVH(parent, R.layout.tap_cell_chat_bubble_location_right, viewType);
             case TYPE_BUBBLE_LOCATION_LEFT:
-                return new LocationVH(parent, R.layout.tap_cell_chat_location_left, viewType);
+                return new LocationVH(parent, R.layout.tap_cell_chat_bubble_location_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
-                ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_product_list);
+                ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_bubble_product_list);
                 prodHolder.setIsRecyclable(false);
                 return prodHolder;
             case TYPE_BUBBLE_ORDER_CARD:

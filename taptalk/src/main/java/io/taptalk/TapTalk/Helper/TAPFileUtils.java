@@ -150,6 +150,7 @@ public class TAPFileUtils {
         return null;
     }
 
+    // FIXME: 19 March 2019 THIS METHOD WRITES FILE INTO STORAGE
     public File getFileFromContentUri(Context context, Uri contentUri) {
         try {
             InputStream is = context.getContentResolver().openInputStream(contentUri);
