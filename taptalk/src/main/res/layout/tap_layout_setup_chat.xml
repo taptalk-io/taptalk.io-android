@@ -4,7 +4,7 @@
     android:id="@+id/fl_setup_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_charcoal_alpha_40"
+    android:background="@color/tap_transparent_charcoal_40"
     android:elevation="4dp">
 
     <android.support.constraint.ConstraintLayout

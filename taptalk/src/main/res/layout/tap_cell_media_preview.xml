@@ -17,7 +17,7 @@
         android:id="@+id/iv_video_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/tap_ic_button_play_preview"
+        android:src="@drawable/tap_ic_button_play"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

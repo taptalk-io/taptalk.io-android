@@ -50,6 +50,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
@@ -84,20 +85,28 @@ public class TAPDataManager {
      * =========================================================================================== *
      */
 
-    private void saveBooleanPreference(boolean bool, String key) {
+    private void saveBooleanPreference(String key, boolean bool) {
         Hawk.put(key, bool);
     }
 
-    private void saveStringPreference(String string, String key) {
+    private void saveStringPreference(String key, String string) {
         Hawk.put(key, string);
     }
 
-    private void saveLongTimestampPreference(Long timestamp, String key) {
+    private void saveFloatPreference(String key, Float flt) {
+        Hawk.put(key, flt);
+    }
+
+    private void saveLongTimestampPreference(String key, Long timestamp) {
         Hawk.put(key, timestamp);
     }
 
     private String getStringPreference(String key) {
         return Hawk.get(key, "");
+    }
+
+    private Float getFloatPreference(String key) {
+        return Hawk.get(key, null);
     }
 
     private Long getLongTimestampPreference(String key) {
@@ -168,7 +177,7 @@ public class TAPDataManager {
     }
 
     public void saveAuthTicket(String authTicket) {
-        saveStringPreference(authTicket, K_AUTH_TICKET);
+        saveStringPreference(K_AUTH_TICKET, authTicket);
     }
 
     public void removeAuthTicket() {
@@ -188,11 +197,11 @@ public class TAPDataManager {
     }
 
     public void saveAccessToken(String accessToken) {
-        saveStringPreference(accessToken, K_ACCESS_TOKEN);
+        saveStringPreference(K_ACCESS_TOKEN, accessToken);
     }
 
     public void saveAccessTokenExpiry(Long accessTokenExpiry) {
-        saveLongTimestampPreference(accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
+        saveLongTimestampPreference(K_ACCESS_TOKEN_EXPIRY, accessTokenExpiry);
     }
 
     public void removeAccessToken() {
@@ -212,11 +221,11 @@ public class TAPDataManager {
     }
 
     public void saveRefreshToken(String refreshToken) {
-        saveStringPreference(refreshToken, K_REFRESH_TOKEN);
+        saveStringPreference(K_REFRESH_TOKEN, refreshToken);
     }
 
     public void saveRefreshTokenExpiry(Long refreshTokenExpiry) {
-        saveLongTimestampPreference(refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
+        saveLongTimestampPreference(K_REFRESH_TOKEN_EXPIRY, refreshTokenExpiry);
     }
 
     public void removeRefreshToken() {
@@ -280,7 +289,7 @@ public class TAPDataManager {
      */
 
     public void setRoomListSetupFinished() {
-        saveLongTimestampPreference(System.currentTimeMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
+        saveLongTimestampPreference(K_IS_ROOM_LIST_SETUP_FINISHED, System.currentTimeMillis());
     }
 
     public Boolean isRoomListSetupFinished() {
@@ -300,7 +309,7 @@ public class TAPDataManager {
     }
 
     public void setWriteStoragePermissionRequested(boolean isRequested) {
-        saveBooleanPreference(isRequested, K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
+        saveBooleanPreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED, isRequested);
     }
 
     public void removeWriteStoragePermissionRequested() {
@@ -329,6 +338,18 @@ public class TAPDataManager {
         Hawk.put(K_FILE_URI_MAP, fileUriMap);
     }
 
+    /**
+     * LATEST SETTING FOR MEDIA VOLUME
+     */
+    public void saveMediaVolumePreference(float volume) {
+        saveFloatPreference(K_MEDIA_VOLUME, volume);
+    }
+
+    public float getMediaVolumePreference() {
+        Float volume = getFloatPreference(K_MEDIA_VOLUME);
+        return volume == null ? 1f : volume;
+    }
+
     // TODO: 14/09/18 TEMP
     public String getRecipientID() {
         return Hawk.get(K_RECIPIENT_ID, "0");
@@ -347,7 +368,7 @@ public class TAPDataManager {
      * Firebase Token
      */
     public void saveFirebaseToken(String firebaseToken) {
-        saveStringPreference(firebaseToken, K_FIREBASE_TOKEN);
+        saveStringPreference(K_FIREBASE_TOKEN, firebaseToken);
     }
 
     public String getFirebaseToken() {
@@ -376,7 +397,7 @@ public class TAPDataManager {
      * Old Data (Auto Clean) Last Delete Timestamp
      */
     public void saveLastDeleteTimestamp(Long lastDeleteTimestamp) {
-        saveLongTimestampPreference(lastDeleteTimestamp, K_LAST_DELETE_TIMESTAMP);
+        saveLongTimestampPreference(K_LAST_DELETE_TIMESTAMP, lastDeleteTimestamp);
     }
 
     public Long getLastDeleteTimestamp() {
@@ -420,7 +441,7 @@ public class TAPDataManager {
      * API HEADER
      */
     public void saveApplicationID(String applicationID) {
-        saveStringPreference(applicationID, APP_ID);
+        saveStringPreference(APP_ID, applicationID);
     }
 
     public String getApplicationID() {
@@ -436,7 +457,7 @@ public class TAPDataManager {
     }
 
     public void saveApplicationSecret(String applicationSecret) {
-        saveStringPreference(applicationSecret, APP_SECRET);
+        saveStringPreference(APP_SECRET, applicationSecret);
     }
 
     public String getApplicationSecret() {
@@ -452,7 +473,7 @@ public class TAPDataManager {
     }
 
     public void saveUserAgent(String userAgent) {
-        saveStringPreference(userAgent, USER_AGENT);
+        saveStringPreference(USER_AGENT, userAgent);
     }
 
     public String getUserAgent() {

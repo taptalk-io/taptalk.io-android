@@ -495,15 +495,6 @@ public class TAPUtils {
 
     // Preview video with external app
     public void openVideoPreview(Context context, Uri uri) {
-        Log.e(TAG, "openVideoPreview: " + uri);
-//        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-//        intent.setDataAndType(uri, context.getString(R.string.tap_intent_type_video));
-//        try {
-//            context.startActivity(intent);
-//        } catch (ActivityNotFoundException e) {
-//            e.printStackTrace();
-//            Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
-//        }
         Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
         intent.putExtra(URI, uri.toString());
         context.startActivity(intent);
@@ -525,19 +516,9 @@ public class TAPUtils {
             minute = String.format("0%s", minute);
         }
 
-        String second = current == 0? "00" : String.valueOf((current % minuteMs) / secondMs);
+        String second = current == 0? "00" : String.valueOf(Math.round(((float) current % minuteMs) / secondMs));
         if (second.length() < 2) {
             second = String.format("0%s", second);
-        }
-
-        String maxMinute = String.valueOf((maxDuration % hourMs) / minuteMs);
-        if (maxMinute.length() < 2) {
-            maxMinute = String.format("0%s", maxMinute);
-        }
-
-        String maxSecond = String.valueOf((maxDuration % minuteMs) / secondMs);
-        if (maxSecond.length() < 2) {
-            maxSecond = String.format("0%s", maxSecond);
         }
 
         if (maxDuration > hourMs) {
@@ -546,14 +527,9 @@ public class TAPUtils {
                 hour = String.format("0%s", hour);
             }
 
-            String maxHour = String.valueOf(maxDuration / hourMs);
-            if (maxHour.length() < 2) {
-                maxHour = String.format("0%s", maxHour);
-            }
-
-            return String.format("%s:%s:%s / %s:%s:%s", hour, minute, second, maxHour, maxMinute, maxSecond);
+            return String.format("%s:%s:%s", hour, minute, second);
         } else {
-            return String.format("%s:%s / %s:%s", minute, second, maxMinute, maxSecond);
+            return String.format("%s:%s", minute, second);
         }
     }
 

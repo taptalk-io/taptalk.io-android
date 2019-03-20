@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tap_black"
@@ -16,145 +17,198 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl_action_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_charcoal_alpha_40"
-        app:layout_constraintTop_toTopOf="parent">
+    <!--Old Action Bar-->
+    <!--<android.support.constraint.ConstraintLayout-->
+    <!--android:id="@+id/cl_action_bar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:background="@color/tap_charcoal_alpha_40"-->
+    <!--app:layout_constraintTop_toTopOf="parent">-->
 
-        <ImageView
-            android:id="@+id/iv_button_back"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_button_back"-->
+    <!--android:layout_width="?attr/actionBarSize"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:padding="16dp"-->
+    <!--android:src="@drawable/tap_ic_back_white"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@id/tv_title"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/TapImageDetailSender"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/tv_message_status"
-            app:layout_constraintEnd_toStartOf="@id/iv_save"
-            app:layout_constraintStart_toEndOf="@id/iv_button_back"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="User Name" />
+    <!--<TextView-->
+    <!--android:id="@+id/tv_title"-->
+    <!--style="@style/TapImageDetailSender"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--app:layout_constraintBottom_toTopOf="@id/tv_message_status"-->
+    <!--app:layout_constraintEnd_toStartOf="@id/iv_save"-->
+    <!--app:layout_constraintStart_toEndOf="@id/iv_button_back"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:layout_constraintVertical_chainStyle="packed"-->
+    <!--tools:text="User Name" />-->
 
-        <TextView
-            android:id="@+id/tv_message_status"
-            style="@style/TapImageDetailStatus"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_save"
-            app:layout_constraintStart_toEndOf="@id/iv_button_back"
-            app:layout_constraintTop_toBottomOf="@id/tv_title"
-            tools:text="Sent at 17:05 17/05/2018" />
+    <!--<TextView-->
+    <!--android:id="@+id/tv_message_status"-->
+    <!--style="@style/TapImageDetailStatus"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@id/iv_save"-->
+    <!--app:layout_constraintStart_toEndOf="@id/iv_button_back"-->
+    <!--app:layout_constraintTop_toBottomOf="@id/tv_title"-->
+    <!--tools:text="Sent at 17:05 17/05/2018" />-->
 
-        <ImageView
-            android:id="@+id/iv_save"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="16dp"
-            android:src="@drawable/tap_ic_save_white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_title"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_save"-->
+    <!--android:layout_width="?attr/actionBarSize"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:padding="16dp"-->
+    <!--android:src="@drawable/tap_ic_save_white"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintStart_toEndOf="@id/tv_title"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
 
-    </android.support.constraint.ConstraintLayout>
+    <!--</android.support.constraint.ConstraintLayout>-->
+
+    <ImageView
+        android:id="@+id/iv_button_close"
+        android:layout_width="60dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/tap_bg_media_player_button_ripple"
+        android:padding="14dp"
+        android:src="@drawable/tap_ic_close_grey_small"
+        android:tint="@color/tap_transparent_white_60"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_button_mute"
+        android:layout_width="60dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/tap_bg_media_player_button_ripple"
+        android:padding="14dp"
+        android:src="@drawable/tap_ic_volume_on"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_button_play_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/tap_ic_button_pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/tap_charcoal_alpha_40"
+        android:layout_margin="16dp"
+        android:background="@drawable/tap_bg_b3474747_rounded_16dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <SeekBar
             android:id="@+id/seek_bar"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:paddingBottom="16dp"
-            android:paddingTop="16dp"
             android:indeterminateTint="@color/tap_white"
             android:max="100"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
             android:progressBackgroundTint="@color/tap_white"
             android:progressTint="@color/tap_transparent_white_40"
             android:thumbTint="@color/tap_white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_duration"
+            app:layout_constraintEnd_toStartOf="@id/tv_duration"
+            app:layout_constraintStart_toEndOf="@id/tv_current_time"
+            app:layout_constraintTop_toTopOf="parent"
             tools:progress="40" />
 
         <TextView
-            android:id="@+id/tv_duration"
-            style="@style/TapQuoteBody"
+            android:id="@+id/tv_current_time"
+            style="@style/TapMessageStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/tap_white"
-            app:layout_constraintBottom_toTopOf="@id/seek_bar"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/tap_transparent_white_60"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/seek_bar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="04:12 / 10:53" />
+            tools:text="04:12" />
+
+        <TextView
+            android:id="@+id/tv_duration"
+            style="@style/TapMessageStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/tap_transparent_white_60"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/seek_bar"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="10:53" />
 
     </android.support.constraint.ConstraintLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_loading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/tap_charcoal_alpha_40"
-        android:visibility="gone">
+    <!--Loading layout-->
+    <!--<FrameLayout-->
+        <!--android:id="@+id/fl_loading"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@color/tap_transparent_charcoal_40"-->
+        <!--android:visibility="gone">-->
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_gravity="center"
-            android:background="@drawable/tap_bg_white_rounded_6dp">
+        <!--<android.support.constraint.ConstraintLayout-->
+            <!--android:layout_width="128dp"-->
+            <!--android:layout_height="128dp"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:background="@drawable/tap_bg_white_rounded_6dp">-->
 
-            <ProgressBar
-                android:id="@+id/pb_saving"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+            <!--<ProgressBar-->
+                <!--android:id="@+id/pb_saving"-->
+                <!--android:layout_width="60dp"-->
+                <!--android:layout_height="60dp"-->
+                <!--android:layout_marginBottom="4dp"-->
+                <!--app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent" />-->
 
-            <ImageView
-                android:id="@+id/iv_saved"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginBottom="4dp"
-                android:src="@drawable/tap_ic_tick_green"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+            <!--<ImageView-->
+                <!--android:id="@+id/iv_saved"-->
+                <!--android:layout_width="60dp"-->
+                <!--android:layout_height="60dp"-->
+                <!--android:layout_marginBottom="4dp"-->
+                <!--android:src="@drawable/tap_ic_tick_green"-->
+                <!--android:visibility="gone"-->
+                <!--app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintStart_toStartOf="parent" />-->
 
-            <TextView
-                android:id="@+id/tv_loading_text"
-                style="@style/TapLoadingText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/tap_saving"
-                app:layout_constraintBottom_toBottomOf="parent" />
+            <!--<TextView-->
+                <!--android:id="@+id/tv_loading_text"-->
+                <!--style="@style/TapLoadingText"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginStart="16dp"-->
+                <!--android:layout_marginEnd="16dp"-->
+                <!--android:layout_marginBottom="16dp"-->
+                <!--android:text="@string/tap_saving"-->
+                <!--app:layout_constraintBottom_toBottomOf="parent" />-->
 
-        </android.support.constraint.ConstraintLayout>
+        <!--</android.support.constraint.ConstraintLayout>-->
 
-    </FrameLayout>
+    <!--</FrameLayout>-->
 
 </android.support.constraint.ConstraintLayout>
