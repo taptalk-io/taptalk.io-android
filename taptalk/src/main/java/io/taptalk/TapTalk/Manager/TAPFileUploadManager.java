@@ -449,7 +449,7 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 sendFileMessageAfterUploadSuccess(context, roomID, videoFile.getName(), mimeType, messageModel.copyMessageModel(), response);
-                isTempFileDeleted = videoFile.delete();
+                isTempFileDeleted = videoFile.delete(); // Delete temporary video file
             }
 
             @Override

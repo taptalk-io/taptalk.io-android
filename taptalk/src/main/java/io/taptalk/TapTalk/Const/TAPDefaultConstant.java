@@ -54,6 +54,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_TEXT_LEFT = 10012;
         public static final int TYPE_BUBBLE_IMAGE_RIGHT = 10021;
         public static final int TYPE_BUBBLE_IMAGE_LEFT = 10022;
+        public static final int TYPE_BUBBLE_VIDEO_RIGHT = 10031;
+        public static final int TYPE_BUBBLE_VIDEO_LEFT = 10032;
         public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
         public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
         public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
@@ -69,9 +71,10 @@ public class TAPDefaultConstant {
         public static final String FILE_NAME = "fileName";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
+        public static final String DURATION = "duration";
         public static final String SIZE = "size";
-        public static final String IMAGE_WIDTH = "width";
-        public static final String IMAGE_HEIGHT = "height";
+        public static final String WIDTH = "width";
+        public static final String HEIGHT = "height";
         public static final String CAPTION = "caption";
         public static final String THUMBNAIL = "thumbnail";
         public static final String FILE_URI = "fileUri";

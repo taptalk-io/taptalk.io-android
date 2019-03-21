@@ -424,6 +424,7 @@ public class TAPUtils {
     /**
      * Reminder: Handle onRequestPermissionsResult in activity
      */
+    // TODO: 21 March 2019 GET VIDEO FROM GOOGLE DRIVE
     public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // Check read storage permission

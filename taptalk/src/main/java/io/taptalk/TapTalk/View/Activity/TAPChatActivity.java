@@ -290,19 +290,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null == intent) {
                             return;
                         }
-                        ArrayList<TAPMediaPreviewModel> imageGalleryUris = new ArrayList<>();
+                        ArrayList<TAPMediaPreviewModel> galleryMediaUris = new ArrayList<>();
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
                             //ini buat lebih dari 1 image selection
-                            imageGalleryUris = TAPUtils.getInstance().getUrisFromClipData(TAPChatActivity.this, clipData, true);
-                            Log.e(TAG, "onActivityResult: " + imageGalleryUris.size());
+                            galleryMediaUris = TAPUtils.getInstance().getUrisFromClipData(TAPChatActivity.this, clipData, true);
+                            Log.e(TAG, "onActivityResult: " + galleryMediaUris.size());
                         } else {
                             //ini buat 1 image selection
                             Uri uri = intent.getData();
                             Log.e(TAG, "onActivityResult: " + uri);
-                            imageGalleryUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
+                            galleryMediaUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
                         }
-                        openMediaPreviewPage(imageGalleryUris);
+                        openMediaPreviewPage(galleryMediaUris);
                         break;
                     case SEND_MEDIA_FROM_PREVIEW:
                         ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);

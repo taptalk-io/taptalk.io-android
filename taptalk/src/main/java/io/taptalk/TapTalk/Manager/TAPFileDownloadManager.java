@@ -299,6 +299,7 @@ public class TAPFileDownloadManager {
     }
 
     public void saveFileMessageUriToPreference() {
+        Log.e(TAG, "saveFileMessageUriToPreference: ");
         TAPDataManager.getInstance().saveFileMessageUriMap(getFileMessageUriMap());
     }
 
@@ -312,6 +313,8 @@ public class TAPFileDownloadManager {
     }
 
     public void saveFileMessageUri(String roomID, String localID, Uri fileUri) {
+        Log.e(TAG, "saveFileMessageUri: " + localID);
+        Log.e(TAG, "saveFileMessageUri: " + fileUri);
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
             roomUriMap.put(localID, fileUri.toString());

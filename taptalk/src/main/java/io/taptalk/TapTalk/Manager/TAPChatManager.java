@@ -60,6 +60,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -668,15 +669,26 @@ public class TAPChatManager {
     private TAPMessageModel createVideoMessageModel(Context context, Uri fileUri, String caption) {
         String videoUri = fileUri.toString();
 
-        // Get video width and height
+        // Get video width, height, duration
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(context, fileUri);
-        int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-        int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        int width, height;
+        if (rotation.equals("90") || rotation.equals("270")) {
+            // Swap width and height when video is rotated
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+        } else {
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+        }
+        int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
         retriever.release();
 
         // Build message model
         TAPMessageModel messageModel;
+        HashMap<String, Object> data = new TAPDataImageModel(width, height, caption, null, videoUri).toHashMap();
+        data.put(DURATION, duration);
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateVideoCaption(caption),
@@ -685,9 +697,8 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    new TAPDataImageModel(width, height, caption, null, videoUri).toHashMap());
+                    data);
         } else {
-            HashMap<String, Object> data = new TAPDataImageModel(width, height, caption, null, videoUri).toHashMap();
             if (null != getUserInfo()) {
                 data.put(USER_INFO, getUserInfo());
             }
@@ -701,6 +712,7 @@ public class TAPChatManager {
                     data,
                     getQuotedMessage());
         }
+        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
         return messageModel;
     }
 
