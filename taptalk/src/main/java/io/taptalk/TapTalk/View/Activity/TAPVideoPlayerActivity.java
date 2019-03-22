@@ -11,11 +11,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.Taptalk.R;
@@ -35,7 +33,6 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     //private ProgressBar pbSaving;
 
     private Uri videoUri;
-    private File videoFile;
     private MediaPlayer mediaPlayer;
     private Timer durationTimer, hidePauseButtonTimer;
     private int duration, pausedPosition;
@@ -49,7 +46,6 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
         receiveIntent();
         initView();
-//        supportPostponeEnterTransition();
         loadVideo();
     }
 
@@ -64,14 +60,6 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         super.onPause();
         pauseVideo();
         TAPDataManager.getInstance().saveMediaVolumePreference(mediaVolume);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (null != videoFile) {
-            boolean deleteTempFile = videoFile.delete();
-        }
     }
 
     private void initView() {
@@ -267,7 +255,6 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         public void onPrepared(MediaPlayer mediaPlayer) {
             if (-1f == mediaVolume) {
                 // Play video on first load
-//                supportStartPostponedEnterTransition();
                 videoView.start();
                 duration = videoView.getDuration();
                 isVideoPlaying = true;

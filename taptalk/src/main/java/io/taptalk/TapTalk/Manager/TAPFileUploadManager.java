@@ -285,7 +285,7 @@ public class TAPFileUploadManager {
             if (null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
                 // Create video file & thumbnail from file Uri
                 videoUri = Uri.parse(videoData.getFileUri());
-                videoFile = TAPFileUtils.getInstance().getFileFromContentUri(context, videoUri);
+                videoFile = new File(TAPFileUtils.getInstance().getFilePath(context, videoUri));
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                 retriever.setDataSource(context, videoUri);
                 Bitmap thumbBitmap = retriever.getFrameAtTime();
@@ -449,7 +449,6 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 sendFileMessageAfterUploadSuccess(context, roomID, videoFile.getName(), mimeType, messageModel.copyMessageModel(), response);
-                isTempFileDeleted = videoFile.delete(); // Delete temporary video file
             }
 
             @Override

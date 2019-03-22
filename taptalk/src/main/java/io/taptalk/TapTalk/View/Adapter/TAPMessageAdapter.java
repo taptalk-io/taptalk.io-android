@@ -763,21 +763,28 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null == videoThumbnail) {
                         // Get full-size thumbnail from Uri
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                        retriever.setDataSource(itemView.getContext(), videoUri);
-                        videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
+                        try {
+                            retriever.setDataSource(itemView.getContext(), videoUri);
+                            videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            videoThumbnail = (BitmapDrawable) finalThumbnail;
+                        }
                         TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
                     }
                     // Load full-size thumbnail from cache
-                    BitmapDrawable finalVideoThumbnail = videoThumbnail;
-                    ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                        glide.load(finalVideoThumbnail)
-                                .transition(DrawableTransitionOptions.withCrossFade(100))
-                                .apply(new RequestOptions()
-                                        .placeholder(finalThumbnail)
-                                        .centerCrop())
-                                .into(rcivVideoThumbnail);
-                        rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
-                    });
+                    if (null != videoThumbnail) {
+                        BitmapDrawable finalVideoThumbnail = videoThumbnail;
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            glide.load(finalVideoThumbnail)
+                                    .transition(DrawableTransitionOptions.withCrossFade(100))
+                                    .apply(new RequestOptions()
+                                            .placeholder(finalThumbnail)
+                                            .centerCrop())
+                                    .into(rcivVideoThumbnail);
+                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
+                        });
+                    }
                 }).start();
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent)) {
@@ -840,17 +847,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void openVideoPlayer(TAPMessageModel message) {
             Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), message.getLocalID());
             if (null == videoUri) {
-                Log.e(TAG, "openVideoPlayer: Uri not found " + message.getLocalID());
                 return;
             }
             Intent intent = new Intent(itemView.getContext(), TAPVideoPlayerActivity.class);
             intent.putExtra(URI, videoUri.toString());
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                    ((Activity) itemView.getContext()),
-//                    rcivVideoThumbnail,
-//                    itemView.getContext().getString(R.string.tap_transition_view_image));
-//            itemView.getContext().startActivity(intent, options.toBundle());
             itemView.getContext().startActivity(intent);
         }
 

@@ -150,27 +150,6 @@ public class TAPFileUtils {
         return null;
     }
 
-    // FIXME: 19 March 2019 THIS METHOD WRITES FILE INTO STORAGE
-    public File getFileFromContentUri(Context context, Uri contentUri) {
-        try {
-            InputStream is = context.getContentResolver().openInputStream(contentUri);
-            if (null != is) {
-                byte[] buffer = new byte[is.available()];
-                is.read(buffer);
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + context.getString(R.string.app_name) + "/Files/TMP_" + contentUri.toString().substring(contentUri.toString().lastIndexOf("/") + 1));
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(buffer);
-                fos.flush();
-                fos.close();
-
-                return file;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
                 maxImageSize / realImage.getWidth(),

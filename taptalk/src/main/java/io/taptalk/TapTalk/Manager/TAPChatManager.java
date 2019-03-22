@@ -712,7 +712,7 @@ public class TAPChatManager {
                     data,
                     getQuotedMessage());
         }
-        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
+        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), TAPFileUtils.getInstance().getFilePath(context, fileUri));
         return messageModel;
     }
 

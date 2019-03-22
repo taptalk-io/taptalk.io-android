@@ -299,7 +299,6 @@ public class TAPFileDownloadManager {
     }
 
     public void saveFileMessageUriToPreference() {
-        Log.e(TAG, "saveFileMessageUriToPreference: ");
         TAPDataManager.getInstance().saveFileMessageUriMap(getFileMessageUriMap());
     }
 
@@ -321,6 +320,19 @@ public class TAPFileDownloadManager {
         } else {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put(localID, fileUri.toString());
+            getFileMessageUriMap().put(roomID, hashMap);
+        }
+    }
+
+    public void saveFileMessageUri(String roomID, String localID, String filePath) {
+        Log.e(TAG, "saveFileMessageUri: " + localID);
+        Log.e(TAG, "saveFileMessageUri: " + filePath);
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap) {
+            roomUriMap.put(localID, filePath);
+        } else {
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put(localID, filePath);
             getFileMessageUriMap().put(roomID, hashMap);
         }
     }
