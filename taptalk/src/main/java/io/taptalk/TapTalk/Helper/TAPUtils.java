@@ -517,7 +517,7 @@ public class TAPUtils {
             minute = String.format("0%s", minute);
         }
 
-        String second = current == 0? "00" : String.valueOf(Math.round(((float) current % minuteMs) / secondMs));
+        String second = current == 0? "00" : String.valueOf((current % minuteMs) / secondMs);
         if (second.length() < 2) {
             second = String.format("0%s", second);
         }

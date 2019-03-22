@@ -457,7 +457,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             (String) (null == item.getData().get(THUMBNAIL) ? "" :
                                     item.getData().get(THUMBNAIL))));
             if (thumbnail.getIntrinsicHeight() <= 0) {
-                // Set placeholder image if thumbnail fails to laod
+                // Set placeholder image if thumbnail fails to load
                 thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
             }
 
@@ -706,7 +706,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             (String) (null == item.getData().get(THUMBNAIL) ? "" :
                                     item.getData().get(THUMBNAIL))));
             if (thumbnail.getIntrinsicHeight() <= 0) {
-                // Set placeholder image if thumbnail fails to laod
+                // Set placeholder image if thumbnail fails to load
                 thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
             }
 
@@ -728,7 +728,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             // Load thumbnail when download is not in progress
-            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
+            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID()) || null != dataUri) {
                 rcivVideoThumbnail.setImageDrawable(thumbnail);
             }
 
@@ -819,14 +819,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void downloadVideo(TAPMessageModel item) {
-            Log.e(TAG, "downloadVideo: " + item.getLocalID());
             Intent intent = new Intent(DownloadFile);
             intent.putExtra(MESSAGE, item);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
         private void cancelDownload(TAPMessageModel item) {
-            Log.e(TAG, "cancelDownload: " + item.getLocalID());
             Intent intent = new Intent(CancelDownload);
             intent.putExtra(DownloadLocalID, item.getLocalID());
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);

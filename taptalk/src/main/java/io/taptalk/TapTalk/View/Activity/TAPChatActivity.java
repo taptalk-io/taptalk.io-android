@@ -123,6 +123,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
@@ -1380,8 +1381,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         failedMessageModel.setSending(true);
                         new Thread(() -> {
                             TAPMessageModel retryMessage = failedMessageModel.copyMessageModel();
-                            if (retryMessage.getType() == TYPE_IMAGE) {
-                                TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), retryMessage);
+                            if (retryMessage.getType() == TYPE_IMAGE || retryMessage.getType() == TYPE_VIDEO) {
+                                TAPChatManager.getInstance().resendImageOrVideoMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), retryMessage);
                             } else if (retryMessage.getType() == TYPE_FILE) {
                                 TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, retryMessage);
                             }

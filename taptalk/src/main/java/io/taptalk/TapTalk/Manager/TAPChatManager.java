@@ -61,6 +61,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -70,6 +72,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 
 public class TAPChatManager {
 
@@ -669,7 +672,7 @@ public class TAPChatManager {
     private TAPMessageModel createVideoMessageModel(Context context, Uri fileUri, String caption) {
         String videoUri = fileUri.toString();
 
-        // Get video width, height, duration
+        // Get video data
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(context, fileUri);
         String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
@@ -683,12 +686,16 @@ public class TAPChatManager {
             height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
         }
         int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(TAPFileUploadManager.getInstance().resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
         retriever.release();
+        long size = new File(TAPFileUtils.getInstance().getFilePath(context, fileUri)).length();
 
         // Build message model
         TAPMessageModel messageModel;
         HashMap<String, Object> data = new TAPDataImageModel(width, height, caption, null, videoUri).toHashMap();
         data.put(DURATION, duration);
+        data.put(THUMBNAIL, thumbBase64);
+        data.put(SIZE, size);
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateVideoCaption(caption),
@@ -822,10 +829,10 @@ public class TAPChatManager {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomID, bitmap, caption)).start();
     }
 
-    public void sendImageMessage(Context context, String roomID, TAPMessageModel imageModel) {
+    public void resendImageOrVideoMessage(Context context, String roomID, TAPMessageModel messageModel) {
         new Thread(() -> {
-            addUploadingMessageToHashMap(imageModel);
-            TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, imageModel);
+            addUploadingMessageToHashMap(messageModel);
+            TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
         }).start();
     }
 

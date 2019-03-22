@@ -278,18 +278,16 @@ public class TAPFileUploadManager {
                 return;
             }
             TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
+            Log.e(TAG, "uploadVideo: " + TAPUtils.getInstance().toJsonString(videoData));
 
             Uri videoUri;
             File videoFile;
-            String thumbBase64;
             if (null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
-                // Create video file & thumbnail from file Uri
+                // Get video file from file Uri
                 videoUri = Uri.parse(videoData.getFileUri());
+                Log.e(TAG, "uploadVideo: " + videoUri);
                 videoFile = new File(TAPFileUtils.getInstance().getFilePath(context, videoUri));
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                retriever.setDataSource(context, videoUri);
-                Bitmap thumbBitmap = retriever.getFrameAtTime();
-                thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(resizeBitmap(thumbBitmap, THUMB_MAX_DIMENSION));
+                Log.e(TAG, "uploadVideo: " + videoFile);
             } else {
                 // Message data does not contain Uri
                 Log.e(TAG, context.getString(R.string.tap_error_message_uri_empty));
@@ -305,7 +303,6 @@ public class TAPFileUploadManager {
             String mimeType = context.getContentResolver().getType(videoUri);
             videoData.setSize(videoFile.length());
             videoData.setMediaType(mimeType);
-            videoData.setThumbnail(thumbBase64);
 
             messageModel.putData(videoData.toHashMap());
             callVideoUploadAPI(context, roomID, messageModel, videoFile, mimeType, videoData);
@@ -569,7 +566,7 @@ public class TAPFileUploadManager {
         return bitmap;
     }
 
-    private Bitmap resizeBitmap(Bitmap bitmap, int imageMaxSize) {
+    public Bitmap resizeBitmap(Bitmap bitmap, int imageMaxSize) {
         int originalWidth = bitmap.getWidth();
         int originalHeight = bitmap.getHeight();
         if (originalWidth > imageMaxSize || originalHeight > imageMaxSize) {
@@ -724,6 +721,7 @@ public class TAPFileUploadManager {
             HashMap<String, Object> fileDataMap = fileDataModel.toHashMap();
             if (null != messageModel.getData()) {
                 messageModel.putData(fileDataMap);
+                messageModel.getData().remove(FILE_URI);
             } else {
                 messageModel.setData(fileDataMap);
             }
