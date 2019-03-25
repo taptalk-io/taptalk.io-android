@@ -550,6 +550,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void setImageViewButtonProgress(TAPMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
+                tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
                 flProgress.setOnClickListener(v -> {
                     Intent intent = new Intent(UploadRetried);
@@ -734,7 +735,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
-                tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
+                tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
+                tvMediaInfo.setText(size == null ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()));
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
                 pbProgress.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
@@ -1260,13 +1262,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            HashMap<String, Object> mapData = item.getData();
+            if (null == mapData) {
+                return;
+            }
+
             if (!item.isAnimating()) {
                 checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             }
 
-            setMapData(item.getData());
+            setMapData(mapData);
 
-            tvMessageStatus.setText(item.getMessageStatusText());
+            if (null == item.getFailedSend() || (null != item.getFailedSend() && !item.getFailedSend())) {
+                tvMessageStatus.setText(item.getMessageStatusText());
+            }
 
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), vMapBorder, item);
@@ -1292,18 +1301,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markUnreadForMessage(item, myUserModel);
 
-            vMapBorder.setOnClickListener(v -> openMapDetail(item.getData()));
+            vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
 
             // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
-            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
+            if (item.getData().containsKey(USER_INFO)) {
                 clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
             }
         }
 
         private void setMapData(HashMap<String, Object> mapData) {
-            if (null == mapData || null == mapData.get(ADDRESS) || null == mapData.get(LATITUDE) || null == mapData.get(LONGITUDE)) {
+            if (null == mapData.get(ADDRESS) || null == mapData.get(LATITUDE) || null == mapData.get(LONGITUDE)) {
                 return;
             }
             tvMessageBody.setText((String) mapData.get(ADDRESS));
