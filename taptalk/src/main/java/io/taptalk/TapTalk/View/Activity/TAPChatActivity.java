@@ -296,11 +296,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null != clipData) {
                             //ini buat lebih dari 1 image selection
                             galleryMediaUris = TAPUtils.getInstance().getUrisFromClipData(TAPChatActivity.this, clipData, true);
-                            Log.e(TAG, "onActivityResult: " + galleryMediaUris.size());
                         } else {
                             //ini buat 1 image selection
                             Uri uri = intent.getData();
-                            Log.e(TAG, "onActivityResult: " + uri);
                             galleryMediaUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
                         }
                         openMediaPreviewPage(galleryMediaUris);
@@ -1479,7 +1477,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 @Override
                 public void onDownloadFailed(String localID) {
-                    Log.e(TAG, "File Download Listener: onDownloadFailed");
                     if (vm.getMessagePointer().containsKey(localID)) {
                         runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
                     }

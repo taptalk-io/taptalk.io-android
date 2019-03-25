@@ -594,14 +594,24 @@ public class TAPChatManager {
     /**
      * Construct Image Message Model
      */
-    private TAPMessageModel createImageMessageModel(Uri fileUri, String caption) {
+    private TAPMessageModel createImageMessageModel(Context context, Uri fileUri, String caption) {
         String imageUri = fileUri.toString();
+        String imagePath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
 
+        // Get image width and height
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(new File(fileUri.getPath()).getAbsolutePath(), options);
-        int imageWidth = options.outWidth;
-        int imageHeight = options.outHeight;
+        BitmapFactory.decodeFile(imagePath, options);
+        int imageWidth;
+        int imageHeight;
+        int orientation = TAPFileUtils.getInstance().getImageOrientation(imagePath);
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            imageWidth = options.outHeight;
+            imageHeight = options.outWidth;
+        } else {
+            imageWidth = options.outWidth;
+            imageHeight = options.outHeight;
+        }
 
         // Build message model
         TAPMessageModel messageModel;
@@ -670,7 +680,7 @@ public class TAPChatManager {
     }
 
     private TAPMessageModel createVideoMessageModel(Context context, Uri fileUri, String caption) {
-        String videoUri = fileUri.toString();
+        String videoPath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
 
         // Get video data
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -692,7 +702,7 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
-        HashMap<String, Object> data = new TAPDataImageModel(width, height, caption, null, videoUri).toHashMap();
+        HashMap<String, Object> data = new TAPDataImageModel(width, height, caption, null, videoPath).toHashMap();
         data.put(DURATION, duration);
         data.put(THUMBNAIL, thumbBase64);
         data.put(SIZE, size);
@@ -719,7 +729,7 @@ public class TAPChatManager {
                     data,
                     getQuotedMessage());
         }
-        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), TAPFileUtils.getInstance().getFilePath(context, fileUri));
+        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), videoPath);
         return messageModel;
     }
 
@@ -732,7 +742,7 @@ public class TAPChatManager {
      */
     private void createImageMessageModelAndAddToUploadQueue(Context context, String roomID,
                                                             Uri fileUri, String caption) {
-        TAPMessageModel messageModel = createImageMessageModel(fileUri, caption);
+        TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption);
 
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);

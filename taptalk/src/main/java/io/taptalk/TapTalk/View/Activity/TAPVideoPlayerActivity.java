@@ -123,7 +123,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
     private void receiveIntent() {
         String uriString = getIntent().getStringExtra(URI);
-        Log.e(TAG, "receiveIntent: " + uriString);
+        Log.e(TAG, "open video: " + uriString);
         if (null != uriString) {
             videoUri = Uri.parse(uriString);
         } else {

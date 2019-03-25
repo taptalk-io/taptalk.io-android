@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -446,6 +447,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item.getData()) {
                 return;
             }
+            Activity activity = (Activity) itemView.getContext();
             Number widthDimension = (Number) item.getData().get(WIDTH);
             Number heightDimension = (Number) item.getData().get(HEIGHT);
             String imageUri = (String) item.getData().get(FILE_URI);
@@ -490,7 +492,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
-                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                        activity.runOnUiThread(() -> {
                             glide.load(cachedImage)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .apply(new RequestOptions()
@@ -500,10 +502,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
                         });
                     } else {
-                        ((Activity) itemView.getContext()).runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
+                        activity.runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
                         }));
-                        if (null == TAPFileDownloadManager.getInstance()
-                                .getDownloadProgressPercent(item.getLocalID())) {
+                        if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                             // Download image
                             if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
                                 TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
@@ -523,28 +524,29 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     }
                                 });
                             } else {
-                                ((Activity) itemView.getContext()).runOnUiThread(() ->
-                                        flProgress.setVisibility(View.GONE));
+                                activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
                                 TAPFileDownloadManager.getInstance().addFailedDownload(item.getLocalID());
                             }
                         }
                     }
                 }).start();
             } else if (null != imageUri && !imageUri.isEmpty()) {
-                rcivImageBody.setOnClickListener(v -> {
+                // Message is not sent to server, load image from Uri
+                rcivImageBody.setOnClickListener(v -> {});
+                Drawable finalThumbnail1 = thumbnail;
+                activity.runOnUiThread(() -> {
+                    if (isMessageFromMySelf(item)) {
+                        flBubble.setForeground(bubbleOverlayRight);
+                    } else {
+                        flBubble.setForeground(bubbleOverlayLeft);
+                    }
+                    glide.load(imageUri)
+                            .transition(DrawableTransitionOptions.withCrossFade(100))
+                            .apply(new RequestOptions()
+                                    .placeholder(finalThumbnail1)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE))
+                            .into(rcivImageBody);
                 });
-                // Message is not sent to server, load image from URI
-                if (isMessageFromMySelf(item)) {
-                    flBubble.setForeground(bubbleOverlayRight);
-                } else {
-                    flBubble.setForeground(bubbleOverlayLeft);
-                }
-                glide.load(imageUri)
-                        .transition(DrawableTransitionOptions.withCrossFade(100))
-                        .apply(new RequestOptions()
-                                .placeholder(thumbnail)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(rcivImageBody);
             }
         }
 
