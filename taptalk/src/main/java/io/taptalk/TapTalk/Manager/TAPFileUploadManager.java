@@ -302,6 +302,7 @@ public class TAPFileUploadManager {
 
         // Update message data
         videoData.setMediaType(mimeType);
+        videoData.setSize(videoFile.length());
 
         messageModel.putData(videoData.toHashMap());
         callVideoUploadAPI(context, roomID, messageModel, videoFile, mimeType, videoData);

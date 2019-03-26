@@ -698,7 +698,7 @@ public class TAPChatManager {
         int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
         String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(TAPFileUploadManager.getInstance().resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
         retriever.release();
-        long size = new File(TAPFileUtils.getInstance().getFilePath(context, fileUri)).length();
+        long size = null == videoPath ? 0L : new File(videoPath).length();
 
         // Build message model
         TAPMessageModel messageModel;

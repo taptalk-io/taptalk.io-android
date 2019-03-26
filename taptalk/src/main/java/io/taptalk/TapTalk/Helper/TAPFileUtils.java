@@ -12,8 +12,11 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Base64;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -130,6 +133,13 @@ public class TAPFileUtils {
                 };
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
+            } else if (isGoogleDriveUri(uri)) {
+                try {
+                    return saveFileIntoExternalStorageByUri(context, uri).getAbsolutePath();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
         }
         // MediaStore (and general)
@@ -246,6 +256,10 @@ public class TAPFileUtils {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
+    private boolean isGoogleDriveUri(Uri uri) {
+        return "com.google.android.apps.docs.storage".equals(uri.getAuthority());
+    }
+
     private boolean isFileProviderUri(Uri uri) {
         return FILEPROVIDER_AUTHORITY.equals(uri.getAuthority());
     }
@@ -263,5 +277,54 @@ public class TAPFileUtils {
             }
         }
         return null;
+    }
+
+    private File saveFileIntoExternalStorageByUri(Context context, Uri uri) throws Exception {
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+        int originalSize = inputStream.available();
+
+        BufferedInputStream bis;
+        BufferedOutputStream bos;
+        String fileName = getFileName(context, uri);
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Videos");
+        dir.mkdirs();
+        File file = new File(dir, fileName);
+        bis = new BufferedInputStream(inputStream);
+        bos = new BufferedOutputStream(new FileOutputStream(
+                file, false));
+
+        byte[] buf = new byte[originalSize];
+        bis.read(buf);
+        do {
+            bos.write(buf);
+        } while (bis.read(buf) != -1);
+
+        bos.flush();
+        bos.close();
+        bis.close();
+
+        return file;
+    }
+
+    private String getFileName(Context context, Uri uri) {
+        String result = null;
+        if ("content".equals(uri.getScheme())) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 }

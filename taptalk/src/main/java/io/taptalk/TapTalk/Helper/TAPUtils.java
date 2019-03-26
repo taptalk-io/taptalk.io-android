@@ -479,8 +479,6 @@ public class TAPUtils {
     public boolean openFile(Context context, Uri uri, String mimeType) {
         // TODO: 8 March 2019 CHECK IF FILE EXISTS
         context.grantUriPermission(context.getPackageName(), uri, FLAG_GRANT_READ_URI_PERMISSION);
-        Log.e(TAG, "openFile: " + uri);
-        Log.e(TAG, "openFile: " + mimeType);
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setDataAndType(uri, mimeType)
                 .addFlags(FLAG_GRANT_READ_URI_PERMISSION);
@@ -619,7 +617,6 @@ public class TAPUtils {
 
     public int getMessageTypeFromFileUri(Context context, Uri uri) {
         String type = context.getContentResolver().getType(uri);
-        Log.e(TAG, "getMessageTypeFromFileUri: " + type);
         // Add message types here
         if (null != type && type.contains("image")) {
             return TYPE_IMAGE;
