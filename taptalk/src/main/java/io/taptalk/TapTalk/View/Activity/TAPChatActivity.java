@@ -291,17 +291,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null == intent) {
                             return;
                         }
-                        ArrayList<TAPMediaPreviewModel> galleryMediaUris = new ArrayList<>();
+                        ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
                             //ini buat lebih dari 1 image selection
-                            galleryMediaUris = TAPUtils.getInstance().getUrisFromClipData(TAPChatActivity.this, clipData, true);
+                            galleryMediaPreviews = TAPUtils.getInstance().getUrisFromClipData(TAPChatActivity.this, clipData, true);
                         } else {
                             //ini buat 1 image selection
                             Uri uri = intent.getData();
-                            galleryMediaUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
+                            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
                         }
-                        openMediaPreviewPage(galleryMediaUris);
+                        openMediaPreviewPage(galleryMediaPreviews);
                         break;
                     case SEND_MEDIA_FROM_PREVIEW:
                         ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);

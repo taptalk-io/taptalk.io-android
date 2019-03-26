@@ -112,7 +112,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             finish();
         });
 
-        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
+        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
     }
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {
@@ -169,19 +169,18 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             return;
         }
 
-        ArrayList<TAPMediaPreviewModel> imageGalleryUris = new ArrayList<>();
+        ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
 
         ClipData clipData = data.getClipData();
         if (null != clipData) {
             //ini buat lebih dari 1 image selection
-            imageGalleryUris = TAPUtils.getInstance().getUrisFromClipData(this, clipData, false);
+            galleryMediaPreviews = TAPUtils.getInstance().getUrisFromClipData(this, clipData, false);
         } else {
             //ini buat 1 image selection
             Uri uri = data.getData();
-            imageGalleryUris.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(this, uri), false));
+            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(this, uri), false));
         }
-
-        medias.addAll(imageGalleryUris);
+        medias.addAll(galleryMediaPreviews);
             
         pagerAdapter.notifyDataSetChanged();
         if (1 < medias.size()) {
