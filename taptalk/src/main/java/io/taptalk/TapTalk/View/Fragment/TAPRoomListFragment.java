@@ -179,7 +179,7 @@ public class TAPRoomListFragment extends Fragment {
             }
 
             @Override
-            public void onSendTextMessage(TAPMessageModel message) {
+            public void onSendMessage(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 

@@ -21,18 +21,23 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            debuggable false
         }
         staging {
             minifyEnabled false
+            debuggable true
         }
         stagingUpload {
             minifyEnabled false
+            debuggable false
         }
         dev {
             minifyEnabled false
+            debuggable true
         }
         devUpload {
             minifyEnabled false
+            debuggable false
         }
     }
 

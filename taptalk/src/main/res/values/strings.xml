@@ -103,8 +103,8 @@
     <string name="tap_error_my_user_not_found">Could not find your user data.</string>
     <string name="tap_error_other_user_not_found">Could not find other user\'s data.</string>
     <string name="tap_error_message_data_empty">File upload failed: data is required in MessageModel.</string>
-    <string name="tap_error_message_uri_empty">File upload failed: URI is required in MessageModel data.</string>
-    <string name="tap_error_message_uri_not_found">File upload failed: file URI not found in Chat Manager.</string>
+    <string name="tap_error_message_uri_empty">File upload failed: Uri is required in MessageModel data.</string>
+    <string name="tap_error_message_uri_not_found">File upload failed: file Uri not found in Chat Manager.</string>
     <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
     <string name="tap_error_no_app_to_open_file">No suitable app to open this file.</string>
 

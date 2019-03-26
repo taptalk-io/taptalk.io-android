@@ -1222,17 +1222,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onSendTextMessage(TAPMessageModel message) {
+        public void onSendMessage(TAPMessageModel message) {
             addNewMessage(message);
             hideQuoteLayout();
-        }
-
-        @Override
-        public void onSendImageMessage(TAPMessageModel message) {
-            // TODO: 5 November 2018 TESTING IMAGE MESSAGE STATUS
-            message.setNeedAnimateSend(true);
-            message.setSending(false);
-            addNewMessage(message);
         }
 
         @Override
@@ -1247,10 +1239,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             switch (message.getType()) {
                 case TAPDefaultConstant.MessageType.TYPE_TEXT:
                     TAPChatManager.getInstance().sendTextMessage(message.getBody());
-                    break;
-                case TYPE_IMAGE:
-                    // TODO: 7 January 2019 RESEND IMAGE MESSAGE
-//                    TAPChatManager.getInstance().showDummyImageMessage(message.getBody());
                     break;
             }
         }

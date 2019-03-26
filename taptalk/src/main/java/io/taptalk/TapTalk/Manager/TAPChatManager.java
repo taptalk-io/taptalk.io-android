@@ -881,7 +881,7 @@ public class TAPChatManager {
         if (!chatListenersCopy.isEmpty()) {
             for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                chatListener.onSendTextMessage(tempNewMessage);
+                chatListener.onSendMessage(tempNewMessage);
             }
         }
     }
@@ -893,7 +893,7 @@ public class TAPChatManager {
         if (!chatListenersCopy.isEmpty() && isNotifyChatListener) {
             for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                chatListener.onSendTextMessage(tempNewMessage);
+                chatListener.onSendMessage(tempNewMessage);
             }
         }
         runSendMessageSequence(messageModel);

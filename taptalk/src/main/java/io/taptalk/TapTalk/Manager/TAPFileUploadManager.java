@@ -675,7 +675,7 @@ public class TAPFileUploadManager {
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
             if (null != messageModel.getData()) {
                 messageModel.putData(imageDataMap);
-                messageModel.getData().remove(FILE_URI);
+                //messageModel.getData().remove(FILE_URI);
             } else {
                 messageModel.setData(imageDataMap);
             }
@@ -718,7 +718,7 @@ public class TAPFileUploadManager {
             HashMap<String, Object> fileDataMap = fileDataModel.toHashMap();
             if (null != messageModel.getData()) {
                 messageModel.putData(fileDataMap);
-                messageModel.getData().remove(FILE_URI);
+                //messageModel.getData().remove(FILE_URI);
             } else {
                 messageModel.setData(fileDataMap);
             }
