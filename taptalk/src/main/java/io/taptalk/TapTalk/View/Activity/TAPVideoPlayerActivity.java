@@ -24,20 +24,18 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
     private final String TAG = TAPVideoPlayerActivity.class.getSimpleName();
 
-    //private FrameLayout flLoading;
     private ConstraintLayout clContainer, clFooter;
     private VideoView videoView;
-    private TextView tvCurrentTime, tvDuration/*, tvTitle, tvMessageStatus, tvLoadingText*/;
-    private ImageView ivButtonClose, ivButtonMute, ivButtonPlayPause/*, ivButtonBack, ivButtonSave, ivSaved*/;
+    private TextView tvCurrentTime, tvDuration/*, tvTitle, tvMessageStatus*/;
+    private ImageView ivButtonClose, ivButtonMute, ivButtonPlayPause/*, ivButtonBack, ivButtonSave*/;
     private SeekBar seekBar;
-    //private ProgressBar pbSaving;
 
     private Uri videoUri;
     private MediaPlayer mediaPlayer;
     private Timer durationTimer, hidePauseButtonTimer;
     private int duration, pausedPosition;
-    private float mediaVolume = -1f;
-    private boolean isVideoPlaying, isSeeking;
+    private float mediaVolume = 1f;
+    private boolean isVideoPlaying, isSeeking, isFirstLoadFinished;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,6 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void initView() {
-        //flLoading = findViewById(R.id.fl_loading);
         clContainer = findViewById(R.id.cl_container);
         clFooter = findViewById(R.id.cl_footer);
         videoView = findViewById(R.id.video_view);
@@ -71,28 +68,17 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         //tvMessageStatus = findViewById(R.id.tv_message_status);
         tvCurrentTime = findViewById(R.id.tv_current_time);
         tvDuration = findViewById(R.id.tv_duration);
-        //tvLoadingText = findViewById(R.id.tv_loading_text);
         ivButtonClose = findViewById(R.id.iv_button_close);
         ivButtonMute = findViewById(R.id.iv_button_mute);
         ivButtonPlayPause = findViewById(R.id.iv_button_play_pause);
         //ivButtonBack = findViewById(R.id.iv_button_back);
         //ivButtonSave = findViewById(R.id.iv_save);
-        //ivSaved = findViewById(R.id.iv_saved);
         seekBar = findViewById(R.id.seek_bar);
-        //pbSaving = findViewById(R.id.pb_saving);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonMute.setOnClickListener(v -> onMuteButtonTapped());
         ivButtonPlayPause.setOnClickListener(v -> onPlayOrPauseButtonTapped());
         clContainer.setOnClickListener(v -> onVideoTapped());
-
-//        if (null != videoUri) {
-//            ivButtonSave.setVisibility(View.GONE);
-//            ivButtonSave.setOnClickListener(null);
-//        } else {
-//            ivButtonSave.setVisibility(View.VISIBLE);
-//            ivButtonSave.setOnClickListener(saveButtonListener);
-//        }
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -253,7 +239,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     private MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            if (-1f == mediaVolume) {
+            if (!isFirstLoadFinished) {
                 // Play video on first load
                 videoView.start();
                 duration = videoView.getDuration();
@@ -262,6 +248,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
                 mediaVolume = TAPDataManager.getInstance().getMediaVolumePreference();
                 ivButtonMute.setImageDrawable(mediaVolume > 0f ? TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_on) : TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_off));
                 tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(duration, duration));
+                isFirstLoadFinished = true;
             }
             videoView.seekTo(pausedPosition);
             mediaPlayer.setVolume(mediaVolume, mediaVolume);
@@ -290,62 +277,4 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             pausedPosition = 0;
         }
     };
-
-//    private void saveVideo() {
-//        if (null == videoUri) {
-//            return;
-//        }
-//        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//            // Request storage permission
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
-//        } else {
-//            showLoading();
-//            // TODO: 18 March 2019 SAVE VIDEO HERE
-//        }
-//    }
-
-//    private void showLoading() {
-//        runOnUiThread(() -> {
-//            flLoading.setVisibility(View.VISIBLE);
-//            pbSaving.setVisibility(View.VISIBLE);
-//            ivSaved.setVisibility(View.GONE);
-//            tvLoadingText.setText(getString(R.string.tap_saving));
-//            ivButtonSave.setOnClickListener(null);
-//        });
-//    }
-
-//    private void endLoading() {
-//        runOnUiThread(() -> {
-//            pbSaving.setVisibility(View.GONE);
-//            ivSaved.setVisibility(View.VISIBLE);
-//            tvLoadingText.setText(getString(R.string.tap_image_saved));
-//            flLoading.setOnClickListener(v -> hideLoading());
-//
-//            new Handler().postDelayed(this::hideLoading, 100L);
-//        });
-//    }
-
-//    private void hideLoading() {
-//        flLoading.setVisibility(View.GONE);
-//        ivButtonSave.setOnClickListener(saveButtonListener);
-//        flLoading.setOnClickListener(emptyListener);
-//    }
-
-//    private View.OnClickListener saveButtonListener = v -> saveVideo();
-//    private View.OnClickListener emptyListener = v -> {};
-
-//    private TapTalkActionInterface saveVideoListener = new TapTalkActionInterface() {
-//        @Override
-//        public void onSuccess(String message) {
-//            endLoading();
-//        }
-//
-//        @Override
-//        public void onFailure(String errorMessage) {
-//            runOnUiThread(() -> {
-//                hideLoading();
-//                Toast.makeText(TAPVideoPlayerActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-//            });
-//        }
-//    };
 }

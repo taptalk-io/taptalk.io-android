@@ -1686,11 +1686,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvQuoteContent.setMaxLines(1);
             } else if (null != quoteFileID && !quoteFileID.isEmpty()) {
                 // Get quote image from file ID
-                // TODO: 8 March 2019 FIX QUOTE FILE TYPE
                 if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
                     // Load file icon
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
-                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_purply));
+                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purply_rounded_8dp));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
                     // Load image from file ID
