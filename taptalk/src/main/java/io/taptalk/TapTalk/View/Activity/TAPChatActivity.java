@@ -852,7 +852,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
             // Add other quotable message type here
-            if (message.getType() == TYPE_IMAGE && null != message.getData()) {
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
