@@ -290,8 +290,7 @@ public class TAPFileUtils {
         dir.mkdirs();
         File file = new File(dir, fileName);
         bis = new BufferedInputStream(inputStream);
-        bos = new BufferedOutputStream(new FileOutputStream(
-                file, false));
+        bos = new BufferedOutputStream(new FileOutputStream(file, false));
 
         byte[] buf = new byte[originalSize];
         bis.read(buf);
@@ -326,5 +325,23 @@ public class TAPFileUtils {
             }
         }
         return result;
+    }
+
+    public File renameDuplicateFile(File file) {
+        while (file.exists() && !file.isDirectory()) {
+            String path = file.getAbsolutePath();
+            StringBuilder sb = new StringBuilder(path);
+            try {
+                // File name already contains duplicate number (2), (3), etc.
+                int duplicateNumberStartIndex = sb.lastIndexOf("(");
+                int duplicateNumberEndIndex = sb.lastIndexOf(")");
+                int duplicateNumber = Integer.valueOf(sb.substring(duplicateNumberStartIndex + 1, duplicateNumberEndIndex)) + 1;
+                sb.replace(duplicateNumberStartIndex, duplicateNumberEndIndex + 1, "(" + duplicateNumber + ")");
+            } catch (Exception e) {
+                sb.insert(sb.lastIndexOf("."), " (2)");
+            }
+            file = new File(sb.toString());
+        }
+        return file;
     }
 }

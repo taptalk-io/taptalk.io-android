@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
@@ -222,9 +223,7 @@ public class TAPFileDownloadManager {
         File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + (message.getType() == TYPE_VIDEO ? "/Videos" : "/Files"));
         dir.mkdirs();
         File file = new File(dir, filename);
-        if (file.exists()) {
-            file.delete();
-        }
+        file = TAPFileUtils.getInstance().renameDuplicateFile(file);
         try {
             // Write file to disk
             // TODO: 5 March 2019 CHECK STORAGE PERMISSION
