@@ -31,6 +31,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -686,6 +688,14 @@ public class TAPDataManager {
 
     public void getAccessTokenFromApi(TapDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance().getAccessToken(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void requestOTPLogin(int countryID, String phone, TapDefaultDataView<TAPLoginOTPResponse> view) {
+        TAPApiManager.getInstance().requestOTPLogin("phone", countryID, phone, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, TapDefaultDataView<TAPLoginOTPVerifyResponse> view) {
+        TAPApiManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultSubscriber<>(view));
     }
 
     public void refreshAccessToken(TapDefaultDataView<TAPGetAccessTokenResponse> view) {

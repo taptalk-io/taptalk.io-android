@@ -36,7 +36,9 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
 import io.taptalk.TapTalk.Interface.TAPLoginInterface;
+import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
+import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface;
 import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
@@ -55,6 +57,8 @@ import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -258,6 +262,50 @@ public class TapTalk {
                 }
             });
         }
+    }
+
+    public static void loginWithRequestOTP(int countryID, String phoneNumber, TAPRequestOTPInterface requestOTPInterface) {
+        TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, new TapDefaultDataView<TAPLoginOTPResponse>() {
+            @Override
+            public void onSuccess(TAPLoginOTPResponse response) {
+                super.onSuccess(response);
+                requestOTPInterface.onRequestSuccess(response.getOtpID(), response.getOtpKey(), response.getPhoneWithCode(), response.isSuccess());
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                requestOTPInterface.onRequestFailed(error.getMessage(), error.getCode());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                requestOTPInterface.onRequestFailed(errorMessage, "400");
+            }
+        });
+    }
+
+    public static void verifyOTP(long otpID, String otpKey, String otpCode, TAPVerifyOTPInterface verifyOTPInterface) {
+        TAPDataManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TapDefaultDataView<TAPLoginOTPVerifyResponse>() {
+            @Override
+            public void onSuccess(TAPLoginOTPVerifyResponse response) {
+                if (response.isRegistered())
+                    verifyOTPInterface.verifyOTPSuccessToLogin(response.getUserID(), response.getTicket());
+                else
+                    verifyOTPInterface.verifyOTPSuccessToRegister();
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                verifyOTPInterface.verifyOTPFailed(error.getMessage(), error.getCode());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                verifyOTPInterface.verifyOTPFailed(errorMessage, "400");
+            }
+        });
     }
 
     public static void checkActiveUserToShowPage(Activity activity) {
