@@ -294,7 +294,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
                             // Multiple media selection
-                            galleryMediaPreviews = TAPUtils.getInstance().getUrisFromClipData(TAPChatActivity.this, clipData, true);
+                            galleryMediaPreviews = TAPUtils.getInstance().getPreviewsFromClipData(TAPChatActivity.this, clipData, true);
                         } else {
                             // Single media selection
                             Uri uri = intent.getData();
@@ -354,7 +354,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
+                    TAPUtils.getInstance().pickMediaFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE:
                     if (null != messageAdapter) {

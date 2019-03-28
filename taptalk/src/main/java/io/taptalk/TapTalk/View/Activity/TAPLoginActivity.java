@@ -81,7 +81,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         String xcUserID = getDummyUserID(etUsername.getText().toString()) + "";
         String fullname = getDummyUserFullName(xcUserID);
         String email = etUsername.getText().toString() + "@moselo.com";
-        String phone = "08979809026";
+        String phone = "6282113308615";
         String username = etUsername.getText().toString();
         String deviceID = Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         TAPDataManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, deviceID, xcUserID,

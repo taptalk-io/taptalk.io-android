@@ -14,8 +14,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
@@ -26,6 +29,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPMediaPreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
 
 public class TAPMediaPreviewActivity extends TAPBaseActivity {
@@ -36,14 +40,14 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn;
     private RecyclerView rvImageThumbnail;
     private ImageView ivAddMoreImage;
-    private TAPMediaPreviewRecyclerAdapter adapter;
+    private TAPMediaPreviewRecyclerAdapter thumbnailAdapter;
     private TAPMediaPreviewPagerAdapter pagerAdapter;
 
     //Intent
     private ArrayList<TAPMediaPreviewModel> medias, errorMedias;
 
     //ImagePreview RecyclerView Data
-    private int lastIndex = 0;
+    private int lastIndex = 0, checkCount = 0;
 
     public interface ImageThumbnailPreviewInterface {
         void onThumbnailTapped(int position, TAPMediaPreviewModel model);
@@ -84,7 +88,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         rvImageThumbnail = findViewById(R.id.rv_image_thumbnail);
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
-        adapter = new TAPMediaPreviewRecyclerAdapter(medias, thumbInterface);
+        thumbnailAdapter = new TAPMediaPreviewRecyclerAdapter(medias, thumbInterface);
         pagerAdapter = new TAPMediaPreviewPagerAdapter(this, medias);
         vpImagePreview.setAdapter(pagerAdapter);
         vpImagePreview.addOnPageChangeListener(vpPreviewListener);
@@ -94,17 +98,15 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             tvMultipleImageIndicator.setText(1 + " of " + medias.size());
 
             rvImageThumbnail.setVisibility(View.VISIBLE);
-            rvImageThumbnail.setAdapter(adapter);
+            rvImageThumbnail.setAdapter(thumbnailAdapter);
             rvImageThumbnail.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvImageThumbnail.setHasFixedSize(false);
             rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, medias.size(), 0, 0));
-
-            SimpleItemAnimator thumbnailItemAnimator = (SimpleItemAnimator) rvImageThumbnail.getItemAnimator();
-            if (null != thumbnailItemAnimator)
-                thumbnailItemAnimator.setSupportsChangeAnimations(false);
         }
+        SimpleItemAnimator thumbnailItemAnimator = (SimpleItemAnimator) rvImageThumbnail.getItemAnimator();
+        if (null != thumbnailItemAnimator) thumbnailItemAnimator.setSupportsChangeAnimations(false);
 
-        checkSendButtonAvailability();
+        checkMediasForErrors();
 
         tvCancelBtn.setOnClickListener(v -> onBackPressed());
         ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
@@ -122,17 +124,17 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                 tvMultipleImageIndicator.setText((i + 1) + " of " + medias.size());
 
             new Thread(() -> {
-                for (TAPMediaPreviewModel recyclerItem : adapter.getItems()) {
+                for (TAPMediaPreviewModel recyclerItem : thumbnailAdapter.getItems()) {
                     recyclerItem.setSelected(false);
                 }
-                adapter.getItemAt(i).setSelected(true);
+                thumbnailAdapter.getItemAt(i).setSelected(true);
 
                 runOnUiThread(() -> {
-                    //adapter.notifyDataSetChanged();
-                    if (lastIndex == i) adapter.notifyItemRangeChanged(i, 1);
+                    //thumbnailAdapter.notifyDataSetChanged();
+                    if (lastIndex == i) thumbnailAdapter.notifyItemRangeChanged(i, 1);
                     else {
-                        adapter.notifyItemChanged(i);
-                        adapter.notifyItemChanged(lastIndex);
+                        thumbnailAdapter.notifyItemChanged(i);
+                        thumbnailAdapter.notifyItemChanged(lastIndex);
                     }
                     lastIndex = i;
                     rvImageThumbnail.scrollToPosition(i);
@@ -168,25 +170,25 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         ClipData clipData = data.getClipData();
         if (null != clipData) {
             // Multiple media selection
-            galleryMediaPreviews = TAPUtils.getInstance().getUrisFromClipData(this, clipData, false);
+            galleryMediaPreviews = TAPUtils.getInstance().getPreviewsFromClipData(this, clipData, false);
         } else {
             // Single media selection
             Uri uri = data.getData();
             galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(this, uri), false));
         }
         medias.addAll(galleryMediaPreviews);
-        checkSendButtonAvailability();
+        checkMediasForErrors();
             
         pagerAdapter.notifyDataSetChanged();
         if (1 < medias.size()) {
             tvMultipleImageIndicator.setText((lastIndex + 1) + " of " + medias.size());
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
             rvImageThumbnail.setVisibility(View.VISIBLE);
-            rvImageThumbnail.setAdapter(adapter);
+            rvImageThumbnail.setAdapter(thumbnailAdapter);
             rvImageThumbnail.setHasFixedSize(false);
             rvImageThumbnail.setLayoutManager(new LinearLayoutManager(TAPMediaPreviewActivity.this, LinearLayoutManager.HORIZONTAL, false));
         } else {
-            adapter.notifyDataSetChanged();
+            thumbnailAdapter.notifyDataSetChanged();
         }
     }
 
@@ -197,37 +199,96 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         else tempPosition = position;
 
         medias.remove(position);
-        if (0 < medias.size())
+        if (0 < medias.size()) {
             medias.get(tempPosition).setSelected(true);
+        }
         pagerAdapter.notifyDataSetChanged();
-        adapter.notifyDataSetChanged();
+        thumbnailAdapter.notifyDataSetChanged();
         tvMultipleImageIndicator.setText((tempPosition + 1) + " of " + medias.size());
 
         if (1 == medias.size()) {
             rvImageThumbnail.setVisibility(View.GONE);
             tvMultipleImageIndicator.setVisibility(View.GONE);
-            checkSendButtonAvailability();
         }
+        checkMediasForErrors();
+    }
+
+    private void checkMediasForErrors() {
+        tvSendBtn.setAlpha(0.5f);
+        tvSendBtn.setOnClickListener(null);
+        new Thread(() -> {
+            errorMedias = new ArrayList<>();
+            checkCount = 0;
+            for (TAPMediaPreviewModel media : medias) {
+                // Check if video size exceeds limit
+                if (null == media.isSizeExceedsLimit() && media.getType() == TYPE_VIDEO) {
+                    Uri uri = media.getUri();
+                    if (TAPFileUtils.getInstance().isGoogleDriveUri(media.getUri())) {
+                        // Requires download to get file size from Google Drive
+                        media.setLoading(true);
+                        runOnUiThread(() -> {
+                            thumbnailAdapter.notifyItemChanged(thumbnailAdapter.getItems().indexOf(media));
+                            pagerAdapter.notifyDataSetChanged();
+                        });
+                        new Thread(() -> {
+                            try {
+                                InputStream inputStream = getContentResolver().openInputStream(uri);
+                                if (null != inputStream && !TAPFileUploadManager.getInstance()
+                                        .isSizeAllowedForUpload((long) inputStream.available())) {
+                                    media.setSizeExceedsLimit(true);
+                                    errorMedias.add(media);
+                                } else {
+                                    media.setSizeExceedsLimit(false);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            media.setLoading(false);
+                            runOnUiThread(() -> {
+                                thumbnailAdapter.notifyItemChanged(thumbnailAdapter.getItems().indexOf(media));
+                                pagerAdapter.notifyDataSetChanged();
+                            });
+                            checkSendButtonAvailability();
+                        }).start();
+                    } else {
+                        // Check file size
+                        if (!TAPFileUploadManager.getInstance().isSizeAllowedForUpload(
+                                new File(TAPFileUtils.getInstance().getFilePath(this, uri)).length())) {
+                            media.setSizeExceedsLimit(true);
+                            errorMedias.add(media);
+                        } else {
+                            media.setSizeExceedsLimit(false);
+                        }
+                        checkSendButtonAvailability();
+                    }
+                } else if (null == media.isSizeExceedsLimit()) {
+                    media.setSizeExceedsLimit(false);
+                    checkSendButtonAvailability();
+                } else if (media.isSizeExceedsLimit()) {
+                    errorMedias.add(media);
+                    checkSendButtonAvailability();
+                } else {
+                    checkSendButtonAvailability();
+                }
+            }
+        }).start();
     }
 
     private void checkSendButtonAvailability() {
-        errorMedias = new ArrayList<>();
-        for (TAPMediaPreviewModel media : medias) {
-            if (media.isSizeExceedsLimit()) {
-                errorMedias.add(media);
-            }
-        }
-        if (errorMedias.size() >= medias.size()) {
-            tvSendBtn.setAlpha(0.5f);
-            tvSendBtn.setOnClickListener(null);
+        if (++checkCount >= medias.size() && errorMedias.size() < medias.size()) {
+            runOnUiThread(() -> {
+                tvSendBtn.setAlpha(1f);
+                tvSendBtn.setOnClickListener(v -> onSendButtonClicked());
+            });
         } else {
-            tvSendBtn.setAlpha(1f);
-            tvSendBtn.setOnClickListener(v -> onSendButtonClicked());
+            runOnUiThread(() -> {
+                tvSendBtn.setAlpha(0.5f);
+                tvSendBtn.setOnClickListener(null);
+            });
         }
     }
 
     private void onSendButtonClicked() {
-        checkSendButtonAvailability();
         if (errorMedias.size() > 0) {
             // Some files exceeded upload limit
             new TapTalkDialog.Builder(TAPMediaPreviewActivity.this)
@@ -249,7 +310,6 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         if (errorMedias.size() > 0) {
             mediasCopy.removeAll(errorMedias);
         }
-        Log.e(TAG, "sendMedias: " + mediasCopy + " / " + medias);
         Intent sendIntent = new Intent();
         sendIntent.putParcelableArrayListExtra(MEDIA_PREVIEWS, mediasCopy);
         setResult(RESULT_OK, sendIntent);

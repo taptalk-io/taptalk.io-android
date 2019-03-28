@@ -407,9 +407,9 @@ public class TAPUtils {
      * Reminder: Handle onRequestPermissionsResult in activity
      */
     public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            // Check read storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Check read & write storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -426,9 +426,9 @@ public class TAPUtils {
      */
     // TODO: 21 March 2019 GET VIDEO FROM GOOGLE DRIVE
     public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            // Check read storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Check read & write storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -601,7 +601,7 @@ public class TAPUtils {
         return fileDisplayInfo;
     }
 
-    public ArrayList<TAPMediaPreviewModel> getUrisFromClipData(Context context, ClipData clipData, boolean isFirstSelected) {
+    public ArrayList<TAPMediaPreviewModel> getPreviewsFromClipData(Context context, ClipData clipData, boolean isFirstSelected) {
         ArrayList<TAPMediaPreviewModel> uris = new ArrayList<>();
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
@@ -885,7 +885,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
      */
     public String getStringSizeLengthFile(long size) {
 
-        DecimalFormat df = new DecimalFormat("0.00");
+        DecimalFormat df = new DecimalFormat("0.##");
 
         float sizeKb = 1024.0f;
         float sizeMb = sizeKb * sizeKb;
@@ -893,13 +893,13 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         float sizeTerra = sizeGb * sizeKb;
 
 
-        if (size < sizeMb)
+        if (size < sizeMb) {
             return df.format(size / sizeKb) + " KB";
-        else if (size < sizeGb)
+        } else if (size < sizeGb) {
             return df.format(size / sizeMb) + " MB";
-        else if (size < sizeTerra)
+        } else if (size < sizeTerra) {
             return df.format(size / sizeGb) + " GB";
-
+        }
         return size + "B";
     }
 

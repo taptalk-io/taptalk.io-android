@@ -226,7 +226,6 @@ public class TAPFileDownloadManager {
         file = TAPFileUtils.getInstance().renameDuplicateFile(file);
         try {
             // Write file to disk
-            // TODO: 5 March 2019 CHECK STORAGE PERMISSION
             BufferedSink sink = Okio.buffer(Okio.sink(file));
             sink.writeAll(responseBody.source());
             sink.close();

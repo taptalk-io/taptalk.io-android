@@ -133,7 +133,9 @@ public class TAPFileUtils {
                 };
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
-            } else if (isGoogleDriveUri(uri)) {
+            }
+            // Google Drive
+            else if (isGoogleDriveUri(uri)) {
                 try {
                     return saveFileIntoExternalStorageByUri(context, uri).getAbsolutePath();
                 } catch (Exception e) {

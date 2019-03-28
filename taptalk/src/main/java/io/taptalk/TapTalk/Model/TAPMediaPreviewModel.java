@@ -19,37 +19,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 public class TAPMediaPreviewModel implements Parcelable {
     private Uri uri;
     private String caption;
+    private Boolean sizeExceedsLimit;
     private int type;
-    private boolean isSelected, sizeExceedsLimit;
+    private boolean isSelected, isLoading;
 
     public TAPMediaPreviewModel(Uri uri, int type, boolean isSelected) {
         this.uri = uri;
         this.type = type;
         this.isSelected = isSelected;
         this.caption = "";
-
-        // Check if video size exceeds limit
-        if (type == TYPE_VIDEO) {
-            new Thread(() -> {
-                if (TAPFileUtils.getInstance().isGoogleDriveUri(uri)) {
-                    Log.e("]]]]", "TAPMediaPreviewModel isGoogleDriveUri: " + uri);
-                    try {
-                        InputStream inputStream = TapTalk.appContext.getContentResolver().openInputStream(uri);
-                        if (null != inputStream && !TAPFileUploadManager.getInstance()
-                                .isSizeAllowedForUpload((long) inputStream.available())) {
-                            Log.e("]]]]", "TAPMediaPreviewModel isGoogleDriveUri: " + inputStream.available());
-                            sizeExceedsLimit = true;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.e("]]]]", "TAPMediaPreviewModel file: " + new File(TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, uri)).length());
-                    sizeExceedsLimit = !TAPFileUploadManager.getInstance().isSizeAllowedForUpload(
-                            new File(TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, uri)).length());
-                }
-            }).start();
-        }
     }
 
     public static TAPMediaPreviewModel Builder(Uri uri, int type, boolean isSelected) {
@@ -72,6 +50,14 @@ public class TAPMediaPreviewModel implements Parcelable {
         this.caption = caption;
     }
 
+    public Boolean isSizeExceedsLimit() {
+        return sizeExceedsLimit;
+    }
+
+    public void setSizeExceedsLimit(Boolean sizeExceedsLimit) {
+        this.sizeExceedsLimit = sizeExceedsLimit;
+    }
+
     public int getType() {
         return type;
     }
@@ -88,12 +74,12 @@ public class TAPMediaPreviewModel implements Parcelable {
         isSelected = selected;
     }
 
-    public boolean isSizeExceedsLimit() {
-        return sizeExceedsLimit;
+    public boolean isLoading() {
+        return isLoading;
     }
 
-    public void setSizeExceedsLimit(boolean sizeExceedsLimit) {
-        this.sizeExceedsLimit = sizeExceedsLimit;
+    public void setLoading(boolean loading) {
+        isLoading = loading;
     }
 
     @Override
@@ -105,17 +91,19 @@ public class TAPMediaPreviewModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.uri, flags);
         dest.writeString(this.caption);
+        dest.writeValue(this.sizeExceedsLimit);
         dest.writeInt(this.type);
         dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.sizeExceedsLimit ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isLoading ? (byte) 1 : (byte) 0);
     }
 
     protected TAPMediaPreviewModel(Parcel in) {
         this.uri = in.readParcelable(Uri.class.getClassLoader());
         this.caption = in.readString();
+        this.sizeExceedsLimit = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.type = in.readInt();
         this.isSelected = in.readByte() != 0;
-        this.sizeExceedsLimit = in.readByte() != 0;
+        this.isLoading = in.readByte() != 0;
     }
 
     public static final Creator<TAPMediaPreviewModel> CREATOR = new Creator<TAPMediaPreviewModel>() {

@@ -66,7 +66,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
         if (mediaPreview.getType() == TYPE_VIDEO) {
             ivVideoIcon.setVisibility(View.VISIBLE);
             ivImagePreview.setOnClickListener(v -> TAPUtils.getInstance().openVideoPreview(context, mediaPreview.getUri()));
-            if (mediaPreview.isSizeExceedsLimit()) {
+            if (null != mediaPreview.isSizeExceedsLimit() && mediaPreview.isSizeExceedsLimit()) {
                 etCaption.setVisibility(View.GONE);
                 tvTypingIndicator.setVisibility(View.GONE);
                 vSeparator.setVisibility(View.GONE);
