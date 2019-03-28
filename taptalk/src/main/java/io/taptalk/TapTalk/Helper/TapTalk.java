@@ -35,7 +35,6 @@ import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
-import io.taptalk.TapTalk.Interface.TAPLoginInterface;
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface;
@@ -219,9 +218,9 @@ public class TapTalk {
         });
     }
 
-    public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPLoginInterface loginInterface) {
+    public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPVerifyOTPInterface verifyOTPInterface) {
         if (null == authTicket || "".equals(authTicket)) {
-            loginInterface.onLoginFailed(new TAPErrorModel("401", "Invalid Auth Ticket", ""));
+            verifyOTPInterface.verifyOTPFailed("401", "Invalid Auth Ticket");
         } else {
             TAPDataManager.getInstance().saveAuthTicket(authTicket);
             TAPDataManager.getInstance().getAccessTokenFromApi(new TapDefaultDataView<TAPGetAccessTokenResponse>() {
@@ -240,7 +239,7 @@ public class TapTalk {
                     TAPApiManager.getInstance().setLogout(false);
                     if (isForeground)
                         TAPConnectionManager.getInstance().connect();
-                    loginInterface.onLoginSuccess();
+                    verifyOTPInterface.verifyOTPSuccessToLogin();
 
                     if (isRefreshTokenExpired) {
                         isRefreshTokenExpired = false;
@@ -252,13 +251,13 @@ public class TapTalk {
                 @Override
                 public void onError(TAPErrorModel error) {
                     super.onError(error);
-                    loginInterface.onLoginFailed(error);
+                    verifyOTPInterface.verifyOTPFailed(error.getCode(), error.getMessage());
                 }
 
                 @Override
                 public void onError(String errorMessage) {
                     super.onError(errorMessage);
-                    loginInterface.onLoginFailed(new TAPErrorModel("500", errorMessage, ""));
+                    verifyOTPInterface.verifyOTPFailed("500", errorMessage);
                 }
             });
         }
@@ -291,7 +290,7 @@ public class TapTalk {
             @Override
             public void onSuccess(TAPLoginOTPVerifyResponse response) {
                 if (response.isRegistered())
-                    verifyOTPInterface.verifyOTPSuccessToLogin(response.getUserID(), response.getTicket());
+                    saveAuthTicketAndGetAccessToken(response.getTicket(), verifyOTPInterface);
                 else
                     verifyOTPInterface.verifyOTPSuccessToRegister();
             }

@@ -7,6 +7,7 @@ import android.support.design.widget.TextInputEditText;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.net.URL;
 
@@ -15,7 +16,7 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
-import io.taptalk.TapTalk.Interface.TAPLoginInterface;
+import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -345,7 +346,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
             super.onSuccess(response);
             TAPApiManager.getInstance().setLogout(false);
             TapTalk.saveAuthTicketAndGetAccessToken(response.getTicket()
-                    , loginInterface);
+                    , verifyOTPInterface);
         }
 
         @Override
@@ -355,19 +356,25 @@ public class TAPLoginActivity extends TAPBaseActivity {
         }
     };
 
-    TAPLoginInterface loginInterface = new TAPLoginInterface() {
+    TAPVerifyOTPInterface verifyOTPInterface = new TAPVerifyOTPInterface() {
         @Override
-        public void onLoginSuccess() {
+        public void verifyOTPSuccessToLogin() {
             runOnUiThread(() -> {
                 Intent intent = new Intent(TAPLoginActivity.this, TAPRoomListActivity.class);
                 startActivity(intent);
                 finish();
             });
+
         }
 
         @Override
-        public void onLoginFailed(TAPErrorModel error) {
-            showDialog("ERROR ", error.getMessage());
+        public void verifyOTPSuccessToRegister() {
+            runOnUiThread(() -> Toast.makeText(TAPLoginActivity.this, "Register", Toast.LENGTH_SHORT).show());
+        }
+
+        @Override
+        public void verifyOTPFailed(String errorCode, String errorMessage) {
+            showDialog("ERROR ", errorMessage);
         }
     };
 
