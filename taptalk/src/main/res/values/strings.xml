@@ -85,6 +85,8 @@
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
     <string name="tap_chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
     <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
+    <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
+    <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
 
     <!--Error Message-->
     <string name="tap_error">Error</string>
@@ -107,6 +109,8 @@
     <string name="tap_error_message_uri_not_found">File upload failed: file Uri not found in Chat Manager.</string>
     <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
     <string name="tap_error_no_app_to_open_file">No suitable app to open this file.</string>
+    <string name="tap_error_exceed_upload_limit">Exceeded %s upload limit</string>
+    <string name="tap_error_please_remove_video">Please remove this video to continue</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>

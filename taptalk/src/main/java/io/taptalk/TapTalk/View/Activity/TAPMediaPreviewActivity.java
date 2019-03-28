@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPMediaPreviewPagerAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMediaPreviewRecyclerAdapter;
@@ -37,22 +40,23 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     private TAPMediaPreviewPagerAdapter pagerAdapter;
 
     //Intent
-    private ArrayList<TAPMediaPreviewModel> medias;
-    //private ArrayList<String> imageCaptions;
+    private ArrayList<TAPMediaPreviewModel> medias, errorMedias;
 
     //ImagePreview RecyclerView Data
     private int lastIndex = 0;
 
     public interface ImageThumbnailPreviewInterface {
-        void onThumbnailTap(int position, TAPMediaPreviewModel model);
+        void onThumbnailTapped(int position, TAPMediaPreviewModel model);
     }
 
     ImageThumbnailPreviewInterface thumbInterface = new ImageThumbnailPreviewInterface() {
         @Override
-        public void onThumbnailTap(int position, TAPMediaPreviewModel model) {
-            if (!model.isSelected())
+        public void onThumbnailTapped(int position, TAPMediaPreviewModel model) {
+            if (!model.isSelected()) {
                 vpImagePreview.setCurrentItem(position, true);
-            else deleteImageProcess(position);
+            } else {
+                removeMediaFromAdapter(position);
+            }
         }
     };
 
@@ -100,18 +104,9 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                 thumbnailItemAnimator.setSupportsChangeAnimations(false);
         }
 
-        tvCancelBtn.setOnClickListener(v -> {
-            setResult(RESULT_CANCELED);
-            finish();
-        });
+        checkSendButtonAvailability();
 
-        tvSendBtn.setOnClickListener(v -> {
-            Intent sendIntent = new Intent();
-            sendIntent.putParcelableArrayListExtra(MEDIA_PREVIEWS, medias);
-            setResult(RESULT_OK, sendIntent);
-            finish();
-        });
-
+        tvCancelBtn.setOnClickListener(v -> onBackPressed());
         ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
     }
 
@@ -168,19 +163,19 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         if (null == data) {
             return;
         }
-
         ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
 
         ClipData clipData = data.getClipData();
         if (null != clipData) {
-            //ini buat lebih dari 1 image selection
+            // Multiple media selection
             galleryMediaPreviews = TAPUtils.getInstance().getUrisFromClipData(this, clipData, false);
         } else {
-            //ini buat 1 image selection
+            // Single media selection
             Uri uri = data.getData();
             galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(this, uri), false));
         }
         medias.addAll(galleryMediaPreviews);
+        checkSendButtonAvailability();
             
         pagerAdapter.notifyDataSetChanged();
         if (1 < medias.size()) {
@@ -195,7 +190,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         }
     }
 
-    private void deleteImageProcess(int position) {
+    private void removeMediaFromAdapter(int position) {
         int tempPosition;
 
         if (0 != position && position == medias.size() - 1) tempPosition = position - 1;
@@ -211,6 +206,53 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         if (1 == medias.size()) {
             rvImageThumbnail.setVisibility(View.GONE);
             tvMultipleImageIndicator.setVisibility(View.GONE);
+            checkSendButtonAvailability();
         }
+    }
+
+    private void checkSendButtonAvailability() {
+        errorMedias = new ArrayList<>();
+        for (TAPMediaPreviewModel media : medias) {
+            if (media.isSizeExceedsLimit()) {
+                errorMedias.add(media);
+            }
+        }
+        if (errorMedias.size() >= medias.size()) {
+            tvSendBtn.setAlpha(0.5f);
+            tvSendBtn.setOnClickListener(null);
+        } else {
+            tvSendBtn.setAlpha(1f);
+            tvSendBtn.setOnClickListener(v -> onSendButtonClicked());
+        }
+    }
+
+    private void onSendButtonClicked() {
+        checkSendButtonAvailability();
+        if (errorMedias.size() > 0) {
+            // Some files exceeded upload limit
+            new TapTalkDialog.Builder(TAPMediaPreviewActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                    .setTitle(getString(R.string.tap_warning_files_may_not_be_sent))
+                    .setMessage(String.format(getString(R.string.tap_warning_video_size_exceeds_limit_wont_be_sent),
+                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().maxUploadSize)))
+                    .setPrimaryButtonTitle(getString(R.string.tap_continue_s))
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setPrimaryButtonListener(true, view -> sendMedias())
+                    .show();
+        } else {
+            sendMedias();
+        }
+    }
+
+    private void sendMedias() {
+        ArrayList<TAPMediaPreviewModel> mediasCopy = new ArrayList<>(medias);
+        if (errorMedias.size() > 0) {
+            mediasCopy.removeAll(errorMedias);
+        }
+        Log.e(TAG, "sendMedias: " + mediasCopy + " / " + medias);
+        Intent sendIntent = new Intent();
+        sendIntent.putParcelableArrayListExtra(MEDIA_PREVIEWS, mediasCopy);
+        setResult(RESULT_OK, sendIntent);
+        finish();
     }
 }

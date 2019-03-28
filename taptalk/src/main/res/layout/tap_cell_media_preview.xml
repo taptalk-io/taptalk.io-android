@@ -52,8 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_typing_indicator"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:background="@color/tap_orangeYellow" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_typing_indicator"
@@ -72,6 +71,7 @@
             tools:text="100/100" />
 
         <View
+            android:id="@+id/v_separator"
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginStart="16dp"
@@ -81,6 +81,56 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_caption" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_error_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="34dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/tap_bg_lightpink_stroke_coralpink_1dp_rounded_8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_warning_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:src="@drawable/tap_ic_failed_red"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_error_title"
+                style="@style/TapErrorMessageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tap_error_exceed_upload_limit"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toBottomOf="@id/iv_warning_icon"
+                app:layout_constraintStart_toEndOf="@id/iv_warning_icon"
+                app:layout_constraintTop_toTopOf="@id/iv_warning_icon" />
+
+            <TextView
+                android:id="@+id/tv_error_message"
+                style="@style/TapErrorMessageBody"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="12dp"
+                android:text="@string/tap_error_please_remove_video"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_warning_icon"
+                app:layout_constraintTop_toBottomOf="@id/tv_error_title" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
 

@@ -26,7 +26,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -294,10 +293,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
-                            //ini buat lebih dari 1 image selection
+                            // Multiple media selection
                             galleryMediaPreviews = TAPUtils.getInstance().getUrisFromClipData(TAPChatActivity.this, clipData, true);
                         } else {
-                            //ini buat 1 image selection
+                            // Single media selection
                             Uri uri = intent.getData();
                             galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
                         }
@@ -330,13 +329,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_FILE:
                         File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                         if (null != tempFile) {
-                            if (TAPFileUploadManager.getInstance().isSizeBelowUploadMaximum(tempFile.length()))
+                            if (TAPFileUploadManager.getInstance().isSizeAllowedForUpload(tempFile.length()))
                                 TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
                             else {
                                 new TapTalkDialog.Builder(TAPChatActivity.this)
                                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                         .setTitle("Sorry")
-                                        .setMessage("Maximum file size is 25 MB.")
+                                        .setMessage("Maximum file size is " + TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().maxUploadSize) + ".")
                                         .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                         .show();
                             }

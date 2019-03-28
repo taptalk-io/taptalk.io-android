@@ -37,11 +37,11 @@
     <color name="tap_highlight_blue">#5AC8FA</color>
 
     <color name="tap_cream_white">#fffdea</color>
+    <color name="tap_lightPink">#fff0f2</color>
     <color name="tap_lightBlueGrey">#cce7e2</color>
     <color name="tap_paleCyan">#eefaf8</color>
 
     <color name="tap_white">#ffffff</color>
-    <color name="tap_transparent">#00ffffff</color>
     <color name="tap_white_fe">#fefefe</color>
     <color name="tap_white_fa">#fafafa</color>
     <color name="tap_white_f8">#f8f8f8</color>

@@ -256,7 +256,7 @@ public class TAPFileUtils {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
-    private boolean isGoogleDriveUri(Uri uri) {
+    public boolean isGoogleDriveUri(Uri uri) {
         return "com.google.android.apps.docs.storage".equals(uri.getAuthority());
     }
 

@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,8 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
-import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
@@ -60,18 +57,19 @@ public class TAPFileUploadManager {
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
     private HashMap<String, String> fileProviderPathMap; // Temporary map containing FileProvider Uri as key and file pathname as value
-    private long maxSize = 25 * 1024 * 1024; // Max size for uploading file message
+
+    public long maxUploadSize = 25 * 1024 * 1024; // Max size for uploading file message
 
     public static TAPFileUploadManager getInstance() {
         return null == instance ? instance = new TAPFileUploadManager() : instance;
     }
 
-    public long getMaxSize() {
-        return maxSize;
+    public long getMaxUploadSize() {
+        return maxUploadSize;
     }
 
-    public void setMaxSize(long maxSize) {
-        this.maxSize = maxSize;
+    public void setMaxUploadSize(long maxUploadSize) {
+        this.maxUploadSize = maxUploadSize;
     }
 
     private HashMap<String, Integer> getUploadProgressMapPercent() {
@@ -739,14 +737,8 @@ public class TAPFileUploadManager {
         }
     }
 
-    /**
-     * Buat ngubah file length jadi format kb/mb/gb
-     *
-     * @param size = file.length
-     * @return
-     */
-    public boolean isSizeBelowUploadMaximum(long size) {
-        return maxSize >= size;
+    public boolean isSizeAllowedForUpload(long size) {
+        return maxUploadSize >= size;
     }
 
     public void getFileProviderPathFromPreference() {
