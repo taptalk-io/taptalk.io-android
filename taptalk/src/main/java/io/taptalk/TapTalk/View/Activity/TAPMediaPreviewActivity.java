@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -227,8 +226,8 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                         // Requires download to get file size from Google Drive
                         media.setLoading(true);
                         runOnUiThread(() -> {
-                            thumbnailAdapter.notifyItemChanged(thumbnailAdapter.getItems().indexOf(media));
                             pagerAdapter.notifyDataSetChanged();
+                            thumbnailAdapter.notifyItemChanged(thumbnailAdapter.getItems().indexOf(media));
                         });
                         new Thread(() -> {
                             try {
@@ -245,8 +244,8 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                             }
                             media.setLoading(false);
                             runOnUiThread(() -> {
-                                thumbnailAdapter.notifyItemChanged(thumbnailAdapter.getItems().indexOf(media));
                                 pagerAdapter.notifyDataSetChanged();
+                                thumbnailAdapter.notifyItemChanged(thumbnailAdapter.getItems().indexOf(media));
                             });
                             checkSendButtonAvailability();
                         }).start();

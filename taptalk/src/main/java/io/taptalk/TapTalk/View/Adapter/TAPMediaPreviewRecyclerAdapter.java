@@ -50,7 +50,14 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
         protected void onBind(TAPMediaPreviewModel item, int position) {
             Glide.with(itemView.getContext()).load(item.getUri()).apply(new RequestOptions().centerCrop()).into(ivImagePreview);
 
-            if (item.isLoading()) {
+            if (item.isSelected() && item.isLoading()) {
+                flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_greenblue_2dp));
+                ivDelete.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_remove_white));
+                ivDelete.setBackground(null);
+                flDelete.setVisibility(View.VISIBLE);
+                pbLoading.setVisibility(View.VISIBLE);
+                itemView.setOnClickListener(v -> thumbInterface.onThumbnailTapped(position, item));
+            } else if (item.isLoading()) {
                 flImagePreview.setBackground(null);
                 ivDelete.setImageDrawable(null);
                 ivDelete.setBackground(null);

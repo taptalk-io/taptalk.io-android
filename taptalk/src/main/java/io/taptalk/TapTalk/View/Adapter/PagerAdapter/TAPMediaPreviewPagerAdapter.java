@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -57,6 +58,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
         TextView tvTypingIndicator = layout.findViewById(R.id.tv_typing_indicator);
         TextView tvErrorTitle = layout.findViewById(R.id.tv_error_title);
         EditText etCaption = layout.findViewById(R.id.et_caption);
+        ProgressBar pbLoading = layout.findViewById(R.id.pb_loading);
         View vSeparator = layout.findViewById(R.id.v_separator);
 
         Glide.with(context).load(mediaPreview.getUri()).into(ivImagePreview);
@@ -64,27 +66,43 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
         String caption = mediaPreview.getCaption();
 
         if (mediaPreview.getType() == TYPE_VIDEO) {
-            ivVideoIcon.setVisibility(View.VISIBLE);
-            ivImagePreview.setOnClickListener(v -> TAPUtils.getInstance().openVideoPreview(context, mediaPreview.getUri()));
-            if (null != mediaPreview.isSizeExceedsLimit() && mediaPreview.isSizeExceedsLimit()) {
+            if (mediaPreview.isLoading()) {
+                ivVideoIcon.setVisibility(View.GONE);
+                pbLoading.setVisibility(View.VISIBLE);
                 etCaption.setVisibility(View.GONE);
                 tvTypingIndicator.setVisibility(View.GONE);
                 vSeparator.setVisibility(View.GONE);
-                clErrorMessage.setVisibility(View.VISIBLE);
-                tvErrorTitle.setText(String.format(context.getString(R.string.tap_error_exceed_upload_limit),
-                        TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().maxUploadSize)));
-            } else {
-                etCaption.setVisibility(View.VISIBLE);
-                tvTypingIndicator.setVisibility(View.VISIBLE);
-                vSeparator.setVisibility(View.VISIBLE);
                 clErrorMessage.setVisibility(View.GONE);
+                ivImagePreview.setOnClickListener(null);
+            } else {
+                ivVideoIcon.setVisibility(View.VISIBLE);
+                pbLoading.setVisibility(View.GONE);
+                ivImagePreview.setOnClickListener(v -> TAPUtils.getInstance().openVideoPreview(context, mediaPreview.getUri()));
+                if (null != mediaPreview.isSizeExceedsLimit() && mediaPreview.isSizeExceedsLimit()) {
+                    etCaption.setVisibility(View.GONE);
+                    tvTypingIndicator.setVisibility(View.GONE);
+                    vSeparator.setVisibility(View.GONE);
+                    clErrorMessage.setVisibility(View.VISIBLE);
+                    tvErrorTitle.setText(String.format(context.getString(R.string.tap_error_exceed_upload_limit),
+                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().maxUploadSize)));
+                } else {
+                    etCaption.setVisibility(View.VISIBLE);
+                    tvTypingIndicator.setVisibility(View.VISIBLE);
+                    vSeparator.setVisibility(View.VISIBLE);
+                    clErrorMessage.setVisibility(View.GONE);
+                }
             }
         } else {
             ivVideoIcon.setVisibility(View.GONE);
+            pbLoading.setVisibility(View.GONE);
+            etCaption.setVisibility(View.VISIBLE);
+            tvTypingIndicator.setVisibility(View.VISIBLE);
+            vSeparator.setVisibility(View.VISIBLE);
+            clErrorMessage.setVisibility(View.GONE);
             ivImagePreview.setOnClickListener(null);
         }
 
-        if (null != caption) {
+        if (null != caption && !mediaPreview.isLoading()) {
             etCaption.setText(caption);
             etCaption.setSelection(caption.length());
             tvTypingIndicator.setVisibility(View.VISIBLE);
@@ -99,11 +117,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (0 == s.length()) tvTypingIndicator.setVisibility(View.GONE);
-                else {
-                    tvTypingIndicator.setVisibility(View.VISIBLE);
-                    tvTypingIndicator.setText(s.length() + "/" + maxCharacter);
-                }
+                tvTypingIndicator.setText(s.length() + "/" + maxCharacter);
             }
 
             @Override
