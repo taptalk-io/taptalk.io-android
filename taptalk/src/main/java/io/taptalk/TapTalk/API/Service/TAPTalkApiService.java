@@ -93,5 +93,4 @@ public interface TAPTalkApiService {
     @POST("client/user/get_all_by_ids")
     Observable<TAPBaseResponse<TAPGetMultipleUserResponse>> getMultipleUserByID(@Body TAPGetMultipleUserByIdRequest request);
 
-
 }
