@@ -102,7 +102,7 @@ public class TapTalk {
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
-    private static int clientAppIcon = R.drawable.tap_ic_launcher_background;
+    private static int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
     private static boolean isRefreshTokenExpired;
     private Intent intent;
 
