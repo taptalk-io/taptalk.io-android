@@ -218,7 +218,7 @@ public class TapTalk {
         });
     }
 
-    public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPVerifyOTPInterface verifyOTPInterface) {
+    private static void saveAuthTicketAndGetAccessToken(String authTicket, TAPVerifyOTPInterface verifyOTPInterface) {
         if (null == authTicket || "".equals(authTicket)) {
             verifyOTPInterface.verifyOTPFailed("401", "Invalid Auth Ticket");
         } else {
@@ -279,7 +279,6 @@ public class TapTalk {
 
             @Override
             public void onError(String errorMessage) {
-                super.onError(errorMessage);
                 requestOTPInterface.onRequestFailed(errorMessage, "400");
             }
         });
