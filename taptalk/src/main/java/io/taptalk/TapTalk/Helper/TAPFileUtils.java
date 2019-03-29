@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.Taptalk.R;
 
@@ -151,7 +152,7 @@ public class TAPFileUtils {
                 return uri.getLastPathSegment();
             } else if (isFileProviderUri(uri)) {
                 // FIXME: 23 January 2019
-                return TAPFileUploadManager.getInstance().getFileProviderPath(uri);
+                return TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
             }
             return getDataColumn(context, uri, null, null);
         }

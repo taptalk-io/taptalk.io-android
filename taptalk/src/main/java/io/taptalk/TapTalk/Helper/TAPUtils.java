@@ -58,11 +58,11 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -465,7 +465,7 @@ public class TAPUtils {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     activity.startActivityForResult(intent, requestCode);
                     // Save file path to map
-                    TAPFileUploadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
+                    TAPFileDownloadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -477,7 +477,14 @@ public class TAPUtils {
     }
 
     public boolean openFile(Context context, Uri uri, String mimeType) {
-        // TODO: 8 March 2019 CHECK IF FILE EXISTS
+        String path = TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
+        if (null == path) {
+            return false;
+        }
+        File file = new File(path);
+        if (!file.exists()) {
+            return false;
+        }
         context.grantUriPermission(context.getPackageName(), uri, FLAG_GRANT_READ_URI_PERMISSION);
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setDataAndType(uri, mimeType)
@@ -488,11 +495,10 @@ public class TAPUtils {
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
         }
     }
 
-    // Preview video with external app
     public void openVideoPreview(Context context, Uri uri) {
         Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
         intent.putExtra(URI, uri.toString());

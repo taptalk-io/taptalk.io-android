@@ -111,6 +111,8 @@
     <string name="tap_error_no_app_to_open_file">No suitable app to open this file.</string>
     <string name="tap_error_exceed_upload_limit">Exceeded %s upload limit</string>
     <string name="tap_error_please_remove_video">Please remove this video to continue</string>
+    <string name="tap_error_could_not_find_file">Could not find file</string>
+    <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>

@@ -56,7 +56,6 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
-    private HashMap<String, String> fileProviderPathMap; // Temporary map containing FileProvider Uri as key and file pathname as value
 
     public long maxUploadSize = 25 * 1024 * 1024; // Max size for uploading file message
 
@@ -145,22 +144,6 @@ public class TAPFileUploadManager {
             return false;
 
         return getUploadQueue(roomID).isEmpty();
-    }
-
-    private HashMap<String, String> getFileProviderPathMap() {
-        return null == fileProviderPathMap ? fileProviderPathMap = new HashMap<>() : fileProviderPathMap;
-    }
-
-    public String getFileProviderPath(Uri fileProviderUri) {
-        return getFileProviderPathMap().get(fileProviderUri.toString());
-    }
-
-    public void addFileProviderPath(Uri fileProviderUri, String path) {
-        getFileProviderPathMap().put(fileProviderUri.toString(), path);
-    }
-
-    public void removeFileProviderPath(Uri fileProviderUri) {
-        getFileProviderPathMap().remove(fileProviderUri.toString());
     }
 
     /**
@@ -684,12 +667,6 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadImageData, imageDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-            // Remove file provider path from map when uploading from camera
-            Uri fileProviderUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, localID);
-            if (null != fileProviderUri) {
-                removeFileProviderPath(fileProviderUri);
-            }
-
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
             getBitmapQueue().remove(messageModel.getLocalID());
@@ -727,9 +704,6 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadFileData, fileDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-            // Remove file provider path from map
-            removeFileProviderPath(TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, localID));
-
             //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
         } catch (Exception e) {
@@ -739,18 +713,5 @@ public class TAPFileUploadManager {
 
     public boolean isSizeAllowedForUpload(long size) {
         return maxUploadSize >= size;
-    }
-
-    public void getFileProviderPathFromPreference() {
-        HashMap<String, String> filePathMap = TAPDataManager.getInstance().getFileProviderPathMap();
-        if (null != filePathMap) {
-            getFileProviderPathMap().putAll(filePathMap);
-        }
-    }
-
-    public void saveFileProviderPathToPreference() {
-        if (getFileProviderPathMap().size() > 0) {
-            TAPDataManager.getInstance().saveFileProviderPathMap(getFileProviderPathMap());
-        }
     }
 }

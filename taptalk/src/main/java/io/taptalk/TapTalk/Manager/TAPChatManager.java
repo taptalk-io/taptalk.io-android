@@ -551,7 +551,7 @@ public class TAPChatManager {
         // Save file Uri
         Uri fileUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
         TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
-        TAPFileUploadManager.getInstance().addFileProviderPath(fileUri, file.getAbsolutePath());
+        TAPFileDownloadManager.getInstance().addFileProviderPath(fileUri, file.getAbsolutePath());
         return messageModel;
     }
 

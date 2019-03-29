@@ -111,7 +111,7 @@ public class TapTalk {
         public void uncaughtException(Thread thread, Throwable throwable) {
             TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
             TAPContactManager.getInstance().saveUserDataMapToDatabase();
-            TAPFileUploadManager.getInstance().saveFileProviderPathToPreference();
+            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
             TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             defaultUEH.uncaughtException(thread, throwable);
         }
@@ -186,7 +186,7 @@ public class TapTalk {
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
-                TAPFileUploadManager.getInstance().getFileProviderPathFromPreference();
+                TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
                 TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
                 defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
@@ -207,7 +207,7 @@ public class TapTalk {
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-                TAPFileUploadManager.getInstance().saveFileProviderPathToPreference();
+                TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
                 TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             }
         });

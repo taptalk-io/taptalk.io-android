@@ -41,8 +41,9 @@ public class TAPFileDownloadManager {
     private static TAPFileDownloadManager instance;
     private HashMap<String, Integer> downloadProgressMapPercent;
     private HashMap<String, Long> downloadProgressMapBytes;
-    private ArrayList<String> failedDownloads;
+    private HashMap<String, String> fileProviderPathMap; // Contains FileProvider Uri as key and file pathname as value
     private HashMap<String /*roomID*/, HashMap<String /*localID*/, String /*stringUri*/>> fileMessageUriMap;
+    private ArrayList<String> failedDownloads;
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;
@@ -237,7 +238,9 @@ public class TAPFileDownloadManager {
             }
 
             // Trigger download success on listener
-            listener.onFileDownloadProcessFinished(localID, FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file));
+            Uri fileProviderUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
+            addFileProviderPath(fileProviderUri, file.getAbsolutePath());
+            listener.onFileDownloadProcessFinished(localID, fileProviderUri);
         } catch (Exception e) {
             e.printStackTrace();
             setDownloadFailed(localID, listener);
@@ -286,6 +289,33 @@ public class TAPFileDownloadManager {
         listener.onDownloadFailed(localID);
     }
 
+    public void getFileProviderPathFromPreference() {
+        HashMap<String, String> filePathMap = TAPDataManager.getInstance().getFileProviderPathMap();
+        if (null != filePathMap) {
+            getFileProviderPathMap().putAll(filePathMap);
+        }
+    }
+
+    public void saveFileProviderPathToPreference() {
+        if (getFileProviderPathMap().size() > 0) {
+            TAPDataManager.getInstance().saveFileProviderPathMap(getFileProviderPathMap());
+        }
+    }
+
+    private HashMap<String, String> getFileProviderPathMap() {
+        return null == fileProviderPathMap ? fileProviderPathMap = new HashMap<>() : fileProviderPathMap;
+    }
+
+    public String getFileProviderPath(Uri fileProviderUri) {
+        return getFileProviderPathMap().get(fileProviderUri.toString());
+    }
+
+    public void addFileProviderPath(Uri fileProviderUri, String path) {
+        Log.e(TAG, "addFileProviderPath: " + fileProviderUri);
+        Log.e(TAG, "addFileProviderPath: " + path);
+        getFileProviderPathMap().put(fileProviderUri.toString(), path);
+    }
+
     private HashMap<String, HashMap<String, String>> getFileMessageUriMap() {
         return null == fileMessageUriMap ? fileMessageUriMap = new LinkedHashMap<>() : fileMessageUriMap;
     }
@@ -329,6 +359,13 @@ public class TAPFileDownloadManager {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put(localID, filePath);
             getFileMessageUriMap().put(roomID, hashMap);
+        }
+    }
+
+    public void removeFileMessageUri(String roomID, String localID) {
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap) {
+            roomUriMap.remove(localID);
         }
     }
 }

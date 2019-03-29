@@ -1402,8 +1402,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 case OpenFile:
                     TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
                     Uri fileUri = intent.getParcelableExtra(FILE_URI);
+                    vm.setOpenedFileMessage(message);
                     if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
-                        TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE));
+                        if (!TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
+                            showDownloadFileDialog();
+                        }
+                    } else {
+                        showDownloadFileDialog();
                     }
                     break;
                 case LongPressChatBubble:
@@ -1470,6 +1475,23 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
             });
         }
+    }
+
+    private void showDownloadFileDialog() {
+        // Prompt download if file does not exist
+        if (null == vm.getOpenedFileMessage()) {
+            return;
+        }
+        TAPFileDownloadManager.getInstance().removeFileMessageUri(vm.getRoom().getRoomID(), vm.getOpenedFileMessage().getLocalID());
+        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getOpenedFileMessage()));
+        new TapTalkDialog.Builder(TAPChatActivity.this)
+                .setTitle(getString(R.string.tap_error_could_not_find_file))
+                .setMessage(getString(R.string.tap_error_redownload_file))
+                .setCancelable(true)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setPrimaryButtonListener(v -> startFileDownload(vm.getOpenedFileMessage()))
+                .show();
     }
 
     private TextWatcher chatWatcher = new TextWatcher() {
