@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
@@ -32,6 +33,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPFileDownloadManager {
 
@@ -39,8 +42,9 @@ public class TAPFileDownloadManager {
     private static TAPFileDownloadManager instance;
     private HashMap<String, Integer> downloadProgressMapPercent;
     private HashMap<String, Long> downloadProgressMapBytes;
-    private ArrayList<String> failedDownloads;
+    private HashMap<String, String> fileProviderPathMap; // Contains FileProvider Uri as key and file pathname as value
     private HashMap<String /*roomID*/, HashMap<String /*localID*/, String /*stringUri*/>> fileMessageUriMap;
+    private ArrayList<String> failedDownloads;
 
     public static TAPFileDownloadManager getInstance() {
         return null == instance ? instance = new TAPFileDownloadManager() : instance;
@@ -213,20 +217,21 @@ public class TAPFileDownloadManager {
         //new Thread(() -> {
         String localID = message.getLocalID();
         String filename;
-        if (null != message.getData()) {
+        if (null != message.getData() && null != message.getData().get(FILE_NAME)) {
             filename = (String) message.getData().get(FILE_NAME);
+        } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+            String mimeType = (String) message.getData().get(MEDIA_TYPE);
+            String extension = null == mimeType ? "" : mimeType.substring(mimeType.lastIndexOf("/") + 1);
+            filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS") + extension;
         } else {
             filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
         }
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Files");
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + (message.getType() == TYPE_VIDEO ? "/Videos" : "/Files"));
         dir.mkdirs();
         File file = new File(dir, filename);
-        if (file.exists()) {
-            file.delete();
-        }
+        file = TAPFileUtils.getInstance().renameDuplicateFile(file);
         try {
             // Write file to disk
-            // TODO: 5 March 2019 CHECK STORAGE PERMISSION
             BufferedSink sink = Okio.buffer(Okio.sink(file));
             sink.writeAll(responseBody.source());
             sink.close();
@@ -238,7 +243,9 @@ public class TAPFileDownloadManager {
             }
 
             // Trigger download success on listener
-            listener.onFileDownloadProcessFinished(localID, FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file));
+            Uri fileProviderUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
+            addFileProviderPath(fileProviderUri, file.getAbsolutePath());
+            listener.onFileDownloadProcessFinished(localID, fileProviderUri);
         } catch (Exception e) {
             e.printStackTrace();
             setDownloadFailed(localID, listener);
@@ -287,6 +294,33 @@ public class TAPFileDownloadManager {
         listener.onDownloadFailed(localID);
     }
 
+    public void getFileProviderPathFromPreference() {
+        HashMap<String, String> filePathMap = TAPDataManager.getInstance().getFileProviderPathMap();
+        if (null != filePathMap) {
+            getFileProviderPathMap().putAll(filePathMap);
+        }
+    }
+
+    public void saveFileProviderPathToPreference() {
+        if (getFileProviderPathMap().size() > 0) {
+            TAPDataManager.getInstance().saveFileProviderPathMap(getFileProviderPathMap());
+        }
+    }
+
+    private HashMap<String, String> getFileProviderPathMap() {
+        return null == fileProviderPathMap ? fileProviderPathMap = new HashMap<>() : fileProviderPathMap;
+    }
+
+    public String getFileProviderPath(Uri fileProviderUri) {
+        return getFileProviderPathMap().get(fileProviderUri.toString());
+    }
+
+    public void addFileProviderPath(Uri fileProviderUri, String path) {
+        Log.e(TAG, "addFileProviderPath: " + fileProviderUri);
+        Log.e(TAG, "addFileProviderPath: " + path);
+        getFileProviderPathMap().put(fileProviderUri.toString(), path);
+    }
+
     private HashMap<String, HashMap<String, String>> getFileMessageUriMap() {
         return null == fileMessageUriMap ? fileMessageUriMap = new LinkedHashMap<>() : fileMessageUriMap;
     }
@@ -319,6 +353,24 @@ public class TAPFileDownloadManager {
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put(localID, fileUri.toString());
             getFileMessageUriMap().put(roomID, hashMap);
+        }
+    }
+
+    public void saveFileMessageUri(String roomID, String localID, String filePath) {
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap) {
+            roomUriMap.put(localID, filePath);
+        } else {
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put(localID, filePath);
+            getFileMessageUriMap().put(roomID, hashMap);
+        }
+    }
+
+    public void removeFileMessageUri(String roomID, String localID) {
+        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
+        if (null != roomUriMap) {
+            roomUriMap.remove(localID);
         }
     }
 }

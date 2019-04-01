@@ -26,7 +26,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -51,7 +50,6 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
@@ -82,7 +80,7 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -107,11 +105,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
@@ -125,6 +122,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
@@ -139,8 +137,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_ME
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
@@ -284,29 +282,30 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null == vm.getCameraImageUri()) {
                             return;
                         }
-                        ArrayList<TAPImagePreviewModel> imageCameraUris = new ArrayList<>();
-                        imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
-                        openImagePreviewPage(imageCameraUris);
+                        ArrayList<TAPMediaPreviewModel> imageCameraUris = new ArrayList<>();
+                        imageCameraUris.add(TAPMediaPreviewModel.Builder(vm.getCameraImageUri(), TYPE_IMAGE, true));
+                        openMediaPreviewPage(imageCameraUris);
                         break;
-                    case SEND_IMAGE_FROM_GALLERY:
+                    case SEND_MEDIA_FROM_GALLERY:
                         if (null == intent) {
                             return;
                         }
-                        ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
+                        ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
-                            //ini buat lebih dari 1 image selection
-                            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, true);
+                            // Multiple media selection
+                            galleryMediaPreviews = TAPUtils.getInstance().getPreviewsFromClipData(TAPChatActivity.this, clipData, true);
                         } else {
-                            //ini buat 1 image selection
-                            imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
+                            // Single media selection
+                            Uri uri = intent.getData();
+                            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
                         }
-                        openImagePreviewPage(imageGalleryUris);
+                        openMediaPreviewPage(galleryMediaPreviews);
                         break;
-                    case SEND_IMAGE_FROM_PREVIEW:
-                        ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
-                        if (null != images && 0 < images.size()) {
-                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom(), images);
+                    case SEND_MEDIA_FROM_PREVIEW:
+                        ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
+                        if (null != medias && 0 < medias.size()) {
+                            TAPChatManager.getInstance().sendImageOrVideoMessage(TapTalk.appContext, vm.getRoom(), medias);
                         }
                         break;
                     case FORWARD_MESSAGE:
@@ -330,13 +329,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     case SEND_FILE:
                         File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                         if (null != tempFile) {
-                            if (TAPFileUploadManager.getInstance().isSizeBelowUploadMaximum(tempFile.length()))
+                            if (TAPFileUploadManager.getInstance().isSizeAllowedForUpload(tempFile.length()))
                                 TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
                             else {
                                 new TapTalkDialog.Builder(TAPChatActivity.this)
                                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                         .setTitle("Sorry")
-                                        .setMessage("Maximum file size is 25 MB.")
+                                        .setMessage("Maximum file size is " + TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().maxUploadSize) + ".")
                                         .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                         .show();
                             }
@@ -355,7 +354,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+                    TAPUtils.getInstance().pickMediaFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE:
                     if (null != messageAdapter) {
@@ -852,7 +851,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
             // Add other quotable message type here
-            if (message.getType() == TYPE_IMAGE && null != message.getData()) {
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
@@ -1025,10 +1024,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    private void openImagePreviewPage(ArrayList<TAPImagePreviewModel> imageUris) {
-        Intent intent = new Intent(TAPChatActivity.this, TAPImagePreviewActivity.class);
-        intent.putExtra(K_IMAGE_URLS, imageUris);
-        startActivityForResult(intent, SEND_IMAGE_FROM_PREVIEW);
+    private void openMediaPreviewPage(ArrayList<TAPMediaPreviewModel> mediaPreviews) {
+        Intent intent = new Intent(TAPChatActivity.this, TAPMediaPreviewActivity.class);
+        intent.putExtra(MEDIA_PREVIEWS, mediaPreviews);
+        startActivityForResult(intent, SEND_MEDIA_FROM_PREVIEW);
     }
 
     //ini Fungsi buat manggil Api Before
@@ -1222,17 +1221,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onSendTextMessage(TAPMessageModel message) {
+        public void onSendMessage(TAPMessageModel message) {
             addNewMessage(message);
             hideQuoteLayout();
-        }
-
-        @Override
-        public void onSendImageMessage(TAPMessageModel message) {
-            // TODO: 5 November 2018 TESTING IMAGE MESSAGE STATUS
-            message.setNeedAnimateSend(true);
-            message.setSending(false);
-            addNewMessage(message);
         }
 
         @Override
@@ -1247,10 +1238,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             switch (message.getType()) {
                 case TAPDefaultConstant.MessageType.TYPE_TEXT:
                     TAPChatManager.getInstance().sendTextMessage(message.getBody());
-                    break;
-                case TYPE_IMAGE:
-                    // TODO: 7 January 2019 RESEND IMAGE MESSAGE
-//                    TAPChatManager.getInstance().showDummyImageMessage(message.getBody());
                     break;
             }
         }
@@ -1379,8 +1366,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         failedMessageModel.setSending(true);
                         new Thread(() -> {
                             TAPMessageModel retryMessage = failedMessageModel.copyMessageModel();
-                            if (retryMessage.getType() == TYPE_IMAGE) {
-                                TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), retryMessage);
+                            if (retryMessage.getType() == TYPE_IMAGE || retryMessage.getType() == TYPE_VIDEO) {
+                                TAPChatManager.getInstance().resendImageOrVideoMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), retryMessage);
                             } else if (retryMessage.getType() == TYPE_FILE) {
                                 TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, retryMessage);
                             }
@@ -1415,8 +1402,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 case OpenFile:
                     TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
                     Uri fileUri = intent.getParcelableExtra(FILE_URI);
+                    vm.setOpenedFileMessage(message);
                     if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
-                        TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE));
+                        if (!TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
+                            showDownloadFileDialog();
+                        }
+                    } else {
+                        showDownloadFileDialog();
                     }
                     break;
                 case LongPressChatBubble:
@@ -1477,13 +1469,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 @Override
                 public void onDownloadFailed(String localID) {
-                    Log.e(TAG, "File Download Listener: onDownloadFailed");
                     if (vm.getMessagePointer().containsKey(localID)) {
                         runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
                     }
                 }
             });
         }
+    }
+
+    private void showDownloadFileDialog() {
+        // Prompt download if file does not exist
+        if (null == vm.getOpenedFileMessage()) {
+            return;
+        }
+        TAPFileDownloadManager.getInstance().removeFileMessageUri(vm.getRoom().getRoomID(), vm.getOpenedFileMessage().getLocalID());
+        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getOpenedFileMessage()));
+        new TapTalkDialog.Builder(TAPChatActivity.this)
+                .setTitle(getString(R.string.tap_error_could_not_find_file))
+                .setMessage(getString(R.string.tap_error_redownload_file))
+                .setCancelable(true)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setPrimaryButtonListener(v -> startFileDownload(vm.getOpenedFileMessage()))
+                .show();
     }
 
     private TextWatcher chatWatcher = new TextWatcher() {
@@ -1718,7 +1726,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onGallerySelected() {
             fConnectionStatus.hideUntilNextConnect(true);
-            TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+            TAPUtils.getInstance().pickMediaFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
         }
 
         @Override

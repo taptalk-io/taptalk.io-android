@@ -12,14 +12,20 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Base64;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 
@@ -34,7 +40,7 @@ public class TAPFileUtils {
     public String encodeToBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
 
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
@@ -129,6 +135,15 @@ public class TAPFileUtils {
 
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
+            // Google Drive
+            else if (isGoogleDriveUri(uri)) {
+                try {
+                    return saveFileIntoExternalStorageByUri(context, uri).getAbsolutePath();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
         }
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
@@ -137,7 +152,7 @@ public class TAPFileUtils {
                 return uri.getLastPathSegment();
             } else if (isFileProviderUri(uri)) {
                 // FIXME: 23 January 2019
-                return TAPFileUploadManager.getInstance().getFileProviderPath(uri);
+                return TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
             }
             return getDataColumn(context, uri, null, null);
         }
@@ -147,8 +162,6 @@ public class TAPFileUtils {
         }
         return null;
     }
-
-
 
     private Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
@@ -180,10 +193,10 @@ public class TAPFileUtils {
             if (getFilePath(activity, imageUri) != null) {
                 exif = new ExifInterface(getFilePath(activity, imageUri));
             } else {
-                return rotateBitmap(image,0);
+                return rotateBitmap(image, 0);
             }
         } catch (IOException e) {
-            return rotateBitmap(image,0);
+            return rotateBitmap(image, 0);
         }
         int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
         return rotateBitmap(image, orientation);
@@ -246,6 +259,10 @@ public class TAPFileUtils {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
+    public boolean isGoogleDriveUri(Uri uri) {
+        return "com.google.android.apps.docs.storage".equals(uri.getAuthority());
+    }
+
     private boolean isFileProviderUri(Uri uri) {
         return FILEPROVIDER_AUTHORITY.equals(uri.getAuthority());
     }
@@ -256,12 +273,78 @@ public class TAPFileUtils {
                 column
         };
 
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,null)) {
+        try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(index);
             }
         }
         return null;
+    }
+
+    private File saveFileIntoExternalStorageByUri(Context context, Uri uri) throws Exception {
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+        int originalSize = inputStream.available();
+
+        BufferedInputStream bis;
+        BufferedOutputStream bos;
+        String fileName = getFileName(context, uri);
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Videos");
+        dir.mkdirs();
+        File file = new File(dir, fileName);
+        bis = new BufferedInputStream(inputStream);
+        bos = new BufferedOutputStream(new FileOutputStream(file, false));
+
+        byte[] buf = new byte[originalSize];
+        bis.read(buf);
+        do {
+            bos.write(buf);
+        } while (bis.read(buf) != -1);
+
+        bos.flush();
+        bos.close();
+        bis.close();
+
+        return file;
+    }
+
+    private String getFileName(Context context, Uri uri) {
+        String result = null;
+        if ("content".equals(uri.getScheme())) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
+    public File renameDuplicateFile(File file) {
+        while (file.exists() && !file.isDirectory()) {
+            String path = file.getAbsolutePath();
+            StringBuilder sb = new StringBuilder(path);
+            try {
+                // File name already contains duplicate number (2), (3), etc.
+                int duplicateNumberStartIndex = sb.lastIndexOf("(");
+                int duplicateNumberEndIndex = sb.lastIndexOf(")");
+                int duplicateNumber = Integer.valueOf(sb.substring(duplicateNumberStartIndex + 1, duplicateNumberEndIndex)) + 1;
+                sb.replace(duplicateNumberStartIndex, duplicateNumberEndIndex + 1, "(" + duplicateNumber + ")");
+            } catch (Exception e) {
+                sb.insert(sb.lastIndexOf("."), " (2)");
+            }
+            file = new File(sb.toString());
+        }
+        return file;
     }
 }

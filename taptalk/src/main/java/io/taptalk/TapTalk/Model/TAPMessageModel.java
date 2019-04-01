@@ -18,8 +18,11 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -391,10 +394,16 @@ public class TAPMessageModel implements Parcelable {
         this.created = model.getCreated();
         this.user = model.getUser();
 
-        if (null == this.data)
+        if (null == this.data) {
             this.data = model.getData();
-        else if (null != model.data)
+        } else if (null != model.data && (model.type == TYPE_IMAGE || model.type == TYPE_VIDEO) &&
+                (null == model.isSending || !model.isSending) &&
+                (null == model.isFailedSend || !model.isFailedSend)) {
             this.data.putAll(model.data);
+            this.data.remove(FILE_URI); // Remove file Uri from data if type is image or video
+        } else if (null != model.data) {
+            this.data.putAll(model.data);
+        }
 
         this.quote = model.getQuote();
         this.recipientID = model.getRecipientID();

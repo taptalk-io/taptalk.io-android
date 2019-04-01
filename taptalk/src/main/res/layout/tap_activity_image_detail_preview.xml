@@ -20,7 +20,7 @@
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_charcoal_alpha_40">
+        android:background="@color/tap_transparent_charcoal_40">
 
         <ImageView
             android:id="@+id/iv_button_back"
@@ -89,7 +89,7 @@
             style="@style/TapMessageBody"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/tap_charcoal_alpha_40"
+            android:background="@color/tap_transparent_charcoal_40"
             android:maxHeight="220dp"
             android:padding="16dp"
             android:scrollbars="vertical"
@@ -102,7 +102,7 @@
         android:id="@+id/fl_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/tap_charcoal_alpha_40"
+        android:background="@color/tap_transparent_charcoal_40"
         android:visibility="gone">
 
         <android.support.constraint.ConstraintLayout

@@ -75,7 +75,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
             TAPUtils.getInstance().dismissKeyboard(this);
             progressBar.setVisibility(View.VISIBLE);
             tvSignIn.setVisibility(View.GONE);
-
             new Thread(() -> {
                 try {
                     TapTalk.verifyOTP(otpID, otpKey, etPhoneAndOTP.getText().toString(), verifyOTPInterface);

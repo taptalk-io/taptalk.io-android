@@ -70,12 +70,16 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(), message,
+        var longPressAdapter = TAPAttachmentAdapter(listOf(), message,
                 bottomSheetListener, onClickListener)
         when (longPressType) {
             LongPressType.CHAT_BUBBLE_TYPE -> {
                 when (message?.type) {
                     TYPE_IMAGE -> {
+                        longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(message),
+                                message, bottomSheetListener, onClickListener)
+                    }
+                    TYPE_VIDEO -> {
                         longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(message),
                                 message, bottomSheetListener, onClickListener)
                     }
@@ -87,9 +91,12 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                         longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLocationBubbleLongPressMenu(),
                                 message, bottomSheetListener, onClickListener)
                     }
-                    else -> {
+                    TYPE_TEXT -> {
                         longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(),
                                 message, bottomSheetListener, onClickListener)
+                    }
+                    else -> {
+                        dismiss()
                     }
                 }
             }

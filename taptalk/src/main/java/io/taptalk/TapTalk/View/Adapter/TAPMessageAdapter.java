@@ -3,8 +3,10 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +17,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -61,6 +64,7 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
+import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_LEFT;
@@ -73,6 +77,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
@@ -82,12 +88,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_HEIGHT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_WIDTH;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.HEIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
@@ -98,6 +107,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCAT
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
@@ -127,23 +137,27 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     public TAPBaseChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BUBBLE_TEXT_RIGHT:
-                return new TextVH(parent, R.layout.tap_cell_chat_text_right, viewType);
+                return new TextVH(parent, R.layout.tap_cell_chat_bubble_text_right, viewType);
             case TYPE_BUBBLE_TEXT_LEFT:
-                return new TextVH(parent, R.layout.tap_cell_chat_text_left, viewType);
+                return new TextVH(parent, R.layout.tap_cell_chat_bubble_text_left, viewType);
             case TYPE_BUBBLE_IMAGE_RIGHT:
-                return new ImageVH(parent, R.layout.tap_cell_chat_image_right, viewType);
+                return new ImageVH(parent, R.layout.tap_cell_chat_bubble_image_right, viewType);
             case TYPE_BUBBLE_IMAGE_LEFT:
-                return new ImageVH(parent, R.layout.tap_cell_chat_image_left, viewType);
+                return new ImageVH(parent, R.layout.tap_cell_chat_bubble_image_left, viewType);
+            case TYPE_BUBBLE_VIDEO_RIGHT:
+                return new VideoVH(parent, R.layout.tap_cell_chat_bubble_image_right, viewType);
+            case TYPE_BUBBLE_VIDEO_LEFT:
+                return new VideoVH(parent, R.layout.tap_cell_chat_bubble_image_left, viewType);
             case TYPE_BUBBLE_FILE_RIGHT:
-                return new FileVH(parent, R.layout.tap_cell_chat_file_right, viewType);
+                return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_right, viewType);
             case TYPE_BUBBLE_FILE_LEFT:
-                return new FileVH(parent, R.layout.tap_cell_chat_file_left, viewType);
+                return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_left, viewType);
             case TYPE_BUBBLE_LOCATION_RIGHT:
-                return new LocationVH(parent, R.layout.tap_cell_chat_location_right, viewType);
+                return new LocationVH(parent, R.layout.tap_cell_chat_bubble_location_right, viewType);
             case TYPE_BUBBLE_LOCATION_LEFT:
-                return new LocationVH(parent, R.layout.tap_cell_chat_location_left, viewType);
+                return new LocationVH(parent, R.layout.tap_cell_chat_bubble_location_left, viewType);
             case TYPE_BUBBLE_PRODUCT_LIST:
-                ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_product_list);
+                ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_bubble_product_list);
                 prodHolder.setIsRecyclable(false);
                 return prodHolder;
             case TYPE_BUBBLE_ORDER_CARD:
@@ -185,6 +199,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         return TYPE_BUBBLE_IMAGE_RIGHT;
                     } else {
                         return TYPE_BUBBLE_IMAGE_LEFT;
+                    }
+                case TYPE_VIDEO:
+                    if (isMessageFromMySelf(messageModel)) {
+                        return TYPE_BUBBLE_VIDEO_RIGHT;
+                    } else {
+                        return TYPE_BUBBLE_VIDEO_LEFT;
                     }
                 case TYPE_FILE:
                     if (isMessageFromMySelf(messageModel)) {
@@ -427,8 +447,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item.getData()) {
                 return;
             }
-            Number widthDimension = (Number) item.getData().get(IMAGE_WIDTH);
-            Number heightDimension = (Number) item.getData().get(IMAGE_HEIGHT);
+            Activity activity = (Activity) itemView.getContext();
+            Number widthDimension = (Number) item.getData().get(WIDTH);
+            Number heightDimension = (Number) item.getData().get(HEIGHT);
             String imageUri = (String) item.getData().get(FILE_URI);
             String imageCaption = (String) item.getData().get(CAPTION);
             String fileID = (String) item.getData().get(FILE_ID);
@@ -438,7 +459,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             (String) (null == item.getData().get(THUMBNAIL) ? "" :
                                     item.getData().get(THUMBNAIL))));
             if (thumbnail.getIntrinsicHeight() <= 0) {
-                // Set placeholder image if thumbnail fails to laod
+                // Set placeholder image if thumbnail fails to load
                 thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
             }
 
@@ -471,7 +492,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null != cachedImage) {
                         // Load image from cache
-                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                        activity.runOnUiThread(() -> {
                             glide.load(cachedImage)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .apply(new RequestOptions()
@@ -479,13 +500,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .centerCrop())
                                     .into(rcivImageBody);
                             rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
-                            //rcivImageBody.setImageBitmap(cachedImage);
                         });
                     } else {
-                        ((Activity) itemView.getContext()).runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
+                        activity.runOnUiThread(() -> rcivImageBody.setOnClickListener(v -> {
                         }));
-                        if (null == TAPFileDownloadManager.getInstance()
-                                .getDownloadProgressPercent(item.getLocalID())) {
+                        if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                             // Download image
                             if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
                                 TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
@@ -505,28 +524,478 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     }
                                 });
                             } else {
-                                ((Activity) itemView.getContext()).runOnUiThread(() ->
-                                        flProgress.setVisibility(View.GONE));
+                                activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
                                 TAPFileDownloadManager.getInstance().addFailedDownload(item.getLocalID());
                             }
                         }
                     }
                 }).start();
             } else if (null != imageUri && !imageUri.isEmpty()) {
-                rcivImageBody.setOnClickListener(v -> {
+                // Message is not sent to server, load image from Uri
+                rcivImageBody.setOnClickListener(v -> {});
+                Drawable finalThumbnail1 = thumbnail;
+                activity.runOnUiThread(() -> {
+                    if (isMessageFromMySelf(item)) {
+                        flBubble.setForeground(bubbleOverlayRight);
+                    } else {
+                        flBubble.setForeground(bubbleOverlayLeft);
+                    }
+                    glide.load(imageUri)
+                            .transition(DrawableTransitionOptions.withCrossFade(100))
+                            .apply(new RequestOptions()
+                                    .placeholder(finalThumbnail1)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE))
+                            .into(rcivImageBody);
                 });
-                // Message is not sent to server, load image from URI
+            }
+        }
+
+        private void setImageViewButtonProgress(TAPMessageModel item) {
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
+                ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
+                flProgress.setOnClickListener(v -> {
+                    Intent intent = new Intent(UploadRetried);
+                    intent.putExtra(UploadLocalID, item.getLocalID());
+                    LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
+                });
+            } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressPercent(item.getLocalID())
+                    && null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID()))
+                    || null != TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
+                ivButtonProgress.setImageResource(R.drawable.tap_ic_download_white);
+                flProgress.setOnClickListener(v -> {
+                });
+            } else {
+                ivButtonProgress.setImageResource(R.drawable.tap_ic_cancel_white);
+                flProgress.setOnClickListener(v -> TAPDataManager.getInstance()
+                        .cancelUploadImage(itemView.getContext(), item.getLocalID()));
+            }
+        }
+
+        @Override
+        protected void receiveSentEvent(TAPMessageModel message) {
+            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveDeliveredEvent(TAPMessageModel message) {
+            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void receiveReadEvent(TAPMessageModel message) {
+            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+
+        @Override
+        protected void setMessage(TAPMessageModel message) {
+            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+        }
+    }
+
+    public class VideoVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer, clForwardedQuote, clQuote, clForwarded;
+        private FrameLayout flBubble, flProgress;
+        private CircleImageView civAvatar;
+        private TAPRoundedCornerImageView rcivVideoThumbnail, rcivQuoteImage;
+        private ImageView ivMessageStatus, ivReply, ivSending, ivButtonProgress;
+        private TextView tvMediaInfo, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
+        private View vQuoteBackground, vQuoteDecoration;
+        private ProgressBar pbProgress;
+
+        private Uri videoUri;
+
+        VideoVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            clForwardedQuote = itemView.findViewById(R.id.cl_forwarded_quote); // Container for quote and forwarded layouts
+            clQuote = itemView.findViewById(R.id.cl_quote);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
+            flBubble = itemView.findViewById(R.id.fl_bubble);
+            flProgress = itemView.findViewById(R.id.fl_progress);
+            rcivVideoThumbnail = itemView.findViewById(R.id.rciv_image);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
+            ivReply = itemView.findViewById(R.id.iv_reply);
+            ivButtonProgress = itemView.findViewById(R.id.iv_button_progress);
+            tvMediaInfo = itemView.findViewById(R.id.tv_media_info);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
+            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            pbProgress = itemView.findViewById(R.id.pb_progress);
+
+            if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
+                civAvatar = itemView.findViewById(R.id.civ_avatar);
+            } else {
+                ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+                ivSending = itemView.findViewById(R.id.iv_sending);
+            }
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (!item.isAnimating()) {
+                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+            }
+
+            tvMediaInfo.setVisibility(View.VISIBLE);
+            tvMessageStatus.setText(item.getMessageStatusText());
+            setLinkDetection(itemView.getContext(), tvMessageBody);
+            enableLongPress(itemView.getContext(), flBubble, item);
+            enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
+
+            setVideoProgress(item);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
+                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+                // Fix layout when quote/forward exists
+                rcivVideoThumbnail.getLayoutParams().width = 0;
+                rcivVideoThumbnail.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
+                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivVideoThumbnail.setTopLeftRadius(0);
+                rcivVideoThumbnail.setTopRightRadius(0);
+                clForwardedQuote.setVisibility(View.VISIBLE);
+            } else {
+                rcivVideoThumbnail.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                if (isMessageFromMySelf(item)) {
+                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
+                } else {
+                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
+                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                }
+                clForwardedQuote.setVisibility(View.GONE);
+            }
+
+            markUnreadForMessage(item, myUserModel);
+
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+
+            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
+            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
+                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
+            }
+        }
+
+        private void setVideoProgress(TAPMessageModel item) {
+            if (null == item.getData()) {
+                return;
+            }
+            String localID = item.getLocalID();
+            Number duration = (Number) item.getData().get(DURATION);
+            Number size = (Number) item.getData().get(SIZE);
+            Number widthDimension = (Number) item.getData().get(WIDTH);
+            Number heightDimension = (Number) item.getData().get(HEIGHT);
+            String videoCaption = (String) item.getData().get(CAPTION);
+            String fileID = (String) item.getData().get(FILE_ID);
+            String dataUri = (String) item.getData().get(FILE_URI);
+
+            Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
+            Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
+            videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
+
+            Drawable thumbnail = new BitmapDrawable(
+                    itemView.getContext().getResources(),
+                    TAPFileUtils.getInstance().decodeBase64(
+                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                    item.getData().get(THUMBNAIL))));
+            if (thumbnail.getIntrinsicHeight() <= 0) {
+                // Set placeholder image if thumbnail fails to load
+                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            }
+
+            // Set caption
+            if (null != videoCaption && !videoCaption.isEmpty()) {
+                rcivVideoThumbnail.setBottomLeftRadius(0);
+                rcivVideoThumbnail.setBottomRightRadius(0);
+                tvMessageBody.setVisibility(View.VISIBLE);
+                tvMessageBody.setText(videoCaption);
+                setLinkDetection(itemView.getContext(), tvMessageBody);
+            } else {
+                rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                rcivVideoThumbnail.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
+                tvMessageBody.setVisibility(View.GONE);
+            }
+
+            if (null != widthDimension && null != heightDimension) {
+                rcivVideoThumbnail.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+            }
+
+            // Load thumbnail when download is not in progress
+            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID()) || null != dataUri) {
+                rcivVideoThumbnail.setImageDrawable(thumbnail);
+            }
+
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                // Message failed to send
+                tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
+                tvMediaInfo.setText(size == null ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()));
+                ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                pbProgress.setVisibility(View.GONE);
+                if (isMessageFromMySelf(item)) {
+                    flBubble.setForeground(bubbleOverlayRight);
+                    rcivVideoThumbnail.setOnClickListener(v -> retryUpload(item));
+                } else {
+                    flBubble.setForeground(bubbleOverlayLeft);
+                    rcivVideoThumbnail.setOnClickListener(v -> downloadVideo(item));
+                }
+                glide.load(videoUri)
+                        .transition(DrawableTransitionOptions.withCrossFade(100))
+                        .apply(new RequestOptions()
+                                .placeholder(thumbnail)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(rcivVideoThumbnail);
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressPercent) && null != videoUri) {
+                // Video has finished downloading or uploading
+                tvMediaInfo.setText(null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
+                ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
+                pbProgress.setVisibility(View.GONE);
+                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
+                Drawable finalThumbnail = thumbnail;
+                new Thread(() -> {
+                    BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
+                    if (null == videoThumbnail) {
+                        // Get full-size thumbnail from Uri
+                        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                        try {
+                            retriever.setDataSource(itemView.getContext(), videoUri);
+                            videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            videoThumbnail = (BitmapDrawable) finalThumbnail;
+                        }
+                        TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
+                    }
+                    // Load full-size thumbnail from cache
+                    if (null != videoThumbnail) {
+                        BitmapDrawable finalVideoThumbnail = videoThumbnail;
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            glide.load(finalVideoThumbnail)
+                                    .transition(DrawableTransitionOptions.withCrossFade(100))
+                                    .apply(new RequestOptions()
+                                            .placeholder(finalThumbnail)
+                                            .centerCrop())
+                                    .into(rcivVideoThumbnail);
+                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
+                        });
+                    }
+                }).start();
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressPercent)) {
+                // Video is not downloaded
+                String videoSize = null == size ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
+                String videoDuration = null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue());
+                tvMediaInfo.setText(String.format("%s%s%s", videoSize, (videoSize.isEmpty() || videoDuration.isEmpty()) ? "" : " - ", videoDuration));
+                if (TAPFileDownloadManager.getInstance().getFailedDownloads().contains(item.getLocalID())) {
+                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                } else {
+                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                }
+                pbProgress.setVisibility(View.GONE);
+                rcivVideoThumbnail.setOnClickListener(v -> downloadVideo(item));
+            } else {
+                // File is downloading or uploading
+                ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                pbProgress.setVisibility(View.VISIBLE);
+                pbProgress.setMax(100);
+                if (null != uploadProgressPercent) {
+                    Long uploadProgressBytes = TAPFileUploadManager.getInstance().getUploadProgressBytes(localID);
+                    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, uploadProgressBytes));
+                    pbProgress.setProgress(uploadProgressPercent);
+                    rcivVideoThumbnail.setOnClickListener(v -> cancelUpload(item));
+                } else {
+                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(localID);
+                    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
+                    pbProgress.setProgress(downloadProgressPercent);
+                    rcivVideoThumbnail.setOnClickListener(v -> cancelDownload(item));
+                }
+            }
+        }
+
+        private void downloadVideo(TAPMessageModel item) {
+            Intent intent = new Intent(DownloadFile);
+            intent.putExtra(MESSAGE, item);
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        }
+
+        private void cancelDownload(TAPMessageModel item) {
+            Intent intent = new Intent(CancelDownload);
+            intent.putExtra(DownloadLocalID, item.getLocalID());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        }
+
+        private void cancelUpload(TAPMessageModel item) {
+            Intent intent = new Intent(UploadCancelled);
+            intent.putExtra(UploadLocalID, item.getLocalID());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        }
+
+        private void retryUpload(TAPMessageModel item) {
+            Intent intent = new Intent(UploadRetried);
+            intent.putExtra(UploadLocalID, item.getLocalID());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        }
+
+        private void openVideoPlayer(TAPMessageModel message) {
+            Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), message.getLocalID());
+            if (null == videoUri) {
+                return;
+            }
+            Intent intent = new Intent(itemView.getContext(), TAPVideoPlayerActivity.class);
+            intent.putExtra(URI, videoUri.toString());
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            itemView.getContext().startActivity(intent);
+        }
+
+//        private void setProgress(TAPMessageModel item) {
+//            String localID = item.getLocalID();
+//            Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
+//            Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID());
+//            if (null != item.getFailedSend() && item.getFailedSend()) {
+//                flProgress.setVisibility(View.VISIBLE);
+//                pbProgress.setVisibility(View.GONE);
+//                tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
+//            } else if ((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+//                    && null == downloadProgressPercent) {
+//                flProgress.setVisibility(View.GONE);
+//                flBubble.setForeground(null);
+//                if (null != item.getData()) {
+//                    Number duration = (Number) item.getData().get(DURATION);
+//                    tvMediaInfo.setText(null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
+//                } else {
+//                    tvMediaInfo.setText("");
+//                }
+//            } else {
+//                flProgress.setVisibility(View.VISIBLE);
+//                pbProgress.setVisibility(View.VISIBLE);
+//                pbProgress.setMax(100);
+//                if (null != uploadProgressPercent) {
+//                    pbProgress.setProgress(uploadProgressPercent);
+//                    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, uploadProgressPercent.longValue()));
+//                } else {
+//                    pbProgress.setProgress(downloadProgressPercent);
+//                    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressPercent.longValue()));
+//                }
+//            }
+//        }
+
+        private void setVideoData(TAPMessageModel item) {
+            if (null == item.getData()) {
+                return;
+            }
+            Number widthDimension = (Number) item.getData().get(WIDTH);
+            Number heightDimension = (Number) item.getData().get(HEIGHT);
+            String videoUri = (String) item.getData().get(FILE_URI);
+            String videoCaption = (String) item.getData().get(CAPTION);
+            String fileID = (String) item.getData().get(FILE_ID);
+            Drawable thumbnail = new BitmapDrawable(
+                    itemView.getContext().getResources(),
+                    TAPFileUtils.getInstance().decodeBase64(
+                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                    item.getData().get(THUMBNAIL))));
+            if (thumbnail.getIntrinsicHeight() <= 0) {
+                // Set placeholder image if thumbnail fails to laod
+                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            }
+
+            // Set caption
+            if (null != videoCaption && !videoCaption.isEmpty()) {
+                rcivVideoThumbnail.setBottomLeftRadius(0);
+                rcivVideoThumbnail.setBottomRightRadius(0);
+                tvMessageBody.setVisibility(View.VISIBLE);
+                tvMessageBody.setText(videoCaption);
+                setLinkDetection(itemView.getContext(), tvMessageBody);
+            } else {
+                rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                rcivVideoThumbnail.setBottomRightRadius(TAPUtils.getInstance().dpToPx(9));
+                tvMessageBody.setVisibility(View.GONE);
+            }
+
+            if (null != widthDimension && null != heightDimension) {
+                rcivVideoThumbnail.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+            }
+
+            // Load thumbnail when download is not in progress
+            if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
+                rcivVideoThumbnail.setImageDrawable(thumbnail);
+            }
+
+            if (null != fileID && !fileID.isEmpty()) {
+                Drawable finalThumbnail = thumbnail;
+                new Thread(() -> {
+                    Uri uri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
+                    if (null != uri) {
+                        BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
+                        if (null == videoThumbnail) {
+                            // Get full-size thumbnail from Uri
+                            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                            retriever.setDataSource(itemView.getContext(), uri);
+                            videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
+                            TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
+                        }
+                        // Load full-size thumbnail from cache
+                        BitmapDrawable finalVideoThumbnail = videoThumbnail;
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            glide.load(finalVideoThumbnail)
+                                    .transition(DrawableTransitionOptions.withCrossFade(100))
+                                    .apply(new RequestOptions()
+                                            .placeholder(finalThumbnail)
+                                            .centerCrop())
+                                    .into(rcivVideoThumbnail);
+                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
+                        });
+                    } else {
+                        ((Activity) itemView.getContext()).runOnUiThread(() -> rcivVideoThumbnail.setOnClickListener(v -> {}));
+                        if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
+                            // Download image
+                            if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                                TAPFileDownloadManager.getInstance().downloadFile(TapTalk.appContext, item, new TAPDownloadListener() {
+                                    @Override
+                                    public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
+                                        TAPFileDownloadManager.getInstance().saveFileMessageUri(item.getRoom().getRoomID(), localID, fileUri);
+                                        Intent intent = new Intent(DownloadFinish);
+                                        intent.putExtra(DownloadLocalID, localID);
+                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                                    }
+
+                                    @Override
+                                    public void onDownloadFailed(String localID) {
+                                        Intent intent = new Intent(DownloadFailed);
+                                        intent.putExtra(DownloadLocalID, localID);
+                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                                    }
+                                });
+                            } else {
+                                ((Activity) itemView.getContext()).runOnUiThread(() -> flProgress.setVisibility(View.GONE));
+                                TAPFileDownloadManager.getInstance().addFailedDownload(item.getLocalID());
+                            }
+                        }
+                    }
+                }).start();
+            } else if (null != videoUri && !videoUri.isEmpty()) {
+                rcivVideoThumbnail.setOnClickListener(v -> {});
+                // Message is not sent to server, load image from Uri
                 if (isMessageFromMySelf(item)) {
                     flBubble.setForeground(bubbleOverlayRight);
                 } else {
                     flBubble.setForeground(bubbleOverlayLeft);
                 }
-                glide.load(imageUri)
+                glide.load(videoUri)
                         .transition(DrawableTransitionOptions.withCrossFade(100))
                         .apply(new RequestOptions()
                                 .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
-                        .into(rcivImageBody);
+                        .into(rcivVideoThumbnail);
             }
         }
 
@@ -668,7 +1137,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private void setFileProgress(TAPMessageModel item) {
             String localID = item.getLocalID();
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
-            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
+            Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
             fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), item.getLocalID());
 
             tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
@@ -685,14 +1154,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     flFileIcon.setOnClickListener(v -> downloadFile(item));
                 }
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressValue) && null != fileUri) {
+                    && null == downloadProgressPercent) && null != fileUri) {
                 // File has finished downloading or uploading
                 tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                 pbProgress.setVisibility(View.GONE);
                 flFileIcon.setOnClickListener(v -> openFile(item));
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressValue)) {
+                    && null == downloadProgressPercent)) {
                 // File is not downloaded
                 tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 if (TAPFileDownloadManager.getInstance().getFailedDownloads().contains(item.getLocalID())) {
@@ -715,7 +1184,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(localID);
                     tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
-                    pbProgress.setProgress(downloadProgressValue);
+                    pbProgress.setProgress(downloadProgressPercent);
                     flFileIcon.setOnClickListener(v -> cancelDownload(item));
                 }
             }
@@ -795,13 +1264,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            HashMap<String, Object> mapData = item.getData();
+            if (null == mapData) {
+                return;
+            }
+
             if (!item.isAnimating()) {
                 checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             }
 
-            setMapData(item.getData());
+            setMapData(mapData);
 
-            tvMessageStatus.setText(item.getMessageStatusText());
+            if (null == item.getFailedSend() || (null != item.getFailedSend() && !item.getFailedSend())) {
+                tvMessageStatus.setText(item.getMessageStatusText());
+            }
 
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), vMapBorder, item);
@@ -827,18 +1303,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markUnreadForMessage(item, myUserModel);
 
-            vMapBorder.setOnClickListener(v -> openMapDetail(item.getData()));
+            vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
 
             // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
-            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
+            if (item.getData().containsKey(USER_INFO)) {
                 clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
             }
         }
 
         private void setMapData(HashMap<String, Object> mapData) {
-            if (null == mapData || null == mapData.get(ADDRESS) || null == mapData.get(LATITUDE) || null == mapData.get(LONGITUDE)) {
+            if (null == mapData.get(ADDRESS) || null == mapData.get(LATITUDE) || null == mapData.get(LONGITUDE)) {
                 return;
             }
             tvMessageBody.setText((String) mapData.get(ADDRESS));
@@ -1210,11 +1686,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvQuoteContent.setMaxLines(1);
             } else if (null != quoteFileID && !quoteFileID.isEmpty()) {
                 // Get quote image from file ID
-                // TODO: 8 March 2019 FIX QUOTE FILE TYPE
                 if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
                     // Load file icon
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
-                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_purply));
+                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purply_rounded_8dp));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
                     // Load image from file ID

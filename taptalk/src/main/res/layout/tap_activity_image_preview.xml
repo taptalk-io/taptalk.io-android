@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tap_charcoal"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_image_preview"

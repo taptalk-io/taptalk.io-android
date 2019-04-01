@@ -37,11 +37,11 @@
     <color name="tap_highlight_blue">#5AC8FA</color>
 
     <color name="tap_cream_white">#fffdea</color>
+    <color name="tap_lightPink">#fff0f2</color>
     <color name="tap_lightBlueGrey">#cce7e2</color>
     <color name="tap_paleCyan">#eefaf8</color>
 
     <color name="tap_white">#ffffff</color>
-    <color name="tap_transparent">#00ffffff</color>
     <color name="tap_white_fe">#fefefe</color>
     <color name="tap_white_fa">#fafafa</color>
     <color name="tap_white_f8">#f8f8f8</color>
@@ -58,14 +58,18 @@
     <color name="tap_black_2c">#2c2c2c</color>
     <color name="tap_black">#000000</color>
     <color name="tap_charcoal">#04040f</color>
-    <color name="tap_charcoal_alpha_50">#8004040f</color>
-    <color name="tap_charcoal_alpha_40">#6604040f</color>
 
     <color name="tap_transparent_white">#00ffffff</color>
+    <color name="tap_transparent_white_20">#33ffffff</color>
+    <color name="tap_transparent_white_40">#66ffffff</color>
+    <color name="tap_transparent_white_60">#99ffffff</color>
     <color name="tap_transparent_black">#00000000</color>
     <color name="tap_transparent_black_18">#2d000000</color>
     <color name="tap_transparent_black_40">#66000000</color>
     <color name="tap_transparent_charcoal">#0004040f</color>
+    <color name="tap_transparent_charcoal_50">#8004040f</color>
+    <color name="tap_transparent_charcoal_40">#6604040f</color>
+    <color name="tap_transparent_black_47_70">#b3474747</color>
 
     <color name="color0">#fdc3a7</color>
     <color name="color1">#d0e69d</color>

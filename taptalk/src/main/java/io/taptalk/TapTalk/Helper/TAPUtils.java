@@ -58,27 +58,31 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -403,17 +407,37 @@ public class TAPUtils {
      * Reminder: Handle onRequestPermissionsResult in activity
      */
     public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
-        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            // Check read storage permission
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Check read & write storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
-            Intent intent = new Intent();
-            intent.setType(activity.getString(R.string.tap_intent_pick_image));
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
-            intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.setType(activity.getString(R.string.tap_intent_type_image));
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_select_picture)), requestCode);
+                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_select_picture)), requestCode);
+            }
+        }
+    }
+
+    /**
+     * Reminder: Handle onRequestPermissionsResult in activity
+     */
+    // TODO: 21 March 2019 GET VIDEO FROM GOOGLE DRIVE
+    public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
+        if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Check read & write storage permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
+        } else {
+            // Permission granted
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.setType(activity.getString(R.string.tap_intent_type_all));
+            String[] mimeTypes = {activity.getString(R.string.tap_intent_type_image), activity.getString(R.string.tap_intent_type_video)};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
+            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_gallery)), requestCode);
             }
         }
     }
@@ -440,8 +464,8 @@ public class TAPUtils {
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     activity.startActivityForResult(intent, requestCode);
-                    // TODO: 22 January 2019 TESTING
-                    TAPFileUploadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
+                    // Save file path to map
+                    TAPFileDownloadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -453,20 +477,64 @@ public class TAPUtils {
     }
 
     public boolean openFile(Context context, Uri uri, String mimeType) {
-        // TODO: 8 March 2019 CHECK IF FILE EXISTS
+        String path = TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
+        if (null == path) {
+            return false;
+        }
+        File file = new File(path);
+        if (!file.exists()) {
+            return false;
+        }
         context.grantUriPermission(context.getPackageName(), uri, FLAG_GRANT_READ_URI_PERMISSION);
-        Log.e(TAG, "openFile: " + uri);
-        Log.e(TAG, "openFile: " + mimeType);
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setDataAndType(uri, mimeType)
                 .addFlags(FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            context.startActivity(Intent.createChooser(intent, "Open folder"));
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.tap_intent_title_open_file)));
             return true;
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
-            return false;
+            return true;
+        }
+    }
+
+    public void openVideoPreview(Context context, Uri uri) {
+        Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
+        intent.putExtra(URI, uri.toString());
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
+        }
+    }
+
+    /**
+     * Current and maxDuration are in milliseconds
+     */
+    public String getMediaDurationString(int current, int maxDuration) {
+        int secondMs = 1000;
+        int minuteMs = 1000 * 60;
+        int hourMs = 1000 * 60 * 60;
+
+        String minute = String.valueOf((current % hourMs) / minuteMs);
+        if (minute.length() < 2) {
+            minute = String.format("0%s", minute);
+        }
+
+        String second = current == 0? "00" : String.valueOf((current % minuteMs) / secondMs);
+        if (second.length() < 2) {
+            second = String.format("0%s", second);
+        }
+
+        if (maxDuration > hourMs) {
+            String hour = String.valueOf(current / hourMs);
+            if (hour.length() < 2) {
+                hour = String.format("0%s", hour);
+            }
+
+            return String.format("%s:%s:%s", hour, minute, second);
+        } else {
+            return String.format("%s:%s", minute, second);
         }
     }
 
@@ -539,14 +607,30 @@ public class TAPUtils {
         return fileDisplayInfo;
     }
 
-    public ArrayList<TAPImagePreviewModel> getUrisFromClipData(ClipData clipData, ArrayList<TAPImagePreviewModel> uris, boolean isFirstSelected) {
+    public ArrayList<TAPMediaPreviewModel> getPreviewsFromClipData(Context context, ClipData clipData, boolean isFirstSelected) {
+        ArrayList<TAPMediaPreviewModel> uris = new ArrayList<>();
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
-            if (count == 0 && isFirstSelected)
-                uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), true));
-            else uris.add(TAPImagePreviewModel.Builder(clipData.getItemAt(count).getUri(), false));
+            Uri uri = clipData.getItemAt(count).getUri();
+            if (count == 0 && isFirstSelected) {
+                uris.add(TAPMediaPreviewModel.Builder(uri, getMessageTypeFromFileUri(context, uri), true));
+            } else {
+                uris.add(TAPMediaPreviewModel.Builder(uri, getMessageTypeFromFileUri(context, uri), false));
+            }
         }
         return uris;
+    }
+
+    public int getMessageTypeFromFileUri(Context context, Uri uri) {
+        String type = context.getContentResolver().getType(uri);
+        // Add message types here
+        if (null != type && type.contains("image")) {
+            return TYPE_IMAGE;
+        } else if (null != type && type.contains("video")) {
+            return TYPE_VIDEO;
+        } else {
+            return -1;
+        }
     }
 
     public void getUserFromXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
@@ -807,7 +891,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
      */
     public String getStringSizeLengthFile(long size) {
 
-        DecimalFormat df = new DecimalFormat("0.00");
+        DecimalFormat df = new DecimalFormat("0.##");
 
         float sizeKb = 1024.0f;
         float sizeMb = sizeKb * sizeKb;
@@ -815,13 +899,13 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         float sizeTerra = sizeGb * sizeKb;
 
 
-        if (size < sizeMb)
+        if (size < sizeMb) {
             return df.format(size / sizeKb) + " KB";
-        else if (size < sizeGb)
+        } else if (size < sizeGb) {
             return df.format(size / sizeMb) + " MB";
-        else if (size < sizeTerra)
+        } else if (size < sizeTerra) {
             return df.format(size / sizeGb) + " GB";
-
+        }
         return size + "B";
     }
 

@@ -197,6 +197,22 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="TapErrorMessageTitle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/tap_font_neueeinstellungsemibold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tap_coral_pink</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TapErrorMessageBody">
+        <item name="android:fontFamily">@font/tap_font_neueeinstellungregular</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/tap_coral_pink</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="SwipeBackLayout">
         <item name="edge_size">50dip</item>
         <!--<item name="tap_shadow_left">@drawable/tap_shadow_left</item>-->

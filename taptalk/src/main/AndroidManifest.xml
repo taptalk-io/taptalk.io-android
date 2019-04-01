@@ -15,20 +15,24 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
-    <application android:theme="@style/AppTheme"
-        android:largeHeap="true">
+    <application
+        android:largeHeap="true"
+        android:theme="@style/AppTheme">
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"></activity>
+
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
             android:stopWithTask="false" />
         <service
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA" />
 
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity" />
-        <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"/>
+        <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity" />
@@ -38,8 +42,9 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPProfileActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
-            android:windowSoftInputMode="adjustNothing"/>
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -53,7 +58,7 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"

@@ -85,6 +85,8 @@
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
     <string name="tap_chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
     <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
+    <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
+    <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
 
     <!--Error Message-->
     <string name="tap_error">Error</string>
@@ -102,14 +104,19 @@
     <string name="tap_error_room_not_found">Could not find room.</string>
     <string name="tap_error_my_user_not_found">Could not find your user data.</string>
     <string name="tap_error_other_user_not_found">Could not find other user\'s data.</string>
-    <string name="tap_error_image_data_empty">File upload failed: data is required in MessageModel.</string>
-    <string name="tap_error_image_uri_empty">File upload failed: URI is required in MessageModel data.</string>
-    <string name="tap_error_image_uri_not_found">File upload failed: file URI not found in Chat Manager.</string>
+    <string name="tap_error_message_data_empty">File upload failed: data is required in MessageModel.</string>
+    <string name="tap_error_message_uri_empty">File upload failed: Uri is required in MessageModel data.</string>
+    <string name="tap_error_message_uri_not_found">File upload failed: file Uri not found in Chat Manager.</string>
     <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
     <string name="tap_error_no_app_to_open_file">No suitable app to open this file.</string>
+    <string name="tap_error_exceed_upload_limit">Exceeded %s upload limit</string>
+    <string name="tap_error_please_remove_video">Please remove this video to continue</string>
+    <string name="tap_error_could_not_find_file">Could not find file</string>
+    <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
+    <string name="tap_video">Video</string>
     <string name="tap_file">File</string>
     <string name="tap_document">Document</string>
     <string name="tap_camera">Camera</string>
@@ -118,6 +125,7 @@
     <string name="tap_location">Location</string>
     <string name="tap_contact">Contact</string>
     <string name="tap_emoji_photo">🖼</string>
+    <string name="tap_emoji_video">🎥</string>
     <string name="tap_emoji_file">📎</string>
     <string name="tap_location_body">📍 Location</string>
 
@@ -147,8 +155,12 @@
     <string name="tap_file_info_progress_dummy">9999.99 MB / %s</string>
 
     <!--Intent-->
-    <string name="tap_intent_pick_image">image/*</string>
-    <string name="tap_intent_select_picture">Select Picture</string>
+    <string name="tap_intent_type_all">*/*</string>
+    <string name="tap_intent_type_image">image/*</string>
+    <string name="tap_intent_type_video">video/*</string>
+    <string name="tap_intent_title_gallery">Gallery</string>
+    <string name="tap_intent_title_select_picture">Select Picture</string>
+    <string name="tap_intent_title_open_file">Open File</string>
     <string name="tap_transition_view_image">tap_view_image</string>
 
     <!--Location-->

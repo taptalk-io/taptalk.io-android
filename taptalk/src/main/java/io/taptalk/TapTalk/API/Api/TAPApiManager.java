@@ -316,6 +316,21 @@ public class TAPApiManager {
         execute(tapMultipart.uploadFile(requestBody), subscriber);
     }
 
+    public void uploadVideo(File videoFile, String roomID, String caption, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        ProgressRequestBody reqFile = new ProgressRequestBody(videoFile, mimeType, uploadCallback);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("roomID", roomID)
+                .addFormDataPart("file", videoFile.getName(), reqFile)
+                .addFormDataPart("caption", caption)
+                .addFormDataPart("fileType", "video")
+                .build();
+        execute(tapMultipart.uploadFile(requestBody), subscriber);
+    }
+
     public void uploadFile(File file, String roomID, String mimeType,
                            ProgressRequestBody.UploadCallbacks uploadCallback,
                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
