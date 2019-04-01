@@ -23,6 +23,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -933,5 +935,15 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
      */
     public String getFileMimeType(File file) {
         return URLConnection.guessContentTypeFromName(file.getName());
+    }
+
+    /**
+     * Untuk animate rotate secara terus-terusan
+     * biasanya sih rotate buat progress bar
+     */
+    public void rotateAnimateInfinitely(Context context, View view) {
+        Animation rotation = AnimationUtils.loadAnimation(context, R.anim.tap_rotation_infinite);
+        rotation.setFillAfter(true);
+        view.startAnimation(rotation);
     }
 }
