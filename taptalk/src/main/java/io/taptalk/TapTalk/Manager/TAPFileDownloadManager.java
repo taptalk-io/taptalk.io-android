@@ -290,6 +290,7 @@ public class TAPFileDownloadManager {
     }
 
     private void setDownloadFailed(String localID, TAPDownloadListener listener) {
+        addFailedDownload(localID);
         removeDownloadProgressMap(localID);
         listener.onDownloadFailed(localID);
     }
