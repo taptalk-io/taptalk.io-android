@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,15 +38,23 @@ class TAPPhoneLoginFragment : Fragment() {
                     textCount in 7..15 -> {
                         fl_continue_btn.visibility = View.VISIBLE
                         fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_gradient_ff9833_ff7e00_rounded_8dp_stroke_ff7e00_1dp)
+                        fl_continue_btn.setOnClickListener { Log.e("><><><", "Test") }
+                        fl_continue_btn.isClickable = true
                     }
                     0 < textCount -> {
                         fl_continue_btn.visibility = View.VISIBLE
                         fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp)
+                        fl_continue_btn.setOnClickListener(null)
+                        fl_continue_btn.isClickable = false
                     }
                     else -> fl_continue_btn.visibility = View.GONE
                 }
             }
 
         })
+    }
+
+    private fun attemptLogin() {
+
     }
 }
