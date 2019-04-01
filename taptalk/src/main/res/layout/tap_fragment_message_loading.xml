@@ -17,7 +17,7 @@
         android:id="@+id/tv_connection_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/tap_font_latobold"
+        android:fontFamily="@font/tap_font_pt_root_bold"
         android:textColor="@color/tap_purply"
         android:textSize="12dp"
         tools:text="@string/tap_loading_new_messages" />

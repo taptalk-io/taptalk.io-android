@@ -88,7 +88,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungregular"
+                    android:fontFamily="@font/tap_font_pt_root_regular"
                     android:gravity="center"
                     android:text="@string/tap_cant_find_person"
                     android:textColor="@color/tap_black_44"
@@ -97,7 +97,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungbold"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
                     android:gravity="center"
                     android:text="@string/tap_add_new_contact"
                     android:textColor="@color/tap_greenBlue"
