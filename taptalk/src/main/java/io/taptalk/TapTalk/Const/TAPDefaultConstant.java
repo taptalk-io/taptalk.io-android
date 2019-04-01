@@ -168,7 +168,7 @@ public class TAPDefaultConstant {
         public static final String UploadLocalID = "kTAPUploadLocalID";
         public static final String UploadFailed = "kTAPUploadFailed";
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
-        public static final String UploadRetried = "kTAPUploadRetried";
+//        public static final String UploadRetried = "kTAPUploadRetried";
         public static final String UploadCancelled = "kTAPUploadCancelled";
     }
 

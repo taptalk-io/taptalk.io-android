@@ -155,6 +155,10 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null);
     }
 
+    public static TAPMessageModel BuilderResendMessage(TAPMessageModel message, Long created) {
+        String localID = TAPUtils.getInstance().generateRandomString(32);
+        return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null);
+    }
 
     public void updateMessageStatusText() {
         if (created > 0L && (null == messageStatusText || messageStatusText.isEmpty())) {

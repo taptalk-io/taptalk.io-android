@@ -346,9 +346,6 @@ public class TAPChatManager {
         );
     }
 
-    /**
-     * Send text messages
-     */
     public void sendTextMessage(String textMessage) {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
@@ -839,11 +836,27 @@ public class TAPChatManager {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomID, bitmap, caption)).start();
     }
 
-    public void resendImageOrVideoMessage(Context context, String roomID, TAPMessageModel messageModel) {
-        new Thread(() -> {
-            addUploadingMessageToHashMap(messageModel);
-            TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
-        }).start();
+    public void resendMessage(TAPMessageModel failedMessageModel) {
+        TAPMessageModel messageToResend = TAPMessageModel.BuilderResendMessage(failedMessageModel, System.currentTimeMillis());
+        triggerListenerAndSendMessage(messageToResend, true);
+    }
+
+    public void retryUpload(Context context, TAPMessageModel failedMessageModel) {
+        TAPMessageModel messageToResend = TAPMessageModel.BuilderResendMessage(failedMessageModel, System.currentTimeMillis());
+        if (messageToResend.getType() == TYPE_VIDEO || messageToResend.getType() == TYPE_FILE) {
+            // Update file message Uri key to new local ID
+            String failedLocalID = failedMessageModel.getLocalID();
+            String localID = messageToResend.getLocalID();
+            String roomID = messageToResend.getRoom().getRoomID();
+            TAPFileDownloadManager.getInstance().saveFileMessageUri(roomID, localID,
+                    TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, failedLocalID));
+            TAPFileDownloadManager.getInstance().removeFileMessageUri(roomID, failedLocalID);
+        }
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageToResend.getLocalID(), 0, 0);
+        addUploadingMessageToHashMap(messageToResend);
+        TAPFileUploadManager.getInstance().addUploadQueue(context, messageToResend.getRoom().getRoomID(), messageToResend);
+        triggerSendMessageListener(messageToResend);
     }
 
     /**

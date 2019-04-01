@@ -150,7 +150,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
 import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
@@ -625,7 +624,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void registerBroadcastManager() {
         TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
-                UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
+                UploadProgressFinish, UploadFailed, UploadCancelled,
                 DownloadProgressLoading, DownloadFinish, DownloadFailed, DownloadFile, OpenFile,
                 CancelDownload, LongPressChatBubble, LongPressEmail, LongPressLink, LongPressPhone);
     }
@@ -1235,10 +1234,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onRetrySendMessage(TAPMessageModel message) {
             vm.delete(message.getLocalID());
-            switch (message.getType()) {
-                case TAPDefaultConstant.MessageType.TYPE_TEXT:
-                    TAPChatManager.getInstance().sendTextMessage(message.getBody());
-                    break;
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO || message.getType() == TYPE_FILE) && null != message.getData() &&
+                    (null == message.getData().get(FILE_ID) || ((String) message.getData().get(FILE_ID)).isEmpty())) {
+                // Re-upload image/video
+                TAPChatManager.getInstance().retryUpload(TAPChatActivity.this, message);
+            } else {
+                // Resend message
+                TAPChatManager.getInstance().resendMessage(message);
             }
         }
 
@@ -1353,26 +1355,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         vm.removeFromUploadingList(localID);
                         vm.removeMessagePointer(localID);
                         messageAdapter.removeMessageAt(itemPos);
-                    }
-                    break;
-                case UploadRetried:
-                    localID = intent.getStringExtra(UploadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
-                        TAPDataManager.getInstance().updateFailedMessageToSending(localID);
-                        // Set Start Point for Progress
-                        TAPFileUploadManager.getInstance().addUploadProgressMap(failedMessageModel.getLocalID(), 0, 0);
-                        failedMessageModel.setFailedSend(false);
-                        failedMessageModel.setSending(true);
-                        new Thread(() -> {
-                            TAPMessageModel retryMessage = failedMessageModel.copyMessageModel();
-                            if (retryMessage.getType() == TYPE_IMAGE || retryMessage.getType() == TYPE_VIDEO) {
-                                TAPChatManager.getInstance().resendImageOrVideoMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), retryMessage);
-                            } else if (retryMessage.getType() == TYPE_FILE) {
-                                TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, retryMessage);
-                            }
-                        }).start();
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
                 case DownloadProgressLoading:

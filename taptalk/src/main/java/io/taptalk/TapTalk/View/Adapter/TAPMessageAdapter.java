@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -17,7 +16,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -95,12 +93,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.HEIGHT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
@@ -110,7 +108,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseChatViewHolder> {
@@ -554,11 +551,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
-                flProgress.setOnClickListener(v -> {
-                    Intent intent = new Intent(UploadRetried);
-                    intent.putExtra(UploadLocalID, item.getLocalID());
-                    LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(intent);
-                });
+                flProgress.setOnClickListener(v -> resendMessage(item));
             } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressPercent(item.getLocalID())
                     && null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID()))
                     || null != TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
@@ -743,7 +736,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 pbProgress.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
                     flBubble.setForeground(bubbleOverlayRight);
-                    rcivVideoThumbnail.setOnClickListener(v -> retryUpload(item));
+                    rcivVideoThumbnail.setOnClickListener(v -> resendMessage(item));
                 } else {
                     flBubble.setForeground(bubbleOverlayLeft);
                     rcivVideoThumbnail.setOnClickListener(v -> downloadVideo(item));
@@ -836,12 +829,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void cancelUpload(TAPMessageModel item) {
             Intent intent = new Intent(UploadCancelled);
-            intent.putExtra(UploadLocalID, item.getLocalID());
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-        }
-
-        private void retryUpload(TAPMessageModel item) {
-            Intent intent = new Intent(UploadRetried);
             intent.putExtra(UploadLocalID, item.getLocalID());
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
@@ -986,7 +973,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
                 pbProgress.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
-                    flFileIcon.setOnClickListener(v -> retryUpload(item));
+                    flFileIcon.setOnClickListener(v -> resendMessage(item));
                 } else {
                     flFileIcon.setOnClickListener(v -> downloadFile(item));
                 }
@@ -1049,12 +1036,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Intent intent = new Intent(OpenFile);
             intent.putExtra(MESSAGE, item);
             intent.putExtra(FILE_URI, fileUri);
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-        }
-
-        private void retryUpload(TAPMessageModel item) {
-            Intent intent = new Intent(UploadRetried);
-            intent.putExtra(UploadLocalID, item.getLocalID());
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
     }

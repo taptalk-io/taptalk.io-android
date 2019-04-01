@@ -317,8 +317,6 @@ public class TAPFileDownloadManager {
     }
 
     public void addFileProviderPath(Uri fileProviderUri, String path) {
-        Log.e(TAG, "addFileProviderPath: " + fileProviderUri);
-        Log.e(TAG, "addFileProviderPath: " + path);
         getFileProviderPathMap().put(fileProviderUri.toString(), path);
     }
 
