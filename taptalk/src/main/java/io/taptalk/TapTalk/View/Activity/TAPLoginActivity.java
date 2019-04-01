@@ -9,9 +9,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPLoginActivity.class.getSimpleName();
     private TAPPhoneLoginFragment fPhoneLogin;
-//    private TextInputEditText etPhoneAndOTP;
-//    private TextView tvSignIn;
-//    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +26,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
     private void initView() {
         fPhoneLogin = (TAPPhoneLoginFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_enter_phone);
-//        etPhoneAndOTP = findViewById(R.id.et_phone_and_otp);
-//        tvSignIn = findViewById(R.id.tv_sign_in);
-//        progressBar = findViewById(R.id.pb_signing_in);
-//        etPhoneAndOTP.setHint("Phone Number");
-//
 //        etPhoneAndOTP.setOnEditorActionListener((v, actionId, event) -> {
 //            attemptLogin();
 //            return false;
