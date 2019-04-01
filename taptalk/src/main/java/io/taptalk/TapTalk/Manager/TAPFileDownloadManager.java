@@ -33,6 +33,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPFileDownloadManager {
@@ -216,8 +217,12 @@ public class TAPFileDownloadManager {
         //new Thread(() -> {
         String localID = message.getLocalID();
         String filename;
-        if (null != message.getData()) {
+        if (null != message.getData() && null != message.getData().get(FILE_NAME)) {
             filename = (String) message.getData().get(FILE_NAME);
+        } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+            String mimeType = (String) message.getData().get(MEDIA_TYPE);
+            String extension = null == mimeType ? "" : mimeType.substring(mimeType.lastIndexOf("/") + 1);
+            filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS") + extension;
         } else {
             filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
         }
