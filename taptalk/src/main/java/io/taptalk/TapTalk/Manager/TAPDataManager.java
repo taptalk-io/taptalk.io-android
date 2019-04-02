@@ -26,6 +26,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -766,6 +767,10 @@ public class TAPDataManager {
 
     public void removeContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().removeContact(userID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getCountryList(TapDefaultDataView<TAPCountryListResponse> view) {
+        TAPApiManager.getInstance().getCountryList(new TAPDefaultSubscriber<>(view));
     }
 
     // Search User

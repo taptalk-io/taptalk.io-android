@@ -105,16 +105,4 @@ public class TAPLoginActivity extends TAPBaseActivity {
 //        }
 //    };
 
-//    private void showDialog(String title, String message) {
-//        new TapTalkDialog.Builder(this)
-//                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-//                .setTitle(title)
-//                .setMessage(message)
-//                .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                .setPrimaryButtonListener(view -> {
-//                    progressBar.setVisibility(View.GONE);
-//                    tvSignIn.setVisibility(View.VISIBLE);
-//                }).show();
-//    }
-
 }

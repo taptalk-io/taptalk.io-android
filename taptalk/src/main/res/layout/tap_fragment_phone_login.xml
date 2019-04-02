@@ -81,9 +81,18 @@
                 android:layout_marginStart="10dp"
                 android:letterSpacing="-0.01"
                 android:lineSpacingExtra="4sp"
-                android:text="+62"
+                tools:text="+62"
                 android:textColor="@color/tap_black_19"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone"/>
+
+            <ImageView
+                android:id="@+id/iv_loading_progress_country"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/tap_ic_loading_progress_circle_orange"/>
 
         </LinearLayout>
 
@@ -138,10 +147,10 @@
             />
 
         <ImageView
-            android:id="@+id/iv_loading_progress"
+            android:id="@+id/iv_loading_progress_request_otp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/tap_ic_loading_progress_circle"
+            android:src="@drawable/tap_ic_loading_progress_circle_white"
             android:layout_gravity="center"
             android:visibility="gone"/>
 

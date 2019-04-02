@@ -4,19 +4,23 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
 
 class TAPPhoneLoginFragment : Fragment() {
+
+    val generalErrorMessage = resources.getString(R.string.tap_error_message_general)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -25,6 +29,7 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        callCountryListFromAPI()
         initView()
     }
 
@@ -91,14 +96,14 @@ class TAPPhoneLoginFragment : Fragment() {
 
     private fun showProgress() {
         tv_btn_continue.visibility = View.GONE
-        iv_loading_progress.visibility = View.VISIBLE
-        TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress)
+        iv_loading_progress_request_otp.visibility = View.VISIBLE
+        TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_request_otp)
     }
 
     private fun stopAndHideProgress() {
         tv_btn_continue.visibility = View.VISIBLE
-        iv_loading_progress.visibility = View.GONE
-        iv_loading_progress.clearAnimation()
+        iv_loading_progress_request_otp.visibility = View.GONE
+        iv_loading_progress_request_otp.clearAnimation()
     }
 
     private val requestOTPInterface = object : TAPRequestOTPInterface {
@@ -107,8 +112,44 @@ class TAPPhoneLoginFragment : Fragment() {
         }
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
-            showDialog("ERROR", errorMessage ?: "Oops! something wrong, please try again later")
+            showDialog("ERROR", errorMessage ?: generalErrorMessage)
         }
+    }
+
+    private fun callCountryListFromAPI() {
+        TAPDataManager.getInstance().getCountryList(object : TapDefaultDataView<TAPCountryListResponse>() {
+            override fun startLoading() {
+                tv_country_code.visibility = View.GONE
+                iv_loading_progress_country.visibility = View.VISIBLE
+                TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_country)
+            }
+
+            override fun onSuccess(response: TAPCountryListResponse?) {
+                super.onSuccess(response)
+                iv_loading_progress_country.visibility = View.GONE
+                iv_loading_progress_country.clearAnimation()
+                tv_country_code.visibility = View.VISIBLE
+                tv_country_code.text = ""
+            }
+
+            override fun onError(error: TAPErrorModel?) {
+                super.onError(error)
+                iv_loading_progress_country.visibility = View.GONE
+                iv_loading_progress_country.clearAnimation()
+                tv_country_code.visibility = View.VISIBLE
+                tv_country_code.text = ""
+                showDialog("ERROR", error?.message ?: generalErrorMessage)
+            }
+
+            override fun onError(errorMessage: String?) {
+                super.onError(errorMessage)
+                iv_loading_progress_country.visibility = View.GONE
+                iv_loading_progress_country.clearAnimation()
+                tv_country_code.visibility = View.VISIBLE
+                tv_country_code.text = ""
+                showDialog("ERROR", errorMessage ?: generalErrorMessage)
+            }
+        })
     }
 
     private fun showDialog(title: String, message: String) {
