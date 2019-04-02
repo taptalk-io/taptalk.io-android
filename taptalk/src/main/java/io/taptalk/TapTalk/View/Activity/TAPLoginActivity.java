@@ -26,12 +26,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
     private void initView() {
         fPhoneLogin = (TAPPhoneLoginFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_enter_phone);
-//        etPhoneAndOTP.setOnEditorActionListener((v, actionId, event) -> {
-//            attemptLogin();
-//            return false;
-//        });
-//
-//        tvSignIn.setOnClickListener(v -> attemptLogin());
     }
 
     private void showPhoneFragment() {
@@ -42,24 +36,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 .commit();
     }
 
-//    private void attemptLogin() {
-//        if (etPhoneAndOTP.getText().toString().equals("")) {
-//            etPhoneAndOTP.setError("Please fill your Phone Number.");
-//        } else {
-//            TAPUtils.getInstance().dismissKeyboard(this);
-//            progressBar.setVisibility(View.VISIBLE);
-//            tvSignIn.setVisibility(View.GONE);
-//
-//            new Thread(() -> {
-//                try {
-//                    setDataAndCallAPI();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }).start();
-//        }
-//    }
-//
+
 //    private void verifyOTP(long otpID, String otpKey) {
 //        if (etPhoneAndOTP.getText().toString().equals("")) {
 //            etPhoneAndOTP.setError("Please fill your OTP.");
@@ -77,16 +54,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
 //        }
 //    }
 //
-//    private void setDataAndCallAPI() {
-//        String phoneNumber = etPhoneAndOTP.getText().toString();
-//        if ('0' == phoneNumber.charAt(0))
-//            phoneNumber = phoneNumber.replaceFirst("0", "");
-//        else if ("+62".equals(phoneNumber.substring(0, 3)))
-//            phoneNumber = phoneNumber.substring(3);
-//        else if ("62".equals(phoneNumber.substring(0, 2)))
-//            phoneNumber = phoneNumber.substring(2);
-//        TapTalk.loginWithRequestOTP(1, phoneNumber, requestOTPInterface);
-//    }
+
 //
 //    TAPRequestOTPInterface requestOTPInterface = new TAPRequestOTPInterface() {
 //        @Override
