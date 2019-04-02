@@ -49,6 +49,14 @@ class TAPPhoneLoginFragment : Fragment() {
             }
 
         })
+
+        et_phone_number.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_white_rounded_8dp_stroke_362ad7_1dp)
+            } else {
+                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_rounded_8dp_stroke_dcdcdc_1dp)
+            }
+        }
     }
 
     private fun attemptLogin() {
