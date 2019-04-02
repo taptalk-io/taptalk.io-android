@@ -36,18 +36,15 @@ class TAPPhoneLoginFragment : Fragment() {
                 val textCount = s?.length?: 0
                 when {
                     textCount in 7..15 -> {
-                        fl_continue_btn.visibility = View.VISIBLE
                         fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_gradient_ff9833_ff7e00_rounded_8dp_stroke_ff7e00_1dp)
                         fl_continue_btn.setOnClickListener { Log.e("><><><", "Test") }
                         fl_continue_btn.isClickable = true
                     }
-                    0 < textCount -> {
-                        fl_continue_btn.visibility = View.VISIBLE
+                    else -> {
                         fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp)
                         fl_continue_btn.setOnClickListener(null)
                         fl_continue_btn.isClickable = false
                     }
-                    else -> fl_continue_btn.visibility = View.GONE
                 }
             }
 
