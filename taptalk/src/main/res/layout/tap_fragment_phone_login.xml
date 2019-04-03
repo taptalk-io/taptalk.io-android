@@ -84,7 +84,7 @@
                 tools:text="+62"
                 android:textColor="@color/tap_black_19"
                 android:textSize="16sp"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
             <ImageView
                 android:id="@+id/iv_loading_progress_country"
@@ -92,6 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="10dp"
+                android:visibility="gone"
                 android:src="@drawable/tap_ic_loading_progress_circle_orange"/>
 
         </LinearLayout>

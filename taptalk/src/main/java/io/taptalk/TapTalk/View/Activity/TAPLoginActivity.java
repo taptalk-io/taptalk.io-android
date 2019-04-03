@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.os.Bundle;
 
+import io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPPhoneLoginFragment;
 import io.taptalk.Taptalk.R;
 
@@ -9,6 +10,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPLoginActivity.class.getSimpleName();
     private TAPPhoneLoginFragment fPhoneLogin;
+    private TAPLoginVerificationFragment fOTPVerification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +18,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_login);
 
         initView();
-        showPhoneFragment();
+        showPhoneLogin();
     }
 
     @Override
@@ -26,13 +28,22 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
     private void initView() {
         fPhoneLogin = (TAPPhoneLoginFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_enter_phone);
+        fOTPVerification = (TAPLoginVerificationFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_verify_otp);
     }
 
-    private void showPhoneFragment() {
+    public void showPhoneLogin() {
         getSupportFragmentManager()
                 .beginTransaction()
                 .show(fPhoneLogin)
-                //.hide(fShowQR)
+                .hide(fOTPVerification)
+                .commit();
+    }
+
+    public void showOTPVerification() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .show(fOTPVerification)
+                .hide(fPhoneLogin)
                 .commit();
     }
 

@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -48,6 +49,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_A
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
@@ -59,6 +61,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
@@ -143,6 +146,38 @@ public class TAPDataManager {
         removeWriteStoragePermissionRequested();
         removeLastDeleteTimestamp();
         removeNotificationMap();
+        removeLastCallCountryTimestamp();
+        removeCountryList();
+    }
+
+    /**
+     * COUNTRY LIST
+     */
+    public HashMap<String, TAPCountryListItem> getCountryList() {
+        return Hawk.get(K_COUNTRY_LIST, new HashMap<String, TAPCountryListItem>());
+    }
+
+    public void saveCountryList(HashMap<String,TAPCountryListItem> countries) {
+        Hawk.put(K_COUNTRY_LIST, countries);
+    }
+
+    public void removeCountryList() {
+        Hawk.delete(K_COUNTRY_LIST);
+    }
+
+    /**
+     * LAST GET COUNTRY TIMESTAMP
+     */
+    public long getLastCallCountryTimestamp() {
+        return Hawk.get(LAST_CALL_COUNTRY_TIMESTAMP, 0L);
+    }
+
+    public void saveLastCallCountryTimestamp(long timestamp) {
+        Hawk.put(LAST_CALL_COUNTRY_TIMESTAMP, timestamp);
+    }
+
+    public void removeLastCallCountryTimestamp() {
+        Hawk.delete(LAST_CALL_COUNTRY_TIMESTAMP);
     }
 
     /**

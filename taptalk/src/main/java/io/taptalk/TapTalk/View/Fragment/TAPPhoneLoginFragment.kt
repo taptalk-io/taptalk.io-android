@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,13 +15,21 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
+import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
+import java.lang.Exception
 
 class TAPPhoneLoginFragment : Fragment() {
 
-    val generalErrorMessage = resources.getString(R.string.tap_error_message_general)
+    val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
+            ?: ""
+    var countryIsoCode = "id"
+    //val oneWeekAgoTimestamp = 604800000L // 7 * 24 * 60 * 60 * 1000
+    private val oneWeekAgoTimestamp : Long = 7 * 24 * 60 * 60 * 1000
+    private var countryHashMap = hashMapOf<String, TAPCountryListItem>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -29,7 +38,19 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        callCountryListFromAPI()
+        countryIsoCode = TAPUtils.getInstance().getDeviceCountryCode(context)
+        val lastCallCountryTimestamp = TAPDataManager.getInstance().lastCallCountryTimestamp
+        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneWeekAgoTimestamp == lastCallCountryTimestamp)
+            callCountryListFromAPI()
+        else {
+            countryHashMap = TAPDataManager.getInstance().countryList
+            if (null == countryHashMap || !countryHashMap.containsKey(countryIsoCode    ) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
+                tv_country_code.text = "+62"
+            } else {
+                tv_country_code.text = "+" + countryHashMap.get(countryIsoCode)?.callingCode
+            }
+            Log.e("><><><", "Masuk else")
+        }
         initView()
     }
 
@@ -109,6 +130,14 @@ class TAPPhoneLoginFragment : Fragment() {
     private val requestOTPInterface = object : TAPRequestOTPInterface {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean) {
             stopAndHideProgress()
+            if (activity is TAPLoginActivity) {
+                try {
+                    (activity as TAPLoginActivity).showOTPVerification()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.e("><><><","Masuk ",e)
+                }
+            }
         }
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
@@ -126,10 +155,35 @@ class TAPPhoneLoginFragment : Fragment() {
 
             override fun onSuccess(response: TAPCountryListResponse?) {
                 super.onSuccess(response)
-                iv_loading_progress_country.visibility = View.GONE
-                iv_loading_progress_country.clearAnimation()
-                tv_country_code.visibility = View.VISIBLE
+                TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
                 tv_country_code.text = ""
+                Thread {
+                    var defaultCountry: TAPCountryListItem? = null
+                    response?.countries?.forEach {
+                        countryHashMap.put(it.iso2Code, it)
+                        if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase() && it.iso2Code.toLowerCase() == "id") {
+                            defaultCountry = it
+                            activity?.runOnUiThread { tv_country_code.text = "+" + it.callingCode }
+                        } else if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase()) {
+                            activity?.runOnUiThread { tv_country_code.text = "+" + it.callingCode }
+                        } else if (it.iso2Code.toLowerCase() == "id") {
+                            defaultCountry = it
+                        }
+                    }
+
+                    if ("" == tv_country_code.text) {
+                        activity?.runOnUiThread { tv_country_code.text = "+" + defaultCountry?.callingCode }
+                    }
+
+                    TAPDataManager.getInstance().saveCountryList(countryHashMap)
+
+                    activity?.runOnUiThread {
+                        iv_loading_progress_country.visibility = View.GONE
+                        iv_loading_progress_country.clearAnimation()
+                        tv_country_code.visibility = View.VISIBLE
+                    }
+                }.start()
+
             }
 
             override fun onError(error: TAPErrorModel?) {
