@@ -235,17 +235,41 @@
             android:textColor="@color/tap_black_19"
             android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tv_timer"
+
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="18dp"
-            android:gravity="center_horizontal"
-            android:lineSpacingExtra="14sp"
-            android:text="Wait 0:23"
-            android:textColor="@color/tap_grey_9b"
-            android:textSize="16sp" />
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_otp_timer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/tap_font_pt_root_bold"
+                android:gravity="center"
+                android:lineSpacingExtra="14sp"
+                android:padding="10dp"
+                android:text="Wait 0:23"
+                android:textColor="@color/tap_grey_9b"
+                android:textSize="16sp"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_request_otp_again"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/tap_font_pt_root_bold"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="14sp"
+                android:padding="10dp"
+                android:text="Request again"
+                android:textColor="@color/tap_pumkin_orange_two"
+                android:textSize="16sp"
+                android:visibility="gone"/>
+
+        </FrameLayout>
 
     </LinearLayout>
 

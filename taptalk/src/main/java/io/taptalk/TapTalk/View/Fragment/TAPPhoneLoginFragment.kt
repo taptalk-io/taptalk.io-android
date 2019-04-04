@@ -111,7 +111,7 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun checkNumberAndCallAPI() {
-        var phoneNumber = et_phone_number.text.toString()
+        var phoneNumber = et_phone_number.text.toString().trim()
         when {
             '0' == phoneNumber.elementAt(0) -> phoneNumber = phoneNumber.replaceFirst("0", "")
             "+62" == phoneNumber.substring(0, 3) -> phoneNumber = phoneNumber.substring(3)
