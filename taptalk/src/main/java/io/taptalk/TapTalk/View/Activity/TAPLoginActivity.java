@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.os.Bundle;
+import android.widget.FrameLayout;
 
 import io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPPhoneLoginFragment;
@@ -9,8 +10,7 @@ import io.taptalk.Taptalk.R;
 public class TAPLoginActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPLoginActivity.class.getSimpleName();
-    private TAPPhoneLoginFragment fPhoneLogin;
-    private TAPLoginVerificationFragment fOTPVerification;
+    private FrameLayout flContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +18,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_login);
 
         initView();
-        showPhoneLogin();
+        initFirstPage();
     }
 
     @Override
@@ -27,23 +27,29 @@ public class TAPLoginActivity extends TAPBaseActivity {
     }
 
     private void initView() {
-        fPhoneLogin = (TAPPhoneLoginFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_enter_phone);
-        fOTPVerification = (TAPLoginVerificationFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_verify_otp);
+        flContainer = findViewById(R.id.fl_container);
+    }
+
+    public void initFirstPage() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fl_container, TAPPhoneLoginFragment.Companion.getInstance())
+                .addToBackStack(null)
+                .commit();
     }
 
     public void showPhoneLogin() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .show(fPhoneLogin)
-                .hide(fOTPVerification)
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
+                .replace(R.id.fl_container, TAPPhoneLoginFragment.Companion.getInstance())
+                .addToBackStack(null)
                 .commit();
     }
 
     public void showOTPVerification() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .show(fOTPVerification)
-                .hide(fPhoneLogin)
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
+                .replace(R.id.fl_container, TAPLoginVerificationFragment.Companion.getInstance())
+                .addToBackStack(null)
                 .commit();
     }
 

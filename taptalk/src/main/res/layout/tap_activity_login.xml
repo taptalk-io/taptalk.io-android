@@ -6,15 +6,8 @@
     android:background="@color/tap_white"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPLoginActivity">
 
-    <fragment
-        android:id="@+id/fragment_enter_phone"
-        class="io.taptalk.TapTalk.View.Fragment.TAPPhoneLoginFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <fragment
-        android:id="@+id/fragment_verify_otp"
-        class="io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment"
+    <FrameLayout
+        android:id="@+id/fl_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -9,6 +9,12 @@ import io.taptalk.Taptalk.R
 
 class TAPLoginVerificationFragment : Fragment() {
 
+    companion object {
+        fun getInstance() : TAPLoginVerificationFragment {
+            return TAPLoginVerificationFragment()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }

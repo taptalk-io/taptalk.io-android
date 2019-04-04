@@ -31,6 +31,12 @@ class TAPPhoneLoginFragment : Fragment() {
     private val oneWeekAgoTimestamp : Long = 7 * 24 * 60 * 60 * 1000
     private var countryHashMap = hashMapOf<String, TAPCountryListItem>()
 
+    companion object {
+        fun getInstance(): TAPPhoneLoginFragment {
+            return TAPPhoneLoginFragment()
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
