@@ -45,10 +45,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 .commit();
     }
 
-    public void showOTPVerification() {
+    public void showOTPVerification(String phoneNumber) {
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
-                .replace(R.id.fl_container, TAPLoginVerificationFragment.Companion.getInstance())
+                .replace(R.id.fl_container, TAPLoginVerificationFragment.Companion.getInstance(phoneNumber))
                 .addToBackStack(null)
                 .commit();
     }

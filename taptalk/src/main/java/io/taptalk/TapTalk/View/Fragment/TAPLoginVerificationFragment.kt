@@ -6,12 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.taptalk.Taptalk.R
+import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
 class TAPLoginVerificationFragment : Fragment() {
-
     companion object {
-        fun getInstance() : TAPLoginVerificationFragment {
-            return TAPLoginVerificationFragment()
+        fun getInstance(phoneNumber: String): TAPLoginVerificationFragment {
+            val instance = TAPLoginVerificationFragment()
+            val args = Bundle()
+            args.putString("PhoneNumber", phoneNumber)
+            instance.arguments = args
+            return instance
         }
     }
 
@@ -27,5 +31,9 @@ class TAPLoginVerificationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        tv_phone_number.text = arguments?.getString("PhoneNumber", "") ?: ""
+        iv_back_button.setOnClickListener {
+            activity?.onBackPressed()
+        }
     }
 }
