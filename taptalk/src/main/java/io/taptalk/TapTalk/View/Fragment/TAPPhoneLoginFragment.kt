@@ -141,7 +141,7 @@ class TAPPhoneLoginFragment : Fragment() {
             if (activity is TAPLoginActivity) {
                 try {
                     val phoneNumber = "+$phone"
-                    (activity as TAPLoginActivity).showOTPVerification(checkAndEditPhoneNumber(), phoneNumber)
+                    (activity as TAPLoginActivity).showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e("><><><","Masuk ",e)

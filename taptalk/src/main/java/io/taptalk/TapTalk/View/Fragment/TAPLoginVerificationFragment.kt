@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.app.Fragment
@@ -8,11 +9,14 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
-import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
+import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
@@ -22,13 +26,23 @@ class TAPLoginVerificationFragment : Fragment() {
     var otpTimer: CountDownTimer? = null
     val waitTime = 30L
     var phoneNumber = "0"
+    var otpID = 0L
+    var otpKey = ""
 
     companion object {
-        fun getInstance(phoneNumber: String, phoneNumberWithCode: String): TAPLoginVerificationFragment {
+        //Arguments Data
+        val kPhoneNumberWithCode = "PhoneNumberWithCode"
+        val kPhoneNumber = "PhoneNumber"
+        val kOTPID = "OTPID"
+        val kOTPKey = "OTPKey"
+
+        fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
             val args = Bundle()
-            args.putString("PhoneNumberWithCode", phoneNumberWithCode)
-            args.putString("PhoneNumber", phoneNumber)
+            args.putString(kPhoneNumberWithCode, phoneNumberWithCode)
+            args.putString(kPhoneNumber, phoneNumber)
+            args.putLong(kOTPID, otpID)
+            args.putString(kOTPKey, otpKey)
             instance.arguments = args
             return instance
         }
@@ -46,8 +60,10 @@ class TAPLoginVerificationFragment : Fragment() {
     }
 
     private fun initViewListener() {
-        tv_phone_number.text = arguments?.getString("PhoneNumberWithCode", "") ?: ""
-        phoneNumber = arguments?.getString("PhoneNumber", "0") ?: "0"
+        tv_phone_number.text = arguments?.getString(kPhoneNumberWithCode, "") ?: ""
+        phoneNumber = arguments?.getString(kPhoneNumber, "0") ?: "0"
+        otpID = arguments?.getLong(kOTPID, 0L) ?: 0L
+        otpKey = arguments?.getString(kOTPKey, "") ?: ""
         iv_back_button.setOnClickListener {
             activity?.onBackPressed()
         }
@@ -60,8 +76,10 @@ class TAPLoginVerificationFragment : Fragment() {
         }
     }
 
-    private val requestOTPInterface : TAPRequestOTPInterface = object : TAPRequestOTPInterface {
+    private val requestOTPInterface: TAPRequestOTPInterface = object : TAPRequestOTPInterface {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean) {
+            this@TAPLoginVerificationFragment.otpID = otpID
+            this@TAPLoginVerificationFragment.otpKey = otpKey ?: ""
             setAndStartTimer()
         }
 
@@ -72,6 +90,9 @@ class TAPLoginVerificationFragment : Fragment() {
     }
 
     private fun setAndStartTimer() {
+        clearOTPEditText()
+        tv_didnt_receive_and_invalid.text = resources.getText(R.string.didnt_receive_the_6_digit_otp)
+        tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_black_19))
         tv_otp_timer.visibility = View.VISIBLE
         tv_request_otp_again.visibility = View.GONE
         otpTimer = object : CountDownTimer(waitTime * 1000, 1000) {
@@ -109,6 +130,53 @@ class TAPLoginVerificationFragment : Fragment() {
 
     private fun cancelTimer() {
         otpTimer?.cancel()
+    }
+
+    private fun verifyOTP() {
+        cancelTimer()
+        TapTalk.verifyOTP(otpID, otpKey, et_otp_code.text.toString(), verifyOTPInterface)
+    }
+
+    private val verifyOTPInterface = object : TAPVerifyOTPInterface {
+        override fun verifyOTPSuccessToLogin() {
+            TAPApiManager.getInstance().isLogout = false
+            activity?.runOnUiThread {
+                val intent = Intent(context, TAPRoomListActivity::class.java)
+                startActivity(intent)
+                activity?.finish()
+            }
+        }
+
+        override fun verifyOTPSuccessToRegister() {
+            activity?.runOnUiThread {
+                Toast.makeText(context, "Register", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        override fun verifyOTPFailed(errorCode: String?, errorMessage: String?) {
+            tv_didnt_receive_and_invalid.text = resources.getText(R.string.invalid_otp)
+            tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_watermelon_red))
+            tv_otp_timer.visibility = View.GONE
+            tv_request_otp_again.visibility = View.VISIBLE
+        }
+
+    }
+
+    private fun clearOTPEditText() {
+        v_pointer_1.visibility = View.VISIBLE
+        v_pointer_2.visibility = View.VISIBLE
+        v_pointer_3.visibility = View.VISIBLE
+        v_pointer_4.visibility = View.VISIBLE
+        v_pointer_5.visibility = View.VISIBLE
+        v_pointer_6.visibility = View.VISIBLE
+
+        iv_otp_filled_1.visibility = View.INVISIBLE
+        iv_otp_filled_2.visibility = View.INVISIBLE
+        iv_otp_filled_3.visibility = View.INVISIBLE
+        iv_otp_filled_4.visibility = View.INVISIBLE
+        iv_otp_filled_5.visibility = View.INVISIBLE
+        iv_otp_filled_6.visibility = View.INVISIBLE
+        et_otp_code.setText("")
     }
 
     val otpTextWatcher = object : TextWatcher {
@@ -211,6 +279,8 @@ class TAPLoginVerificationFragment : Fragment() {
                     iv_otp_filled_4.visibility = View.VISIBLE
                     iv_otp_filled_5.visibility = View.VISIBLE
                     iv_otp_filled_6.visibility = View.VISIBLE
+
+                    verifyOTP()
                 }
                 else -> {
                     v_pointer_1.visibility = View.VISIBLE

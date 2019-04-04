@@ -231,7 +231,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"
-            android:text="Didn’t receive the 6 digit OTP?"
+            android:text="@string/didnt_receive_the_6_digit_otp"
             android:textColor="@color/tap_black_19"
             android:textSize="14sp" />
 
