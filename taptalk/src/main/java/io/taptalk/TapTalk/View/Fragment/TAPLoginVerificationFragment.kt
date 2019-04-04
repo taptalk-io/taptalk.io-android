@@ -9,17 +9,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
 class TAPLoginVerificationFragment : Fragment() {
+    val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
+            ?: ""
     var otpTimer: CountDownTimer? = null
     val waitTime = 30L
+    var phoneNumber = "0"
 
     companion object {
-        fun getInstance(phoneNumber: String): TAPLoginVerificationFragment {
+        fun getInstance(phoneNumber: String, phoneNumberWithCode: String): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
             val args = Bundle()
+            args.putString("PhoneNumberWithCode", phoneNumberWithCode)
             args.putString("PhoneNumber", phoneNumber)
             instance.arguments = args
             return instance
@@ -38,7 +46,8 @@ class TAPLoginVerificationFragment : Fragment() {
     }
 
     private fun initViewListener() {
-        tv_phone_number.text = arguments?.getString("PhoneNumber", "") ?: ""
+        tv_phone_number.text = arguments?.getString("PhoneNumberWithCode", "") ?: ""
+        phoneNumber = arguments?.getString("PhoneNumber", "0") ?: "0"
         iv_back_button.setOnClickListener {
             activity?.onBackPressed()
         }
@@ -46,6 +55,20 @@ class TAPLoginVerificationFragment : Fragment() {
         et_otp_code.requestFocus()
         TAPUtils.getInstance().showKeyboard(activity, et_otp_code)
         setAndStartTimer()
+        tv_request_otp_again.setOnClickListener {
+            TapTalk.loginWithRequestOTP(1, phoneNumber, requestOTPInterface)
+        }
+    }
+
+    private val requestOTPInterface : TAPRequestOTPInterface = object : TAPRequestOTPInterface {
+        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean) {
+            setAndStartTimer()
+        }
+
+        override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
+            showDialog("ERROR", errorMessage ?: generalErrorMessage)
+        }
+
     }
 
     private fun setAndStartTimer() {
@@ -206,5 +229,16 @@ class TAPLoginVerificationFragment : Fragment() {
                 }
             }
         }
-    };
+    }
+
+    private fun showDialog(title: String, message: String) {
+        TapTalkDialog.Builder(context)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setPrimaryButtonListener {
+
+                }.show()
+    }
 }

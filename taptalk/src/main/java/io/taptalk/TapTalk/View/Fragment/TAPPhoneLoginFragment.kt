@@ -50,12 +50,11 @@ class TAPPhoneLoginFragment : Fragment() {
             callCountryListFromAPI()
         else {
             countryHashMap = TAPDataManager.getInstance().countryList
-            if (null == countryHashMap || !countryHashMap.containsKey(countryIsoCode    ) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
+            if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
                 tv_country_code.text = "+62"
             } else {
                 tv_country_code.text = "+" + countryHashMap.get(countryIsoCode)?.callingCode
             }
-            Log.e("><><><", "Masuk else")
         }
         initView()
     }
@@ -110,15 +109,18 @@ class TAPPhoneLoginFragment : Fragment() {
         checkNumberAndCallAPI()
     }
 
-    private fun checkNumberAndCallAPI() {
+    private fun checkAndEditPhoneNumber() : String {
         var phoneNumber = et_phone_number.text.toString().trim()
         when {
             '0' == phoneNumber.elementAt(0) -> phoneNumber = phoneNumber.replaceFirst("0", "")
             "+62" == phoneNumber.substring(0, 3) -> phoneNumber = phoneNumber.substring(3)
             "62" == phoneNumber.substring(0, 2) -> phoneNumber = phoneNumber.substring(2)
         }
+        return phoneNumber
+    }
 
-        TapTalk.loginWithRequestOTP(1, phoneNumber, requestOTPInterface)
+    private fun checkNumberAndCallAPI() {
+        TapTalk.loginWithRequestOTP(1, checkAndEditPhoneNumber(), requestOTPInterface)
     }
 
     private fun showProgress() {
@@ -139,7 +141,7 @@ class TAPPhoneLoginFragment : Fragment() {
             if (activity is TAPLoginActivity) {
                 try {
                     val phoneNumber = "+$phone"
-                    (activity as TAPLoginActivity).showOTPVerification(phoneNumber)
+                    (activity as TAPLoginActivity).showOTPVerification(checkAndEditPhoneNumber(), phoneNumber)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e("><><><","Masuk ",e)
