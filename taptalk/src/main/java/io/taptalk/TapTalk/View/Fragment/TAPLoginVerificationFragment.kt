@@ -72,6 +72,7 @@ class TAPLoginVerificationFragment : Fragment() {
         TAPUtils.getInstance().showKeyboard(activity, et_otp_code)
         setAndStartTimer()
         tv_request_otp_again.setOnClickListener {
+            showRequestingOTPLoading()
             TapTalk.loginWithRequestOTP(1, phoneNumber, requestOTPInterface)
         }
     }
@@ -95,9 +96,13 @@ class TAPLoginVerificationFragment : Fragment() {
         tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_black_19))
         tv_otp_timer.visibility = View.VISIBLE
         tv_request_otp_again.visibility = View.GONE
+        ll_loading_otp.visibility = View.GONE
+        iv_progress_otp.clearAnimation()
+
         otpTimer = object : CountDownTimer(waitTime * 1000, 1000) {
             override fun onFinish() {
                 tv_otp_timer.visibility = View.GONE
+                ll_loading_otp.visibility = View.GONE
                 tv_request_otp_again.visibility = View.VISIBLE
             }
 
@@ -133,6 +138,7 @@ class TAPLoginVerificationFragment : Fragment() {
     }
 
     private fun verifyOTP() {
+        showVerifyingOTPLoading()
         cancelTimer()
         TapTalk.verifyOTP(otpID, otpKey, et_otp_code.text.toString(), verifyOTPInterface)
     }
@@ -156,8 +162,9 @@ class TAPLoginVerificationFragment : Fragment() {
         override fun verifyOTPFailed(errorCode: String?, errorMessage: String?) {
             tv_didnt_receive_and_invalid.text = resources.getText(R.string.invalid_otp)
             tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_watermelon_red))
-            tv_otp_timer.visibility = View.GONE
             tv_request_otp_again.visibility = View.VISIBLE
+            ll_loading_otp.visibility = View.GONE
+            tv_otp_timer.visibility = View.GONE
         }
 
     }
@@ -310,5 +317,23 @@ class TAPLoginVerificationFragment : Fragment() {
                 .setPrimaryButtonListener {
 
                 }.show()
+    }
+
+    private fun showRequestingOTPLoading() {
+        tv_request_otp_again.visibility = View.GONE
+        tv_otp_timer.visibility = View.GONE
+        iv_progress_otp.clearAnimation()
+        ll_loading_otp.visibility = View.VISIBLE
+        tv_loading_otp.text = resources.getText(R.string.requesting_otp)
+        TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_progress_otp)
+    }
+
+    private fun showVerifyingOTPLoading() {
+        tv_request_otp_again.visibility = View.GONE
+        tv_otp_timer.visibility = View.GONE
+        iv_progress_otp.clearAnimation()
+        ll_loading_otp.visibility = View.VISIBLE
+        tv_loading_otp.text = resources.getText(R.string.verifying_otp)
+        TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_progress_otp)
     }
 }

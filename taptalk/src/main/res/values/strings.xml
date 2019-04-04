@@ -228,4 +228,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
     <string name="invalid_otp">Invalid OTP, please try again</string>
+    <string name="verifying_otp">Verifying OTP</string>
+    <string name="requesting_otp">Requesting OTP</string>
 </resources>

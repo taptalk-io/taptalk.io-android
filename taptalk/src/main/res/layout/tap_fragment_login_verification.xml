@@ -241,6 +241,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="18dp"
+            android:animateLayoutChanges="true"
             android:gravity="center">
 
             <TextView
@@ -251,7 +252,7 @@
                 android:gravity="center"
                 android:lineSpacingExtra="14sp"
                 android:padding="10dp"
-                android:text="Wait 0:23"
+                tools:text="Wait 0:23"
                 android:textColor="@color/tap_grey_9b"
                 android:textSize="16sp"
                 android:visibility="visible" />
@@ -267,7 +268,36 @@
                 android:text="Request again"
                 android:textColor="@color/tap_pumkin_orange_two"
                 android:textSize="16sp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ll_loading_otp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:animateLayoutChanges="true"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_loading_otp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
+                    android:gravity="end"
+                    android:lineSpacingExtra="6sp"
+                    android:text="@string/verifying_otp"
+                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/iv_progress_otp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/tap_ic_loading_progress_circle_orange" />
+
+            </LinearLayout>
 
         </FrameLayout>
 
