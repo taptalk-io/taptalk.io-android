@@ -1,0 +1,306 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment">
+
+    <ImageView
+        android:id="@+id/iv_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:paddingStart="11dp"
+        android:paddingTop="37dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="11dp"
+        android:src="@drawable/tap_ic_back_arrow_pumpkin_orange"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/ll_otp_verification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="117dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_back_button">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/tap_font_pt_root_medium"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.03"
+            android:lineSpacingExtra="6sp"
+            android:text="Enter the 6 digit OTP we’ve sent to"
+            android:textColor="@color/tap_black_19"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/tap_font_pt_root_medium"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.03"
+            android:lineSpacingExtra="6sp"
+            android:textColor="@color/tap_black_19"
+            android:textSize="16sp"
+            tools:text="+628197304402" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:background="@color/quantum_bluegrey300">
+
+            <LinearLayout
+                android:id="@+id/ll_otp_pointer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/ll_otp_1"
+                    android:layout_width="24dp"
+                    android:layout_height="26dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_otp_filled_1"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/tap_bg_circle_191919"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:id="@+id/v_pointer_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/tap_black_19" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_otp_2"
+                    android:layout_width="24dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="25dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_otp_filled_2"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/tap_bg_circle_191919"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:id="@+id/v_pointer_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/tap_black_19" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_otp_3"
+                    android:layout_width="24dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="25dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_otp_filled_3"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/tap_bg_circle_191919"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:id="@+id/v_pointer_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/tap_black_19" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_otp_4"
+                    android:layout_width="24dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="25dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_otp_filled_4"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/tap_bg_circle_191919"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:id="@+id/v_pointer_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/tap_black_19" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_otp_5"
+                    android:layout_width="24dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="25dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_otp_filled_5"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/tap_bg_circle_191919"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:id="@+id/v_pointer_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/tap_black_19" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_otp_6"
+                    android:layout_width="24dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="25dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/iv_otp_filled_6"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/tap_bg_circle_191919"
+                        android:visibility="invisible" />
+
+                    <View
+                        android:id="@+id/v_pointer_6"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/tap_black_19" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/et_otp_code"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_gravity="center"
+                android:alpha="0"
+                android:inputType="numberSigned"
+                android:maxLength="6"
+                tools:background="@color/tap_blue_purple" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_didnt_receive_and_invalid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="34dp"
+            android:fontFamily="@font/tap_font_pt_root_regular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="6sp"
+            android:text="@string/didnt_receive_the_6_digit_otp"
+            android:textColor="@color/tap_black_19"
+            android:textSize="14sp" />
+
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="18dp"
+            android:animateLayoutChanges="true"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_otp_timer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/tap_font_pt_root_bold"
+                android:gravity="center"
+                android:lineSpacingExtra="14sp"
+                android:padding="10dp"
+                tools:text="Wait 0:23"
+                android:textColor="@color/tap_grey_9b"
+                android:textSize="16sp"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_request_otp_again"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/tap_font_pt_root_bold"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="14sp"
+                android:padding="10dp"
+                android:text="Request again"
+                android:textColor="@color/tap_pumkin_orange_two"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ll_loading_otp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:animateLayoutChanges="true"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tv_loading_otp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
+                    android:gravity="end"
+                    android:lineSpacingExtra="6sp"
+                    android:text="@string/verifying_otp"
+                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/iv_progress_otp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/tap_ic_loading_progress_circle_orange" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -221,4 +221,13 @@
     <string name="tap_unread_messages">Unread Messages</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
+    <string name="tap_welcome">Welcome</string>
+    <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
+    <string name="invalid_otp">Invalid OTP, please try again</string>
+    <string name="verifying_otp">Verifying OTP</string>
+    <string name="requesting_otp">Requesting OTP</string>
 </resources>
