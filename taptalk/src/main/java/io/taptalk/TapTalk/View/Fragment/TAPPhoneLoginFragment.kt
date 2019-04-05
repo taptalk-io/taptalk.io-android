@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
@@ -17,6 +18,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.View.Activity.TAPCountryList
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
@@ -100,6 +102,11 @@ class TAPPhoneLoginFragment : Fragment() {
             } else {
                 fl_phone_number.setBackgroundResource(R.drawable.tap_bg_rounded_8dp_stroke_dcdcdc_1dp)
             }
+        }
+
+        ll_country_code.setOnClickListener {
+            val intent = Intent(context, TAPCountryList::class.java)
+            startActivity(intent)
         }
     }
 
