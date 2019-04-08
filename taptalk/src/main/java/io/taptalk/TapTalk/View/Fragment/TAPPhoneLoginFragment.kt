@@ -18,7 +18,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.taptalk.TapTalk.View.Activity.TAPCountryList
+import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
@@ -105,7 +105,8 @@ class TAPPhoneLoginFragment : Fragment() {
         }
 
         ll_country_code.setOnClickListener {
-            val intent = Intent(context, TAPCountryList::class.java)
+            val intent = Intent(context, TAPCountryListActivity::class.java)
+            intent.putExtra("countryMap", countryHashMap)
             startActivity(intent)
         }
     }

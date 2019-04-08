@@ -18,7 +18,7 @@
     <application
         android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryList"></activity>
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity"></activity>
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity" />
 
         <service
