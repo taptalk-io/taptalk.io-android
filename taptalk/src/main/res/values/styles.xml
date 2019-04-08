@@ -20,6 +20,46 @@
         <item name="android:textSize">17sp</item>
     </style>
 
+    <style name="TapTitle">
+        <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tap_black_19</item>
+        <item name="android:textSize">40sp</item>
+    </style>
+
+    <style name="TapFormFieldName">
+        <item name="android:fontFamily">@font/tap_font_pt_root_medium</item>
+        <item name="android:letterSpacing">-0.03</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tap_black_19</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TapFormFieldBody">
+        <item name="android:fontFamily">@font/tap_font_pt_root_regular</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tap_black_19</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TapFormGuide">
+        <item name="android:fontFamily">@font/tap_font_pt_root_regular</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tap_black_19</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TapFormError">
+        <item name="android:fontFamily">@font/tap_font_pt_root_regular</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tap_watermelon_red</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="TapRoomName">
         <item name="android:ellipsize">end</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
@@ -41,7 +81,9 @@
     </style>
 
     <style name="TapButton">
-        <item name="android:background">@drawable/tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp</item>
+        <item name="android:background">
+            @drawable/tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp
+        </item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
@@ -153,7 +195,8 @@
     </style>
 
     <style name="TapUnreadBadge">
-        <item name="android:background">@drawable/tap_bg_amethyst_mediumpurple_270_rounded_10dp</item>
+        <item name="android:background">@drawable/tap_bg_amethyst_mediumpurple_270_rounded_10dp
+        </item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:paddingStart">7dp</item>
         <item name="android:paddingTop">4dp</item>

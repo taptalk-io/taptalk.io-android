@@ -8,12 +8,12 @@
     <ImageView
         android:id="@+id/iv_back_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:paddingStart="11dp"
-        android:paddingTop="37dp"
-        android:paddingEnd="15dp"
-        android:paddingBottom="11dp"
+        android:paddingStart="10.5dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="10.5dp"
+        android:paddingBottom="18dp"
         android:src="@drawable/tap_ic_back_arrow_pumpkin_orange"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -231,7 +231,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"
-            android:text="@string/didnt_receive_the_6_digit_otp"
+            android:text="@string/tap_didnt_receive_the_6_digit_otp"
             android:textColor="@color/tap_black_19"
             android:textSize="14sp" />
 
@@ -286,7 +286,7 @@
                     android:fontFamily="@font/tap_font_pt_root_bold"
                     android:gravity="end"
                     android:lineSpacingExtra="6sp"
-                    android:text="@string/verifying_otp"
+                    android:text="@string/tap_verifying_otp"
                     android:textColor="@color/tap_pumkin_orange_two"
                     android:textSize="16sp" />
 

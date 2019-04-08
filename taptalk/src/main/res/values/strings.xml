@@ -28,6 +28,8 @@
     <string name="tap_exit_group">Exit Group</string>
     <string name="tap_shared_media">Shared Media</string>
     <string name="tap_forward">Forward</string>
+    <string name="tap_welcome">Welcome</string>
+    <string name="tap_register">Register</string>
 
     <!--Chat Room List-->
     <string name="tap_setting_up_your_chatroom">Setting up your chatroom</string>
@@ -87,6 +89,9 @@
     <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
     <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
+    <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
+    <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
+    <string name="tap_guide_username">Lowercase only. Must start with an alphabet ‘abc…’ and it may end with a numeric ‘123..’ or an underscore ‘_’. No special characters allowed.</string>
 
     <!--Error Message-->
     <string name="tap_error">Error</string>
@@ -113,6 +118,7 @@
     <string name="tap_error_please_remove_video">Please remove this video to continue</string>
     <string name="tap_error_could_not_find_file">Could not find file</string>
     <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
+    <string name="tap_error_invalid_otp">Invalid OTP, please try again</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -221,13 +227,24 @@
     <string name="tap_unread_messages">Unread Messages</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
-    <string name="tap_welcome">Welcome</string>
-    <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
-    <string name="invalid_otp">Invalid OTP, please try again</string>
-    <string name="verifying_otp">Verifying OTP</string>
-    <string name="requesting_otp">Requesting OTP</string>
+    <string name="tap_verifying_otp">Verifying OTP</string>
+    <string name="tap_requesting_otp">Requesting OTP</string>
+    <string name="tap_full_name">Full Name</string>
+    <string name="tap_username">Username</string>
+    <string name="tap_mobile_number">Mobile Number</string>
+    <string name="tap_email_address">Email Address</string>
+    <string name="tap_hint_username">e.g user1234_</string>
+    <string name="tap_hint_phone_number">8129 7304 402</string>
+    <string name="tap_hint_email_address">e.g example@work.com</string>
+    <string name="tap_optional">Optional</string>
+    <string name="tap_password">Password</string>
+    <string name="tap_hint_insert_password">Insert Password</string>
+    <string name="tap_retype_password">Retype Password</string>
+    <string name="tap_error_invalid_full_name">Invalid full name</string>
+    <string name="tap_error_invalid_username">Invalid username</string>
+    <string name="tap_error_not_a_valid_mobile_number">Not a valid mobile number</string>
+    <string name="tap_error_invalid_email_address">Invalid email address</string>
+    <string name="tap_error_invalid_password">Invalid password</string>
+    <string name="tap_error_password_does_not_match">Password does not match</string>
 </resources>

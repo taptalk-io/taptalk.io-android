@@ -56,6 +56,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
+import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
@@ -262,7 +263,8 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void openNewChatActivity() {
-        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
+        Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
+//        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
         startActivity(intent);
         if (null != getActivity()) {
             getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);

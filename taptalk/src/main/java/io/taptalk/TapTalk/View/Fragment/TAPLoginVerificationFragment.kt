@@ -16,6 +16,7 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
+import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
@@ -92,7 +93,7 @@ class TAPLoginVerificationFragment : Fragment() {
 
     private fun setAndStartTimer() {
         clearOTPEditText()
-        tv_didnt_receive_and_invalid.text = resources.getText(R.string.didnt_receive_the_6_digit_otp)
+        tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
         tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_black_19))
         tv_otp_timer.visibility = View.VISIBLE
         tv_request_otp_again.visibility = View.GONE
@@ -155,12 +156,13 @@ class TAPLoginVerificationFragment : Fragment() {
 
         override fun verifyOTPSuccessToRegister() {
             activity?.runOnUiThread {
-                Toast.makeText(context, "Register", Toast.LENGTH_SHORT).show()
+                val intent = Intent(context, TAPRegisterActivity::class.java)
+                startActivity(intent)
             }
         }
 
         override fun verifyOTPFailed(errorCode: String?, errorMessage: String?) {
-            tv_didnt_receive_and_invalid.text = resources.getText(R.string.invalid_otp)
+            tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_error_invalid_otp)
             tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_watermelon_red))
             tv_request_otp_again.visibility = View.VISIBLE
             ll_loading_otp.visibility = View.GONE
@@ -324,7 +326,7 @@ class TAPLoginVerificationFragment : Fragment() {
         tv_otp_timer.visibility = View.GONE
         iv_progress_otp.clearAnimation()
         ll_loading_otp.visibility = View.VISIBLE
-        tv_loading_otp.text = resources.getText(R.string.requesting_otp)
+        tv_loading_otp.text = resources.getText(R.string.tap_requesting_otp)
         TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_progress_otp)
     }
 
@@ -333,7 +335,7 @@ class TAPLoginVerificationFragment : Fragment() {
         tv_otp_timer.visibility = View.GONE
         iv_progress_otp.clearAnimation()
         ll_loading_otp.visibility = View.VISIBLE
-        tv_loading_otp.text = resources.getText(R.string.verifying_otp)
+        tv_loading_otp.text = resources.getText(R.string.tap_verifying_otp)
         TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_progress_otp)
     }
 }
