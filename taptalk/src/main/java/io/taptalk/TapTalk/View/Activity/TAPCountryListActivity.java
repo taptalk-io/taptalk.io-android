@@ -26,7 +26,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
     private TextView tvCloseBtn;
     private EditText etSearch;
     private RecyclerView rvCountryList;
-    private HashMap<String, TAPCountryListItem> countryHashMap;
+    private List<TAPCountryListItem> countryList;
     private List<TAPCountryRecycleItem> countryItem = new ArrayList<>();
     private TAPCountryListAdapter adapter;
 
@@ -41,9 +41,9 @@ public class TAPCountryListActivity extends AppCompatActivity {
 
     private void initPassingIntentData() {
         try {
-            countryHashMap = (HashMap<String, TAPCountryListItem>) getIntent().getSerializableExtra("countryMap");
+            countryList = getIntent().getParcelableArrayListExtra("CountryList");
         } catch (Exception e) {
-            countryHashMap = new LinkedHashMap<>();
+            countryList = new ArrayList<>();
         }
     }
 
@@ -60,8 +60,8 @@ public class TAPCountryListActivity extends AppCompatActivity {
             countryItem.clear();
             int countryCounter = 0;
             char tempInitial = 'a';
-            for (Map.Entry<String, TAPCountryListItem> entry : countryHashMap.entrySet()) {
-                char countryInitial = entry.getValue().getCommonName().charAt(0);
+            for (TAPCountryListItem entry : countryList) {
+                char countryInitial = entry.getCommonName().charAt(0);
                 if (0 == countryCounter || tempInitial != countryInitial) {
                     TAPCountryRecycleItem countryRecycleFirstInitial = new TAPCountryRecycleItem();
                     countryRecycleFirstInitial.setRecyclerItemType(COUNTRY_INITIAL);
@@ -71,7 +71,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
 
                 TAPCountryRecycleItem countryRecycleItem = new TAPCountryRecycleItem();
                 countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM);
-                countryRecycleItem.setCountryListItem(entry.getValue());
+                countryRecycleItem.setCountryListItem(entry);
                 countryItem.add(countryRecycleItem);
 
                 tempInitial = countryInitial;

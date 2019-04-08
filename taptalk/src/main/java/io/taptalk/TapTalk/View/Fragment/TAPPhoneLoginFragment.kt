@@ -22,7 +22,6 @@ import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
-import java.lang.Exception
 
 class TAPPhoneLoginFragment : Fragment() {
 
@@ -31,7 +30,8 @@ class TAPPhoneLoginFragment : Fragment() {
     var countryIsoCode = "id"
     //val oneWeekAgoTimestamp = 604800000L // 7 * 24 * 60 * 60 * 1000
     private val oneWeekAgoTimestamp : Long = 7 * 24 * 60 * 60 * 1000
-    private var countryHashMap = hashMapOf<String, TAPCountryListItem>()
+    private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
+    private var countryListitems = arrayListOf<TAPCountryListItem>()
 
     companion object {
         fun getInstance(): TAPPhoneLoginFragment {
@@ -51,7 +51,9 @@ class TAPPhoneLoginFragment : Fragment() {
         if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneWeekAgoTimestamp == lastCallCountryTimestamp)
             callCountryListFromAPI()
         else {
-            countryHashMap = TAPDataManager.getInstance().countryList
+            //countryHashMap = TAPDataManager.getInstance().countryList
+            countryListitems = TAPDataManager.getInstance().countryList
+            countryHashMap = countryListitems.associateBy ( {it.iso2Code}, {it} ).toMutableMap()
             if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
                 tv_country_code.text = "+62"
             } else {
@@ -106,7 +108,7 @@ class TAPPhoneLoginFragment : Fragment() {
 
         ll_country_code.setOnClickListener {
             val intent = Intent(context, TAPCountryListActivity::class.java)
-            intent.putExtra("countryMap", countryHashMap)
+            intent.putExtra("CountryList", countryListitems)
             startActivity(intent)
         }
     }
@@ -171,12 +173,13 @@ class TAPPhoneLoginFragment : Fragment() {
             }
 
             override fun onSuccess(response: TAPCountryListResponse?) {
-                super.onSuccess(response)
+                countryListitems.clear()
                 TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
                 tv_country_code.text = ""
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
                     response?.countries?.forEach {
+                        countryListitems.add(it)
                         countryHashMap.put(it.iso2Code, it)
                         if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase() && it.iso2Code.toLowerCase() == "id") {
                             defaultCountry = it
@@ -192,7 +195,7 @@ class TAPPhoneLoginFragment : Fragment() {
                         activity?.runOnUiThread { tv_country_code.text = "+" + defaultCountry?.callingCode }
                     }
 
-                    TAPDataManager.getInstance().saveCountryList(countryHashMap)
+                    TAPDataManager.getInstance().saveCountryList(countryListitems)
 
                     activity?.runOnUiThread {
                         iv_loading_progress_country.visibility = View.GONE
