@@ -21,6 +21,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM;
+import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM_BOTTOM;
 
 public class TAPCountryListActivity extends AppCompatActivity {
     private TextView tvCloseBtn;
@@ -58,24 +59,32 @@ public class TAPCountryListActivity extends AppCompatActivity {
     private void initAdapter() {
         try {
             countryItem.clear();
-            int countryCounter = 0;
-            char tempInitial = 'a';
-            for (TAPCountryListItem entry : countryList) {
+            int countryListSize = countryList.size();
+            for (int countryCounter = 0; countryCounter < countryListSize; countryCounter++) {
+                TAPCountryListItem entry = countryList.get(countryCounter);
                 char countryInitial = entry.getCommonName().charAt(0);
-                if (0 == countryCounter || tempInitial != countryInitial) {
+                if (0 == countryCounter ||
+                        (0 < countryList.get(countryCounter - 1).getCommonName().length() &&
+                                countryList.get(countryCounter - 1).getCommonName().charAt(0) != countryInitial)) {
                     TAPCountryRecycleItem countryRecycleFirstInitial = new TAPCountryRecycleItem();
                     countryRecycleFirstInitial.setRecyclerItemType(COUNTRY_INITIAL);
                     countryRecycleFirstInitial.setCountryInitial(countryInitial);
                     countryItem.add(countryRecycleFirstInitial);
                 }
 
-                TAPCountryRecycleItem countryRecycleItem = new TAPCountryRecycleItem();
-                countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM);
-                countryRecycleItem.setCountryListItem(entry);
-                countryItem.add(countryRecycleItem);
-
-                tempInitial = countryInitial;
-                countryCounter++;
+                if (countryCounter == countryListSize - 1 || (countryCounter < countryListSize - 1 &&
+                        0 < countryList.get(countryCounter + 1).getCommonName().length() &&
+                        countryList.get(countryCounter + 1).getCommonName().charAt(0) != countryInitial)) {
+                    TAPCountryRecycleItem countryRecycleItem = new TAPCountryRecycleItem();
+                    countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM_BOTTOM);
+                    countryRecycleItem.setCountryListItem(entry);
+                    countryItem.add(countryRecycleItem);
+                } else {
+                    TAPCountryRecycleItem countryRecycleItem = new TAPCountryRecycleItem();
+                    countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM);
+                    countryRecycleItem.setCountryListItem(entry);
+                    countryItem.add(countryRecycleItem);
+                }
             }
 
             adapter = new TAPCountryListAdapter(countryItem);
