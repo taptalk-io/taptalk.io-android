@@ -9,7 +9,12 @@ import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_register.*
 
@@ -17,16 +22,16 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private var formCheck = arrayOf(0, 0, 0, 0, 0, 0)
 
-    private val INDEX_FULL_NAME = 0
-    private val INDEX_USERNAME = 1
-    private val INDEX_MOBILE_NUMBER = 2
-    private val INDEX_EMAIL = 3
-    private val INDEX_PASSWORD = 4
-    private val INDEX_PASSWORD_RETYPE = 5
+    private val indexFullName = 0
+    private val indexUsername = 1
+    private val indexMobileNumber = 2
+    private val indexEmail = 3
+    private val indexPassword = 4
+    private val indexPasswordRetype = 5
 
-    private val STATE_EMPTY = 0
-    private val STATE_VALID = 1
-    private val STATE_INVALID = -1
+    private val stateEmpty = 0
+    private val stateValid = 1
+    private val stateInvalid = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +68,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
         et_retype_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
 
+        // TODO: get default country ID
+
         fl_container.setOnClickListener{ clearAllFocus() }
         cl_form_container.setOnClickListener{ clearAllFocus() }
         iv_button_back.setOnClickListener { onBackPressed() }
@@ -80,17 +87,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun checkFullName(hasFocus: Boolean) {
         if (et_full_name.text.isNotEmpty() && et_full_name.text.matches(Regex("[A-Za-z ]*"))) {
             // Valid full name
-            formCheck[INDEX_FULL_NAME] = STATE_VALID
+            formCheck[indexFullName] = stateValid
             tv_label_full_name_error.visibility = View.GONE
             updateEditTextBackground(et_full_name, hasFocus)
         } else if (et_full_name.text.isEmpty()) {
             // Not filled
-            formCheck[INDEX_FULL_NAME] = STATE_EMPTY
+            formCheck[indexFullName] = stateEmpty
             tv_label_full_name_error.visibility = View.GONE
             updateEditTextBackground(et_full_name, hasFocus)
         } else {
             // Invalid full name
-            formCheck[INDEX_FULL_NAME] = STATE_INVALID
+            formCheck[indexFullName] = stateInvalid
             tv_label_full_name_error.visibility = View.VISIBLE
             et_full_name.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
@@ -100,17 +107,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun checkUsername(hasFocus: Boolean) {
         if (et_username.text.isNotEmpty() && et_username.text.matches(Regex("[a-z0-9_]*")) && et_username.text[0].isLetter()) {
             // Valid username
-            formCheck[INDEX_USERNAME] = STATE_VALID
+            formCheck[indexUsername] = stateValid
             tv_label_username_error.visibility = View.GONE
             updateEditTextBackground(et_username, hasFocus)
         } else if (et_username.text.isEmpty()) {
             // Not filled
-            formCheck[INDEX_USERNAME] = STATE_EMPTY
+            formCheck[indexUsername] = stateEmpty
             tv_label_username_error.visibility = View.GONE
             updateEditTextBackground(et_username, hasFocus)
         } else {
             // Invalid username
-            formCheck[INDEX_USERNAME] = STATE_INVALID
+            formCheck[indexUsername] = stateInvalid
             tv_label_username_error.visibility = View.VISIBLE
             et_username.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
@@ -119,19 +126,19 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun checkMobileNumber(hasFocus: Boolean) {
         val phoneNumber = StringBuilder().append(tv_country_code.text).append(et_mobile_number.text)
-        if (et_mobile_number.text.isNotEmpty() && Patterns.PHONE.matcher(phoneNumber).matches() && et_mobile_number.text.length >= 7 && et_mobile_number.text.length <= 15) {
+        if (et_mobile_number.text.isNotEmpty() && Patterns.PHONE.matcher(phoneNumber).matches() && et_mobile_number.text.length in 7..15) {
             // Valid phone number
-            formCheck[INDEX_MOBILE_NUMBER] = STATE_VALID
+            formCheck[indexMobileNumber] = stateValid
             tv_label_mobile_number_error.visibility = View.GONE
             updateEditTextBackground(et_mobile_number, hasFocus)
         } else if (et_mobile_number.text.isEmpty()) {
             // Not filled
-            formCheck[INDEX_MOBILE_NUMBER] = STATE_EMPTY
+            formCheck[indexMobileNumber] = stateEmpty
             tv_label_mobile_number_error.visibility = View.GONE
             updateEditTextBackground(et_mobile_number, hasFocus)
         } else {
             // Invalid phone number
-            formCheck[INDEX_MOBILE_NUMBER] = STATE_INVALID
+            formCheck[indexMobileNumber] = stateInvalid
             tv_label_mobile_number_error.visibility = View.VISIBLE
             et_mobile_number.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
@@ -141,17 +148,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun checkEmailAddress(hasFocus: Boolean) {
         if (et_email_address.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(et_email_address.text).matches()) {
             // Valid email address
-            formCheck[INDEX_EMAIL] = STATE_VALID
+            formCheck[indexEmail] = stateValid
             tv_label_email_address_error.visibility = View.GONE
             updateEditTextBackground(et_email_address, hasFocus)
         } else if (et_email_address.text.isEmpty()) {
             // Not filled
-            formCheck[INDEX_EMAIL] = STATE_EMPTY
+            formCheck[indexEmail] = stateEmpty
             tv_label_email_address_error.visibility = View.GONE
             updateEditTextBackground(et_email_address, hasFocus)
         } else {
             // Invalid email address
-            formCheck[INDEX_EMAIL] = STATE_INVALID
+            formCheck[indexEmail] = stateInvalid
             tv_label_email_address_error.visibility = View.VISIBLE
             et_email_address.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
@@ -159,20 +166,21 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun checkPassword(hasFocus: Boolean) {
-        // TODO: validate password
-        if (et_password.text.isNotEmpty() && et_password.text.length >= 6) {
+        // Regex to match string containing lowercase, uppercase, number, and special character
+        val regex = Regex("^(?=.*?\\p{Lu})(?=.*?\\p{Ll})(?=.*?\\d)" + "(?=.*?[`~!@#$%^&*()\\-_=+\\\\|\\[{\\]};:'\",<.>/?]).*$")
+        if (et_password.text.isNotEmpty() && et_password.text.matches(regex)) {
             // Valid password
-            formCheck[INDEX_PASSWORD] = STATE_VALID
+            formCheck[indexPassword] = stateValid
             tv_label_password_error.visibility = View.GONE
             updateEditTextBackground(cl_password, hasFocus)
         } else if (et_password.text.isEmpty()) {
             // Not filled
-            formCheck[INDEX_PASSWORD] = STATE_EMPTY
+            formCheck[indexPassword] = stateEmpty
             tv_label_password_error.visibility = View.GONE
             updateEditTextBackground(cl_password, hasFocus)
         } else {
             // Invalid password
-            formCheck[INDEX_PASSWORD] = STATE_INVALID
+            formCheck[indexPassword] = stateInvalid
             tv_label_password_error.visibility = View.VISIBLE
             cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
@@ -182,17 +190,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun checkRetypedPassword(hasFocus: Boolean) {
         if (et_password.text.isNotEmpty() && et_password.text.toString() == et_retype_password.text.toString()) {
             // Password matches
-            formCheck[INDEX_PASSWORD_RETYPE] = STATE_VALID
+            formCheck[indexPasswordRetype] = stateValid
             tv_label_retype_password_error.visibility = View.GONE
             updateEditTextBackground(cl_retype_password, hasFocus)
         } else if (et_retype_password.text.isEmpty()) {
             // Not filled
-            formCheck[INDEX_PASSWORD_RETYPE] = STATE_EMPTY
+            formCheck[indexPasswordRetype] = stateEmpty
             tv_label_retype_password_error.visibility = View.GONE
             updateEditTextBackground(cl_retype_password, hasFocus)
         } else {
             // Password does not match
-            formCheck[INDEX_PASSWORD_RETYPE] = STATE_INVALID
+            formCheck[indexPasswordRetype] = stateInvalid
             tv_label_retype_password_error.visibility = View.VISIBLE
             cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
@@ -208,12 +216,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun checkContinueButtonAvailability() {
-        if (formCheck[INDEX_FULL_NAME] == STATE_VALID &&
-                formCheck[INDEX_USERNAME] == STATE_VALID &&
-                formCheck[INDEX_MOBILE_NUMBER] == STATE_VALID &&
-                formCheck[INDEX_EMAIL] == STATE_VALID && (
-                        (formCheck[INDEX_PASSWORD] == STATE_EMPTY && formCheck[INDEX_PASSWORD_RETYPE] == STATE_EMPTY) ||
-                                (formCheck[INDEX_PASSWORD] == STATE_VALID && formCheck[INDEX_PASSWORD_RETYPE] == STATE_VALID))) {
+        if (formCheck[indexFullName] == stateValid &&
+                formCheck[indexUsername] == stateValid &&
+                formCheck[indexMobileNumber] == stateValid &&
+                (formCheck[indexEmail] == stateEmpty || formCheck[indexEmail] == stateValid) && (
+                        (formCheck[indexPassword] == stateEmpty && formCheck[indexPasswordRetype] == stateEmpty) ||
+                                (formCheck[indexPassword] == stateValid && formCheck[indexPasswordRetype] == stateValid))) {
             // All forms valid
             fl_button_continue.background = getDrawable(R.drawable.tap_bg_gradient_ff9833_ff7e00_rounded_8dp_stroke_ff7e00_1dp)
             fl_button_continue.setOnClickListener { register() }
@@ -238,14 +246,31 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun register() {
-        // TODO
-        finish()
+        TAPDataManager.getInstance().register(
+                et_full_name.text.toString(),
+                et_username.text.toString(),
+                Integer.valueOf(tv_country_code.text.toString()),
+                et_mobile_number.text.toString(),
+                et_email_address.text.toString(),
+                et_password.text.toString(),
+                registerView
+        )
+    }
+
+    private fun showErrorDialog(message: String) {
+        TapTalkDialog.Builder(this@TAPRegisterActivity)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(getString(R.string.tap_error))
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setCancelable(true)
+                .show()
     }
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            if (formCheck[INDEX_FULL_NAME] != STATE_INVALID) {
+            if (formCheck[indexFullName] != stateInvalid) {
                 view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
@@ -257,7 +282,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val usernameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            if (formCheck[INDEX_USERNAME] != STATE_INVALID) {
+            if (formCheck[indexUsername] != stateInvalid) {
                 view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
@@ -269,7 +294,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val mobileNumberFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            if (formCheck[INDEX_MOBILE_NUMBER] != STATE_INVALID) {
+            if (formCheck[indexMobileNumber] != stateInvalid) {
                 view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
@@ -281,7 +306,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            if (formCheck[INDEX_EMAIL] != STATE_INVALID) {
+            if (formCheck[indexEmail] != stateInvalid) {
                 view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
@@ -293,7 +318,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val passwordFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             cl_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            if (formCheck[INDEX_PASSWORD] != STATE_INVALID) {
+            if (formCheck[indexPassword] != stateInvalid) {
                 cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
@@ -305,7 +330,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val passwordRetypeFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             cl_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            if (formCheck[INDEX_PASSWORD_RETYPE] != STATE_INVALID) {
+            if (formCheck[indexPasswordRetype] != stateInvalid) {
                 cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
@@ -320,7 +345,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (formCheck[INDEX_FULL_NAME] != STATE_EMPTY) {
+            if (formCheck[indexFullName] != stateEmpty) {
                 checkFullName(et_full_name.hasFocus())
             }
         }
@@ -332,7 +357,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (formCheck[INDEX_USERNAME] != STATE_EMPTY) {
+            if (formCheck[indexUsername] != stateEmpty) {
                 checkUsername(et_username.hasFocus())
             }
         }
@@ -344,7 +369,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (formCheck[INDEX_MOBILE_NUMBER] != STATE_EMPTY) {
+            if (formCheck[indexMobileNumber] != stateEmpty) {
                 checkMobileNumber(et_mobile_number.hasFocus())
             }
         }
@@ -356,9 +381,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (formCheck[INDEX_EMAIL] != STATE_EMPTY) {
-                checkEmailAddress(et_email_address.hasFocus())
-            }
+            checkEmailAddress(et_email_address.hasFocus())
         }
     }
 
@@ -379,6 +402,33 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             checkRetypedPassword(et_retype_password.hasFocus())
+        }
+    }
+
+    private val registerView = object : TapDefaultDataView<TAPRegisterResponse>() {
+        override fun startLoading() {
+            tv_button_continue.visibility = View.GONE
+            iv_register_progress.visibility = View.VISIBLE
+            TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPRegisterActivity, iv_register_progress)
+        }
+
+        override fun endLoading() {
+            tv_button_continue.visibility = View.VISIBLE
+            iv_register_progress.visibility = View.GONE
+            iv_register_progress.clearAnimation()
+        }
+
+        override fun onSuccess(response: TAPRegisterResponse?) {
+            // TODO: continue to chat
+            finish()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            showErrorDialog(error?.message ?: getString(R.string.tap_error_message_general))
+        }
+
+        override fun onError(throwable: Throwable?) {
+            showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
         }
     }
 }

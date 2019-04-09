@@ -34,6 +34,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -806,6 +807,10 @@ public class TAPDataManager {
 
     public void getCountryList(TapDefaultDataView<TAPCountryListResponse> view) {
         TAPApiManager.getInstance().getCountryList(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void register(String fullName, String username, Integer countryID, String phone, String email, String password, TapDefaultDataView<TAPRegisterResponse> view) {
+        TAPApiManager.getInstance().register(fullName, username, countryID, phone, email, password, new TAPDefaultSubscriber<>(view));
     }
 
     // Search User

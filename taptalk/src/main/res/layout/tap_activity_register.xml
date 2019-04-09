@@ -352,6 +352,18 @@
             </android.support.constraint.ConstraintLayout>
 
             <TextView
+                android:id="@+id/tv_label_password_guide"
+                style="@style/TapFormGuide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tap_guide_password"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cl_password" />
+
+            <TextView
                 android:id="@+id/tv_label_password_error"
                 style="@style/TapFormError"
                 android:layout_width="wrap_content"
@@ -361,7 +373,7 @@
                 android:text="@string/tap_error_invalid_password"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cl_password" />
+                app:layout_constraintTop_toBottomOf="@id/tv_label_password_guide" />
 
             <TextView
                 android:id="@+id/tv_label_retype_password"
@@ -453,7 +465,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_label_retype_password_error">
 
                 <TextView
-                    android:id="@+id/tv_btn_continue"
+                    android:id="@+id/tv_button_continue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
