@@ -859,7 +859,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
-                tvQuoteTitle.setText(message.getUser().getName());
+
+                if (null != TAPChatManager.getInstance().getActiveUser() &&
+                        message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()))
+                    tvQuoteTitle.setText(getString(R.string.tap_you));
+                else tvQuoteTitle.setText(message.getUser().getName());
+
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
             } else if (message.getType() == TYPE_FILE && null != message.getData()) {
@@ -879,14 +884,24 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
-                tvQuoteTitle.setText(message.getUser().getName());
+
+                if (null != TAPChatManager.getInstance().getActiveUser() &&
+                        message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()))
+                    tvQuoteTitle.setText(getString(R.string.tap_you));
+                else tvQuoteTitle.setText(message.getUser().getName());
+
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
             } else {
                 // Show text quote
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
-                tvQuoteTitle.setText(message.getUser().getName());
+
+                if (null != TAPChatManager.getInstance().getActiveUser() &&
+                        message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()))
+                    tvQuoteTitle.setText(getString(R.string.tap_you));
+                else tvQuoteTitle.setText(message.getUser().getName());
+
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
             }
