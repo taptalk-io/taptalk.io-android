@@ -1,18 +1,19 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.content.res.ResourcesCompat
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageView
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_register.*
-import java.lang.StringBuilder
 
-class TAPRegisterActivity : AppCompatActivity() {
+class TAPRegisterActivity : TAPBaseActivity() {
 
     private var formCheck = arrayOf(0, 0, 0, 0, 0, 0)
 
@@ -40,6 +41,8 @@ class TAPRegisterActivity : AppCompatActivity() {
     }
 
     private fun initView() {
+        window?.setBackgroundDrawable(null)
+
         et_full_name.onFocusChangeListener = fullNameFocusListener
         et_username.onFocusChangeListener = usernameFocusListener
         et_mobile_number.onFocusChangeListener = mobileNumberFocusListener
@@ -54,7 +57,24 @@ class TAPRegisterActivity : AppCompatActivity() {
         et_password.addTextChangedListener(passwordWatcher)
         et_retype_password.addTextChangedListener(passwordRetypeWatcher)
 
+        et_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        et_retype_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        et_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
+        et_retype_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
+
+        fl_container.setOnClickListener{ clearAllFocus() }
+        cl_form_container.setOnClickListener{ clearAllFocus() }
         iv_button_back.setOnClickListener { onBackPressed() }
+        iv_view_password.setOnClickListener{ togglePasswordVisibility(et_password, iv_view_password) }
+        iv_view_password_retype.setOnClickListener{ togglePasswordVisibility(et_retype_password, iv_view_password_retype) }
+
+        et_retype_password.setOnEditorActionListener { v, a, e -> fl_button_continue.callOnClick() }
+    }
+
+    private fun clearAllFocus() {
+        TAPUtils.getInstance().dismissKeyboard(this)
+        fl_container.clearFocus()
     }
 
     private fun checkFullName(hasFocus: Boolean) {
@@ -99,7 +119,7 @@ class TAPRegisterActivity : AppCompatActivity() {
 
     private fun checkMobileNumber(hasFocus: Boolean) {
         val phoneNumber = StringBuilder().append(tv_country_code.text).append(et_mobile_number.text)
-        if (et_mobile_number.text.isNotEmpty() && Patterns.PHONE.matcher(phoneNumber).matches()) {
+        if (et_mobile_number.text.isNotEmpty() && Patterns.PHONE.matcher(phoneNumber).matches() && et_mobile_number.text.length >= 7 && et_mobile_number.text.length <= 15) {
             // Valid phone number
             formCheck[INDEX_MOBILE_NUMBER] = STATE_VALID
             tv_label_mobile_number_error.visibility = View.GONE
@@ -144,17 +164,17 @@ class TAPRegisterActivity : AppCompatActivity() {
             // Valid password
             formCheck[INDEX_PASSWORD] = STATE_VALID
             tv_label_password_error.visibility = View.GONE
-            updateEditTextBackground(et_password, hasFocus)
+            updateEditTextBackground(cl_password, hasFocus)
         } else if (et_password.text.isEmpty()) {
             // Not filled
             formCheck[INDEX_PASSWORD] = STATE_EMPTY
             tv_label_password_error.visibility = View.GONE
-            updateEditTextBackground(et_password, hasFocus)
+            updateEditTextBackground(cl_password, hasFocus)
         } else {
             // Invalid password
             formCheck[INDEX_PASSWORD] = STATE_INVALID
             tv_label_password_error.visibility = View.VISIBLE
-            et_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
         checkContinueButtonAvailability()
     }
@@ -164,17 +184,17 @@ class TAPRegisterActivity : AppCompatActivity() {
             // Password matches
             formCheck[INDEX_PASSWORD_RETYPE] = STATE_VALID
             tv_label_retype_password_error.visibility = View.GONE
-            updateEditTextBackground(et_retype_password, hasFocus)
+            updateEditTextBackground(cl_retype_password, hasFocus)
         } else if (et_retype_password.text.isEmpty()) {
             // Not filled
             formCheck[INDEX_PASSWORD_RETYPE] = STATE_EMPTY
             tv_label_retype_password_error.visibility = View.GONE
-            updateEditTextBackground(et_retype_password, hasFocus)
+            updateEditTextBackground(cl_retype_password, hasFocus)
         } else {
             // Password does not match
             formCheck[INDEX_PASSWORD_RETYPE] = STATE_INVALID
             tv_label_retype_password_error.visibility = View.VISIBLE
-            et_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
         checkContinueButtonAvailability()
     }
@@ -204,8 +224,22 @@ class TAPRegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun register() {
+    private fun togglePasswordVisibility(editText: EditText, button: ImageView) {
+        val cursorPosition = editText.selectionStart
+        if (editText.inputType == InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_orange))
+        } else {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_grey))
+        }
+        editText.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
+        editText.setSelection(cursorPosition)
+    }
 
+    private fun register() {
+        // TODO
+        finish()
     }
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
@@ -258,32 +292,24 @@ class TAPRegisterActivity : AppCompatActivity() {
 
     private val passwordFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
-            view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            iv_view_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            v_separator_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+            cl_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (formCheck[INDEX_PASSWORD] != STATE_INVALID) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
-            view.elevation = 0f
-            iv_view_password.elevation = 0f
-            v_separator_password.elevation = 0f
+            cl_password.elevation = 0f
             checkPassword(hasFocus)
         }
     }
 
     private val passwordRetypeFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
-            view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            iv_view_password_retype.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            v_separator_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+            cl_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (formCheck[INDEX_PASSWORD_RETYPE] != STATE_INVALID) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
             }
         } else {
-            view.elevation = 0f
-            iv_view_password_retype.elevation = 0f
-            v_separator_retype_password.elevation = 0f
+            cl_retype_password.elevation = 0f
             checkRetypedPassword(hasFocus)
         }
     }
@@ -295,7 +321,7 @@ class TAPRegisterActivity : AppCompatActivity() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             if (formCheck[INDEX_FULL_NAME] != STATE_EMPTY) {
-                checkFullName(true)
+                checkFullName(et_full_name.hasFocus())
             }
         }
     }
@@ -307,7 +333,7 @@ class TAPRegisterActivity : AppCompatActivity() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             if (formCheck[INDEX_USERNAME] != STATE_EMPTY) {
-                checkUsername(true)
+                checkUsername(et_username.hasFocus())
             }
         }
     }
@@ -319,7 +345,7 @@ class TAPRegisterActivity : AppCompatActivity() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             if (formCheck[INDEX_MOBILE_NUMBER] != STATE_EMPTY) {
-                checkMobileNumber(true)
+                checkMobileNumber(et_mobile_number.hasFocus())
             }
         }
     }
@@ -331,7 +357,7 @@ class TAPRegisterActivity : AppCompatActivity() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             if (formCheck[INDEX_EMAIL] != STATE_EMPTY) {
-                checkEmailAddress(true)
+                checkEmailAddress(et_email_address.hasFocus())
             }
         }
     }
@@ -342,7 +368,7 @@ class TAPRegisterActivity : AppCompatActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            checkPassword(true)
+            checkPassword(et_password.hasFocus())
         }
     }
 
@@ -352,7 +378,7 @@ class TAPRegisterActivity : AppCompatActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            checkRetypedPassword(true)
+            checkRetypedPassword(et_retype_password.hasFocus())
         }
     }
 }

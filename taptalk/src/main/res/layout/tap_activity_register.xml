@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tap_white"
@@ -31,6 +32,7 @@
         android:overScrollMode="never">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_form_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true">
@@ -295,46 +297,59 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_label_password"
                 app:layout_constraintStart_toEndOf="@id/tv_label_password" />
 
-            <EditText
-                android:id="@+id/et_password"
-                style="@style/TapFormFieldBody"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
-                android:hint="@string/tap_hint_insert_password"
-                android:imeOptions="actionNext"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:paddingStart="15dp"
-                android:paddingTop="15dp"
-                android:paddingEnd="70dp"
-                android:paddingBottom="15dp"
-                android:textColorHint="@color/tap_grey_9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
-                app:layout_constraintTop_toBottomOf="@id/tv_label_password" />
+                app:layout_constraintTop_toBottomOf="@id/tv_label_password">
 
-            <ImageView
-                android:id="@+id/iv_view_password"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:padding="18dp"
-                android:src="@drawable/tap_ic_view_grey"
-                app:layout_constraintBottom_toBottomOf="@id/et_password"
-                app:layout_constraintDimensionRatio="H, 1:1"
-                app:layout_constraintEnd_toEndOf="@id/et_password"
-                app:layout_constraintTop_toTopOf="@id/et_password" />
+                <EditText
+                    android:id="@+id/et_password"
+                    style="@style/TapFormFieldBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/tap_transparent_white"
+                    android:hint="@string/tap_hint_insert_password"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingStart="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingEnd="70dp"
+                    android:paddingBottom="15dp"
+                    android:textColorHint="@color/tap_grey_9b"
+                    android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <View
-                android:id="@+id/v_separator_password"
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:background="@color/tap_grey_dc"
-                app:layout_constraintBottom_toBottomOf="@id/iv_view_password"
-                app:layout_constraintStart_toStartOf="@id/iv_view_password"
-                app:layout_constraintTop_toTopOf="@id/iv_view_password" />
+                <ImageView
+                    android:id="@+id/iv_view_password"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:padding="18dp"
+                    android:src="@drawable/tap_ic_view_grey"
+                    app:layout_constraintBottom_toBottomOf="@id/et_password"
+                    app:layout_constraintDimensionRatio="H, 1:1"
+                    app:layout_constraintEnd_toEndOf="@id/et_password"
+                    app:layout_constraintTop_toTopOf="@id/et_password" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/tap_grey_dc"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_view_password"
+                    app:layout_constraintStart_toStartOf="@id/iv_view_password"
+                    app:layout_constraintTop_toTopOf="@id/iv_view_password" />
+
+            </android.support.constraint.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_label_password_error"
@@ -346,7 +361,7 @@
                 android:text="@string/tap_error_invalid_password"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/et_password" />
+                app:layout_constraintTop_toBottomOf="@id/cl_password" />
 
             <TextView
                 android:id="@+id/tv_label_retype_password"
@@ -359,46 +374,59 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_password_error" />
 
-            <EditText
-                android:id="@+id/et_retype_password"
-                style="@style/TapFormFieldBody"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_retype_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
-                android:hint="@string/tap_retype_password"
-                android:imeOptions="actionDone"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                android:paddingStart="15dp"
-                android:paddingTop="15dp"
-                android:paddingEnd="70dp"
-                android:paddingBottom="15dp"
-                android:textColorHint="@color/tap_grey_9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
-                app:layout_constraintTop_toBottomOf="@id/tv_label_retype_password" />
+                app:layout_constraintTop_toBottomOf="@id/tv_label_retype_password">
 
-            <ImageView
-                android:id="@+id/iv_view_password_retype"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:padding="18dp"
-                android:src="@drawable/tap_ic_view_grey"
-                app:layout_constraintBottom_toBottomOf="@id/et_retype_password"
-                app:layout_constraintDimensionRatio="H, 1:1"
-                app:layout_constraintEnd_toEndOf="@id/et_retype_password"
-                app:layout_constraintTop_toTopOf="@id/et_retype_password" />
+                <EditText
+                    android:id="@+id/et_retype_password"
+                    style="@style/TapFormFieldBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/tap_transparent_white"
+                    android:hint="@string/tap_retype_password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingStart="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingEnd="70dp"
+                    android:paddingBottom="15dp"
+                    android:textColorHint="@color/tap_grey_9b"
+                    android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <View
-                android:id="@+id/v_separator_retype_password"
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:background="@color/tap_grey_dc"
-                app:layout_constraintBottom_toBottomOf="@id/iv_view_password_retype"
-                app:layout_constraintStart_toStartOf="@id/iv_view_password_retype"
-                app:layout_constraintTop_toTopOf="@id/iv_view_password_retype" />
+                <ImageView
+                    android:id="@+id/iv_view_password_retype"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:padding="18dp"
+                    android:src="@drawable/tap_ic_view_grey"
+                    app:layout_constraintBottom_toBottomOf="@id/et_retype_password"
+                    app:layout_constraintDimensionRatio="H, 1:1"
+                    app:layout_constraintEnd_toEndOf="@id/et_retype_password"
+                    app:layout_constraintTop_toTopOf="@id/et_retype_password" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/tap_grey_dc"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_view_password_retype"
+                    app:layout_constraintStart_toStartOf="@id/iv_view_password_retype"
+                    app:layout_constraintTop_toTopOf="@id/iv_view_password_retype" />
+
+            </android.support.constraint.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_label_retype_password_error"
@@ -410,7 +438,7 @@
                 android:text="@string/tap_error_password_does_not_match"
                 android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/et_retype_password" />
+                app:layout_constraintTop_toBottomOf="@id/cl_retype_password" />
 
             <FrameLayout
                 android:id="@+id/fl_button_continue"
