@@ -345,7 +345,6 @@ public class TAPFileDownloadManager {
     }
 
     public void saveFileMessageUri(String roomID, String fileID, Uri fileUri) {
-        Log.e(TAG, "saveFileMessageUri: " + fileUri.toString());
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
             roomUriMap.put(fileID, fileUri.toString());
@@ -357,7 +356,6 @@ public class TAPFileDownloadManager {
     }
 
     public void saveFileMessageUri(String roomID, String fileID, String filePath) {
-        Log.e(TAG, "saveFileMessageUri: " + filePath);
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
             roomUriMap.put(fileID, filePath);

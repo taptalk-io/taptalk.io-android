@@ -699,7 +699,6 @@ public class TAPFileUploadManager {
                 messageModel.setData(fileDataMap);
             }
 
-            Log.e(TAG, "sendFileMessageAfterUploadSuccess: " + TAPUtils.getInstance().toJsonString(messageModel));
             new Thread(() -> TAPChatManager.getInstance().sendFileMessageToServer(messageModel)).start();
 
             //removeUploadProgressMap(localID);
