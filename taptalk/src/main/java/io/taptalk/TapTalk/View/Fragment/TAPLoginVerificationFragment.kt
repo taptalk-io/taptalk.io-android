@@ -65,9 +65,8 @@ class TAPLoginVerificationFragment : Fragment() {
         phoneNumber = arguments?.getString(kPhoneNumber, "0") ?: "0"
         otpID = arguments?.getLong(kOTPID, 0L) ?: 0L
         otpKey = arguments?.getString(kOTPKey, "") ?: ""
-        iv_back_button.setOnClickListener {
-            activity?.onBackPressed()
-        }
+        TAPUtils.getInstance().animateClickButton(iv_back_button, 0.95f)
+        iv_back_button.setOnClickListener { activity?.onBackPressed() }
         et_otp_code.addTextChangedListener(otpTextWatcher)
         et_otp_code.requestFocus()
         TAPUtils.getInstance().showKeyboard(activity, et_otp_code)

@@ -238,6 +238,16 @@ public class TAPFileUploadManager {
             imageData.setThumbnail(thumbBase64);
 
             messageModel.putData(imageData.toHashMap());
+
+            //untuk ngecek skali lagi sebelum manggil api, udah d cancel atau belom
+            if (isUploadQueueEmpty(roomID))
+                return;
+            else if (0 < getUploadQueue(roomID).size() &&
+                    !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
+                uploadNextSequence(context, roomID);
+                return;
+            }
+
             callImageUploadAPI(context, roomID, messageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
         }
     }
@@ -287,6 +297,15 @@ public class TAPFileUploadManager {
         videoData.setSize(videoFile.length());
 
         messageModel.putData(videoData.toHashMap());
+
+        //untuk ngecek skali lagi sebelum manggil api, udah d cancel atau belom
+        if (isUploadQueueEmpty(roomID))
+            return;
+        else if (0 < getUploadQueue(roomID).size() &&
+                !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
+            uploadNextSequence(context, roomID);
+            return;
+        }
         callVideoUploadAPI(context, roomID, messageModel, videoFile, mimeType, videoData);
     }
 
@@ -337,6 +356,15 @@ public class TAPFileUploadManager {
             }
 
             File tempFile = new File(pathName);
+
+            //untuk ngecek skali lagi sebelum manggil api, udah d cancel atau belom
+            if (isUploadQueueEmpty(roomID))
+                return;
+            else if (0 < getUploadQueue(roomID).size() &&
+                    !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
+                uploadNextSequence(context, roomID);
+                return;
+            }
             callFileUploadAPI(context, roomID, messageModel, tempFile, fileData.getMediaType());
         }).start();
     }

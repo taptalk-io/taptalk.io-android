@@ -22,6 +22,7 @@ import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
@@ -948,6 +949,20 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         Animation rotation = AnimationUtils.loadAnimation(context, R.anim.tap_rotation_infinite);
         rotation.setFillAfter(true);
         view.startAnimation(rotation);
+    }
+
+
+    public void animateClickButton(View view, Float resize) {
+        view.setOnTouchListener((v, event) -> {
+            if (MotionEvent.ACTION_UP == event.getAction()) {
+                view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
+            } else if (MotionEvent.ACTION_DOWN == event.getAction()) {
+                view.animate().scaleX(resize).scaleY(resize).setDuration(100).start();
+            } else if (MotionEvent.ACTION_CANCEL == event.getAction()) {
+                view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
+            }
+            return false;
+        });
     }
 
     public String getDeviceCountryCode(Context context) {

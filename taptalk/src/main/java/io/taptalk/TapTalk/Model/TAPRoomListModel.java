@@ -40,6 +40,10 @@ public class TAPRoomListModel {
         this.lastMessageTimestamp = lastMessageTimestamp;
     }
 
+    public void setLastMessageTimestamp(long timestamp) {
+        setLastMessageTimestamp(TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated()));
+    }
+
     public int getUnreadCount() {
         return unreadCount;
     }

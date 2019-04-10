@@ -8,12 +8,11 @@
     <ImageView
         android:id="@+id/iv_back_button"
         android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:paddingStart="10.5dp"
-        android:paddingTop="18dp"
-        android:paddingEnd="10.5dp"
-        android:paddingBottom="18dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="11dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="12dp"
         android:src="@drawable/tap_ic_back_arrow_pumpkin_orange"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -154,11 +154,11 @@ public class TAPDataManager {
     /**
      * COUNTRY LIST
      */
-    public HashMap<String, TAPCountryListItem> getCountryList() {
-        return Hawk.get(K_COUNTRY_LIST, new HashMap<String, TAPCountryListItem>());
+    public ArrayList<TAPCountryListItem> getCountryList() {
+        return Hawk.get(K_COUNTRY_LIST, new ArrayList<>());
     }
 
-    public void saveCountryList(HashMap<String,TAPCountryListItem> countries) {
+    public void saveCountryList(ArrayList<TAPCountryListItem> countries) {
         Hawk.put(K_COUNTRY_LIST, countries);
     }
 

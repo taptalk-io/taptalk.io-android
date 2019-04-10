@@ -347,6 +347,7 @@ public class TAPRoomListFragment extends Fragment {
 
         if (null != roomList) {
             //room nya ada di listnya
+            roomList.setLastMessageTimestamp(message.getCreated());
             TAPMessageModel roomLastMessage = roomList.getLastMessage();
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
