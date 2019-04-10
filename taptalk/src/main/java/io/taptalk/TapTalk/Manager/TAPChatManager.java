@@ -722,7 +722,7 @@ public class TAPChatManager {
             messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                     generateVideoCaption(caption),
                     activeRoom,
-                    TYPE_IMAGE,
+                    TYPE_VIDEO,
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
@@ -846,15 +846,6 @@ public class TAPChatManager {
 
     public void retryUpload(Context context, TAPMessageModel failedMessageModel) {
         TAPMessageModel messageToResend = TAPMessageModel.BuilderResendMessage(failedMessageModel, System.currentTimeMillis());
-        if (messageToResend.getType() == TYPE_VIDEO || messageToResend.getType() == TYPE_FILE) {
-            // Update file message Uri key to new local ID
-            String failedLocalID = failedMessageModel.getLocalID();
-            String localID = messageToResend.getLocalID();
-            String roomID = messageToResend.getRoom().getRoomID();
-//            TAPFileDownloadManager.getInstance().saveFileMessageUri(roomID, localID,
-//                    TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, failedLocalID));
-//            TAPFileDownloadManager.getInstance().removeFileMessageUri(roomID, failedLocalID);
-        }
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageToResend.getLocalID(), 0, 0);
         addUploadingMessageToHashMap(messageToResend);
@@ -868,8 +859,7 @@ public class TAPChatManager {
      */
     public boolean checkAndSendForwardedMessage(TAPRoomModel roomModel) {
         String roomID = roomModel.getRoomID();
-        if (null != getQuoteActions().get(roomID) &&
-                getQuoteActions().get(roomID) == FORWARD) {
+        if (null != getQuoteActions().get(roomID) && getQuoteActions().get(roomID) == FORWARD) {
             // Send forwarded message
             TAPMessageModel messageModel = buildForwardedMessage(getQuotedMessages().get(roomID), roomModel);
             triggerListenerAndSendMessage(messageModel, true);

@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -373,28 +374,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageViewButtonProgress(item);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
-                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
-                // Fix layout when quote/forward exists
-                rcivImageBody.getLayoutParams().width = 0;
-                rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
-                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivImageBody.setTopLeftRadius(0);
-                rcivImageBody.setTopRightRadius(0);
-                clForwardedQuote.setVisibility(View.VISIBLE);
-            } else {
-                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                if (isMessageFromMySelf(item)) {
-                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
-                } else {
-                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
-                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
-                }
-                clForwardedQuote.setVisibility(View.GONE);
-            }
 
             markUnreadForMessage(item, myUserModel);
             setProgress(item);
@@ -450,6 +429,32 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageUri = (String) item.getData().get(FILE_URI);
             String imageCaption = (String) item.getData().get(CAPTION);
             String fileID = (String) item.getData().get(FILE_ID);
+
+            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
+                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+                // Fix layout when quote/forward exists
+                rcivImageBody.getLayoutParams().width = 0;
+                if (null != widthDimension && null != heightDimension && (widthDimension.floatValue() / heightDimension.floatValue()) > 3) {
+                    rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(78);
+                }
+                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivImageBody.setTopLeftRadius(0);
+                rcivImageBody.setTopRightRadius(0);
+                clForwardedQuote.setVisibility(View.VISIBLE);
+            } else {
+                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                if (isMessageFromMySelf(item)) {
+                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
+                } else {
+                    rcivImageBody.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
+                    rcivImageBody.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                }
+                clForwardedQuote.setVisibility(View.GONE);
+            }
+
             Drawable thumbnail = new BitmapDrawable(
                     itemView.getContext().getResources(),
                     TAPFileUtils.getInstance().decodeBase64(
@@ -642,31 +647,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
-            setVideoProgress(item);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
-                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
-                // Fix layout when quote/forward exists
-                rcivVideoThumbnail.getLayoutParams().width = 0;
-                rcivVideoThumbnail.getLayoutParams().height = TAPUtils.getInstance().dpToPx(244);
-                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivVideoThumbnail.setTopLeftRadius(0);
-                rcivVideoThumbnail.setTopRightRadius(0);
-                clForwardedQuote.setVisibility(View.VISIBLE);
-            } else {
-                rcivVideoThumbnail.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-                rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                if (isMessageFromMySelf(item)) {
-                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
-                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
-                } else {
-                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
-                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
-                }
-                clForwardedQuote.setVisibility(View.GONE);
-            }
+            setVideoProgress(item);
 
             markUnreadForMessage(item, myUserModel);
 
@@ -695,6 +678,31 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
             videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), fileID);
+
+            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
+                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+                // Fix layout when quote/forward exists
+                rcivVideoThumbnail.getLayoutParams().width = 0;
+                if (null != widthDimension && null != heightDimension && (widthDimension.floatValue() / heightDimension.floatValue()) > 3) {
+                    rcivVideoThumbnail.getLayoutParams().height = TAPUtils.getInstance().dpToPx(78);
+                }
+                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivVideoThumbnail.setTopLeftRadius(0);
+                rcivVideoThumbnail.setTopRightRadius(0);
+                clForwardedQuote.setVisibility(View.VISIBLE);
+            } else {
+                rcivVideoThumbnail.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                if (isMessageFromMySelf(item)) {
+                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.getInstance().dpToPx(9));
+                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.getInstance().dpToPx(2));
+                } else {
+                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.getInstance().dpToPx(2));
+                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.getInstance().dpToPx(9));
+                }
+                clForwardedQuote.setVisibility(View.GONE);
+            }
 
             Drawable thumbnail = new BitmapDrawable(
                     itemView.getContext().getResources(),
