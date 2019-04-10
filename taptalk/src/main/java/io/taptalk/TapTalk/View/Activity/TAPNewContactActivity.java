@@ -185,11 +185,19 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         tvUserName.setText(vm.getSearchResult().getName());
 
-        // Check if user is in my contacts
-        tvButtonText.setVisibility(View.GONE);
-        ivButtonImage.setVisibility(View.GONE);
-        pbButton.setVisibility(View.VISIBLE);
-        TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+        clButtonAction.setOnClickListener(null);
+
+        if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+            tvButtonText.setText(getString(R.string.tap_this_is_you));
+            tvButtonText.setTextColor(getResources().getColor(R.color.tap_greenBlue));
+            clButtonAction.setBackground(null);
+        } else {
+            // Check if user is in my contacts
+            tvButtonText.setVisibility(View.GONE);
+            ivButtonImage.setVisibility(View.GONE);
+            pbButton.setVisibility(View.VISIBLE);
+            TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+        }
     }
 
     private void showExpertView() {
@@ -233,11 +241,19 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // TODO: 25 October 2018 SET CATEGORY
         if (null != vm.getSearchResult().getUserRole()) tvCategory.setText(vm.getSearchResult().getUserRole().getRoleName());
 
-        // Check if user is in my contacts
-        tvButtonText.setVisibility(View.GONE);
-        ivButtonImage.setVisibility(View.GONE);
-        pbButton.setVisibility(View.VISIBLE);
-        TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+        clButtonAction.setOnClickListener(null);
+
+        if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+            tvButtonText.setText(getString(R.string.tap_this_is_you));
+            tvButtonText.setTextColor(getResources().getColor(R.color.tap_greenBlue));
+            clButtonAction.setBackground(null);
+        } else {
+            // Check if user is in my contacts
+            tvButtonText.setVisibility(View.GONE);
+            ivButtonImage.setVisibility(View.GONE);
+            pbButton.setVisibility(View.VISIBLE);
+            TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+        }
     }
 
     private void showSearchResult() {
@@ -324,6 +340,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
+            clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_green_button_ripple));
+            tvButtonText.setTextColor(getResources().getColor(R.color.tap_white));
             if (isContact == 0) {
                 // Searched user is not a contact
                 runOnUiThread(() -> {

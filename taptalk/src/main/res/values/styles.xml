@@ -82,11 +82,10 @@
 
     <style name="TapButton">
         <item name="android:background">
-            @drawable/tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp
+            @drawable/tap_bg_green_button_ripple
         </item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textAllCaps">false</item>
