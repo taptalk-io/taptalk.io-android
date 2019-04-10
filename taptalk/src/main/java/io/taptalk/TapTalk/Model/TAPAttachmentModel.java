@@ -96,7 +96,7 @@ public class TAPAttachmentModel {
     }
 
     public static List<TAPAttachmentModel> createFailedMessageBubbleLongPressMenu() {
-        // TODO: 10 April 2019 ADD LONG PRESS MENU FOR FAILED MESSAGES 
+        // TODO: 10 April 2019 ADD LONG PRESS MENU FOR FAILED MESSAGES
         int[] imageResIds = {
 
         };
