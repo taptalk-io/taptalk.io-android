@@ -43,7 +43,7 @@ public class TAPFileDownloadManager {
     private HashMap<String, Integer> downloadProgressMapPercent;
     private HashMap<String, Long> downloadProgressMapBytes;
     private HashMap<String, String> fileProviderPathMap; // Contains FileProvider Uri as key and file pathname as value
-    private HashMap<String /*roomID*/, HashMap<String /*localID*/, String /*stringUri*/>> fileMessageUriMap;
+    private HashMap<String /*roomID*/, HashMap<String /*fileID*/, String /*stringUri*/>> fileMessageUriMap;
     private ArrayList<String> failedDownloads;
 
     public static TAPFileDownloadManager getInstance() {
@@ -335,41 +335,43 @@ public class TAPFileDownloadManager {
         TAPDataManager.getInstance().saveFileMessageUriMap(getFileMessageUriMap());
     }
 
-    public Uri getFileMessageUri(String roomID, String localID) {
+    public Uri getFileMessageUri(String roomID, String fileID) {
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
-        if (null != roomUriMap && null != roomUriMap.get(localID)) {
-            return Uri.parse(roomUriMap.get(localID));
+        if (null != roomUriMap && null != roomUriMap.get(fileID)) {
+            return Uri.parse(roomUriMap.get(fileID));
         } else {
             return null;
         }
     }
 
-    public void saveFileMessageUri(String roomID, String localID, Uri fileUri) {
+    public void saveFileMessageUri(String roomID, String fileID, Uri fileUri) {
+        Log.e(TAG, "saveFileMessageUri: " + fileUri.toString());
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
-            roomUriMap.put(localID, fileUri.toString());
+            roomUriMap.put(fileID, fileUri.toString());
         } else {
             HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(localID, fileUri.toString());
+            hashMap.put(fileID, fileUri.toString());
             getFileMessageUriMap().put(roomID, hashMap);
         }
     }
 
-    public void saveFileMessageUri(String roomID, String localID, String filePath) {
+    public void saveFileMessageUri(String roomID, String fileID, String filePath) {
+        Log.e(TAG, "saveFileMessageUri: " + filePath);
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
-            roomUriMap.put(localID, filePath);
+            roomUriMap.put(fileID, filePath);
         } else {
             HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(localID, filePath);
+            hashMap.put(fileID, filePath);
             getFileMessageUriMap().put(roomID, hashMap);
         }
     }
 
-    public void removeFileMessageUri(String roomID, String localID) {
+    public void removeFileMessageUri(String roomID, String fileID) {
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
-            roomUriMap.remove(localID);
+            roomUriMap.remove(fileID);
         }
     }
 }

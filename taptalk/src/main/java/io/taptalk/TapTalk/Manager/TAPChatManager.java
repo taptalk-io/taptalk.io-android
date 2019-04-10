@@ -61,6 +61,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -521,6 +522,9 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
+        Uri fileUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
+        HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
+        data.put(FILE_URI, fileUri.toString());
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateFileMessageBody(fileName),
@@ -529,9 +533,8 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap());
+                    data);
         } else {
-            HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
             if (null != getUserInfo()) {
                 data.put(USER_INFO, getUserInfo());
             }
@@ -546,8 +549,7 @@ public class TAPChatManager {
                     getQuotedMessage());
         }
         // Save file Uri
-        Uri fileUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
-        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
+//        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
         TAPFileDownloadManager.getInstance().addFileProviderPath(fileUri, file.getAbsolutePath());
         return messageModel;
     }
@@ -726,7 +728,7 @@ public class TAPChatManager {
                     data,
                     getQuotedMessage());
         }
-        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), videoPath);
+//        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), videoPath);
         return messageModel;
     }
 
@@ -848,9 +850,9 @@ public class TAPChatManager {
             String failedLocalID = failedMessageModel.getLocalID();
             String localID = messageToResend.getLocalID();
             String roomID = messageToResend.getRoom().getRoomID();
-            TAPFileDownloadManager.getInstance().saveFileMessageUri(roomID, localID,
-                    TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, failedLocalID));
-            TAPFileDownloadManager.getInstance().removeFileMessageUri(roomID, failedLocalID);
+//            TAPFileDownloadManager.getInstance().saveFileMessageUri(roomID, localID,
+//                    TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, failedLocalID));
+//            TAPFileDownloadManager.getInstance().removeFileMessageUri(roomID, failedLocalID);
         }
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageToResend.getLocalID(), 0, 0);

@@ -1442,7 +1442,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
                     if (null != message.getData()) {
                         // Save file Uri to manager
-                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), localID, fileUri);
+                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), (String) message.getData().get(FILE_ID), fileUri);
                     }
                     if (vm.getMessagePointer().containsKey(localID)) {
                         runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));

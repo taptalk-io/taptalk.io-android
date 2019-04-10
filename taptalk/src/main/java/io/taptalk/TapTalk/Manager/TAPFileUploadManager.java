@@ -261,7 +261,8 @@ public class TAPFileUploadManager {
         }
         TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
 
-        Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
+//        Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
+        Uri videoUri = Uri.parse(videoData.getFileUri());
         File videoFile = new File(videoUri.toString());
         String mimeType = TAPUtils.getInstance().getFileMimeType(videoFile);
         if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
@@ -309,7 +310,8 @@ public class TAPFileUploadManager {
                 return;
             }
             TAPDataFileModel fileData = new TAPDataFileModel(messageModel.getData());
-            Uri fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
+//            Uri fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
+            Uri fileUri = Uri.parse(fileData.getFileUri());
 
             if (null == fileUri) {
                 // File URI not found
@@ -686,16 +688,18 @@ public class TAPFileUploadManager {
             }
             addUploadProgressMap(localID, 100, size);
 
+            TAPFileDownloadManager.getInstance().saveFileMessageUri(roomID, response.getId(), (String) messageModel.getData().get(FILE_URI));
             TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(response.getId(), fileName,
                     mimetype, response.getSize());
             HashMap<String, Object> fileDataMap = fileDataModel.toHashMap();
             if (null != messageModel.getData()) {
                 messageModel.putData(fileDataMap);
-                //messageModel.getData().remove(FILE_URI);
+                messageModel.getData().remove(FILE_URI);
             } else {
                 messageModel.setData(fileDataMap);
             }
 
+            Log.e(TAG, "sendFileMessageAfterUploadSuccess: " + TAPUtils.getInstance().toJsonString(messageModel));
             new Thread(() -> TAPChatManager.getInstance().sendFileMessageToServer(messageModel)).start();
 
             //removeUploadProgressMap(localID);

@@ -30,6 +30,9 @@ public class TAPDataFileModel implements Parcelable {
     @Nullable
     @JsonProperty("size")
     private Number size;
+    @Nullable
+    @JsonProperty("fileUri")
+    private String fileUri;
 
     public TAPDataFileModel(@Nullable String fileID, @Nullable String fileName, @Nullable String mediaType, @Nullable Number size) {
         this.fileID = fileID;
@@ -56,6 +59,7 @@ public class TAPDataFileModel implements Parcelable {
         this.fileID = (String) imageDataMap.get(FILE_ID);
         this.fileName = (String) imageDataMap.get(FILE_NAME);
         this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
+        this.fileUri = (String) imageDataMap.get(FILE_URI);
         this.size = (Number) imageDataMap.get(SIZE);
     }
 
@@ -99,6 +103,14 @@ public class TAPDataFileModel implements Parcelable {
         this.size = size;
     }
 
+    @Nullable
+    public String getFileUri() {
+        return fileUri;
+    }
+
+    public void setFileUri(@Nullable String fileUri) {
+        this.fileUri = fileUri;
+    }
 
     @Override
     public int describeContents() {
