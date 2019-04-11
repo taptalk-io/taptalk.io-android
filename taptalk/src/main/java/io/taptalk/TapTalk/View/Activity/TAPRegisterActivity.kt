@@ -107,9 +107,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun checkUsername(hasFocus: Boolean) {
+        TAPDataManager.getInstance().cancelCheckUsernameApiCall()
+        checkUsernameTimer.cancel()
         if (et_username.text.isNotEmpty() && et_username.text.matches(Regex("[a-z0-9_]*")) && et_username.text[0].isLetter()) {
             // Valid username, continue to check if username exists
-            checkUsernameTimer.cancel()
             if (hasFocus) {
                 // Start timer to check username if focused
                 checkUsernameTimer.start()
@@ -191,6 +192,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             formCheck[indexPassword] = stateInvalid
             tv_label_password_error.visibility = View.VISIBLE
             cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_watermelon_red))
         }
         checkContinueButtonAvailability()
     }
@@ -211,6 +213,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             formCheck[indexPasswordRetype] = stateInvalid
             tv_label_retype_password_error.visibility = View.VISIBLE
             cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_watermelon_red))
         }
         checkContinueButtonAvailability()
     }
@@ -220,6 +223,19 @@ class TAPRegisterActivity : TAPBaseActivity() {
             view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
         } else {
             view.background = getDrawable(R.drawable.tap_bg_rounded_8dp_stroke_dcdcdc_1dp)
+        }
+        if (view == cl_password) {
+            if (hasFocus) {
+                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
+            } else {
+                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_grey_dc))
+            }
+        } else if (view == cl_retype_password) {
+            if (hasFocus) {
+                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
+            } else {
+                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_grey_dc))
+            }
         }
     }
 
@@ -328,6 +344,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             cl_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (formCheck[indexPassword] != stateInvalid) {
                 cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
             }
         } else {
             cl_password.elevation = 0f
@@ -340,6 +357,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             cl_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (formCheck[indexPasswordRetype] != stateInvalid) {
                 cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
             }
         } else {
             cl_retype_password.elevation = 0f
@@ -415,7 +433,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val checkUsernameTimer = object : CountDownTimer(300L, 100L) {
         override fun onTick(p0: Long) {
-
         }
 
         override fun onFinish() {
