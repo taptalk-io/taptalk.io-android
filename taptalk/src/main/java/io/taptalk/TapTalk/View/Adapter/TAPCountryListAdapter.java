@@ -21,8 +21,6 @@ import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.CO
 public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem, TAPBaseViewHolder<TAPCountryRecycleItem>>
         implements FastScrollRecyclerView.SectionedAdapter, FastScrollRecyclerView.MeasurableAdapter<TAPBaseViewHolder<TAPCountryRecycleItem>> {
 
-    private ArrayList<Integer> mSectionPositions;
-
     public TAPCountryListAdapter(List<TAPCountryRecycleItem> items) {
         setItems(items);
     }

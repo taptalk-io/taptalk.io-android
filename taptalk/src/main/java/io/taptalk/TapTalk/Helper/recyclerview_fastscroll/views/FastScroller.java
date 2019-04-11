@@ -203,6 +203,11 @@ public class FastScroller {
             case MotionEvent.ACTION_DOWN:
                 if (isNearPoint(downX, downY)) {
                     mTouchOffset = downY - mThumbPosition.y;
+                } else if (!isNearPoint(downX, downY)) {
+                    int bottom = mRecyclerView.getHeight() - mThumbHeight;
+                    float boundedY = (float) Math.max(0, Math.min(bottom, y - mTouchOffset));
+                    float touchFraction = boundedY / bottom;
+                    String sectionName = mRecyclerView.scrollToPositionAtProgress(touchFraction);
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
