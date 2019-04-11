@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
@@ -361,5 +362,10 @@ public class TAPApiManager {
     public void register(String fullName, String username, Integer countryID, String phone, String email, String password, Subscriber<TAPBaseResponse<TAPRegisterResponse>> subscriber) {
         TAPRegisterRequest request = new TAPRegisterRequest(fullName, username, countryID, phone, email, password);
         execute(homingPigeon.register(request), subscriber);
+    }
+
+    public void checkUsernameExists(String username, Subscriber<TAPBaseResponse<TAPCheckUsernameResponse>> subscriber) {
+        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
+        execute(homingPigeon.checkUsernameExists(request), subscriber);
     }
 }

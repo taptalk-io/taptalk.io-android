@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
@@ -101,4 +102,7 @@ public interface TAPTalkApiService {
 
     @POST("client/register")
     Observable<TAPBaseResponse<TAPRegisterResponse>> register(@Body TAPRegisterRequest request);
+
+    @POST("client/user/exists/username")
+    Observable<TAPBaseResponse<TAPCheckUsernameResponse>> checkUsernameExists(@Body TAPGetUserByUsernameRequest request);
 }

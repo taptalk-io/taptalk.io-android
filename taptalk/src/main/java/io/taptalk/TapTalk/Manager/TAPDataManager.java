@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
@@ -832,6 +833,25 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getMultipleUserByID(ids, new TAPDefaultSubscriber<>(view));
     }
 
+    public void cancelUserSearchApiCall() {
+        if (null != searchUserSubscriber) {
+            searchUserSubscriber.unsubscribe();
+        }
+    }
+
+    // Check Username
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPCheckUsernameResponse>, TapDefaultDataView<TAPCheckUsernameResponse>, TAPCheckUsernameResponse> checkUsernameSubscriber;
+
+    public void checkUsernameExists(String username, TapDefaultDataView<TAPCheckUsernameResponse> view) {
+        TAPApiManager.getInstance().checkUsernameExists(username, checkUsernameSubscriber = new TAPDefaultSubscriber<>(view));
+    }
+
+    public void cancelCheckUsernameApiCall() {
+        if (null != checkUsernameSubscriber) {
+            checkUsernameSubscriber.unsubscribe();
+        }
+    }
+
     // Upload File
     private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>> uploadSubscribers;
 
@@ -903,12 +923,5 @@ public class TAPDataManager {
     private TAPBaseSubscriber<TapDefaultDataView<ResponseBody>> getNewDownloadSubscriber(String localID, TapDefaultDataView<ResponseBody> view) {
         getDownloadSubscribers().put(localID, new TAPBaseSubscriber<>(view));
         return getDownloadSubscribers().get(localID);
-    }
-
-    // FIXME: 25 October 2018
-    public void cancelUserSearchApiCall() {
-        if (null != searchUserSubscriber) {
-            searchUserSubscriber.unsubscribe();
-        }
     }
 }

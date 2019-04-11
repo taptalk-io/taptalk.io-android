@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.support.v4.content.res.ResourcesCompat
 import android.text.Editable
 import android.text.InputType
@@ -13,6 +14,7 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.Taptalk.R
@@ -106,10 +108,15 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun checkUsername(hasFocus: Boolean) {
         if (et_username.text.isNotEmpty() && et_username.text.matches(Regex("[a-z0-9_]*")) && et_username.text[0].isLetter()) {
-            // Valid username
-            formCheck[indexUsername] = stateValid
-            tv_label_username_error.visibility = View.GONE
-            updateEditTextBackground(et_username, hasFocus)
+            // Valid username, continue to check if username exists
+            checkUsernameTimer.cancel()
+            if (hasFocus) {
+                // Start timer to check username if focused
+                checkUsernameTimer.start()
+            } else {
+                // Check username right away when not focused
+                TAPDataManager.getInstance().checkUsernameExists(et_username.text.toString(), checkUsernameView)
+            }
         } else if (et_username.text.isEmpty()) {
             // Not filled
             formCheck[indexUsername] = stateEmpty
@@ -118,6 +125,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         } else {
             // Invalid username
             formCheck[indexUsername] = stateInvalid
+            tv_label_username_error.text = getString(R.string.tap_error_invalid_username)
             tv_label_username_error.visibility = View.VISIBLE
             et_username.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
@@ -402,6 +410,43 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             checkRetypedPassword(et_retype_password.hasFocus())
+        }
+    }
+
+    private val checkUsernameTimer = object : CountDownTimer(300L, 100L) {
+        override fun onTick(p0: Long) {
+
+        }
+
+        override fun onFinish() {
+            TAPDataManager.getInstance().checkUsernameExists(et_username.text.toString(), checkUsernameView)
+        }
+    }
+
+    private val checkUsernameView = object : TapDefaultDataView<TAPCheckUsernameResponse>() {
+        override fun onSuccess(response: TAPCheckUsernameResponse?) {
+            if (response?.exists == false) {
+                formCheck[indexUsername] = stateValid
+                tv_label_username_error.visibility = View.GONE
+                updateEditTextBackground(et_username, et_username.hasFocus())
+            } else {
+                setErrorResult(getString(R.string.tap_error_username_exists))
+            }
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            setErrorResult(error?.message ?: getString(R.string.tap_error_unable_to_verify_username))
+        }
+
+        override fun onError(throwable: Throwable?) {
+            setErrorResult(getString(R.string.tap_error_unable_to_verify_username))
+        }
+
+        private fun setErrorResult(message: String) {
+            formCheck[indexUsername] = stateInvalid
+            tv_label_username_error.text = message
+            tv_label_username_error.visibility = View.VISIBLE
+            et_username.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
         }
     }
 
