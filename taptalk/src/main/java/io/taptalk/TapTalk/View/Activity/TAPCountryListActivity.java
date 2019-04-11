@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.taptalk.TapTalk.Helper.AlphabeticalFastScrolling.IndexFastScrollRecyclerView;
+import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.taptalk.TapTalk.View.Adapter.TAPCountryListAdapter;
@@ -23,7 +24,7 @@ import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.CO
 public class TAPCountryListActivity extends AppCompatActivity {
     private TextView tvCloseBtn;
     private EditText etSearch;
-    private IndexFastScrollRecyclerView rvCountryList;
+    private FastScrollRecyclerView rvCountryList;
     private List<TAPCountryListItem> countryList;
     private TAPCountryListAdapter adapter;
 
@@ -58,18 +59,6 @@ public class TAPCountryListActivity extends AppCompatActivity {
             rvCountryList.setAdapter(adapter);
             rvCountryList.setHasFixedSize(true);
             rvCountryList.setLayoutManager(new LinearLayoutManager(TAPCountryListActivity.this, LinearLayoutManager.VERTICAL, false));
-            rvCountryList.setIndexTextSize(12);
-            rvCountryList.setIndexBarColor("#33334c");
-            rvCountryList.setIndexBarCornerRadius(0);
-            rvCountryList.setIndexBarTransparentValue((float) 0.4);
-            rvCountryList.setIndexbarMargin(0);
-            rvCountryList.setIndexbarWidth(40);
-            rvCountryList.setPreviewPadding(0);
-            rvCountryList.setIndexBarTextColor("#FFFFFF");
-
-            rvCountryList.setIndexBarVisibility(true);
-            rvCountryList.setIndexbarHighLateTextColor("#33334c");
-            rvCountryList.setIndexBarHighLateTextVisibility(true);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("><><><", "initAdapter: ", e);

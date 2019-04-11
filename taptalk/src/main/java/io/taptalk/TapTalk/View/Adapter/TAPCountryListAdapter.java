@@ -1,20 +1,25 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
+import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
+
 public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem, TAPBaseViewHolder<TAPCountryRecycleItem>>
-        implements SectionIndexer {
+        implements FastScrollRecyclerView.SectionedAdapter, FastScrollRecyclerView.MeasurableAdapter<TAPBaseViewHolder<TAPCountryRecycleItem>> {
 
     private ArrayList<Integer> mSectionPositions;
 
@@ -42,28 +47,19 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
         return getItems().get(position).getRecyclerItemType().ordinal();
     }
 
+    @NonNull
     @Override
-    public Object[] getSections() {
-        List<String> sections = new ArrayList<>(26);
-        mSectionPositions = new ArrayList<>(26);
-        for (int i = 0, size = getItems().size(); i < size; i++) {
-            String section = String.valueOf(getItems().get(i).getCountryInitial()).toUpperCase();
-            if (!sections.contains(section)) {
-                sections.add(section);
-                mSectionPositions.add(i);
-            }
+    public String getSectionName(int position) {
+        return getItemAt(position).getCountryInitial() + "";
+    }
+
+    @Override
+    public int getViewTypeHeight(RecyclerView recyclerView, @Nullable TAPBaseViewHolder<TAPCountryRecycleItem> viewHolder, int viewType) {
+        if (COUNTRY_INITIAL == TAPCountryRecycleItem.RecyclerItemType.values()[viewType]) {
+            return TAPUtils.getInstance().dpToPx(52);
+        } else {
+            return TAPUtils.getInstance().dpToPx(44);
         }
-        return sections.toArray(new String[0]);
-    }
-
-    @Override
-    public int getPositionForSection(int sectionIndex) {
-        return mSectionPositions.get(sectionIndex);
-    }
-
-    @Override
-    public int getSectionForPosition(int position) {
-        return 0;
     }
 
     public class CountryItemViewHolder extends TAPBaseViewHolder<TAPCountryRecycleItem> {
@@ -102,7 +98,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
 
         @Override
         protected void onBind(TAPCountryRecycleItem item, int position) {
-            tvCountryInitial.setText(item.getCountryInitial()+"");
+            tvCountryInitial.setText(item.getCountryInitial() + "");
         }
     }
 }

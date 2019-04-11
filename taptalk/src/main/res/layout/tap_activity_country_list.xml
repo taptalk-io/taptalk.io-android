@@ -65,34 +65,41 @@
                 android:id="@+id/iv_search_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/tap_ic_search_grey"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/tap_ic_search_grey" />
 
             <EditText
                 android:id="@+id/et_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="16dp"
                 android:background="@color/tap_white"
                 android:fontFamily="@font/tap_font_pt_root_regular"
-                android:hint="@string/search_for_country"
-                android:layout_marginEnd="16dp"
                 android:gravity="center_vertical"
+                android:hint="@string/search_for_country"
                 android:letterSpacing="-0.01"
                 android:lineSpacingExtra="6sp"
-                android:textSize="14sp"
-                android:layout_gravity="center_vertical"
-                />
+                android:textSize="14sp" />
 
         </LinearLayout>
 
     </FrameLayout>
 
-    <io.taptalk.TapTalk.Helper.AlphabeticalFastScrolling.IndexFastScrollRecyclerView
-        android:id="@+id/rv_country_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/tap_white_f3"/>
+    <io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView
+    android:id="@+id/rv_country_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tap_white_f3"
+    app:fastScrollPopupBgColor="@color/colorAccent"
+    app:fastScrollPopupTextColor="@android:color/primary_text_dark"
+    app:fastScrollPopupTextSize="56sp"
+    app:fastScrollPopupBackgroundSize="88dp"
+    app:fastScrollThumbColor="@color/colorAccent"
+    app:fastScrollTrackColor="#1f000000"
+    app:fastScrollPopupPosition="adjacent"
+    />
 
 </LinearLayout>
