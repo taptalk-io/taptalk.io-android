@@ -108,6 +108,7 @@ public class TAPDefaultConstant {
         public static final int FORWARD_MESSAGE = 15;
         public static final int PICK_LOCATION = 16;
         public static final int SEND_FILE = 17;
+        public static final int COUNTRY_PICK = 18;
     }
 
     public static final class PermissionRequest {
@@ -294,4 +295,5 @@ public class TAPDefaultConstant {
     public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
+    public static final String K_COUNTRY_PICK = "kTAPCountryPick";
 }

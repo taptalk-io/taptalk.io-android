@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Helper;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
@@ -22,6 +23,7 @@ import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -204,6 +206,25 @@ public class TAPUtils {
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = TapTalk.appContext.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public int dpToPx(Resources res, float dp) {
+        return (int) (dp * res.getDisplayMetrics().density);
+    }
+
+    /**
+     * Converts sp to px
+     *
+     * @param res Resources
+     * @param sp  the value in sp
+     * @return int
+     */
+    public int spToPx(Resources res, float sp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, res.getDisplayMetrics());
+    }
+
+    public boolean isRtl(Resources res) {
+        return res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     public boolean hasPermissions(Context context, String... permissions) {

@@ -34,22 +34,25 @@
 
     <item name="tap_link_bettermovementmethod_highlight_background_span" type="id" />
 
-    <declare-styleable name="IndexFastScrollRecyclerView">
-        <attr name="setIndexTextSize" format="integer" />
-        <attr name="setIndexbarWidth" format="float" />
-        <attr name="setIndexbarMargin" format="float" />
-        <attr name="setPreviewPadding" format="integer" />
-        <attr name="setPreviewTextSize" format="integer" />
-        <attr name="setPreviewColor" format="color" />
-        <attr name="setPreviewTextColor" format="color" />
-        <attr name="setPreviewTransparentValue" format="float" />
-        <attr name="setIndexBarCornerRadius" format="integer" />
-        <attr name="setIndexBarTransparentValue" format="float" />
-        <attr name="setIndexBarColor" format="string" />
-        <attr name="setIndexBarTextColor" format="string" />
-        <attr name="setIndexBarHighlightTextColor" format="string" />
-        <attr name="setIndexBarColorRes" format="color" />
-        <attr name="setIndexBarTextColorRes" format="color" />
-        <attr name="setIndexBarHighlightTextColorRes" format="color" />
+    <declare-styleable name="FastScrollRecyclerView">
+        <attr name="fastScrollThumbColor" format="reference|color" />
+        <attr name="fastScrollThumbInactiveColor" format="reference|color" />
+        <attr name="fastScrollTrackColor" format="reference|color" />
+        <attr name="fastScrollPopupBgColor" format="reference|color" />
+        <attr name="fastScrollPopupTextColor" format="reference|color" />
+        <attr name="fastScrollPopupTextSize" format="reference|dimension" />
+        <attr name="fastScrollPopupTextVerticalAlignmentMode" format="enum">
+            <enum name="text_bounds" value="0"/>
+            <enum name="font_metrics" value="1"/>
+        </attr>
+        <attr name="fastScrollPopupBackgroundSize" format="reference|dimension" />
+        <attr name="fastScrollPopupPosition" format="enum">
+            <enum name="adjacent" value="0"/>
+            <enum name="center" value="1"/>
+        </attr>
+        <attr name="fastScrollAutoHide" format="reference|boolean" />
+        <attr name="fastScrollAutoHideDelay" format="reference|integer" />
+        <attr name="fastScrollEnableThumbInactiveColor" format="reference|boolean" />
+        <attr name="fastScrollThumbEnabled" format="reference|boolean" />
     </declare-styleable>
 </resources>

@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Fragment
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -9,7 +10,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -109,7 +114,7 @@ class TAPPhoneLoginFragment : Fragment() {
         ll_country_code.setOnClickListener {
             val intent = Intent(context, TAPCountryListActivity::class.java)
             intent.putExtra("CountryList", countryListitems)
-            startActivity(intent)
+            startActivityForResult(intent, COUNTRY_PICK)
         }
     }
 
@@ -235,5 +240,18 @@ class TAPPhoneLoginFragment : Fragment() {
                 .setPrimaryButtonListener {
                     stopAndHideProgress()
                 }.show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            COUNTRY_PICK -> {
+                when (resultCode) {
+                    RESULT_OK -> {
+                        val item = data?.getParcelableExtra<TAPCountryListItem>(TAPDefaultConstant.K_COUNTRY_PICK);
+                        Toast.makeText(context, item?.commonName, LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
 }
