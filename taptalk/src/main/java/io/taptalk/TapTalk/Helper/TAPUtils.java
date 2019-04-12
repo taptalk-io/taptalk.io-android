@@ -208,6 +208,10 @@ public class TAPUtils {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
+    public int dpToPx(Resources res, float dp) {
+        return (int) (dp * res.getDisplayMetrics().density);
+    }
+
     /**
      * Converts sp to px
      *

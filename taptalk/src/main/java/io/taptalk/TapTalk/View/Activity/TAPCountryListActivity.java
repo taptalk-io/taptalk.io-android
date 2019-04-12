@@ -105,8 +105,6 @@ public class TAPCountryListActivity extends AppCompatActivity {
     }
 
     private void searchCountry(String countryKeyword) {
-        List<TAPCountryRecycleItem> recycleItems = adapter.getItems();
-
         if ("".equals(countryKeyword) || countryKeyword.isEmpty()) {
             adapter.setItems(setupDataForRecycler(""));
         } else {

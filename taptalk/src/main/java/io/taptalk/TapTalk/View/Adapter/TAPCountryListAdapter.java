@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.taptalk.Taptalk.R;
@@ -54,9 +55,9 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
     @Override
     public int getViewTypeHeight(RecyclerView recyclerView, @Nullable TAPBaseViewHolder<TAPCountryRecycleItem> viewHolder, int viewType) {
         if (COUNTRY_INITIAL == TAPCountryRecycleItem.RecyclerItemType.values()[viewType]) {
-            return TAPUtils.getInstance().dpToPx(52);
+            return TAPUtils.getInstance().dpToPx(TapTalk.appContext.getResources(),52);
         } else {
-            return TAPUtils.getInstance().dpToPx(44);
+            return TAPUtils.getInstance().dpToPx(TapTalk.appContext.getResources(), 44);
         }
     }
 
