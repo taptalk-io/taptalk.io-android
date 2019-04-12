@@ -355,7 +355,7 @@ public class TAPRoomListFragment extends Fragment {
                 roomLastMessage.updateValue(message);
                 Integer roomPos = vm.getRoomList().indexOf(roomList);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
-            } else {
+            } else if (roomLastMessage.getCreated() < message.getCreated()) {
                 //last message nya beda sama yang ada di tampilan
                 roomList.setLastMessage(message);
 
