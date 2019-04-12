@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,12 +13,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.taptalk.TapTalk.View.Adapter.TAPCountryListAdapter;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_PICK;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM_BOTTOM;
@@ -28,6 +31,17 @@ public class TAPCountryListActivity extends AppCompatActivity {
     private FastScrollRecyclerView rvCountryList;
     private List<TAPCountryListItem> countryList;
     private TAPCountryListAdapter adapter;
+
+    public interface TAPCountryPickInterface {
+        void onPick(TAPCountryListItem country);
+    }
+
+    private TAPCountryPickInterface countryPickInterface = country -> {
+        Intent intent = new Intent();
+        intent.putExtra(K_COUNTRY_PICK, country);
+        setResult(RESULT_OK, intent);
+        onBackPressed();
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +72,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
 
     private void initAdapter() {
         try {
-            adapter = new TAPCountryListAdapter(setupDataForRecycler(""));
+            adapter = new TAPCountryListAdapter(setupDataForRecycler(""), countryPickInterface);
             rvCountryList.setAdapter(adapter);
             rvCountryList.setHasFixedSize(true);
             rvCountryList.setLayoutManager(new LinearLayoutManager(TAPCountryListActivity.this, LinearLayoutManager.VERTICAL, false));

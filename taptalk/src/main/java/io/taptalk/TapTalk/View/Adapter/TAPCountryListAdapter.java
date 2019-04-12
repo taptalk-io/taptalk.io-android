@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
@@ -15,6 +14,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
+import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
@@ -22,8 +22,11 @@ import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.CO
 public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem, TAPBaseViewHolder<TAPCountryRecycleItem>>
         implements FastScrollRecyclerView.SectionedAdapter, FastScrollRecyclerView.MeasurableAdapter<TAPBaseViewHolder<TAPCountryRecycleItem>> {
 
-    public TAPCountryListAdapter(List<TAPCountryRecycleItem> items) {
+    private TAPCountryListActivity.TAPCountryPickInterface countryPickInterface;
+
+    public TAPCountryListAdapter(List<TAPCountryRecycleItem> items, TAPCountryListActivity.TAPCountryPickInterface countryPickInterface) {
         setItems(items);
+        this.countryPickInterface = countryPickInterface;
     }
 
     @NonNull
@@ -55,7 +58,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
     @Override
     public int getViewTypeHeight(RecyclerView recyclerView, @Nullable TAPBaseViewHolder<TAPCountryRecycleItem> viewHolder, int viewType) {
         if (COUNTRY_INITIAL == TAPCountryRecycleItem.RecyclerItemType.values()[viewType]) {
-            return TAPUtils.getInstance().dpToPx(TapTalk.appContext.getResources(),52);
+            return TAPUtils.getInstance().dpToPx(TapTalk.appContext.getResources(), 52);
         } else {
             return TAPUtils.getInstance().dpToPx(TapTalk.appContext.getResources(), 44);
         }
@@ -84,6 +87,8 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
                 vLine.setVisibility(View.VISIBLE);
             }
             tvCountryName.setText(item.getCountryListItem().getCommonName());
+
+            itemView.setOnClickListener(v -> countryPickInterface.onPick(item.getCountryListItem()));
         }
     }
 
