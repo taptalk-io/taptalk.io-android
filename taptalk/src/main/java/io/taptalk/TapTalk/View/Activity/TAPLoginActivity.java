@@ -44,10 +44,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 .commit();
     }
 
-    public void showOTPVerification(Long otpID, String otpKey, String phoneNumber, String phoneNumberWithCode) {
+    public void showOTPVerification(Long otpID, String otpKey, String phoneNumber, String phoneNumberWithCode, int countryID, String countryCallingID) {
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
-                .replace(R.id.fl_container, TAPLoginVerificationFragment.Companion.getInstance(otpID, otpKey, phoneNumber, phoneNumberWithCode))
+                .replace(R.id.fl_container, TAPLoginVerificationFragment.Companion.getInstance(otpID, otpKey, phoneNumber, phoneNumberWithCode, countryID, countryCallingID))
                 .addToBackStack(null)
                 .commit();
     }
