@@ -37,6 +37,7 @@ class TAPPhoneLoginFragment : Fragment() {
     var countryIsoCode = "id" //Indonesia Default
     var defaultCallingCode = "62" //Indonesia Default
     var defaultCountryID = 1 //Indonesia Default
+    var isNeedResetData = true //ini biar dy ga ngambil data hp setiap kali muncul halaman login
 
     //val oneWeekAgoTimestamp = 604800000L // 7 * 24 * 60 * 60 * 1000
     private val oneWeekAgoTimestamp: Long = 7 * 24 * 60 * 60 * 1000
@@ -57,20 +58,23 @@ class TAPPhoneLoginFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        countryIsoCode = TAPUtils.getInstance().getDeviceCountryCode(context)
         val lastCallCountryTimestamp = TAPDataManager.getInstance().lastCallCountryTimestamp
         if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneWeekAgoTimestamp == lastCallCountryTimestamp)
             callCountryListFromAPI()
-        else {
+        else if (isNeedResetData) {
+            countryIsoCode = TAPUtils.getInstance().getDeviceCountryCode(context)
             //countryHashMap = TAPDataManager.getInstance().countryList
             countryListitems = TAPDataManager.getInstance().countryList
             countryHashMap = countryListitems.associateBy({ it.iso2Code }, { it }).toMutableMap()
+            isNeedResetData = false
             if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
-                setCountry(1, "62")
+                setCountry(defaultCountryID, defaultCallingCode)
             } else {
                 setCountry(countryHashMap.get(countryIsoCode)?.countryID ?: 0,
                         countryHashMap.get(countryIsoCode)?.callingCode ?: "")
             }
+        } else {
+            setCountry(defaultCountryID, defaultCallingCode)
         }
         initView()
     }
@@ -85,7 +89,7 @@ class TAPPhoneLoginFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val textCount = s?.length ?: 0
+                val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
                 when (textCount) {
                     in 7..15 -> {
                         fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_gradient_ff9833_ff7e00_rounded_8dp_stroke_ff7e00_1dp)
@@ -132,11 +136,12 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun checkAndEditPhoneNumber(): String {
-        var phoneNumber = et_phone_number.text.toString().trim()
+        var phoneNumber = et_phone_number.text.toString().replace("-","").trim()
         val callingCodeLength: Int = defaultCallingCode.length
         when {
+            phoneNumber.isEmpty() || callingCodeLength > phoneNumber.length -> {}
             '0' == phoneNumber.elementAt(0) -> phoneNumber = phoneNumber.replaceFirst("0", "")
-            "+$defaultCallingCode" == phoneNumber.substring(0, (callingCodeLength + 1)) -> phoneNumber = phoneNumber.substring(3)
+            //"+$defaultCallingCode" == phoneNumber.substring(0, (callingCodeLength + 1)) -> phoneNumber = phoneNumber.substring(3)
             defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> phoneNumber = phoneNumber.substring(2)
         }
         return phoneNumber

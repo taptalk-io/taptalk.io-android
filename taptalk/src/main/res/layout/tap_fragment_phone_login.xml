@@ -111,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/tap_transparent_white"
                 android:hint="1234 5678 0000"
-                android:inputType="phone"
+                android:inputType="numberSigned"
                 android:padding="13dp"
                 android:imeOptions="actionSend"
                 android:textCursorDrawable="@drawable/tap_login_color_cursor"
