@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import io.taptalk.TapTalk.API.Api.TAPApiManager
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -156,6 +158,8 @@ class TAPLoginVerificationFragment : Fragment() {
         override fun verifyOTPSuccessToRegister() {
             activity?.runOnUiThread {
                 val intent = Intent(context, TAPRegisterActivity::class.java)
+//                intent.putExtra(COUNTRY_LIST, )
+                intent.putExtra(MOBILE_NUMBER, phoneNumber)
                 startActivity(intent)
             }
         }

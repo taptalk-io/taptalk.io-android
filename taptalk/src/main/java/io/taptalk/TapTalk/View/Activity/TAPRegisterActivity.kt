@@ -1,21 +1,29 @@
 package io.taptalk.TapTalk.View.Activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.content.res.ResourcesCompat
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
+import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_register.*
@@ -23,6 +31,7 @@ import kotlinx.android.synthetic.main.tap_activity_register.*
 class TAPRegisterActivity : TAPBaseActivity() {
 
     private var formCheck = arrayOf(0, 0, 0, 0, 0, 0)
+    private var selectedCountry: TAPCountryListItem? = null
 
     private val indexFullName = 0
     private val indexUsername = 1
@@ -52,14 +61,14 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         et_full_name.onFocusChangeListener = fullNameFocusListener
         et_username.onFocusChangeListener = usernameFocusListener
-        et_mobile_number.onFocusChangeListener = mobileNumberFocusListener
+        //et_mobile_number.onFocusChangeListener = mobileNumberFocusListener
         et_email_address.onFocusChangeListener = emailAddressFocusListener
         et_password.onFocusChangeListener = passwordFocusListener
         et_retype_password.onFocusChangeListener = passwordRetypeFocusListener
 
         et_full_name.addTextChangedListener(fullNameWatcher)
         et_username.addTextChangedListener(usernameWatcher)
-        et_mobile_number.addTextChangedListener(numberWatcher)
+        //et_mobile_number.addTextChangedListener(numberWatcher)
         et_email_address.addTextChangedListener(emailWatcher)
         et_password.addTextChangedListener(passwordWatcher)
         et_retype_password.addTextChangedListener(passwordRetypeWatcher)
@@ -70,7 +79,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
         et_retype_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
 
-        // TODO: get default country ID
+        selectedCountry = intent.getParcelableExtra(COUNTRY_LIST)
+        tv_country_code.text = "+" + selectedCountry?.callingCode
+        et_mobile_number.isEnabled = false
+        et_mobile_number.hint = intent.getStringExtra(MOBILE_NUMBER)
 
         fl_container.setOnClickListener{ clearAllFocus() }
         cl_form_container.setOnClickListener{ clearAllFocus() }
@@ -79,11 +91,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
         iv_view_password_retype.setOnClickListener{ togglePasswordVisibility(et_retype_password, iv_view_password_retype) }
 
         et_retype_password.setOnEditorActionListener { v, a, e -> fl_button_continue.callOnClick() }
-    }
-
-    private fun clearAllFocus() {
-        TAPUtils.getInstance().dismissKeyboard(this)
-        fl_container.clearFocus()
     }
 
     private fun checkFullName(hasFocus: Boolean) {
@@ -135,26 +142,26 @@ class TAPRegisterActivity : TAPBaseActivity() {
         checkContinueButtonAvailability()
     }
 
-    private fun checkMobileNumber(hasFocus: Boolean) {
-        val phoneNumber = StringBuilder().append(tv_country_code.text).append(et_mobile_number.text)
-        if (et_mobile_number.text.isNotEmpty() && Patterns.PHONE.matcher(phoneNumber).matches() && et_mobile_number.text.length in 7..15) {
-            // Valid phone number
-            formCheck[indexMobileNumber] = stateValid
-            tv_label_mobile_number_error.visibility = View.GONE
-            updateEditTextBackground(et_mobile_number, hasFocus)
-        } else if (et_mobile_number.text.isEmpty()) {
-            // Not filled
-            formCheck[indexMobileNumber] = stateEmpty
-            tv_label_mobile_number_error.visibility = View.GONE
-            updateEditTextBackground(et_mobile_number, hasFocus)
-        } else {
-            // Invalid phone number
-            formCheck[indexMobileNumber] = stateInvalid
-            tv_label_mobile_number_error.visibility = View.VISIBLE
-            et_mobile_number.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
-        }
-        checkContinueButtonAvailability()
-    }
+//    private fun checkMobileNumber(hasFocus: Boolean) {
+//        val phoneNumber = StringBuilder().append(tv_country_code.text).append(et_mobile_number.text)
+//        if (et_mobile_number.text.isNotEmpty() && Patterns.PHONE.matcher(phoneNumber).matches() && et_mobile_number.text.length in 7..15) {
+//            // Valid phone number
+//            formCheck[indexMobileNumber] = stateValid
+//            tv_label_mobile_number_error.visibility = View.GONE
+//            updateEditTextBackground(et_mobile_number, hasFocus)
+//        } else if (et_mobile_number.text.isEmpty()) {
+//            // Not filled
+//            formCheck[indexMobileNumber] = stateEmpty
+//            tv_label_mobile_number_error.visibility = View.GONE
+//            updateEditTextBackground(et_mobile_number, hasFocus)
+//        } else {
+//            // Invalid phone number
+//            formCheck[indexMobileNumber] = stateInvalid
+//            tv_label_mobile_number_error.visibility = View.VISIBLE
+//            et_mobile_number.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+//        }
+//        checkContinueButtonAvailability()
+//    }
 
     private fun checkEmailAddress(hasFocus: Boolean) {
         if (et_email_address.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(et_email_address.text).matches()) {
@@ -195,6 +202,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
             tv_label_password_error.visibility = View.VISIBLE
             cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
             v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_watermelon_red))
+        }
+        if (et_retype_password.text.isNotEmpty()) {
+            checkRetypedPassword(et_retype_password.hasFocus())
         }
         checkContinueButtonAvailability()
     }
@@ -258,6 +268,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
     }
 
+    private fun clearAllFocus() {
+        TAPUtils.getInstance().dismissKeyboard(this)
+        fl_container.clearFocus()
+    }
+
     private fun togglePasswordVisibility(editText: EditText, button: ImageView) {
         val cursorPosition = editText.selectionStart
         if (editText.inputType == InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) {
@@ -275,7 +290,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         TAPDataManager.getInstance().register(
                 et_full_name.text.toString(),
                 et_username.text.toString(),
-                Integer.valueOf(tv_country_code.text.toString()),
+                selectedCountry?.countryID ?: 1,
                 et_mobile_number.text.toString(),
                 et_email_address.text.toString(),
                 et_password.text.toString(),
@@ -317,17 +332,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
     }
 
-    private val mobileNumberFocusListener = View.OnFocusChangeListener { view, hasFocus ->
-        if (hasFocus) {
-            view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-            if (formCheck[indexMobileNumber] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
-            }
-        } else {
-            view.elevation = 0f
-            checkMobileNumber(hasFocus)
-        }
-    }
+//    private val mobileNumberFocusListener = View.OnFocusChangeListener { view, hasFocus ->
+//        if (hasFocus) {
+//            view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+//            if (formCheck[indexMobileNumber] != stateInvalid) {
+//                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+//            }
+//        } else {
+//            view.elevation = 0f
+//            checkMobileNumber(hasFocus)
+//        }
+//    }
 
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
@@ -391,17 +406,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
     }
 
-    private val numberWatcher = object : TextWatcher {
-        override fun afterTextChanged(p0: Editable?) {}
-
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (formCheck[indexMobileNumber] != stateEmpty) {
-                checkMobileNumber(et_mobile_number.hasFocus())
-            }
-        }
-    }
+//    private val numberWatcher = object : TextWatcher {
+//        override fun afterTextChanged(p0: Editable?) {}
+//
+//        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+//
+//        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//            if (formCheck[indexMobileNumber] != stateEmpty) {
+//                checkMobileNumber(et_mobile_number.hasFocus())
+//            }
+//        }
+//    }
 
     private val emailWatcher = object : TextWatcher {
         override fun afterTextChanged(p0: Editable?) {}
@@ -483,7 +498,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {
-            // TODO: continue to chat
+            TAPApiManager.getInstance().isLogout = false
+            val intent = Intent(this@TAPRegisterActivity, TAPRoomListActivity::class.java)
+            startActivity(intent)
             finish()
         }
 

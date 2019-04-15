@@ -20,6 +20,7 @@ import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.taptalk.TapTalk.View.Adapter.TAPCountryListAdapter;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_PICK;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM;
@@ -53,7 +54,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
 
     private void initPassingIntentData() {
         try {
-            countryList = getIntent().getParcelableArrayListExtra("CountryList");
+            countryList = getIntent().getParcelableArrayListExtra(COUNTRY_LIST);
         } catch (Exception e) {
             countryList = new ArrayList<>();
         }

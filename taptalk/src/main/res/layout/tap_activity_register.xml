@@ -180,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:text="+62" />
+                    android:hint="+62" />
 
                 <ImageView
                     android:id="@+id/iv_loading_progress_country"
@@ -201,6 +201,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:enabled="false"
                 android:hint="@string/tap_hint_phone_number"
                 android:imeOptions="actionNext"
                 android:inputType="number"

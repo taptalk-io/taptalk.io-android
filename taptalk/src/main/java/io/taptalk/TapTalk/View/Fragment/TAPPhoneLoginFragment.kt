@@ -15,6 +15,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
@@ -119,7 +120,7 @@ class TAPPhoneLoginFragment : Fragment() {
 
         ll_country_code.setOnClickListener {
             val intent = Intent(context, TAPCountryListActivity::class.java)
-            intent.putExtra("CountryList", countryListitems)
+            intent.putExtra(COUNTRY_LIST, countryListitems)
             startActivityForResult(intent, COUNTRY_PICK)
         }
     }

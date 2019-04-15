@@ -97,6 +97,8 @@ public class TAPDefaultConstant {
         public static final String QUOTE = "kTAPExtraQuote";
         public static final String URI = "kTAPExtraUri";
         public static final String MEDIA_PREVIEWS = "kTAPExtraMediaPreviews";
+        public static final String COUNTRY_LIST = "kTAPExtraCountryList";
+        public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
     }
 
     public static final class RequestCode {
