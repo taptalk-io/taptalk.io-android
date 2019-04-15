@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Fragment
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
@@ -32,9 +33,12 @@ class TAPPhoneLoginFragment : Fragment() {
 
     val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
             ?: ""
-    var countryIsoCode = "id"
+    var countryIsoCode = "id" //Indonesia Default
+    var defaultCallingCode = "62" //Indonesia Default
+    var defaultCountryID = 1 //Indonesia Default
+
     //val oneWeekAgoTimestamp = 604800000L // 7 * 24 * 60 * 60 * 1000
-    private val oneWeekAgoTimestamp : Long = 7 * 24 * 60 * 60 * 1000
+    private val oneWeekAgoTimestamp: Long = 7 * 24 * 60 * 60 * 1000
     private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     private var countryListitems = arrayListOf<TAPCountryListItem>()
 
@@ -50,6 +54,7 @@ class TAPPhoneLoginFragment : Fragment() {
         return inflater.inflate(R.layout.tap_fragment_phone_login, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         countryIsoCode = TAPUtils.getInstance().getDeviceCountryCode(context)
         val lastCallCountryTimestamp = TAPDataManager.getInstance().lastCallCountryTimestamp
@@ -58,11 +63,12 @@ class TAPPhoneLoginFragment : Fragment() {
         else {
             //countryHashMap = TAPDataManager.getInstance().countryList
             countryListitems = TAPDataManager.getInstance().countryList
-            countryHashMap = countryListitems.associateBy ( {it.iso2Code}, {it} ).toMutableMap()
+            countryHashMap = countryListitems.associateBy({ it.iso2Code }, { it }).toMutableMap()
             if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
-                tv_country_code.text = "+62"
+                setCountry(1, "62")
             } else {
-                tv_country_code.text = "+" + countryHashMap.get(countryIsoCode)?.callingCode
+                setCountry(countryHashMap.get(countryIsoCode)?.countryID ?: 0,
+                        countryHashMap.get(countryIsoCode)?.callingCode ?: "")
             }
         }
         initView()
@@ -124,18 +130,19 @@ class TAPPhoneLoginFragment : Fragment() {
         checkNumberAndCallAPI()
     }
 
-    private fun checkAndEditPhoneNumber() : String {
+    private fun checkAndEditPhoneNumber(): String {
         var phoneNumber = et_phone_number.text.toString().trim()
+        val callingCodeLength: Int = defaultCallingCode.length
         when {
             '0' == phoneNumber.elementAt(0) -> phoneNumber = phoneNumber.replaceFirst("0", "")
-            "+62" == phoneNumber.substring(0, 3) -> phoneNumber = phoneNumber.substring(3)
-            "62" == phoneNumber.substring(0, 2) -> phoneNumber = phoneNumber.substring(2)
+            "+$defaultCallingCode" == phoneNumber.substring(0, (callingCodeLength + 1)) -> phoneNumber = phoneNumber.substring(3)
+            defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> phoneNumber = phoneNumber.substring(2)
         }
         return phoneNumber
     }
 
     private fun checkNumberAndCallAPI() {
-        TapTalk.loginWithRequestOTP(1, checkAndEditPhoneNumber(), requestOTPInterface)
+        TapTalk.loginWithRequestOTP(defaultCountryID, checkAndEditPhoneNumber(), requestOTPInterface)
     }
 
     private fun showProgress() {
@@ -159,7 +166,7 @@ class TAPPhoneLoginFragment : Fragment() {
                     (activity as TAPLoginActivity).showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Log.e("><><><","Masuk ",e)
+                    Log.e("><><><", "Masuk ", e)
                 }
             }
         }
@@ -177,10 +184,11 @@ class TAPPhoneLoginFragment : Fragment() {
                 TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_country)
             }
 
+            @SuppressLint("SetTextI18n")
             override fun onSuccess(response: TAPCountryListResponse?) {
                 countryListitems.clear()
                 TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
-                tv_country_code.text = ""
+                setCountry(0, "")
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
                     response?.countries?.forEach {
@@ -188,16 +196,23 @@ class TAPPhoneLoginFragment : Fragment() {
                         countryHashMap.put(it.iso2Code, it)
                         if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase() && it.iso2Code.toLowerCase() == "id") {
                             defaultCountry = it
-                            activity?.runOnUiThread { tv_country_code.text = "+" + it.callingCode }
+                            activity?.runOnUiThread {
+                                setCountry(it.countryID, it.callingCode)
+                            }
                         } else if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase()) {
-                            activity?.runOnUiThread { tv_country_code.text = "+" + it.callingCode }
+                            activity?.runOnUiThread {
+                                setCountry(it.countryID, it.callingCode)
+                            }
                         } else if (it.iso2Code.toLowerCase() == "id") {
                             defaultCountry = it
                         }
                     }
 
                     if ("" == tv_country_code.text) {
-                        activity?.runOnUiThread { tv_country_code.text = "+" + defaultCountry?.callingCode }
+                        val callingCode: String = defaultCountry?.callingCode ?: ""
+                        activity?.runOnUiThread {
+                            setCountry(defaultCountry?.countryID ?: 0, callingCode)
+                        }
                     }
 
                     TAPDataManager.getInstance().saveCountryList(countryListitems)
@@ -216,7 +231,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 iv_loading_progress_country.visibility = View.GONE
                 iv_loading_progress_country.clearAnimation()
                 tv_country_code.visibility = View.VISIBLE
-                tv_country_code.text = ""
+                setCountry(0, "")
                 showDialog("ERROR", error?.message ?: generalErrorMessage)
             }
 
@@ -225,7 +240,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 iv_loading_progress_country.visibility = View.GONE
                 iv_loading_progress_country.clearAnimation()
                 tv_country_code.visibility = View.VISIBLE
-                tv_country_code.text = ""
+                setCountry(0, "")
                 showDialog("ERROR", errorMessage ?: generalErrorMessage)
             }
         })
@@ -242,16 +257,26 @@ class TAPPhoneLoginFragment : Fragment() {
                 }.show()
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             COUNTRY_PICK -> {
                 when (resultCode) {
                     RESULT_OK -> {
-                        val item = data?.getParcelableExtra<TAPCountryListItem>(TAPDefaultConstant.K_COUNTRY_PICK);
+                        val item = data?.getParcelableExtra<TAPCountryListItem>(TAPDefaultConstant.K_COUNTRY_PICK)
                         Toast.makeText(context, item?.commonName, LENGTH_SHORT).show()
+                        val callingCode: String = item?.callingCode ?: ""
+                        setCountry(item?.countryID ?: 0, callingCode)
                     }
                 }
             }
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setCountry(countryID: Int, callingCode: String) {
+        tv_country_code.text = "+$callingCode"
+        defaultCountryID = countryID
+        defaultCallingCode = callingCode
     }
 }
