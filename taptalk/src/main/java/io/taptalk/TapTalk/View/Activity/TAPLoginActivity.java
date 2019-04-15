@@ -33,7 +33,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
     public void initFirstPage() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_container, TAPPhoneLoginFragment.Companion.getInstance())
-                .addToBackStack(null)
                 .commit();
     }
 
