@@ -235,6 +235,7 @@
     <string name="tap_permission_request">Permission Request</string>
     <string name="tap_reply">Reply</string>
     <string name="tap_requesting_otp">Requesting OTP</string>
+    <string name="tap_retry">Retry</string>
     <string name="tap_retype_password">Retype Password</string>
     <string name="tap_saving">Saving…</string>
     <string name="tap_search">Search</string>

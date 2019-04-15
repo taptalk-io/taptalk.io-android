@@ -1,29 +1,24 @@
 package io.taptalk.TapTalk.View.Activity
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.content.res.ResourcesCompat
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
-import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
-import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_register.*
@@ -31,7 +26,8 @@ import kotlinx.android.synthetic.main.tap_activity_register.*
 class TAPRegisterActivity : TAPBaseActivity() {
 
     private var formCheck = arrayOf(0, 0, 0, 0, 0, 0)
-    private var selectedCountry: TAPCountryListItem? = null
+    private var countryID = 1
+    private var countryCallingCode = "62"
 
     private val indexFullName = 0
     private val indexUsername = 1
@@ -79,16 +75,20 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
         et_retype_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
 
-        selectedCountry = intent.getParcelableExtra(COUNTRY_LIST)
-        tv_country_code.text = "+" + selectedCountry?.callingCode
+        countryID = intent.getIntExtra(COUNTRY_ID, 1)
+        countryCallingCode = intent.getStringExtra(COUNTRY_CALLING_CODE)
+        tv_country_code.text = "+$countryCallingCode"
         et_mobile_number.isEnabled = false
-        et_mobile_number.hint = intent.getStringExtra(MOBILE_NUMBER)
+        et_mobile_number.setText(intent.getStringExtra(MOBILE_NUMBER))
+        if (et_mobile_number.text.isNotEmpty()) {
+            formCheck[indexMobileNumber] = stateValid
+        }
 
-        fl_container.setOnClickListener{ clearAllFocus() }
-        cl_form_container.setOnClickListener{ clearAllFocus() }
+        fl_container.setOnClickListener { clearAllFocus() }
+        cl_form_container.setOnClickListener { clearAllFocus() }
         iv_button_back.setOnClickListener { onBackPressed() }
-        iv_view_password.setOnClickListener{ togglePasswordVisibility(et_password, iv_view_password) }
-        iv_view_password_retype.setOnClickListener{ togglePasswordVisibility(et_retype_password, iv_view_password_retype) }
+        iv_view_password.setOnClickListener { togglePasswordVisibility(et_password, iv_view_password) }
+        iv_view_password_retype.setOnClickListener { togglePasswordVisibility(et_retype_password, iv_view_password_retype) }
 
         et_retype_password.setOnEditorActionListener { v, a, e -> fl_button_continue.callOnClick() }
     }
@@ -290,7 +290,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         TAPDataManager.getInstance().register(
                 et_full_name.text.toString(),
                 et_username.text.toString(),
-                selectedCountry?.countryID ?: 1,
+                countryID,
                 et_mobile_number.text.toString(),
                 et_email_address.text.toString(),
                 et_password.text.toString(),
@@ -469,11 +469,16 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onError(error: TAPErrorModel?) {
-            setErrorResult(error?.message ?: getString(R.string.tap_error_unable_to_verify_username))
+            setErrorResult(error?.message
+                    ?: getString(R.string.tap_error_unable_to_verify_username))
         }
 
         override fun onError(throwable: Throwable?) {
             setErrorResult(getString(R.string.tap_error_unable_to_verify_username))
+        }
+
+        override fun endLoading() {
+            checkContinueButtonAvailability()
         }
 
         private fun setErrorResult(message: String) {
@@ -498,10 +503,31 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {
-            TAPApiManager.getInstance().isLogout = false
-            val intent = Intent(this@TAPRegisterActivity, TAPRoomListActivity::class.java)
-            startActivity(intent)
-            finish()
+            TapTalk.saveAuthTicketAndGetAccessToken(response?.ticket
+                    ?: "", object : TAPVerifyOTPInterface {
+                override fun verifyOTPSuccessToLogin() {
+                    setResult(RESULT_OK)
+                    finish()
+                }
+
+                override fun verifyOTPSuccessToRegister() {
+
+                }
+
+                override fun verifyOTPFailed(errorCode: String?, errorMessage: String?) {
+                    TapTalkDialog.Builder(this@TAPRegisterActivity)
+                            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                            .setTitle(getString(R.string.tap_error))
+                            .setMessage(errorMessage)
+                            .setPrimaryButtonTitle(getString(R.string.tap_retry))
+                            .setPrimaryButtonListener(true) {
+                                TapTalk.saveAuthTicketAndGetAccessToken(response?.ticket
+                                        ?: "", this)
+                            }
+                            .setCancelable(false)
+                            .show()
+                }
+            })
         }
 
         override fun onError(error: TAPErrorModel?) {

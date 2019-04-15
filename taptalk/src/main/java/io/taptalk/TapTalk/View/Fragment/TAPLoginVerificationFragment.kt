@@ -9,15 +9,15 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import io.taptalk.TapTalk.API.Api.TAPApiManager
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
+import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity
 import io.taptalk.Taptalk.R
@@ -31,6 +31,8 @@ class TAPLoginVerificationFragment : Fragment() {
     var phoneNumber = "0"
     var otpID = 0L
     var otpKey = ""
+    var countryID = 0
+    var countryCallingCode = ""
 
     companion object {
         //Arguments Data
@@ -38,14 +40,18 @@ class TAPLoginVerificationFragment : Fragment() {
         val kPhoneNumber = "PhoneNumber"
         val kOTPID = "OTPID"
         val kOTPKey = "OTPKey"
+        val kCountryID = "CountryID"
+        val kCountryCallingCode = "CountryCallingCode"
 
-        fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String): TAPLoginVerificationFragment {
+        fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String, countryID : Int, countryCallingCode : String): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
             val args = Bundle()
             args.putString(kPhoneNumberWithCode, phoneNumberWithCode)
             args.putString(kPhoneNumber, phoneNumber)
             args.putLong(kOTPID, otpID)
             args.putString(kOTPKey, otpKey)
+            args.putInt(kCountryID, countryID)
+            args.putString(kCountryCallingCode, countryCallingCode)
             instance.arguments = args
             return instance
         }
@@ -67,6 +73,8 @@ class TAPLoginVerificationFragment : Fragment() {
         phoneNumber = arguments?.getString(kPhoneNumber, "0") ?: "0"
         otpID = arguments?.getLong(kOTPID, 0L) ?: 0L
         otpKey = arguments?.getString(kOTPKey, "") ?: ""
+        countryID = arguments?.getInt(kCountryID) ?: 0
+        countryCallingCode = arguments?.getString(kCountryCallingCode, "") ?: ""
         TAPUtils.getInstance().animateClickButton(iv_back_button, 0.95f)
         iv_back_button.setOnClickListener { activity?.onBackPressed() }
         et_otp_code.addTextChangedListener(otpTextWatcher)
@@ -89,7 +97,6 @@ class TAPLoginVerificationFragment : Fragment() {
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
             showDialog("ERROR", errorMessage ?: generalErrorMessage)
         }
-
     }
 
     private fun setAndStartTimer() {
@@ -158,9 +165,11 @@ class TAPLoginVerificationFragment : Fragment() {
         override fun verifyOTPSuccessToRegister() {
             activity?.runOnUiThread {
                 val intent = Intent(context, TAPRegisterActivity::class.java)
-//                intent.putExtra(COUNTRY_LIST, )
+                intent.putExtra(COUNTRY_ID, countryID)
+                intent.putExtra(COUNTRY_CALLING_CODE, countryCallingCode)
                 intent.putExtra(MOBILE_NUMBER, phoneNumber)
-                startActivity(intent)
+                activity?.startActivityForResult(intent, REGISTER)
+                (activity as TAPLoginActivity).initFirstPage()
             }
         }
 
@@ -171,7 +180,6 @@ class TAPLoginVerificationFragment : Fragment() {
             ll_loading_otp.visibility = View.GONE
             tv_otp_timer.visibility = View.GONE
         }
-
     }
 
     private fun clearOTPEditText() {

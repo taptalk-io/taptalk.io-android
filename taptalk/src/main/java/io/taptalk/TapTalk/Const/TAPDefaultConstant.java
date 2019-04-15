@@ -98,6 +98,8 @@ public class TAPDefaultConstant {
         public static final String URI = "kTAPExtraUri";
         public static final String MEDIA_PREVIEWS = "kTAPExtraMediaPreviews";
         public static final String COUNTRY_LIST = "kTAPExtraCountryList";
+        public static final String COUNTRY_ID = "kTAPExtraCountryID";
+        public static final String COUNTRY_CALLING_CODE = "kTAPExtraCountryCallingCode";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
     }
 
@@ -111,6 +113,7 @@ public class TAPDefaultConstant {
         public static final int PICK_LOCATION = 16;
         public static final int SEND_FILE = 17;
         public static final int COUNTRY_PICK = 18;
+        public static final int REGISTER = 19;
     }
 
     public static final class PermissionRequest {

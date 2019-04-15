@@ -216,7 +216,7 @@ public class TapTalk {
         });
     }
 
-    private static void saveAuthTicketAndGetAccessToken(String authTicket, TAPVerifyOTPInterface verifyOTPInterface) {
+    public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPVerifyOTPInterface verifyOTPInterface) {
         if (null == authTicket || "".equals(authTicket)) {
             verifyOTPInterface.verifyOTPFailed("401", "Invalid Auth Ticket");
         } else {
