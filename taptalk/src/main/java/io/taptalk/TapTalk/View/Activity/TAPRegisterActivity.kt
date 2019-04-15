@@ -109,7 +109,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun checkUsername(hasFocus: Boolean) {
         TAPDataManager.getInstance().cancelCheckUsernameApiCall()
         checkUsernameTimer.cancel()
-        if (et_username.text.isNotEmpty() && et_username.text.matches(Regex("[a-z0-9_]*")) && et_username.text[0].isLetter()) {
+        if (et_username.text.isNotEmpty() && et_username.text.matches(Regex("[a-z0-9_]*")) &&
+                et_username.text[0].isLetter() &&
+                et_username.text[et_username.text.lastIndex].isLetterOrDigit()) {
             // Valid username, continue to check if username exists
             if (hasFocus) {
                 // Start timer to check username if focused

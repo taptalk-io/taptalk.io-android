@@ -59,6 +59,7 @@ import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
+import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
@@ -260,6 +261,17 @@ public class TAPRoomListFragment extends Fragment {
         });
         flSetupContainer.setOnClickListener(v -> {
         });
+
+        if (BuildConfig.DEBUG) {
+            ivButtonNewChat.setOnLongClickListener(view1 -> {
+                Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
+                startActivity(intent);
+                if (null != getActivity()) {
+                    getActivity().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                }
+                return false;
+            });
+        }
     }
 
     private void openNewChatActivity() {

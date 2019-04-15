@@ -111,11 +111,6 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onUserProfileClicked(Activity activity, TAPUserModel userModel) {
-            //TapTalk.openTapTalkUserProfile(activity, userModel);
-        }
-
-        @Override
         public void onProductLeftButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
             super.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
         }
