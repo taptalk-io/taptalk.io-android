@@ -54,6 +54,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_TEXT_LEFT = 10012;
         public static final int TYPE_BUBBLE_IMAGE_RIGHT = 10021;
         public static final int TYPE_BUBBLE_IMAGE_LEFT = 10022;
+        public static final int TYPE_BUBBLE_VIDEO_RIGHT = 10031;
+        public static final int TYPE_BUBBLE_VIDEO_LEFT = 10032;
         public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
         public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
         public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
@@ -69,9 +71,10 @@ public class TAPDefaultConstant {
         public static final String FILE_NAME = "fileName";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
+        public static final String DURATION = "duration";
         public static final String SIZE = "size";
-        public static final String IMAGE_WIDTH = "width";
-        public static final String IMAGE_HEIGHT = "height";
+        public static final String WIDTH = "width";
+        public static final String HEIGHT = "height";
         public static final String CAPTION = "caption";
         public static final String THUMBNAIL = "thumbnail";
         public static final String FILE_URI = "fileUri";
@@ -92,17 +95,25 @@ public class TAPDefaultConstant {
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
         public static final String IS_TYPING = "kTAPExtraIsTyping";
         public static final String QUOTE = "kTAPExtraQuote";
+        public static final String URI = "kTAPExtraUri";
+        public static final String MEDIA_PREVIEWS = "kTAPExtraMediaPreviews";
+        public static final String COUNTRY_LIST = "kTAPExtraCountryList";
+        public static final String COUNTRY_ID = "kTAPExtraCountryID";
+        public static final String COUNTRY_CALLING_CODE = "kTAPExtraCountryCallingCode";
+        public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
     }
 
     public static final class RequestCode {
         public static final int CREATE_GROUP = 10;
         public static final int PICK_GROUP_IMAGE = 11;
         public static final int SEND_IMAGE_FROM_CAMERA = 12;
-        public static final int SEND_IMAGE_FROM_GALLERY = 13;
-        public static final int SEND_IMAGE_FROM_PREVIEW = 14;
+        public static final int SEND_MEDIA_FROM_GALLERY = 13;
+        public static final int SEND_MEDIA_FROM_PREVIEW = 14;
         public static final int FORWARD_MESSAGE = 15;
         public static final int PICK_LOCATION = 16;
         public static final int SEND_FILE = 17;
+        public static final int COUNTRY_PICK = 18;
+        public static final int REGISTER = 19;
     }
 
     public static final class PermissionRequest {
@@ -111,7 +122,8 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_READ_EXTERNAL_STORAGE_FILE = 22;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 31;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE = 32;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 33;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO = 34;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 35;
         public static final int PERMISSION_LOCATION = 41;
     }
 
@@ -162,7 +174,7 @@ public class TAPDefaultConstant {
         public static final String UploadLocalID = "kTAPUploadLocalID";
         public static final String UploadFailed = "kTAPUploadFailed";
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
-        public static final String UploadRetried = "kTAPUploadRetried";
+//        public static final String UploadRetried = "kTAPUploadRetried";
         public static final String UploadCancelled = "kTAPUploadCancelled";
     }
 
@@ -191,11 +203,6 @@ public class TAPDefaultConstant {
 
     public static final class OldDataConst {
         public static final String K_LAST_DELETE_TIMESTAMP = "kTAPLastDeleteTimestamp";
-    }
-
-    public static final class ImagePreview {
-        public static final String K_IMAGE_RES_CODE = "kTAPImageResultCode";
-        public static final String K_IMAGE_URLS = "kTAPImageUrls";
     }
 
     public static final class MediaType {
@@ -267,6 +274,7 @@ public class TAPDefaultConstant {
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
     public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
+    public static final String K_MEDIA_VOLUME = "kTAPMediaVolume";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
@@ -290,4 +298,7 @@ public class TAPDefaultConstant {
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
     public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
+    public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
+    public static final String K_COUNTRY_LIST = "kTAPCountryList";
+    public static final String K_COUNTRY_PICK = "kTAPCountryPick";
 }

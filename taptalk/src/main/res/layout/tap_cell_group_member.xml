@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
-        android:fontFamily="@font/tap_font_latobold"
+        android:fontFamily="@font/tap_font_pt_root_bold"
         android:gravity="center_horizontal"
         android:letterSpacing="-0.01"
         android:maxLines="1"

@@ -35,7 +35,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel quotedMessage, pendingDownloadMessage;
+    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage;
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
@@ -229,12 +229,26 @@ public class TAPChatViewModel extends AndroidViewModel {
         TAPChatManager.getInstance().setQuotedMessage(quotedMessage, quoteAction);
     }
 
+    /**
+     * Used to save pending download message when requesting storage permission
+     */
     public TAPMessageModel getPendingDownloadMessage() {
         return pendingDownloadMessage;
     }
 
     public void setPendingDownloadMessage(TAPMessageModel pendingDownloadMessage) {
         this.pendingDownloadMessage = pendingDownloadMessage;
+    }
+
+    /**
+     * Used to save file-type message when user opens file from chat bubble
+     */
+    public TAPMessageModel getOpenedFileMessage() {
+        return openedFileMessage;
+    }
+
+    public void setOpenedFileMessage(TAPMessageModel openedFileMessage) {
+        this.openedFileMessage = openedFileMessage;
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {

@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:fontFamily="@font/tap_font_latobold"
+        android:fontFamily="@font/tap_font_pt_root_bold"
         android:gravity="end"
         android:letterSpacing="0.09"
         android:padding="10dp"

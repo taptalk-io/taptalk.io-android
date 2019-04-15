@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tap_charcoal"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_image_preview"
@@ -23,7 +23,7 @@
         android:id="@+id/tv_cancel_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/tap_font_latoregular"
+        android:fontFamily="@font/tap_font_pt_root_regular"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:letterSpacing="-0.02"
         android:paddingStart="16dp"
@@ -44,6 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="31dp"
         android:layout_marginEnd="16dp"
+        android:fontFamily="@font/tap_font_pt_root_regular"
         android:gravity="end"
         android:letterSpacing="-0.02"
         android:textColor="@color/tap_white"
@@ -86,7 +87,7 @@
             android:id="@+id/tv_send_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/tap_font_latobold"
+            android:fontFamily="@font/tap_font_pt_root_bold"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="end"
             android:letterSpacing="0.02"

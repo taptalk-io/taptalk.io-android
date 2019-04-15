@@ -18,8 +18,11 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -152,6 +155,10 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null);
     }
 
+    public static TAPMessageModel BuilderResendMessage(TAPMessageModel message, Long created) {
+        String localID = TAPUtils.getInstance().generateRandomString(32);
+        return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null);
+    }
 
     public void updateMessageStatusText() {
         if (created > 0L && (null == messageStatusText || messageStatusText.isEmpty())) {
@@ -391,10 +398,16 @@ public class TAPMessageModel implements Parcelable {
         this.created = model.getCreated();
         this.user = model.getUser();
 
-        if (null == this.data)
+        if (null == this.data) {
             this.data = model.getData();
-        else if (null != model.data)
+        } else if (null != model.data && (model.type == TYPE_IMAGE || model.type == TYPE_VIDEO) &&
+                (null == model.isSending || !model.isSending) &&
+                (null == model.isFailedSend || !model.isFailedSend)) {
             this.data.putAll(model.data);
+            this.data.remove(FILE_URI); // Remove file Uri from data if type is image or video
+        } else if (null != model.data) {
+            this.data.putAll(model.data);
+        }
 
         this.quote = model.getQuote();
         this.recipientID = model.getRecipientID();

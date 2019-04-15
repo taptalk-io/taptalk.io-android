@@ -167,7 +167,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungregular"
+                    android:fontFamily="@font/tap_font_pt_root_regular"
                     android:gravity="center"
                     android:text="@string/tap_cant_find_contact"
                     android:textColor="@color/tap_grey_9b"
@@ -176,7 +176,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungbold"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
                     android:gravity="center"
                     android:text="@string/tap_view_blocked_contacts"
                     android:textColor="@color/tap_grey_9b"

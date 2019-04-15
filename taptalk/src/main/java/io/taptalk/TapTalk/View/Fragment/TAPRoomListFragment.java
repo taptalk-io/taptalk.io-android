@@ -56,8 +56,10 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
+import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
+import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
@@ -179,7 +181,7 @@ public class TAPRoomListFragment extends Fragment {
             }
 
             @Override
-            public void onSendTextMessage(TAPMessageModel message) {
+            public void onSendMessage(TAPMessageModel message) {
                 processMessageFromSocket(message);
             }
 
@@ -259,6 +261,17 @@ public class TAPRoomListFragment extends Fragment {
         });
         flSetupContainer.setOnClickListener(v -> {
         });
+
+        if (BuildConfig.DEBUG) {
+            ivButtonNewChat.setOnLongClickListener(view1 -> {
+                Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
+                startActivity(intent);
+                if (null != getActivity()) {
+                    getActivity().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                }
+                return false;
+            });
+        }
     }
 
     private void openNewChatActivity() {
@@ -346,6 +359,7 @@ public class TAPRoomListFragment extends Fragment {
 
         if (null != roomList) {
             //room nya ada di listnya
+            roomList.setLastMessageTimestamp(message.getCreated());
             TAPMessageModel roomLastMessage = roomList.getLastMessage();
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
@@ -353,7 +367,7 @@ public class TAPRoomListFragment extends Fragment {
                 roomLastMessage.updateValue(message);
                 Integer roomPos = vm.getRoomList().indexOf(roomList);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
-            } else {
+            } else if (roomLastMessage.getCreated() < message.getCreated()) {
                 //last message nya beda sama yang ada di tampilan
                 roomList.setLastMessage(message);
 

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_message_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/tap_ic_message_sent_grey"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/tap_ic_reply_circle_white"
+        app:layout_constraintBottom_toTopOf="@id/iv_message_status"
+        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/fl_bubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="110dp"
+        android:layout_marginEnd="16dp"
+        android:elevation="1dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tv_message_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginBottom="8dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_forwarded_quote"
+                android:layout_width="234dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_amethyst_mediumpurple_270_rounded_8dp_1dp_0dp_0dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <include
+                    android:id="@+id/cl_forwarded"
+                    layout="@layout/tap_layout_forwarded_bubble_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintBottom_toTopOf="@id/v_quote_background"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_goneMarginBottom="10dp" />
+
+                <View
+                    android:id="@+id/v_quote_background"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/tap_bg_mediumpurple_rounded_4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cl_forwarded"
+                    app:layout_goneMarginTop="10dp" />
+
+                <include
+                    android:id="@+id/cl_quote"
+                    layout="@layout/tap_layout_quote_bubble_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/v_quote_background"
+                    app:layout_goneMarginTop="10dp" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/map_view"
+                android:layout_width="234dp"
+                android:layout_height="177dp"
+                android:clickable="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
+                app:topLeftRadius="8dp"
+                app:topRightRadius="1dp"
+                tools:background="@color/tap_cream_white" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/tap_ic_location_marker"
+                app:layout_constraintBottom_toBottomOf="@id/map_view"
+                app:layout_constraintEnd_toEndOf="@id/map_view"
+                app:layout_constraintStart_toStartOf="@id/map_view"
+                app:layout_constraintTop_toTopOf="@id/map_view"
+                app:layout_constraintVertical_bias="0.385" />
+
+            <View
+                android:id="@+id/v_map_border"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp"
+                app:layout_constraintBottom_toBottomOf="@id/map_view"
+                app:layout_constraintEnd_toEndOf="@id/map_view"
+                app:layout_constraintStart_toStartOf="@id/map_view"
+                app:layout_constraintTop_toTopOf="@id/map_view" />
+
+            <TextView
+                android:id="@+id/tv_message_body"
+                style="@style/TapMessageBody"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_amethyst_mediumpurple_270_rounded_0dp_0dp_8dp_8dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/tap_white"
+                android:textColorLink="@color/tap_white"
+                app:layout_constraintEnd_toEndOf="@id/map_view"
+                app:layout_constraintStart_toStartOf="@id/map_view"
+                app:layout_constraintTop_toBottomOf="@id/map_view"
+                tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Baru, RT.12/RW.2, Gunung, Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12120" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_message_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/tap_font_pt_root_regular"
+        android:textColor="@color/tap_grey_9b"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble"
+        tools:text="Delivered at 17:05 17/05/2018" />
+
+    <ImageView
+        android:id="@+id/iv_sending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="5dp"
+        android:alpha="0"
+        android:src="@drawable/tap_ic_message_sending_grey"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+
+</android.support.constraint.ConstraintLayout>

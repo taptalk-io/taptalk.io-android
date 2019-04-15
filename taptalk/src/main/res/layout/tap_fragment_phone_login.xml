@@ -1,0 +1,160 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="false"
+    tools:context="io.taptalk.TapTalk.View.Fragment.TAPPhoneLoginFragment">
+
+    <ImageView
+        android:id="@+id/iv_taptalk_logo"
+        android:layout_width="132dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="80dp"
+        android:src="@drawable/taptalk_logo_with_name_color"
+        app:layout_constraintBottom_toTopOf="@id/tv_welcome"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:fontFamily="@font/tap_font_pt_root_bold"
+        android:letterSpacing="-0.01"
+        android:lineSpacingExtra="6sp"
+        android:text="@string/tap_welcome"
+        android:textColor="@color/tap_black_19"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_taptalk_logo" />
+
+    <TextView
+        android:id="@+id/tv_welcome_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/tap_font_pt_root_medium"
+        android:letterSpacing="-0.03"
+        android:lineSpacingExtra="6sp"
+        android:text="@string/tap_enter_your_mobile_number_to_continue"
+        android:textColor="@color/tap_black_19"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_welcome" />
+
+    <LinearLayout
+        android:id="@+id/ll_input_phone_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_welcome_message">
+
+        <LinearLayout
+            android:id="@+id/ll_country_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+            android:orientation="horizontal"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/iv_country_flag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/tap_ic_default_flag" />
+
+            <TextView
+                android:id="@+id/tv_country_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:letterSpacing="-0.01"
+                android:lineSpacingExtra="4sp"
+                tools:text="+62"
+                android:textColor="@color/tap_black_19"
+                android:textSize="16sp"
+                android:visibility="visible"/>
+
+            <ImageView
+                android:id="@+id/iv_loading_progress_country"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:visibility="gone"
+                android:src="@drawable/tap_ic_loading_progress_circle_orange"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp">
+
+            <EditText
+                android:id="@+id/et_phone_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/tap_transparent_white"
+                android:hint="1234 5678 0000"
+                android:inputType="numberSigned"
+                android:padding="13dp"
+                android:imeOptions="actionSend"
+                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textColorHint="@color/tap_grey_9b" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_continue_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="visible"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp"
+        app:layout_constraintTop_toBottomOf="@id/ll_input_phone_number">
+
+        <TextView
+            android:id="@+id/tv_btn_continue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/tap_white"
+            android:lineSpacingExtra="14sp"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/tap_font_pt_root_bold"
+            android:text="@string/tap_continue_s"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            />
+
+        <ImageView
+            android:id="@+id/iv_loading_progress_request_otp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/tap_ic_loading_progress_circle_white"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>
