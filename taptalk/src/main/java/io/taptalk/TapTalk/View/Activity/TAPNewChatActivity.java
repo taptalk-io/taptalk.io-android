@@ -2,14 +2,18 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,6 +34,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 
 public class TAPNewChatActivity extends TAPBaseActivity {
 
+    private static final String TAG = TAPNewChatActivity.class.getSimpleName();
     private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
     private ImageView ivButtonClose, ivButtonSearch;
     private TextView tvTitle;
@@ -97,6 +102,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         llButtonScanQR.setOnClickListener(v -> openQRScanner());
         llButtonNewGroup.setOnClickListener(v -> createNewGroup());
         llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
+
+        getContactList();
     }
 
     @Override
@@ -143,5 +150,39 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         Intent intent = new Intent(this, TAPBlockedListActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
+
+    private void getContactList() {
+        ContentResolver cr = getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                null, null, null, ContactsContract.Contacts.DISPLAY_NAME + " COLLATE NOCASE ASC");
+        if ((null != cur ? cur.getCount() : 0) > 0) {
+            while (cur.moveToNext()) {
+                String id = cur.getString(
+                        cur.getColumnIndex(ContactsContract.Contacts._ID));
+                String name = cur.getString(cur.getColumnIndex(
+                        ContactsContract.Contacts.DISPLAY_NAME));
+
+                if (cur.getInt(cur.getColumnIndex(
+                        ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                    Cursor pCur = cr.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{id}, null);
+                    if (null != pCur) {
+                        while (pCur.moveToNext()) {
+                            String phoneNo = pCur.getString(pCur.getColumnIndex(
+                                    ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            Log.e(TAG, "Name: " + name + " Phone Number: " + phoneNo);
+                        }
+                        pCur.close();
+                    }
+                }
+            }
+        }
+        if (cur != null) {
+            cur.close();
+        }
     }
 }
