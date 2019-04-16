@@ -18,11 +18,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMenuItem;
 import io.taptalk.TapTalk.View.Adapter.TAPImageListAdapter;
@@ -57,11 +63,14 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
     private TAPProfileViewModel vm;
 
+    private RequestManager glide;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_profile);
 
+        glide = Glide.with(this);
         initViewModel();
         initView();
     }
@@ -94,7 +103,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
-            Glide.with(this).load(vm.getRoom().getRoomImage().getFullsize()).into(ivProfile);
+            glide.load(vm.getRoom().getRoomImage().getFullsize()).into(ivProfile);
         } else {
             ivProfile.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
         }
@@ -104,7 +113,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+                GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
                 getResources().getColor(R.color.tap_transparent_black_40),
                 getResources().getColor(R.color.tap_transparent_black_18),
                 getResources().getColor(R.color.tap_transparent_black),
@@ -222,6 +231,12 @@ public class TAPProfileActivity extends TAPBaseActivity {
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
+
+        if (vm.getRoom().getRoomType() == 1) {
+            TAPDataManager.getInstance().getUserByIdFromApi(
+                    TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()),
+                    getUserView);
+        }
     }
 
     private void setNotification(boolean isNotificationOn) {
@@ -357,6 +372,18 @@ public class TAPProfileActivity extends TAPBaseActivity {
             case MENU_EXIT_GROUP:
                 exitGroup();
                 break;
+        }
+    };
+
+    private TapDefaultDataView<TAPGetUserResponse> getUserView = new TapDefaultDataView<TAPGetUserResponse>() {
+        @Override
+        public void onSuccess(TAPGetUserResponse response) {
+            glide.load(response.getUser().getAvatarURL().getFullsize())
+                    .apply(new RequestOptions().placeholder(ivProfile.getDrawable()))
+                    .into(ivProfile);
+            String name = response.getUser().getName();
+            tvFullName.setText(name);
+            tvCollapsedName.setText(name);
         }
     };
 }

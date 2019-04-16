@@ -9,6 +9,8 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 
 @Dao
@@ -55,6 +57,11 @@ public interface TAPMessageDao {
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
             "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword escape '\\' group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> searchAllChatRooms(String keyword);
+
+    @Query("select localID, messageID, body, type, created, data, userID, xcUserID, username, userFullName, userImage " +
+            "from Message_Table where type in (" + TYPE_IMAGE + ", " + TYPE_VIDEO +
+            ") and created < :lastTimestamp and roomID = :roomID order by created desc limit " + numOfItem)
+    List<TAPMessageEntity> getRoomMedias(Long lastTimestamp, String roomID);
 
     @Query("select localID, roomName, roomImage, roomType, roomColor from Message_Table where roomID = :roomID")
     TAPMessageEntity getRoom(String roomID);
