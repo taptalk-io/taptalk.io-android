@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -54,6 +55,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
         protected void onBind(TAPMenuItem item, int position) {
             ivMenuIcon.setImageResource(item.getIconRes());
             tvMenuLabel.setText(item.getMenuLabel());
+            tvMenuLabel.setTextColor(ContextCompat.getColor(itemView.getContext(), item.getTextColorRes()));
 
             if (item.isSwitchMenu()) {
                 swMenuSwitch.setVisibility(View.VISIBLE);

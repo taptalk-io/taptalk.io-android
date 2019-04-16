@@ -153,6 +153,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuClearChat = new TAPMenuItem(
                     MENU_CLEAR_CHAT,
                     R.drawable.tap_ic_delete_red,
+                    R.color.tap_tomato,
                     false,
                     false,
                     getString(R.string.tap_clear_chat));
@@ -169,6 +170,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuExitGroup = new TAPMenuItem(
                     MENU_EXIT_GROUP,
                     R.drawable.tap_ic_exit_red,
+                    R.color.tap_tomato,
                     false,
                     false,
                     getString(R.string.tap_exit_group));
