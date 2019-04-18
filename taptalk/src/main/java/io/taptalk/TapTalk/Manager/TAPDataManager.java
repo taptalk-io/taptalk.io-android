@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
@@ -800,6 +801,10 @@ public class TAPDataManager {
 
     public void addContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().addContact(userID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void addContactByPhone(List<String> phones, TapDefaultDataView<TAPAddContactByPhoneResponse> view) {
+        TAPApiManager.getInstance().addContactByPhone(phones, new TAPDefaultSubscriber<>(view));
     }
 
     public void removeContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {

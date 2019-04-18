@@ -14,6 +14,7 @@ public class TAPContactManager {
     private static final String TAG = TAPContactManager.class.getSimpleName();
     private static TAPContactManager instance;
     private HashMap<String, TAPUserModel> userDataMap;
+    private HashMap<String, TAPUserModel> userMapByPhoneNumber;
 
     private TAPContactManager() {
         //loadAllUserDataFromDatabase();
@@ -96,4 +97,20 @@ public class TAPContactManager {
         }
     };
 
+    public HashMap<String, TAPUserModel> getUserMapByPhoneNumber() {
+        return null == userMapByPhoneNumber ? userMapByPhoneNumber = new HashMap<>() : userMapByPhoneNumber;
+    }
+
+    public void setUserMapByPhoneNumber(HashMap<String, TAPUserModel> userMapByPhoneNumber) {
+        this.userMapByPhoneNumber = userMapByPhoneNumber;
+    }
+
+    public void addUserMapByPhoneNumber(TAPUserModel userModel) {
+        if (null != userModel.getPhoneWithCode() && !"".equals(userModel.getPhoneWithCode()))
+            getUserMapByPhoneNumber().put(userModel.getPhoneNumber(), userModel);
+    }
+
+    public boolean isUserPhoneNumberAlreadyExist(String phone) {
+        return getUserMapByPhoneNumber().containsKey(phone);
+    }
 }
