@@ -29,7 +29,7 @@ public abstract class TapTalkDatabase extends RoomDatabase{
 //                    Editable.Factory.getInstance().newEditable(DB_ENCRYPT_PASS));
             database = Room.databaseBuilder(context,
                     TapTalkDatabase.class, "message_database")
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_2_3)
 //                    .openHelperFactory(factory)
                     .build();
         }
@@ -41,6 +41,17 @@ public abstract class TapTalkDatabase extends RoomDatabase{
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("CREATE INDEX index_MyContact_isContact ON MyContact(isContact)");
+        }
+    };
+
+    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'phoneWithCode' TEXT");
+            database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'isEmailVerified' INTEGER");
+            database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'isPhoneVerified' INTEGER");
+            database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'countryID' INTEGER");
+            database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'countryCallingCode' TEXT");
         }
     };
 

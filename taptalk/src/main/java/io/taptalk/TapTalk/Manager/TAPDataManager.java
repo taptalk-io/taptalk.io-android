@@ -65,6 +65,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
@@ -324,6 +325,22 @@ public class TAPDataManager {
     public void removeUserLastActivityMap() {
         Hawk.delete(K_USER_LAST_ACTIVITY);
     }
+
+    /**
+     * MY COUNTRY CODE
+     */
+    public String getMyCountryCode() {
+        return getStringPreference(MY_COUNTRY_CODE);
+    }
+
+    public void saveMyCountryCode(String myCountryCode) {
+        saveStringPreference(MY_COUNTRY_CODE, myCountryCode);
+    }
+
+    public void removeMyCountryCode() {
+        Hawk.delete(MY_COUNTRY_CODE);
+    }
+
 
     /**
      * ROOM LIST FIRST SETUP

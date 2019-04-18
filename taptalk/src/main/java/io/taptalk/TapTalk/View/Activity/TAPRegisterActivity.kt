@@ -506,6 +506,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             TapTalk.saveAuthTicketAndGetAccessToken(response?.ticket
                     ?: "", object : TAPVerifyOTPInterface {
                 override fun verifyOTPSuccessToLogin() {
+                    TAPDataManager.getInstance().saveMyCountryCode(countryCallingCode)
                     setResult(RESULT_OK)
                     finish()
                 }

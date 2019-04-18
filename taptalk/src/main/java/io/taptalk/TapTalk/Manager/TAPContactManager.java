@@ -15,6 +15,7 @@ public class TAPContactManager {
     private static TAPContactManager instance;
     private HashMap<String, TAPUserModel> userDataMap;
     private HashMap<String, TAPUserModel> userMapByPhoneNumber;
+    private String myCountryCode;
 
     private TAPContactManager() {
         //loadAllUserDataFromDatabase();
@@ -112,5 +113,13 @@ public class TAPContactManager {
 
     public boolean isUserPhoneNumberAlreadyExist(String phone) {
         return getUserMapByPhoneNumber().containsKey(phone);
+    }
+
+    public String getMyCountryCode() {
+        return null == myCountryCode ? myCountryCode = "62" : myCountryCode;
+    }
+
+    public void setMyCountryCode(String myCountryCode) {
+        this.myCountryCode = myCountryCode;
     }
 }

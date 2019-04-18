@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 2;
+        public static final int kDatabaseVersion = 3;
     }
 
     public static final class ConnectionEvent {
@@ -301,4 +301,5 @@ public class TAPDefaultConstant {
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
+    public static final String MY_COUNTRY_CODE = "kMyCountryCode";
 }
