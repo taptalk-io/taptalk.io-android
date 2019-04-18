@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -153,6 +154,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void getContactList() {
+        Log.e(TAG, "getContactList: "+ TAPContactManager.getInstance().getMyCountryCode());
         ContentResolver cr = getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, ContactsContract.Contacts.DISPLAY_NAME + " COLLATE NOCASE ASC");

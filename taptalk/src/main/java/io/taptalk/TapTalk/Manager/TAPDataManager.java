@@ -152,6 +152,7 @@ public class TAPDataManager {
         removeNotificationMap();
         removeLastCallCountryTimestamp();
         removeCountryList();
+        removeMyCountryCode();
     }
 
     /**
@@ -335,6 +336,7 @@ public class TAPDataManager {
 
     public void saveMyCountryCode(String myCountryCode) {
         saveStringPreference(MY_COUNTRY_CODE, myCountryCode);
+        TAPContactManager.getInstance().setMyCountryCode(myCountryCode);
     }
 
     public void removeMyCountryCode() {
