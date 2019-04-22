@@ -259,7 +259,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                         (formCheck[indexPassword] == stateEmpty && formCheck[indexPasswordRetype] == stateEmpty) ||
                                 (formCheck[indexPassword] == stateValid && formCheck[indexPasswordRetype] == stateValid))) {
             // All forms valid
-            fl_button_continue.background = getDrawable(R.drawable.tap_bg_gradient_ff9833_ff7e00_rounded_8dp_stroke_ff7e00_1dp)
+            fl_button_continue.background = getDrawable(R.drawable.tap_bg_orange_button_ripple)
             fl_button_continue.setOnClickListener { register() }
         } else {
             // Has invalid forms
@@ -304,8 +304,49 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 .setTitle(getString(R.string.tap_error))
                 .setMessage(message)
                 .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                .setCancelable(true)
+                .setPrimaryButtonListener(true) {enableEditing()}
+                .setCancelable(false)
                 .show()
+    }
+
+    private fun disableEditing() {
+        et_full_name.isEnabled = false
+        et_username.isEnabled = false
+        et_email_address.isEnabled = false
+        et_password.isEnabled = false
+        et_retype_password.isEnabled = false
+
+        et_full_name.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_username.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_email_address.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_password.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_retype_password.setTextColor(resources.getColor(R.color.tap_grey_9b))
+
+        tv_button_continue.visibility = View.GONE
+        iv_register_progress.visibility = View.VISIBLE
+        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPRegisterActivity, iv_register_progress)
+
+        fl_button_continue.setOnClickListener(null)
+    }
+
+    private fun enableEditing() {
+        et_full_name.isEnabled = true
+        et_username.isEnabled = true
+        et_email_address.isEnabled = true
+        et_password.isEnabled = true
+        et_retype_password.isEnabled = true
+
+        et_full_name.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_username.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_email_address.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_password.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_retype_password.setTextColor(resources.getColor(R.color.tap_black_19))
+
+        tv_button_continue.visibility = View.VISIBLE
+        iv_register_progress.visibility = View.GONE
+        iv_register_progress.clearAnimation()
+
+        fl_button_continue.setOnClickListener { register() }
     }
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
@@ -491,15 +532,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val registerView = object : TapDefaultDataView<TAPRegisterResponse>() {
         override fun startLoading() {
-            tv_button_continue.visibility = View.GONE
-            iv_register_progress.visibility = View.VISIBLE
-            TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPRegisterActivity, iv_register_progress)
+            disableEditing()
         }
 
         override fun endLoading() {
-            tv_button_continue.visibility = View.VISIBLE
-            iv_register_progress.visibility = View.GONE
-            iv_register_progress.clearAnimation()
+            enableEditing()
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {

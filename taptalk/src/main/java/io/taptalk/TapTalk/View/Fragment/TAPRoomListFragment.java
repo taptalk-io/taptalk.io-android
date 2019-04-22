@@ -62,6 +62,9 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_CALLING_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 
 public class TAPRoomListFragment extends Fragment {
@@ -262,9 +265,13 @@ public class TAPRoomListFragment extends Fragment {
         flSetupContainer.setOnClickListener(v -> {
         });
 
+        // TODO: 22 April 2019 TESTING
         if (BuildConfig.DEBUG) {
             ivButtonNewChat.setOnLongClickListener(view1 -> {
                 Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
+                intent.putExtra(COUNTRY_ID, 1);
+                intent.putExtra(COUNTRY_CALLING_CODE, "62");
+                intent.putExtra(MOBILE_NUMBER, "82113308615");
                 startActivity(intent);
                 if (null != getActivity()) {
                     getActivity().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
