@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -618,6 +619,11 @@ public class TAPDataManager {
             return;
         }
         TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
+    }
+
+    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
+        Log.e(TAG, "getRoomMedias: " + roomID);
+        TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {

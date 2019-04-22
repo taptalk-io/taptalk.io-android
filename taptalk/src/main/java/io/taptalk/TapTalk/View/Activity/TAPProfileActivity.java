@@ -25,13 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMenuItem;
-import io.taptalk.TapTalk.View.Adapter.TAPImageListAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPMediaListAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMenuButtonAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
@@ -59,7 +60,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private AppBarLayout appBarLayout;
     private TAPMenuButtonAdapter menuButtonAdapter;
-    private TAPImageListAdapter sharedMediaAdapter;
+    private TAPMediaListAdapter sharedMediaAdapter;
 
     private TAPProfileViewModel vm;
 
@@ -188,45 +189,35 @@ public class TAPProfileActivity extends TAPBaseActivity {
         }
 
         // TODO: 23 October 2018 GET SHARED MEDIA
+        TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener);
 
         // Dummy media
-        TAPImageURL dummyImage = vm.getRoom().getRoomImage();
-        dummyImage = null == dummyImage ? new TAPImageURL() : dummyImage;
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
-        vm.getSharedMedias().add(dummyImage);
+//        TAPImageURL dummyImage = vm.getRoom().getRoomImage();
+//        dummyImage = null == dummyImage ? new TAPImageURL() : dummyImage;
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
+//        vm.getSharedMedias().add(dummyImage);
         // End dummy
-
-        if (vm.getSharedMedias().size() > 0) {
-            // Has shared media
-            tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
-            sharedMediaAdapter = new TAPImageListAdapter(vm.getSharedMedias());
-            rvSharedMedia.setAdapter(sharedMediaAdapter);
-            rvSharedMedia.setLayoutManager(new GridLayoutManager(this, 3));
-        } else {
-            tvSharedMediaLabel.setVisibility(View.GONE);
-            rvSharedMedia.setVisibility(View.GONE);
-        }
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
@@ -384,6 +375,32 @@ public class TAPProfileActivity extends TAPBaseActivity {
             String name = response.getUser().getName();
             tvFullName.setText(name);
             tvCollapsedName.setText(name);
+        }
+    };
+
+    private TAPDatabaseListener<TAPMessageEntity> sharedMediaListener = new TAPDatabaseListener<TAPMessageEntity>() {
+        @Override
+        public void onSelectFinished(List<TAPMessageEntity> entities) {
+            Log.e(TAG, "onSelectFinished: " + entities.size());
+            if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
+                // No shared media
+                tvSharedMediaLabel.setVisibility(View.GONE);
+                rvSharedMedia.setVisibility(View.GONE);
+            } else {
+                // Has shared media
+                if (0 == vm.getSharedMedias().size()) {
+                    // Initialize shared media adapter
+                    tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
+                    sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), glide);
+                    rvSharedMedia.setAdapter(sharedMediaAdapter);
+                    rvSharedMedia.setLayoutManager(new GridLayoutManager(TAPProfileActivity.this, 3));
+                }
+
+                for (TAPMessageEntity entity : entities) {
+                    vm.getSharedMedias().add(TAPChatManager.getInstance().convertToModel(entity));
+                }
+                runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyDataSetChanged()));
+            }
         }
     };
 }

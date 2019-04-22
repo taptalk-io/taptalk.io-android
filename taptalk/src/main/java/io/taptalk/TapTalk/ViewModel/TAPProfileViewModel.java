@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 
 public class TAPProfileViewModel extends AndroidViewModel {
 
     private TAPRoomModel room;
-    private List<TAPImageURL> sharedMedias;
+    private List<TAPMessageModel> sharedMedias;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -27,11 +28,11 @@ public class TAPProfileViewModel extends AndroidViewModel {
         this.room = room;
     }
 
-    public List<TAPImageURL> getSharedMedias() {
+    public List<TAPMessageModel> getSharedMedias() {
         return null == sharedMedias ? sharedMedias = new ArrayList<>() : sharedMedias;
     }
 
-    public void setSharedMedias(List<TAPImageURL> sharedMedias) {
+    public void setSharedMedias(List<TAPMessageModel> sharedMedias) {
         this.sharedMedias = sharedMedias;
     }
 }

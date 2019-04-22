@@ -15,7 +15,9 @@
         android:paddingEnd="1dp"
         android:paddingBottom="1dp"
         android:scaleType="centerCrop"
+        android:transitionName="@string/tap_transition_view_image"
         app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toTopOf="parent"
         tools:background="@color/colorAccent" />
 
 </android.support.constraint.ConstraintLayout>
