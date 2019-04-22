@@ -1,13 +1,16 @@
 package io.taptalk.TapTalk.View.Fragment;
 
+import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
@@ -62,6 +66,7 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 
 public class TAPRoomListFragment extends Fragment {
@@ -275,9 +280,11 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void openNewChatActivity() {
-        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
-        startActivity(intent);
-        if (null != getActivity()) {
+        if (!TAPUtils.getInstance().hasPermissions(getActivity(), Manifest.permission.READ_CONTACTS)) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT);
+        } else if (null != getActivity()) {
+            Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
+            startActivity(intent);
             getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }
     }
@@ -690,4 +697,17 @@ public class TAPRoomListFragment extends Fragment {
             }
         }
     };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.e(TAG, "onRequestPermissionsResult: 2" );
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case PERMISSION_READ_CONTACT:
+                    Log.e(TAG, "onRequestPermissionsResult: " );
+                    openNewChatActivity();
+                    break;
+            }
+        }
+    }
 }
