@@ -280,9 +280,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void openNewChatActivity() {
-        if (!TAPUtils.getInstance().hasPermissions(getActivity(), Manifest.permission.READ_CONTACTS)) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT);
-        } else if (null != getActivity()) {
+        if (null != getActivity()) {
             Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
@@ -698,17 +696,4 @@ public class TAPRoomListFragment extends Fragment {
             }
         }
     };
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.e(TAG, "onRequestPermissionsResult: 2" );
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            switch (requestCode) {
-                case PERMISSION_READ_CONTACT:
-                    Log.e(TAG, "onRequestPermissionsResult: " );
-                    openNewChatActivity();
-                    break;
-            }
-        }
-    }
 }

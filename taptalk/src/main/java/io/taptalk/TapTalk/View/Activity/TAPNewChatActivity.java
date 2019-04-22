@@ -36,6 +36,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CONTACT_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
 
 public class TAPNewChatActivity extends TAPBaseActivity {
 
@@ -62,6 +63,14 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+    }
+
+    private void permissionCheckAndGetContactList() {
+        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT);
+        } else {
+            getContactList();
+        }
     }
 
     private void initViewModel() {
@@ -108,7 +117,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         llButtonNewGroup.setOnClickListener(v -> createNewGroup());
         llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
 
-        getContactList();
+        permissionCheckAndGetContactList();
     }
 
     @Override
@@ -117,6 +126,9 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             switch (requestCode) {
                 case PERMISSION_CAMERA_CAMERA:
                     openQRScanner();
+                    break;
+                case PERMISSION_READ_CONTACT:
+                    permissionCheckAndGetContactList();
                     break;
             }
         }
