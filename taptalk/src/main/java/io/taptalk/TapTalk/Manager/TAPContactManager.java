@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +115,21 @@ public class TAPContactManager {
 
     public boolean isUserPhoneNumberAlreadyExist(String phone) {
         return getUserMapByPhoneNumber().containsKey(phone);
+    }
+
+    public String convertPhoneNumber(String phone) {
+        String tempPhone = phone.replaceFirst("\\+", "").replace(" ", "").replace("-", "");
+        String prefix = tempPhone.substring(0, getMyCountryCode().length());
+
+        if ('0' == tempPhone.charAt(0)) {
+            tempPhone = tempPhone.replaceFirst("0", getMyCountryCode());
+        } else if (!prefix.equals(getMyCountryCode())) {
+            Log.e(TAG, "isUserPhoneNumberAlreadyExist: " + prefix);
+            tempPhone = getMyCountryCode() + tempPhone;
+        }
+
+        Log.e(TAG, "convertPhoneNumber: " + tempPhone);
+        return tempPhone;
     }
 
     public String getMyCountryCode() {

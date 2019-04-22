@@ -20,10 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -154,7 +158,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void getContactList() {
-        Log.e(TAG, "getContactList: "+ TAPContactManager.getInstance().getMyCountryCode());
+        List<String> newContactsPhoneNumbers = new ArrayList<>();
         ContentResolver cr = getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, ContactsContract.Contacts.DISPLAY_NAME + " COLLATE NOCASE ASC");
@@ -177,6 +181,11 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             String phoneNo = pCur.getString(pCur.getColumnIndex(
                                     ContactsContract.CommonDataKinds.Phone.NUMBER));
                             Log.e(TAG, "Name: " + name + " Phone Number: " + phoneNo);
+                            String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
+                            if (!TAPContactManager.getInstance()
+                                    .isUserPhoneNumberAlreadyExist(phoneNumb)) {
+                                newContactsPhoneNumbers.add(phoneNumb);
+                            }
                         }
                         pCur.close();
                     }
@@ -186,5 +195,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (cur != null) {
             cur.close();
         }
+
+        TAPDataManager.getInstance().addContactByPhone(newContactsPhoneNumbers, new TapDefaultDataView<TAPAddContactByPhoneResponse>() {
+            @Override
+            public void onSuccess(TAPAddContactByPhoneResponse response) {
+                Log.e(TAG, "onSuccess: "+ response.getUsers().size() );
+            }
+        });
     }
 }

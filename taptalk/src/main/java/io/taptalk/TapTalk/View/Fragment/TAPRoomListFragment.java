@@ -575,6 +575,7 @@ public class TAPRoomListFragment extends Fragment {
                     List<TAPUserModel> users = new ArrayList<>();
                     for (TAPContactModel contact : response.getContacts()) {
                         users.add(contact.getUser().setUserAsContact());
+                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contact.getUser());
                     }
                     TAPDataManager.getInstance().insertMyContactToDatabase(users);
                     TAPContactManager.getInstance().updateUserDataMap(users);
