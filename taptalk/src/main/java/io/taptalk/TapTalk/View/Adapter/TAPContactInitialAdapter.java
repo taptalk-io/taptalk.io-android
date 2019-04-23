@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,6 +35,13 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
         this.listener = listener;
     }
 
+//    public void updateAdapterData(List<List<TAPUserModel>> contactList) {
+//        DiffUtil.DiffResult diffResult = DiffUtil
+//                .calculateDiff(new TAPContactListDiffCallback(getItems(), contactList));
+//        setItems(contactList, false);
+//        diffResult.dispatchUpdatesTo(this);
+//    }
+
     @NonNull
     @Override
     public ContactListHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,6 +70,12 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
     public void setItems(List<List<TAPUserModel>> contactList) {
         this.contactList = contactList;
         notifyDataSetChanged();
+    }
+
+    public void setItems(List<List<TAPUserModel>> contactList, boolean isNotify) {
+        this.contactList = contactList;
+        if (isNotify)
+            notifyDataSetChanged();
     }
 
     class ContactListHolder extends RecyclerView.ViewHolder {

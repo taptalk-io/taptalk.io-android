@@ -43,6 +43,18 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("countryCallingCode") private String countryCallingCode;
     @Nullable @JsonIgnore private Integer isContact;
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TAPUserModel &&
+                this.getUserID().equals(((TAPUserModel) obj).getUserID()))
+            return true;
+        else if (obj instanceof TAPUserModel &&
+                !this.getUserID().equals(((TAPUserModel) obj).getUserID()))
+            return false;
+        else
+            return super.equals(obj);
+    }
+
     @Ignore
     public TAPUserModel(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable TAPUserRoleModel userRole

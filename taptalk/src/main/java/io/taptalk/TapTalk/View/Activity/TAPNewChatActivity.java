@@ -20,7 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -170,48 +173,74 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void getContactList() {
-        List<String> newContactsPhoneNumbers = new ArrayList<>();
-        ContentResolver cr = getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
-                null, null, null, ContactsContract.Contacts.DISPLAY_NAME + " COLLATE NOCASE ASC");
-        if ((null != cur ? cur.getCount() : 0) > 0) {
-            while (cur.moveToNext()) {
-                String id = cur.getString(
-                        cur.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cur.getString(cur.getColumnIndex(
-                        ContactsContract.Contacts.DISPLAY_NAME));
+        new Thread(() -> {
+            List<String> newContactsPhoneNumbers = new ArrayList<>();
+            ContentResolver cr = getContentResolver();
+            Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                    null, null, null, ContactsContract.Contacts.DISPLAY_NAME + " COLLATE NOCASE ASC");
+            if ((null != cur ? cur.getCount() : 0) > 0) {
+                while (cur.moveToNext()) {
+                    String id = cur.getString(
+                            cur.getColumnIndex(ContactsContract.Contacts._ID));
+                    String name = cur.getString(cur.getColumnIndex(
+                            ContactsContract.Contacts.DISPLAY_NAME));
 
-                if (cur.getInt(cur.getColumnIndex(
-                        ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    Cursor pCur = cr.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    if (null != pCur) {
-                        while (pCur.moveToNext()) {
-                            String phoneNo = pCur.getString(pCur.getColumnIndex(
-                                    ContactsContract.CommonDataKinds.Phone.NUMBER));
-                            Log.e(TAG, "Name: " + name + " Phone Number: " + phoneNo);
-                            String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
-                            if (!TAPContactManager.getInstance()
-                                    .isUserPhoneNumberAlreadyExist(phoneNumb)) {
-                                newContactsPhoneNumbers.add(phoneNumb);
+                    if (cur.getInt(cur.getColumnIndex(
+                            ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                        Cursor pCur = cr.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{id}, null);
+                        if (null != pCur) {
+                            while (pCur.moveToNext()) {
+                                String phoneNo = pCur.getString(pCur.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                Log.e(TAG, "Name: " + name + " Phone Number: " + phoneNo);
+                                String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
+                                if (!TAPContactManager.getInstance()
+                                        .isUserPhoneNumberAlreadyExist(phoneNumb)) {
+                                    newContactsPhoneNumbers.add(phoneNumb);
+                                }
                             }
+                            pCur.close();
                         }
-                        pCur.close();
                     }
                 }
             }
-        }
-        if (cur != null) {
-            cur.close();
-        }
+            if (cur != null) {
+                cur.close();
+            }
 
+            callAddContactsByPhoneApi(newContactsPhoneNumbers);
+
+        }).start();
+    }
+
+    private void callAddContactsByPhoneApi(List<String> newContactsPhoneNumbers) {
         TAPDataManager.getInstance().addContactByPhone(newContactsPhoneNumbers, new TapDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
-                Log.e(TAG, "onSuccess: "+ response.getUsers().size() );
+                new Thread(() -> {
+
+                    Set<TAPUserModel> contactsSet = new LinkedHashSet<>();
+                    contactsSet.addAll(response.getUsers());
+                    contactsSet.addAll(vm.getContactList());
+
+                    vm.getContactList().clear();
+                    vm.getContactList().addAll(contactsSet);
+                    Collections.sort(vm.getContactList(), (o1, o2) -> {
+                        int res = String.CASE_INSENSITIVE_ORDER.compare(o1.getName(), o2.getName());
+                        if (res == 0) {
+                            res = o1.getName().compareTo(o2.getName());
+                        }
+                        return res;
+                    });
+                    vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+                    runOnUiThread(() -> {
+                        adapter.setItems(vm.getSeparatedContacts());
+                    });
+                }).start();
             }
         });
     }
