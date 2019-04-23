@@ -70,6 +70,8 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
                     tivImageDetail.setImageDrawable(image);
                     supportStartPostponedEnterTransition();
                 });
+            } else {
+                finish();
             }
         }).start();
     }

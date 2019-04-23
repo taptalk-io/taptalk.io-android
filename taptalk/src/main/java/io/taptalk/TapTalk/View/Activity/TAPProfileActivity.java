@@ -1,13 +1,23 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,19 +36,32 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPMenuItem;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Adapter.TAPMediaListAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMenuButtonAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 
 public class TAPProfileActivity extends TAPBaseActivity {
 
@@ -74,12 +97,30 @@ public class TAPProfileActivity extends TAPBaseActivity {
         glide = Glide.with(this);
         initViewModel();
         initView();
+        TAPBroadcastManager.register(this, downloadProgressReceiver, DownloadProgressLoading);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TAPBroadcastManager.unregister(this, downloadProgressReceiver);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE:
+                    startVideoDownload(vm.getPendingDownloadMessage());
+                    break;
+            }
+        }
     }
 
     private void initViewModel() {
@@ -191,34 +232,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
         // TODO: 23 October 2018 GET SHARED MEDIA
         TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener);
 
-        // Dummy media
-//        TAPImageURL dummyImage = vm.getRoom().getRoomImage();
-//        dummyImage = null == dummyImage ? new TAPImageURL() : dummyImage;
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-//        vm.getSharedMedias().add(dummyImage);
-        // End dummy
-
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
@@ -252,6 +265,37 @@ public class TAPProfileActivity extends TAPBaseActivity {
 
     private void exitGroup() {
         Log.e(TAG, "exitGroup: ");
+    }
+
+    private void startVideoDownload(TAPMessageModel message) {
+        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request storage permission
+            vm.setPendingDownloadMessage(message);
+            ActivityCompat.requestPermissions(
+                    TAPProfileActivity.this, new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
+        } else {
+            // Download file
+            vm.setPendingDownloadMessage(null);
+            TAPFileDownloadManager.getInstance().downloadFile(TAPProfileActivity.this, message, new TAPDownloadListener() {
+                @Override
+                public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
+                    if (null != message.getData()) {
+                        // Save file Uri to manager
+                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), (String) message.getData().get(FILE_ID), fileUri);
+                    }
+                    runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message)));
+                }
+
+                @Override
+                public void onDownloadFailed(String localID) {
+                    runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message)));
+                }
+            });
+        }
+        sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message));
     }
 
     private AppBarLayout.OnOffsetChangedListener offsetChangedListener = new AppBarLayout.OnOffsetChangedListener() {
@@ -366,6 +410,78 @@ public class TAPProfileActivity extends TAPBaseActivity {
         }
     };
 
+    public interface MediaInterface {
+        void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady);
+        void onCancelDownloadClicked(TAPMessageModel item);
+    }
+
+    private MediaInterface mediaInterface = new MediaInterface() {
+        @Override
+        public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
+            Log.e("]]]]]", "onMediaClicked: " + item.getType());
+            if (item.getType() == TYPE_IMAGE && isMediaReady) {
+                // Preview image detail
+                Intent intent = new Intent(TAPProfileActivity.this, TAPImageDetailPreviewActivity.class);
+                intent.putExtra(MESSAGE, item);
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        TAPProfileActivity.this,
+                        ivThumbnail,
+                        getString(R.string.tap_transition_view_image));
+                startActivity(intent, options.toBundle());
+            } else if (item.getType() == TYPE_IMAGE) {
+                // Download image
+                Log.e(TAG, "Download Image: " + item.getLocalID());
+                TAPFileDownloadManager.getInstance().downloadImage(TAPProfileActivity.this, item, new TAPDownloadListener() {
+                    @Override
+                    public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
+                        Log.e(TAG, "onImageDownloadProcessFinished: " + sharedMediaAdapter.getItems().indexOf(item));
+                        runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item)));
+                    }
+
+                    @Override
+                    public void onDownloadFailed(String localID) {
+                        Log.e(TAG, "onDownloadFailed: " + sharedMediaAdapter.getItems().indexOf(item));
+                        runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item)));
+                    }
+                });
+                sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
+            } else if (item.getType() == TYPE_VIDEO && isMediaReady) {
+                // Open video player
+                if (null == item.getData()) {
+                    return;
+                }
+                Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
+                Log.e("]]]]", "videoUri: " + videoUri);
+                if (null == videoUri) {
+                    new TapTalkDialog.Builder(TAPProfileActivity.this)
+                            .setTitle(getString(R.string.tap_error_could_not_find_file))
+                            .setMessage(getString(R.string.tap_error_redownload_file))
+                            .setCancelable(true)
+                            .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                            .setPrimaryButtonListener(v -> startVideoDownload(item))
+                            .show();
+                    return;
+                }
+                Intent intent = new Intent(TAPProfileActivity.this, TAPVideoPlayerActivity.class);
+                intent.putExtra(URI, videoUri.toString());
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+            } else if (item.getType() == TYPE_VIDEO) {
+                // Download video
+                Log.e(TAG, "Download Video: " + item.getLocalID());
+                startVideoDownload(item);
+            }
+        }
+
+        @Override
+        public void onCancelDownloadClicked(TAPMessageModel item) {
+            Log.e(TAG, "onCancelDownloadClicked: " + item.getLocalID());
+            TAPFileDownloadManager.getInstance().cancelFileDownload(item.getLocalID());
+            sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
+        }
+    };
+
     private TapDefaultDataView<TAPGetUserResponse> getUserView = new TapDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
@@ -391,15 +507,31 @@ public class TAPProfileActivity extends TAPBaseActivity {
                 if (0 == vm.getSharedMedias().size()) {
                     // Initialize shared media adapter
                     tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
-                    sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), glide);
+                    sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), mediaInterface, glide);
                     rvSharedMedia.setAdapter(sharedMediaAdapter);
                     rvSharedMedia.setLayoutManager(new GridLayoutManager(TAPProfileActivity.this, 3));
                 }
 
                 for (TAPMessageEntity entity : entities) {
-                    vm.getSharedMedias().add(TAPChatManager.getInstance().convertToModel(entity));
+                    vm.addSharedMedia(TAPChatManager.getInstance().convertToModel(entity));
                 }
                 runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyDataSetChanged()));
+            }
+        }
+    };
+
+    private BroadcastReceiver downloadProgressReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (null == action) {
+                return;
+            }
+            switch (action) {
+                case DownloadProgressLoading:
+                    String localID = intent.getStringExtra(DownloadLocalID);
+                    sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(vm.getSharedMedia(localID)));
+                    break;
             }
         }
     };
