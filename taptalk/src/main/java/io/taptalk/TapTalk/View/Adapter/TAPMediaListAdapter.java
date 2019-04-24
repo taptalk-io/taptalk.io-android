@@ -67,7 +67,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
         private Activity activity;
         private ConstraintLayout clContainer;
         private FrameLayout flProgress;
-        private ImageView ivThumbnail;
+        private ImageView ivThumbnail, ivButtonProgress;
         private ProgressBar pbProgress;
 
         private boolean isMediaReady;
@@ -77,6 +77,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             clContainer = itemView.findViewById(R.id.cl_container);
             flProgress = itemView.findViewById(R.id.fl_progress);
             ivThumbnail = itemView.findViewById(R.id.iv_thumbnail);
+            ivButtonProgress = itemView.findViewById(R.id.iv_button_progress);
             pbProgress = itemView.findViewById(R.id.pb_progress);
             activity = (Activity) itemView.getContext();
         }
@@ -85,16 +86,6 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
         protected void onBind(TAPMessageModel item, int position) {
             clContainer.getLayoutParams().width = gridWidth;
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID());
-            if (null != downloadProgressValue) {
-                // Show download progress
-                pbProgress.setMax(100);
-                pbProgress.setProgress(downloadProgressValue);
-                flProgress.setVisibility(View.VISIBLE);
-                flProgress.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
-            } else {
-                flProgress.setVisibility(View.GONE);
-                flProgress.setOnClickListener(null);
-            }
             if (null != item.getData()) {
                 new Thread(() -> {
                     BitmapDrawable mediaThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable((String) item.getData().get(FILE_ID));
@@ -106,14 +97,14 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                                 .listener(new RequestListener<Drawable>() {
                                     @Override
                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                        loadSmallThumbnail(item);
+                                        loadSmallThumbnail(item, downloadProgressValue);
                                         Log.e("]]]]", "onLoadFailed: " + item.getLocalID());
                                         return false;
                                     }
 
                                     @Override
                                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                        isMediaReady = true;
+                                        setMediaReady(item);
                                         Log.e("]]]]", "onResourceReady: " + item.getLocalID());
                                         return false;
                                     }
@@ -129,30 +120,34 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                                     .listener(new RequestListener<Drawable>() {
                                         @Override
                                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                            loadSmallThumbnail(item);
+                                            loadSmallThumbnail(item, downloadProgressValue);
                                             Log.e("]]]]", "onLoadFailed: " + item.getLocalID());
                                             return false;
                                         }
 
                                         @Override
                                         public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                            isMediaReady = true;
+                                            setMediaReady(item);
                                             Log.e("]]]]", "onResourceReady: " + item.getLocalID());
                                             return false;
                                         }
                                     })
                                     .into(ivThumbnail));
                         } else/* if (null == downloadProgressValue)*/ {
-                            // TODO: 22 April 2019 SHOW DOWNLOAD BUTTON
-                            loadSmallThumbnail(item);
+                            loadSmallThumbnail(item, downloadProgressValue);
                         }
                     }
                 }).start();
             }
+        }
+
+        private void setMediaReady(TAPMessageModel item) {
+            isMediaReady = true;
+            flProgress.setVisibility(View.GONE);
             clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
         }
 
-        private void loadSmallThumbnail(TAPMessageModel item) {
+        private void loadSmallThumbnail(TAPMessageModel item, Integer downloadProgressValue) {
             isMediaReady = false;
             if (null == item.getData()/* || null != ivThumbnail.getDrawable()*/) {
                 return;
@@ -162,7 +157,21 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                     TAPFileUtils.getInstance().decodeBase64(
                             (String) (null == item.getData().get(THUMBNAIL) ? "" :
                                     item.getData().get(THUMBNAIL))));
-            activity.runOnUiThread(() -> ivThumbnail.setImageDrawable(thumbnail));
+            activity.runOnUiThread(() -> {
+                ivThumbnail.setImageDrawable(thumbnail);
+                if (null != downloadProgressValue) {
+                    // Show download progress
+                    pbProgress.setMax(100);
+                    pbProgress.setProgress(downloadProgressValue);
+                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                    clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
+                } else {
+                    // Show download button
+                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                    clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
+                }
+                flProgress.setVisibility(View.VISIBLE);
+            });
             Log.e("]]]]", "loadSmallThumbnail: " + thumbnail);
         }
     }
