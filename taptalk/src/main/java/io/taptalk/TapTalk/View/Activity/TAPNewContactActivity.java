@@ -340,27 +340,29 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
-            clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_green_button_ripple));
-            tvButtonText.setTextColor(getResources().getColor(R.color.tap_white));
-            if (isContact == 0) {
-                // Searched user is not a contact
-                runOnUiThread(() -> {
-                    ivButtonImage.setVisibility(View.GONE);
-                    tvButtonText.setVisibility(View.VISIBLE);
-                    pbButton.setVisibility(View.GONE);
-                    tvButtonText.setText(getString(R.string.tap_add_to_contacts));
-                    clButtonAction.setOnClickListener(v -> addToContact());
-                });
-            } else {
-                // Searched user is in my contacts
-                runOnUiThread(() -> {
-                    ivButtonImage.setVisibility(View.VISIBLE);
-                    tvButtonText.setVisibility(View.VISIBLE);
-                    pbButton.setVisibility(View.GONE);
-                    tvButtonText.setText(getString(R.string.tap_chat_now));
-                    clButtonAction.setOnClickListener(v -> openChatRoom());
-                });
-            }
+            runOnUiThread(() -> {
+                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_green_button_ripple));
+                tvButtonText.setTextColor(getResources().getColor(R.color.tap_white));
+                if (isContact == 0) {
+                    // Searched user is not a contact
+                    runOnUiThread(() -> {
+                        ivButtonImage.setVisibility(View.GONE);
+                        tvButtonText.setVisibility(View.VISIBLE);
+                        pbButton.setVisibility(View.GONE);
+                        tvButtonText.setText(getString(R.string.tap_add_to_contacts));
+                        clButtonAction.setOnClickListener(v -> addToContact());
+                    });
+                } else {
+                    // Searched user is in my contacts
+                    runOnUiThread(() -> {
+                        ivButtonImage.setVisibility(View.VISIBLE);
+                        tvButtonText.setVisibility(View.VISIBLE);
+                        pbButton.setVisibility(View.GONE);
+                        tvButtonText.setText(getString(R.string.tap_chat_now));
+                        clButtonAction.setOnClickListener(v -> openChatRoom());
+                    });
+                }
+            });
         }
 
         @Override

@@ -20,10 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -222,24 +219,25 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
                 new Thread(() -> {
-
-                    Set<TAPUserModel> contactsSet = new LinkedHashSet<>();
-                    contactsSet.addAll(response.getUsers());
-                    contactsSet.addAll(vm.getContactList());
-
-                    vm.getContactList().clear();
-                    vm.getContactList().addAll(contactsSet);
-                    Collections.sort(vm.getContactList(), (o1, o2) -> {
-                        int res = String.CASE_INSENSITIVE_ORDER.compare(o1.getName(), o2.getName());
-                        if (res == 0) {
-                            res = o1.getName().compareTo(o2.getName());
+                    try {
+                        // Insert contacts to database
+                        if (null == response.getUsers() || response.getUsers().isEmpty()) {
+                            return;
                         }
-                        return res;
-                    });
-                    vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
-                    runOnUiThread(() -> {
-                        adapter.setItems(vm.getSeparatedContacts());
-                    });
+                        new Thread(() -> {
+                            List<TAPUserModel> users = new ArrayList<>();
+                            for (TAPUserModel contact : response.getUsers()) {
+                                contact.setIsContact(1);
+                                users.add(contact);
+                                TAPContactManager.getInstance().addUserMapByPhoneNumber(contact);
+                            }
+                            TAPDataManager.getInstance().insertMyContactToDatabase(users);
+                            TAPContactManager.getInstance().updateUserDataMap(users);
+                        }).start();
+                    } catch (Exception e) {
+                        Log.e(TAG, "initViewModel: ", e);
+                        e.printStackTrace();
+                    }
                 }).start();
             }
         });
