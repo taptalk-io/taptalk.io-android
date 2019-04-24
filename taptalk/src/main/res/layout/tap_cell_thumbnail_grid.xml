@@ -51,4 +51,32 @@
 
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/tv_media_info"
+        style="@style/TapQuoteBody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/tap_bg_2d000000_rounded_8dp"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        android:textColor="@color/tap_white"
+        android:textSize="10dp"
+        app:layout_constraintStart_toStartOf="@id/iv_thumbnail"
+        app:layout_constraintTop_toTopOf="@id/iv_thumbnail"
+        tools:text="12.8 MB" />
+
+    <ImageView
+        android:id="@+id/iv_video_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="4dp"
+        android:src="@drawable/tap_ic_video_white"
+        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
+        app:layout_constraintStart_toStartOf="@id/iv_thumbnail" />
+
 </android.support.constraint.ConstraintLayout>

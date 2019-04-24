@@ -325,6 +325,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
+        private Drawable thumbnail;
+
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
@@ -450,14 +452,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.GONE);
             }
 
-            Drawable thumbnail = new BitmapDrawable(
-                    itemView.getContext().getResources(),
-                    TAPFileUtils.getInstance().decodeBase64(
-                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
-                                    item.getData().get(THUMBNAIL))));
-            if (thumbnail.getIntrinsicHeight() <= 0) {
-                // Set placeholder image if thumbnail fails to load
-                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            if (null == thumbnail) {
+                thumbnail = new BitmapDrawable(
+                        itemView.getContext().getResources(),
+                        TAPFileUtils.getInstance().decodeBase64(
+                                (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                        item.getData().get(THUMBNAIL))));
+                if (thumbnail.getIntrinsicHeight() <= 0) {
+                    // Set placeholder image if thumbnail fails to load
+                    thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+                }
             }
 
             // Set caption
@@ -583,6 +587,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
 
         private Uri videoUri;
+        private Drawable thumbnail;
 
         VideoVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -684,14 +689,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.GONE);
             }
 
-            Drawable thumbnail = new BitmapDrawable(
-                    itemView.getContext().getResources(),
-                    TAPFileUtils.getInstance().decodeBase64(
-                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
-                                    item.getData().get(THUMBNAIL))));
-            if (thumbnail.getIntrinsicHeight() <= 0) {
-                // Set placeholder image if thumbnail fails to load
-                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            if (null == thumbnail) {
+                thumbnail = new BitmapDrawable(
+                        itemView.getContext().getResources(),
+                        TAPFileUtils.getInstance().decodeBase64(
+                                (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                        item.getData().get(THUMBNAIL))));
+                if (thumbnail.getIntrinsicHeight() <= 0) {
+                    // Set placeholder image if thumbnail fails to load
+                    thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+                }
             }
 
             // Set caption

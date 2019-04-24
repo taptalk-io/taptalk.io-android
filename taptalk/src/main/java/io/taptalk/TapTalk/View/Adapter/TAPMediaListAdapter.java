@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
@@ -38,7 +39,9 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -67,9 +70,11 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
         private Activity activity;
         private ConstraintLayout clContainer;
         private FrameLayout flProgress;
-        private ImageView ivThumbnail, ivButtonProgress;
+        private ImageView ivThumbnail, ivButtonProgress, ivVideoIcon;
+        private TextView tvMediaInfo;
         private ProgressBar pbProgress;
 
+        private Drawable thumbnail;
         private boolean isMediaReady;
 
         ThumbnailGridVH(ViewGroup parent, int itemLayoutId) {
@@ -78,6 +83,8 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             flProgress = itemView.findViewById(R.id.fl_progress);
             ivThumbnail = itemView.findViewById(R.id.iv_thumbnail);
             ivButtonProgress = itemView.findViewById(R.id.iv_button_progress);
+            ivVideoIcon = itemView.findViewById(R.id.iv_video_icon);
+            tvMediaInfo = itemView.findViewById(R.id.tv_media_info);
             pbProgress = itemView.findViewById(R.id.pb_progress);
             activity = (Activity) itemView.getContext();
         }
@@ -139,18 +146,24 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                     }
                 }).start();
             }
+            if (item.getType() == TYPE_VIDEO) {
+                ivVideoIcon.setVisibility(View.VISIBLE);
+            } else {
+                ivVideoIcon.setVisibility(View.GONE);
+            }
         }
 
         private void setMediaReady(TAPMessageModel item) {
             isMediaReady = true;
             clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
-            if (item.getType() == TYPE_VIDEO) {
-                pbProgress.setProgress(0);
-                ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
-                flProgress.setVisibility(View.VISIBLE);
+            if (item.getType() == TYPE_VIDEO && null != item.getData()) {
+                Number duration = (Number) item.getData().get(DURATION);
+                tvMediaInfo.setText(TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
+                tvMediaInfo.setVisibility(View.VISIBLE);
             } else {
-                flProgress.setVisibility(View.GONE);
+                tvMediaInfo.setVisibility(View.GONE);
             }
+            flProgress.setVisibility(View.GONE);
         }
 
         private void loadSmallThumbnail(TAPMessageModel item, Integer downloadProgressValue) {
@@ -158,25 +171,39 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             if (null == item.getData()) {
                 return;
             }
-            Drawable thumbnail = new BitmapDrawable(
-                    itemView.getContext().getResources(),
-                    TAPFileUtils.getInstance().decodeBase64(
-                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
-                                    item.getData().get(THUMBNAIL))));
+            if (null == thumbnail) {
+                thumbnail = new BitmapDrawable(
+                        itemView.getContext().getResources(),
+                        TAPFileUtils.getInstance().decodeBase64(
+                                (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                        item.getData().get(THUMBNAIL))));
+                if (thumbnail.getIntrinsicHeight() <= 0) {
+                    // Set placeholder image if thumbnail fails to load
+                    thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+                }
+            }
+            Number size = (Number) item.getData().get(SIZE);
+            String videoSize = null == size ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
+            Drawable finalThumbnail = thumbnail;
             activity.runOnUiThread(() -> {
-                ivThumbnail.setImageDrawable(thumbnail);
+                //ivThumbnail.setImageDrawable(thumbnail);
+                glide.load(finalThumbnail).apply(new RequestOptions().placeholder(finalThumbnail)).into(ivThumbnail);
                 if (null != downloadProgressValue) {
                     // Show download progress
+                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
+                    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
                     pbProgress.setMax(100);
                     pbProgress.setProgress(downloadProgressValue);
                     ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
                     clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
                 } else {
                     // Show download button
+                    tvMediaInfo.setText(videoSize);
                     pbProgress.setProgress(0);
                     ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
                     clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
                 }
+                tvMediaInfo.setVisibility(View.VISIBLE);
                 flProgress.setVisibility(View.VISIBLE);
             });
             Log.e("]]]]", "loadSmallThumbnail: " + thumbnail);

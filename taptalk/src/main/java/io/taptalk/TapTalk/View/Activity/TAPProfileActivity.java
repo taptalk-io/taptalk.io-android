@@ -20,6 +20,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -468,6 +469,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
         }
     };
 
+    // TODO: 24 April 2019 PAGING
     private TAPDatabaseListener<TAPMessageEntity> sharedMediaListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
@@ -484,6 +486,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
                     sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), mediaInterface, glide);
                     rvSharedMedia.setAdapter(sharedMediaAdapter);
                     rvSharedMedia.setLayoutManager(new GridLayoutManager(TAPProfileActivity.this, 3));
+                    SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvSharedMedia.getItemAnimator();
+                    if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
                 }
 
                 for (TAPMessageEntity entity : entities) {
