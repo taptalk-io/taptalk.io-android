@@ -64,7 +64,6 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -1312,6 +1311,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 return;
             }
             String localID;
+            Uri fileUri;
             switch (action) {
                 case UploadProgressLoading:
                     localID = intent.getStringExtra(UploadLocalID);
@@ -1363,6 +1363,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
+                    String fileID = intent.getStringExtra(FILE_ID);
+                    fileUri = intent.getParcelableExtra(FILE_URI);
+                    if (null != fileID && null != fileUri) {
+                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), fileID, fileUri);
+                    }
                     break;
                 case DownloadFailed:
                     localID = intent.getStringExtra(DownloadLocalID);
@@ -1383,7 +1388,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case OpenFile:
                     TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
-                    Uri fileUri = intent.getParcelableExtra(FILE_URI);
+                    fileUri = intent.getParcelableExtra(FILE_URI);
                     vm.setOpenedFileMessage(message);
                     if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
                         if (!TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
@@ -1437,25 +1442,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(TAPChatActivity.this, message, new TAPDownloadListener() {
-                @Override
-                public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
-                    if (null != message.getData()) {
-                        // Save file Uri to manager
-                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), (String) message.getData().get(FILE_ID), fileUri);
-                    }
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
-                    }
-                }
-
-                @Override
-                public void onDownloadFailed(String localID) {
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
-                    }
-                }
-            });
+            TAPFileDownloadManager.getInstance().downloadFile(TAPChatActivity.this, message);
         }
     }
 

@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -16,7 +15,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -49,7 +47,6 @@ import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
-import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -81,9 +78,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -509,22 +504,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                             // Download image
                             if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
-                                TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
-                                    @Override
-                                    public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
-                                        // Load bitmap to view
-                                        Intent intent = new Intent(DownloadFinish);
-                                        intent.putExtra(DownloadLocalID, localID);
-                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                                    }
-
-                                    @Override
-                                    public void onDownloadFailed(String localID) {
-                                        Intent intent = new Intent(DownloadFailed);
-                                        intent.putExtra(DownloadLocalID, localID);
-                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                                    }
-                                });
+                                TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item);
                             } else {
                                 activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
                                 TAPFileDownloadManager.getInstance().addFailedDownload(item.getLocalID());

@@ -133,7 +133,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                                         }
                                     })
                                     .into(ivThumbnail));
-                        } else/* if (null == downloadProgressValue)*/ {
+                        } else {
                             loadSmallThumbnail(item, downloadProgressValue);
                         }
                     }
@@ -143,13 +143,19 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
 
         private void setMediaReady(TAPMessageModel item) {
             isMediaReady = true;
-            flProgress.setVisibility(View.GONE);
             clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
+            if (item.getType() == TYPE_VIDEO) {
+                pbProgress.setProgress(0);
+                ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
+                flProgress.setVisibility(View.VISIBLE);
+            } else {
+                flProgress.setVisibility(View.GONE);
+            }
         }
 
         private void loadSmallThumbnail(TAPMessageModel item, Integer downloadProgressValue) {
             isMediaReady = false;
-            if (null == item.getData()/* || null != ivThumbnail.getDrawable()*/) {
+            if (null == item.getData()) {
                 return;
             }
             Drawable thumbnail = new BitmapDrawable(
@@ -167,6 +173,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                     clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
                 } else {
                     // Show download button
+                    pbProgress.setProgress(0);
                     ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
                     clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
                 }

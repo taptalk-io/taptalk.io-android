@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -40,7 +39,6 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -53,6 +51,8 @@ import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -97,7 +97,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
         glide = Glide.with(this);
         initViewModel();
         initView();
-        TAPBroadcastManager.register(this, downloadProgressReceiver, DownloadProgressLoading);
+        TAPBroadcastManager.register(this, downloadProgressReceiver, DownloadProgressLoading, DownloadFinish, DownloadFailed);
     }
 
     @Override
@@ -279,21 +279,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(TAPProfileActivity.this, message, new TAPDownloadListener() {
-                @Override
-                public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
-                    if (null != message.getData()) {
-                        // Save file Uri to manager
-                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), (String) message.getData().get(FILE_ID), fileUri);
-                    }
-                    runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message)));
-                }
-
-                @Override
-                public void onDownloadFailed(String localID) {
-                    runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message)));
-                }
-            });
+            TAPFileDownloadManager.getInstance().downloadFile(TAPProfileActivity.this, message);
         }
         sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message));
     }
@@ -431,19 +417,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
             } else if (item.getType() == TYPE_IMAGE) {
                 // Download image
                 Log.e(TAG, "Download Image: " + item.getLocalID());
-                TAPFileDownloadManager.getInstance().downloadImage(TAPProfileActivity.this, item, new TAPDownloadListener() {
-                    @Override
-                    public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
-                        Log.e(TAG, "onImageDownloadProcessFinished: " + sharedMediaAdapter.getItems().indexOf(item));
-                        runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item)));
-                    }
-
-                    @Override
-                    public void onDownloadFailed(String localID) {
-                        Log.e(TAG, "onDownloadFailed: " + sharedMediaAdapter.getItems().indexOf(item));
-                        runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item)));
-                    }
-                });
+                TAPFileDownloadManager.getInstance().downloadImage(TAPProfileActivity.this, item);
                 sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
             } else if (item.getType() == TYPE_VIDEO && isMediaReady) {
                 // Open video player
@@ -529,8 +503,10 @@ public class TAPProfileActivity extends TAPBaseActivity {
             }
             switch (action) {
                 case DownloadProgressLoading:
+                case DownloadFinish:
+                case DownloadFailed:
                     String localID = intent.getStringExtra(DownloadLocalID);
-                    sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(vm.getSharedMedia(localID)));
+                    runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(vm.getSharedMedia(localID))));
                     break;
             }
         }
