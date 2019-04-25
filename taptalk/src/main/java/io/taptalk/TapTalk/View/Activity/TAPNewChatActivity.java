@@ -41,7 +41,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 public class TAPNewChatActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPNewChatActivity.class.getSimpleName();
-    private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts;
+    private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts, llButtonSync;
     private ImageView ivButtonClose, ivButtonSearch;
     private TextView tvTitle;
     private RecyclerView rvContactList;
@@ -91,6 +91,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
         llButtonNewGroup = findViewById(R.id.ll_button_new_group);
         llBlockedContacts = findViewById(R.id.ll_blocked_contacts);
+        llButtonSync = findViewById(R.id.ll_btn_sync);
         ivButtonClose = findViewById(R.id.iv_button_close);
         ivButtonSearch = findViewById(R.id.iv_button_search);
         tvTitle = findViewById(R.id.tv_title);
@@ -110,14 +111,16 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         llButtonNewGroup.setVisibility(View.GONE);
         llBlockedContacts.setVisibility(View.GONE);
 
+        //Animate sync button
+        TAPUtils.getInstance().animateClickButton(llButtonSync, 0.97f);
+
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> searchContact());
         llButtonNewContact.setOnClickListener(v -> addNewContact());
         llButtonScanQR.setOnClickListener(v -> openQRScanner());
         llButtonNewGroup.setOnClickListener(v -> createNewGroup());
         llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
-
-        permissionCheckAndGetContactList();
+        llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactList());
     }
 
     @Override
