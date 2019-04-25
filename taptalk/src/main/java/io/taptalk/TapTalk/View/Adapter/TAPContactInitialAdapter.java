@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import io.taptalk.TapTalk.DiffCallback.TAPContactListDiffCallback;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
@@ -35,12 +36,12 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
         this.listener = listener;
     }
 
-//    public void updateAdapterData(List<List<TAPUserModel>> contactList) {
-//        DiffUtil.DiffResult diffResult = DiffUtil
-//                .calculateDiff(new TAPContactListDiffCallback(getItems(), contactList));
-//        setItems(contactList, false);
-//        diffResult.dispatchUpdatesTo(this);
-//    }
+    public void updateAdapterData(List<List<TAPUserModel>> contactList) {
+        DiffUtil.DiffResult diffResult = DiffUtil
+                .calculateDiff(new TAPContactListDiffCallback(getItems(), contactList));
+        setItems(contactList, false);
+        diffResult.dispatchUpdatesTo(this);
+    }
 
     @NonNull
     @Override

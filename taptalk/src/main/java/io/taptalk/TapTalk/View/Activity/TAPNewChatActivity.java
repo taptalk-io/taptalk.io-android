@@ -81,7 +81,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 vm.getContactList().clear();
                 vm.getContactList().addAll(userModels);
                 vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
-                runOnUiThread(() -> adapter.setItems(vm.getSeparatedContacts()));
+                runOnUiThread(() -> adapter.updateAdapterData(vm.getSeparatedContacts()));
             }
         });
     }
