@@ -238,7 +238,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
             menuItems.add(menuExitGroup);
         }
 
-        TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener);
+        new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
@@ -412,7 +412,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
     private MediaInterface mediaInterface = new MediaInterface() {
         @Override
         public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
-            Log.e("]]]]]", "onMediaClicked: " + item.getType());
             if (item.getType() == TYPE_IMAGE && isMediaReady) {
                 // Preview image detail
                 Intent intent = new Intent(TAPProfileActivity.this, TAPImageDetailPreviewActivity.class);
@@ -424,7 +423,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
                 startActivity(intent, options.toBundle());
             } else if (item.getType() == TYPE_IMAGE) {
                 // Download image
-                Log.e(TAG, "Download Image: " + item.getLocalID());
                 TAPFileDownloadManager.getInstance().downloadImage(TAPProfileActivity.this, item);
                 sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
             } else if (item.getType() == TYPE_VIDEO && isMediaReady) {
@@ -433,7 +431,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
                     return;
                 }
                 Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
-                Log.e("]]]]", "videoUri: " + videoUri);
                 if (null == videoUri) {
                     new TapTalkDialog.Builder(TAPProfileActivity.this)
                             .setTitle(getString(R.string.tap_error_could_not_find_file))
@@ -451,14 +448,12 @@ public class TAPProfileActivity extends TAPBaseActivity {
                 startActivity(intent);
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video
-                Log.e(TAG, "Download Video: " + item.getLocalID());
                 startVideoDownload(item);
             }
         }
 
         @Override
         public void onCancelDownloadClicked(TAPMessageModel item) {
-            Log.e(TAG, "onCancelDownloadClicked: " + item.getLocalID());
             TAPFileDownloadManager.getInstance().cancelFileDownload(item.getLocalID());
             sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
         }
@@ -479,7 +474,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
     private TAPDatabaseListener<TAPMessageEntity> sharedMediaListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
-            Log.e(TAG, "onSelectFinished: " + entities.size());
             if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                 // No shared media
                 vm.setFinishedLoadingSharedMedia(true);
@@ -488,7 +482,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
             } else {
                 // Has shared media
                 int previousSize = vm.getSharedMedias().size();
-                Log.e(TAG, "previousSize: " + previousSize);
                 if (0 == previousSize) {
                     // First load
                     tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
@@ -510,24 +503,19 @@ public class TAPProfileActivity extends TAPBaseActivity {
                         messageAnimator.setSupportsChangeAnimations(false);
                     }
                     if (MAX_ITEMS_PER_PAGE <= entities.size()) {
-                        Log.e(TAG, "getScreenHeight: " + TAPUtils.getInstance().getScreenHeight());
                         sharedMediaPagingScrollListener = () -> {
                             // Get coordinates of view holder (last index - half of max item per load)
                             View view = sharedMediaLayoutManager.findViewByPosition(sharedMediaAdapter.getItemCount() - (MAX_ITEMS_PER_PAGE / 2));
-                            Log.e(TAG, "findViewByPosition: " + (sharedMediaAdapter.getItemCount() - (MAX_ITEMS_PER_PAGE / 2)));
                             int[] location = new int[2];
                             if (null != view) {
                                 view.getLocationOnScreen(location);
-                                Log.e(TAG, "getLocationOnScreen: " + location[1]);
                                 if (!vm.isFinishedLoadingSharedMedia() && location[1] < TAPUtils.getInstance().getScreenHeight()) {
                                     // Load more if view holder is visible
                                     if (!vm.isLoadingSharedMedia()) {
                                         vm.setLoadingSharedMedia(true);
-                                        TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener);
+                                        new Thread(() -> TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener)).start();
                                     }
                                 }
-                            } else {
-                                Log.e(TAG, "view null");
                             }
                         };
                         nsvProfile.getViewTreeObserver().addOnScrollChangedListener(sharedMediaPagingScrollListener);
@@ -543,8 +531,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
                 }
                 vm.setLastSharedMediaTimestamp(vm.getSharedMedias().get(vm.getSharedMedias().size() - 1).getCreated());
                 vm.setLoadingSharedMedia(false);
-                Log.e(TAG, "setLastSharedMediaTimestamp: " + TAPTimeFormatter.getInstance().formatTime(vm.getLastSharedMediaTimestamp(), "MM/dd HH:mm:ss"));
-//                runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyDataSetChanged()));
                 runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyItemRangeInserted(previousSize, entities.size())));
             }
         }

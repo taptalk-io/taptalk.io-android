@@ -623,7 +623,6 @@ public class TAPDataManager {
     }
 
     public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
-        Log.e(TAG, "getRoomMedias: " + roomID + " " + TAPTimeFormatter.getInstance().formatTime(lastTimestamp, "MM/dd HH:mm"));
         TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
