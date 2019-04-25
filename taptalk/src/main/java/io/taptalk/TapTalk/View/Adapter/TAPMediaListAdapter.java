@@ -191,7 +191,9 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                 if (null != downloadProgressValue) {
                     // Show download progress
                     Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
-                    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
+                    if (null != downloadProgressBytes) {
+                        tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
+                    }
                     pbProgress.setMax(100);
                     pbProgress.setProgress(downloadProgressValue);
                     ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
