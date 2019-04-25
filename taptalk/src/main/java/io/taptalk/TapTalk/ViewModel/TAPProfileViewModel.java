@@ -17,6 +17,8 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private List<TAPMessageModel> sharedMedias;
     private HashMap<String, TAPMessageModel> sharedMediasMap;
     private TAPMessageModel pendingDownloadMessage;
+    private long lastSharedMediaTimestamp;
+    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -53,5 +55,29 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setPendingDownloadMessage(TAPMessageModel pendingDownloadMessage) {
         this.pendingDownloadMessage = pendingDownloadMessage;
+    }
+
+    public long getLastSharedMediaTimestamp() {
+        return lastSharedMediaTimestamp;
+    }
+
+    public void setLastSharedMediaTimestamp(long lastSharedMediaTimestamp) {
+        this.lastSharedMediaTimestamp = lastSharedMediaTimestamp;
+    }
+
+    public boolean isLoadingSharedMedia() {
+        return isLoadingSharedMedia;
+    }
+
+    public void setLoadingSharedMedia(boolean loadingSharedMedia) {
+        isLoadingSharedMedia = loadingSharedMedia;
+    }
+
+    public boolean isFinishedLoadingSharedMedia() {
+        return isFinishedLoadingSharedMedia;
+    }
+
+    public void setFinishedLoadingSharedMedia(boolean finishedLoadingSharedMedia) {
+        isFinishedLoadingSharedMedia = finishedLoadingSharedMedia;
     }
 }

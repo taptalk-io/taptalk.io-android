@@ -1,15 +1,12 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -32,18 +29,13 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
-import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
@@ -96,7 +88,6 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             if (null != item.getData()) {
                 new Thread(() -> {
                     BitmapDrawable mediaThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable((String) item.getData().get(FILE_ID));
-                    Log.e("]]]]", "getBitmapDrawable: " + mediaThumbnail);
                     if (null != mediaThumbnail) {
                         // Load image from cache
                         activity.runOnUiThread(() -> glide.load(mediaThumbnail)
@@ -105,14 +96,12 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                                     @Override
                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                         loadSmallThumbnail(item, downloadProgressValue);
-                                        Log.e("]]]]", "onLoadFailed: " + item.getLocalID());
                                         return false;
                                     }
 
                                     @Override
                                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                         setMediaReady(item);
-                                        Log.e("]]]]", "onResourceReady: " + item.getLocalID());
                                         return false;
                                     }
                                 })
@@ -120,7 +109,6 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                     } else {
                         // Load video thumbnail
                         Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
-                        Log.e("]]]]", "getFileMessageUri: " + videoUri);
                         if (null != videoUri) {
                             activity.runOnUiThread(() -> glide.load(videoUri)
                                     .apply(new RequestOptions().placeholder(ivThumbnail.getDrawable()))
@@ -128,14 +116,12 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                                         @Override
                                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                             loadSmallThumbnail(item, downloadProgressValue);
-                                            Log.e("]]]]", "onLoadFailed: " + item.getLocalID());
                                             return false;
                                         }
 
                                         @Override
                                         public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                                             setMediaReady(item);
-                                            Log.e("]]]]", "onResourceReady: " + item.getLocalID());
                                             return false;
                                         }
                                     })
@@ -158,8 +144,12 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
             if (item.getType() == TYPE_VIDEO && null != item.getData()) {
                 Number duration = (Number) item.getData().get(DURATION);
-                tvMediaInfo.setText(TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
-                tvMediaInfo.setVisibility(View.VISIBLE);
+                if (null != duration) {
+                    tvMediaInfo.setText(TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
+                    tvMediaInfo.setVisibility(View.VISIBLE);
+                } else {
+                    tvMediaInfo.setVisibility(View.GONE);
+                }
             } else {
                 tvMediaInfo.setVisibility(View.GONE);
             }
@@ -184,10 +174,8 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             }
             Number size = (Number) item.getData().get(SIZE);
             String videoSize = null == size ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
-            Drawable finalThumbnail = thumbnail;
             activity.runOnUiThread(() -> {
-                //ivThumbnail.setImageDrawable(thumbnail);
-                glide.load(finalThumbnail).apply(new RequestOptions().placeholder(finalThumbnail)).into(ivThumbnail);
+                ivThumbnail.setImageDrawable(thumbnail);
                 if (null != downloadProgressValue) {
                     // Show download progress
                     Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
@@ -208,7 +196,6 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                 tvMediaInfo.setVisibility(View.VISIBLE);
                 flProgress.setVisibility(View.VISIBLE);
             });
-            Log.e("]]]]", "loadSmallThumbnail: " + thumbnail);
         }
     }
 }

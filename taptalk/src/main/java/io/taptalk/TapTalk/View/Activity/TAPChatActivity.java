@@ -122,7 +122,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -1613,13 +1613,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //ini buat ngecek kalau room nya kosong manggil api before aja
                     //sebaliknya kalau roomnya ada isinya manggil after baru before*
                     //* = kalau jumlah itemnya < 50
-                    if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
+                    if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
                     /* Call Message List API
                     Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
                         callApiAfter();
-                    } else if (NUM_OF_ITEM <= vm.getMessageModels().size()) {
+                    } else if (MAX_ITEMS_PER_PAGE <= vm.getMessageModels().size()) {
                         rvMessageList.addOnScrollListener(endlessScrollListener);
                         callApiAfter();
                     } else {
@@ -1641,7 +1641,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         updateMessageDecoration();
                     }
                 });
-                if (NUM_OF_ITEM > entities.size() && 1 < entities.size()) {
+                if (MAX_ITEMS_PER_PAGE > entities.size() && 1 < entities.size()) {
                     state = STATE.DONE;
                 } else {
                     rvMessageList.addOnScrollListener(endlessScrollListener);
@@ -1666,7 +1666,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
 
             if (null != messageAdapter) {
-                if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
+                if (MAX_ITEMS_PER_PAGE > entities.size() && STATE.DONE != state) {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
                 } else if (STATE.WORKING == state) {
                     state = STATE.LOADED;
@@ -1810,7 +1810,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
-            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
+            if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             } else {
                 fNewerLoading.hide();
@@ -1901,7 +1901,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
-            if (NUM_OF_ITEM > response.getMessages().size() && 1 < response.getMessages().size()) {
+            if (MAX_ITEMS_PER_PAGE > response.getMessages().size() && 1 < response.getMessages().size()) {
                 state = STATE.DONE;
             } else {
                 rvMessageList.addOnScrollListener(endlessScrollListener);

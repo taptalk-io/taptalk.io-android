@@ -17,12 +17,14 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,6 +39,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -62,6 +65,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 
 public class TAPProfileActivity extends TAPBaseActivity {
@@ -75,6 +79,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
     private final int MENU_VIEW_MEMBERS = 5;
     private final int MENU_EXIT_GROUP = 6;
 
+    private NestedScrollView nsvProfile;
     private LinearLayout llToolbarCollapsed;
     private ImageView ivProfile, ivButtonBack;
     private TextView tvFullName, tvCollapsedName, tvSharedMediaLabel;
@@ -85,6 +90,8 @@ public class TAPProfileActivity extends TAPBaseActivity {
     private AppBarLayout appBarLayout;
     private TAPMenuButtonAdapter menuButtonAdapter;
     private TAPMediaListAdapter sharedMediaAdapter;
+    private GridLayoutManager sharedMediaLayoutManager;
+    private ViewTreeObserver.OnScrollChangedListener sharedMediaPagingScrollListener;
 
     private TAPProfileViewModel vm;
 
@@ -130,6 +137,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
     }
 
     private void initView() {
+        nsvProfile = findViewById(R.id.nsv_profile);
         llToolbarCollapsed = findViewById(R.id.ll_toolbar_collapsed);
         ivProfile = findViewById(R.id.iv_profile);
         ivButtonBack = findViewById(R.id.iv_button_back);
@@ -230,7 +238,6 @@ public class TAPProfileActivity extends TAPBaseActivity {
             menuItems.add(menuExitGroup);
         }
 
-        // TODO: 23 October 2018 GET SHARED MEDIA
         TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener);
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
@@ -469,31 +476,76 @@ public class TAPProfileActivity extends TAPBaseActivity {
         }
     };
 
-    // TODO: 24 April 2019 PAGING
     private TAPDatabaseListener<TAPMessageEntity> sharedMediaListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             Log.e(TAG, "onSelectFinished: " + entities.size());
             if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                 // No shared media
+                vm.setFinishedLoadingSharedMedia(true);
                 tvSharedMediaLabel.setVisibility(View.GONE);
                 rvSharedMedia.setVisibility(View.GONE);
             } else {
                 // Has shared media
-                if (0 == vm.getSharedMedias().size()) {
-                    // Initialize shared media adapter
+                int previousSize = vm.getSharedMedias().size();
+                Log.e(TAG, "previousSize: " + previousSize);
+                if (0 == previousSize) {
+                    // First load
                     tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
                     sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), mediaInterface, glide);
+                    sharedMediaLayoutManager = new GridLayoutManager(TAPProfileActivity.this, 3) {
+                        @Override
+                        public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                            try {
+                                super.onLayoutChildren(recycler, state);
+                            } catch (IndexOutOfBoundsException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
                     rvSharedMedia.setAdapter(sharedMediaAdapter);
-                    rvSharedMedia.setLayoutManager(new GridLayoutManager(TAPProfileActivity.this, 3));
+                    rvSharedMedia.setLayoutManager(sharedMediaLayoutManager);
                     SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvSharedMedia.getItemAnimator();
-                    if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
+                    if (null != messageAnimator) {
+                        messageAnimator.setSupportsChangeAnimations(false);
+                    }
+                    if (MAX_ITEMS_PER_PAGE <= entities.size()) {
+                        Log.e(TAG, "getScreenHeight: " + TAPUtils.getInstance().getScreenHeight());
+                        sharedMediaPagingScrollListener = () -> {
+                            // Get coordinates of view holder (last index - half of max item per load)
+                            View view = sharedMediaLayoutManager.findViewByPosition(sharedMediaAdapter.getItemCount() - (MAX_ITEMS_PER_PAGE / 2));
+                            Log.e(TAG, "findViewByPosition: " + (sharedMediaAdapter.getItemCount() - (MAX_ITEMS_PER_PAGE / 2)));
+                            int[] location = new int[2];
+                            if (null != view) {
+                                view.getLocationOnScreen(location);
+                                Log.e(TAG, "getLocationOnScreen: " + location[1]);
+                                if (!vm.isFinishedLoadingSharedMedia() && location[1] < TAPUtils.getInstance().getScreenHeight()) {
+                                    // Load more if view holder is visible
+                                    if (!vm.isLoadingSharedMedia()) {
+                                        vm.setLoadingSharedMedia(true);
+                                        TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener);
+                                    }
+                                }
+                            } else {
+                                Log.e(TAG, "view null");
+                            }
+                        };
+                        nsvProfile.getViewTreeObserver().addOnScrollChangedListener(sharedMediaPagingScrollListener);
+                    }
                 }
-
+                if (MAX_ITEMS_PER_PAGE > entities.size()) {
+                    // No more medias in database
+                    vm.setFinishedLoadingSharedMedia(true);
+                    nsvProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener);
+                }
                 for (TAPMessageEntity entity : entities) {
                     vm.addSharedMedia(TAPChatManager.getInstance().convertToModel(entity));
                 }
-                runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyDataSetChanged()));
+                vm.setLastSharedMediaTimestamp(vm.getSharedMedias().get(vm.getSharedMedias().size() - 1).getCreated());
+                vm.setLoadingSharedMedia(false);
+                Log.e(TAG, "setLastSharedMediaTimestamp: " + TAPTimeFormatter.getInstance().formatTime(vm.getLastSharedMediaTimestamp(), "MM/dd HH:mm:ss"));
+//                runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyDataSetChanged()));
+                runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyItemRangeInserted(previousSize, entities.size())));
             }
         }
     };

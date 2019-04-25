@@ -11,12 +11,12 @@ import java.util.List;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 
 @Dao
 public interface TAPMessageDao {
 
-    int numOfItem = NUM_OF_ITEM;
+    int numOfItem = MAX_ITEMS_PER_PAGE;
 
     @Delete
     void delete(List<TAPMessageEntity> messageEntities);

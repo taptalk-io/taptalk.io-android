@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
@@ -622,7 +623,7 @@ public class TAPDataManager {
     }
 
     public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
-        Log.e(TAG, "getRoomMedias: " + roomID);
+        Log.e(TAG, "getRoomMedias: " + roomID + " " + TAPTimeFormatter.getInstance().formatTime(lastTimestamp, "MM/dd HH:mm"));
         TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
