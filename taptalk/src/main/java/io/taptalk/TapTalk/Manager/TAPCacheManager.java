@@ -133,4 +133,11 @@ public class TAPCacheManager {
             return diskLruCache.getBitmapDrawable(context, key);
         } else return null;
     }
+
+    public void removeFromCache(String key) {
+        new Thread(() -> {
+            getMemoryCache().remove(key);
+            diskLruCache.remove(key);
+        }).start();
+    }
 }

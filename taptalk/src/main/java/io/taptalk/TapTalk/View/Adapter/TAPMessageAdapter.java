@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -46,6 +47,7 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -59,6 +61,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.Taptalk.R;
@@ -834,12 +837,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
             if (null == videoUri) {
-                return;
+                // Prompt download
+                this.videoUri = null;
+                String fileID = (String) message.getData().get(FILE_ID);
+                TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID);
+                notifyItemChanged(getLayoutPosition());
+                new TapTalkDialog.Builder(itemView.getContext())
+                        .setTitle(itemView.getContext().getString(R.string.tap_error_could_not_find_file))
+                        .setMessage(itemView.getContext().getString(R.string.tap_error_redownload_file))
+                        .setCancelable(true)
+                        .setPrimaryButtonTitle(itemView.getContext().getString(R.string.tap_ok))
+                        .setSecondaryButtonTitle(itemView.getContext().getString(R.string.tap_cancel))
+                        .setPrimaryButtonListener(v -> downloadVideo(message))
+                        .show();
+            } else {
+                // Open video
+                Intent intent = new Intent(itemView.getContext(), TAPVideoPlayerActivity.class);
+                intent.putExtra(URI, videoUri.toString());
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                itemView.getContext().startActivity(intent);
             }
-            Intent intent = new Intent(itemView.getContext(), TAPVideoPlayerActivity.class);
-            intent.putExtra(URI, videoUri.toString());
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            itemView.getContext().startActivity(intent);
         }
 
         @Override

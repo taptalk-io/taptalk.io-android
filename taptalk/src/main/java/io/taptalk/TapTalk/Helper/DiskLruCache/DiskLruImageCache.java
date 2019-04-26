@@ -94,7 +94,6 @@ public class DiskLruImageCache {
             } catch (IOException ignored) {
             }
         }
-
     }
 
     public BitmapDrawable getBitmapDrawable(Context context, String key) {
@@ -122,7 +121,14 @@ public class DiskLruImageCache {
             Log.d("cache_test_DISK_", bitmapDrawable == null ? "" : "image read from disk " + key);
         }
         return bitmapDrawable;
+    }
 
+    public void remove(String key) {
+        try {
+            diskCache.remove(key);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean containsKey(String key) {

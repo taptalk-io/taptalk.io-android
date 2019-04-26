@@ -41,8 +41,10 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -289,7 +291,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
             vm.setPendingDownloadMessage(null);
             TAPFileDownloadManager.getInstance().downloadFile(TAPProfileActivity.this, message);
         }
-        sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message));
+        runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message)));
     }
 
     private AppBarLayout.OnOffsetChangedListener offsetChangedListener = new AppBarLayout.OnOffsetChangedListener() {
@@ -425,13 +427,13 @@ public class TAPProfileActivity extends TAPBaseActivity {
                 // Download image
                 TAPFileDownloadManager.getInstance().downloadImage(TAPProfileActivity.this, item);
                 sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
-            } else if (item.getType() == TYPE_VIDEO && isMediaReady) {
-                // Open video player
-                if (null == item.getData()) {
-                    return;
-                }
+            } else if (item.getType() == TYPE_VIDEO && isMediaReady && null != item.getData()) {
                 Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
                 if (null == videoUri) {
+                    // Prompt download
+                    String fileID = (String) item.getData().get(FILE_ID);
+                    TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID);
+                    sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
                     new TapTalkDialog.Builder(TAPProfileActivity.this)
                             .setTitle(getString(R.string.tap_error_could_not_find_file))
                             .setMessage(getString(R.string.tap_error_redownload_file))
@@ -440,12 +442,13 @@ public class TAPProfileActivity extends TAPBaseActivity {
                             .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                             .setPrimaryButtonListener(v -> startVideoDownload(item))
                             .show();
-                    return;
+                } else {
+                    // Open video player
+                    Intent intent = new Intent(TAPProfileActivity.this, TAPVideoPlayerActivity.class);
+                    intent.putExtra(URI, videoUri.toString());
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(intent);
                 }
-                Intent intent = new Intent(TAPProfileActivity.this, TAPVideoPlayerActivity.class);
-                intent.putExtra(URI, videoUri.toString());
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(intent);
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video
                 startVideoDownload(item);
