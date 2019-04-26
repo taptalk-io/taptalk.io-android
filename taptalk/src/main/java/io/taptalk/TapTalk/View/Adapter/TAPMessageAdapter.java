@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -48,8 +47,8 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
-import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -62,6 +61,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.Taptalk.R;
@@ -81,9 +81,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -330,6 +328,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
+        private Drawable thumbnail;
+
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
@@ -455,14 +455,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.GONE);
             }
 
-            Drawable thumbnail = new BitmapDrawable(
-                    itemView.getContext().getResources(),
-                    TAPFileUtils.getInstance().decodeBase64(
-                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
-                                    item.getData().get(THUMBNAIL))));
-            if (thumbnail.getIntrinsicHeight() <= 0) {
-                // Set placeholder image if thumbnail fails to load
-                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            if (null == thumbnail) {
+                thumbnail = new BitmapDrawable(
+                        itemView.getContext().getResources(),
+                        TAPFileUtils.getInstance().decodeBase64(
+                                (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                        item.getData().get(THUMBNAIL))));
+                if (thumbnail.getIntrinsicHeight() <= 0) {
+                    // Set placeholder image if thumbnail fails to load
+                    thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+                }
             }
 
             // Set caption
@@ -509,22 +511,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                             // Download image
                             if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
-                                TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item, new TAPDownloadListener() {
-                                    @Override
-                                    public void onImageDownloadProcessFinished(String localID, Bitmap bitmap) {
-                                        // Load bitmap to view
-                                        Intent intent = new Intent(DownloadFinish);
-                                        intent.putExtra(DownloadLocalID, localID);
-                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                                    }
-
-                                    @Override
-                                    public void onDownloadFailed(String localID) {
-                                        Intent intent = new Intent(DownloadFailed);
-                                        intent.putExtra(DownloadLocalID, localID);
-                                        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                                    }
-                                });
+                                TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item);
                             } else {
                                 activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
                                 TAPFileDownloadManager.getInstance().addFailedDownload(item.getLocalID());
@@ -603,6 +590,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
 
         private Uri videoUri;
+        private Drawable thumbnail;
 
         VideoVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -704,14 +692,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.GONE);
             }
 
-            Drawable thumbnail = new BitmapDrawable(
-                    itemView.getContext().getResources(),
-                    TAPFileUtils.getInstance().decodeBase64(
-                            (String) (null == item.getData().get(THUMBNAIL) ? "" :
-                                    item.getData().get(THUMBNAIL))));
-            if (thumbnail.getIntrinsicHeight() <= 0) {
-                // Set placeholder image if thumbnail fails to load
-                thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            if (null == thumbnail) {
+                thumbnail = new BitmapDrawable(
+                        itemView.getContext().getResources(),
+                        TAPFileUtils.getInstance().decodeBase64(
+                                (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                        item.getData().get(THUMBNAIL))));
+                if (thumbnail.getIntrinsicHeight() <= 0) {
+                    // Set placeholder image if thumbnail fails to load
+                    thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+                }
             }
 
             // Set caption
@@ -847,12 +837,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
             if (null == videoUri) {
-                return;
+                // Prompt download
+                this.videoUri = null;
+                String fileID = (String) message.getData().get(FILE_ID);
+                TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID);
+                notifyItemChanged(getLayoutPosition());
+                new TapTalkDialog.Builder(itemView.getContext())
+                        .setTitle(itemView.getContext().getString(R.string.tap_error_could_not_find_file))
+                        .setMessage(itemView.getContext().getString(R.string.tap_error_redownload_file))
+                        .setCancelable(true)
+                        .setPrimaryButtonTitle(itemView.getContext().getString(R.string.tap_ok))
+                        .setSecondaryButtonTitle(itemView.getContext().getString(R.string.tap_cancel))
+                        .setPrimaryButtonListener(v -> downloadVideo(message))
+                        .show();
+            } else {
+                // Open video
+                Intent intent = new Intent(itemView.getContext(), TAPVideoPlayerActivity.class);
+                intent.putExtra(URI, videoUri.toString());
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                itemView.getContext().startActivity(intent);
             }
-            Intent intent = new Intent(itemView.getContext(), TAPVideoPlayerActivity.class);
-            intent.putExtra(URI, videoUri.toString());
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            itemView.getContext().startActivity(intent);
         }
 
         @Override

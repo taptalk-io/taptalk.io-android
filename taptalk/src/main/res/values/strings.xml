@@ -122,6 +122,7 @@
     <string name="tap_error_invalid_otp">Invalid OTP, please try again</string>
     <string name="tap_error_invalid_full_name">Invalid full name</string>
     <string name="tap_error_invalid_username">Invalid username</string>
+    <string name="tap_error_username_length">Username\'s length must be 4–32 characters</string>
     <string name="tap_error_username_exists">Username already exists</string>
     <string name="tap_error_unable_to_verify_username">Unable to verify username, please check your connection and try again</string>
     <string name="tap_error_not_a_valid_mobile_number">Not a valid mobile number</string>

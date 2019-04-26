@@ -64,7 +64,6 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPDownloadListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -123,7 +122,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -1312,6 +1311,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 return;
             }
             String localID;
+            Uri fileUri;
             switch (action) {
                 case UploadProgressLoading:
                     localID = intent.getStringExtra(UploadLocalID);
@@ -1363,6 +1363,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
+                    String fileID = intent.getStringExtra(FILE_ID);
+                    fileUri = intent.getParcelableExtra(FILE_URI);
+                    if (null != fileID && null != fileUri) {
+                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), fileID, fileUri);
+                    }
                     break;
                 case DownloadFailed:
                     localID = intent.getStringExtra(DownloadLocalID);
@@ -1383,7 +1388,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case OpenFile:
                     TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
-                    Uri fileUri = intent.getParcelableExtra(FILE_URI);
+                    fileUri = intent.getParcelableExtra(FILE_URI);
                     vm.setOpenedFileMessage(message);
                     if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
                         if (!TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
@@ -1437,25 +1442,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(TAPChatActivity.this, message, new TAPDownloadListener() {
-                @Override
-                public void onFileDownloadProcessFinished(String localID, Uri fileUri) {
-                    if (null != message.getData()) {
-                        // Save file Uri to manager
-                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), (String) message.getData().get(FILE_ID), fileUri);
-                    }
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
-                    }
-                }
-
-                @Override
-                public void onDownloadFailed(String localID) {
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
-                    }
-                }
-            });
+            TAPFileDownloadManager.getInstance().downloadFile(TAPChatActivity.this, message);
         }
     }
 
@@ -1626,13 +1613,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //ini buat ngecek kalau room nya kosong manggil api before aja
                     //sebaliknya kalau roomnya ada isinya manggil after baru before*
                     //* = kalau jumlah itemnya < 50
-                    if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
+                    if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
                     /* Call Message List API
                     Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
                         callApiAfter();
-                    } else if (NUM_OF_ITEM <= vm.getMessageModels().size()) {
+                    } else if (MAX_ITEMS_PER_PAGE <= vm.getMessageModels().size()) {
                         rvMessageList.addOnScrollListener(endlessScrollListener);
                         callApiAfter();
                     } else {
@@ -1654,7 +1641,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         updateMessageDecoration();
                     }
                 });
-                if (NUM_OF_ITEM > entities.size() && 1 < entities.size()) {
+                if (MAX_ITEMS_PER_PAGE > entities.size() && 1 < entities.size()) {
                     state = STATE.DONE;
                 } else {
                     rvMessageList.addOnScrollListener(endlessScrollListener);
@@ -1679,7 +1666,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
 
             if (null != messageAdapter) {
-                if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
+                if (MAX_ITEMS_PER_PAGE > entities.size() && STATE.DONE != state) {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
                 } else if (STATE.WORKING == state) {
                     state = STATE.LOADED;
@@ -1823,7 +1810,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
-            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
+            if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             } else {
                 fNewerLoading.hide();
@@ -1914,7 +1901,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
-            if (NUM_OF_ITEM > response.getMessages().size() && 1 < response.getMessages().size()) {
+            if (MAX_ITEMS_PER_PAGE > response.getMessages().size() && 1 < response.getMessages().size()) {
                 state = STATE.DONE;
             } else {
                 rvMessageList.addOnScrollListener(endlessScrollListener);

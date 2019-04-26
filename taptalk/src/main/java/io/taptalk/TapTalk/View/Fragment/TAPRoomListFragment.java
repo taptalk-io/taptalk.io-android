@@ -1,16 +1,13 @@
 package io.taptalk.TapTalk.View.Fragment;
 
-import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
@@ -56,7 +52,6 @@ import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
@@ -66,7 +61,9 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_CALLING_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 
 public class TAPRoomListFragment extends Fragment {
@@ -267,9 +264,13 @@ public class TAPRoomListFragment extends Fragment {
         flSetupContainer.setOnClickListener(v -> {
         });
 
+        // TODO: 22 April 2019 TESTING
         if (BuildConfig.DEBUG) {
             ivButtonNewChat.setOnLongClickListener(view1 -> {
                 Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
+                intent.putExtra(COUNTRY_ID, 1);
+                intent.putExtra(COUNTRY_CALLING_CODE, "62");
+                intent.putExtra(MOBILE_NUMBER, "82113308615");
                 startActivity(intent);
                 if (null != getActivity()) {
                     getActivity().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

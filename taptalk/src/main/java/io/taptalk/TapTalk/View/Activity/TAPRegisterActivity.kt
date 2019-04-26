@@ -38,6 +38,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val stateEmpty = 0
     private val stateValid = 1
+    private val stateChecking = 2
     private val stateInvalid = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,14 +58,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         et_full_name.onFocusChangeListener = fullNameFocusListener
         et_username.onFocusChangeListener = usernameFocusListener
-        //et_mobile_number.onFocusChangeListener = mobileNumberFocusListener
         et_email_address.onFocusChangeListener = emailAddressFocusListener
         et_password.onFocusChangeListener = passwordFocusListener
         et_retype_password.onFocusChangeListener = passwordRetypeFocusListener
 
         et_full_name.addTextChangedListener(fullNameWatcher)
         et_username.addTextChangedListener(usernameWatcher)
-        //et_mobile_number.addTextChangedListener(numberWatcher)
         et_email_address.addTextChangedListener(emailWatcher)
         et_password.addTextChangedListener(passwordWatcher)
         et_retype_password.addTextChangedListener(passwordRetypeWatcher)
@@ -115,53 +114,31 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun checkUsername(hasFocus: Boolean) {
         TAPDataManager.getInstance().cancelCheckUsernameApiCall()
-        checkUsernameTimer.cancel()
-        if (et_username.text.isNotEmpty() && et_username.text.matches(Regex("[a-z0-9_]*")) &&
+        if (et_username.text.isNotEmpty() && et_username.text.length in 4..32 &&
+                et_username.text.matches(Regex("[a-z0-9_]*")) &&
                 et_username.text[0].isLetter() &&
                 et_username.text[et_username.text.lastIndex].isLetterOrDigit()) {
             // Valid username, continue to check if username exists
-            if (hasFocus) {
-                // Start timer to check username if focused
-                checkUsernameTimer.start()
-            } else {
-                // Check username right away when not focused
-                TAPDataManager.getInstance().checkUsernameExists(et_username.text.toString(), checkUsernameView)
-            }
+            TAPDataManager.getInstance().checkUsernameExists(et_username.text.toString(), checkUsernameView)
         } else if (et_username.text.isEmpty()) {
             // Not filled
             formCheck[indexUsername] = stateEmpty
             tv_label_username_error.visibility = View.GONE
             updateEditTextBackground(et_username, hasFocus)
+            checkContinueButtonAvailability()
         } else {
             // Invalid username
             formCheck[indexUsername] = stateInvalid
-            tv_label_username_error.text = getString(R.string.tap_error_invalid_username)
+            if (et_username.text.length in 4..32) {
+                tv_label_username_error.text = getString(R.string.tap_error_invalid_username)
+            } else {
+                tv_label_username_error.text = getString(R.string.tap_error_username_length)
+            }
             tv_label_username_error.visibility = View.VISIBLE
             et_username.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            checkContinueButtonAvailability()
         }
-        checkContinueButtonAvailability()
     }
-
-//    private fun checkMobileNumber(hasFocus: Boolean) {
-//        val phoneNumber = StringBuilder().append(tv_country_code.text).append(et_mobile_number.text)
-//        if (et_mobile_number.text.isNotEmpty() && Patterns.PHONE.matcher(phoneNumber).matches() && et_mobile_number.text.length in 7..15) {
-//            // Valid phone number
-//            formCheck[indexMobileNumber] = stateValid
-//            tv_label_mobile_number_error.visibility = View.GONE
-//            updateEditTextBackground(et_mobile_number, hasFocus)
-//        } else if (et_mobile_number.text.isEmpty()) {
-//            // Not filled
-//            formCheck[indexMobileNumber] = stateEmpty
-//            tv_label_mobile_number_error.visibility = View.GONE
-//            updateEditTextBackground(et_mobile_number, hasFocus)
-//        } else {
-//            // Invalid phone number
-//            formCheck[indexMobileNumber] = stateInvalid
-//            tv_label_mobile_number_error.visibility = View.VISIBLE
-//            et_mobile_number.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
-//        }
-//        checkContinueButtonAvailability()
-//    }
 
     private fun checkEmailAddress(hasFocus: Boolean) {
         if (et_email_address.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(et_email_address.text).matches()) {
@@ -259,13 +236,21 @@ class TAPRegisterActivity : TAPBaseActivity() {
                         (formCheck[indexPassword] == stateEmpty && formCheck[indexPasswordRetype] == stateEmpty) ||
                                 (formCheck[indexPassword] == stateValid && formCheck[indexPasswordRetype] == stateValid))) {
             // All forms valid
-            fl_button_continue.background = getDrawable(R.drawable.tap_bg_gradient_ff9833_ff7e00_rounded_8dp_stroke_ff7e00_1dp)
-            fl_button_continue.setOnClickListener { register() }
+            enableContinueButton()
         } else {
             // Has invalid forms
-            fl_button_continue.background = getDrawable(R.drawable.tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp)
-            fl_button_continue.setOnClickListener(null)
+            disableContinueButton()
         }
+    }
+
+    private fun enableContinueButton() {
+        fl_button_continue.background = getDrawable(R.drawable.tap_bg_orange_button_ripple)
+        fl_button_continue.setOnClickListener { register() }
+    }
+
+    private fun disableContinueButton() {
+        fl_button_continue.background = getDrawable(R.drawable.tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp)
+        fl_button_continue.setOnClickListener(null)
     }
 
     private fun clearAllFocus() {
@@ -304,8 +289,49 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 .setTitle(getString(R.string.tap_error))
                 .setMessage(message)
                 .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                .setCancelable(true)
+                .setPrimaryButtonListener(true) { enableEditing() }
+                .setCancelable(false)
                 .show()
+    }
+
+    private fun disableEditing() {
+        et_full_name.isEnabled = false
+        et_username.isEnabled = false
+        et_email_address.isEnabled = false
+        et_password.isEnabled = false
+        et_retype_password.isEnabled = false
+
+        et_full_name.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_username.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_email_address.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_password.setTextColor(resources.getColor(R.color.tap_grey_9b))
+        et_retype_password.setTextColor(resources.getColor(R.color.tap_grey_9b))
+
+        tv_button_continue.visibility = View.GONE
+        iv_register_progress.visibility = View.VISIBLE
+        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPRegisterActivity, iv_register_progress)
+
+        fl_button_continue.setOnClickListener(null)
+    }
+
+    private fun enableEditing() {
+        et_full_name.isEnabled = true
+        et_username.isEnabled = true
+        et_email_address.isEnabled = true
+        et_password.isEnabled = true
+        et_retype_password.isEnabled = true
+
+        et_full_name.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_username.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_email_address.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_password.setTextColor(resources.getColor(R.color.tap_black_19))
+        et_retype_password.setTextColor(resources.getColor(R.color.tap_black_19))
+
+        tv_button_continue.visibility = View.VISIBLE
+        iv_register_progress.visibility = View.GONE
+        iv_register_progress.clearAnimation()
+
+        fl_button_continue.setOnClickListener { register() }
     }
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
@@ -316,7 +342,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
             }
         } else {
             view.elevation = 0f
-            checkFullName(hasFocus)
+            if (formCheck[indexFullName] != stateInvalid) {
+                updateEditTextBackground(et_full_name, hasFocus)
+            }
         }
     }
 
@@ -328,21 +356,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
             }
         } else {
             view.elevation = 0f
-            checkUsername(hasFocus)
+            if (formCheck[indexUsername] != stateInvalid) {
+                updateEditTextBackground(et_username, hasFocus)
+            }
         }
     }
-
-//    private val mobileNumberFocusListener = View.OnFocusChangeListener { view, hasFocus ->
-//        if (hasFocus) {
-//            view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
-//            if (formCheck[indexMobileNumber] != stateInvalid) {
-//                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
-//            }
-//        } else {
-//            view.elevation = 0f
-//            checkMobileNumber(hasFocus)
-//        }
-//    }
 
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
@@ -352,7 +370,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
             }
         } else {
             view.elevation = 0f
-            checkEmailAddress(hasFocus)
+            if (formCheck[indexEmail] != stateInvalid) {
+                updateEditTextBackground(et_email_address, hasFocus)
+            }
         }
     }
 
@@ -365,7 +385,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
             }
         } else {
             cl_password.elevation = 0f
-            checkPassword(hasFocus)
+            if (formCheck[indexPassword] != stateInvalid) {
+                updateEditTextBackground(cl_password, hasFocus)
+            }
         }
     }
 
@@ -378,7 +400,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
             }
         } else {
             cl_retype_password.elevation = 0f
-            checkRetypedPassword(hasFocus)
+            if (formCheck[indexPasswordRetype] != stateInvalid) {
+                updateEditTextBackground(cl_retype_password, hasFocus)
+            }
         }
     }
 
@@ -388,9 +412,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (formCheck[indexFullName] != stateEmpty) {
-                checkFullName(et_full_name.hasFocus())
-            }
+            disableContinueButton()
+            checkFullNameTimer.cancel()
+            checkFullNameTimer.start()
         }
     }
 
@@ -400,23 +424,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (formCheck[indexUsername] != stateEmpty) {
-                checkUsername(et_username.hasFocus())
-            }
+            disableContinueButton()
+            checkUsernameTimer.cancel()
+            checkUsernameTimer.start()
         }
     }
-
-//    private val numberWatcher = object : TextWatcher {
-//        override fun afterTextChanged(p0: Editable?) {}
-//
-//        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-//
-//        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//            if (formCheck[indexMobileNumber] != stateEmpty) {
-//                checkMobileNumber(et_mobile_number.hasFocus())
-//            }
-//        }
-//    }
 
     private val emailWatcher = object : TextWatcher {
         override fun afterTextChanged(p0: Editable?) {}
@@ -424,7 +436,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            checkEmailAddress(et_email_address.hasFocus())
+            disableContinueButton()
+            checkEmailAddressTimer.cancel()
+            checkEmailAddressTimer.start()
         }
     }
 
@@ -434,7 +448,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            checkPassword(et_password.hasFocus())
+            disableContinueButton()
+            checkPasswordTimer.cancel()
+            checkPasswordTimer.start()
         }
     }
 
@@ -444,16 +460,54 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            checkRetypedPassword(et_retype_password.hasFocus())
+            disableContinueButton()
+            checkRetypedPasswordTimer.cancel()
+            checkRetypedPasswordTimer.start()
         }
     }
 
-    private val checkUsernameTimer = object : CountDownTimer(300L, 100L) {
+    private val checkFullNameTimer = object : CountDownTimer(1000L, 100L) {
         override fun onTick(p0: Long) {
         }
 
         override fun onFinish() {
-            TAPDataManager.getInstance().checkUsernameExists(et_username.text.toString(), checkUsernameView)
+            checkFullName(et_full_name.hasFocus())
+        }
+    }
+
+    private val checkUsernameTimer = object : CountDownTimer(1000L, 100L) {
+        override fun onTick(p0: Long) {
+        }
+
+        override fun onFinish() {
+            checkUsername(et_username.hasFocus())
+        }
+    }
+
+    private val checkEmailAddressTimer = object : CountDownTimer(1000L, 100L) {
+        override fun onTick(p0: Long) {
+        }
+
+        override fun onFinish() {
+            checkEmailAddress(et_email_address.hasFocus())
+        }
+    }
+
+    private val checkPasswordTimer = object : CountDownTimer(1000L, 100L) {
+        override fun onTick(p0: Long) {
+        }
+
+        override fun onFinish() {
+            checkPassword(et_password.hasFocus())
+        }
+    }
+
+    private val checkRetypedPasswordTimer = object : CountDownTimer(1000L, 100L) {
+        override fun onTick(p0: Long) {
+        }
+
+        override fun onFinish() {
+            checkRetypedPassword(et_retype_password.hasFocus())
         }
     }
 
@@ -491,15 +545,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val registerView = object : TapDefaultDataView<TAPRegisterResponse>() {
         override fun startLoading() {
-            tv_button_continue.visibility = View.GONE
-            iv_register_progress.visibility = View.VISIBLE
-            TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPRegisterActivity, iv_register_progress)
+            disableEditing()
         }
 
         override fun endLoading() {
-            tv_button_continue.visibility = View.VISIBLE
-            iv_register_progress.visibility = View.GONE
-            iv_register_progress.clearAnimation()
+            enableEditing()
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {

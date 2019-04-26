@@ -5,7 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 
 /**
  * Created by Rionaldo on 6/6/17.
@@ -13,7 +13,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
 
 public abstract class TAPEndlessScrollListener extends RecyclerView.OnScrollListener {
 
-    private int visibleThreshold = NUM_OF_ITEM - 5;
+    private int visibleThreshold = MAX_ITEMS_PER_PAGE - 5;
     private int currentPage = 0;
     // The total number of items in the dataset after the last load
     private int previousTotalItemCount = 0;
@@ -30,7 +30,7 @@ public abstract class TAPEndlessScrollListener extends RecyclerView.OnScrollList
 
     public TAPEndlessScrollListener(LinearLayoutManager layoutManager, int visibleThreshold) {
         this.mLayoutManager = layoutManager;
-        if (visibleThreshold <= NUM_OF_ITEM)
+        if (visibleThreshold <= MAX_ITEMS_PER_PAGE)
             this.visibleThreshold = visibleThreshold;
     }
 
