@@ -6,6 +6,7 @@ import android.os.CountDownTimer
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity
@@ -156,6 +158,7 @@ class TAPLoginVerificationFragment : Fragment() {
         override fun verifyOTPSuccessToLogin() {
             TAPApiManager.getInstance().isLogout = false
             activity?.runOnUiThread {
+                TAPDataManager.getInstance().saveMyCountryCode(countryCallingCode)
                 val intent = Intent(context, TAPRoomListActivity::class.java)
                 startActivity(intent)
                 activity?.finish()

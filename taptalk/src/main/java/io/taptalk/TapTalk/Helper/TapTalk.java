@@ -165,6 +165,7 @@ public class TapTalk {
 
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance().connect();
+            TAPContactManager.getInstance().setMyCountryCode(TAPDataManager.getInstance().getMyCountryCode());
             TAPOldDataManager.getInstance().startAutoCleanProcess();
         }
 

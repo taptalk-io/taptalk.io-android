@@ -52,7 +52,6 @@ import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
@@ -62,6 +61,9 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_CALLING_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 
 public class TAPRoomListFragment extends Fragment {
@@ -262,9 +264,13 @@ public class TAPRoomListFragment extends Fragment {
         flSetupContainer.setOnClickListener(v -> {
         });
 
+        // TODO: 22 April 2019 TESTING
         if (BuildConfig.DEBUG) {
             ivButtonNewChat.setOnLongClickListener(view1 -> {
                 Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
+                intent.putExtra(COUNTRY_ID, 1);
+                intent.putExtra(COUNTRY_CALLING_CODE, "62");
+                intent.putExtra(MOBILE_NUMBER, "82113308615");
                 startActivity(intent);
                 if (null != getActivity()) {
                     getActivity().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
@@ -275,9 +281,9 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void openNewChatActivity() {
-        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
-        startActivity(intent);
         if (null != getActivity()) {
+            Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
+            startActivity(intent);
             getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }
     }
@@ -568,6 +574,7 @@ public class TAPRoomListFragment extends Fragment {
                     List<TAPUserModel> users = new ArrayList<>();
                     for (TAPContactModel contact : response.getContacts()) {
                         users.add(contact.getUser().setUserAsContact());
+                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contact.getUser());
                     }
                     TAPDataManager.getInstance().insertMyContactToDatabase(users);
                     TAPContactManager.getInstance().updateUserDataMap(users);

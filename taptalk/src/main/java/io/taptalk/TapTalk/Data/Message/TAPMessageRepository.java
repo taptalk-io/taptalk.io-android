@@ -155,6 +155,18 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getRoomMedias(Long lastTimestamp, String roomID, final TAPDatabaseListener listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> roomMedias;
+            if (lastTimestamp == 0L) {
+                roomMedias = messageDao.getRoomMedias(roomID);
+            } else {
+                roomMedias = messageDao.getRoomMedias(lastTimestamp, roomID);
+            }
+            listener.onSelectFinished(roomMedias);
+        }).start();
+    }
+
     public void getRoom(String myID, TAPUserModel otherUserModel, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String roomID = TAPChatManager.getInstance().arrangeRoomId(myID, otherUserModel.getUserID());

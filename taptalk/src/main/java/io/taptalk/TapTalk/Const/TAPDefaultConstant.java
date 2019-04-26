@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 2;
+        public static final int kDatabaseVersion = 3;
     }
 
     public static final class ConnectionEvent {
@@ -125,6 +125,7 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO = 34;
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 35;
         public static final int PERMISSION_LOCATION = 41;
+        public static final int PERMISSION_READ_CONTACT = 51;
     }
 
     public static final class Sorting {
@@ -278,7 +279,7 @@ public class TAPDefaultConstant {
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
-    public static final int NUM_OF_ITEM = 50;
+    public static final int MAX_ITEMS_PER_PAGE = 50;
     public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;
@@ -301,4 +302,5 @@ public class TAPDefaultConstant {
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
+    public static final String MY_COUNTRY_CODE = "kMyCountryCode";
 }

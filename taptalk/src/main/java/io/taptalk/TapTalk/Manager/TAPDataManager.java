@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -21,7 +22,9 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
@@ -64,6 +67,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
@@ -150,6 +154,7 @@ public class TAPDataManager {
         removeNotificationMap();
         removeLastCallCountryTimestamp();
         removeCountryList();
+        removeMyCountryCode();
     }
 
     /**
@@ -323,6 +328,23 @@ public class TAPDataManager {
     public void removeUserLastActivityMap() {
         Hawk.delete(K_USER_LAST_ACTIVITY);
     }
+
+    /**
+     * MY COUNTRY CODE
+     */
+    public String getMyCountryCode() {
+        return getStringPreference(MY_COUNTRY_CODE);
+    }
+
+    public void saveMyCountryCode(String myCountryCode) {
+        saveStringPreference(MY_COUNTRY_CODE, myCountryCode);
+        TAPContactManager.getInstance().setMyCountryCode(myCountryCode);
+    }
+
+    public void removeMyCountryCode() {
+        Hawk.delete(MY_COUNTRY_CODE);
+    }
+
 
     /**
      * ROOM LIST FIRST SETUP
@@ -620,6 +642,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
     }
 
+    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
+    }
+
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
@@ -800,6 +826,10 @@ public class TAPDataManager {
 
     public void addContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().addContact(userID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void addContactByPhone(List<String> phones, TapDefaultDataView<TAPAddContactByPhoneResponse> view) {
+        TAPApiManager.getInstance().addContactByPhone(phones, new TAPDefaultSubscriber<>(view));
     }
 
     public void removeContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
