@@ -239,6 +239,7 @@
     <string name="tap_retype_password">Retype Password</string>
     <string name="tap_saving">Saving…</string>
     <string name="tap_search">Search</string>
+    <string name="tap_syncing">Syncing…</string>
     <string name="tap_search_for_country">Search for country</string>
     <string name="tap_send">Send</string>
     <string name="tap_sending">Sending…</string>

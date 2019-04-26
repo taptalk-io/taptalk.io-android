@@ -110,7 +110,7 @@ public class TAPContactManager {
 
     public void addUserMapByPhoneNumber(TAPUserModel userModel) {
         if (null != userModel.getPhoneWithCode() && !"".equals(userModel.getPhoneWithCode()))
-            getUserMapByPhoneNumber().put(userModel.getPhoneNumber(), userModel);
+            getUserMapByPhoneNumber().put(userModel.getPhoneWithCode(), userModel);
     }
 
     public boolean isUserPhoneNumberAlreadyExist(String phone) {
