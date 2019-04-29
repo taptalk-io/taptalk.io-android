@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Fragment
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
@@ -93,12 +94,23 @@ class TAPLoginVerificationFragment : Fragment() {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean) {
             this@TAPLoginVerificationFragment.otpID = otpID
             this@TAPLoginVerificationFragment.otpKey = otpKey ?: ""
-            setAndStartTimer()
+            resendOtpSuccessMessage()
+
+            Handler().postDelayed({ setAndStartTimer() }, 2000)
+            //setAndStartTimer()
         }
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
             showDialog("ERROR", errorMessage ?: generalErrorMessage)
         }
+    }
+
+    private fun resendOtpSuccessMessage() {
+        clearOTPEditText()
+        tv_request_otp_again.visibility = View.GONE
+        ll_loading_otp.visibility = View.GONE
+        ll_otp_sent.visibility = View.VISIBLE
+        iv_progress_otp.clearAnimation()
     }
 
     private fun setAndStartTimer() {
@@ -108,6 +120,7 @@ class TAPLoginVerificationFragment : Fragment() {
         tv_otp_timer.visibility = View.VISIBLE
         tv_request_otp_again.visibility = View.GONE
         ll_loading_otp.visibility = View.GONE
+        ll_otp_sent.visibility = View.GONE
         iv_progress_otp.clearAnimation()
 
         otpTimer = object : CountDownTimer(waitTime * 1000, 1000) {
