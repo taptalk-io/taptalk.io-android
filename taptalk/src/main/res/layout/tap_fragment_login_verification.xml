@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:fontFamily="@font/tap_font_pt_root_medium"
+            android:fontFamily="@font/tap_font_pt_root_bold"
             android:gravity="center_horizontal"
             android:letterSpacing="-0.03"
             android:lineSpacingExtra="6sp"

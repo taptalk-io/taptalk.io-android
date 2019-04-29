@@ -212,7 +212,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             cur.getColumnIndex(ContactsContract.Contacts._ID));
                     String name = cur.getString(cur.getColumnIndex(
                             ContactsContract.Contacts.DISPLAY_NAME));
-
                     if (cur.getInt(cur.getColumnIndex(
                             ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
                         Cursor pCur = cr.query(
@@ -220,14 +219,14 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                                 null,
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                                 new String[]{id}, null);
+
                         if (null != pCur) {
                             while (pCur.moveToNext()) {
                                 String phoneNo = pCur.getString(pCur.getColumnIndex(
                                         ContactsContract.CommonDataKinds.Phone.NUMBER));
-                                Log.e(TAG, "Name: " + name + " Phone Number: " + phoneNo);
                                 String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
                                 if (!TAPContactManager.getInstance()
-                                        .isUserPhoneNumberAlreadyExist(phoneNumb)) {
+                                        .isUserPhoneNumberAlreadyExist(phoneNumb) && !newContactsPhoneNumbers.contains(phoneNumb)) {
                                     newContactsPhoneNumbers.add(phoneNumb);
                                 }
                             }
