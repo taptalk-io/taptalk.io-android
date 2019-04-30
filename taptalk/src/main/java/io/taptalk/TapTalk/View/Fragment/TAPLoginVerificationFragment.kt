@@ -84,6 +84,7 @@ class TAPLoginVerificationFragment : Fragment() {
         et_otp_code.addTextChangedListener(otpTextWatcher)
         et_otp_code.requestFocus()
         TAPUtils.getInstance().showKeyboard(activity, et_otp_code)
+        clearOTPEditText()
         setAndStartTimer()
         tv_request_otp_again.setOnClickListener {
             showRequestingOTPLoading()
@@ -98,7 +99,6 @@ class TAPLoginVerificationFragment : Fragment() {
             resendOtpSuccessMessage()
 
             Handler().postDelayed({ setAndStartTimer() }, 2000)
-            //setAndStartTimer()
         }
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
@@ -115,7 +115,6 @@ class TAPLoginVerificationFragment : Fragment() {
     }
 
     private fun setAndStartTimer() {
-        clearOTPEditText()
         tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
         tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_black_19))
         tv_otp_timer.visibility = View.VISIBLE
