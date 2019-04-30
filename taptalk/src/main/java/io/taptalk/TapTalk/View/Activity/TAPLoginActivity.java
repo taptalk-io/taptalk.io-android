@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.widget.FrameLayout;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPPhoneLoginFragment;
+import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER;
@@ -16,12 +18,13 @@ public class TAPLoginActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPLoginActivity.class.getSimpleName();
     private FrameLayout flContainer;
+    private TAPLoginViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_login);
-
+        initViewModel();
         initView();
         initFirstPage();
     }
@@ -72,4 +75,15 @@ public class TAPLoginActivity extends TAPBaseActivity {
                 .commit();
     }
 
+    public void setLastLoginData(Long otpID, String otpKey, String phoneNumber, String phoneNumberWithCode, int countryID, String countryCallingID) {
+        vm.setLastLoginData(otpID, otpKey, phoneNumber, phoneNumberWithCode, countryID, countryCallingID);
+    }
+
+    private void initViewModel() {
+        vm = ViewModelProviders.of(this).get(TAPLoginViewModel.class);
+    }
+
+    public TAPLoginViewModel getVm() {
+        return null == vm ? vm = ViewModelProviders.of(this).get(TAPLoginViewModel.class) : vm;
+    }
 }

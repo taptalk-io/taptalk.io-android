@@ -256,5 +256,6 @@
     <string name="tap_verifying_otp">Verifying OTP</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
+    <string name="otp_successfully_sent">OTP Successfully Sent</string>
 
 </resources>
