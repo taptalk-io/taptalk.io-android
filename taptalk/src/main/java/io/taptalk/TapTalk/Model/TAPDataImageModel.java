@@ -29,10 +29,11 @@ public class TAPDataImageModel implements Parcelable {
     @Nullable @JsonProperty("fileUri") private String fileUri;
     @Nullable @JsonProperty("thumbnail") private String thumbnail;
 
-    public TAPDataImageModel(@Nullable Number width, @Nullable Number height, @Nullable String caption,
+    public TAPDataImageModel(@Nullable Number width, @Nullable Number height, @Nullable Number size, @Nullable String caption,
                              @Nullable String thumbnail, @Nullable String fileUri) {
         this.width = width;
         this.height = height;
+        this.size = size;
         this.caption = caption;
         this.fileUri = fileUri;
         this.thumbnail = thumbnail;

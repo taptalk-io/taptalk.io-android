@@ -16,6 +16,7 @@ import android.webkit.MimeTypeMap;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -187,24 +188,29 @@ public class TAPFileUploadManager {
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             return;
         }
+
         TAPDataImageModel imageData = new TAPDataImageModel(messageModel.getData());
+        System.gc();
 
         // Create and resize image file
-        Uri imageUri = null;
-        Bitmap bitmap, thumbBitmap;
-        String thumbBase64;
         if (null != imageData.getFileUri() && !imageData.getFileUri().isEmpty()) {
             // Create image from file Uri
-            imageUri = Uri.parse(imageData.getFileUri());
-            bitmap = createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION);
-            thumbBitmap = createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION);
-            thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+            new Thread(() -> {
+                Uri imageUri = Uri.parse(imageData.getFileUri());
+                Bitmap bitmap = createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION);
+                Bitmap thumbBitmap = createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION);
+                String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
+            }).start();
         } else if (null != getBitmapQueue().get(messageModel.getLocalID())) {
             // Create image from bitmap queue
-            bitmap = getBitmapQueue().get(messageModel.getLocalID());
-            bitmap = createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION);
-            thumbBitmap = createAndResizeImageFile(bitmap, THUMB_MAX_DIMENSION);
-            thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+            new Thread(() -> {
+                Bitmap bitmap = getBitmapQueue().get(messageModel.getLocalID());
+                bitmap = createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION);
+                Bitmap thumbBitmap = createAndResizeImageFile(bitmap, THUMB_MAX_DIMENSION);
+                String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap, thumbBase64);
+            }).start();
         } else {
             // Image data does not contain Uri
             Log.e(TAG, context.getString(R.string.tap_error_message_uri_empty));
@@ -214,42 +220,46 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, messageModel.getLocalID());
             intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        }
+    }
+
+    private void checkAndUploadCompressedImage(Context context, String roomID,
+                                               TAPMessageModel messageModel, Uri imageUri,
+                                               TAPDataImageModel imageData, Bitmap bitmap,
+                                               String thumbBase64) {
+        if (null == bitmap) {
             return;
         }
-
-        if (null != bitmap) {
-            String mimeType;
-            if (null != imageUri && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-                mimeType = context.getContentResolver().getType(imageUri);
-            } else if (null != imageUri) {
-                mimeType = TAPUtils.getInstance().getFileMimeType(new File(imageUri.toString()));
-            } else {
-                mimeType = IMAGE_JPEG;
-            }
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
-
-            // Update message data
-            imageData.setHeight(bitmap.getHeight());
-            imageData.setWidth(bitmap.getWidth());
-            imageData.setSize(imageFile.length());
-            imageData.setMediaType(mimeType);
-            imageData.setThumbnail(thumbBase64);
-
-            messageModel.putData(imageData.toHashMap());
-
-            //untuk ngecek skali lagi sebelum manggil api, udah d cancel atau belom
-            if (isUploadQueueEmpty(roomID))
-                return;
-            else if (0 < getUploadQueue(roomID).size() &&
-                    !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
-                uploadNextSequence(context, roomID);
-                return;
-            }
-
-            callImageUploadAPI(context, roomID, messageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
+        String mimeType;
+        if (null != imageUri && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
+            mimeType = context.getContentResolver().getType(imageUri);
+        } else if (null != imageUri) {
+            mimeType = TAPUtils.getInstance().getFileMimeType(new File(imageUri.toString()));
+        } else {
+            mimeType = IMAGE_JPEG;
         }
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+        File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+
+        // Update message data
+        imageData.setHeight(bitmap.getHeight());
+        imageData.setWidth(bitmap.getWidth());
+        imageData.setSize(imageFile.length());
+        imageData.setMediaType(mimeType);
+        imageData.setThumbnail(thumbBase64);
+
+        messageModel.putData(imageData.toHashMap());
+
+        //untuk ngecek skali lagi sebelum manggil api, udah d cancel atau belom
+        if (isUploadQueueEmpty(roomID))
+            return;
+        else if (0 < getUploadQueue(roomID).size() &&
+                !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
+            uploadNextSequence(context, roomID);
+            return;
+        }
+        callImageUploadAPI(context, roomID, messageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
     }
 
     private void uploadVideo(Context context, String roomID) {
@@ -269,12 +279,12 @@ public class TAPFileUploadManager {
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             return;
         }
-        TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
 
-//        Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
+        TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
         Uri videoUri = Uri.parse(videoData.getFileUri());
         File videoFile = new File(videoUri.toString());
         String mimeType = TAPUtils.getInstance().getFileMimeType(videoFile);
+
         if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
             // Get video file from file Uri if map is empty
             videoUri = Uri.parse(videoData.getFileUri());
@@ -298,10 +308,10 @@ public class TAPFileUploadManager {
 
         messageModel.putData(videoData.toHashMap());
 
-        //untuk ngecek skali lagi sebelum manggil api, udah d cancel atau belom
-        if (isUploadQueueEmpty(roomID))
+        // Check if upload is canceled
+        if (isUploadQueueEmpty(roomID)) {
             return;
-        else if (0 < getUploadQueue(roomID).size() &&
+        } else if (0 < getUploadQueue(roomID).size() &&
                 !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
             uploadNextSequence(context, roomID);
             return;
@@ -315,7 +325,6 @@ public class TAPFileUploadManager {
                 // Queue is empty
                 return;
             }
-
             TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
 
             if (null == messageModel.getData()) {
@@ -328,12 +337,12 @@ public class TAPFileUploadManager {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 return;
             }
+
             TAPDataFileModel fileData = new TAPDataFileModel(messageModel.getData());
-//            Uri fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(roomID, messageModel.getLocalID());
             Uri fileUri = Uri.parse(fileData.getFileUri());
 
             if (null == fileUri) {
-                // File URI not found
+                // File Uri not found
                 getUploadQueue(roomID).remove(0);
                 getBitmapQueue().remove(messageModel.getLocalID());
                 Intent intent = new Intent(UploadFailed);
@@ -549,10 +558,16 @@ public class TAPFileUploadManager {
      */
     private Bitmap createAndResizeImageFile(Context context, Uri imageUri, int imageMaxSize) {
         Bitmap bitmap;
+//        final BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        options.inSampleSize = calculateInSampleSize(options, IMAGE_MAX_DIMENSION, IMAGE_MAX_DIMENSION);
         try {
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
         } catch (Exception e) {
             // No content provider
+//            BitmapFactory.decodeFile(imageUri.toString(), options);
+//            options.inJustDecodeBounds = false;
+//            bitmap = BitmapFactory.decodeFile(imageUri.toString(), options);
             bitmap = BitmapFactory.decodeFile(imageUri.toString());
         }
         bitmap = resizeBitmap(bitmap, imageMaxSize);
@@ -620,6 +635,27 @@ public class TAPFileUploadManager {
             e.printStackTrace();
         }
         return bitmap;
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        Log.e(TAG, "calculateInSampleSize: " + inSampleSize);
+        return inSampleSize;
     }
 
     /**

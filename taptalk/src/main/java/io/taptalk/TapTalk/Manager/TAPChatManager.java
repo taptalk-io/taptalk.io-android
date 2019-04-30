@@ -597,6 +597,7 @@ public class TAPChatManager {
     private TAPMessageModel createImageMessageModel(Context context, Uri fileUri, String caption) {
         String imageUri = fileUri.toString();
         String imagePath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
+        long size = null == imagePath ? 0L : new File(imagePath).length();
 
         // Get image width and height
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -623,9 +624,9 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri).toHashMap());
+                    new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap());
         } else {
-            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, caption, null, imageUri).toHashMap();
+            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap();
             if (null != getUserInfo()) {
                 data.put(USER_INFO, getUserInfo());
             }
@@ -645,6 +646,7 @@ public class TAPChatManager {
     private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption) {
         int imageWidth = bitmap.getWidth();
         int imageHeight = bitmap.getHeight();
+        long size = bitmap.getByteCount();
 
         // Build message model
         TAPMessageModel messageModel;
@@ -656,9 +658,9 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     getOtherUserIdFromRoom(activeRoom.getRoomID()),
-                    new TAPDataImageModel(imageWidth, imageHeight, caption, null, null).toHashMap());
+                    new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap());
         } else {
-            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, caption, null, null).toHashMap();
+            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap();
             if (null != getUserInfo()) {
                 data.put(USER_INFO, getUserInfo());
             }
@@ -702,10 +704,9 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
-        HashMap<String, Object> data = new TAPDataImageModel(width, height, caption, null, videoPath).toHashMap();
+        HashMap<String, Object> data = new TAPDataImageModel(width, height, size, caption, null, videoPath).toHashMap();
         data.put(DURATION, duration);
         data.put(THUMBNAIL, thumbBase64);
-        data.put(SIZE, size);
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateVideoCaption(caption),
