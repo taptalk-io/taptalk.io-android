@@ -43,6 +43,7 @@ class TAPPhoneLoginFragment : Fragment() {
     private val oneWeekAgoTimestamp: Long = 7 * 24 * 60 * 60 * 1000
     private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     private var countryListitems = arrayListOf<TAPCountryListItem>()
+    private val maxTime = 30L
 
     companion object {
         fun getInstance(): TAPPhoneLoginFragment {
@@ -136,10 +137,11 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun checkAndEditPhoneNumber(): String {
-        var phoneNumber = et_phone_number.text.toString().replace("-","").trim()
+        var phoneNumber = et_phone_number.text.toString().replace("-", "").trim()
         val callingCodeLength: Int = defaultCallingCode.length
         when {
-            phoneNumber.isEmpty() || callingCodeLength > phoneNumber.length -> {}
+            phoneNumber.isEmpty() || callingCodeLength > phoneNumber.length -> {
+            }
             '0' == phoneNumber.elementAt(0) -> phoneNumber = phoneNumber.replaceFirst("0", "")
             //"+$defaultCallingCode" == phoneNumber.substring(0, (callingCodeLength + 1)) -> phoneNumber = phoneNumber.substring(3)
             defaultCallingCode == phoneNumber.substring(0, callingCodeLength) -> phoneNumber = phoneNumber.substring(2)
@@ -148,7 +150,15 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun checkNumberAndCallAPI() {
-        TapTalk.loginWithRequestOTP(defaultCountryID, checkAndEditPhoneNumber(), requestOTPInterface)
+        val loginActivity = activity as TAPLoginActivity
+        val loginViewModel = loginActivity.vm
+        val currentOTPTimestampLength = System.currentTimeMillis() - loginViewModel.lastLoginTimestamp
+        if (defaultCountryID == loginViewModel.countryID
+                && checkAndEditPhoneNumber() == loginViewModel.phoneNumber
+                && currentOTPTimestampLength <= maxTime * 1000) {
+            requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
+        } else
+            TapTalk.loginWithRequestOTP(defaultCountryID, checkAndEditPhoneNumber(), requestOTPInterface)
     }
 
     private fun showProgress() {
@@ -169,7 +179,9 @@ class TAPPhoneLoginFragment : Fragment() {
             if (activity is TAPLoginActivity) {
                 try {
                     val phoneNumber = "+$phone"
-                    (activity as TAPLoginActivity).showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
+                    val loginActivity = activity as TAPLoginActivity
+                    loginActivity.setLastLoginData(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
+                    loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e("><><><", "Masuk ", e)
