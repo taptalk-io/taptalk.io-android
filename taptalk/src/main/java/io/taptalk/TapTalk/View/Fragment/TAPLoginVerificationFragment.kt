@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -229,10 +230,15 @@ class TAPLoginVerificationFragment : Fragment() {
                 1 -> {
                     v_pointer_1.visibility = View.INVISIBLE
                     v_pointer_2.visibility = View.VISIBLE
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_pumkin_orange_two))
                     v_pointer_3.visibility = View.VISIBLE
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_4.visibility = View.VISIBLE
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_5.visibility = View.VISIBLE
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_6.visibility = View.VISIBLE
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
 
                     iv_otp_filled_1.visibility = View.VISIBLE
                     iv_otp_filled_2.visibility = View.INVISIBLE
@@ -245,9 +251,13 @@ class TAPLoginVerificationFragment : Fragment() {
                     v_pointer_1.visibility = View.INVISIBLE
                     v_pointer_2.visibility = View.INVISIBLE
                     v_pointer_3.visibility = View.VISIBLE
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_pumkin_orange_two))
                     v_pointer_4.visibility = View.VISIBLE
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_5.visibility = View.VISIBLE
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_6.visibility = View.VISIBLE
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
 
                     iv_otp_filled_1.visibility = View.VISIBLE
                     iv_otp_filled_2.visibility = View.VISIBLE
@@ -261,8 +271,11 @@ class TAPLoginVerificationFragment : Fragment() {
                     v_pointer_2.visibility = View.INVISIBLE
                     v_pointer_3.visibility = View.INVISIBLE
                     v_pointer_4.visibility = View.VISIBLE
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_pumkin_orange_two))
                     v_pointer_5.visibility = View.VISIBLE
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_6.visibility = View.VISIBLE
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
 
                     iv_otp_filled_1.visibility = View.VISIBLE
                     iv_otp_filled_2.visibility = View.VISIBLE
@@ -277,7 +290,9 @@ class TAPLoginVerificationFragment : Fragment() {
                     v_pointer_3.visibility = View.INVISIBLE
                     v_pointer_4.visibility = View.INVISIBLE
                     v_pointer_5.visibility = View.VISIBLE
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_pumkin_orange_two))
                     v_pointer_6.visibility = View.VISIBLE
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
 
                     iv_otp_filled_1.visibility = View.VISIBLE
                     iv_otp_filled_2.visibility = View.VISIBLE
@@ -293,6 +308,7 @@ class TAPLoginVerificationFragment : Fragment() {
                     v_pointer_4.visibility = View.INVISIBLE
                     v_pointer_5.visibility = View.INVISIBLE
                     v_pointer_6.visibility = View.VISIBLE
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_pumkin_orange_two))
 
                     iv_otp_filled_1.visibility = View.VISIBLE
                     iv_otp_filled_2.visibility = View.VISIBLE
@@ -320,11 +336,17 @@ class TAPLoginVerificationFragment : Fragment() {
                 }
                 else -> {
                     v_pointer_1.visibility = View.VISIBLE
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_pumkin_orange_two))
                     v_pointer_2.visibility = View.VISIBLE
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_3.visibility = View.VISIBLE
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_4.visibility = View.VISIBLE
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_5.visibility = View.VISIBLE
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
                     v_pointer_6.visibility = View.VISIBLE
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(context?: TapTalk.appContext, R.color.tap_black_19))
 
                     iv_otp_filled_1.visibility = View.INVISIBLE
                     iv_otp_filled_2.visibility = View.INVISIBLE
