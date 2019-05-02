@@ -86,8 +86,8 @@ class TAPLoginVerificationFragment : Fragment() {
         TAPUtils.getInstance().showKeyboard(activity, et_otp_code)
         clearOTPEditText()
 
-        if ((System.currentTimeMillis() - (activity as TAPLoginActivity).vm.lastLoginTimestamp) < waitTime) {
-            Log.e("<><><>", "" + (System.currentTimeMillis() - (activity as TAPLoginActivity).vm.lastLoginTimestamp))
+        if (0L != (activity as TAPLoginActivity).vm.lastLoginTimestamp
+                && (System.currentTimeMillis() - (activity as TAPLoginActivity).vm.lastLoginTimestamp) < waitTime) {
             setAndStartTimer(waitTime - (System.currentTimeMillis() - (activity as TAPLoginActivity).vm.lastLoginTimestamp))
         } else setAndStartTimer(waitTime)
         //setAndStartTimer(waitTime)
@@ -123,50 +123,54 @@ class TAPLoginVerificationFragment : Fragment() {
     }
 
     private fun setAndStartTimer(waitTime: Long) {
-        tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
-        tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_black_19))
-        tv_otp_timer.visibility = View.VISIBLE
-        tv_request_otp_again.visibility = View.GONE
-        ll_loading_otp.visibility = View.GONE
-        ll_otp_sent.visibility = View.GONE
-        iv_progress_otp.clearAnimation()
-        otpTimer?.cancel()
+        if (null != tv_didnt_receive_and_invalid && null != tv_otp_timer && null != tv_request_otp_again
+                && null != ll_loading_otp && null != ll_otp_sent && null != iv_progress_otp) {
+            tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
+            tv_didnt_receive_and_invalid.setTextColor(resources.getColor(R.color.tap_black_19))
+            tv_otp_timer.visibility = View.VISIBLE
+            tv_request_otp_again.visibility = View.GONE
+            ll_loading_otp.visibility = View.GONE
+            ll_otp_sent.visibility = View.GONE
+            iv_progress_otp.clearAnimation()
+            otpTimer?.cancel()
 
-        otpTimer = object : CountDownTimer(waitTime, 1000) {
-            override fun onFinish() {
-                tv_otp_timer.visibility = View.GONE
-                ll_loading_otp.visibility = View.GONE
-                tv_request_otp_again.visibility = View.VISIBLE
-            }
+            otpTimer = object : CountDownTimer(waitTime, 1000) {
+                override fun onFinish() {
+                    tv_otp_timer.visibility = View.GONE
+                    ll_loading_otp.visibility = View.GONE
+                    tv_request_otp_again.visibility = View.VISIBLE
+                }
 
-            override fun onTick(millisUntilFinished: Long) {
-                val timeLeft = millisUntilFinished / 1000
-                val minuteLeft = timeLeft / 60
-                val secondLeft = timeLeft - (60 * (timeLeft / 60))
-                when (minuteLeft) {
-                    0L -> {
-                        try {
-                            if (10 > secondLeft) tv_otp_timer.text = "Wait 0:0$secondLeft"
-                            else tv_otp_timer.text = "Wait 0:$secondLeft"
-                        } catch (e: Exception) {
-                            cancelTimer()
-                            e.printStackTrace()
+                override fun onTick(millisUntilFinished: Long) {
+                    val timeLeft = millisUntilFinished / 1000
+                    val minuteLeft = timeLeft / 60
+                    val secondLeft = timeLeft - (60 * (timeLeft / 60))
+                    when (minuteLeft) {
+                        0L -> {
+                            try {
+                                if (10 > secondLeft) tv_otp_timer.text = "Wait 0:0$secondLeft"
+                                else tv_otp_timer.text = "Wait 0:$secondLeft"
+                            } catch (e: Exception) {
+                                cancelTimer()
+                                e.printStackTrace()
+                            }
                         }
-                    }
-                    else -> {
-                        try {
-                            tv_otp_timer.text = "Wait $minuteLeft:$secondLeft"
-                        } catch (e: Exception) {
-                            cancelTimer()
-                            e.printStackTrace()
+                        else -> {
+                            try {
+                                tv_otp_timer.text = "Wait $minuteLeft:$secondLeft"
+                            } catch (e: Exception) {
+                                cancelTimer()
+                                e.printStackTrace()
+                            }
                         }
                     }
                 }
-            }
-        }.start()
+            }.start()
 
-        if (this.waitTime == waitTime)
-            (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
+            if (this.waitTime == waitTime) {
+                (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
+            }
+        }
     }
 
     private fun cancelTimer() {
