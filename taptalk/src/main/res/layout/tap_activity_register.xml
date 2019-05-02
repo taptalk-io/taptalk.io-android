@@ -84,8 +84,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_full_name"
                 android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_full_name" />
 
@@ -136,8 +139,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_username"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username_guide" />
 
@@ -178,8 +185,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:textColor="@color/tap_grey_9b"
-                    android:hint="+62" />
+                    android:hint="+62"
+                    android:textColor="@color/tap_grey_9b" />
 
                 <ImageView
                     android:id="@+id/iv_loading_progress_country"
@@ -220,8 +227,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_not_a_valid_mobile_number"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_mobile_number" />
 
@@ -270,8 +281,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_email_address"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_email_address" />
 
@@ -369,8 +384,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_password"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_password_guide" />
 
@@ -446,8 +465,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_password_does_not_match"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_retype_password" />
 

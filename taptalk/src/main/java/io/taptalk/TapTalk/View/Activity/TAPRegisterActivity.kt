@@ -83,6 +83,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
             formCheck[indexMobileNumber] = stateValid
         }
 
+        TAPUtils.getInstance().showKeyboard(this, et_full_name)
+
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
         iv_button_back.setOnClickListener { onBackPressed() }
@@ -115,7 +117,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun checkUsername(hasFocus: Boolean) {
         TAPDataManager.getInstance().cancelCheckUsernameApiCall()
         if (et_username.text.isNotEmpty() && et_username.text.length in 4..32 &&
-                et_username.text.matches(Regex("[a-z0-9_]*")) &&
+                et_username.text.matches(Regex("[a-z0-9._]*")) &&
                 et_username.text[0].isLetter() &&
                 et_username.text[et_username.text.lastIndex].isLetterOrDigit()) {
             // Valid username, continue to check if username exists
