@@ -170,6 +170,7 @@ public class TapTalk {
         }
 
         TAPDataManager.getInstance().updateSendingMessageToFailed();
+        TAPContactManager.getInstance().setContactSyncPermissionAsked(TAPDataManager.getInstance().isContactSyncPermissionAsked());
 
         //init stetho tapi hanya untuk DEBUG State
         if (BuildConfig.DEBUG)

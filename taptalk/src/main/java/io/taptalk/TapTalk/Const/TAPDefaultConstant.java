@@ -303,4 +303,6 @@ public class TAPDefaultConstant {
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
     public static final String MY_COUNTRY_CODE = "kMyCountryCode";
+
+    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
 }
