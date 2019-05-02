@@ -246,18 +246,6 @@
         app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
 
         <fragment
-            android:id="@+id/f_loading_older"
-            class="io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment"
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <fragment
-            android:id="@+id/f_loading_newer"
-            class="io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment"
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <fragment
             android:id="@+id/f_connection_status"
             class="io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment"
             android:layout_width="match_parent"
