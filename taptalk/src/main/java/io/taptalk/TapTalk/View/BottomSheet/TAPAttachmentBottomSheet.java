@@ -19,12 +19,18 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
     private RecyclerView recyclerView;
     private TAPAttachmentListener attachmentListener;
     private View.OnClickListener onClickListener = v -> dismiss();
+    private boolean isImagePickerBottomSheet;
 
     public TAPAttachmentBottomSheet() {
         // Required empty public constructor
     }
 
     public TAPAttachmentBottomSheet(TAPAttachmentListener attachmentListener) {
+        this.attachmentListener = attachmentListener;
+    }
+
+    public TAPAttachmentBottomSheet(boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener) {
+        this.isImagePickerBottomSheet = isImagePickerBottomSheet;
         this.attachmentListener = attachmentListener;
     }
 
@@ -51,7 +57,7 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        recyclerView.setAdapter(new TAPAttachmentAdapter(attachmentListener, onClickListener));
+        recyclerView.setAdapter(new TAPAttachmentAdapter(isImagePickerBottomSheet, attachmentListener, onClickListener));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
     }
