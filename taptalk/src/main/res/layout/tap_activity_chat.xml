@@ -460,7 +460,7 @@
         android:id="@+id/tv_badge_unread"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/tap_bg_amethyst_mediumpurple_270_rounded_10dp"
+        android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp"
         android:elevation="6dp"
         android:fontFamily="@font/tap_font_pt_root_bold"
         android:paddingStart="8dp"

@@ -110,7 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/tap_transparent_white"
-                android:hint="1234 5678 0000"
+                android:hint="82212345678"
                 android:inputType="numberSigned"
                 android:padding="13dp"
                 android:imeOptions="actionSend"

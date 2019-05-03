@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white">
+    android:background="@color/tap_white_f3">
 
     <FrameLayout
         android:id="@+id/fl_button_search"
@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@drawable/tap_bg_rounded_white_8dp_stroke_dcdcdc_1dp"
-            android:elevation="10dp"
+            android:elevation="2dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="16dp"
@@ -65,6 +65,12 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
+        
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/tap_grey_dc"
+            android:layout_gravity="bottom"/>
 
     </FrameLayout>
 
@@ -144,9 +150,10 @@
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/tap_white"
         android:overScrollMode="never"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/f_connection_status" />
+        app:layout_constraintTop_toBottomOf="@id/f_connection_status"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <fragment
         android:id="@+id/f_connection_status"
