@@ -267,6 +267,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     public void animateAlreadyContact() {
         runOnUiThread(() -> {
+            llButton.setAlpha(0f);
             if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
                 glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
             } else {
@@ -283,7 +284,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             tvAlreadyContact.setText(Html.fromHtml("<b>" + contactModel.getName() + "</b> "
                     + getResources().getString(R.string.tap_is_already_in_your_contacts)));
             cvResult.animate().alpha(1f).withEndAction(() -> {
-                llButton.animate().alpha(0f).start();
+                //llButton.animate().alpha(0f).start();
                 llTextUsername.animate().alpha(0f).withEndAction(() -> {
                     llTextUsername.setVisibility(View.GONE);
                     tvAlreadyContact.setVisibility(View.VISIBLE);
