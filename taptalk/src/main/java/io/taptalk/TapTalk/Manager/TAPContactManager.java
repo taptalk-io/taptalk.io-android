@@ -18,6 +18,7 @@ public class TAPContactManager {
     private HashMap<String, TAPUserModel> userDataMap;
     private HashMap<String, TAPUserModel> userMapByPhoneNumber;
     private String myCountryCode;
+    private boolean isContactSyncPermissionAsked;
 
     private TAPContactManager() {
         //loadAllUserDataFromDatabase();
@@ -138,5 +139,18 @@ public class TAPContactManager {
 
     public void setMyCountryCode(String myCountryCode) {
         this.myCountryCode = myCountryCode;
+    }
+
+    public boolean isContactSyncPermissionAsked() {
+        return isContactSyncPermissionAsked;
+    }
+
+    public void setAndSaveContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
+        TAPDataManager.getInstance().saveContactSyncPermissionAsked(contactSyncPermissionAsked);
+        isContactSyncPermissionAsked = contactSyncPermissionAsked;
+    }
+
+    public void setContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
+        isContactSyncPermissionAsked = contactSyncPermissionAsked;
     }
 }

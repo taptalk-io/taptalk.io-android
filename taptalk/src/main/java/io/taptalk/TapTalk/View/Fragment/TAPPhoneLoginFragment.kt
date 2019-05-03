@@ -157,8 +157,10 @@ class TAPPhoneLoginFragment : Fragment() {
                 && checkAndEditPhoneNumber() == loginViewModel.phoneNumber
                 && currentOTPTimestampLength <= maxTime * 1000) {
             requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
-        } else
+        } else {
             TapTalk.loginWithRequestOTP(defaultCountryID, checkAndEditPhoneNumber(), requestOTPInterface)
+            loginActivity.vm.lastLoginTimestamp = 0L
+        }
     }
 
     private fun showProgress() {
