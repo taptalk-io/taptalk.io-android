@@ -89,17 +89,17 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Change avatar icon and background
-            if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
+            //if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
                 // Item is selected
-                clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_black_18));
-                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_select));
-                ivAvatarIcon.setVisibility(View.VISIBLE);
-                vSeparator.setVisibility(View.GONE);
-                vSeparatorFull.setVisibility(View.GONE);
-            } else {
+            //    clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_black_18));
+            //    ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_select));
+            //    ivAvatarIcon.setVisibility(View.VISIBLE);
+            //    vSeparator.setVisibility(View.GONE);
+            //    vSeparatorFull.setVisibility(View.GONE);
+            //} else {
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-                clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_white));
+                clContainer.setBackgroundColor(resource.getColor(R.color.tap_white));
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
                 ivAvatarIcon.setVisibility(View.GONE);
                 if (position == getItemCount() - 1) {
@@ -109,7 +109,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                     vSeparator.setVisibility(View.VISIBLE);
                     vSeparatorFull.setVisibility(View.GONE);
                 }
-            }
+            //}
 
             // Set name and timestamp text
             tvFullName.setText(item.getLastMessage().getRoom().getRoomName());
