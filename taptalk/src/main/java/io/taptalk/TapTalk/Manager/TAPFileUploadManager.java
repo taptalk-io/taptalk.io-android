@@ -16,7 +16,6 @@ import android.webkit.MimeTypeMap;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,6 +37,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
@@ -195,22 +195,21 @@ public class TAPFileUploadManager {
         // Create and resize image file
         if (null != imageData.getFileUri() && !imageData.getFileUri().isEmpty()) {
             // Create image from file Uri
-            new Thread(() -> {
-                Uri imageUri = Uri.parse(imageData.getFileUri());
-                Bitmap bitmap = createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION);
-                Bitmap thumbBitmap = createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION);
-                String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
-                checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
-            }).start();
+            Uri imageUri = Uri.parse(imageData.getFileUri());
+            createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap ->
+                    // Create thumbnail
+                    createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION, thumbBitmap -> {
+                        String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                        checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
+                    }));
         } else if (null != getBitmapQueue().get(messageModel.getLocalID())) {
             // Create image from bitmap queue
-            new Thread(() -> {
-                Bitmap bitmap = getBitmapQueue().get(messageModel.getLocalID());
-                bitmap = createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION);
-                Bitmap thumbBitmap = createAndResizeImageFile(bitmap, THUMB_MAX_DIMENSION);
-                String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
-                checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap, thumbBase64);
-            }).start();
+            Bitmap bitmap = getBitmapQueue().get(messageModel.getLocalID());
+            createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, bitmap1 ->
+                    createAndResizeImageFile(bitmap1, THUMB_MAX_DIMENSION, thumbBitmap -> {
+                        String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                        checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap1, thumbBase64);
+                    }));
         } else {
             // Image data does not contain Uri
             Log.e(TAG, context.getString(R.string.tap_error_message_uri_empty));
@@ -230,14 +229,7 @@ public class TAPFileUploadManager {
         if (null == bitmap) {
             return;
         }
-        String mimeType;
-        if (null != imageUri && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-            mimeType = context.getContentResolver().getType(imageUri);
-        } else if (null != imageUri) {
-            mimeType = TAPUtils.getInstance().getFileMimeType(new File(imageUri.toString()));
-        } else {
-            mimeType = IMAGE_JPEG;
-        }
+        String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
         File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
@@ -542,6 +534,10 @@ public class TAPFileUploadManager {
                         mimeType, uploadCallbacks, uploadView);
     }
 
+    public void uploadProfilePicture(String userID, Uri imageUri) {
+
+    }
+
     private void messageUploadFailed(Context context, TAPMessageModel messageModelWithUri, String roomID) {
         if (TAPChatManager.getInstance().checkMessageIsUploading(messageModelWithUri.getLocalID())) {
             TAPChatManager.getInstance().removeUploadingMessageFromHashMap(messageModelWithUri.getLocalID());
@@ -556,30 +552,37 @@ public class TAPFileUploadManager {
     /**
      * Modify image before uploading
      */
-    private Bitmap createAndResizeImageFile(Context context, Uri imageUri, int imageMaxSize) {
-        Bitmap bitmap;
+    public void createAndResizeImageFile(Context context, Uri imageUri, int imageMaxSize, BitmapInterface bitmapInterface) {
+        final String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+        new Thread(() -> {
+            Bitmap bitmap;
 //        final BitmapFactory.Options options = new BitmapFactory.Options();
 //        options.inJustDecodeBounds = true;
 //        options.inSampleSize = calculateInSampleSize(options, IMAGE_MAX_DIMENSION, IMAGE_MAX_DIMENSION);
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
-        } catch (Exception e) {
-            // No content provider
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
+            } catch (Exception e) {
+                // No content provider
 //            BitmapFactory.decodeFile(imageUri.toString(), options);
 //            options.inJustDecodeBounds = false;
 //            bitmap = BitmapFactory.decodeFile(imageUri.toString(), options);
-            bitmap = BitmapFactory.decodeFile(imageUri.toString());
-        }
-        bitmap = resizeBitmap(bitmap, imageMaxSize);
-        bitmap = fixImageOrientation(bitmap, imageUri);
-        bitmap = compressBitmap(bitmap, IMAGE_COMPRESSION_QUALITY);
-        return bitmap;
+                bitmap = BitmapFactory.decodeFile(imageUri.toString());
+            }
+            bitmap = resizeBitmap(bitmap, imageMaxSize);
+            bitmap = fixImageOrientation(bitmap, imageUri);
+            bitmap = compressBitmap(bitmap, mimeType, IMAGE_COMPRESSION_QUALITY);
+            bitmapInterface.onBitmapReady(bitmap);
+        }).start();
     }
 
-    private Bitmap createAndResizeImageFile(Bitmap bitmap, int imageMaxSize) {
-        bitmap = resizeBitmap(bitmap, imageMaxSize);
-        bitmap = compressBitmap(bitmap, IMAGE_COMPRESSION_QUALITY);
-        return bitmap;
+    private void createAndResizeImageFile(Bitmap bitmap, int imageMaxSize, BitmapInterface bitmapInterface) {
+        new Thread(() -> {
+            Bitmap bitmapEdit = bitmap;
+            bitmapEdit = resizeBitmap(bitmapEdit, imageMaxSize);
+            // TODO: 3 May 2019 MIME TYPE FORCED TO JPEG
+            bitmapEdit = compressBitmap(bitmapEdit, IMAGE_JPEG, IMAGE_COMPRESSION_QUALITY);
+            bitmapInterface.onBitmapReady(bitmapEdit);
+        }).start();
     }
 
     public Bitmap resizeBitmap(Bitmap bitmap, int imageMaxSize) {
@@ -623,10 +626,11 @@ public class TAPFileUploadManager {
         return bitmap;
     }
 
-    private Bitmap compressBitmap(Bitmap bitmap, int compressionQuality) {
+    private Bitmap compressBitmap(Bitmap bitmap, String mimeType, int compressionQuality) {
         try {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, compressionQuality, os);
+            // TODO: 3 May 2019 ADD OTHER IMAGE FORMATS (GIF?)
+            bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, compressionQuality, os);
             byte[] byteArray = os.toByteArray();
             bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             os.flush();
@@ -656,6 +660,10 @@ public class TAPFileUploadManager {
         }
         Log.e(TAG, "calculateInSampleSize: " + inSampleSize);
         return inSampleSize;
+    }
+
+    public interface BitmapInterface {
+        void onBitmapReady(Bitmap bitmap);
     }
 
     /**

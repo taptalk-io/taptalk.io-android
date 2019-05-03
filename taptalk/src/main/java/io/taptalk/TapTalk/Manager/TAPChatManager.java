@@ -825,7 +825,7 @@ public class TAPChatManager {
             for (TAPMediaPreviewModel media : medias) {
                 if (media.getType() == TYPE_IMAGE) {
                     createImageMessageModelAndAddToUploadQueue(context, room.getRoomID(), media.getUri(), media.getCaption());
-                } else {
+                } else if (media.getType() == TYPE_VIDEO) {
                     createVideoMessageModelAndAddToUploadQueue(context, room.getRoomID(), media.getUri(), media.getCaption());
                 }
             }
