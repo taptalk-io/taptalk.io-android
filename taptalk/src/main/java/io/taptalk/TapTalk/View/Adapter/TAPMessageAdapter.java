@@ -34,6 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -489,7 +490,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (null != fileID && !fileID.isEmpty()) {
-                Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
                     BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null != cachedImage) {
@@ -498,7 +498,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             glide.load(cachedImage)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .apply(new RequestOptions()
-                                            .placeholder(finalThumbnail)
+                                            .placeholder(thumbnail)
                                             .centerCrop())
                                     .into(rcivImageBody);
                             rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
@@ -520,20 +520,32 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if (null != imageUri && !imageUri.isEmpty()) {
                 // Message is not sent to server, load image from Uri
                 rcivImageBody.setOnClickListener(v -> {});
-                Drawable finalThumbnail1 = thumbnail;
-                activity.runOnUiThread(() -> {
-                    if (isMessageFromMySelf(item)) {
-                        flBubble.setForeground(bubbleOverlayRight);
-                    } else {
-                        flBubble.setForeground(bubbleOverlayLeft);
-                    }
-                    glide.load(imageUri)
-                            .transition(DrawableTransitionOptions.withCrossFade(100))
-                            .apply(new RequestOptions()
-                                    .placeholder(finalThumbnail1)
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE))
-                            .into(rcivImageBody);
-                });
+                Number size = (Number) item.getData().get(SIZE);
+                if (null != size && size.longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
+                    // TODO: 30 April 2019 IMAGE THUMBNAIL IS EMPTY, SHOWS GRAY BACKGROUND
+                    activity.runOnUiThread(() -> {
+                        if (isMessageFromMySelf(item)) {
+                            flBubble.setForeground(bubbleOverlayRight);
+                        } else {
+                            flBubble.setForeground(bubbleOverlayLeft);
+                        }
+                        rcivImageBody.setImageDrawable(thumbnail);
+                    });
+                } else {
+                    activity.runOnUiThread(() -> {
+                        if (isMessageFromMySelf(item)) {
+                            flBubble.setForeground(bubbleOverlayRight);
+                        } else {
+                            flBubble.setForeground(bubbleOverlayLeft);
+                        }
+                        glide.load(imageUri)
+                                .transition(DrawableTransitionOptions.withCrossFade(100))
+                                .apply(new RequestOptions()
+                                        .placeholder(thumbnail)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE))
+                                .into(rcivImageBody);
+                    });
+                }
             }
         }
 
@@ -750,7 +762,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
                 pbProgress.setVisibility(View.GONE);
                 rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
-                Drawable finalThumbnail = thumbnail;
                 new Thread(() -> {
                     BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null == videoThumbnail) {
@@ -761,7 +772,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
                         } catch (Exception e) {
                             e.printStackTrace();
-                            videoThumbnail = (BitmapDrawable) finalThumbnail;
+                            videoThumbnail = (BitmapDrawable) thumbnail;
                         }
                         TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
                     }
@@ -772,7 +783,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             glide.load(finalVideoThumbnail)
                                     .transition(DrawableTransitionOptions.withCrossFade(100))
                                     .apply(new RequestOptions()
-                                            .placeholder(finalThumbnail)
+                                            .placeholder(thumbnail)
                                             .centerCrop())
                                     .into(rcivVideoThumbnail);
                             rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));

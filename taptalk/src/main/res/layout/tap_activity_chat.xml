@@ -26,7 +26,7 @@
             android:src="@drawable/tap_ic_back_white"
             android:tint="@color/tap_greenBlue"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_title"
+            app:layout_constraintEnd_toStartOf="@id/tv_room_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -151,9 +151,9 @@
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+        android:visibility="gone"
 
         <TextView
             android:id="@+id/tv_chat_empty_guide"
@@ -244,18 +244,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
-
-        <fragment
-            android:id="@+id/f_loading_older"
-            class="io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment"
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <fragment
-            android:id="@+id/f_loading_newer"
-            class="io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment"
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
 
         <fragment
             android:id="@+id/f_connection_status"

@@ -87,6 +87,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
@@ -961,6 +962,16 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
      */
     public String getFileMimeType(File file) {
         return URLConnection.guessContentTypeFromName(file.getName());
+    }
+
+    public String getImageMimeType(Context context, Uri imageUri) {
+        if (null != imageUri && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
+            return context.getContentResolver().getType(imageUri);
+        } else if (null != imageUri) {
+            return TAPUtils.getInstance().getFileMimeType(new File(imageUri.toString()));
+        } else {
+            return IMAGE_JPEG;
+        }
     }
 
     /**

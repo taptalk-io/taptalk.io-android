@@ -91,7 +91,7 @@
     <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
     <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
-    <string name="tap_guide_username">May only contain lowercase alphabet ‘abc…’, numeric ‘123…’, or an underscore ‘_’.\nUsername must start with a lowercase alphabet and end with lowercase alphabet or numeric.</string>
+    <string name="tap_guide_username">May only contain lowercase alphabet ‘abc…’, numeric ‘123…’, dot ‘.’, or an underscore ‘_’.\nUsername must start with a lowercase alphabet and end with lowercase alphabet or numeric.</string>
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
 
     <!--Error Message-->
@@ -214,6 +214,7 @@
     <string name="tap_add_a_caption">Add a caption</string>
     <string name="tap_add_to_contacts">Add to Contacts</string>
     <string name="tap_cancel">Cancel</string>
+    <string name="tap_change">Change</string>
     <string name="tap_chat_now">Chat Now</string>
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_history">Clear history</string>
@@ -234,6 +235,7 @@
     <string name="tap_optional">Optional</string>
     <string name="tap_password">Password</string>
     <string name="tap_permission_request">Permission Request</string>
+    <string name="tap_profile_picture">Profile Picture</string>
     <string name="tap_reply">Reply</string>
     <string name="tap_requesting_otp">Requesting OTP</string>
     <string name="tap_retry">Retry</string>

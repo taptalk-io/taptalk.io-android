@@ -91,7 +91,6 @@ import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
-import io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -183,7 +182,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
     private View vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
-    private TAPLoadingMessageFragment fOlderLoading, fNewerLoading;
 
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
@@ -443,8 +441,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
-        fOlderLoading = (TAPLoadingMessageFragment) getSupportFragmentManager().findFragmentById(R.id.f_loading_older);
-        fNewerLoading = (TAPLoadingMessageFragment) getSupportFragmentManager().findFragmentById(R.id.f_loading_newer);
     }
 
     private boolean initViewModel() {
@@ -500,10 +496,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.setOtherUserTyping(true);
             showTypingIndicator();
         }
-
-        // Set loading texts
-        fOlderLoading.setLoadingText(getString(R.string.tap_loading_older_messages));
-        fNewerLoading.setLoadingText(getString(R.string.tap_loading_new_messages));
 
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(glide, chatListener);
@@ -1753,11 +1745,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
-        public void startLoading() {
-            fNewerLoading.show();
-        }
-
-        @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
@@ -1813,8 +1800,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
-            } else {
-                fNewerLoading.hide();
             }
 
             if (!vm.isInitialAPICallFinished()) {
@@ -1885,16 +1870,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
-        public void startLoading() {
-            fNewerLoading.show();
-        }
-
-        @Override
-        public void endLoading() {
-            fNewerLoading.hide();
-        }
-
-        @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
@@ -1954,16 +1929,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     //message before yang di panggil pas pagination db balikin data di bawah limit
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
-        @Override
-        public void startLoading() {
-            fOlderLoading.show();
-        }
-
-        @Override
-        public void endLoading() {
-            fOlderLoading.hide();
-        }
-
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database

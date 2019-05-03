@@ -95,6 +95,30 @@ public class TAPAttachmentModel {
         return attachMenus;
     }
 
+    public static List<TAPAttachmentModel> createImagePickerMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_camera_green_blue,
+                R.drawable.tap_ic_gallery_green_blue,
+        };
+
+        int[] titleResIds = {
+                R.string.tap_camera,
+                R.string.tap_gallery,
+        };
+
+        int[] ids = {
+                ID_CAMERA,
+                ID_GALLERY,
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
     public static List<TAPAttachmentModel> createFailedMessageBubbleLongPressMenu() {
         // TODO: 10 April 2019 ADD LONG PRESS MENU FOR FAILED MESSAGES
         int[] imageResIds = {

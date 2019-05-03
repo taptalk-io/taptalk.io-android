@@ -32,6 +32,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_OPEN;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_REPLY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SEND_SMS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createAttachMenu;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createImagePickerMenu;
 
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
@@ -40,10 +41,14 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
     private String messageToCopy = "", linkifyresult = "";
     private TAPMessageModel message;
 
-    public TAPAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
-        setItems(createAttachMenu(), false);
+        if (isImagePickerBottomSheet) {
+            setItems(createImagePickerMenu(), false);
+        } else {
+            setItems(createAttachMenu(), false);
+        }
     }
 
     public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String linkifyresult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {

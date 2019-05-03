@@ -247,37 +247,16 @@ public class TAPRoomListFragment extends Fragment {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         clButtonSearch.setOnClickListener(v -> {
-            if (null != fragment)
+            if (null != fragment) {
                 fragment.showSearchChat();
+            }
         });
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
-        ivButtonMute.setOnClickListener(v -> {
-
-        });
-        ivButtonDelete.setOnClickListener(v -> {
-
-        });
-        ivButtonMore.setOnClickListener(v -> {
-
-        });
-        flSetupContainer.setOnClickListener(v -> {
-        });
-
-        // TODO: 22 April 2019 TESTING
-        if (BuildConfig.DEBUG) {
-            ivButtonNewChat.setOnLongClickListener(view1 -> {
-                Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
-                intent.putExtra(COUNTRY_ID, 1);
-                intent.putExtra(COUNTRY_CALLING_CODE, "62");
-                intent.putExtra(MOBILE_NUMBER, "82113308615");
-                startActivity(intent);
-                if (null != getActivity()) {
-                    getActivity().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-                }
-                return false;
-            });
-        }
+        ivButtonMute.setOnClickListener(v -> {});
+        ivButtonDelete.setOnClickListener(v -> {});
+        ivButtonMore.setOnClickListener(v -> {});
+        flSetupContainer.setOnClickListener(v -> {});
     }
 
     private void openNewChatActivity() {
