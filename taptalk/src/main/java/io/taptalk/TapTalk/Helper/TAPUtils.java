@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.Helper;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
@@ -77,7 +76,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
-import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
@@ -412,7 +411,7 @@ public class TAPUtils {
     }
 
     public void openProfileActivity(Context context, TAPRoomModel room) {
-        Intent intent = new Intent(context, TAPProfileActivity.class);
+        Intent intent = new Intent(context, TAPChatProfileActivity.class);
         intent.putExtra(ROOM, room);
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -638,7 +638,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
 //        if (TapTalk.isOpenDefaultProfileEnabled) {
-//            Intent intent = new Intent(this, TAPProfileActivity.class);
+//            Intent intent = new Intent(this, TAPChatProfileActivity.class);
 //            intent.putExtra(K_ROOM, vm.getRoom());
 //            startActivity(intent);
 //            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

@@ -39,10 +39,11 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPProfileActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity" />
         <activity

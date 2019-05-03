@@ -39,7 +39,6 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
@@ -70,9 +69,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 
-public class TAPProfileActivity extends TAPBaseActivity {
+public class TAPChatProfileActivity extends TAPBaseActivity {
 
-    private static final String TAG = TAPProfileActivity.class.getSimpleName();
+    private static final String TAG = TAPChatProfileActivity.class.getSimpleName();
 
     private final int MENU_NOTIFICATION = 1;
     private final int MENU_ROOM_COLOR = 2;
@@ -102,7 +101,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tap_activity_profile);
+        setContentView(R.layout.tap_activity_chat_profile);
 
         glide = Glide.with(this);
         initViewModel();
@@ -282,14 +281,14 @@ public class TAPProfileActivity extends TAPBaseActivity {
             // Request storage permission
             vm.setPendingDownloadMessage(message);
             ActivityCompat.requestPermissions(
-                    TAPProfileActivity.this, new String[]{
+                    TAPChatProfileActivity.this, new String[]{
                             Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(TAPProfileActivity.this, message);
+            TAPFileDownloadManager.getInstance().downloadFile(TAPChatProfileActivity.this, message);
         }
         runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(message)));
     }
@@ -416,16 +415,16 @@ public class TAPProfileActivity extends TAPBaseActivity {
         public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
             if (item.getType() == TYPE_IMAGE && isMediaReady) {
                 // Preview image detail
-                Intent intent = new Intent(TAPProfileActivity.this, TAPImageDetailPreviewActivity.class);
+                Intent intent = new Intent(TAPChatProfileActivity.this, TAPImageDetailPreviewActivity.class);
                 intent.putExtra(MESSAGE, item);
                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        TAPProfileActivity.this,
+                        TAPChatProfileActivity.this,
                         ivThumbnail,
                         getString(R.string.tap_transition_view_image));
                 startActivity(intent, options.toBundle());
             } else if (item.getType() == TYPE_IMAGE) {
                 // Download image
-                TAPFileDownloadManager.getInstance().downloadImage(TAPProfileActivity.this, item);
+                TAPFileDownloadManager.getInstance().downloadImage(TAPChatProfileActivity.this, item);
                 sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
             } else if (item.getType() == TYPE_VIDEO && isMediaReady && null != item.getData()) {
                 Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
@@ -434,7 +433,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
                     String fileID = (String) item.getData().get(FILE_ID);
                     TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID);
                     sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
-                    new TapTalkDialog.Builder(TAPProfileActivity.this)
+                    new TapTalkDialog.Builder(TAPChatProfileActivity.this)
                             .setTitle(getString(R.string.tap_error_could_not_find_file))
                             .setMessage(getString(R.string.tap_error_redownload_file))
                             .setCancelable(true)
@@ -444,7 +443,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    Intent intent = new Intent(TAPProfileActivity.this, TAPVideoPlayerActivity.class);
+                    Intent intent = new Intent(TAPChatProfileActivity.this, TAPVideoPlayerActivity.class);
                     intent.putExtra(URI, videoUri.toString());
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(intent);
@@ -489,7 +488,7 @@ public class TAPProfileActivity extends TAPBaseActivity {
                     // First load
                     tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
                     sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), mediaInterface, glide);
-                    sharedMediaLayoutManager = new GridLayoutManager(TAPProfileActivity.this, 3) {
+                    sharedMediaLayoutManager = new GridLayoutManager(TAPChatProfileActivity.this, 3) {
                         @Override
                         public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
                             try {

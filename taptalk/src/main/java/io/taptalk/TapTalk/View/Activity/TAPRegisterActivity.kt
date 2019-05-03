@@ -18,8 +18,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -301,7 +299,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
         } else {
-            view.background = getDrawable(R.drawable.tap_bg_rounded_8dp_stroke_dcdcdc_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
         }
         if (view == cl_password) {
             if (hasFocus) {
