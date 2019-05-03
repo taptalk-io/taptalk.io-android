@@ -28,6 +28,8 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
@@ -74,8 +76,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void permissionCheckAndGetContactList() {
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT);
-            TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
+            showPermissionDialog();
         } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             flSync.setVisibility(View.VISIBLE);
         } else {
@@ -85,11 +86,24 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void permissionCheckAndGetContactListWhenSyncButtonClicked() {
         if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT);
-            TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
+            showPermissionDialog();
         } else {
             getContactList(true);
         }
+    }
+
+    private void showPermissionDialog() {
+        new TapTalkDialog.Builder(TAPNewChatActivity.this)
+                .setTitle("Contact Sync")
+                .setMessage(TapTalk.getClientAppName() + " need your permission to access your contact")
+                .setCancelable(false)
+                .setPrimaryButtonTitle("Allow")
+                .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
+                .setSecondaryButtonTitle("Deny")
+                .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
+                .show();
+        TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
+
     }
 
     private void initViewModel() {
