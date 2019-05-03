@@ -225,7 +225,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="@drawable/tap_bg_gradient_ff9833_ff7e00_rounded_8dp_stroke_ff7e00_1dp"
+            android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_6dp"
             android:gravity="center"
             android:orientation="horizontal">
 
