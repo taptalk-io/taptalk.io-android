@@ -94,12 +94,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void showPermissionDialog() {
         new TapTalkDialog.Builder(TAPNewChatActivity.this)
-                .setTitle("Contact Sync")
-                .setMessage(TapTalk.getClientAppName() + " need your permission to access your contact")
+                .setTitle("Contact Access")
+                .setMessage("We need to access your contact to make it easier for you to find your friends")
                 .setCancelable(false)
                 .setPrimaryButtonTitle("Allow")
                 .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
-                .setSecondaryButtonTitle("Deny")
+                .setSecondaryButtonTitle("Cancel")
                 .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
                 .show();
         TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
