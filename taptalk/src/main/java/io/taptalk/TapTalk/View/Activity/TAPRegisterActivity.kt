@@ -18,6 +18,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -140,10 +142,19 @@ class TAPRegisterActivity : TAPBaseActivity() {
         iv_button_back.setOnClickListener { onBackPressed() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         iv_view_password.setOnClickListener { togglePasswordVisibility(et_password, iv_view_password) }
         iv_view_password_retype.setOnClickListener { togglePasswordVisibility(et_retype_password, iv_view_password_retype) }
 
         et_retype_password.setOnEditorActionListener { v, a, e -> fl_button_continue.callOnClick() }
+
+        // TODO TEMPORARILY REMOVED PASSWORD
+        tv_label_password.visibility = View.GONE
+        tv_label_password_optional.visibility = View.GONE
+        cl_password.visibility = View.GONE
+        tv_label_retype_password.visibility = View.GONE
+        tv_label_retype_password_error.visibility = View.GONE
+        cl_retype_password.visibility = View.GONE
     }
 
     private fun showProfilePicturePickerBottomSheet() {
@@ -151,16 +162,23 @@ class TAPRegisterActivity : TAPBaseActivity() {
         TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(supportFragmentManager, "")
     }
 
+    private fun removeProfilePicture() {
+        vm.profilePictureUri = null
+        reloadProfilePicture(false)
+    }
+
     private fun reloadProfilePicture(showErrorMessage: Boolean) {
         if (null == vm.profilePictureUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
-            civ_profile_picture.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar))
+            glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
+            iv_remove_profile_picture.visibility = View.GONE
             if (showErrorMessage) {
                 Toast.makeText(this@TAPRegisterActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
             glide.load(vm.profilePictureUri).into(civ_profile_picture)
+            iv_remove_profile_picture.visibility = View.VISIBLE
         }
     }
 
