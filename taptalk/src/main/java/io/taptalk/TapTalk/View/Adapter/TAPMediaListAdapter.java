@@ -29,7 +29,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -40,11 +40,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 
 public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
 
-    private TAPProfileActivity.MediaInterface mediaInterface;
+    private TAPChatProfileActivity.MediaInterface mediaInterface;
     private RequestManager glide;
     private int gridWidth;
 
-    public TAPMediaListAdapter(List<TAPMessageModel> items, TAPProfileActivity.MediaInterface mediaInterface, RequestManager glide) {
+    public TAPMediaListAdapter(List<TAPMessageModel> items, TAPChatProfileActivity.MediaInterface mediaInterface, RequestManager glide) {
         setItems(items, true);
         gridWidth = TAPUtils.getInstance().getScreenWidth() / 3;
         this.mediaInterface = mediaInterface;

@@ -30,6 +30,7 @@
     <string name="tap_forward">Forward</string>
     <string name="tap_welcome">Welcome</string>
     <string name="tap_register">Register</string>
+    <string name="tap_my_account">My Account</string>
 
     <!--Chat Room List-->
     <string name="tap_setting_up_your_chatroom">Setting up your chatroom</string>
@@ -260,5 +261,7 @@
     <string name="no_chats_to_show">No chats to show</string>
     <string name="it_seems_like_you_don_t_have_any_chats_to_show_but_don_t_worry_your_chat_list_will_grow_once_you">It seems like you don’t have any chats to show, but don’t worry! Your chat list will grow once you</string>
     <string name="start_a_new_chat">Start a New Chat</string>
+    <string name="tap_change_password">Change Password</string>
+    <string name="tap_update">Update</string>
 
 </resources>

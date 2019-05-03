@@ -58,7 +58,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="15.4dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/tap_bg_rounded_white_8dp_stroke_dcdcdc_1dp"
+            android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
             android:orientation="horizontal">
 
             <ImageView

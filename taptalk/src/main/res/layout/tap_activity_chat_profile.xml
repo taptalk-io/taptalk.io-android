@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tap_white_f3"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPProfileActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
