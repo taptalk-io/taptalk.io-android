@@ -133,43 +133,71 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/tap_white_f3"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/f_connection_status">
 
-        <ImageView
-            android:layout_width="220dp"
-            android:layout_height="138dp"
-            android:padding="12dp"
-            android:src="@drawable/tap_img_chat_empty" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_marginStart="64dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="64dp"
-            android:fontFamily="@font/tap_font_pt_root_bold"
-            android:gravity="center"
-            android:text="@string/tap_no_chats"
-            android:textColor="@color/tap_black_44"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="64dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="64dp"
-            android:layout_marginBottom="78dp"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_marginTop="122dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textColor="@color/tap_black_19"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="6sp"
+                android:gravity="center_horizontal"
+                android:text="@string/no_chats_to_show"
+                android:fontFamily="@font/tap_font_pt_root_bold"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/tap_ic_face_sad"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/tap_black_19"
+            android:letterSpacing="-0.01"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:lineSpacingExtra="6sp"
-            android:text="@string/tap_new_chat_guide"
-            android:textColor="@color/tap_black_44"
-            android:textSize="13sp" />
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:fontFamily="@font/tap_font_pt_root_regular"
+            android:text="@string/it_seems_like_you_don_t_have_any_chats_to_show_but_don_t_worry_your_chat_list_will_grow_once_you"
+            />
+
+        <TextView
+            android:id="@+id/tv_start_new_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/tap_pumkin_orange_two"
+            android:lineSpacingExtra="6sp"
+            android:gravity="center_horizontal"
+            android:text="@string/start_a_new_chat"
+            android:fontFamily="@font/tap_font_pt_root_bold"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            />
 
     </LinearLayout>
 
@@ -179,11 +207,11 @@
         android:layout_height="56dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_green_circle_button_ripple"
+        android:background="@drawable/tap_bg_gradient_ff7e00_ff9833_circle_button_ripple"
         android:elevation="8dp"
         android:padding="16dp"
-        android:src="@drawable/tap_ic_new_chat_white"
-        android:visibility="gone"
+        android:src="@drawable/tap_ic_pencil_chat"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

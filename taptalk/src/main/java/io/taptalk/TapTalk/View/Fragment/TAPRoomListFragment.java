@@ -74,7 +74,7 @@ public class TAPRoomListFragment extends Fragment {
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
     private LinearLayout llRoomEmpty;
-    private TextView tvSelectionCount;
+    private TextView tvSelectionCount, tvStartNewChat;
     private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
 
     private RecyclerView rvContactList;
@@ -219,6 +219,7 @@ public class TAPRoomListFragment extends Fragment {
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         tvSelectionCount = view.findViewById(R.id.tv_selection_count);
+        tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
         ivButtonNewChat = view.findViewById(R.id.iv_button_new_chat);
         ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
         ivButtonMute = view.findViewById(R.id.iv_button_mute);
@@ -252,6 +253,10 @@ public class TAPRoomListFragment extends Fragment {
             }
         });
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
+        tvStartNewChat.setOnClickListener(v -> {
+            TAPUtils.getInstance().animateClickButton(tvStartNewChat, 0.95f);
+            openNewChatActivity();
+        });
         ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
         ivButtonMute.setOnClickListener(v -> {});
         ivButtonDelete.setOnClickListener(v -> {});
@@ -524,6 +529,7 @@ public class TAPRoomListFragment extends Fragment {
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }
+            showNewChatButton();
         }
 
         @Override

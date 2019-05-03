@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 public class TAPRegisterViewModel extends AndroidViewModel {
-    private int[] formCheck = {0, 0, 0, 0, 0, 0};
+    private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
     private int countryID = 0;
     private String countryCallingCode = "62";
     private Uri profilePictureUri;
