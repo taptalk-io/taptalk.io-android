@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +33,7 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -55,15 +59,10 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
-import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_CALLING_CODE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 
 public class TAPRoomListFragment extends Fragment {
@@ -76,6 +75,7 @@ public class TAPRoomListFragment extends Fragment {
     private LinearLayout llRoomEmpty;
     private TextView tvSelectionCount, tvStartNewChat;
     private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
+    private CircleImageView civMyAvatarImage;
 
     private RecyclerView rvContactList;
     private LinearLayoutManager llm;
@@ -215,20 +215,31 @@ public class TAPRoomListFragment extends Fragment {
 
     private void initView(View view) {
         clButtonSearch = view.findViewById(R.id.cl_button_search);
-        clSelection = view.findViewById(R.id.cl_selection);
+        //clSelection = view.findViewById(R.id.cl_selection);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
-        tvSelectionCount = view.findViewById(R.id.tv_selection_count);
+        //tvSelectionCount = view.findViewById(R.id.tv_selection_count);
         tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
         ivButtonNewChat = view.findViewById(R.id.iv_button_new_chat);
-        ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
-        ivButtonMute = view.findViewById(R.id.iv_button_mute);
-        ivButtonDelete = view.findViewById(R.id.iv_button_delete);
-        ivButtonMore = view.findViewById(R.id.iv_button_more);
+        //ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
+        //ivButtonMute = view.findViewById(R.id.iv_button_mute);
+        //ivButtonDelete = view.findViewById(R.id.iv_button_delete);
+        //ivButtonMore = view.findViewById(R.id.iv_button_more);
         rvContactList = view.findViewById(R.id.rv_contact_list);
+        civMyAvatarImage = view.findViewById(R.id.civ_my_avatar_image);
 
         if (null != getActivity()) {
             getActivity().getWindow().setBackgroundDrawable(null);
+        }
+
+        if (null != getContext() && null != TAPChatManager.getInstance().getActiveUser()
+                && null != TAPChatManager.getInstance().getActiveUser().getAvatarURL()
+                && !TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(getContext()).load(TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail())
+                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+        } else if (null != getContext()) {
+            Glide.with(getContext()).load(getContext().getDrawable(R.drawable.tap_img_default_avatar))
+                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
         }
 
         flSetupContainer.setVisibility(View.GONE);
@@ -248,6 +259,7 @@ public class TAPRoomListFragment extends Fragment {
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
         clButtonSearch.setOnClickListener(v -> {
+            TAPUtils.getInstance().animateClickButton(clButtonSearch, 0.97f);
             if (null != fragment) {
                 fragment.showSearchChat();
             }
@@ -257,11 +269,12 @@ public class TAPRoomListFragment extends Fragment {
             TAPUtils.getInstance().animateClickButton(tvStartNewChat, 0.95f);
             openNewChatActivity();
         });
-        ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
-        ivButtonMute.setOnClickListener(v -> {});
-        ivButtonDelete.setOnClickListener(v -> {});
-        ivButtonMore.setOnClickListener(v -> {});
-        flSetupContainer.setOnClickListener(v -> {});
+        //ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
+        //ivButtonMute.setOnClickListener(v -> {});
+        //ivButtonDelete.setOnClickListener(v -> {});
+        //ivButtonMore.setOnClickListener(v -> {});
+        flSetupContainer.setOnClickListener(v -> {
+        });
     }
 
     private void openNewChatActivity() {
@@ -404,17 +417,17 @@ public class TAPRoomListFragment extends Fragment {
 
     private void showSelectionActionBar() {
         vm.setSelecting(true);
-        tvSelectionCount.setText(vm.getSelectedCount() + "");
+        //tvSelectionCount.setText(vm.getSelectedCount() + "");
         clButtonSearch.setElevation(0);
         clButtonSearch.setVisibility(View.INVISIBLE);
-        clSelection.setVisibility(View.VISIBLE);
+        //clSelection.setVisibility(View.VISIBLE);
     }
 
     private void hideSelectionActionBar() {
         vm.setSelecting(false);
         clButtonSearch.setElevation(TAPUtils.getInstance().dpToPx(2));
         clButtonSearch.setVisibility(View.VISIBLE);
-        clSelection.setVisibility(View.INVISIBLE);
+        //clSelection.setVisibility(View.INVISIBLE);
     }
 
     public void cancelSelection() {
