@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@drawable/tap_bg_purplish_pink_medium_purple"
+    android:background="@drawable/tap_bg_bluepurple_dodger_blue"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity">
 
     <ProgressBar
@@ -146,8 +146,8 @@
 
                     <ImageView
                         android:id="@+id/iv_add_success"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="40dp"
                         android:src="@drawable/tap_ic_add_contact" />
@@ -188,7 +188,7 @@
                 android:layout_height="54dp"
                 android:alpha="1"
                 android:animateLayoutChanges="true"
-                android:background="@color/colorAccent"
+                android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_6dp"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:gravity="center"
                 android:orientation="horizontal"
@@ -231,7 +231,7 @@
                 android:gravity="center"
                 android:letterSpacing="0.01"
                 android:text="@string/tap_this_is_you"
-                android:textColor="@color/tap_black_44"
+                android:textColor="@color/tap_pumkin_orange_two"
                 android:textSize="13sp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
