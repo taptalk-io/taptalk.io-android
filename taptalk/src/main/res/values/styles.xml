@@ -83,7 +83,7 @@
 
     <style name="TapButton">
         <item name="android:background">
-            @drawable/tap_bg_green_button_ripple
+            @drawable/tap_bg_orange_button_ripple
         </item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -98,7 +98,7 @@
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tap_white</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="TapSearchBar">
