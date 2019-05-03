@@ -263,7 +263,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                                 String phoneNo = pCur.getString(pCur.getColumnIndex(
                                         ContactsContract.CommonDataKinds.Phone.NUMBER));
                                 String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
-                                if (!TAPContactManager.getInstance()
+                                if (!"".equals(phoneNumb) && !TAPContactManager.getInstance()
                                         .isUserPhoneNumberAlreadyExist(phoneNumb) && !newContactsPhoneNumbers.contains(phoneNumb)) {
                                     newContactsPhoneNumbers.add(phoneNumb);
                                 }

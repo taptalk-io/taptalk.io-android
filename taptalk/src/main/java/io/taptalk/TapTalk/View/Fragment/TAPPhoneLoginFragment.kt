@@ -284,7 +284,6 @@ class TAPPhoneLoginFragment : Fragment() {
                 when (resultCode) {
                     RESULT_OK -> {
                         val item = data?.getParcelableExtra<TAPCountryListItem>(TAPDefaultConstant.K_COUNTRY_PICK)
-                        Toast.makeText(context, item?.commonName, LENGTH_SHORT).show()
                         val callingCode: String = item?.callingCode ?: ""
                         setCountry(item?.countryID ?: 0, callingCode)
                     }

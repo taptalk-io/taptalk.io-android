@@ -119,7 +119,10 @@ public class TAPContactManager {
     }
 
     public String convertPhoneNumber(String phone) {
-        String tempPhone = phone.replaceFirst("\\+", "").replace(" ", "").replace("-", "");
+        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(","))
+            return "";
+
+        String tempPhone = phone.replaceAll("[^\\d]", "");
         String prefix = tempPhone.substring(0, getMyCountryCode().length());
 
         if ('0' == tempPhone.charAt(0)) {
