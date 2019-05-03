@@ -55,7 +55,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
     }
 
-    protected void markUnreadForMessage(TAPMessageModel item, TAPUserModel myUserModel) {
+    protected void markMessageAsRead(TAPMessageModel item, TAPUserModel myUserModel) {
         if ((null == item.getIsRead() || !item.getIsRead()) && !myUserModel.getUserID().equals(item.getUser().getUserID())
                 && (null != item.getSending() && !item.getSending())) {
             item.updateReadMessage();

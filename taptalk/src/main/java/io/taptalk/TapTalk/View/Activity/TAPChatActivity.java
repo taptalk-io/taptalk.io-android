@@ -26,6 +26,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1815,8 +1816,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             } else {
                 fNewerLoading.hide();
             }
-            //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
-            vm.setInitialAPICallFinished(true);
+
+            if (!vm.isInitialAPICallFinished()) {
+                //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
+                vm.setInitialAPICallFinished(true);
+
+                //Sementara Temporary buat Mastiin ga ada message nyangkut
+                setAllUnreadMessageToRead();
+            }
         }
 
         @Override
@@ -1849,6 +1856,31 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     };
+
+    private void setAllUnreadMessageToRead() {
+        new Thread(() -> TAPDataManager.getInstance().getAllMessageThatNotRead(TAPChatManager.getInstance().getOpenRoom(),
+                new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                for (TAPMessageEntity entity : entities) {
+                    if (vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                        markMessageAsRead(vm.getMessagePointer().get(entity.getLocalID()));
+                    } else {
+                        markMessageAsRead(TAPChatManager.getInstance().convertToModel(entity));
+                    }
+                }
+            }
+        })).start();
+    }
+
+    private void markMessageAsRead(TAPMessageModel readMessage) {
+        new Thread(() -> {
+            if (null != readMessage.getIsRead() && !readMessage.getIsRead()) {
+                TAPMessageStatusManager.getInstance().addUnreadListByOne(readMessage.getRoom().getRoomID());
+                TAPMessageStatusManager.getInstance().addReadMessageQueue(readMessage);
+            }
+        }).start();
+    }
 
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {

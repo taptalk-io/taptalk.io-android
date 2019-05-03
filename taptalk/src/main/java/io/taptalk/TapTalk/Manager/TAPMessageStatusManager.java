@@ -115,7 +115,6 @@ public class TAPMessageStatusManager {
     }
 
     public void triggerCallMessageStatusApi() {
-
         new Thread(() -> {
             //ini buat delivered
             if (0 < getDeliveredMessageQueue().size()) {

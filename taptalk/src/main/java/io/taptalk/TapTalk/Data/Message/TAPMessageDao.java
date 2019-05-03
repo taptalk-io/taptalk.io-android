@@ -54,6 +54,9 @@ public interface TAPMessageDao {
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
 
+    @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID")
+    List<TAPMessageEntity> getAllMessageThatNotRead(String userID, String roomID);
+
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
             "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword escape '\\' group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> searchAllChatRooms(String keyword);

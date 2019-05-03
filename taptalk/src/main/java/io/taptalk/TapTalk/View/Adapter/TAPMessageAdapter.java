@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -61,7 +60,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.Taptalk.R;
@@ -277,7 +275,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setLinkDetection(itemView.getContext(), tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
 
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
@@ -375,7 +373,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
             setProgress(item);
             setImageData(item);
 
@@ -639,7 +637,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             setVideoProgress(item);
 
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -935,7 +933,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setFileProgress(item);
             enableLongPress(itemView.getContext(), flBubble, item);
 
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
 
             checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
@@ -1137,7 +1135,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.GONE);
             }
 
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
 
             vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -1209,7 +1207,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         });
             else items = new ArrayList<>();
             adapter = new TAPProductListAdapter(items, item, myUserModel, chatListener);
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
 
             rvProductList.setAdapter(adapter);
             rvProductList.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -1243,7 +1241,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvLogMessage.setText(TAPUtils.getInstance().toJsonString(item));
             //tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
         }
     }
 
@@ -1255,7 +1253,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            markUnreadForMessage(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
         }
     }
 
