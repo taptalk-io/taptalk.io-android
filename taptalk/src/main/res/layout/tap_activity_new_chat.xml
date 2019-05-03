@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@color/tap_white_f8"
+    android:descendantFocusability="blocksDescendants"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity">
 
     <android.support.constraint.ConstraintLayout
