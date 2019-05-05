@@ -26,7 +26,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -115,6 +114,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEven
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
@@ -122,7 +122,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -533,13 +532,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         // TODO: 1 February 2019 UPDATE WELCOME MESSAGE
-        if (null != vm.getOtherUserModel().getUserRole() && vm.getOtherUserModel().getUserRole().getCode().equals("expert")) {
-            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an Expert."));
-            tvProfileDescription.setText("Hi, there! If you are looking for creative gifts for someone special, please check his/her services!");
-        } else {
-            tvChatEmptyGuide.setText("Are you looking for creative gifts?");
-            tvProfileDescription.setText("Discuss with your friend and discover more about the creative gift in our lists.");
-        }
+        tvChatEmptyGuide.setText(Html.fromHtml("Start a conversation with " + "<b><font color='#191919'>" + vm.getRoom().getRoomName() + "</font></b>"));
+        tvProfileDescription.setText("Say hi to " + vm.getRoom().getRoomName() + " and start a conversation");
 
         //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
@@ -1786,7 +1780,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 messageAdapter.addMessage(0, messageAfterModels);
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
-                if (vm.isOnBottom() && 0 < messageAfterModels.size()) rvMessageList.scrollToPosition(0);
+                if (vm.isOnBottom() && 0 < messageAfterModels.size())
+                    rvMessageList.scrollToPosition(0);
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
@@ -1845,17 +1840,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void setAllUnreadMessageToRead() {
         new Thread(() -> TAPDataManager.getInstance().getAllMessageThatNotRead(TAPChatManager.getInstance().getOpenRoom(),
                 new TAPDatabaseListener<TAPMessageEntity>() {
-            @Override
-            public void onSelectFinished(List<TAPMessageEntity> entities) {
-                for (TAPMessageEntity entity : entities) {
-                    if (vm.getMessagePointer().containsKey(entity.getLocalID())) {
-                        markMessageAsRead(vm.getMessagePointer().get(entity.getLocalID()));
-                    } else {
-                        markMessageAsRead(TAPChatManager.getInstance().convertToModel(entity));
+                    @Override
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                        for (TAPMessageEntity entity : entities) {
+                            if (vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                                markMessageAsRead(vm.getMessagePointer().get(entity.getLocalID()));
+                            } else {
+                                markMessageAsRead(TAPChatManager.getInstance().convertToModel(entity));
+                            }
+                        }
                     }
-                }
-            }
-        })).start();
+                })).start();
     }
 
     private void markMessageAsRead(TAPMessageModel readMessage) {
