@@ -7,6 +7,8 @@
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
     android:paddingEnd="8dp"
+    android:paddingTop="1dp"
+    android:paddingBottom="1dp"
     tools:background="@drawable/tap_bg_purpleblue_rounded_4dp">
 
     <View
