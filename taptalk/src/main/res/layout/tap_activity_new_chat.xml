@@ -24,7 +24,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="20dp"
-            android:src="@drawable/tap_ic_close_green"
+            android:src="@drawable/tap_ic_close_pumpkin_orange"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +47,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_search_grey"
+            android:src="@drawable/tap_ic_search_pumpkin_orange"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_title"
@@ -95,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_new_contact_green" />
+                    android:src="@drawable/tap_ic_new_contact_pumpkin_orange" />
 
                 <TextView
                     style="@style/TapMenuLabel"
@@ -124,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_scan_green" />
+                    android:src="@drawable/tap_ic_scan_pumpkin_orange" />
 
                 <TextView
                     style="@style/TapMenuLabel"
@@ -153,7 +153,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_new_group_green" />
+                    android:src="@drawable/tap_ic_new_group_pumpkin_orange" />
 
                 <TextView
                     style="@style/TapMenuLabel"
@@ -190,16 +190,17 @@
                     android:gravity="center"
                     android:text="@string/tap_cant_find_contact"
                     android:textColor="@color/tap_grey_9b"
-                    android:textSize="13sp" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/tap_font_pt_root_bold"
                     android:gravity="center"
+                    android:layout_marginTop="8dp"
                     android:text="@string/tap_view_blocked_contacts"
-                    android:textColor="@color/tap_grey_9b"
-                    android:textSize="13sp" />
+                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
