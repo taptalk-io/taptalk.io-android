@@ -11,11 +11,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
@@ -31,7 +32,6 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
-import kotlinx.android.synthetic.main.tap_activity_register.*
 import kotlinx.android.synthetic.main.tap_activity_register.civ_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_register.cl_form_container
 import kotlinx.android.synthetic.main.tap_activity_register.cl_password
@@ -55,16 +55,15 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private val indexMobileNumber = 3
     private val indexEmail = 4
     private val indexPassword = 5
-    private val indexPasswordRetype = 6
 
-    private val stateEmpty = 0
+    private val stateUnchanged = 0
     private val stateValid = 1
-    private val stateChecking = 2
     private val stateInvalid = -1
+    private val stateEmpty = -2
 
-    private lateinit var vm : TAPRegisterViewModel
+    private lateinit var vm: TAPRegisterViewModel
 
-    private lateinit var glide : RequestManager
+    private lateinit var glide: RequestManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,8 +110,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
-        vm.countryID = intent.getIntExtra(COUNTRY_ID, 1)
-        vm.countryCallingCode = intent.getStringExtra(COUNTRY_CALLING_CODE)
     }
 
     private fun initView() {
@@ -124,21 +121,27 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_full_name.addTextChangedListener(fullNameWatcher)
         et_email_address.addTextChangedListener(emailWatcher)
 
-        tv_country_code.text = "+" + vm.countryCallingCode
+        glide.load(vm.myUserModel.avatarURL.thumbnail)
+                .apply(RequestOptions().placeholder(R.drawable.tap_img_default_avatar))
+                .into(civ_profile_picture)
+        et_full_name.setText(vm.myUserModel.name)
+        et_username.setText(vm.myUserModel.username)
+        tv_country_code.text = "+" + vm.myUserModel.countryCallingCode
+        et_mobile_number.setText(vm.myUserModel.phoneNumber)
+        et_email_address.setText(vm.myUserModel.email)
 
         et_username.isEnabled = false
         et_mobile_number.isEnabled = false
 
-        et_mobile_number.setText(intent.getStringExtra(MOBILE_NUMBER))
-        if (et_mobile_number.text.isNotEmpty()) {
-            vm.formCheck[indexMobileNumber] = stateValid
-        }
-
+        iv_button_close.setOnClickListener { onBackPressed() }
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        cl_password.setOnClickListener { openChangePasswordPage() }
+
+        sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
     }
 
     private fun showProfilePicturePickerBottomSheet() {
@@ -167,7 +170,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun checkFullName(hasFocus: Boolean) {
-        if (et_full_name.text.isNotEmpty() && et_full_name.text.matches(Regex("[A-Za-z ]*"))) {
+        if (et_full_name.text.toString() == vm.myUserModel.name) {
+            // Unchanged
+            vm.formCheck[indexFullName] = stateUnchanged
+            tv_label_full_name_error.visibility = View.GONE
+            updateEditTextBackground(et_full_name, hasFocus)
+        } else if (et_full_name.text.isNotEmpty() && et_full_name.text.matches(Regex("[A-Za-z ]*"))) {
             // Valid full name
             vm.formCheck[indexFullName] = stateValid
             tv_label_full_name_error.visibility = View.GONE
@@ -187,7 +195,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun checkEmailAddress(hasFocus: Boolean) {
-        if (et_email_address.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(et_email_address.text).matches()) {
+        if (et_email_address.text.toString() == vm.myUserModel.email) {
+            // Unchanged
+            vm.formCheck[indexEmail] = stateUnchanged
+            tv_label_email_address_error.visibility = View.GONE
+            updateEditTextBackground(et_email_address, hasFocus)
+        } else if (et_email_address.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(et_email_address.text).matches()) {
             // Valid email address
             vm.formCheck[indexEmail] = stateValid
             tv_label_email_address_error.visibility = View.GONE
@@ -222,16 +235,16 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun checkContinueButtonAvailability() {
-        if (vm.formCheck[indexFullName] == stateValid &&
-                vm.formCheck[indexUsername] == stateValid &&
-                vm.formCheck[indexMobileNumber] == stateValid &&
-                (vm.formCheck[indexEmail] == stateEmpty || vm.formCheck[indexEmail] == stateValid) && (
-                        (vm.formCheck[indexPassword] == stateEmpty && vm.formCheck[indexPasswordRetype] == stateEmpty) ||
-                                (vm.formCheck[indexPassword] == stateValid && vm.formCheck[indexPasswordRetype] == stateValid))) {
+        if ((vm.formCheck[indexFullName] == stateValid || vm.formCheck[indexFullName] == stateUnchanged) &&
+                vm.formCheck[indexEmail] != stateInvalid &&
+                vm.formCheck[indexPassword] != stateInvalid && (
+                        vm.formCheck[indexFullName] != stateUnchanged ||
+                        vm.formCheck[indexEmail] != stateUnchanged ||
+                        vm.formCheck[indexPassword] != stateUnchanged)) {
             // All forms valid
             enableContinueButton()
         } else {
-            // Has invalid forms
+            // No changes / has invalid forms
             disableContinueButton()
         }
     }
@@ -249,6 +262,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun clearAllFocus() {
         TAPUtils.getInstance().dismissKeyboard(this)
         fl_container.clearFocus()
+    }
+
+    private fun openChangePasswordPage() {
+        // TODO
     }
 
     private fun showErrorDialog(message: String) {
@@ -269,7 +286,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_full_name.setTextColor(resources.getColor(R.color.tap_grey_9b))
         et_email_address.setTextColor(resources.getColor(R.color.tap_grey_9b))
 
-        tv_button_continue.visibility = View.GONE
+        tv_button_update.visibility = View.GONE
         iv_update_progress.visibility = View.VISIBLE
         TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_update_progress)
 
@@ -283,14 +300,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
         et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
 
-        tv_button_continue.visibility = View.VISIBLE
+        tv_button_update.visibility = View.VISIBLE
         iv_update_progress.visibility = View.GONE
         iv_update_progress.clearAnimation()
 
         //fl_button_update.setOnClickListener { register() }
     }
 
-    private val profilePicturePickerListener = object : TAPAttachmentListener(){
+    private val profilePicturePickerListener = object : TAPAttachmentListener() {
         override fun onCameraSelected() {
             vm.profilePictureUri = TAPUtils.getInstance().takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
@@ -418,6 +435,19 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         override fun onError(throwable: Throwable?) {
             showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
+        }
+    }
+
+    private val scrollViewListener = ViewTreeObserver.OnScrollChangedListener {
+        val y = sv_profile.scrollY
+        val h = iv_profile_background.height
+        when {
+            y == 0 ->
+                cl_action_bar.elevation = 0f
+            y < h ->
+                cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(1).toFloat()
+            else ->
+                cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
         }
     }
 }

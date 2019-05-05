@@ -58,6 +58,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
@@ -264,6 +265,7 @@ public class TAPRoomListFragment extends Fragment {
                 fragment.showSearchChat();
             }
         });
+        civMyAvatarImage.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         tvStartNewChat.setOnClickListener(v -> {
             TAPUtils.getInstance().animateClickButton(tvStartNewChat, 0.95f);
@@ -277,10 +279,18 @@ public class TAPRoomListFragment extends Fragment {
         });
     }
 
-    private void openNewChatActivity() {
+    private void openMyAccountActivity() {
+        Intent intent = new Intent(getContext(), TAPMyAccountActivity.class);
+        startActivity(intent);
         if (null != getActivity()) {
-            Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
-            startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
+    }
+
+    private void openNewChatActivity() {
+        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
+        startActivity(intent);
+        if (null != getActivity()) {
             getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }
     }

@@ -172,7 +172,7 @@
 
     <!--Hints-->
     <string name="tap_hint_username">e.g user_1234</string>
-    <string name="tap_hint_phone_number">81297304402</string>
+    <string name="tap_hint_phone_number">82212345678</string>
     <string name="tap_hint_email_address">e.g example@work.com</string>
     <string name="tap_hint_insert_password">Insert Password</string>
 

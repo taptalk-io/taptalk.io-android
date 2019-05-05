@@ -5,11 +5,15 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.TAPUserModel;
+
 public class TAPRegisterViewModel extends AndroidViewModel {
     private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
     private int countryID = 0;
     private String countryCallingCode = "62";
     private Uri profilePictureUri;
+    private TAPUserModel myUserModel;
 
     public TAPRegisterViewModel(@NonNull Application application) {
         super(application);
@@ -45,5 +49,13 @@ public class TAPRegisterViewModel extends AndroidViewModel {
 
     public void setProfilePictureUri(Uri profilePictureUri) {
         this.profilePictureUri = profilePictureUri;
+    }
+
+    public TAPUserModel getMyUserModel() {
+        return null == myUserModel ? TAPDataManager.getInstance().getActiveUser() : myUserModel;
+    }
+
+    public void setMyUserModel(TAPUserModel myUserModel) {
+        this.myUserModel = myUserModel;
     }
 }
