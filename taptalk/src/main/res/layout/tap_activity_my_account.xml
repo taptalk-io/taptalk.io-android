@@ -374,7 +374,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="24dp"
                 android:background="@drawable/tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_password">
@@ -400,6 +399,12 @@
                     android:visibility="gone" />
 
             </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fl_button_update" />
 
         </android.support.constraint.ConstraintLayout>
 

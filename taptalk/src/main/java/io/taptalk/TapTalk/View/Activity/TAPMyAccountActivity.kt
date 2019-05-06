@@ -142,6 +142,15 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_password.setOnClickListener { openChangePasswordPage() }
 
         sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
+
+        // TODO temporarily disable editing
+        et_full_name.isEnabled = false
+        et_email_address.isEnabled = false
+        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
+        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
+        tv_label_password.visibility = View.GONE
+        cl_password.visibility = View.GONE
+        fl_button_update.visibility = View.GONE
     }
 
     private fun showProfilePicturePickerBottomSheet() {
