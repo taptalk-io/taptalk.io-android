@@ -244,7 +244,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             if (room.isMuted()) {
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
             } else {
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp));
             }
 
             clContainer.setOnClickListener(v -> {

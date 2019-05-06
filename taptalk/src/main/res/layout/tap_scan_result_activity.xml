@@ -120,7 +120,7 @@
                         android:gravity="center_horizontal"
                         android:maxLines="2"
                         tools:text="NAMANYABERNAMA"
-                        android:textColor="@color/tap_mediumPurple"
+                        android:textColor="@color/tap_black_19"
                         android:textSize="20sp" />
 
                     <TextView
@@ -131,7 +131,7 @@
                         android:fontFamily="@font/tap_font_pt_root_regular"
                         android:gravity="center_horizontal"
                         tools:text="Vivamus adipiscing fermentum quam "
-                        android:textColor="@color/tap_mediumPurple"
+                        android:textColor="@color/tap_grey_9b"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -161,7 +161,7 @@
                         android:fontFamily="@font/tap_font_pt_root_regular"
                         android:gravity="center_horizontal"
                         android:text="@string/you_have_added_to_your_contacts"
-                        android:textColor="@color/tap_mediumPurple"
+                        android:textColor="@color/tap_black_19"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -177,7 +177,7 @@
                     android:gravity="center_horizontal"
                     android:text="@string/tap_is_already_in_your_contacts"
                     android:textAlignment="center"
-                    android:textColor="@color/tap_mediumPurple"
+                    android:textColor="@color/tap_black_19"
                     android:visibility="gone" />
 
             </FrameLayout>

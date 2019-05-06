@@ -24,7 +24,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_greenBlue"
+            android:tint="@color/tap_pumkin_orange_two"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_room_name"
             app:layout_constraintStart_toStartOf="parent"
@@ -151,71 +151,80 @@
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
-        android:visibility="gone"
 
-        <TextView
-            android:id="@+id/tv_chat_empty_guide"
-            android:layout_width="match_parent"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.02"
-            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/tap_chat_other_user_is_expert" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <io.taptalk.TapTalk.Helper.CircleImageView
-            android:id="@+id/civ_my_avatar"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginTop="36dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/tap_bg_circle_d9d9d9"
-            android:translationX="14dp"
-            app:civ_border_color="@color/tap_white"
-            app:civ_border_width="4dp"
-            app:layout_constraintEnd_toStartOf="@id/civ_other_user_avatar"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide" />
+            <TextView
+                android:id="@+id/tv_chat_empty_guide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/tap_font_pt_root_regular"
+                android:gravity="center_horizontal"
+                android:letterSpacing="-0.02"
+                android:textSize="18sp"
+                android:textColor="@color/tap_black_19"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/civ_my_avatar"
+                tools:text="@string/tap_chat_other_user_is_expert" />
 
-        <io.taptalk.TapTalk.Helper.CircleImageView
-            android:id="@+id/civ_other_user_avatar"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginTop="36dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/tap_bg_circle_d9d9d9"
-            android:translationX="-14dp"
-            app:civ_border_color="@color/tap_white"
-            app:civ_border_width="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/civ_my_avatar"
-            app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide" />
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_my_avatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/tap_bg_circle_d9d9d9"
+                android:translationX="14dp"
+                app:civ_border_color="@color/tap_white"
+                app:civ_border_width="4dp"
+                app:layout_constraintEnd_toStartOf="@id/civ_other_user_avatar"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_profile_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="18dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.02"
-            android:textColor="@color/tap_black_44"
-            android:textSize="15sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/civ_my_avatar"
-            tools:text="Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!" />
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_other_user_avatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/tap_bg_circle_d9d9d9"
+                android:translationX="-14dp"
+                app:civ_border_color="@color/tap_white"
+                app:civ_border_width="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/civ_my_avatar"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_profile_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/tap_font_pt_root_regular"
+                android:gravity="center_horizontal"
+                android:letterSpacing="-0.02"
+                android:textColor="@color/tap_black_19"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide"
+                tools:text="Hey there! If you are looking for handmade gifts to give to someone special, please check out my list of services and pricing below!" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.constraint.ConstraintLayout>
 
@@ -223,8 +232,8 @@
         android:id="@+id/fl_message_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="gone"
         android:descendantFocusability="blocksDescendants"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
         tools:background="@color/tap_transparent_charcoal_40">
@@ -289,7 +298,7 @@
                 android:id="@+id/v_quote_decoration"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_easterpurple_rounded_4dp_0dp_4dp_0dp"
+                android:background="@drawable/tap_bg_purplishblue_rounded_4dp_0dp_4dp_0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_cancel_reply"
                 app:layout_constraintTop_toTopOf="parent" />

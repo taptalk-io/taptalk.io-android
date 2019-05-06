@@ -34,7 +34,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1522,11 +1521,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
                 } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_f3f3f3_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_8dp));
                 }
-                vQuoteDecoration.setVisibility(View.GONE);
+                //vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else if (null != quoteFileID && !quoteFileID.isEmpty()) {
@@ -1534,7 +1533,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
                     // Load file icon
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
-                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purply_rounded_8dp));
+                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
                     // Load image from file ID
@@ -1544,9 +1543,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 }
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
                 } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_f3f3f3_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_8dp));
                 }
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
@@ -1554,11 +1553,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Show no image
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_mediumpurple_rounded_4dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purpleblue_rounded_4dp));
                 } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_f3f3f3_rounded_4dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_4dp));
                 }
-                vQuoteDecoration.setVisibility(View.VISIBLE);
+                //vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
             }

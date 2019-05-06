@@ -103,7 +103,7 @@
                     android:id="@+id/fl_file_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/tap_bg_purple_circle_ripple"
+                    android:background="@drawable/tap_bg_blue_circle_ripple"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">

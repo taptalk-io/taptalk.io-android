@@ -11,8 +11,6 @@ import io.taptalk.TapTalk.View.Fragment.TAPShowQRFragment;
 import io.taptalk.Taptalk.R;
 
 public class TAPBarcodeScannerActivity extends TAPBaseActivity {
-    private TAPBarcodeScannerFragment fBarcodeScanner;
-    private TAPShowQRFragment fShowQR;
     private TextView tvToolbarTitle;
     private ImageView ivBack;
     private FrameLayout flToolbar;
@@ -20,6 +18,7 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
     private enum ScanState {
         SCAN, SHOW
     }
+
     private ScanState state = ScanState.SCAN;
 
     @Override
@@ -33,13 +32,15 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+        if (ScanState.SHOW == state) {
+            showScanner();
+        } else {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+        }
     }
 
     private void initView() {
-        fBarcodeScanner = (TAPBarcodeScannerFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_scan_qr_code);
-        fShowQR = (TAPShowQRFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_show_qr_code);
         tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
         ivBack = findViewById(R.id.iv_back);
         flToolbar = findViewById(R.id.fl_toolbar);
@@ -53,8 +54,8 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
         flToolbar.setVisibility(View.VISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
-                .show(fBarcodeScanner)
-                .hide(fShowQR)
+                .setCustomAnimations(R.animator.tap_fade_in_fragment, R.animator.tap_fade_out_fragment)
+                .replace(R.id.fl_qr_code, TAPBarcodeScannerFragment.newInstance())
                 .commit();
     }
 
@@ -64,8 +65,8 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
         flToolbar.setVisibility(View.VISIBLE);
         getSupportFragmentManager()
                 .beginTransaction()
-                .show(fShowQR)
-                .hide(fBarcodeScanner)
+                .setCustomAnimations(R.animator.tap_fade_in_fragment, R.animator.tap_fade_out_fragment)
+                .replace(R.id.fl_qr_code, TAPShowQRFragment.newInstance())
                 .commit();
     }
 }
