@@ -1533,7 +1533,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
                     // Load file icon
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
-                    rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
+                    if (isMessageFromMySelf(item)) {
+                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
+                    } else {
+                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_8dp));
+                    }
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
                     // Load image from file ID
@@ -1557,7 +1561,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_4dp));
                 }
-                //vQuoteDecoration.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
             }
