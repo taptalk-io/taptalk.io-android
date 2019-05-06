@@ -187,6 +187,7 @@
 
     <!--Location-->
     <string name="tap_pin_coordinates">Pin Coordinates</string>
+    <string name="tap_send_location">Send Location</string>
     <string name="tap_set_location">Set Location</string>
     <string name="tap_search_address">Search Address</string>
     <string name="tap_searching_for_address">Searching for address</string>
