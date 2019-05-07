@@ -29,6 +29,7 @@
             android:id="@+id/iv_button_close"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/tap_ic_close_orange"
             app:layout_constraintDimensionRatio="H, 1:1"

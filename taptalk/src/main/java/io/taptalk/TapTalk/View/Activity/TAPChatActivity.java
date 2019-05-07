@@ -179,7 +179,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPRoundedCornerImageView rcivQuoteImage;
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvQuoteTitle,
             tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
-    private View vStatusBadge, vQuoteDecoration;
+    private View vRoomImage, vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
 
     // RecyclerView
@@ -437,6 +437,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
         etChat = (EditText) findViewById(R.id.et_chat);
+        vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
@@ -577,7 +578,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         sblChat.setSwipeInterface(swipeInterface);
 
-        civRoomImage.setOnClickListener(v -> openRoomProfile());
+        vRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> closeActivity());
         ivButtonCancelReply.setOnClickListener(v -> hideQuoteLayout());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());

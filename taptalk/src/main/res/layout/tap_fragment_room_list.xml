@@ -17,15 +17,16 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.CardView
+            android:id="@+id/cv_button_search"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            app:cardCornerRadius="8dp"
+            android:layout_marginBottom="8dp"
+            android:clipToPadding="true"
             android:elevation="2dp"
-            android:clipToPadding="true">
+            app:cardCornerRadius="8dp">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_search"
@@ -60,10 +61,12 @@
 
                 <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_my_avatar_image"
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="?attr/actionBarSize"
-                    android:layout_marginEnd="2dp"
-                    android:padding="14dp"
+                    android:layout_width="56dp"
+                    android:layout_height="50dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="13dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="13dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/tap_bg_circle_d9d9d9"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -71,7 +74,19 @@
                     app:layout_constraintStart_toEndOf="@id/tv_search_text"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <!--Clickable area for avatar image-->
+                <View
+                    android:id="@+id/v_my_avatar_image"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_my_avatar_image"
+                    app:layout_constraintEnd_toEndOf="@id/civ_my_avatar_image"
+                    app:layout_constraintStart_toStartOf="@id/civ_my_avatar_image"
+                    app:layout_constraintTop_toTopOf="@id/civ_my_avatar_image" />
+
             </android.support.constraint.ConstraintLayout>
+
         </android.support.v7.widget.CardView>
 
         <View
@@ -196,7 +211,7 @@
                 android:gravity="center_horizontal"
                 android:letterSpacing="-0.02"
                 android:lineSpacingExtra="6sp"
-                android:text="@string/no_chats_to_show"
+                android:text="@string/tap_no_chats_to_show"
                 android:textColor="@color/tap_black_19"
                 android:textSize="24sp" />
 
@@ -213,7 +228,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"
-            android:text="@string/it_seems_like_you_don_t_have_any_chats_to_show_but_don_t_worry_your_chat_list_will_grow_once_you"
+            android:text="@string/tap_room_list_empty"
             android:textColor="@color/tap_black_19"
             android:textSize="14sp" />
 
@@ -228,7 +243,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:text="@string/start_a_new_chat"
+            android:text="@string/tap_start_a_new_chat"
             android:textColor="@color/tap_pumkin_orange_two"
             android:textSize="16sp" />
 

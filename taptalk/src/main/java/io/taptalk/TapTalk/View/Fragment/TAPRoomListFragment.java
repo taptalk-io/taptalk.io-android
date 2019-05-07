@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -65,6 +66,7 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 
 public class TAPRoomListFragment extends Fragment {
 
@@ -77,6 +79,8 @@ public class TAPRoomListFragment extends Fragment {
     private TextView tvSelectionCount, tvStartNewChat;
     private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
     private CircleImageView civMyAvatarImage;
+    private CardView cvButtonSearch;
+    private View vButtonMyAccount;
 
     private RecyclerView rvContactList;
     private LinearLayoutManager llm;
@@ -121,7 +125,6 @@ public class TAPRoomListFragment extends Fragment {
         addNetworkListener();
         TAPBroadcastManager.register(getContext(), receiver, REFRESH_TOKEN_RENEWED);
         new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
-        reloadProfilePicture();
     }
 
     @Override
@@ -130,6 +133,13 @@ public class TAPRoomListFragment extends Fragment {
         TAPNotificationManager.getInstance().setRoomListAppear(false);
         TAPBroadcastManager.unregister(getContext(), receiver);
         removeNetworkListener();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == EDIT_PROFILE) {
+            reloadProfilePicture();
+        }
     }
 
     @Override
@@ -229,6 +239,8 @@ public class TAPRoomListFragment extends Fragment {
         //ivButtonMore = view.findViewById(R.id.iv_button_more);
         rvContactList = view.findViewById(R.id.rv_contact_list);
         civMyAvatarImage = view.findViewById(R.id.civ_my_avatar_image);
+        cvButtonSearch = view.findViewById(R.id.cv_button_search);
+        vButtonMyAccount = view.findViewById(R.id.v_my_avatar_image);
 
         if (null != getActivity()) {
             getActivity().getWindow().setBackgroundDrawable(null);
@@ -252,13 +264,13 @@ public class TAPRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        clButtonSearch.setOnClickListener(v -> {
-            TAPUtils.getInstance().animateClickButton(clButtonSearch, 0.97f);
+        cvButtonSearch.setOnClickListener(v -> {
+            TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
             if (null != fragment) {
                 fragment.showSearchChat();
             }
         });
-        civMyAvatarImage.setOnClickListener(v -> openMyAccountActivity());
+        vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         tvStartNewChat.setOnClickListener(v -> {
             TAPUtils.getInstance().animateClickButton(tvStartNewChat, 0.95f);
@@ -287,7 +299,7 @@ public class TAPRoomListFragment extends Fragment {
 
     private void openMyAccountActivity() {
         Intent intent = new Intent(getContext(), TAPMyAccountActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, EDIT_PROFILE);
         if (null != getActivity()) {
             getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }

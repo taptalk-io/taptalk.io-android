@@ -125,7 +125,6 @@
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginEnd="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="14dp"
             android:scaleType="centerCrop"
             android:src="@drawable/tap_bg_circle_d9d9d9"
@@ -133,6 +132,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_room_name"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <!--Clickable area for room image-->
+        <View
+            android:id="@+id/v_room_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
+            app:layout_constraintEnd_toEndOf="@id/civ_room_image"
+            app:layout_constraintStart_toStartOf="@id/civ_room_image"
+            app:layout_constraintTop_toTopOf="@id/civ_room_image" />
 
         <ImageView
             android:id="@+id/iv_room_icon"
@@ -168,13 +178,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/tap_font_pt_root_regular"
                 android:gravity="center_horizontal"
                 android:letterSpacing="-0.02"
-                android:textSize="18sp"
                 android:textColor="@color/tap_black_19"
+                android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/civ_my_avatar"
@@ -212,8 +222,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/tap_font_pt_root_regular"
                 android:gravity="center_horizontal"
                 android:letterSpacing="-0.02"
