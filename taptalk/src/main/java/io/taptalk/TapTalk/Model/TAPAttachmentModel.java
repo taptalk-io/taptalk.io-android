@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Model;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
@@ -143,9 +142,9 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createTextBubbleLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_reply_green_blue,
-                R.drawable.tap_ic_forward_green_blue,
-                R.drawable.tap_ic_copy_green_blue
+                R.drawable.tap_ic_reply_pumpkin_orange,
+                R.drawable.tap_ic_forward_pumpkin_orange,
+                R.drawable.tap_ic_copy_pumpkin_orange
         };
 
         int[] titleResIds = {
@@ -178,9 +177,9 @@ public class TAPAttachmentModel {
                 !((String) messageModel.getData().get(CAPTION)).isEmpty()) {
             // Show Copy option to copy caption
             imageResIds = new int[]{
-                    R.drawable.tap_ic_reply_green_blue,
-//                    R.drawable.tap_ic_forward_green_blue,
-                    R.drawable.tap_ic_copy_green_blue
+                    R.drawable.tap_ic_reply_pumpkin_orange,
+//                    R.drawable.tap_ic_forward_pumpkin_orange,
+                    R.drawable.tap_ic_copy_pumpkin_orange
             };
 
             titleResIds = new int[]{
@@ -197,8 +196,8 @@ public class TAPAttachmentModel {
         } else {
             // Show only forward and reply
             imageResIds = new int[]{
-                    R.drawable.tap_ic_reply_green_blue,
-//                    R.drawable.tap_ic_forward_green_blue,
+                    R.drawable.tap_ic_reply_pumpkin_orange,
+//                    R.drawable.tap_ic_forward_pumpkin_orange,
             };
 
             titleResIds = new int[]{
@@ -223,8 +222,8 @@ public class TAPAttachmentModel {
     // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
     public static List<TAPAttachmentModel> createFileBubbleLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_reply_green_blue,
-//                R.drawable.tap_ic_forward_green_blue,
+                R.drawable.tap_ic_reply_pumpkin_orange,
+//                R.drawable.tap_ic_forward_pumpkin_orange,
         };
 
         int[] titleResIds = {
@@ -247,9 +246,9 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createLocationBubbleLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_reply_green_blue,
-                R.drawable.tap_ic_forward_green_blue,
-                R.drawable.tap_ic_copy_green_blue
+                R.drawable.tap_ic_reply_pumpkin_orange,
+                R.drawable.tap_ic_forward_pumpkin_orange,
+                R.drawable.tap_ic_copy_pumpkin_orange
         };
 
         int[] titleResIds = {
@@ -274,8 +273,8 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createLinkLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_open_link_green_blue,
-                R.drawable.tap_ic_copy_green_blue
+                R.drawable.tap_ic_open_link_pumpkin_orange,
+                R.drawable.tap_ic_copy_pumpkin_orange
         };
 
         int[] titleResIds = {
@@ -298,8 +297,8 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createEmailLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_mail_green_blue,
-                R.drawable.tap_ic_copy_green_blue
+                R.drawable.tap_ic_mail_pumpkin_orange,
+                R.drawable.tap_ic_copy_pumpkin_orange
         };
 
         int[] titleResIds = {
@@ -322,9 +321,9 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createPhoneLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_call_green_blue,
-                R.drawable.tap_ic_sms_green_blue,
-                R.drawable.tap_ic_copy_green_blue
+                R.drawable.tap_ic_call_pumpkin_orange,
+                R.drawable.tap_ic_sms_pumpkin_orange,
+                R.drawable.tap_ic_copy_pumpkin_orange
         };
 
         int[] titleResIds = {
