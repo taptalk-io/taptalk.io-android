@@ -105,8 +105,9 @@ public class TAPDefaultConstant {
 
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
-        public static final int PICK_PROFILE_IMAGE_CAMERA = 21;
-        public static final int PICK_PROFILE_IMAGE_GALLERY = 22;
+        public static final int EDIT_PROFILE = 21;
+        public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
+        public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
         public static final int SEND_IMAGE_FROM_CAMERA = 51;
         public static final int SEND_MEDIA_FROM_GALLERY = 52;

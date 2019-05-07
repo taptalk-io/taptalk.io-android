@@ -17,15 +17,16 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.CardView
+            android:id="@+id/cv_button_search"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            app:cardCornerRadius="8dp"
+            android:layout_marginBottom="8dp"
+            android:clipToPadding="true"
             android:elevation="2dp"
-            android:clipToPadding="true">
+            app:cardCornerRadius="8dp">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_search"
@@ -60,10 +61,12 @@
 
                 <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_my_avatar_image"
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="?attr/actionBarSize"
-                    android:layout_marginEnd="2dp"
-                    android:padding="14dp"
+                    android:layout_width="56dp"
+                    android:layout_height="50dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="13dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="13dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/tap_bg_circle_d9d9d9"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -71,7 +74,19 @@
                     app:layout_constraintStart_toEndOf="@id/tv_search_text"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <!--Clickable area for avatar image-->
+                <View
+                    android:id="@+id/v_my_avatar_image"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_my_avatar_image"
+                    app:layout_constraintEnd_toEndOf="@id/civ_my_avatar_image"
+                    app:layout_constraintStart_toStartOf="@id/civ_my_avatar_image"
+                    app:layout_constraintTop_toTopOf="@id/civ_my_avatar_image" />
+
             </android.support.constraint.ConstraintLayout>
+
         </android.support.v7.widget.CardView>
 
         <View

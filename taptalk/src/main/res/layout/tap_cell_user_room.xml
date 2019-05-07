@@ -6,8 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="68dp"
     android:animateLayoutChanges="true"
-    android:descendantFocusability="blocksDescendants"
     android:background="@color/tap_white"
+    android:descendantFocusability="blocksDescendants"
+    android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
 
     <io.taptalk.TapTalk.Helper.CircleImageView
@@ -131,8 +132,8 @@
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
         android:background="@color/tap_grey_ea"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
