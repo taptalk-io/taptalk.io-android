@@ -129,6 +129,8 @@
     <string name="tap_error_invalid_email_address">Invalid email address</string>
     <string name="tap_error_invalid_password">Invalid password</string>
     <string name="tap_error_password_does_not_match">Password does not match</string>
+    <string name="tap_error_unable_to_upload">Unable to upload</string>
+    <string name="tap_error_upload_profile_picture">An error occurred while uploading your profile picture, would you like to try again?</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -254,6 +256,7 @@
     <string name="tap_typing_2">Typing..</string>
     <string name="tap_typing_3">Typing...</string>
     <string name="tap_unread_messages">Unread Messages</string>
+    <string name="tap_uploading">Uploading</string>
     <string name="tap_username">Username</string>
     <string name="tap_verifying_otp">Verifying OTP</string>
     <string name="tap_you">You</string>

@@ -24,7 +24,7 @@
         android:id="@+id/fl_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/tap_bg_circle_66000000"
+        android:background="@drawable/tap_bg_circle_6604040f"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

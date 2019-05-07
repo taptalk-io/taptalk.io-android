@@ -351,6 +351,19 @@ public class TAPApiManager {
         execute(tapMultipart.uploadFile(requestBody), subscriber);
     }
 
+    public void uploadProfilePicture(File imageFile, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("fileType", "image")
+                .build();
+        execute(tapMultipart.uploadProfilePicture(requestBody), subscriber);
+    }
+
     public void downloadFile(String roomID, String localID, String fileID, Subscriber<ResponseBody> subscriber) {
         TAPTalkDownloadApiService tapDownload = TAPApiConnection.getInstance().getTapDownload();
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);

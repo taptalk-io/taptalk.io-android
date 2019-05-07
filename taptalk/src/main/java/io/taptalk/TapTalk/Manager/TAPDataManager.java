@@ -953,6 +953,22 @@ public class TAPDataManager {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
+    public void uploadProfilePicture(File imageFile, String mimeType,
+                                     ProgressRequestBody.UploadCallbacks uploadCallback,
+                                     TapDefaultDataView<TAPGetUserResponse> view) {
+        cancelUploadProfilePicture();
+        uploadProfilePictureSubscriber = new TAPDefaultSubscriber<>(view);
+        TAPApiManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallback, uploadProfilePictureSubscriber);
+    }
+
+    public void cancelUploadProfilePicture() {
+        if (null != uploadProfilePictureSubscriber) {
+            uploadProfilePictureSubscriber.unsubscribe();
+        }
+    }
+
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TapDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> uploadProfilePictureSubscriber;
+
     // File Download
     private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
 
