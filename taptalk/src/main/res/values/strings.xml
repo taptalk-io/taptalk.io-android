@@ -91,8 +91,9 @@
     <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
     <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
-    <string name="tap_guide_username">May only contain lowercase alphabet ‘abc…’, numeric ‘123…’, dot ‘.’, or an underscore ‘_’.\nUsername must start with a lowercase alphabet and end with lowercase alphabet or numeric.</string>
+    <string name="tap_guide_username">Username is always required.\nMust be between 4–32 characters.\nCan only contain a–z, 0–9, underscores, and dot.\nCan\'t start with number or underscore or dot.\nCan\'t end with underscore or dot.\nCan\'t contain consecutive underscores, consecutive dot, underscore followed with dot, and otherwise.</string>
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
+    <string name="tap_room_list_empty">It seems like you don’t have any chats to show, but don’t worry! Your chat list will grow once you</string>
 
     <!--Error Message-->
     <string name="tap_error">Error</string>
@@ -218,6 +219,7 @@
     <string name="tap_add_to_contacts">Add to Contacts</string>
     <string name="tap_cancel">Cancel</string>
     <string name="tap_change">Change</string>
+    <string name="tap_change_password">Change Password</string>
     <string name="tap_chat_now">Chat Now</string>
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_history">Clear history</string>
@@ -231,10 +233,12 @@
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>
+    <string name="tap_no_chats_to_show">No chats to show</string>
     <string name="tap_no_description">No Description</string>
     <string name="tap_ok">OK</string>
     <string name="tap_oops">Oops…</string>
     <string name="tap_optional">Optional</string>
+    <string name="tap_otp_successfully_sent">OTP Successfully Sent</string>
     <string name="tap_password">Password</string>
     <string name="tap_permission_request">Permission Request</string>
     <string name="tap_profile_picture">Profile Picture</string>
@@ -251,21 +255,18 @@
     <string name="tap_send_a_message">Send a message…</string>
     <string name="tap_sent_at">Sent at</string>
     <string name="tap_select_country">Select Country</string>
+    <string name="tap_skip">Skip</string>
+    <string name="tap_start_a_new_chat">Start a New Chat</string>
     <string name="tap_typing">typing</string>
     <string name="tap_typing_1">Typing.</string>
     <string name="tap_typing_2">Typing..</string>
     <string name="tap_typing_3">Typing...</string>
     <string name="tap_unread_messages">Unread Messages</string>
+    <string name="tap_update">Update</string>
     <string name="tap_uploading">Uploading</string>
     <string name="tap_username">Username</string>
     <string name="tap_verifying_otp">Verifying OTP</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
-    <string name="otp_successfully_sent">OTP Successfully Sent</string>
-    <string name="no_chats_to_show">No chats to show</string>
-    <string name="it_seems_like_you_don_t_have_any_chats_to_show_but_don_t_worry_your_chat_list_will_grow_once_you">It seems like you don’t have any chats to show, but don’t worry! Your chat list will grow once you</string>
-    <string name="start_a_new_chat">Start a New Chat</string>
-    <string name="tap_change_password">Change Password</string>
-    <string name="tap_update">Update</string>
 
 </resources>

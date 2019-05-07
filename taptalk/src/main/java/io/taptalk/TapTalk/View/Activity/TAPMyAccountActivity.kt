@@ -36,6 +36,12 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
+import kotlinx.android.synthetic.main.tap_activity_my_account.civ_profile_picture_overlay
+import kotlinx.android.synthetic.main.tap_activity_my_account.iv_edit_profile_picture_icon
+import kotlinx.android.synthetic.main.tap_activity_my_account.pb_profile_picture_progress
+import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_change_profile_picture
+import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_password
+import kotlinx.android.synthetic.main.tap_activity_register.*
 import kotlinx.android.synthetic.main.tap_activity_register.civ_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_register.cl_form_container
 import kotlinx.android.synthetic.main.tap_activity_register.cl_password
@@ -335,6 +341,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setOnClickListener(null)
         civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
+        iv_remove_profile_picture.setOnClickListener(null)
         fl_button_update.setOnClickListener(null)
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
@@ -359,7 +366,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setOnClickListener{ onBackPressed() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        //fl_button_update.setOnClickListener { register() }
+        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        //fl_button_update.setOnClickListener { updateProfile() }
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_close_orange))
         iv_button_close.clearAnimation()
@@ -390,6 +398,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
         TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
 
+        pb_profile_picture_progress.progress = 0
+
         tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
         tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_grey_9b))
         iv_edit_profile_picture_icon.visibility = View.GONE
@@ -397,23 +407,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         pb_profile_picture_progress.visibility = View.VISIBLE
         pb_profile_picture_progress.progress = 0
     }
-
-//    private fun showProfilePictureUploadFinished() {
-//        if (!vm.isUpdatingProfile) {
-//            iv_button_close.setOnClickListener { onBackPressed() }
-//            iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_close_orange))
-//            iv_button_close.clearAnimation()
-//        }
-//
-//        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-//        ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-//
-//        tv_label_change_profile_picture.text = getString(R.string.tap_change)
-//        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumkin_orange_two))
-//        iv_edit_profile_picture_icon.visibility = View.VISIBLE
-//        civ_profile_picture_overlay.visibility = View.GONE
-//        pb_profile_picture_progress.visibility = View.GONE
-//    }
 
     private val profilePicturePickerListener = object : TAPAttachmentListener() {
         override fun onCameraSelected() {

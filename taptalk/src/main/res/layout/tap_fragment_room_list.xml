@@ -196,7 +196,7 @@
                 android:gravity="center_horizontal"
                 android:letterSpacing="-0.02"
                 android:lineSpacingExtra="6sp"
-                android:text="@string/no_chats_to_show"
+                android:text="@string/tap_no_chats_to_show"
                 android:textColor="@color/tap_black_19"
                 android:textSize="24sp" />
 
@@ -220,7 +220,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"
-            android:text="@string/it_seems_like_you_don_t_have_any_chats_to_show_but_don_t_worry_your_chat_list_will_grow_once_you"
+            android:text="@string/tap_room_list_empty"
             android:textColor="@color/tap_black_19"
             android:textSize="14sp" />
 
@@ -235,7 +235,7 @@
             android:paddingTop="8dp"
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
-            android:text="@string/start_a_new_chat"
+            android:text="@string/tap_start_a_new_chat"
             android:textColor="@color/tap_pumkin_orange_two"
             android:textSize="16sp" />
 

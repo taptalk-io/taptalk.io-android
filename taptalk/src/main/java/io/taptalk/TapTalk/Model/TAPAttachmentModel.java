@@ -97,8 +97,8 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createImagePickerMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_camera_green_blue,
-                R.drawable.tap_ic_gallery_green_blue,
+                R.drawable.tap_ic_camera_pumpkin_orange,
+                R.drawable.tap_ic_gallery_pumpkin_orange,
         };
 
         int[] titleResIds = {
