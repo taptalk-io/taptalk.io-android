@@ -49,7 +49,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val stateEmpty = 0
     private val stateValid = 1
-    private val stateChecking = 2
     private val stateInvalid = -1
 
     private lateinit var vm : TAPRegisterViewModel
@@ -383,6 +382,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun disableEditing() {
+        civ_profile_picture.setOnClickListener(null)
+        ll_change_profile_picture.setOnClickListener(null)
+
         et_full_name.isEnabled = false
         et_username.isEnabled = false
         et_email_address.isEnabled = false
@@ -403,6 +405,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun enableEditing() {
+        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+        ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+
         et_full_name.isEnabled = true
         et_username.isEnabled = true
         et_email_address.isEnabled = true

@@ -27,6 +27,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -36,6 +37,8 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -168,6 +171,56 @@ public class TAPFileUploadManager {
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
         addUploadQueue(context, roomID, messageModel);
+    }
+
+    public void uploadProfilePicture(Context context, Uri imageUri, String userID) {
+        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
+            ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
+                @Override
+                public void onProgressUpdate(int percentage, long bytes) {
+                    addUploadProgressMap(userID, percentage, bytes);
+                    Intent intent = new Intent(UploadProgressLoading);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                }
+
+                @Override public void onError() {}
+
+                @Override public void onFinish() {}
+            };
+
+            TapDefaultDataView<TAPGetUserResponse> uploadProfilePictureView = new TapDefaultDataView<TAPGetUserResponse>() {
+                @Override
+                public void onSuccess(TAPGetUserResponse response) {
+                    TAPDataManager.getInstance().saveActiveUser(response.getUser());
+
+                    Intent intent = new Intent(UploadProgressFinish);
+                    intent.putExtra(K_USER, response.getUser());
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                }
+
+                @Override
+                public void onError(TAPErrorModel error) {
+                    Intent intent = new Intent(UploadFailed);
+                    intent.putExtra(K_USER_ID, userID);
+                    intent.putExtra(UploadFailedErrorMessage, error.getMessage());
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    Intent intent = new Intent(UploadFailed);
+                    intent.putExtra(K_USER_ID, userID);
+                    intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_upload_profile_picture));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                }
+            };
+
+            String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+            TAPDataManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallbacks, uploadProfilePictureView);
+        });
     }
 
     private void uploadImage(Context context, String roomID) {
@@ -532,10 +585,6 @@ public class TAPFileUploadManager {
                 .uploadFile(localID, file,
                         messageModel.getRoom().getRoomID(),
                         mimeType, uploadCallbacks, uploadView);
-    }
-
-    public void uploadProfilePicture(String userID, Uri imageUri) {
-
     }
 
     private void messageUploadFailed(Context context, TAPMessageModel messageModelWithUri, String roomID) {

@@ -2,8 +2,12 @@ package io.taptalk.TapTalk.View.Activity
 
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.content.ContextCompat
@@ -16,18 +20,18 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
-import io.taptalk.TapTalk.API.View.TapDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
-import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Manager.TAPDataManager
-import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
-import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import io.taptalk.Taptalk.R
@@ -72,6 +76,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         glide = Glide.with(this)
         initViewModel()
         initView()
+        registerBroadcastReceiver()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        TAPBroadcastManager.unregister(this@TAPMyAccountActivity, uploadBroadcastReceiver)
     }
 
     override fun onBackPressed() {
@@ -97,11 +107,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             Activity.RESULT_OK -> {
                 when (requestCode) {
                     PICK_PROFILE_IMAGE_CAMERA -> {
-                        reloadProfilePicture(true)
+                        reloadProfilePicture(vm.profilePictureUri, true, true)
                     }
                     PICK_PROFILE_IMAGE_GALLERY -> {
                         vm.profilePictureUri = intent?.data
-                        reloadProfilePicture(true)
+                        reloadProfilePicture(vm.profilePictureUri, true, true)
                     }
                 }
             }
@@ -110,6 +120,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
+        vm.currentProfilePicture = vm.myUserModel.avatarURL.thumbnail
     }
 
     private fun initView() {
@@ -121,7 +132,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_full_name.addTextChangedListener(fullNameWatcher)
         et_email_address.addTextChangedListener(emailWatcher)
 
-        glide.load(vm.myUserModel.avatarURL.thumbnail)
+        glide.load(vm.currentProfilePicture)
                 .apply(RequestOptions().placeholder(R.drawable.tap_img_default_avatar))
                 .into(civ_profile_picture)
         et_full_name.setText(vm.myUserModel.name)
@@ -153,6 +164,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         fl_button_update.visibility = View.GONE
     }
 
+    private fun registerBroadcastReceiver() {
+        TAPBroadcastManager.register(this@TAPMyAccountActivity, uploadBroadcastReceiver,
+                UploadProgressLoading, UploadProgressFinish, UploadFailed)
+    }
+
     private fun showProfilePicturePickerBottomSheet() {
         TAPUtils.getInstance().dismissKeyboard(this@TAPMyAccountActivity)
         TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(supportFragmentManager, "")
@@ -160,21 +176,41 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun removeProfilePicture() {
         vm.profilePictureUri = null
-        reloadProfilePicture(false)
+        reloadProfilePicture(vm.profilePictureUri, false, false)
     }
 
-    private fun reloadProfilePicture(showErrorMessage: Boolean) {
-        if (null == vm.profilePictureUri) {
+    private fun reloadProfilePicture(imageUri: Uri?, showErrorMessage: Boolean, uploadPicture: Boolean) {
+        if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
             glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
-            iv_remove_profile_picture.visibility = View.GONE
+            // TODO temporarily disabled removing profile picture
+//            iv_remove_profile_picture.visibility = View.GONE
             if (showErrorMessage) {
                 Toast.makeText(this@TAPMyAccountActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
-            glide.load(vm.profilePictureUri).into(civ_profile_picture)
-            iv_remove_profile_picture.visibility = View.VISIBLE
+            glide.load(imageUri).into(civ_profile_picture)
+            // TODO temporarily disabled removing profile picture
+//            iv_remove_profile_picture.visibility = View.VISIBLE
+
+            if (uploadPicture) {
+                uploadProfilePicture()
+            }
+        }
+    }
+
+    private fun reloadProfilePicture(imageUrl: String?, placeholder: Drawable) {
+        if (null == imageUrl) {
+            vm.formCheck[indexProfilePicture] = stateEmpty
+            glide.load(R.drawable.tap_img_default_avatar).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
+            // TODO temporarily disabled removing profile picture
+//            iv_remove_profile_picture.visibility = View.GONE
+        } else {
+            vm.formCheck[indexProfilePicture] = stateValid
+            glide.load(imageUrl).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
+            // TODO temporarily disabled removing profile picture
+//            iv_remove_profile_picture.visibility = View.VISIBLE
         }
     }
 
@@ -277,44 +313,107 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         // TODO
     }
 
+    private fun uploadProfilePicture() {
+        vm.isUploadingProfilePicture = true
+        TAPFileUploadManager.getInstance().uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
+        showProfilePictureUploading()
+    }
+
     private fun showErrorDialog(message: String) {
+        enableEditing()
         TapTalkDialog.Builder(this@TAPMyAccountActivity)
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setTitle(getString(R.string.tap_error))
                 .setMessage(message)
                 .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                .setPrimaryButtonListener(true) { enableEditing() }
-                .setCancelable(false)
+                .setPrimaryButtonListener(true) { }
+                .setCancelable(true)
                 .show()
     }
 
     private fun disableEditing() {
-        et_full_name.isEnabled = false
-        et_email_address.isEnabled = false
-
-        et_full_name.setTextColor(resources.getColor(R.color.tap_grey_9b))
-        et_email_address.setTextColor(resources.getColor(R.color.tap_grey_9b))
-
-        tv_button_update.visibility = View.GONE
-        iv_update_progress.visibility = View.VISIBLE
-        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_update_progress)
-
+        iv_button_close.setOnClickListener(null)
+        civ_profile_picture.setOnClickListener(null)
+        ll_change_profile_picture.setOnClickListener(null)
         fl_button_update.setOnClickListener(null)
+
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
+        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
+
+        // TODO temporarily disable editing
+//        et_full_name.isEnabled = false
+//        et_email_address.isEnabled = false
+//
+//        et_full_name.setTextColor(resources.getColor(R.color.tap_grey_9b))
+//        et_email_address.setTextColor(resources.getColor(R.color.tap_grey_9b))
+//
+//        tv_button_update.visibility = View.GONE
+//        iv_update_progress.visibility = View.VISIBLE
+//        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_update_progress)
     }
 
     private fun enableEditing() {
-        et_full_name.isEnabled = true
-        et_email_address.isEnabled = true
-
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
-
-        tv_button_update.visibility = View.VISIBLE
-        iv_update_progress.visibility = View.GONE
-        iv_update_progress.clearAnimation()
-
+        if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
+            return
+        }
+        iv_button_close.setOnClickListener{ onBackPressed() }
+        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+        ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         //fl_button_update.setOnClickListener { register() }
+
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_close_orange))
+        iv_button_close.clearAnimation()
+
+        tv_label_change_profile_picture.text = getString(R.string.tap_change)
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumkin_orange_two))
+        iv_edit_profile_picture_icon.visibility = View.VISIBLE
+        civ_profile_picture_overlay.visibility = View.GONE
+        pb_profile_picture_progress.visibility = View.GONE
+
+        // TODO temporarily disable editing
+//        et_full_name.isEnabled = true
+//        et_email_address.isEnabled = true
+//
+//        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
+//        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
+//
+//        tv_button_update.visibility = View.VISIBLE
+//        iv_update_progress.visibility = View.GONE
+//        iv_update_progress.clearAnimation()
     }
+
+    private fun showProfilePictureUploading() {
+        iv_button_close.setOnClickListener(null)
+        civ_profile_picture.setOnClickListener(null)
+        ll_change_profile_picture.setOnClickListener(null)
+
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
+        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
+
+        tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_grey_9b))
+        iv_edit_profile_picture_icon.visibility = View.GONE
+        civ_profile_picture_overlay.visibility = View.VISIBLE
+        pb_profile_picture_progress.visibility = View.VISIBLE
+        pb_profile_picture_progress.progress = 0
+    }
+
+//    private fun showProfilePictureUploadFinished() {
+//        if (!vm.isUpdatingProfile) {
+//            iv_button_close.setOnClickListener { onBackPressed() }
+//            iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_close_orange))
+//            iv_button_close.clearAnimation()
+//        }
+//
+//        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+//        ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+//
+//        tv_label_change_profile_picture.text = getString(R.string.tap_change)
+//        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumkin_orange_two))
+//        iv_edit_profile_picture_icon.visibility = View.VISIBLE
+//        civ_profile_picture_overlay.visibility = View.GONE
+//        pb_profile_picture_progress.visibility = View.GONE
+//    }
 
     private val profilePicturePickerListener = object : TAPAttachmentListener() {
         override fun onCameraSelected() {
@@ -396,57 +495,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private val registerView = object : TapDefaultDataView<TAPRegisterResponse>() {
-        override fun startLoading() {
-            disableEditing()
-        }
-
-        override fun endLoading() {
-            enableEditing()
-        }
-
-        override fun onSuccess(response: TAPRegisterResponse?) {
-            TapTalk.saveAuthTicketAndGetAccessToken(response?.ticket
-                    ?: "", object : TAPVerifyOTPInterface {
-                override fun verifyOTPSuccessToLogin() {
-                    TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
-                    if (null != vm.profilePictureUri) {
-                        // TODO UPLOAD PROFILE PICTURE
-                    } else {
-                        setResult(RESULT_OK)
-                        finish()
-                    }
-                }
-
-                override fun verifyOTPSuccessToRegister() {
-
-                }
-
-                override fun verifyOTPFailed(errorCode: String?, errorMessage: String?) {
-                    TapTalkDialog.Builder(this@TAPMyAccountActivity)
-                            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                            .setTitle(getString(R.string.tap_error))
-                            .setMessage(errorMessage)
-                            .setPrimaryButtonTitle(getString(R.string.tap_retry))
-                            .setPrimaryButtonListener(true) {
-                                TapTalk.saveAuthTicketAndGetAccessToken(response?.ticket
-                                        ?: "", this)
-                            }
-                            .setCancelable(false)
-                            .show()
-                }
-            })
-        }
-
-        override fun onError(error: TAPErrorModel?) {
-            showErrorDialog(error?.message ?: getString(R.string.tap_error_message_general))
-        }
-
-        override fun onError(throwable: Throwable?) {
-            showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
-        }
-    }
-
     private val scrollViewListener = ViewTreeObserver.OnScrollChangedListener {
         val y = sv_profile.scrollY
         val h = iv_profile_background.height
@@ -457,6 +505,43 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(1).toFloat()
             else ->
                 cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
+        }
+    }
+
+    private val uploadBroadcastReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val action = intent?.action
+            when (action) {
+                UploadProgressLoading -> {
+                    pb_profile_picture_progress.progress = TAPFileUploadManager.getInstance().getUploadProgressPercent(vm.myUserModel.userID)?: 0
+                }
+                UploadProgressFinish -> {
+                    val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
+                    vm.currentProfilePicture = updatedUserModel.avatarURL.thumbnail
+                    if (updatedUserModel?.userID == vm.myUserModel.userID) {
+                        vm.isUploadingProfilePicture = false
+                        enableEditing()
+                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
+                    }
+                }
+                UploadFailed -> {
+                    val userID = intent.getStringExtra(K_USER_ID)
+                    if (null != userID && userID == vm.myUserModel.userID) {
+                        vm.isUploadingProfilePicture = false
+                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
+                        enableEditing()
+                        TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                                .setTitle(getString(R.string.tap_error_unable_to_upload))
+                                .setMessage(intent.getStringExtra(UploadFailedErrorMessage)?: getString(R.string.tap_error_upload_profile_picture))
+                                .setPrimaryButtonTitle(getString(R.string.tap_retry))
+                                .setPrimaryButtonListener(true) { reloadProfilePicture(vm.profilePictureUri, true, true) }
+                                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                                .setCancelable(true)
+                                .show()
+                    }
+                }
+            }
         }
     }
 }

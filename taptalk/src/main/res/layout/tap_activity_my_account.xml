@@ -71,6 +71,35 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_profile_picture_overlay"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                android:src="@drawable/tap_bg_circle_6604040f"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture" />
+
+            <ProgressBar
+                android:id="@+id/pb_profile_picture_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:elevation="2dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture"
+                tools:progress="65" />
+
             <ImageView
                 android:id="@+id/iv_remove_profile_picture"
                 android:layout_width="36dp"

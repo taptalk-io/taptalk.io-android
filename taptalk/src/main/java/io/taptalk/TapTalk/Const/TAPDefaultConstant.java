@@ -270,6 +270,7 @@ public class TAPDefaultConstant {
     public static final String K_AUTH_TICKET = "kTAPAuthTicket";
     public static final String K_MY_USERNAME = "kTAPMyUsername";
     public static final String K_USER = "kTAPUser";
+    public static final String K_USER_ID = "kTAPUserID";
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";

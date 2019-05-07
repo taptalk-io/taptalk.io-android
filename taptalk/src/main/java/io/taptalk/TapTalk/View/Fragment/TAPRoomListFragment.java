@@ -121,6 +121,7 @@ public class TAPRoomListFragment extends Fragment {
         addNetworkListener();
         TAPBroadcastManager.register(getContext(), receiver, REFRESH_TOKEN_RENEWED);
         new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
+        reloadProfilePicture();
     }
 
     @Override
@@ -233,15 +234,7 @@ public class TAPRoomListFragment extends Fragment {
             getActivity().getWindow().setBackgroundDrawable(null);
         }
 
-        if (null != getContext() && null != TAPChatManager.getInstance().getActiveUser()
-                && null != TAPChatManager.getInstance().getActiveUser().getAvatarURL()
-                && !TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(getContext()).load(TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail())
-                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
-        } else if (null != getContext()) {
-            Glide.with(getContext()).load(getContext().getDrawable(R.drawable.tap_img_default_avatar))
-                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
-        }
+        reloadProfilePicture();
 
         flSetupContainer.setVisibility(View.GONE);
 
@@ -277,6 +270,19 @@ public class TAPRoomListFragment extends Fragment {
         //ivButtonMore.setOnClickListener(v -> {});
         flSetupContainer.setOnClickListener(v -> {
         });
+    }
+
+    private void reloadProfilePicture() {
+        // TODO: 7 May 2019 CHECK IF PROFILE IS HIDDEN
+        if (null != getContext() && null != TAPChatManager.getInstance().getActiveUser()
+                && null != TAPChatManager.getInstance().getActiveUser().getAvatarURL()
+                && !TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(getContext()).load(TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail())
+                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+        } else if (null != getContext()) {
+            Glide.with(getContext()).load(getContext().getDrawable(R.drawable.tap_img_default_avatar))
+                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+        }
     }
 
     private void openMyAccountActivity() {

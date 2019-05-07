@@ -5,13 +5,14 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPRegisterViewModel extends AndroidViewModel {
     private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
     private int countryID = 0;
-    private String countryCallingCode = "62";
+    private boolean isUpdatingProfile, isUploadingProfilePicture;
+    private String countryCallingCode = "62", currentProfilePicture;
     private Uri profilePictureUri;
     private TAPUserModel myUserModel;
 
@@ -43,6 +44,30 @@ public class TAPRegisterViewModel extends AndroidViewModel {
         this.countryCallingCode = countryCallingCode;
     }
 
+    public boolean isUpdatingProfile() {
+        return isUpdatingProfile;
+    }
+
+    public void setUpdatingProfile(boolean updatingProfile) {
+        isUpdatingProfile = updatingProfile;
+    }
+
+    public boolean isUploadingProfilePicture() {
+        return isUploadingProfilePicture;
+    }
+
+    public void setUploadingProfilePicture(boolean uploadingProfilePicture) {
+        isUploadingProfilePicture = uploadingProfilePicture;
+    }
+
+    public String getCurrentProfilePicture() {
+        return currentProfilePicture;
+    }
+
+    public void setCurrentProfilePicture(String currentProfilePicture) {
+        this.currentProfilePicture = currentProfilePicture;
+    }
+
     public Uri getProfilePictureUri() {
         return profilePictureUri;
     }
@@ -52,7 +77,7 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     }
 
     public TAPUserModel getMyUserModel() {
-        return null == myUserModel ? TAPDataManager.getInstance().getActiveUser() : myUserModel;
+        return null == myUserModel ? TAPChatManager.getInstance().getActiveUser() : myUserModel;
     }
 
     public void setMyUserModel(TAPUserModel myUserModel) {
