@@ -79,6 +79,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
+        if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
+            return
+        }
         super.onBackPressed()
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
     }
@@ -394,6 +397,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun showErrorDialog(message: String) {
+        vm.isUpdatingProfile = false
         enableEditing()
         TapTalkDialog.Builder(this)
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -701,6 +705,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val registerView = object : TapDefaultDataView<TAPRegisterResponse>() {
         override fun startLoading() {
+            vm.isUpdatingProfile = true
             disableEditing()
         }
 
@@ -734,6 +739,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                             .show()
                 }
             })
+            vm.isUpdatingProfile = false
         }
 
         override fun onError(error: TAPErrorModel?) {

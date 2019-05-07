@@ -41,7 +41,6 @@ import kotlinx.android.synthetic.main.tap_activity_my_account.iv_edit_profile_pi
 import kotlinx.android.synthetic.main.tap_activity_my_account.pb_profile_picture_progress
 import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_change_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_password
-import kotlinx.android.synthetic.main.tap_activity_register.*
 import kotlinx.android.synthetic.main.tap_activity_register.civ_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_register.cl_form_container
 import kotlinx.android.synthetic.main.tap_activity_register.cl_password
@@ -91,6 +90,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     override fun onBackPressed() {
+        if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
+            return
+        }
         super.onBackPressed()
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
     }
@@ -326,6 +328,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun showErrorDialog(message: String) {
+        vm.isUpdatingProfile = false
         enableEditing()
         TapTalkDialog.Builder(this@TAPMyAccountActivity)
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
