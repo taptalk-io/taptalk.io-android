@@ -45,11 +45,11 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private ConstraintLayout clSearchResult, clButtonAction, clConnectionLost;
     private LinearLayout llEmpty;
-    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage;
+    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage, ivProgressSearch;
     private CircleImageView civAvatar;
     private TextView /*tvSearchUsernameGuide, */tvFullName, tvUsername, tvButtonText;
     private EditText etSearch;
-    private ProgressBar pbSearch, pbButton;
+    private ProgressBar pbButton;
 
     private TAPNewContactViewModel vm;
 
@@ -86,13 +86,13 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         ivExpertCover = findViewById(R.id.iv_expert_cover);
         ivAvatarIcon = findViewById(R.id.iv_avatar_icon);
         ivButtonImage = findViewById(R.id.iv_button_image);
+        ivProgressSearch = findViewById(R.id.iv_progress_search);
         civAvatar = findViewById(R.id.civ_avatar);
 //        tvSearchUsernameGuide = findViewById(R.id.tv_search_username_guide);
         tvFullName = findViewById(R.id.tv_full_name);
         tvUsername = findViewById(R.id.tv_username);
         tvButtonText = findViewById(R.id.tv_button_text);
         etSearch = findViewById(R.id.et_search);
-        pbSearch = findViewById(R.id.pb_search);
         pbButton = findViewById(R.id.pb_button);
 
         glide = Glide.with(this);
@@ -132,7 +132,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         llEmpty.setVisibility(View.GONE);
         clConnectionLost.setVisibility(View.GONE);
         ivButtonCancel.setVisibility(View.VISIBLE);
-        pbSearch.setVisibility(View.INVISIBLE);
+        ivProgressSearch.setVisibility(View.INVISIBLE);
     }
 
     private void showResultNotFound() {
@@ -375,13 +375,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void startLoading() {
             ivButtonCancel.setVisibility(View.INVISIBLE);
-            pbSearch.setVisibility(View.VISIBLE);
+            ivProgressSearch.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
         }
 
         @Override
         public void endLoading() {
+            ivProgressSearch.setVisibility(View.INVISIBLE);
+            ivProgressSearch.clearAnimation();
             ivButtonCancel.setVisibility(View.VISIBLE);
-            pbSearch.setVisibility(View.INVISIBLE);
         }
 
         @Override

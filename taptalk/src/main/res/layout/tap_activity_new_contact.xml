@@ -37,18 +37,19 @@
             android:hint="@string/tap_search_by_username"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:textCursorDrawable="@drawable/tap_login_color_cursor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_cancel"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_goneMarginEnd="?attr/actionBarSize" />
 
-        <ProgressBar
-            android:id="@+id/pb_search"
+        <ImageView
+            android:id="@+id/iv_progress_search"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
-            android:indeterminateTint="@color/tap_greenBlue"
             android:padding="18dp"
+            android:src="@drawable/tap_ic_loading_progress_circle_orange"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -234,18 +235,13 @@
         android:id="@+id/ll_empty"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="38dp"
+        android:layout_marginTop="48dp"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/tap_img_no_result" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -254,19 +250,22 @@
             android:fontFamily="@font/tap_font_pt_root_bold"
             android:gravity="center_horizontal"
             android:letterSpacing="-0.02"
+            android:lineSpacingExtra="6sp"
             android:text="@string/tap_oops"
-            android:textColor="@color/tap_black_44"
-            android:textSize="15sp" />
+            android:textColor="@color/tap_black_19"
+            android:textSize="24sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:fontFamily="@font/tap_font_pt_root_regular"
             android:gravity="center_horizontal"
             android:letterSpacing="-0.02"
+            android:lineHeight="20sp"
             android:text="@string/tap_could_not_find_any_results"
-            android:textColor="@color/tap_black_44"
-            android:textSize="15sp" />
+            android:textColor="@color/tap_black_19"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
