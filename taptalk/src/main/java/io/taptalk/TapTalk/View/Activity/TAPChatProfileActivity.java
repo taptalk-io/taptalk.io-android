@@ -184,7 +184,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         } else {
             menuNotification = new TAPMenuItem(
                     MENU_NOTIFICATION,
-                    R.drawable.tap_ic_notifications_green,
+                    R.drawable.tap_ic_notifications_pumpkin_orange,
                     true,
                     true,
                     getString(R.string.tap_notifications));
@@ -195,8 +195,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 false,
                 false,
                 getString(R.string.tap_conversation_color));
+
+        TAPMenuItem menuRoomSearchChat = new TAPMenuItem(
+                MENU_ROOM_COLOR,
+                R.drawable.tap_ic_search_grey,
+                false,
+                false,
+                getString(R.string.tap_search_chat));
+
         menuItems.add(menuNotification);
         menuItems.add(menuRoomColor);
+        menuItems.add(menuRoomSearchChat);
 
         menuButtonAdapter = new TAPMenuButtonAdapter(menuItems, profileMenuInterface);
         rvMenuButtons.setAdapter(menuButtonAdapter);

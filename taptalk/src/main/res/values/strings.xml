@@ -25,6 +25,7 @@
     <string name="tap_block_user">Block User</string>
     <string name="tap_view_members">View Members</string>
     <string name="tap_clear_chat">Clear Chat</string>
+    <string name="tap_search_chat">Search Chat</string>
     <string name="tap_exit_group">Exit Group</string>
     <string name="tap_shared_media">Shared Media</string>
     <string name="tap_forward">Forward</string>
