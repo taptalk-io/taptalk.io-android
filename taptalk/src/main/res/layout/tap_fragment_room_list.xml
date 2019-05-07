@@ -178,7 +178,7 @@
         android:background="@color/tap_white_f3"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/f_connection_status">
 
@@ -199,13 +199,6 @@
                 android:text="@string/tap_no_chats_to_show"
                 android:textColor="@color/tap_black_19"
                 android:textSize="24sp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/tap_ic_face_sad" />
 
 
         </LinearLayout>

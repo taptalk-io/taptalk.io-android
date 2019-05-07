@@ -8,6 +8,7 @@ public class TAPCountryRecycleItem {
     private RecyclerItemType recyclerItemType;
     private TAPCountryListItem countryListItem;
     private char countryInitial;
+    private boolean isSelected;
 
     public RecyclerItemType getRecyclerItemType() {
         return recyclerItemType;
@@ -31,5 +32,13 @@ public class TAPCountryRecycleItem {
 
     public void setCountryInitial(char countryInitial) {
         this.countryInitial = countryInitial;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }
