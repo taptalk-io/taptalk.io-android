@@ -308,7 +308,7 @@
                 android:id="@+id/v_quote_decoration"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_purplishblue_rounded_4dp_0dp_4dp_0dp"
+                android:background="@drawable/tap_bg_dodgerblue_rounded_4dp_0dp_4dp_0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_cancel_reply"
                 app:layout_constraintTop_toTopOf="parent" />
