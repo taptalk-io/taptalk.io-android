@@ -47,7 +47,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private LinearLayout llEmpty;
     private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage, ivProgressSearch;
     private CircleImageView civAvatar;
-    private TextView /*tvSearchUsernameGuide, */tvFullName, tvUsername, tvButtonText;
+    private TextView tvSearchUsernameGuide, tvFullName, tvUsername, tvButtonText;
     private EditText etSearch;
     private ProgressBar pbButton;
 
@@ -88,7 +88,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         ivButtonImage = findViewById(R.id.iv_button_image);
         ivProgressSearch = findViewById(R.id.iv_progress_search);
         civAvatar = findViewById(R.id.civ_avatar);
-//        tvSearchUsernameGuide = findViewById(R.id.tv_search_username_guide);
+        tvSearchUsernameGuide = findViewById(R.id.tv_search_username_guide);
         tvFullName = findViewById(R.id.tv_full_name);
         tvUsername = findViewById(R.id.tv_username);
         tvButtonText = findViewById(R.id.tv_button_text);
@@ -122,7 +122,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void showEmpty() {
-//        tvSearchUsernameGuide.setVisibility(View.VISIBLE);
+        tvSearchUsernameGuide.setVisibility(View.VISIBLE);
         ivExpertCover.setVisibility(View.GONE);
         civAvatar.setVisibility(View.GONE);
         ivAvatarIcon.setVisibility(View.GONE);
@@ -136,7 +136,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void showResultNotFound() {
-//        tvSearchUsernameGuide.setVisibility(View.GONE);
+        tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.GONE);
         civAvatar.setVisibility(View.GONE);
         ivAvatarIcon.setVisibility(View.GONE);
@@ -148,7 +148,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void showConnectionLost() {
-//        tvSearchUsernameGuide.setVisibility(View.GONE);
+        tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.GONE);
         civAvatar.setVisibility(View.GONE);
         ivAvatarIcon.setVisibility(View.GONE);
@@ -160,7 +160,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void showUserView() {
-//        tvSearchUsernameGuide.setVisibility(View.GONE);
+        tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.GONE);
         civAvatar.setVisibility(View.VISIBLE);
         ivAvatarIcon.setVisibility(View.GONE);
@@ -202,7 +202,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void showExpertView() {
-//        tvSearchUsernameGuide.setVisibility(View.GONE);
+        tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.VISIBLE);
         civAvatar.setVisibility(View.VISIBLE);
         tvFullName.setVisibility(View.VISIBLE);

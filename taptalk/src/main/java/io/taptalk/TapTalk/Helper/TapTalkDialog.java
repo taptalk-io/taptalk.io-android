@@ -115,7 +115,7 @@ public class TapTalkDialog extends Dialog {
         Resources res = getContext().getResources();
         switch (dialogType) {
             case ERROR_DIALOG:
-                primary.setBackground(res.getDrawable(R.drawable.tap_bg_watermelon_red_rounded_4dp));
+                primary.setBackground(res.getDrawable(R.drawable.tap_bg_watermelon_rounded_4dp));
                 //secondary.setBackground(res.getDrawable(R.drawable.tap_bg_white_stroke_grey9b_1dp_rounded_4dp));
                 //secondary.setTextColor(res.getColor(R.color.tap_grey_9b));
                 break;

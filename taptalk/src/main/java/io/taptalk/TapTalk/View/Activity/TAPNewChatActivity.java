@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,13 +47,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 public class TAPNewChatActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPNewChatActivity.class.getSimpleName();
-    private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts, llButtonSync, llConnectionStatus;
+    private LinearLayout llBlockedContacts, llButtonSync, llConnectionStatus;
     private ImageView ivButtonClose, ivButtonSearch, ivConnectionStatus;
     private TextView tvTitle, tvConnectionStatus;
     private RecyclerView rvContactList;
     private NestedScrollView nsvNewChat;
     private FrameLayout flSyncStatus, flSync;
     private ProgressBar pbConnecting;
+    private ConstraintLayout clButtonNewContact, clButtonScanQR, clButtonNewGroup;
 
     private TAPContactInitialAdapter adapter;
     private TAPContactListViewModel vm;
@@ -120,9 +122,9 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void initView() {
-        llButtonNewContact = findViewById(R.id.ll_button_new_contact);
-        llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
-        llButtonNewGroup = findViewById(R.id.ll_button_new_group);
+        clButtonNewContact = findViewById(R.id.cl_button_new_contact);
+        clButtonScanQR = findViewById(R.id.cl_button_scan_qr);
+        clButtonNewGroup = findViewById(R.id.cl_button_new_group);
         llBlockedContacts = findViewById(R.id.ll_blocked_contacts);
         llButtonSync = findViewById(R.id.ll_btn_sync);
         llConnectionStatus = findViewById(R.id.ll_connection_status);
@@ -150,7 +152,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         rvContactList.setHasFixedSize(false);
 
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
-        llButtonNewGroup.setVisibility(View.GONE);
+        clButtonNewGroup.setVisibility(View.GONE);
         llBlockedContacts.setVisibility(View.GONE);
 
         //Animate sync button
@@ -158,9 +160,9 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> searchContact());
-        llButtonNewContact.setOnClickListener(v -> addNewContact());
-        llButtonScanQR.setOnClickListener(v -> openQRScanner());
-        llButtonNewGroup.setOnClickListener(v -> createNewGroup());
+        clButtonNewContact.setOnClickListener(v -> addNewContact());
+        clButtonScanQR.setOnClickListener(v -> openQRScanner());
+        clButtonNewGroup.setOnClickListener(v -> createNewGroup());
         llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
         llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
 

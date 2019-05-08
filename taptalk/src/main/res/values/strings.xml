@@ -269,5 +269,6 @@
     <string name="tap_verifying_otp">Verifying OTP</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
+    <string name="usernames_are_case_sensitive_so_make_sure_you_input_correctly">Usernames are case sensitive, so make sure you input correctly</string>
 
 </resources>
