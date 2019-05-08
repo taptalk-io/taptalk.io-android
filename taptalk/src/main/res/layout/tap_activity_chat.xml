@@ -398,6 +398,7 @@
             android:paddingBottom="6dp"
             android:textColor="@color/tap_black_44"
             android:textColorHint="@color/tap_grey_9b"
+            android:textCursorDrawable="@drawable/tap_login_color_cursor"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_send"
