@@ -291,4 +291,13 @@
         <item name="android:padding">0dp</item>
     </style>
 
+    <style name="TapSwitchColor">
+        <!-- Active thumb color & Active track color(30% transparency) -->
+        <item name="colorControlActivated">@color/tap_pumkin_orange_two</item>
+        <!-- Inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/tap_grey_9b</item>
+        <!-- Inactive track color(30% transparency) -->
+        <item name="android:colorForeground">@color/tap_grey_9b</item>
+    </style>
+
 </resources>
