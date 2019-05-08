@@ -409,6 +409,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
                 showConnectionLost();
+                endLoading();
             }
         }
     };

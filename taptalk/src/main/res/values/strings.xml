@@ -25,6 +25,7 @@
     <string name="tap_block_user">Block User</string>
     <string name="tap_view_members">View Members</string>
     <string name="tap_clear_chat">Clear Chat</string>
+    <string name="tap_search_chat">Search Chat</string>
     <string name="tap_exit_group">Exit Group</string>
     <string name="tap_shared_media">Shared Media</string>
     <string name="tap_forward">Forward</string>
@@ -229,7 +230,7 @@
     <string name="tap_edit">Edit</string>
     <string name="tap_email_address">Email Address</string>
     <string name="tap_full_name">Full Name</string>
-    <string name="tap_highlighted_string"><![CDATA[<font color=\'#2eccad\'>%s</font>]]></string>
+    <string name="tap_highlighted_string"><![CDATA[<font color=\'#ff7e00\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>

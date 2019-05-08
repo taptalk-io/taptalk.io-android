@@ -273,7 +273,7 @@
         android:id="@+id/cl_connection_lost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/tap_cream_white"
+        android:background="@color/tap_parchment"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
