@@ -375,6 +375,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_close_orange))
         iv_button_close.clearAnimation()
 
+        pb_profile_picture_progress.progress = 0
+
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
         tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumkin_orange_two))
         iv_edit_profile_picture_icon.visibility = View.VISIBLE
@@ -400,8 +402,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
         TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
-
-        pb_profile_picture_progress.progress = 0
 
         tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
         tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_grey_9b))
