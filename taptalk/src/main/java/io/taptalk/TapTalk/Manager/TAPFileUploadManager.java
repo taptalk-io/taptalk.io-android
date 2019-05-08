@@ -49,6 +49,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFileData;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgress;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 
@@ -180,12 +181,17 @@ public class TAPFileUploadManager {
                 public void onProgressUpdate(int percentage, long bytes) {
                     addUploadProgressMap(userID, percentage, bytes);
                     Intent intent = new Intent(UploadProgressLoading);
+                    intent.putExtra(UploadProgress, percentage);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 }
 
-                @Override public void onError() {}
+                @Override public void onError() {
+                    removeUploadProgressMap(userID);
+                }
 
-                @Override public void onFinish() {}
+                @Override public void onFinish() {
+                    removeUploadProgressMap(userID);
+                }
             };
 
             TapDefaultDataView<TAPGetUserResponse> uploadProfilePictureView = new TapDefaultDataView<TAPGetUserResponse>() {

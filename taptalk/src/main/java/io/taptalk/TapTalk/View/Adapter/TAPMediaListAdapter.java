@@ -65,6 +65,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
         private ImageView ivThumbnail, ivButtonProgress, ivVideoIcon;
         private TextView tvMediaInfo;
         private ProgressBar pbProgress;
+        private View vThumbnailOverlay;
 
         private Drawable thumbnail;
         private boolean isMediaReady;
@@ -78,6 +79,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             ivVideoIcon = itemView.findViewById(R.id.iv_video_icon);
             tvMediaInfo = itemView.findViewById(R.id.tv_media_info);
             pbProgress = itemView.findViewById(R.id.pb_progress);
+            vThumbnailOverlay = itemView.findViewById(R.id.v_thumbnail_overlay);
             activity = (Activity) itemView.getContext();
         }
 
@@ -147,11 +149,14 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                 if (null != duration) {
                     tvMediaInfo.setText(TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
                     tvMediaInfo.setVisibility(View.VISIBLE);
+                    vThumbnailOverlay.setVisibility(View.VISIBLE);
                 } else {
                     tvMediaInfo.setVisibility(View.GONE);
+                    vThumbnailOverlay.setVisibility(View.VISIBLE);
                 }
             } else {
                 tvMediaInfo.setVisibility(View.GONE);
+                vThumbnailOverlay.setVisibility(View.GONE);
             }
             flProgress.setVisibility(View.GONE);
         }
@@ -178,10 +183,11 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                 ivThumbnail.setImageDrawable(thumbnail);
                 if (null != downloadProgressValue) {
                     // Show download progress
-                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
-                    if (null != downloadProgressBytes) {
-                        tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
-                    }
+                    //Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
+                    //if (null != downloadProgressBytes) {
+                    //    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
+                    //}
+                    tvMediaInfo.setText(videoSize);
                     pbProgress.setMax(100);
                     pbProgress.setProgress(downloadProgressValue);
                     ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
@@ -195,6 +201,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                 }
                 tvMediaInfo.setVisibility(View.VISIBLE);
                 flProgress.setVisibility(View.VISIBLE);
+                vThumbnailOverlay.setVisibility(View.VISIBLE);
             });
         }
     }

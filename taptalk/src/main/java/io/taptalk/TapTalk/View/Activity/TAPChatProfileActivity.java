@@ -227,7 +227,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     false,
                     false,
                     getString(R.string.tap_clear_chat));
-            menuItems.add(menuBlock);
+            menuItems.add(2, menuBlock);
             menuItems.add(menuClearChat);
         } else {
             // Group
@@ -244,7 +244,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     false,
                     false,
                     getString(R.string.tap_exit_group));
-            menuItems.add(menuViewMembers);
+            menuItems.add(2, menuViewMembers);
             menuItems.add(menuExitGroup);
         }
 
