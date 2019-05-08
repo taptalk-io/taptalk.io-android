@@ -292,8 +292,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 vm.formCheck[indexEmail] != stateInvalid &&
                 vm.formCheck[indexPassword] != stateInvalid && (
                         vm.formCheck[indexFullName] != stateUnchanged ||
-                        vm.formCheck[indexEmail] != stateUnchanged ||
-                        vm.formCheck[indexPassword] != stateUnchanged)) {
+                                vm.formCheck[indexEmail] != stateUnchanged ||
+                                vm.formCheck[indexPassword] != stateUnchanged)) {
             // All forms valid
             enableContinueButton()
         } else {
@@ -323,8 +323,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
-        TAPFileUploadManager.getInstance().uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
         showProfilePictureUploading()
+        TAPFileUploadManager.getInstance().uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
     }
 
     private fun showErrorDialog(message: String) {
@@ -366,7 +366,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         }
-        iv_button_close.setOnClickListener{ onBackPressed() }
+        iv_button_close.setOnClickListener { onBackPressed() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
@@ -375,13 +375,13 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_close_orange))
         iv_button_close.clearAnimation()
 
-        pb_profile_picture_progress.progress = 0
 
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
         tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumkin_orange_two))
         iv_edit_profile_picture_icon.visibility = View.VISIBLE
         civ_profile_picture_overlay.visibility = View.GONE
         pb_profile_picture_progress.visibility = View.GONE
+        pb_profile_picture_progress.progress = 0
 
         // TODO temporarily disable editing
 //        et_full_name.isEnabled = true
@@ -504,12 +504,13 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private val uploadBroadcastReceiver = object: BroadcastReceiver() {
+    private val uploadBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action
             when (action) {
                 UploadProgressLoading -> {
-                    pb_profile_picture_progress.progress = TAPFileUploadManager.getInstance().getUploadProgressPercent(vm.myUserModel.userID)?: 0
+                    pb_profile_picture_progress.progress = intent.getIntExtra(UploadProgress, 0)
+                    pb_profile_picture_progress.visibility = View.VISIBLE
                 }
                 UploadProgressFinish -> {
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
@@ -529,7 +530,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                         TapTalkDialog.Builder(this@TAPMyAccountActivity)
                                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                                 .setTitle(getString(R.string.tap_error_unable_to_upload))
-                                .setMessage(intent.getStringExtra(UploadFailedErrorMessage)?: getString(R.string.tap_error_upload_profile_picture))
+                                .setMessage(intent.getStringExtra(UploadFailedErrorMessage)
+                                        ?: getString(R.string.tap_error_upload_profile_picture))
                                 .setPrimaryButtonTitle(getString(R.string.tap_retry))
                                 .setPrimaryButtonListener(true) { reloadProfilePicture(vm.profilePictureUri, true, true) }
                                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
