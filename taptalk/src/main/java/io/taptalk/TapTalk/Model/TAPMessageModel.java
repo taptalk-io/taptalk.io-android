@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,12 +12,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -122,12 +128,37 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
-        // TODO: 9 January 2019 HANDLE NON-TEXT MESSAGES
-        TAPQuoteModel quote = new TAPQuoteModel(quotedMessage.getUser().getName(), quotedMessage.getBody(), null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID), null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(IMAGE_URL), "");
+        String quoteTitle, quoteContent;
+        if (quotedMessage.getType() == TYPE_FILE) {
+            quoteTitle = TAPUtils.getInstance().getFileDisplayName(quotedMessage);
+            quoteContent = TAPUtils.getInstance().getFileDisplayInfo(quotedMessage);
+        } else {
+            quoteTitle = quotedMessage.getUser().getName();
+            quoteContent = quotedMessage.getBody();
+        }
+        String quoteFileID = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID);
+        String quoteImageURL = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(IMAGE_URL);
+        String quoteFileType = String.valueOf(quotedMessage.getType()); // TODO: 8 March 2019 CHANGE FILE TYPE
+        TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, quoteFileID, quoteImageURL, quoteFileType);
         TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID(), quotedMessage.getLocalID(), quotedMessage.getType());
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null);
     }
 
+    public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel user, String recipientID) {
+        String localID = TAPUtils.getInstance().generateRandomString(32);
+        TAPForwardFromModel forwardFrom;
+        if (null == messageToForward.getForwardFrom() || null == messageToForward.getForwardFrom().getFullname() || messageToForward.getForwardFrom().getFullname().isEmpty()) {
+            forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getName(), messageToForward.getMessageID(), messageToForward.getLocalID());
+        } else {
+            forwardFrom = messageToForward.getForwardFrom();
+        }
+        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null);
+    }
+
+    public static TAPMessageModel BuilderResendMessage(TAPMessageModel message, Long created) {
+        String localID = TAPUtils.getInstance().generateRandomString(32);
+        return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null);
+    }
 
     public void updateMessageStatusText() {
         if (created > 0L && (null == messageStatusText || messageStatusText.isEmpty())) {
@@ -366,7 +397,18 @@ public class TAPMessageModel implements Parcelable {
         this.type = model.getType();
         this.created = model.getCreated();
         this.user = model.getUser();
-        this.data = model.getData();
+
+        if (null == this.data) {
+            this.data = model.getData();
+        } else if (null != model.data && (model.type == TYPE_IMAGE || model.type == TYPE_VIDEO) &&
+                (null == model.isSending || !model.isSending) &&
+                (null == model.isFailedSend || !model.isFailedSend)) {
+            this.data.putAll(model.data);
+            this.data.remove(FILE_URI); // Remove file Uri from data if type is image or video
+        } else if (null != model.data) {
+            this.data.putAll(model.data);
+        }
+
         this.quote = model.getQuote();
         this.recipientID = model.getRecipientID();
         this.replyTo = model.getReplyTo();
@@ -398,6 +440,8 @@ public class TAPMessageModel implements Parcelable {
     }
 
     public TAPMessageModel copyMessageModel() {
+        if (null != getData()) setData(new HashMap<>(getData()));
+
         return new TAPMessageModel(
                 getMessageID(),
                 getLocalID(),

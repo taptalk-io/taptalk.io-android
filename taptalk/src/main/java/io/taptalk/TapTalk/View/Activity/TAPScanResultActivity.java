@@ -103,7 +103,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         addedContactUserModel = getIntent().getParcelableExtra(ADDED_CONTACT);
         scanResult = getIntent().getStringExtra(SCAN_RESULT);
-        myUserModel = TAPDataManager.getInstance().getActiveUser();
+        myUserModel = TAPChatManager.getInstance().getActiveUser();
 
         if (null != addedContactUserModel) setUpFromNewContact();
         else if (null != scanResult) setUpFromScanQR();
@@ -116,11 +116,6 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             glide.load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
         } else {
             civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-        }
-        if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
-        } else {
-            civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
         tvContactFullname.setText(addedContactUserModel.getName());
         tvContactUsername.setText(addedContactUserModel.getUsername());
@@ -148,11 +143,6 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         } else {
             civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
-        if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
-        } else {
-            civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-        }
         tvContactFullname.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());
 
@@ -174,7 +164,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void handleWhenUserNotInContact() {
-        llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView));
+        runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView)));
     }
 
     TapDefaultDataView<TAPCommonResponse> addContactView = new TapDefaultDataView<TAPCommonResponse>() {
@@ -212,9 +202,10 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             ivButtonIcon.setVisibility(View.VISIBLE);
             pbAddLoading.setVisibility(View.GONE);
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
-                    .setTitle("Error")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setPrimaryButtonListener(v -> {
                     }).show();
         }
@@ -227,9 +218,10 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             pbAddLoading.setVisibility(View.GONE);
             // TODO: 31/10/18 ini textnya masih dummy
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
-                    .setTitle("Error")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_api_call_return_error))
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setPrimaryButtonListener(v -> {
                     }).show();
         }
@@ -246,12 +238,11 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         public void onError(TAPErrorModel error) {
             super.onError(error);
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
-                    .setTitle("Error")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle("OK")
-                    .setPrimaryButtonListener(v -> {
-                        onBackPressed();
-                    }).show();
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonListener(v -> onBackPressed()).show();
         }
 
         @Override
@@ -259,12 +250,11 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             super.onError(throwable);
             // TODO: 31/10/18 ini textnya masih dummy
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
-                    .setTitle("Error")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_api_call_return_error))
-                    .setPrimaryButtonTitle("OK")
-                    .setPrimaryButtonListener(v -> {
-                        onBackPressed();
-                    }).show();
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonListener(v -> onBackPressed()).show();
         }
     };
 
@@ -277,6 +267,12 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     public void animateAlreadyContact() {
         runOnUiThread(() -> {
+            llButton.setAlpha(0f);
+            if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
+                glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
+            } else {
+                civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+            }
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             llButton.setOnClickListener(v -> {
@@ -288,7 +284,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             tvAlreadyContact.setText(Html.fromHtml("<b>" + contactModel.getName() + "</b> "
                     + getResources().getString(R.string.tap_is_already_in_your_contacts)));
             cvResult.animate().alpha(1f).withEndAction(() -> {
-                llButton.animate().alpha(0f).start();
+                //llButton.animate().alpha(0f).start();
                 llTextUsername.animate().alpha(0f).withEndAction(() -> {
                     llTextUsername.setVisibility(View.GONE);
                     tvAlreadyContact.setVisibility(View.VISIBLE);
@@ -325,6 +321,11 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     public void animateAddSuccess(TAPUserModel contactModel) {
         runOnUiThread(() -> {
             tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.you_have_added_to_your_contacts), contactModel.getName())));
+            if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
+                glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
+            } else {
+                civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+            }
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             cvResult.animate().alpha(1f).withEndAction(() -> {

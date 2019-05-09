@@ -4,7 +4,7 @@
     android:id="@+id/fl_setup_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_transparent_charcoal"
+    android:background="@color/tap_transparent_charcoal_40"
     android:elevation="4dp">
 
     <android.support.constraint.ConstraintLayout
@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/tv_setup_chat"
-            style="@style/HomingPigeonToolbarTitle"
+            style="@style/TapToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="24dp"
             android:layout_marginStart="16dp"
@@ -49,7 +49,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="28dp"
             android:ellipsize="end"
-            android:fontFamily="@font/tap_font_neueeinstellungregular"
+            android:fontFamily="@font/tap_font_pt_root_regular"
             android:gravity="center_horizontal"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"

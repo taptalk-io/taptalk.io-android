@@ -24,7 +24,7 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -91,7 +91,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        TAPUserModel myUser = TAPDataManager.getInstance().getActiveUser();
+        TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
 
         // Add self as selected group member
@@ -117,9 +117,10 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         new TapTalkDialog.Builder(TAPCreateNewGroupActivity.this)
+                                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setTitle(getString(R.string.tap_cannot_add_more_people))
                                 .setMessage(getString(R.string.tap_group_limit_reached))
-                                .setPrimaryButtonTitle("OK")
+                                .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                 .setPrimaryButtonListener(v -> {
 
                                 })

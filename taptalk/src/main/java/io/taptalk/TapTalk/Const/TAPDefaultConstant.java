@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 1;
+        public static final int kDatabaseVersion = 3;
     }
 
     public static final class ConnectionEvent {
@@ -50,10 +50,16 @@ public class TAPDefaultConstant {
 
     public static final class BubbleType {
         public static final int TYPE_LOG = 0;
-        public static final int TYPE_BUBBLE_TEXT_RIGHT = 1001;
-        public static final int TYPE_BUBBLE_TEXT_LEFT = 1002;
-        public static final int TYPE_BUBBLE_IMAGE_RIGHT = 1011;
-        public static final int TYPE_BUBBLE_IMAGE_LEFT = 1012;
+        public static final int TYPE_BUBBLE_TEXT_RIGHT = 10011;
+        public static final int TYPE_BUBBLE_TEXT_LEFT = 10012;
+        public static final int TYPE_BUBBLE_IMAGE_RIGHT = 10021;
+        public static final int TYPE_BUBBLE_IMAGE_LEFT = 10022;
+        public static final int TYPE_BUBBLE_VIDEO_RIGHT = 10031;
+        public static final int TYPE_BUBBLE_VIDEO_LEFT = 10032;
+        public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
+        public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
+        public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
+        public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_EMPTY = 9999;
@@ -62,40 +68,67 @@ public class TAPDefaultConstant {
     public static final class MessageData {
         public static final String ITEMS = "items";
         public static final String FILE_ID = "fileID";
+        public static final String FILE_NAME = "fileName";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
-        public static final String IMAGE_SIZE = "size";
-        public static final String IMAGE_WIDTH = "width";
-        public static final String IMAGE_HEIGHT = "height";
+        public static final String DURATION = "duration";
+        public static final String SIZE = "size";
+        public static final String WIDTH = "width";
+        public static final String HEIGHT = "height";
         public static final String CAPTION = "caption";
         public static final String THUMBNAIL = "thumbnail";
         public static final String FILE_URI = "fileUri";
         public static final String USER_INFO = "userInfo";
+        public static final String ADDRESS = "address";
+        public static final String LATITUDE = "latitude";
+        public static final String LONGITUDE = "longitude";
     }
 
     public static final class Extras {
-        public static final String ROOM_NAME = "kTAPExtraRoomName";
+        public static final String MESSAGE = "kTAPExtraMessage";
+        public static final String ROOM = "kTAPExtraRoom";
+        public static final String URL_MESSAGE = "kTAPExtraUrlMessage";
+        public static final String COPY_MESSAGE = "kTAPExtraCopyMessage";
         public static final String MY_ID = "kTAPExtraMyID";
         public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
         public static final String GROUP_NAME = "kTAPExtraGroupName";
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
         public static final String IS_TYPING = "kTAPExtraIsTyping";
         public static final String QUOTE = "kTAPExtraQuote";
+        public static final String URI = "kTAPExtraUri";
+        public static final String MEDIA_PREVIEWS = "kTAPExtraMediaPreviews";
+        public static final String COUNTRY_LIST = "kTAPExtraCountryList";
+        public static final String COUNTRY_ID = "kTAPExtraCountryID";
+        public static final String COUNTRY_CALLING_CODE = "kTAPExtraCountryCallingCode";
+        public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
     }
 
     public static final class RequestCode {
-        public static final int CREATE_GROUP = 10;
-        public static final int PICK_GROUP_IMAGE = 11;
-        public static final int SEND_IMAGE_FROM_CAMERA = 12;
-        public static final int SEND_IMAGE_FROM_GALLERY = 13;
-        public static final int SEND_IMAGE_FROM_PREVIEW = 14;
+        public static final int COUNTRY_PICK = 11;
+        public static final int EDIT_PROFILE = 21;
+        public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
+        public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
+        public static final int REGISTER = 31;
+        public static final int SEND_IMAGE_FROM_CAMERA = 51;
+        public static final int SEND_MEDIA_FROM_GALLERY = 52;
+        public static final int SEND_MEDIA_FROM_PREVIEW = 53;
+        public static final int SEND_FILE = 54;
+        public static final int FORWARD_MESSAGE = 61;
+        public static final int PICK_LOCATION = 62;
+        public static final int CREATE_GROUP = 81;
+        public static final int PICK_GROUP_IMAGE = 91;
     }
 
     public static final class PermissionRequest {
-        public static final int PERMISSION_CAMERA_CAMERA = 1;
-        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 2;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 3;
-        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK = 4;
+        public static final int PERMISSION_CAMERA_CAMERA = 11;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_GALLERY = 21;
+        public static final int PERMISSION_READ_EXTERNAL_STORAGE_FILE = 22;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA = 31;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE = 32;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO = 34;
+        public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 35;
+        public static final int PERMISSION_LOCATION = 41;
+        public static final int PERMISSION_READ_CONTACT = 51;
     }
 
     public static final class Sorting {
@@ -141,11 +174,13 @@ public class TAPDefaultConstant {
         public static final String UploadProgressLoading = "kTAPUploadProgressLading";
         public static final String UploadProgressFinish = "kTAPUploadProgressFinish";
         public static final String UploadImageData = "kTAPUploadImageData";
+        public static final String UploadFileData = "kTAPUploadFileData";
         public static final String UploadLocalID = "kTAPUploadLocalID";
         public static final String UploadFailed = "kTAPUploadFailed";
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
-        public static final String UploadRetried = "kTAPUploadRetried";
+//        public static final String UploadRetried = "kTAPUploadRetried";
         public static final String UploadCancelled = "kTAPUploadCancelled";
+        public static final String UploadProgress = "kTAPUploadProgress";
     }
 
     public static final class DownloadBroadcastEvent {
@@ -153,6 +188,16 @@ public class TAPDefaultConstant {
         public static final String DownloadLocalID = "kTAPDownloadLocalID";
         public static final String DownloadFinish = "kTAPDownloadFinish";
         public static final String DownloadFailed = "kTAPDownloadFailed";
+        public static final String DownloadFile = "kTAPDownloadFile";
+        public static final String CancelDownload = "kTAPCancelDownload";
+        public static final String OpenFile = "kTAPOpenFile";
+    }
+
+    public static final class LongPressBroadcastEvent {
+        public static final String LongPressChatBubble = "kTAPLongPressChatBubble";
+        public static final String LongPressLink = "kTAPLongPressLink";
+        public static final String LongPressEmail = "kTAPLongPressEmail";
+        public static final String LongPressPhone = "kTAPLongPressPhone";
     }
 
     public static final class TokenHeaderConst {
@@ -165,19 +210,15 @@ public class TAPDefaultConstant {
         public static final String K_LAST_DELETE_TIMESTAMP = "kTAPLastDeleteTimestamp";
     }
 
-    public static final class ImagePreview {
-        public static final String K_IMAGE_RES_CODE = "kTAPImageResultCode";
-        public static final String K_IMAGE_URLS = "kTAPImageUrls";
-    }
-
     public static final class MediaType {
         public static final String IMAGE_JPEG = "image/jpeg";
         public static final String IMAGE_PNG = "image/png";
         public static final String IMAGE_GIF = "image/gif";
     }
 
-    public static final class ImageDetail {
-        public static final String IMAGE_FILE_ID = "kImageLocalID";
+    public static final class QuoteAction {
+        public static final int REPLY = 1;
+        public static final int FORWARD = 2;
     }
 
     public static final class CustomHeaderKey {
@@ -186,10 +227,17 @@ public class TAPDefaultConstant {
         public static final String APP_SECRET = "kTAPApplicationSecret";
     }
 
+    public static final class Location {
+        public static final String LONGITUDE = "kTAPlongitude";
+        public static final String LATITUDE = "kTAPlatitude";
+        public static final String LOCATION_NAME = "kTAPlocationName";
+        public static final String POSTAL_CODE = "kTAPPostalCode";
+    }
+
     public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://hp.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://hp.moselo.com/";
-        public static final String BASE_WSS_PRODUCTION = "wss://hp.moselo.com/pigeon";
+        public static final String BASE_URL_API_PRODUCTION = "https://taptalk-production.moselo.com/api/v1/";
+        public static final String BASE_URL_SOCKET_PRODUCTION = "https://taptalk-production.moselo.com/";
+        public static final String BASE_WSS_PRODUCTION = "wss://taptalk-production.moselo.com/connect";
 
         public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com/api/v1/";
         public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com/";
@@ -224,16 +272,19 @@ public class TAPDefaultConstant {
     public static final String K_AUTH_TICKET = "kTAPAuthTicket";
     public static final String K_MY_USERNAME = "kTAPMyUsername";
     public static final String K_USER = "kTAPUser";
+    public static final String K_USER_ID = "kTAPUserID";
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
-    public static final String K_ROOM = "kTAPRoom";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
     public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
+    public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
+    public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
+    public static final String K_MEDIA_VOLUME = "kTAPMediaVolume";
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
-    public static final int NUM_OF_ITEM = 50;
+    public static final int MAX_ITEMS_PER_PAGE = 50;
     public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;
@@ -253,4 +304,10 @@ public class TAPDefaultConstant {
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
     public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
+    public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
+    public static final String K_COUNTRY_LIST = "kTAPCountryList";
+    public static final String K_COUNTRY_PICK = "kTAPCountryPick";
+    public static final String MY_COUNTRY_CODE = "kMyCountryCode";
+
+    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
 }

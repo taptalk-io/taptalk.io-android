@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,21 +60,29 @@ public class TAPMessageRepository {
 
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages) {
         new Thread(() -> {
+            messageEntities.removeAll(Collections.singleton(null)); // Remove null objects from list
+            if (messageEntities.isEmpty()) {
+                return;
+            }
             messageDao.insert(messageEntities);
-
-            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
+            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages) {
                 TAPChatManager.getInstance().clearSaveMessages();
-
+            }
         }).start();
     }
 
     public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
         new Thread(() -> {
-            messageDao.insert(messageEntities);
-            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages)
-                TAPChatManager.getInstance().clearSaveMessages();
-
-            listener.onInsertFinished();
+            messageEntities.removeAll(Collections.singleton(null)); // Remove null objects from list
+            if (messageEntities.isEmpty()) {
+                listener.onInsertFailed("Could not save messages, inserted list is either empty or null.");
+            } else {
+                messageDao.insert(messageEntities);
+                if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages) {
+                    TAPChatManager.getInstance().clearSaveMessages();
+                }
+                listener.onInsertFinished();
+            }
         }).start();
     }
 
@@ -131,6 +140,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getAllMessageThatNotRead(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messageEntities = messageDao.getAllMessageThatNotRead(myID, roomID);
+            listener.onSelectFinished(messageEntities);
+        }).start();
+    }
+
     public void searchAllChatRooms(String myID, String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String queryKeyword = '%' + keyword
@@ -143,6 +159,18 @@ public class TAPMessageRepository {
                 unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
             }
             listener.onSelectedRoomList(entities, unreadMap);
+        }).start();
+    }
+
+    public void getRoomMedias(Long lastTimestamp, String roomID, final TAPDatabaseListener listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> roomMedias;
+            if (lastTimestamp == 0L) {
+                roomMedias = messageDao.getRoomMedias(roomID);
+            } else {
+                roomMedias = messageDao.getRoomMedias(lastTimestamp, roomID);
+            }
+            listener.onSelectFinished(roomMedias);
         }).start();
     }
 

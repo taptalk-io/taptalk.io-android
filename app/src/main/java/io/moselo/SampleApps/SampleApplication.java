@@ -111,11 +111,6 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onUserProfileClicked(Activity activity, TAPUserModel userModel) {
-            TapTalk.openTapTalkUserProfile(activity, userModel);
-        }
-
-        @Override
         public void onProductLeftButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
             super.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
         }
@@ -134,13 +129,11 @@ public class SampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        TapTalk.init(this, "b43b48745dfa0e44k1",
-                "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4",
-                "android",
-                TAPListener);
-        TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.app_name));
-        TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
         if ("dev".equals(BuildConfig.BUILD_TYPE)) {
+            TapTalk.init(this, "b43b48745dfa0e44k1",
+                    "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4",
+                    "android",
+                    TAPListener);
             TapTalk.setTapTalkEnvironment(TapTalkEnvironmentDevelopment);
             Stetho.initialize(
                     Stetho.newInitializerBuilder(this)
@@ -148,6 +141,10 @@ public class SampleApplication extends Application {
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                             .build());
         } else if ("staging".equals(BuildConfig.BUILD_TYPE)) {
+            TapTalk.init(this, "b43b48745dfa0e44k1",
+                    "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4",
+                    "android",
+                    TAPListener);
             TapTalk.setTapTalkEnvironment(TapTalkEnvironmentStaging);
             Stetho.initialize(
                     Stetho.newInitializerBuilder(this)
@@ -155,7 +152,13 @@ public class SampleApplication extends Application {
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                             .build());
         } else {
+            TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
+                    "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
+                    "android",
+                    TAPListener);
             TapTalk.setTapTalkEnvironment(TapTalkEnvironmentProduction);
         }
+        TapTalk.saveAppInfo(R.drawable.tap_ic_taptalk_logo, getResources().getString(R.string.app_name));
+        TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
     }
 }

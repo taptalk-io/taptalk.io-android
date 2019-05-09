@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -17,6 +16,9 @@ public class TAPContactManager {
     private static final String TAG = TAPContactManager.class.getSimpleName();
     private static TAPContactManager instance;
     private HashMap<String, TAPUserModel> userDataMap;
+    private HashMap<String, TAPUserModel> userMapByPhoneNumber;
+    private String myCountryCode;
+    private boolean isContactSyncPermissionAsked;
 
     private TAPContactManager() {
         //loadAllUserDataFromDatabase();
@@ -42,7 +44,7 @@ public class TAPContactManager {
     }
 
     public void updateUserDataMap(TAPUserModel user) {
-        if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
+        if (!user.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
             // Add new user to map
             user.setIsContact(0);
             getUserDataMap().put(user.getUserID(), user);
@@ -59,7 +61,7 @@ public class TAPContactManager {
     }
 
     public void saveUserDataToDatabase(TAPUserModel userModel) {
-        if (!userModel.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+        if (!userModel.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
             TAPDataManager.getInstance().checkContactAndInsertToDatabase(userModel);
         }
     }
@@ -68,7 +70,7 @@ public class TAPContactManager {
         TAPDataManager.getInstance().getAllUserData(getAllUserDataListener);
     }
 
-    private void saveUserDataMapToDatabase() {
+    public void saveUserDataMapToDatabase() {
         TAPDataManager.getInstance().insertMyContactToDatabase(convertUserDataToList(userDataMap));
     }
 
@@ -99,4 +101,59 @@ public class TAPContactManager {
         }
     };
 
+    public HashMap<String, TAPUserModel> getUserMapByPhoneNumber() {
+        return null == userMapByPhoneNumber ? userMapByPhoneNumber = new HashMap<>() : userMapByPhoneNumber;
+    }
+
+    public void setUserMapByPhoneNumber(HashMap<String, TAPUserModel> userMapByPhoneNumber) {
+        this.userMapByPhoneNumber = userMapByPhoneNumber;
+    }
+
+    public void addUserMapByPhoneNumber(TAPUserModel userModel) {
+        if (null != userModel.getPhoneWithCode() && !"".equals(userModel.getPhoneWithCode()))
+            getUserMapByPhoneNumber().put(userModel.getPhoneWithCode(), userModel);
+    }
+
+    public boolean isUserPhoneNumberAlreadyExist(String phone) {
+        return getUserMapByPhoneNumber().containsKey(phone);
+    }
+
+    public String convertPhoneNumber(String phone) {
+        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(","))
+            return "";
+
+        String tempPhone = phone.replaceAll("[^\\d]", "");
+        String prefix = tempPhone.substring(0, getMyCountryCode().length());
+
+        if ('0' == tempPhone.charAt(0)) {
+            tempPhone = tempPhone.replaceFirst("0", getMyCountryCode());
+        } else if (!prefix.equals(getMyCountryCode())) {
+            Log.e(TAG, "isUserPhoneNumberAlreadyExist: " + prefix);
+            tempPhone = getMyCountryCode() + tempPhone;
+        }
+
+        Log.e(TAG, "convertPhoneNumber: " + tempPhone);
+        return tempPhone;
+    }
+
+    public String getMyCountryCode() {
+        return null == myCountryCode ? myCountryCode = "62" : myCountryCode;
+    }
+
+    public void setMyCountryCode(String myCountryCode) {
+        this.myCountryCode = myCountryCode;
+    }
+
+    public boolean isContactSyncPermissionAsked() {
+        return isContactSyncPermissionAsked;
+    }
+
+    public void setAndSaveContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
+        TAPDataManager.getInstance().saveContactSyncPermissionAsked(contactSyncPermissionAsked);
+        isContactSyncPermissionAsked = contactSyncPermissionAsked;
+    }
+
+    public void setContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
+        isContactSyncPermissionAsked = contactSyncPermissionAsked;
+    }
 }

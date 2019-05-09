@@ -15,14 +15,44 @@
 
     <attr name="SwipeBackLayoutStyle" format="reference"/>
 
+    <attr name="topLeftRadius" format="dimension" />
+    <attr name="topRightRadius" format="dimension" />
+    <attr name="bottomLeftRadius" format="dimension" />
+    <attr name="bottomRightRadius" format="dimension" />
+    <attr name="cornerRadius" format="dimension" />
+
     <declare-styleable name="TAPRoundedCornerImageView">
-        <attr name="topLeftRadius" format="dimension" />
-        <attr name="topRightRadius" format="dimension" />
-        <attr name="bottomLeftRadius" format="dimension" />
-        <attr name="bottomRightRadius" format="dimension" />
-        <attr name="cornerRadius" format="dimension" />
+        <attr name="topLeftRadius" />
+        <attr name="topRightRadius" />
+        <attr name="bottomLeftRadius" />
+        <attr name="bottomRightRadius" />
+        <attr name="cornerRadius" />
         <attr name="minWidth" format="dimension" />
         <attr name="minHeight" format="dimension" />
         <attr name="dimensionRatio" format="float" />
+    </declare-styleable>
+
+    <item name="tap_link_bettermovementmethod_highlight_background_span" type="id" />
+
+    <declare-styleable name="FastScrollRecyclerView">
+        <attr name="fastScrollThumbColor" format="reference|color" />
+        <attr name="fastScrollThumbInactiveColor" format="reference|color" />
+        <attr name="fastScrollTrackColor" format="reference|color" />
+        <attr name="fastScrollPopupBgColor" format="reference|color" />
+        <attr name="fastScrollPopupTextColor" format="reference|color" />
+        <attr name="fastScrollPopupTextSize" format="reference|dimension" />
+        <attr name="fastScrollPopupTextVerticalAlignmentMode" format="enum">
+            <enum name="text_bounds" value="0"/>
+            <enum name="font_metrics" value="1"/>
+        </attr>
+        <attr name="fastScrollPopupBackgroundSize" format="reference|dimension" />
+        <attr name="fastScrollPopupPosition" format="enum">
+            <enum name="adjacent" value="0"/>
+            <enum name="center" value="1"/>
+        </attr>
+        <attr name="fastScrollAutoHide" format="reference|boolean" />
+        <attr name="fastScrollAutoHideDelay" format="reference|integer" />
+        <attr name="fastScrollEnableThumbInactiveColor" format="reference|boolean" />
+        <attr name="fastScrollThumbEnabled" format="reference|boolean" />
     </declare-styleable>
 </resources>

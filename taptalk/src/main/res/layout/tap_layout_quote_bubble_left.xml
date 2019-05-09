@@ -7,13 +7,13 @@
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
     android:paddingEnd="8dp"
-    tools:background="@drawable/tap_bg_f3f3f3_rounded_4dp">
+    tools:background="@drawable/tap_bg_pumpkin_rounded_4dp">
 
     <View
         android:id="@+id/v_quote_decoration"
         android:layout_width="4dp"
         android:layout_height="0dp"
-        android:background="@drawable/tap_bg_easterpurple_rounded_4dp_0dp_4dp_0dp"
+        android:background="@drawable/tap_bg_lightorange_rounded_4dp_0dp_4dp_0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,31 +26,33 @@
         android:visibility="gone"
         app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/tap_img_chat_empty" />
 
     <TextView
         android:id="@+id/tv_quote_title"
-        style="@style/HomingPigeonReplySenderName"
+        style="@style/TapQuoteTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         android:ellipsize="end"
         android:maxLines="1"
-        app:layout_constraintVertical_chainStyle="packed"
+        android:textColor="@color/tap_white"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_quote_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/rciv_quote_image"
         app:layout_constraintTop_toTopOf="@id/v_quote_decoration"
+        app:layout_constraintVertical_chainStyle="packed"
         app:layout_goneMarginTop="0dp"
         tools:text="User Name" />
 
     <TextView
         android:id="@+id/tv_quote_content"
-        style="@style/HomingPigeonReplyBody"
+        style="@style/TapQuoteBody"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -59,6 +61,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:paddingStart="0dp"
+        android:textColor="@color/tap_white"
         android:paddingEnd="8dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/v_quote_decoration"

@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:fontFamily="@font/tap_font_latoregular"
+        android:fontFamily="@font/tap_font_pt_root_regular"
         android:letterSpacing="-0.02"
         android:textColor="@color/tap_grey_9b"
         android:textSize="15sp"

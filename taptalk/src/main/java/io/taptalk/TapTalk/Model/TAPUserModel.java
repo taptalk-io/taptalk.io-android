@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Model;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity(tableName = "MyContact")
+@Entity(tableName = "MyContact", indices = @Index("isContact"))
 public class TAPUserModel implements Parcelable {
 
     //userID itu userID dari Bisnis Server kalau xcUserID itu userID dari Chat Server
@@ -26,6 +27,7 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("username") private String username;
     @Nullable @JsonProperty("email") private String email;
     @Nullable @JsonProperty("phone") private String phoneNumber;
+    @Nullable @JsonProperty("phoneWithCode") private String phoneWithCode;
     @Embedded @Nullable @JsonProperty("userRole") private TAPUserRoleModel userRole;
     @Nullable @JsonProperty("lastLogin") private Long lastLogin;
     @Nullable @JsonProperty("lastActivity") private Long lastActivity;
@@ -33,9 +35,25 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("created") private Long created;
     @Nullable @JsonProperty("updated") private Long updated;
     @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
+    @Nullable @JsonProperty("isEmailVerified") private Boolean isEmailVerified;
+    @Nullable @JsonProperty("isPhoneVerified") private Boolean isPhoneVerified;
     @Nullable @JsonProperty("isRequestAccepted") private Boolean isRequestAccepted;
     @Nullable @JsonProperty("isOnline") private Boolean isOnline;
+    @Nullable @JsonProperty("countryID") private Integer countryID;
+    @Nullable @JsonProperty("countryCallingCode") private String countryCallingCode;
     @Nullable @JsonIgnore private Integer isContact;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TAPUserModel &&
+                this.getUserID().equals(((TAPUserModel) obj).getUserID()))
+            return true;
+        else if (obj instanceof TAPUserModel &&
+                !this.getUserID().equals(((TAPUserModel) obj).getUserID()))
+            return false;
+        else
+            return super.equals(obj);
+    }
 
     @Ignore
     public TAPUserModel(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
@@ -252,6 +270,51 @@ public class TAPUserModel implements Parcelable {
         isOnline = online;
     }
 
+    @Nullable
+    public String getPhoneWithCode() {
+        return phoneWithCode;
+    }
+
+    public void setPhoneWithCode(@Nullable String phoneWithCode) {
+        this.phoneWithCode = phoneWithCode;
+    }
+
+    @Nullable
+    public Boolean getEmailVerified() {
+        return isEmailVerified;
+    }
+
+    public void setEmailVerified(@Nullable Boolean emailVerified) {
+        isEmailVerified = emailVerified;
+    }
+
+    @Nullable
+    public Boolean getPhoneVerified() {
+        return isPhoneVerified;
+    }
+
+    public void setPhoneVerified(@Nullable Boolean phoneVerified) {
+        isPhoneVerified = phoneVerified;
+    }
+
+    @Nullable
+    public Integer getCountryID() {
+        return countryID;
+    }
+
+    public void setCountryID(@Nullable Integer countryID) {
+        this.countryID = countryID;
+    }
+
+    @Nullable
+    public String getCountryCallingCode() {
+        return countryCallingCode;
+    }
+
+    public void setCountryCallingCode(@Nullable String countryCallingCode) {
+        this.countryCallingCode = countryCallingCode;
+    }
+
     // Update when adding fields to model
     public void updateValue(TAPUserModel userModel) {
         this.userID = userModel.getUserID();
@@ -261,6 +324,7 @@ public class TAPUserModel implements Parcelable {
         this.username = userModel.getUsername();
         this.email = userModel.getEmail();
         this.phoneNumber = userModel.getPhoneNumber();
+        this.phoneWithCode = userModel.getPhoneWithCode();
         this.userRole = userModel.getUserRole();
         this.lastLogin = userModel.getLastLogin();
         this.lastActivity = userModel.getLastActivity();
@@ -269,11 +333,14 @@ public class TAPUserModel implements Parcelable {
         this.updated = userModel.getUpdated();
         this.isRequestPending = userModel.getRequestPending();
         this.isRequestAccepted = userModel.getRequestAccepted();
+        this.isEmailVerified = userModel.getEmailVerified();
+        this.isPhoneVerified = userModel.getPhoneVerified();
+        this.countryID = userModel.getCountryID();
+        this.countryCallingCode = userModel.getCountryCallingCode();
         if (null != this.isContact && this.isContact != 1) {
             this.isContact = userModel.isContact;
         }
     }
-
 
     @Override
     public int describeContents() {
@@ -289,6 +356,7 @@ public class TAPUserModel implements Parcelable {
         dest.writeString(this.username);
         dest.writeString(this.email);
         dest.writeString(this.phoneNumber);
+        dest.writeString(this.phoneWithCode);
         dest.writeParcelable(this.userRole, flags);
         dest.writeValue(this.lastLogin);
         dest.writeValue(this.lastActivity);
@@ -296,8 +364,12 @@ public class TAPUserModel implements Parcelable {
         dest.writeValue(this.created);
         dest.writeValue(this.updated);
         dest.writeValue(this.isRequestPending);
+        dest.writeValue(this.isEmailVerified);
+        dest.writeValue(this.isPhoneVerified);
         dest.writeValue(this.isRequestAccepted);
         dest.writeValue(this.isOnline);
+        dest.writeValue(this.countryID);
+        dest.writeString(this.countryCallingCode);
         dest.writeValue(this.isContact);
     }
 
@@ -309,6 +381,7 @@ public class TAPUserModel implements Parcelable {
         this.username = in.readString();
         this.email = in.readString();
         this.phoneNumber = in.readString();
+        this.phoneWithCode = in.readString();
         this.userRole = in.readParcelable(TAPUserRoleModel.class.getClassLoader());
         this.lastLogin = (Long) in.readValue(Long.class.getClassLoader());
         this.lastActivity = (Long) in.readValue(Long.class.getClassLoader());
@@ -316,8 +389,12 @@ public class TAPUserModel implements Parcelable {
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
         this.isRequestPending = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isEmailVerified = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isPhoneVerified = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isRequestAccepted = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isOnline = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.countryID = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.countryCallingCode = in.readString();
         this.isContact = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 

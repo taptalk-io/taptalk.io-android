@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -21,19 +22,27 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -42,17 +51,24 @@ import okhttp3.ResponseBody;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASKED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
@@ -82,20 +98,28 @@ public class TAPDataManager {
      * =========================================================================================== *
      */
 
-    private void saveBooleanPreference(boolean bool, String key) {
+    private void saveBooleanPreference(String key, boolean bool) {
         Hawk.put(key, bool);
     }
 
-    private void saveStringPreference(String string, String key) {
+    private void saveStringPreference(String key, String string) {
         Hawk.put(key, string);
     }
 
-    private void saveLongTimestampPreference(Long timestamp, String key) {
+    private void saveFloatPreference(String key, Float flt) {
+        Hawk.put(key, flt);
+    }
+
+    private void saveLongTimestampPreference(String key, Long timestamp) {
         Hawk.put(key, timestamp);
     }
 
     private String getStringPreference(String key) {
         return Hawk.get(key, "");
+    }
+
+    private Float getFloatPreference(String key) {
+        return Hawk.get(key, null);
     }
 
     private Long getLongTimestampPreference(String key) {
@@ -129,6 +153,40 @@ public class TAPDataManager {
         removeWriteStoragePermissionRequested();
         removeLastDeleteTimestamp();
         removeNotificationMap();
+        removeLastCallCountryTimestamp();
+        removeCountryList();
+        removeMyCountryCode();
+        removeContactSyncPermissionAsked();
+    }
+
+    /**
+     * COUNTRY LIST
+     */
+    public ArrayList<TAPCountryListItem> getCountryList() {
+        return Hawk.get(K_COUNTRY_LIST, new ArrayList<>());
+    }
+
+    public void saveCountryList(ArrayList<TAPCountryListItem> countries) {
+        Hawk.put(K_COUNTRY_LIST, countries);
+    }
+
+    public void removeCountryList() {
+        Hawk.delete(K_COUNTRY_LIST);
+    }
+
+    /**
+     * LAST GET COUNTRY TIMESTAMP
+     */
+    public long getLastCallCountryTimestamp() {
+        return Hawk.get(LAST_CALL_COUNTRY_TIMESTAMP, 0L);
+    }
+
+    public void saveLastCallCountryTimestamp(long timestamp) {
+        Hawk.put(LAST_CALL_COUNTRY_TIMESTAMP, timestamp);
+    }
+
+    public void removeLastCallCountryTimestamp() {
+        Hawk.delete(LAST_CALL_COUNTRY_TIMESTAMP);
     }
 
     /**
@@ -166,7 +224,7 @@ public class TAPDataManager {
     }
 
     public void saveAuthTicket(String authTicket) {
-        saveStringPreference(authTicket, K_AUTH_TICKET);
+        saveStringPreference(K_AUTH_TICKET, authTicket);
     }
 
     public void removeAuthTicket() {
@@ -186,11 +244,11 @@ public class TAPDataManager {
     }
 
     public void saveAccessToken(String accessToken) {
-        saveStringPreference(accessToken, K_ACCESS_TOKEN);
+        saveStringPreference(K_ACCESS_TOKEN, accessToken);
     }
 
     public void saveAccessTokenExpiry(Long accessTokenExpiry) {
-        saveLongTimestampPreference(accessTokenExpiry, K_ACCESS_TOKEN_EXPIRY);
+        saveLongTimestampPreference(K_ACCESS_TOKEN_EXPIRY, accessTokenExpiry);
     }
 
     public void removeAccessToken() {
@@ -210,11 +268,11 @@ public class TAPDataManager {
     }
 
     public void saveRefreshToken(String refreshToken) {
-        saveStringPreference(refreshToken, K_REFRESH_TOKEN);
+        saveStringPreference(K_REFRESH_TOKEN, refreshToken);
     }
 
     public void saveRefreshTokenExpiry(Long refreshTokenExpiry) {
-        saveLongTimestampPreference(refreshTokenExpiry, K_REFRESH_TOKEN_EXPIRY);
+        saveLongTimestampPreference(K_REFRESH_TOKEN_EXPIRY, refreshTokenExpiry);
     }
 
     public void removeRefreshToken() {
@@ -274,11 +332,45 @@ public class TAPDataManager {
     }
 
     /**
+     * CONTACT SYNC PERMISSION
+     */
+
+    public boolean isContactSyncPermissionAsked() {
+        return Hawk.get(IS_PERMISSION_SYNC_ASKED, false);
+    }
+
+    public void saveContactSyncPermissionAsked(boolean userSyncPermissionAsked) {
+        Hawk.put(IS_PERMISSION_SYNC_ASKED, userSyncPermissionAsked);
+    }
+
+    public void removeContactSyncPermissionAsked() {
+        Hawk.delete(IS_PERMISSION_SYNC_ASKED);
+    }
+
+
+    /**
+     * MY COUNTRY CODE
+     */
+    public String getMyCountryCode() {
+        return getStringPreference(MY_COUNTRY_CODE);
+    }
+
+    public void saveMyCountryCode(String myCountryCode) {
+        saveStringPreference(MY_COUNTRY_CODE, myCountryCode);
+        TAPContactManager.getInstance().setMyCountryCode(myCountryCode);
+    }
+
+    public void removeMyCountryCode() {
+        Hawk.delete(MY_COUNTRY_CODE);
+    }
+
+
+    /**
      * ROOM LIST FIRST SETUP
      */
 
     public void setRoomListSetupFinished() {
-        saveLongTimestampPreference(System.currentTimeMillis(), K_IS_ROOM_LIST_SETUP_FINISHED);
+        saveLongTimestampPreference(K_IS_ROOM_LIST_SETUP_FINISHED, System.currentTimeMillis());
     }
 
     public Boolean isRoomListSetupFinished() {
@@ -298,11 +390,45 @@ public class TAPDataManager {
     }
 
     public void setWriteStoragePermissionRequested(boolean isRequested) {
-        saveBooleanPreference(isRequested, K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
+        saveBooleanPreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED, isRequested);
     }
 
     public void removeWriteStoragePermissionRequested() {
         removePreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
+    }
+
+    /**
+     * FILE PROVIDER PATH
+     */
+    public HashMap<String, String> getFileProviderPathMap() {
+        return Hawk.get(K_FILE_PATH_MAP, null);
+    }
+
+    public void saveFileProviderPathMap(HashMap<String, String> fileProviderPathMap) {
+        Hawk.put(K_FILE_PATH_MAP, fileProviderPathMap);
+    }
+
+    /**
+     * FILE URI CACHE
+     */
+    public HashMap<String, HashMap<String, String>> getFileMessageUriMap() {
+        return Hawk.get(K_FILE_URI_MAP, null);
+    }
+
+    public void saveFileMessageUriMap(HashMap<String, HashMap<String, String>> fileUriMap) {
+        Hawk.put(K_FILE_URI_MAP, fileUriMap);
+    }
+
+    /**
+     * LATEST SETTING FOR MEDIA VOLUME
+     */
+    public void saveMediaVolumePreference(float volume) {
+        saveFloatPreference(K_MEDIA_VOLUME, volume);
+    }
+
+    public float getMediaVolumePreference() {
+        Float volume = getFloatPreference(K_MEDIA_VOLUME);
+        return volume == null ? 1f : volume;
     }
 
     // TODO: 14/09/18 TEMP
@@ -323,7 +449,7 @@ public class TAPDataManager {
      * Firebase Token
      */
     public void saveFirebaseToken(String firebaseToken) {
-        saveStringPreference(firebaseToken, K_FIREBASE_TOKEN);
+        saveStringPreference(K_FIREBASE_TOKEN, firebaseToken);
     }
 
     public String getFirebaseToken() {
@@ -352,7 +478,7 @@ public class TAPDataManager {
      * Old Data (Auto Clean) Last Delete Timestamp
      */
     public void saveLastDeleteTimestamp(Long lastDeleteTimestamp) {
-        saveLongTimestampPreference(lastDeleteTimestamp, K_LAST_DELETE_TIMESTAMP);
+        saveLongTimestampPreference(K_LAST_DELETE_TIMESTAMP, lastDeleteTimestamp);
     }
 
     public Long getLastDeleteTimestamp() {
@@ -396,7 +522,7 @@ public class TAPDataManager {
      * API HEADER
      */
     public void saveApplicationID(String applicationID) {
-        saveStringPreference(applicationID, APP_ID);
+        saveStringPreference(APP_ID, applicationID);
     }
 
     public String getApplicationID() {
@@ -412,7 +538,7 @@ public class TAPDataManager {
     }
 
     public void saveApplicationSecret(String applicationSecret) {
-        saveStringPreference(applicationSecret, APP_SECRET);
+        saveStringPreference(APP_SECRET, applicationSecret);
     }
 
     public String getApplicationSecret() {
@@ -428,7 +554,7 @@ public class TAPDataManager {
     }
 
     public void saveUserAgent(String userAgent) {
-        saveStringPreference(userAgent, USER_AGENT);
+        saveStringPreference(USER_AGENT, userAgent);
     }
 
     public String getUserAgent() {
@@ -514,6 +640,13 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
+    public void getAllMessageThatNotRead(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null == getActiveUser())
+            return;
+
+        TAPDatabaseManager.getInstance().getAllMessageThatNotRead(getActiveUser().getUserID(), roomID, listener);
+    }
+
     public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
@@ -533,6 +666,10 @@ public class TAPDataManager {
             return;
         }
         TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
+    }
+
+    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -664,6 +801,14 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
+    public void requestOTPLogin(int countryID, String phone, TapDefaultDataView<TAPLoginOTPResponse> view) {
+        TAPApiManager.getInstance().requestOTPLogin("phone", countryID, phone, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, TapDefaultDataView<TAPLoginOTPVerifyResponse> view) {
+        TAPApiManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultSubscriber<>(view));
+    }
+
     public void refreshAccessToken(TapDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance().refreshAccessToken(new TAPDefaultSubscriber<>(view));
     }
@@ -709,8 +854,20 @@ public class TAPDataManager {
         TAPApiManager.getInstance().addContact(userID, new TAPDefaultSubscriber<>(view));
     }
 
+    public void addContactByPhone(List<String> phones, TapDefaultDataView<TAPAddContactByPhoneResponse> view) {
+        TAPApiManager.getInstance().addContactByPhone(phones, new TAPDefaultSubscriber<>(view));
+    }
+
     public void removeContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().removeContact(userID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getCountryList(TapDefaultDataView<TAPCountryListResponse> view) {
+        TAPApiManager.getInstance().getCountryList(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void register(String fullName, String username, Integer countryID, String phone, String email, String password, TapDefaultDataView<TAPRegisterResponse> view) {
+        TAPApiManager.getInstance().register(fullName, username, countryID, phone, email, password, new TAPDefaultSubscriber<>(view));
     }
 
     // Search User
@@ -732,13 +889,44 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getMultipleUserByID(ids, new TAPDefaultSubscriber<>(view));
     }
 
-    // Upload Image
+    public void cancelUserSearchApiCall() {
+        if (null != searchUserSubscriber) {
+            searchUserSubscriber.unsubscribe();
+        }
+    }
+
+    // Check Username
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPCheckUsernameResponse>, TapDefaultDataView<TAPCheckUsernameResponse>, TAPCheckUsernameResponse> checkUsernameSubscriber;
+
+    public void checkUsernameExists(String username, TapDefaultDataView<TAPCheckUsernameResponse> view) {
+        TAPApiManager.getInstance().checkUsernameExists(username, checkUsernameSubscriber = new TAPDefaultSubscriber<>(view));
+    }
+
+    public void cancelCheckUsernameApiCall() {
+        if (null != checkUsernameSubscriber) {
+            checkUsernameSubscriber.unsubscribe();
+        }
+    }
+
+    // Upload File
     private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>> uploadSubscribers;
 
     public void uploadImage(String localID, File imageFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             TapDefaultDataView<TAPUploadFileResponse> view) {
         TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
+    }
+
+    public void uploadVideo(String localID, File videoFile, String roomID, String caption, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadVideo(videoFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
+    }
+
+    public void uploadFile(String localID, File file, String roomID, String mimeType,
+                           ProgressRequestBody.UploadCallbacks uploadCallback,
+                           TapDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance().uploadFile(file, roomID, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 
     private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>
@@ -765,15 +953,47 @@ public class TAPDataManager {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
-    // File Download
-    public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, new TAPBaseSubscriber<>(view));
+    public void uploadProfilePicture(File imageFile, String mimeType,
+                                     ProgressRequestBody.UploadCallbacks uploadCallback,
+                                     TapDefaultDataView<TAPGetUserResponse> view) {
+        cancelUploadProfilePicture();
+        uploadProfilePictureSubscriber = new TAPDefaultSubscriber<>(view);
+        TAPApiManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallback, uploadProfilePictureSubscriber);
     }
 
-    // FIXME: 25 October 2018
-    public void cancelUserSearchApiCall() {
-        if (null != searchUserSubscriber) {
-            searchUserSubscriber.unsubscribe();
+    public void cancelUploadProfilePicture() {
+        if (null != uploadProfilePictureSubscriber) {
+            uploadProfilePictureSubscriber.unsubscribe();
         }
+    }
+
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TapDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> uploadProfilePictureSubscriber;
+
+    // File Download
+    private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
+
+    public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
+        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, getNewDownloadSubscriber(localID, view));
+    }
+
+    public void cancelFileDownload(String localID) {
+        TAPBaseSubscriber downloadSubscriber = getDownloadSubscribers().get(localID);
+        if (null != downloadSubscriber) {
+            downloadSubscriber.unsubscribe();
+            removeDownloadSubscriber(localID);
+        }
+    }
+
+    public void removeDownloadSubscriber(String localID) {
+        getDownloadSubscribers().remove(localID);
+    }
+
+    private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> getDownloadSubscribers() {
+        return null == downloadSubscribers ? downloadSubscribers = new HashMap<>() : downloadSubscribers;
+    }
+
+    private TAPBaseSubscriber<TapDefaultDataView<ResponseBody>> getNewDownloadSubscriber(String localID, TapDefaultDataView<ResponseBody> view) {
+        getDownloadSubscribers().put(localID, new TAPBaseSubscriber<>(view));
+        return getDownloadSubscribers().get(localID);
     }
 }

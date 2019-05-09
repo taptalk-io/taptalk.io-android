@@ -35,10 +35,11 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel quotedMessage;
+    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage;
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
+    private Integer quoteAction;
     private long lastTimestamp = 0;
     private int numUsers, containerAnimationState;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished;
@@ -215,12 +216,39 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public TAPMessageModel getQuotedMessage() {
-        return quotedMessage;
+        return null == quotedMessage ? TAPChatManager.getInstance().getQuotedMessage() : quotedMessage;
     }
 
-    public void setQuotedMessage(TAPMessageModel quotedMessage) {
+    public Integer getQuoteAction() {
+        return null == quoteAction ? null == TAPChatManager.getInstance().getQuoteAction() ? -1 : TAPChatManager.getInstance().getQuoteAction() : quoteAction;
+    }
+
+    public void setQuotedMessage(TAPMessageModel quotedMessage, int quoteAction) {
         this.quotedMessage = quotedMessage;
-        TAPChatManager.getInstance().setQuotedMessage(quotedMessage);
+        this.quoteAction = quoteAction;
+        TAPChatManager.getInstance().setQuotedMessage(quotedMessage, quoteAction);
+    }
+
+    /**
+     * Used to save pending download message when requesting storage permission
+     */
+    public TAPMessageModel getPendingDownloadMessage() {
+        return pendingDownloadMessage;
+    }
+
+    public void setPendingDownloadMessage(TAPMessageModel pendingDownloadMessage) {
+        this.pendingDownloadMessage = pendingDownloadMessage;
+    }
+
+    /**
+     * Used to save file-type message when user opens file from chat bubble
+     */
+    public TAPMessageModel getOpenedFileMessage() {
+        return openedFileMessage;
+    }
+
+    public void setOpenedFileMessage(TAPMessageModel openedFileMessage) {
+        this.openedFileMessage = openedFileMessage;
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {

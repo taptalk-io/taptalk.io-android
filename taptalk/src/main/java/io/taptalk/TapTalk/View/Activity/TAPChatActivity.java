@@ -5,10 +5,12 @@ import android.animation.LayoutTransition;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -24,7 +26,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -40,6 +41,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,50 +79,81 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImagePreviewModel;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_RES_CODE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ImagePreview.K_IMAGE_URLS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.NUM_OF_ITEM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_GALLERY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_PREVIEW;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFileData;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadRetried;
+import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
 
 public class TAPChatActivity extends TAPBaseChatActivity {
 
@@ -146,7 +179,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPRoundedCornerImageView rcivQuoteImage;
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvQuoteTitle,
             tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
-    private View vStatusBadge, vQuoteDecoration;
+    private View vRoomImage, vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
 
     // RecyclerView
@@ -204,7 +237,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         super.onResume();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
-        showQuoteLayout(TAPChatManager.getInstance().getQuotedMessage(), false);
+        showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
         callApiGetUserByUserID();
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
             callApiAfter();
@@ -245,29 +278,63 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null == vm.getCameraImageUri()) {
                             return;
                         }
-                        ArrayList<TAPImagePreviewModel> imageCameraUris = new ArrayList<>();
-                        imageCameraUris.add(TAPImagePreviewModel.Builder(vm.getCameraImageUri(), true));
-                        openImagePreviewPage(imageCameraUris);
+                        ArrayList<TAPMediaPreviewModel> imageCameraUris = new ArrayList<>();
+                        imageCameraUris.add(TAPMediaPreviewModel.Builder(vm.getCameraImageUri(), TYPE_IMAGE, true));
+                        openMediaPreviewPage(imageCameraUris);
                         break;
-                    case SEND_IMAGE_FROM_GALLERY:
+                    case SEND_MEDIA_FROM_GALLERY:
                         if (null == intent) {
                             return;
                         }
-                        ArrayList<TAPImagePreviewModel> imageGalleryUris = new ArrayList<>();
+                        ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
                         ClipData clipData = intent.getClipData();
                         if (null != clipData) {
-                            //ini buat lebih dari 1 image selection
-                            TAPUtils.getInstance().getUrisFromClipData(clipData, imageGalleryUris, true);
+                            // Multiple media selection
+                            galleryMediaPreviews = TAPUtils.getInstance().getPreviewsFromClipData(TAPChatActivity.this, clipData, true);
                         } else {
-                            //ini buat 1 image selection
-                            imageGalleryUris.add(TAPImagePreviewModel.Builder(intent.getData(), true));
+                            // Single media selection
+                            Uri uri = intent.getData();
+                            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TAPChatActivity.this, uri), true));
                         }
-                        openImagePreviewPage(imageGalleryUris);
+                        openMediaPreviewPage(galleryMediaPreviews);
                         break;
-                    case SEND_IMAGE_FROM_PREVIEW:
-                        ArrayList<TAPImagePreviewModel> images = intent.getParcelableArrayListExtra(K_IMAGE_RES_CODE);
-                        if (null != images && 0 < images.size()) {
-                            TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, vm.getRoom().getRoomID(), images);
+                    case SEND_MEDIA_FROM_PREVIEW:
+                        ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
+                        if (null != medias && 0 < medias.size()) {
+                            TAPChatManager.getInstance().sendImageOrVideoMessage(TapTalk.appContext, vm.getRoom(), medias);
+                        }
+                        break;
+                    case FORWARD_MESSAGE:
+                        TAPRoomModel room = intent.getParcelableExtra(ROOM);
+                        if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
+                            // Show message in composer
+                            showQuoteLayout(intent.getParcelableExtra(MESSAGE), FORWARD, false);
+                        } else {
+                            // Open selected chat room
+                            TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
+                            TAPUtils.getInstance().startChatActivity(TAPChatActivity.this, room);
+                            finish();
+                        }
+                        break;
+                    case PICK_LOCATION:
+                        String address = intent.getStringExtra(LOCATION_NAME) == null ? "" : intent.getStringExtra(LOCATION_NAME);
+                        Double latitude = intent.getDoubleExtra(LATITUDE, 0.0);
+                        Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);
+                        TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
+                        break;
+                    case SEND_FILE:
+                        File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
+                        if (null != tempFile) {
+                            if (TAPFileUploadManager.getInstance().isSizeAllowedForUpload(tempFile.length()))
+                                TAPChatManager.getInstance().sendFileMessage(TAPChatActivity.this, tempFile);
+                            else {
+                                new TapTalkDialog.Builder(TAPChatActivity.this)
+                                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                                        .setTitle("Sorry")
+                                        .setMessage("Maximum file size is " + TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().maxUploadSize) + ".")
+                                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                        .show();
+                            }
                         }
                         break;
                 }
@@ -283,12 +350,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+                    TAPUtils.getInstance().pickMediaFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
                     break;
-                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK:
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE:
                     if (null != messageAdapter) {
                         messageAdapter.notifyDataSetChanged();
                     }
+                    break;
+                case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
+                    TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
+                    break;
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE:
+                    startFileDownload(vm.getPendingDownloadMessage());
+                    break;
+                case PERMISSION_LOCATION:
+                    TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
                     break;
             }
         }
@@ -321,7 +397,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .setCancelable(false)
                     .setPrimaryButtonListener(v -> {
-                                ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE_TO_DISK);
+                                ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
                                 TAPDataManager.getInstance().setWriteStoragePermissionRequested(true);
                             }
                     )
@@ -361,6 +437,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
         etChat = (EditText) findViewById(R.id.et_chat);
+        vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
@@ -369,10 +446,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private boolean initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPChatViewModel.class);
         if (null == vm.getRoom()) {
-            vm.setRoom(getIntent().getParcelableExtra(K_ROOM));
+            vm.setRoom(getIntent().getParcelableExtra(ROOM));
         }
         if (null == vm.getMyUserModel()) {
-            vm.setMyUserModel(TAPDataManager.getInstance().getActiveUser());
+            vm.setMyUserModel(TAPChatManager.getInstance().getActiveUser());
         }
         if (null == vm.getOtherUserModel()) {
             vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
@@ -420,9 +497,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             showTypingIndicator();
         }
 
-        // TODO: 24 September 2018 CALL ONLINE STATUS API
-        //showUserOffline();
-
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(glide, chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
@@ -434,6 +508,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         // FIXME: 9 November 2018 IMAGES CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0);
+        rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
@@ -458,13 +533,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         // TODO: 1 February 2019 UPDATE WELCOME MESSAGE
-        if (null != vm.getOtherUserModel().getUserRole() && vm.getOtherUserModel().getUserRole().getCode().equals("expert")) {
-            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an Expert."));
-            tvProfileDescription.setText("Hi, there! If you are looking for creative gifts for someone special, please check his/her services!");
-        } else {
-            tvChatEmptyGuide.setText("Are you looking for creative gifts?");
-            tvProfileDescription.setText("Discuss with your friend and discover more about the creative gift in our lists.");
-        }
+        tvChatEmptyGuide.setText(Html.fromHtml("Start a conversation with " + "<b><font color='#191919'>" + vm.getRoom().getRoomName() + "</font></b>"));
+        tvProfileDescription.setText("Say hi to " + vm.getRoom().getRoomName() + " and start a conversation");
 
         //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
@@ -508,7 +578,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         sblChat.setSwipeInterface(swipeInterface);
 
-        civRoomImage.setOnClickListener(v -> openRoomProfile());
+        vRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> closeActivity());
         ivButtonCancelReply.setOnClickListener(v -> hideQuoteLayout());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
@@ -540,9 +610,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void registerBroadcastManager() {
-        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading
-                , UploadProgressFinish, UploadFailed, UploadCancelled, UploadRetried,
-                DownloadProgressLoading, DownloadFinish, DownloadFailed);
+        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
+                UploadProgressFinish, UploadFailed, UploadCancelled,
+                DownloadProgressLoading, DownloadFinish, DownloadFailed, DownloadFile, OpenFile,
+                CancelDownload, LongPressChatBubble, LongPressEmail, LongPressLink, LongPressPhone);
     }
 
     private void closeActivity() {
@@ -562,7 +633,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
 //        if (TapTalk.isOpenDefaultProfileEnabled) {
-//            Intent intent = new Intent(this, TAPProfileActivity.class);
+//            Intent intent = new Intent(this, TAPChatProfileActivity.class);
 //            intent.putExtra(K_ROOM, vm.getRoom());
 //            startActivity(intent);
 //            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
@@ -617,6 +688,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             TAPChatManager.getInstance().sendTextMessage(message);
             //scroll to Bottom
             rvMessageList.scrollToPosition(0);
+        } else {
+            TAPChatManager.getInstance().checkAndSendForwardedMessage(vm.getRoom());
+            ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
         }
     }
 
@@ -638,7 +712,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
             //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
-            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
+            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
                 if (vm.getMessagePointer().containsKey(newID) &&
@@ -655,7 +729,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                 } else if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
-                    Log.e(TAG, "rio:2 " + newID);
                     messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
                     vm.addMessagePointer(newMessage);
@@ -664,7 +737,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     messageAdapter.addMessage(newMessage);
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
-                    Log.e(TAG, "updateUnreadCount: 1");
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -688,7 +760,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
             });
             //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
-            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPDataManager
+            boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
                 messageAdapter.addMessage(newMessage);
@@ -699,7 +771,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 } else {
                     // Message from other people is received when recycler is scrolled up
                     vm.addUnreadMessage(newMessage);
-                    Log.e(TAG, "updateUnreadCount: 2");
                     updateUnreadCount();
                 }
                 updateMessageDecoration();
@@ -710,9 +781,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void updateMessageFromSocket(TAPMessageModel message) {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
-            Log.e(TAG, "updateMessageFromSocket: " + position + " " + message.getLocalID() + " " + message.getHidden());
             if (-1 != position) {
-                Log.e(TAG, "rio:1 " + message.getLocalID());
                 vm.updateMessagePointer(message);
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
@@ -760,33 +829,51 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    private void showQuoteLayout(@Nullable TAPMessageModel message, boolean showKeyboard) {
+    private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
         if (null == message) {
             return;
         }
-        vm.setQuotedMessage(message);
+        vm.setQuotedMessage(message, quoteAction);
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
-            tvQuoteTitle.setText(message.getUser().getName());
-            tvQuoteContent.setText(message.getBody());
             // Add other quotable message type here
-            if (message.getType() == TYPE_IMAGE && null != message.getData()) {
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
                 rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID)));
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteTitle.setText(message.getUser().getName());
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+            } else if (message.getType() == TYPE_FILE && null != message.getData()) {
+                // Show file quote
+                vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setImageDrawable(getDrawable(R.drawable.tap_ic_documents_white));
+                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_circle_bluepurple));
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));
+                tvQuoteContent.setText(TAPUtils.getInstance().getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
             } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
                 // Unknown message type
                 glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteTitle.setText(message.getUser().getName());
+                tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
             } else {
                 // Show text quote
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteTitle.setText(message.getUser().getName());
+                tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
             }
             if (showKeyboard) {
@@ -796,7 +883,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideQuoteLayout() {
-        vm.setQuotedMessage(null);
+        vm.setQuotedMessage(null, 0);
         runOnUiThread(() -> clQuote.setVisibility(View.GONE));
     }
 
@@ -804,7 +891,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.INVISIBLE);
         vm.clearUnreadMessages();
-        Log.e(TAG, "updateUnreadCount: 3");
         updateUnreadCount();
     }
 
@@ -924,10 +1010,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    private void openImagePreviewPage(ArrayList<TAPImagePreviewModel> imageUris) {
-        Intent intent = new Intent(TAPChatActivity.this, TAPImagePreviewActivity.class);
-        intent.putExtra(K_IMAGE_URLS, imageUris);
-        startActivityForResult(intent, SEND_IMAGE_FROM_PREVIEW);
+    private void openMediaPreviewPage(ArrayList<TAPMediaPreviewModel> mediaPreviews) {
+        Intent intent = new Intent(TAPChatActivity.this, TAPMediaPreviewActivity.class);
+        intent.putExtra(MEDIA_PREVIEWS, mediaPreviews);
+        startActivityForResult(intent, SEND_MEDIA_FROM_PREVIEW);
     }
 
     //ini Fungsi buat manggil Api Before
@@ -1121,36 +1207,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onSendTextMessage(TAPMessageModel message) {
+        public void onSendMessage(TAPMessageModel message) {
             addNewMessage(message);
             hideQuoteLayout();
         }
 
         @Override
-        public void onSendImageMessage(TAPMessageModel message) {
-            // TODO: 5 November 2018 TESTING IMAGE MESSAGE STATUS
-            message.setNeedAnimateSend(true);
-            message.setSending(false);
-            addNewMessage(message);
-        }
-
-        @Override
         public void onReplyMessage(TAPMessageModel message) {
-            showQuoteLayout(message, true);
+            showQuoteLayout(message, REPLY, true);
             TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
         }
 
         @Override
         public void onRetrySendMessage(TAPMessageModel message) {
             vm.delete(message.getLocalID());
-            switch (message.getType()) {
-                case TAPDefaultConstant.MessageType.TYPE_TEXT:
-                    TAPChatManager.getInstance().sendTextMessage(message.getBody());
-                    break;
-                case TYPE_IMAGE:
-                    // TODO: 7 January 2019 RESEND IMAGE MESSAGE
-//                    TAPChatManager.getInstance().showDummyImageMessage(message.getBody());
-                    break;
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO || message.getType() == TYPE_FILE) && null != message.getData() &&
+                    (null == message.getData().get(FILE_ID) || ((String) message.getData().get(FILE_ID)).isEmpty())) {
+                // Re-upload image/video
+                TAPChatManager.getInstance().retryUpload(TAPChatActivity.this, message);
+            } else {
+                // Resend message
+                TAPChatManager.getInstance().resendMessage(message);
             }
         }
 
@@ -1167,7 +1244,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             message.setIsRead(true);
             vm.removeUnreadMessage(message.getLocalID());
-            Log.e(TAG, "updateUnreadCount: 4");
             updateUnreadCount();
         }
 
@@ -1223,6 +1299,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 return;
             }
             String localID;
+            Uri fileUri;
             switch (action) {
                 case UploadProgressLoading:
                     localID = intent.getStringExtra(UploadLocalID);
@@ -1232,10 +1309,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     break;
                 case UploadProgressFinish:
                     localID = intent.getStringExtra(UploadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID) &&
+                    if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadImageData) &&
                             intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
                         TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
                         messageModel.setData((HashMap<String, Object>) intent.getSerializableExtra(UploadImageData));
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
+                    } else if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadFileData) &&
+                            intent.getSerializableExtra(UploadFileData) instanceof HashMap) {
+                        TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                        messageModel.putData((HashMap<String, Object>) intent.getSerializableExtra(UploadFileData));
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
                     }
                     break;
@@ -1263,28 +1345,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.removeMessageAt(itemPos);
                     }
                     break;
-                case UploadRetried:
-                    localID = intent.getStringExtra(UploadLocalID);
-                    if (vm.getMessagePointer().containsKey(localID)) {
-                        TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
-                        TAPDataManager.getInstance().updateFailedMessageToSending(localID);
-                        // Set Start Point for Progress
-                        TAPFileUploadManager.getInstance().addUploadProgressMap(failedMessageModel.getLocalID(), 0);
-                        failedMessageModel.setFailedSend(false);
-                        failedMessageModel.setSending(true);
-                        new Thread(() -> {
-                            TAPMessageModel imageMessageRetry = failedMessageModel.copyMessageModel();
-                            TAPChatManager.getInstance().sendImageMessage(TAPChatActivity.this, vm.getRoom().getRoomID(), imageMessageRetry);
-                        }).start();
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
-                    }
-                    break;
                 case DownloadProgressLoading:
                 case DownloadFinish:
                     localID = intent.getStringExtra(DownloadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
+                    String fileID = intent.getStringExtra(FILE_ID);
+                    fileUri = intent.getParcelableExtra(FILE_URI);
+                    if (null != fileID && null != fileUri) {
+                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), fileID, fileUri);
+                    }
+                    break;
                 case DownloadFailed:
                     localID = intent.getStringExtra(DownloadLocalID);
                     TAPFileDownloadManager.getInstance().addFailedDownload(localID);
@@ -1292,9 +1364,92 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
                     break;
+                case DownloadFile:
+                    startFileDownload(intent.getParcelableExtra(MESSAGE));
+                    break;
+                case CancelDownload:
+                    localID = intent.getStringExtra(DownloadLocalID);
+                    TAPFileDownloadManager.getInstance().cancelFileDownload(localID);
+                    if (vm.getMessagePointer().containsKey(localID)) {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    }
+                    break;
+                case OpenFile:
+                    TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
+                    fileUri = intent.getParcelableExtra(FILE_URI);
+                    vm.setOpenedFileMessage(message);
+                    if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+                        if (!TAPUtils.getInstance().openFile(TAPChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
+                            showDownloadFileDialog();
+                        }
+                    } else {
+                        showDownloadFileDialog();
+                    }
+                    break;
+                case LongPressChatBubble:
+                    if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
+                        chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
+                case LongPressLink:
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet linkBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(LINK_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        linkBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
+                case LongPressEmail:
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet emailBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(EMAIL_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        emailBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
+                case LongPressPhone:
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        phoneBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                    }
+                    break;
             }
         }
     };
+
+    private void startFileDownload(TAPMessageModel message) {
+        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request storage permission
+            vm.setPendingDownloadMessage(message);
+            ActivityCompat.requestPermissions(
+                    TAPChatActivity.this, new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE);
+        } else {
+            // Download file
+            vm.setPendingDownloadMessage(null);
+            TAPFileDownloadManager.getInstance().downloadFile(TAPChatActivity.this, message);
+        }
+    }
+
+    private void showDownloadFileDialog() {
+        // Prompt download if file does not exist
+        if (null == vm.getOpenedFileMessage()) {
+            return;
+        }
+        TAPFileDownloadManager.getInstance().removeFileMessageUri(vm.getRoom().getRoomID(), vm.getOpenedFileMessage().getLocalID());
+        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getOpenedFileMessage()));
+        new TapTalkDialog.Builder(TAPChatActivity.this)
+                .setTitle(getString(R.string.tap_error_could_not_find_file))
+                .setMessage(getString(R.string.tap_error_redownload_file))
+                .setCancelable(true)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setPrimaryButtonListener(v -> startFileDownload(vm.getOpenedFileMessage()))
+                .show();
+    }
 
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
@@ -1321,7 +1476,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
                 }
-                ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+                if (vm.getQuoteAction() == FORWARD) {
+                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
+                } else {
+                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+                }
             }
         }
 
@@ -1442,13 +1601,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     //ini buat ngecek kalau room nya kosong manggil api before aja
                     //sebaliknya kalau roomnya ada isinya manggil after baru before*
                     //* = kalau jumlah itemnya < 50
-                    if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size()) {
+                    if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
                     /* Call Message List API
                     Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
                         callApiAfter();
-                    } else if (NUM_OF_ITEM <= vm.getMessageModels().size()) {
+                    } else if (MAX_ITEMS_PER_PAGE <= vm.getMessageModels().size()) {
                         rvMessageList.addOnScrollListener(endlessScrollListener);
                         callApiAfter();
                     } else {
@@ -1470,7 +1629,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         updateMessageDecoration();
                     }
                 });
-                if (NUM_OF_ITEM > entities.size() && 1 < entities.size()) {
+                if (MAX_ITEMS_PER_PAGE > entities.size() && 1 < entities.size()) {
                     state = STATE.DONE;
                 } else {
                     rvMessageList.addOnScrollListener(endlessScrollListener);
@@ -1495,7 +1654,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
 
             if (null != messageAdapter) {
-                if (NUM_OF_ITEM > entities.size() && STATE.DONE != state) {
+                if (MAX_ITEMS_PER_PAGE > entities.size() && STATE.DONE != state) {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
                 } else if (STATE.WORKING == state) {
                     state = STATE.LOADED;
@@ -1524,15 +1683,62 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onGallerySelected() {
             fConnectionStatus.hideUntilNextConnect(true);
-            TAPUtils.getInstance().pickImageFromGallery(TAPChatActivity.this, SEND_IMAGE_FROM_GALLERY, true);
+            TAPUtils.getInstance().pickMediaFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
+        }
+
+        @Override
+        public void onLocationSelected() {
+            TAPUtils.getInstance().openLocationPicker(TAPChatActivity.this);
+        }
+
+        @Override
+        public void onDocumentSelected() {
+            TAPUtils.getInstance().openDocumentPicker(TAPChatActivity.this);
+        }
+
+        @Override
+        public void onCopySelected(String text) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(text, text);
+            clipboard.setPrimaryClip(clip);
+        }
+
+        @Override
+        public void onReplySelected(TAPMessageModel message) {
+            showQuoteLayout(message, REPLY, true);
+            TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
+        }
+
+        @Override
+        public void onForwardSelected(TAPMessageModel message) {
+            Intent intent = new Intent(TAPChatActivity.this, TAPForwardPickerActivity.class);
+            intent.putExtra(MESSAGE, message);
+            startActivityForResult(intent, FORWARD_MESSAGE);
+            overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
+
+        @Override
+        public void onOpenLinkSelected(String url) {
+            TAPUtils.getInstance().openCustomTabLayout(TAPChatActivity.this, url);
+        }
+
+        @Override
+        public void onComposeSelected(String emailRecipient) {
+            TAPUtils.getInstance().composeEmail(TAPChatActivity.this, emailRecipient);
+        }
+
+        @Override
+        public void onPhoneCallSelected(String phoneNumber) {
+            TAPUtils.getInstance().openDialNumber(TAPChatActivity.this, phoneNumber);
+        }
+
+        @Override
+        public void onPhoneSmsSelected(String phoneNumber) {
+            TAPUtils.getInstance().composeSMS(TAPChatActivity.this, phoneNumber);
         }
     };
 
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
-        @Override
-        public void startLoading() {
-        }
-
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
@@ -1543,16 +1749,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addAfterTextMessage(message, messageAfterModels);
-//                    new Thread(() -> {
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
-
-                    //ini buat update last update timestamp yang ada di preference
-                    //ini di taruh di new Thread biar ga bkin scrollingnya lag
-                    if (null != message.getUpdated() &&
-                            TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
-                        TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
-                    }
-//                    }).start();
+                    new Thread(() -> {
+                        //ini buat update last update timestamp yang ada di preference
+                        //ini di taruh di new Thread biar ga bkin scrollingnya lag
+                        if (null != message.getUpdated() &&
+                                TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
+                            TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
+                        }
+                    }).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1561,7 +1766,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //sorting message balikan dari api after
             //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
             if (0 < messageAfterModels.size()) {
-                TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(messageAfterModels);
+                TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(messageAfterModels);
                 mergeSort(messageAfterModels, ASCENDING);
             }
 
@@ -1572,13 +1777,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 flMessageList.setVisibility(View.VISIBLE);
                 //masukin datanya ke dalem recyclerView
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
-                messageAdapter.addMessage(0, messageAfterModels);
                 updateMessageDecoration();
+                messageAdapter.addMessage(0, messageAfterModels);
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
-                if (vm.isOnBottom()) rvMessageList.scrollToPosition(0);
-                //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
-                new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
+                if (vm.isOnBottom() && 0 < messageAfterModels.size())
+                    rvMessageList.scrollToPosition(0);
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
@@ -1590,19 +1794,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 });
 
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
-            if (0 < vm.getMessageModels().size() && NUM_OF_ITEM > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
+            if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             }
-            //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
-            vm.setInitialAPICallFinished(true);
+
+            if (!vm.isInitialAPICallFinished()) {
+                //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
+                vm.setInitialAPICallFinished(true);
+
+                //Sementara Temporary buat Mastiin ga ada message nyangkut
+                setAllUnreadMessageToRead();
+            }
         }
 
         @Override
         public void onError(TAPErrorModel error) {
             if (BuildConfig.DEBUG) {
                 new TapTalkDialog.Builder(TAPChatActivity.this)
-                        .setTitle("Error")
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                        .setTitle(getString(R.string.tap_error))
                         .setMessage(error.getMessage())
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
                         .show();
             }
 
@@ -1614,8 +1826,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onError(String errorMessage) {
             if (BuildConfig.DEBUG) {
                 new TapTalkDialog.Builder(TAPChatActivity.this)
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setTitle("Error")
                         .setMessage(errorMessage)
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
                         .show();
             }
 
@@ -1623,6 +1837,31 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     };
+
+    private void setAllUnreadMessageToRead() {
+        new Thread(() -> TAPDataManager.getInstance().getAllMessageThatNotRead(TAPChatManager.getInstance().getOpenRoom(),
+                new TAPDatabaseListener<TAPMessageEntity>() {
+                    @Override
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                        for (TAPMessageEntity entity : entities) {
+                            if (vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                                markMessageAsRead(vm.getMessagePointer().get(entity.getLocalID()));
+                            } else {
+                                markMessageAsRead(TAPChatManager.getInstance().convertToModel(entity));
+                            }
+                        }
+                    }
+                })).start();
+    }
+
+    private void markMessageAsRead(TAPMessageModel readMessage) {
+        new Thread(() -> {
+            if (null != readMessage.getIsRead() && !readMessage.getIsRead()) {
+                TAPMessageStatusManager.getInstance().addUnreadListByOne(readMessage.getRoom().getRoomID());
+                TAPMessageStatusManager.getInstance().addReadMessageQueue(readMessage);
+            }
+        }).start();
+    }
 
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
@@ -1636,8 +1875,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addBeforeTextMessage(message, messageBeforeModels);
-
-                    new Thread(() -> responseMessages.add(TAPChatManager.getInstance().convertToEntity(message))).start();
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1666,7 +1904,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
             TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
-            if (NUM_OF_ITEM > response.getMessages().size() && 1 < response.getMessages().size()) {
+            if (MAX_ITEMS_PER_PAGE > response.getMessages().size() && 1 < response.getMessages().size()) {
                 state = STATE.DONE;
             } else {
                 rvMessageList.addOnScrollListener(endlessScrollListener);
@@ -1688,10 +1926,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     //message before yang di panggil pas pagination db balikin data di bawah limit
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
-        public void startLoading() {
-        }
-
-        @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
@@ -1701,8 +1935,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     addBeforeTextMessage(message, messageBeforeModels);
-
-                    new Thread(() -> responseMessages.add(TAPChatManager.getInstance().convertToEntity(message))).start();
+                    responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

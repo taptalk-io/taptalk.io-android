@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tap_charcoal"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPImagePreviewActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_image_preview"
@@ -23,11 +23,11 @@
         android:id="@+id/tv_cancel_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/tap_font_latoregular"
+        android:fontFamily="@font/tap_font_pt_root_regular"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:letterSpacing="-0.02"
         android:paddingStart="16dp"
-        android:paddingTop="31dp"
+        android:paddingTop="12dp"
         android:paddingEnd="16dp"
         android:paddingBottom="12dp"
         android:text="@string/tap_cancel"
@@ -42,8 +42,9 @@
         android:id="@+id/tv_multiple_image_indicator"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
+        android:fontFamily="@font/tap_font_pt_root_regular"
         android:gravity="end"
         android:letterSpacing="-0.02"
         android:textColor="@color/tap_white"
@@ -74,9 +75,9 @@
             android:layout_height="wrap_content"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:paddingStart="16dp"
-            android:paddingTop="10dp"
+            android:paddingTop="22dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="10dp"
+            android:paddingBottom="12dp"
             android:src="@drawable/tap_ic_icon_add_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -86,20 +87,21 @@
             android:id="@+id/tv_send_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/tap_font_latobold"
+            android:fontFamily="@font/tap_font_pt_root_bold"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:gravity="end"
-            android:letterSpacing="0.02"
+            android:letterSpacing="0.01"
             android:paddingStart="16dp"
-            android:paddingTop="10dp"
+            android:paddingTop="22dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="10dp"
+            android:paddingBottom="12dp"
             android:text="@string/tap_send"
             android:textColor="@color/tap_white"
-            android:textSize="17sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.666" />
 
     </android.support.constraint.ConstraintLayout>
 

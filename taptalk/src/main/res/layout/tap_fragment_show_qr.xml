@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_white"
-    tools:context=".View.Fragment.TAPShowQRFragment">
+    android:background="@color/tap_white">
 
     <ImageView
         android:id="@+id/iv_qr_code"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:layout_marginTop="34dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -19,7 +18,7 @@
 
     <Button
         android:id="@+id/btn_scan_qr_code"
-        style="@style/HomingPigeonButton"
+        style="@style/TapButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -34,16 +33,16 @@
         android:id="@+id/tv_scan_qr_code"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:fontFamily="@font/tap_font_latoregular"
+        android:fontFamily="@font/tap_font_pt_root_regular"
         android:gravity="center_horizontal"
         android:letterSpacing="-0.01"
-        android:lineSpacingExtra="4sp"
+        android:lineSpacingExtra="6sp"
         android:text="@string/tap_scan_qr_code_guide"
-        android:textColor="@color/tap_grey_9b"
-        android:textSize="15sp"
+        android:textColor="@color/tap_black_19"
+        android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

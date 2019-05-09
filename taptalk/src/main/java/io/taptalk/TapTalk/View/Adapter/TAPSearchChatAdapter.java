@@ -22,6 +22,8 @@ import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -32,8 +34,15 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
     private String searchKeyword;
 
+    private TapTalkRoomListInterface roomListInterface;
+
     public TAPSearchChatAdapter(List<TAPSearchChatModel> items) {
         setItems(items, true);
+    }
+
+    public TAPSearchChatAdapter(List<TAPSearchChatModel> items, TapTalkRoomListInterface roomListInterface) {
+        setItems(items, true);
+        this.roomListInterface = roomListInterface;
     }
 
     @NonNull
@@ -128,7 +137,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             } catch (Exception e) {
                 highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword.replaceAll("[^A-Za-z0-9 ]", "") + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
             }
-            tvLastMessage.setText(TAPDataManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
+            tvLastMessage.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
                     Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
 
             // Set message timestamp
@@ -235,19 +244,25 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             if (room.isMuted()) {
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
             } else {
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp));
             }
 
             clContainer.setOnClickListener(v -> {
-                TAPUtils.getInstance().startChatActivity(itemView.getContext(),
-                        room.getRoomID(),
-                        room.getRoomName(),
-                        room.getRoomImage(),
-                        room.getRoomType(),
-                        room.getRoomColor());
+                if (null == roomListInterface) {
+                    // Open chat room
+                    TAPUtils.getInstance().startChatActivity(itemView.getContext(),
+                            room.getRoomID(),
+                            room.getRoomName(),
+                            room.getRoomImage(),
+                            room.getRoomType(),
+                            room.getRoomColor());
 
-                TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
-                TAPDataManager.getInstance().insertToDatabase(recentItem);
+                    TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
+                    TAPDataManager.getInstance().insertToDatabase(recentItem);
+                } else {
+                    // Trigger listener
+                    roomListInterface.onRoomSelected(item.getRoom());
+                }
             });
         }
     }

@@ -191,8 +191,9 @@ public class TAPSearchChatFragment extends Fragment {
         TAPSearchChatModel emptyItem = new TAPSearchChatModel(EMPTY_STATE);
         vm.clearSearchResults();
         vm.addSearchResult(emptyItem);
-        if (null != getActivity())
+        if (null != getActivity()) {
             getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+        }
     }
 
     private void startSearch() {
@@ -279,7 +280,7 @@ public class TAPSearchChatFragment extends Fragment {
                     // Convert contact to room model
                     // TODO: 18 October 2018 LENGKAPIN DATA
                     TAPRoomModel room = new TAPRoomModel(
-                            TAPChatManager.getInstance().arrangeRoomId(TAPDataManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
+                            TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
                             /* 1 ON 1 ROOM TYPE */ 1,
                             contact.getAvatarURL(),

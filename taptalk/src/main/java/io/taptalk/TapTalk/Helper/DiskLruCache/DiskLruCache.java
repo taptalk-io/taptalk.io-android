@@ -184,7 +184,7 @@ public final class DiskLruCache implements Closeable {
   public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize)
       throws IOException {
     if (maxSize <= 0) {
-      throw new IllegalArgumentException("maxSize <= 0");
+      throw new IllegalArgumentException("maxUploadSize <= 0");
     }
     if (valueCount <= 0) {
       throw new IllegalArgumentException("valueCount <= 0");

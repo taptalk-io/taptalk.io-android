@@ -6,28 +6,82 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_AUDIO;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CALL;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CAMERA;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COMPOSE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CONTACT;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COPY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DOCUMENT;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_LOCATION;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_OPEN;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_REPLY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SEND_SMS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createAttachMenu;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createImagePickerMenu;
 
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
     private TAPAttachmentListener attachmentListener;
     View.OnClickListener onClickListener;
+    private String messageToCopy = "", linkifyresult = "";
+    private TAPMessageModel message;
 
-    public TAPAttachmentAdapter(TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
-        setItems(createAttachMenu(), false);
+        if (isImagePickerBottomSheet) {
+            setItems(createImagePickerMenu(), false);
+        } else {
+            setItems(createAttachMenu(), false);
+        }
+    }
+
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String linkifyresult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.messageToCopy = messageToCopy;
+        this.onClickListener = onClickListener;
+        this.linkifyresult = linkifyresult;
+    }
+
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.onClickListener = onClickListener;
+        if (null != message) {
+            this.message = message;
+            switch (message.getType()) {
+                case TYPE_IMAGE:
+                    // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE
+                    if (null != message.getData()) {
+                        this.messageToCopy = (String) message.getData().get(CAPTION);
+                    }
+                    break;
+                case TYPE_LOCATION:
+                    if (null != message.getData()) {
+                        this.messageToCopy = (String) message.getData().get(ADDRESS);
+                    }
+                    break;
+                default:
+                    this.messageToCopy = message.getBody();
+                    break;
+            }
+        }
     }
 
     @NonNull
@@ -90,6 +144,27 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case ID_CONTACT:
                     attachmentListener.onContactSelected();
+                    break;
+                case ID_REPLY:
+                    attachmentListener.onReplySelected(message);
+                    break;
+                case ID_FORWARD:
+                    attachmentListener.onForwardSelected(message);
+                    break;
+                case ID_COPY:
+                    attachmentListener.onCopySelected(messageToCopy);
+                    break;
+                case ID_OPEN:
+                    attachmentListener.onOpenLinkSelected(linkifyresult);
+                    break;
+                case ID_COMPOSE:
+                    attachmentListener.onComposeSelected(linkifyresult);
+                    break;
+                case ID_CALL:
+                    attachmentListener.onPhoneCallSelected(linkifyresult);
+                    break;
+                case ID_SEND_SMS:
+                    attachmentListener.onPhoneSmsSelected(messageToCopy);
                     break;
             }
             onClickListener.onClick(itemView);

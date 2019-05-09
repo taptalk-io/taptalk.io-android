@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/tv_menu_label"
-        style="@style/HomingPigeonMenuLabel"
+        style="@style/TapMenuLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"

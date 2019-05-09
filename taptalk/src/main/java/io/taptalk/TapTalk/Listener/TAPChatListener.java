@@ -12,8 +12,7 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override public void onReceiveMessageInOtherRoom(TAPMessageModel message) {}
     @Override public void onUpdateMessageInOtherRoom(TAPMessageModel message) {}
     @Override public void onDeleteMessageInOtherRoom(TAPMessageModel message) {}
-    @Override public void onSendTextMessage(TAPMessageModel message) {}
-    @Override public void onSendImageMessage(TAPMessageModel message) {}
+    @Override public void onSendMessage(TAPMessageModel message) {}
     @Override public void onReplyMessage(TAPMessageModel message) {}
     @Override public void onRetrySendMessage(TAPMessageModel message) {}
     @Override public void onSendFailed(TAPMessageModel message) {}

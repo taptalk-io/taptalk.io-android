@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tap_white_f3"
-    tools:context=".View.Activity.TAPSearchContactActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
@@ -23,15 +23,15 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_greenBlue"
+            android:tint="@color/tap_pumkin_orange_two"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_title"
+            app:layout_constraintEnd_toStartOf="@id/et_search"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/HomingPigeonSearchBar"
+            style="@style/TapSearchBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="@string/tap_search_for_contacts"
@@ -47,11 +47,11 @@
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="16dp"
+            android:padding="13dp"
             android:src="@drawable/tap_ic_close_grey"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_title"
+            app:layout_constraintStart_toEndOf="@id/et_search"
             app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
@@ -88,20 +88,21 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungregular"
+                    android:fontFamily="@font/tap_font_pt_root_regular"
                     android:gravity="center"
                     android:text="@string/tap_cant_find_person"
-                    android:textColor="@color/tap_black_44"
-                    android:textSize="13sp" />
+                    android:textColor="@color/tap_grey_9b"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungbold"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
                     android:gravity="center"
+                    android:layout_marginTop="8dp"
                     android:text="@string/tap_add_new_contact"
-                    android:textColor="@color/tap_greenBlue"
-                    android:textSize="13sp" />
+                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 

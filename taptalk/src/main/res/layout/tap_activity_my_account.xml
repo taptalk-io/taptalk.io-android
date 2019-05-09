@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tap_white_f3"
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/tap_white">
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/TapPageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tap_my_account"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_button_close"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@drawable/tap_ic_close_orange"
+            app:layout_constraintDimensionRatio="H, 1:1"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <ScrollView
+        android:id="@+id/sv_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:overScrollMode="never">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl_form_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true">
+
+            <ImageView
+                android:id="@+id/iv_profile_background"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/tap_bg_half_circle_bottom_white"
+                android:elevation="2dp"
+                android:paddingBottom="12dp"
+                app:layout_constraintDimensionRatio="W, 1:2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_profile_picture"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginTop="24dp"
+                android:elevation="2dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/tap_img_default_avatar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_profile_picture_overlay"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                android:src="@drawable/tap_bg_circle_6604040f"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture" />
+
+            <ProgressBar
+                android:id="@+id/pb_profile_picture_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:elevation="2dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture"
+                tools:progress="65" />
+
+            <ImageView
+                android:id="@+id/iv_remove_profile_picture"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:elevation="2dp"
+                android:scaleType="center"
+                android:src="@drawable/tap_ic_close_red_circle"
+                android:translationX="6dp"
+                android:translationY="-6dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture" />
+
+            <LinearLayout
+                android:id="@+id/ll_change_profile_picture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/civ_profile_picture">
+
+                <TextView
+                    android:id="@+id/tv_label_change_profile_picture"
+                    style="@style/TapTextButtonOrange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tap_change" />
+
+                <ImageView
+                    android:id="@+id/iv_edit_profile_picture_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/tap_ic_edit_orange" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_label_full_name"
+                style="@style/TapFormFieldName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/tap_full_name"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_profile_background" />
+
+            <EditText
+                android:id="@+id/et_full_name"
+                style="@style/TapFormFieldBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+                android:hint="@string/tap_full_name"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
+
+            <TextView
+                android:id="@+id/tv_label_full_name_error"
+                style="@style/TapFormError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tap_error_invalid_full_name"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_full_name" />
+
+            <TextView
+                android:id="@+id/tv_label_username"
+                style="@style/TapFormFieldName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/tap_username"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_label_full_name_error" />
+
+            <EditText
+                android:id="@+id/et_username"
+                style="@style/TapFormFieldBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:textColor="@color/tap_grey_9b"
+                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_username"
+                tools:text="@string/tap_hint_username" />
+
+            <TextView
+                android:id="@+id/tv_label_mobile_number"
+                style="@style/TapFormFieldName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/tap_mobile_number"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_username" />
+
+            <LinearLayout
+                android:id="@+id/ll_country_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+                android:orientation="horizontal"
+                android:padding="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_mobile_number">
+
+                <ImageView
+                    android:id="@+id/iv_country_flag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/tap_ic_default_flag" />
+
+                <TextView
+                    android:id="@+id/tv_country_code"
+                    style="@style/TapFormFieldBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:hint="+62"
+                    android:textColor="@color/tap_grey_9b" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/et_mobile_number"
+                style="@style/TapFormFieldBody"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+                android:enabled="false"
+                android:hint="@string/tap_hint_phone_number"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:textColor="@color/tap_grey_9b"
+                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ll_country_code"
+                app:layout_constraintTop_toTopOf="@id/ll_country_code" />
+
+            <TextView
+                android:id="@+id/tv_label_email_address"
+                style="@style/TapFormFieldName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/tap_email_address"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_mobile_number" />
+
+            <TextView
+                android:id="@+id/tv_label_email_address_optional"
+                style="@style/TapFormGuide"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/tap_optional"
+                app:layout_constraintBottom_toBottomOf="@id/tv_label_email_address"
+                app:layout_constraintStart_toEndOf="@id/tv_label_email_address" />
+
+            <EditText
+                android:id="@+id/et_email_address"
+                style="@style/TapFormFieldBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+                android:hint="@string/tap_hint_email_address"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_email_address" />
+
+            <TextView
+                android:id="@+id/tv_label_email_address_error"
+                style="@style/TapFormError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tap_error_invalid_email_address"
+                android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_email_address" />
+
+            <TextView
+                android:id="@+id/tv_label_password"
+                style="@style/TapFormFieldName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/tap_password"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_label_email_address_error" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_white_button_ripple"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_password">
+
+                <TextView
+                    android:id="@+id/tv_password"
+                    style="@style/TapTextButtonOrange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/tap_transparent_white"
+                    android:maxLines="1"
+                    android:paddingStart="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingEnd="70dp"
+                    android:paddingBottom="15dp"
+                    android:text="@string/tap_change_password"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_change_password"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:scaleType="center"
+                    android:src="@drawable/tap_ic_chevron_white"
+                    android:tint="@color/tap_pumkin_orange_two"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_password"
+                    app:layout_constraintDimensionRatio="H, 1:1"
+                    app:layout_constraintEnd_toEndOf="@id/tv_password"
+                    app:layout_constraintTop_toTopOf="@id/tv_password" />
+
+                <View
+                    android:id="@+id/v_password_separator"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/tap_grey_dc"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_change_password"
+                    app:layout_constraintStart_toStartOf="@id/iv_change_password"
+                    app:layout_constraintTop_toTopOf="@id/iv_change_password" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <FrameLayout
+                android:id="@+id/fl_button_update"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_password">
+
+                <TextView
+                    android:id="@+id/tv_button_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="14sp"
+                    android:text="@string/tap_update"
+                    android:textColor="@color/tap_white"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/iv_update_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tap_ic_loading_progress_circle_white"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fl_button_update" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+
+</FrameLayout>

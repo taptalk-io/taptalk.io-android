@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/tap_black"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreview">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity">
 
     <io.taptalk.TapTalk.Helper.TAPTouchImageView
         android:id="@+id/tiv_image_detail"
@@ -12,5 +15,135 @@
         android:layout_height="match_parent"
         android:src="@drawable/tap_bg_grey_e4"
         android:transitionName="@string/tap_transition_view_image" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/tap_transparent_charcoal_40">
+
+        <ImageView
+            android:id="@+id/iv_button_back"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_back_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/TapImageDetailSender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/tv_message_status"
+            app:layout_constraintEnd_toStartOf="@id/iv_save"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="User Name" />
+
+        <TextView
+            android:id="@+id/tv_message_status"
+            style="@style/TapImageDetailStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_save"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            tools:text="Sent at 17:05 17/05/2018" />
+
+        <ImageView
+            android:id="@+id/iv_save"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_save_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_title"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:background="@drawable/tap_bg_charcoal_40_gradient_90" />
+
+        <TextView
+            android:id="@+id/tv_caption"
+            style="@style/TapMessageBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tap_transparent_charcoal_40"
+            android:maxHeight="220dp"
+            android:padding="16dp"
+            android:scrollbars="vertical"
+            android:textColor="@color/tap_white"
+            tools:text="Lorem ipsum" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/tap_transparent_charcoal_40"
+        android:visibility="gone">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_gravity="center"
+            android:background="@drawable/tap_bg_white_rounded_6dp">
+
+            <ProgressBar
+                android:id="@+id/pb_saving"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_saved"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginBottom="4dp"
+                android:src="@drawable/tap_ic_tick_green"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_loading_text"
+                style="@style/TapLoadingText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/tap_saving"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
 
 </FrameLayout>

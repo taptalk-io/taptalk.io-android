@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/tv_user_name"
-        style="@style/HomingPigeonContactName"
+        style="@style/TapContactName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -23,7 +23,7 @@
 
     <TextView
         android:id="@+id/tv_last_message"
-        style="@style/HomingPigeonRoomMessage"
+        style="@style/TapRoomMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:fontFamily="@font/tap_font_latoregular"
+        android:fontFamily="@font/tap_font_pt_root_regular"
         android:gravity="end"
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="5sp"

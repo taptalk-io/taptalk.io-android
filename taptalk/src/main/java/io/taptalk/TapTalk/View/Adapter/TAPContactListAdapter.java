@@ -18,7 +18,6 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
@@ -38,14 +37,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
     public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
-        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
     }
 
     public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
-        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
     }
 
     // Constructor for selectable contacts
@@ -53,7 +52,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
         setItems(contactList, false);
         this.viewType = SELECT;
         this.selectedContacts = selectedContacts;
-        this.myID = TAPDataManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
         this.listener = listener;
     }
 
@@ -201,7 +200,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
             } else {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                ivAvatarIcon.setImageResource(R.drawable.tap_ic_close_red_circle);
+                ivAvatarIcon.setImageResource(R.drawable.tap_ic_close_red_circle_border);
             }
 
             itemView.setOnClickListener(v -> deselectContact(item));

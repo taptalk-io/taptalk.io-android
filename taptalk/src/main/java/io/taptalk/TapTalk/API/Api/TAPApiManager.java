@@ -17,6 +17,7 @@ import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
@@ -26,19 +27,28 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -67,7 +77,6 @@ public class TAPApiManager {
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
     private TAPTalkMultipartApiService tapMultipart;
-    private TAPTalkDownloadApiService tapDownload;
     private static TAPApiManager instance;
     private int isShouldRefreshToken = 0;
     //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
@@ -196,6 +205,16 @@ public class TAPApiManager {
         execute(homingPigeon.getAccessToken(), subscriber);
     }
 
+    public void requestOTPLogin(String loginMethod, int countryID, String phone, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
+        TAPLoginOTPRequest request = new TAPLoginOTPRequest(loginMethod, countryID, phone);
+        execute(homingPigeon.requestOTPLogin(request), subscriber);
+    }
+
+    public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, Subscriber<TAPBaseResponse<TAPLoginOTPVerifyResponse>> subscriber) {
+        TAPLoginOTPVerifyRequest request = new TAPLoginOTPVerifyRequest(otpID, otpKey, otpCode);
+        execute(homingPigeon.verifyingOTPLogin(request), subscriber);
+    }
+
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
         return hpRefresh.refreshAccessToken()
                 .compose(this.applyIOMainThreadSchedulers())
@@ -300,12 +319,73 @@ public class TAPApiManager {
                 .addFormDataPart("caption", caption)
                 .addFormDataPart("fileType", "image")
                 .build();
-        execute(tapMultipart.uploadImage(requestBody), subscriber);
+        execute(tapMultipart.uploadFile(requestBody), subscriber);
+    }
+
+    public void uploadVideo(File videoFile, String roomID, String caption, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        ProgressRequestBody reqFile = new ProgressRequestBody(videoFile, mimeType, uploadCallback);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("roomID", roomID)
+                .addFormDataPart("file", videoFile.getName(), reqFile)
+                .addFormDataPart("caption", caption)
+                .addFormDataPart("fileType", "video")
+                .build();
+        execute(tapMultipart.uploadFile(requestBody), subscriber);
+    }
+
+    public void uploadFile(File file, String roomID, String mimeType,
+                           ProgressRequestBody.UploadCallbacks uploadCallback,
+                           Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("roomID", roomID)
+                .addFormDataPart("file", file.getName(), reqFile)
+                .addFormDataPart("fileType", "file")
+                .build();
+        execute(tapMultipart.uploadFile(requestBody), subscriber);
+    }
+
+    public void uploadProfilePicture(File imageFile, String mimeType,
+                            ProgressRequestBody.UploadCallbacks uploadCallback,
+                            Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("fileType", "image")
+                .build();
+        execute(tapMultipart.uploadProfilePicture(requestBody), subscriber);
     }
 
     public void downloadFile(String roomID, String localID, String fileID, Subscriber<ResponseBody> subscriber) {
         TAPTalkDownloadApiService tapDownload = TAPApiConnection.getInstance().getTapDownload();
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
+    }
+
+    public void getCountryList(Subscriber<TAPBaseResponse<TAPCountryListResponse>> subscriber) {
+        execute(homingPigeon.getCountryList(), subscriber);
+    }
+
+    public void register(String fullName, String username, Integer countryID, String phone, String email, String password, Subscriber<TAPBaseResponse<TAPRegisterResponse>> subscriber) {
+        TAPRegisterRequest request = new TAPRegisterRequest(fullName, username, countryID, phone, email, password);
+        execute(homingPigeon.register(request), subscriber);
+    }
+
+    public void checkUsernameExists(String username, Subscriber<TAPBaseResponse<TAPCheckUsernameResponse>> subscriber) {
+        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
+        execute(homingPigeon.checkUsernameExists(request), subscriber);
+    }
+
+    public void addContactByPhone(List<String> phones, Subscriber<TAPBaseResponse<TAPAddContactByPhoneResponse>> subscriber) {
+        TAPAddContactByPhoneRequest request = new TAPAddContactByPhoneRequest(phones);
+        execute(homingPigeon.addContactByPhone(request), subscriber);
     }
 }

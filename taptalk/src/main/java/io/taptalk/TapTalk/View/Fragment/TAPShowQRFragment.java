@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,7 @@ import io.taptalk.TapTalk.Helper.QRCode.BarcodeFormat;
 import io.taptalk.TapTalk.Helper.QRCode.BitMatrix;
 import io.taptalk.TapTalk.Helper.QRCode.MultiFormatWriter;
 import io.taptalk.TapTalk.Helper.QRCode.WriterException;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.Taptalk.R;
 
@@ -56,7 +57,7 @@ public class TAPShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap(TAPDataManager.getInstance().getActiveUser().getUserID());
+            bitmap = encodeAsBitmap(TAPChatManager.getInstance().getActiveUser().getUserID());
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,6 +68,7 @@ public class TAPShowQRFragment extends Fragment {
                 ((TAPBarcodeScannerActivity) getActivity()).showScanner();
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.e("<>><><", "onViewCreated: ",e );
             }
         });
     }

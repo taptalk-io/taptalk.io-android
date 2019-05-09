@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.RemoteInput;
 
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
-
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
 
 public class TAPReplyBroadcastReceiver extends BroadcastReceiver {

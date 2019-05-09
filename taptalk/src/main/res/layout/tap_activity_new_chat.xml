@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/tap_white_f8"
+    android:descendantFocusability="blocksDescendants"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -13,7 +15,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/tap_white"
         android:elevation="2dp"
-        android:foreground="?attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_button_close"
@@ -21,7 +24,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="20dp"
-            android:src="@drawable/tap_ic_close_green"
+            android:src="@drawable/tap_ic_close_pumpkin_orange"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,12 +32,12 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/HomingPigeonToolbarTitle"
+            style="@style/TapToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/tap_new_chat"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/iv_button_search"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_search"
             app:layout_constraintStart_toEndOf="@id/iv_button_close"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -44,7 +47,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_search_grey"
+            android:src="@drawable/tap_ic_search_pumpkin_orange"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_title"
@@ -52,104 +55,170 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <FrameLayout
+        android:id="@+id/fl_sync_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/nsv_new_chat"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <include layout="@layout/tap_fragment_connection_status" />
+
+    </FrameLayout>
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nsv_new_chat"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:overScrollMode="never">
+        android:layout_height="0dp"
+        android:descendantFocusability="blocksDescendants"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toTopOf="@id/fl_sync"
+        app:layout_constraintTop_toBottomOf="@id/fl_sync_status">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/ll_button_new_contact"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_button_new_contact"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/tap_white"
                 android:foreground="?attr/selectableItemBackground"
-                android:gravity="start|center_vertical"
-                android:orientation="horizontal">
+                android:gravity="start|center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv_new_contact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/tap_ic_new_contact_pumpkin_orange"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_new_contact"
+                    style="@style/TapMenuLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/tap_new_contact"
+                    app:layout_constraintStart_toEndOf="@id/iv_new_contact"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_new_contact_green" />
+                    android:layout_gravity="center_vertical|end"
+                    android:src="@drawable/tap_ic_arrow_right_pumpkin"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="16dp"/>
 
-                <TextView
-                    style="@style/HomingPigeonMenuLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/tap_new_contact" />
-
-            </LinearLayout>
+            </android.support.constraint.ConstraintLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/tap_grey_ea" />
 
-            <LinearLayout
-                android:id="@+id/ll_button_scan_qr"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_button_scan_qr"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:background="@color/tap_white"
                 android:foreground="?attr/selectableItemBackground"
-                android:gravity="start|center_vertical"
-                android:orientation="horizontal">
+                android:gravity="start|center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv_scan_qr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/tap_ic_scan_pumpkin_orange"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_scan_qr"
+                    style="@style/TapMenuLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/tap_scan_qr_code"
+                    app:layout_constraintStart_toEndOf="@id/iv_scan_qr"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:src="@drawable/tap_ic_arrow_right_pumpkin"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="16dp"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_button_new_group"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@color/tap_white"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="start|center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv_new_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_scan_green" />
+                    android:src="@drawable/tap_ic_new_group_pumpkin_orange"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <TextView
-                    style="@style/HomingPigeonMenuLabel"
+                    android:id="@+id/tv_new_group"
+                    style="@style/TapMenuLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:text="@string/tap_scan_qr_code" />
+                    android:text="@string/tap_new_group"
+                    app:layout_constraintStart_toEndOf="@id/iv_new_group"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-            </LinearLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:src="@drawable/tap_ic_arrow_right_pumpkin"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginEnd="16dp"/>
+
+            </android.support.constraint.ConstraintLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/tap_grey_ea" />
-
-            <LinearLayout
-                android:id="@+id/ll_button_new_group"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@color/tap_white"
-                android:foreground="?attr/selectableItemBackground"
-                android:gravity="start|center_vertical"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_new_group_green" />
-
-                <TextView
-                    style="@style/HomingPigeonMenuLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:text="@string/tap_new_group" />
-
-            </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_contact_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:descendantFocusability="blocksDescendants"
                 android:nestedScrollingEnabled="false" />
 
             <LinearLayout
@@ -157,30 +226,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="14dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="24dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungregular"
+                    android:fontFamily="@font/tap_font_pt_root_regular"
                     android:gravity="center"
                     android:text="@string/tap_cant_find_contact"
                     android:textColor="@color/tap_grey_9b"
-                    android:textSize="13sp" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_neueeinstellungbold"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
                     android:gravity="center"
+                    android:layout_marginTop="8dp"
                     android:text="@string/tap_view_blocked_contacts"
-                    android:textColor="@color/tap_grey_9b"
-                    android:textSize="13sp" />
+                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -188,4 +258,48 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-</FrameLayout>
+    <FrameLayout
+        android:id="@+id/fl_sync"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:background="@color/tap_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nsv_new_chat"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/tap_grey_dc" />
+
+        <LinearLayout
+            android:id="@+id/ll_btn_sync"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_6dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/tap_ic_sync_white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:fontFamily="@font/tap_font_pt_root_bold"
+                android:text="Sync Contacts Now"
+                android:textColor="@color/tap_white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

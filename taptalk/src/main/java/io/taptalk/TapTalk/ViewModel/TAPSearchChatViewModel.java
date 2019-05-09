@@ -12,6 +12,7 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 
@@ -21,6 +22,7 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
     private List<TAPSearchChatModel> searchResults;
     private List<TAPSearchChatModel> recentSearches;
     private Map<String, TAPRoomModel> roomPointer;
+    private TAPMessageModel selectedMessage;
     private String searchKeyword;
     private boolean isRecentSearchShown;
 
@@ -62,6 +64,14 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
 
     public boolean resultContainsRoom(String roomID) {
         return getRoomPointer().containsKey(roomID);
+    }
+
+    public TAPMessageModel getSelectedMessage() {
+        return selectedMessage;
+    }
+
+    public void setSelectedMessage(TAPMessageModel selectedMessage) {
+        this.selectedMessage = selectedMessage;
     }
 
     public String getSearchKeyword() {

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@drawable/tap_bg_purplish_pink_medium_purple"
+    android:background="@drawable/tap_bg_bluepurple_dodger_blue"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity">
 
     <ProgressBar
@@ -111,27 +111,27 @@
                     android:visibility="visible">
 
                     <TextView
-                        android:id="@+id/tv_contact_fullname"
+                        android:id="@+id/tv_contact_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="13dp"
                         android:ellipsize="end"
-                        android:fontFamily="@font/tap_font_neueeinstellungbold"
+                        android:fontFamily="@font/tap_font_pt_root_bold"
                         android:gravity="center_horizontal"
                         android:maxLines="2"
                         tools:text="NAMANYABERNAMA"
-                        android:textColor="@color/tap_mediumPurple"
+                        android:textColor="@color/tap_black_19"
                         android:textSize="20sp" />
 
                     <TextView
-                        android:id="@+id/tv_contact_username"
+                        android:id="@+id/tv_contact_fullname"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:fontFamily="@font/tap_font_neueeinstellungregular"
+                        android:fontFamily="@font/tap_font_pt_root_regular"
                         android:gravity="center_horizontal"
                         tools:text="Vivamus adipiscing fermentum quam "
-                        android:textColor="@color/tap_mediumPurple"
+                        android:textColor="@color/tap_grey_9b"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -146,8 +146,8 @@
 
                     <ImageView
                         android:id="@+id/iv_add_success"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="40dp"
                         android:src="@drawable/tap_ic_add_contact" />
@@ -158,10 +158,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="41dp"
-                        android:fontFamily="@font/tap_font_neueeinstellungregular"
+                        android:fontFamily="@font/tap_font_pt_root_regular"
                         android:gravity="center_horizontal"
                         android:text="@string/you_have_added_to_your_contacts"
-                        android:textColor="@color/tap_mediumPurple"
+                        android:textColor="@color/tap_black_19"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -173,11 +173,11 @@
                     android:layout_marginTop="64dp"
                     android:layout_marginBottom="40dp"
                     android:alpha="0"
-                    android:fontFamily="@font/tap_font_neueeinstellungregular"
+                    android:fontFamily="@font/tap_font_pt_root_regular"
                     android:gravity="center_horizontal"
                     android:text="@string/tap_is_already_in_your_contacts"
                     android:textAlignment="center"
-                    android:textColor="@color/tap_mediumPurple"
+                    android:textColor="@color/tap_black_19"
                     android:visibility="gone" />
 
             </FrameLayout>
@@ -188,7 +188,7 @@
                 android:layout_height="54dp"
                 android:alpha="1"
                 android:animateLayoutChanges="true"
-                android:background="@color/colorAccent"
+                android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_6dp"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:gravity="center"
                 android:orientation="horizontal"
@@ -216,7 +216,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:fontFamily="@font/tap_font_neueeinstellungbold"
+                    android:fontFamily="@font/tap_font_pt_root_bold"
                     android:text="@string/tap_add_to_contacts"
                     android:textColor="@color/tap_white"
                     android:textSize="15sp" />
@@ -231,7 +231,7 @@
                 android:gravity="center"
                 android:letterSpacing="0.01"
                 android:text="@string/tap_this_is_you"
-                android:textColor="@color/tap_black_44"
+                android:textColor="@color/tap_pumkin_orange_two"
                 android:textSize="13sp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"

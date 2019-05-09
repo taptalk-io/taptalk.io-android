@@ -11,8 +11,7 @@ public interface TapTalkChatInterface {
     void onReceiveMessageInOtherRoom(TAPMessageModel message);
     void onUpdateMessageInOtherRoom(TAPMessageModel message);
     void onDeleteMessageInOtherRoom(TAPMessageModel message);
-    void onSendTextMessage(TAPMessageModel message);
-    void onSendImageMessage(TAPMessageModel message);
+    void onSendMessage(TAPMessageModel message);
     void onReplyMessage(TAPMessageModel message);
     void onRetrySendMessage(TAPMessageModel message);
     void onSendFailed(TAPMessageModel message);

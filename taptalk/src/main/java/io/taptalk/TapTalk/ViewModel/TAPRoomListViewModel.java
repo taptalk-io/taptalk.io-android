@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 
 public class TAPRoomListViewModel extends AndroidViewModel {
@@ -24,8 +24,8 @@ public class TAPRoomListViewModel extends AndroidViewModel {
 
     public TAPRoomListViewModel(@NonNull Application application) {
         super(application);
-        myUserID = null != TAPDataManager.getInstance().getActiveUser() ?
-                TAPDataManager.getInstance().getActiveUser().getUserID()
+        myUserID = null != TAPChatManager.getInstance().getActiveUser() ?
+                TAPChatManager.getInstance().getActiveUser().getUserID()
                 : null;
     }
 

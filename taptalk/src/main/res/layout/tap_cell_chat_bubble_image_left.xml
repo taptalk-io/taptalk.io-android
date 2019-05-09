@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <io.taptalk.TapTalk.Helper.CircleImageView
+        android:id="@+id/civ_avatar"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble"
+        tools:src="@drawable/tap_bg_circle_9b9b9b" />
+
+    <FrameLayout
+        android:id="@+id/fl_bubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="110dp"
+        android:elevation="1dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tv_message_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginBottom="8dp"
+        app:layout_goneMarginStart="16dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_forwarded_quote"
+                android:layout_width="234dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_white_rounded_1dp_8dp_0dp_0dp_stroke_eaeaea_1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <include
+                    android:id="@+id/cl_forwarded"
+                    layout="@layout/tap_layout_forwarded_bubble_left"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="4dp"
+                    android:visibility="gone"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintBottom_toTopOf="@id/v_quote_background"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/v_quote_background"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/tap_bg_f3f3f3_rounded_4dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cl_forwarded"
+                    app:layout_goneMarginTop="10dp" />
+
+                <include
+                    android:id="@+id/cl_quote"
+                    layout="@layout/tap_layout_quote_bubble_left"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/v_quote_background"
+                    app:layout_goneMarginTop="10dp" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+                android:id="@+id/rciv_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxWidth="234dp"
+                android:maxHeight="300dp"
+                android:src="@drawable/tap_bg_grey_e4"
+                android:transitionName="@string/tap_transition_view_image"
+                app:cornerRadius="9dp"
+                app:dimensionRatio="0.78"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
+                app:minHeight="100dp"
+                app:minWidth="78dp"
+                app:topLeftRadius="2dp"
+                tools:src="@drawable/tap_img_setup_chat" />
+
+            <FrameLayout
+                android:id="@+id/fl_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_circle_6604040f"
+                app:layout_constraintBottom_toBottomOf="@+id/rciv_image"
+                app:layout_constraintEnd_toEndOf="@id/rciv_image"
+                app:layout_constraintStart_toStartOf="@id/rciv_image"
+                app:layout_constraintTop_toTopOf="@+id/rciv_image">
+
+                <ProgressBar
+                    android:id="@+id/pb_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:indeterminate="false"
+                    android:max="100"
+                    android:padding="4dp"
+                    android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                    tools:progress="65" />
+
+                <ImageView
+                    android:id="@+id/iv_button_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tap_ic_cancel_white" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_media_info"
+                style="@style/TapQuoteBody"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/tap_bg_2d000000_rounded_8dp"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/tap_white"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/rciv_image"
+                app:layout_constraintTop_toTopOf="@id/rciv_image"
+                tools:text="12.8 MB - 00:37" />
+
+            <TextView
+                android:id="@+id/tv_message_body"
+                style="@style/TapMessageBody"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tap_bg_white_rounded_0dp_0dp_8dp_8dp_stroke_eaeaea_1dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="10dp"
+                android:textColor="@color/tap_black_2c"
+                android:textColorLink="@color/tap_dodger_blue"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/rciv_image"
+                app:layout_constraintStart_toStartOf="@id/rciv_image"
+                app:layout_constraintTop_toBottomOf="@id/rciv_image"
+                tools:text="Hey there, love your work!" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_message_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/tap_font_pt_root_regular"
+        android:textColor="@color/tap_grey_9b"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble"
+        tools:text="Delivered at 17:05 17/05/2018" />
+
+    <ImageView
+        android:id="@+id/iv_reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/tap_ic_reply_circle_white"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+
+</android.support.constraint.ConstraintLayout>

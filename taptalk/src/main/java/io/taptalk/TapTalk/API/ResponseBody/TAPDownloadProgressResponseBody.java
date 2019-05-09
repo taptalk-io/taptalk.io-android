@@ -49,15 +49,16 @@ public class TAPDownloadProgressResponseBody extends ResponseBody {
         return new ForwardingSource(source) {
             long totalBytesRead = 0L;
 
-            @Override public long read(Buffer sink, long byteCount) throws IOException {
+            @Override
+            public long read(Buffer sink, long byteCount) throws IOException {
                 long bytesRead = super.read(sink, byteCount);
                 // read() returns the number of bytes read, or -1 if this source is exhausted.
                 totalBytesRead += bytesRead != -1 ? bytesRead : 0;
 
                 if (bytesRead != -1) {
-                    int percentage = (int) (100 * totalBytesRead/responseBody.contentLength());
-                    progressListener.update(percentage, localID);
-                } else progressListener.finish(localID);
+                    int percentage = (int) (100 * totalBytesRead / responseBody.contentLength());
+                    progressListener.update(localID, percentage, totalBytesRead);
+                } else progressListener.finish(localID, totalBytesRead);
                 return bytesRead;
             }
         };

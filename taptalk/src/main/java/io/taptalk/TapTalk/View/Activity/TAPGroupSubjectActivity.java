@@ -37,8 +37,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 
@@ -172,8 +172,8 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         String groupName = etGroupName.getText().toString();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
             // TODO: 19 September 2018 CREATE GROUP
-            Intent intent = new Intent(this, TAPProfileActivity.class);
-            intent.putExtra(K_ROOM, vm.getGroupData());
+            Intent intent = new Intent(this, TAPChatProfileActivity.class);
+            intent.putExtra(ROOM, vm.getGroupData());
             startActivity(intent);
             setResult(RESULT_OK);
             finish();
