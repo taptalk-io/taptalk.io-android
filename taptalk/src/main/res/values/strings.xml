@@ -95,6 +95,7 @@
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
     <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
+    <string name="tap_guide_enter_otp">Enter the 6 digit OTP we’ve sent to</string>
     <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
     <string name="tap_guide_username">Username is always required.\nMust be between 4–32 characters.\nCan only contain a–z, 0–9, underscores, and dot.\nCan\'t start with number or underscore or dot.\nCan\'t end with underscore or dot.\nCan\'t contain consecutive underscores, consecutive dot, underscore followed with dot, and otherwise.</string>
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
@@ -248,6 +249,7 @@
     <string name="tap_permission_request">Permission Request</string>
     <string name="tap_profile_picture">Profile Picture</string>
     <string name="tap_reply">Reply</string>
+    <string name="tap_request_again">Request again</string>
     <string name="tap_requesting_otp">Requesting OTP</string>
     <string name="tap_retry">Retry</string>
     <string name="tap_retype_password">Retype Password</string>
@@ -262,6 +264,7 @@
     <string name="tap_select_country">Select Country</string>
     <string name="tap_skip">Skip</string>
     <string name="tap_start_a_new_chat">Start a New Chat</string>
+    <string name="tap_sync_contacts_now">Sync Contacts Now</string>
     <string name="tap_typing">typing</string>
     <string name="tap_typing_1">Typing.</string>
     <string name="tap_typing_2">Typing..</string>
@@ -273,6 +276,5 @@
     <string name="tap_verifying_otp">Verifying OTP</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
-    <string name="usernames_are_case_sensitive_so_make_sure_you_input_correctly">Usernames are case sensitive, so make sure you input correctly</string>
 
 </resources>
