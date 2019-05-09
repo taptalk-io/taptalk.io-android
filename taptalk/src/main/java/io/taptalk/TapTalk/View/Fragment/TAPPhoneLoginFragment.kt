@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
@@ -70,13 +72,14 @@ class TAPPhoneLoginFragment : Fragment() {
             countryHashMap = countryListitems.associateBy({ it.iso2Code }, { it }).toMutableMap()
             isNeedResetData = false
             if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
-                setCountry(defaultCountryID, defaultCallingCode)
+                setCountry(defaultCountryID, defaultCallingCode, "")
             } else {
                 setCountry(countryHashMap.get(countryIsoCode)?.countryID ?: 0,
-                        countryHashMap.get(countryIsoCode)?.callingCode ?: "")
+                        countryHashMap.get(countryIsoCode)?.callingCode ?: "",
+                        countryHashMap.get(countryIsoCode)?.flagIconUrl ?: "")
             }
         } else {
-            setCountry(defaultCountryID, defaultCallingCode)
+            setCountry(defaultCountryID, defaultCallingCode, "")
         }
         initView()
     }
@@ -210,7 +213,7 @@ class TAPPhoneLoginFragment : Fragment() {
             override fun onSuccess(response: TAPCountryListResponse?) {
                 countryListitems.clear()
                 TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
-                setCountry(0, "")
+                setCountry(0, "", "")
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
                     response?.countries?.forEach {
@@ -219,11 +222,11 @@ class TAPPhoneLoginFragment : Fragment() {
                         if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase() && it.iso2Code.toLowerCase() == "id") {
                             defaultCountry = it
                             activity?.runOnUiThread {
-                                setCountry(it.countryID, it.callingCode)
+                                setCountry(it.countryID, it.callingCode, it.flagIconUrl)
                             }
                         } else if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase()) {
                             activity?.runOnUiThread {
-                                setCountry(it.countryID, it.callingCode)
+                                setCountry(it.countryID, it.callingCode, it.flagIconUrl)
                             }
                         } else if (it.iso2Code.toLowerCase() == "id") {
                             defaultCountry = it
@@ -233,7 +236,8 @@ class TAPPhoneLoginFragment : Fragment() {
                     if ("" == tv_country_code.text) {
                         val callingCode: String = defaultCountry?.callingCode ?: ""
                         activity?.runOnUiThread {
-                            setCountry(defaultCountry?.countryID ?: 0, callingCode)
+                            setCountry(defaultCountry?.countryID
+                                    ?: 0, callingCode, defaultCountry?.flagIconUrl ?: "")
                         }
                     }
 
@@ -253,7 +257,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 iv_loading_progress_country.visibility = View.GONE
                 iv_loading_progress_country.clearAnimation()
                 tv_country_code.visibility = View.VISIBLE
-                setCountry(0, "")
+                setCountry(0, "", "")
                 showDialog("ERROR", error?.message ?: generalErrorMessage)
             }
 
@@ -262,7 +266,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 iv_loading_progress_country.visibility = View.GONE
                 iv_loading_progress_country.clearAnimation()
                 tv_country_code.visibility = View.VISIBLE
-                setCountry(0, "")
+                setCountry(0, "", "")
                 showDialog("ERROR", errorMessage ?: generalErrorMessage)
             }
         })
@@ -287,7 +291,7 @@ class TAPPhoneLoginFragment : Fragment() {
                     RESULT_OK -> {
                         val item = data?.getParcelableExtra<TAPCountryListItem>(TAPDefaultConstant.K_COUNTRY_PICK)
                         val callingCode: String = item?.callingCode ?: ""
-                        setCountry(item?.countryID ?: 0, callingCode)
+                        setCountry(item?.countryID ?: 0, callingCode, item?.flagIconUrl ?: "")
                     }
                 }
             }
@@ -295,9 +299,13 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setCountry(countryID: Int, callingCode: String) {
+    private fun setCountry(countryID: Int, callingCode: String, flagIconUrl: String) {
         tv_country_code.text = "+$callingCode"
         defaultCountryID = countryID
         defaultCallingCode = callingCode
+
+        if ("" != flagIconUrl)
+            Glide.with(this).load(flagIconUrl).apply(object : RequestOptions() {}.centerCrop()).into(iv_country_flag)
+        else iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
     }
 }
