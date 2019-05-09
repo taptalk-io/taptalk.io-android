@@ -22,6 +22,7 @@
             android:paddingTop="18dp"
             android:paddingEnd="10.5dp"
             android:paddingBottom="18dp"
+            android:tint="@color/colorPrimaryDark"
             android:src="@drawable/tap_ic_back_arrow_pumpkin_orange" />
 
     </FrameLayout>
@@ -128,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tap_pumpkin_orange" />
+                    android:tint="@color/colorPrimaryDark" />
 
             </LinearLayout>
 

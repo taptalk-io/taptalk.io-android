@@ -23,7 +23,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/tap_cfp_action_close"
-            android:textColor="@color/tap_pumpkin_orange"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -101,11 +101,11 @@
         android:layout_height="match_parent"
         android:background="@color/tap_white_f3"
         app:fastScrollPopupBackgroundSize="88dp"
-        app:fastScrollPopupBgColor="@color/tap_pumpkin_orange"
+        app:fastScrollPopupBgColor="@color/colorPrimaryDark"
         app:fastScrollPopupPosition="adjacent"
         app:fastScrollPopupTextColor="@android:color/primary_text_dark"
         app:fastScrollPopupTextSize="56sp"
-        app:fastScrollThumbColor="@color/tap_pumpkin_orange"
+        app:fastScrollThumbColor="@color/colorPrimaryDark"
         app:fastScrollThumbInactiveColor="@color/tap_grey_9b"
         app:fastScrollTrackColor="#1f000000" />
 
