@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/tap_darkPurple">
+    android:color="?android:colorControlHighlight">
     <item android:drawable="@drawable/tap_bg_purply_rounded_2dp_10dp_0dp_0dp" />
 </ripple>

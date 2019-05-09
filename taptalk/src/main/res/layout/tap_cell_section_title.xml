@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
         android:padding="10dp"
-        android:textColor="@color/tap_pumkin_orange_two"
+        android:textColor="@color/tap_pumpkin_orange"
         android:text="@string/tap_recent"
         android:letterSpacing="0.15"
         app:layout_constraintBottom_toBottomOf="parent"

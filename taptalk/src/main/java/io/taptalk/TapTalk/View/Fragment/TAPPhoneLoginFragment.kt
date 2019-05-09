@@ -11,8 +11,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
@@ -94,7 +92,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
                 when (textCount) {
                     in 7..15 -> {
-                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_orange_button_ripple)
+                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_6dp_ripple)
                         fl_continue_btn.setOnClickListener { attemptLogin() }
                         fl_continue_btn.isClickable = true
                     }

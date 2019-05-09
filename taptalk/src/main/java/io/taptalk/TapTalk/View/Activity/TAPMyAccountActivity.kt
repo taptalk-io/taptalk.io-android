@@ -303,7 +303,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun enableContinueButton() {
-        fl_button_update.background = getDrawable(R.drawable.tap_bg_orange_button_ripple)
+        fl_button_update.background = getDrawable(R.drawable.tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_6dp_ripple)
         //fl_button_update.setOnClickListener { register() }
     }
 
@@ -377,7 +377,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
 
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumkin_orange_two))
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumpkin_orange))
         iv_edit_profile_picture_icon.visibility = View.VISIBLE
         civ_profile_picture_overlay.visibility = View.GONE
         pb_profile_picture_progress.visibility = View.GONE

@@ -4,9 +4,9 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/tap_mango</item>
-        <item name="colorPrimaryDark">@color/tap_pumkin_orange_two</item>
+        <item name="colorPrimaryDark">@color/tap_pumpkin_orange</item>
         <item name="colorAccent">@color/tap_dodger_blue</item>
-        <item name="android:statusBarColor">@color/tap_pumkin_orange_two</item>
+        <item name="android:statusBarColor">@color/tap_pumpkin_orange</item>
     </style>
 
 </resources>

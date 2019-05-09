@@ -3,5 +3,5 @@
     android:shape="rectangle">
     <stroke
         android:width="2dp"
-        android:color="@color/tap_pumkin_orange_two"/>
+        android:color="@color/tap_pumpkin_orange"/>
 </shape>

@@ -249,7 +249,7 @@
                     android:gravity="center"
                     android:layout_marginTop="8dp"
                     android:text="@string/tap_view_blocked_contacts"
-                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textColor="@color/tap_pumpkin_orange"
                     android:textSize="20sp" />
 
             </LinearLayout>
@@ -277,7 +277,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_6dp"
+            android:background="@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_6dp"
             android:gravity="center"
             android:orientation="horizontal">
 

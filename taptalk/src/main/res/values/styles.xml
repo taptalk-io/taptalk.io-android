@@ -50,7 +50,7 @@
     <style name="TapTextButtonOrange">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:lineSpacingExtra">6sp</item>
-        <item name="android:textColor">@color/tap_pumkin_orange_two</item>
+        <item name="android:textColor">@color/tap_pumpkin_orange</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -100,9 +100,7 @@
     </style>
 
     <style name="TapButton">
-        <item name="android:background">
-            @drawable/tap_bg_orange_button_ripple
-        </item>
+        <item name="android:background">@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_6dp_ripple</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
@@ -213,8 +211,7 @@
     </style>
 
     <style name="TapUnreadBadge">
-        <item name="android:background">@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp
-        </item>
+        <item name="android:background">@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_10dp</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:paddingStart">7dp</item>
         <item name="android:paddingTop">4dp</item>
@@ -293,7 +290,7 @@
 
     <style name="TapSwitchColor">
         <!-- Active thumb color & Active track color(30% transparency) -->
-        <item name="colorControlActivated">@color/tap_pumkin_orange_two</item>
+        <item name="colorControlActivated">@color/tap_pumpkin_orange</item>
         <!-- Inactive thumb color -->
         <item name="colorSwitchThumbNormal">@color/tap_grey_9b</item>
         <!-- Inactive track color(30% transparency) -->

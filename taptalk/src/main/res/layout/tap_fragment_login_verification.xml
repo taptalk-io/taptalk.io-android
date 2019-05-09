@@ -265,7 +265,7 @@
                 android:lineSpacingExtra="14sp"
                 android:padding="10dp"
                 android:text="Request again"
-                android:textColor="@color/tap_pumkin_orange_two"
+                android:textColor="@color/tap_pumpkin_orange"
                 android:textSize="16sp"
                 android:visibility="gone" />
 
@@ -286,7 +286,7 @@
                     android:gravity="end"
                     android:lineSpacingExtra="6sp"
                     android:text="@string/tap_verifying_otp"
-                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textColor="@color/tap_pumpkin_orange"
                     android:textSize="16sp" />
 
                 <ImageView

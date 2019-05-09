@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_pumkin_orange_two"
+            android:tint="@color/tap_pumpkin_orange"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_search"
             app:layout_constraintStart_toStartOf="parent"
@@ -101,7 +101,7 @@
                     android:gravity="center"
                     android:layout_marginTop="8dp"
                     android:text="@string/tap_add_new_contact"
-                    android:textColor="@color/tap_pumkin_orange_two"
+                    android:textColor="@color/tap_pumpkin_orange"
                     android:textSize="16sp" />
 
             </LinearLayout>

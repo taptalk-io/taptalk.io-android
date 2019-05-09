@@ -366,7 +366,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (null == transitionToGreen) {
                 transitionToGreen = ValueAnimator.ofArgb(
                         getResources().getColor(R.color.tap_white),
-                        getResources().getColor(R.color.tap_greenBlue));
+                        getResources().getColor(R.color.tap_pumpkin_orange));
                 transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToGreen.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
