@@ -9,6 +9,7 @@
     tools:context="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity">
 
     <FrameLayout
+        android:id="@+id/fl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/tap_white">
@@ -26,6 +27,7 @@
     </FrameLayout>
 
     <ScrollView
+        android:id="@+id/sv_register"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
@@ -48,17 +50,99 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_profile_picture"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginTop="32dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/tap_img_default_avatar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_profile_picture_overlay"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                android:src="@drawable/tap_bg_circle_6604040f"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture" />
+
+            <ProgressBar
+                android:id="@+id/pb_profile_picture_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:elevation="2dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture"
+                tools:progress="65" />
+
+            <ImageView
+                android:id="@+id/iv_remove_profile_picture"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:scaleType="center"
+                android:src="@drawable/tap_ic_close_red_circle"
+                android:translationX="6dp"
+                android:translationY="-6dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture" />
+
+            <LinearLayout
+                android:id="@+id/ll_change_profile_picture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/civ_profile_picture">
+
+                <TextView
+                    android:id="@+id/tv_label_change_profile_picture"
+                    style="@style/TapTextButtonOrange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tap_change" />
+
+                <ImageView
+                    android:id="@+id/iv_edit_profile_picture_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/tap_ic_edit_orange"
+                    android:tint="@color/tap_pumkin_orange_two" />
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/tv_label_full_name"
                 style="@style/TapFormFieldName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="24dp"
                 android:text="@string/tap_full_name"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+                app:layout_constraintTop_toBottomOf="@+id/ll_change_profile_picture" />
 
             <EditText
                 android:id="@+id/et_full_name"
@@ -68,7 +152,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
                 android:hint="@string/tap_full_name"
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
@@ -84,8 +168,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_full_name"
                 android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_full_name" />
 
@@ -108,7 +195,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
                 android:hint="@string/tap_hint_username"
                 android:imeOptions="actionNext"
                 android:inputType="text"
@@ -136,8 +223,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_username"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username_guide" />
 
@@ -158,7 +249,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
                 android:orientation="horizontal"
                 android:padding="15dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -178,17 +269,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:textColor="@color/tap_grey_9b"
-                    android:hint="+62" />
-
-                <ImageView
-                    android:id="@+id/iv_loading_progress_country"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
-                    android:src="@drawable/tap_ic_loading_progress_circle_orange"
-                    android:visibility="gone" />
+                    android:hint="+62"
+                    android:textColor="@color/tap_grey_9b" />
 
             </LinearLayout>
 
@@ -199,7 +281,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
                 android:enabled="false"
                 android:hint="@string/tap_hint_phone_number"
                 android:imeOptions="actionNext"
@@ -220,8 +302,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_not_a_valid_mobile_number"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_mobile_number" />
 
@@ -254,7 +340,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
                 android:hint="@string/tap_hint_email_address"
                 android:imeOptions="actionNext"
                 android:inputType="textEmailAddress"
@@ -270,8 +356,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_email_address"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_email_address" />
 
@@ -303,7 +393,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_password">
 
                 <EditText
@@ -369,8 +459,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_invalid_password"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_password_guide" />
 
@@ -392,7 +486,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_retype_password">
 
                 <EditText
@@ -446,8 +540,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:text="@string/tap_error_password_does_not_match"
                 android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_retype_password" />
 

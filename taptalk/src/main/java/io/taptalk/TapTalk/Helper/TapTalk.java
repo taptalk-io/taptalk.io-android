@@ -48,7 +48,6 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -65,7 +64,7 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
-import io.taptalk.TapTalk.View.Activity.TAPProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -170,6 +169,7 @@ public class TapTalk {
         }
 
         TAPDataManager.getInstance().updateSendingMessageToFailed();
+        TAPContactManager.getInstance().setContactSyncPermissionAsked(TAPDataManager.getInstance().isContactSyncPermissionAsked());
 
         //init stetho tapi hanya untuk DEBUG State
         if (BuildConfig.DEBUG)
@@ -535,7 +535,7 @@ public class TapTalk {
         TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
             public void onSelectFinished(TAPRoomModel roomModel) {
-                Intent intent = new Intent(context, TAPProfileActivity.class);
+                Intent intent = new Intent(context, TAPChatProfileActivity.class);
                 intent.putExtra(ROOM, roomModel);
                 context.startActivity(intent);
                 if (context instanceof Activity) {

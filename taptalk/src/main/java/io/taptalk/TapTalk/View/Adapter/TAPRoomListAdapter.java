@@ -60,7 +60,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivMute, ivMessageStatus;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
-        private View vSeparator;
+        private View vSeparator, vSeparatorFull;
 
         RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -74,6 +74,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            vSeparatorFull = itemView.findViewById(R.id.v_separator_full);
         }
 
         @Override
@@ -88,20 +89,27 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Change avatar icon and background
-            if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
+            //if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
                 // Item is selected
-                clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_black_18));
-                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_select));
-                ivAvatarIcon.setVisibility(View.VISIBLE);
-                vSeparator.setVisibility(View.GONE);
-            } else {
+            //    clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_black_18));
+            //    ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_select));
+            //    ivAvatarIcon.setVisibility(View.VISIBLE);
+            //    vSeparator.setVisibility(View.GONE);
+            //    vSeparatorFull.setVisibility(View.GONE);
+            //} else {
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-                clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_white));
+                clContainer.setBackgroundColor(resource.getColor(R.color.tap_white));
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
                 ivAvatarIcon.setVisibility(View.GONE);
-                vSeparator.setVisibility(View.VISIBLE);
-            }
+                if (position == getItemCount() - 1) {
+                    vSeparator.setVisibility(View.GONE);
+                    vSeparatorFull.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.VISIBLE);
+                    vSeparatorFull.setVisibility(View.GONE);
+                }
+            //}
 
             // Set name and timestamp text
             tvFullName.setText(item.getLastMessage().getRoom().getRoomName());
@@ -126,7 +134,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_amethyst_mediumpurple_270_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp));
             }
 
             // Change Status Message Icon

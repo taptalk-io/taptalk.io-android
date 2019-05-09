@@ -18,6 +18,7 @@ public class TAPContactManager {
     private HashMap<String, TAPUserModel> userDataMap;
     private HashMap<String, TAPUserModel> userMapByPhoneNumber;
     private String myCountryCode;
+    private boolean isContactSyncPermissionAsked;
 
     private TAPContactManager() {
         //loadAllUserDataFromDatabase();
@@ -118,7 +119,10 @@ public class TAPContactManager {
     }
 
     public String convertPhoneNumber(String phone) {
-        String tempPhone = phone.replaceFirst("\\+", "").replace(" ", "").replace("-", "");
+        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(","))
+            return "";
+
+        String tempPhone = phone.replaceAll("[^\\d]", "");
         String prefix = tempPhone.substring(0, getMyCountryCode().length());
 
         if ('0' == tempPhone.charAt(0)) {
@@ -138,5 +142,18 @@ public class TAPContactManager {
 
     public void setMyCountryCode(String myCountryCode) {
         this.myCountryCode = myCountryCode;
+    }
+
+    public boolean isContactSyncPermissionAsked() {
+        return isContactSyncPermissionAsked;
+    }
+
+    public void setAndSaveContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
+        TAPDataManager.getInstance().saveContactSyncPermissionAsked(contactSyncPermissionAsked);
+        isContactSyncPermissionAsked = contactSyncPermissionAsked;
+    }
+
+    public void setContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
+        isContactSyncPermissionAsked = contactSyncPermissionAsked;
     }
 }

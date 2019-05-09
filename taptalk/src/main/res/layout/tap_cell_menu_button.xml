@@ -11,10 +11,11 @@
 
     <ImageView
         android:id="@+id/iv_menu_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginStart="8dp"
-        android:src="@drawable/tap_ic_notifications_green"
+        android:scaleType="center"
+        android:src="@drawable/tap_ic_notifications_pumpkin_orange"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

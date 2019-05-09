@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,9 +29,11 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -44,13 +47,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 public class TAPNewChatActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPNewChatActivity.class.getSimpleName();
-    private LinearLayout llButtonNewContact, llButtonScanQR, llButtonNewGroup, llBlockedContacts, llButtonSync, llConnectionStatus;
-    private ImageView ivButtonClose, ivButtonSearch, ivSyncingLoading, ivConnectionStatus;
+    private LinearLayout llBlockedContacts, llButtonSync, llConnectionStatus;
+    private ImageView ivButtonClose, ivButtonSearch, ivConnectionStatus;
     private TextView tvTitle, tvConnectionStatus;
     private RecyclerView rvContactList;
     private NestedScrollView nsvNewChat;
-    private FrameLayout flLoading, flSyncStatus;
+    private FrameLayout flSyncStatus, flSync;
     private ProgressBar pbConnecting;
+    private ConstraintLayout clButtonNewContact, clButtonScanQR, clButtonNewGroup;
 
     private TAPContactInitialAdapter adapter;
     private TAPContactListViewModel vm;
@@ -71,11 +75,37 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void permissionCheckAndGetContactList() {
-        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT);
+        if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
+                !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+            showPermissionDialog();
+        } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+            flSync.setVisibility(View.VISIBLE);
         } else {
-            getContactList();
+            //getContactList(false);
+            getContactList(false);
         }
+    }
+
+    private void permissionCheckAndGetContactListWhenSyncButtonClicked() {
+        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+            showPermissionDialog();
+        } else {
+            getContactList(true);
+        }
+    }
+
+    private void showPermissionDialog() {
+        new TapTalkDialog.Builder(TAPNewChatActivity.this)
+                .setTitle("Contact Access")
+                .setMessage("We need to access your contact to make it easier for you to find your friends")
+                .setCancelable(false)
+                .setPrimaryButtonTitle("Allow")
+                .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
+                .setSecondaryButtonTitle("Cancel")
+                .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
+                .show();
+        TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
+
     }
 
     private void initViewModel() {
@@ -92,22 +122,21 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void initView() {
-        llButtonNewContact = findViewById(R.id.ll_button_new_contact);
-        llButtonScanQR = findViewById(R.id.ll_button_scan_qr);
-        llButtonNewGroup = findViewById(R.id.ll_button_new_group);
+        clButtonNewContact = findViewById(R.id.cl_button_new_contact);
+        clButtonScanQR = findViewById(R.id.cl_button_scan_qr);
+        clButtonNewGroup = findViewById(R.id.cl_button_new_group);
         llBlockedContacts = findViewById(R.id.ll_blocked_contacts);
         llButtonSync = findViewById(R.id.ll_btn_sync);
         llConnectionStatus = findViewById(R.id.ll_connection_status);
         ivButtonClose = findViewById(R.id.iv_button_close);
         ivButtonSearch = findViewById(R.id.iv_button_search);
-        ivSyncingLoading = findViewById(R.id.iv_syncing_loading);
         ivConnectionStatus = findViewById(R.id.iv_connection_status);
         tvTitle = findViewById(R.id.tv_title);
         tvConnectionStatus = findViewById(R.id.tv_connection_status);
         rvContactList = findViewById(R.id.rv_contact_list);
         nsvNewChat = findViewById(R.id.nsv_new_chat);
-        flLoading = findViewById(R.id.fl_loading);
         flSyncStatus = findViewById(R.id.fl_sync_status);
+        flSync = findViewById(R.id.fl_sync);
         pbConnecting = findViewById(R.id.pb_connecting);
 
         pbConnecting.setVisibility(View.GONE);
@@ -123,7 +152,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         rvContactList.setHasFixedSize(false);
 
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
-        llButtonNewGroup.setVisibility(View.GONE);
+        clButtonNewGroup.setVisibility(View.GONE);
         llBlockedContacts.setVisibility(View.GONE);
 
         //Animate sync button
@@ -131,11 +160,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> searchContact());
-        llButtonNewContact.setOnClickListener(v -> addNewContact());
-        llButtonScanQR.setOnClickListener(v -> openQRScanner());
-        llButtonNewGroup.setOnClickListener(v -> createNewGroup());
+        clButtonNewContact.setOnClickListener(v -> addNewContact());
+        clButtonScanQR.setOnClickListener(v -> openQRScanner());
+        clButtonNewGroup.setOnClickListener(v -> createNewGroup());
         llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
-        llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactList());
+        llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
+
+        permissionCheckAndGetContactList();
     }
 
     @Override
@@ -146,7 +177,14 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     openQRScanner();
                     break;
                 case PERMISSION_READ_CONTACT:
-                    permissionCheckAndGetContactList();
+                    //permissionCheckAndGetContactList();
+                    getContactList(true);
+                    break;
+            }
+        } else {
+            switch (requestCode) {
+                case PERMISSION_READ_CONTACT:
+                    flSync.setVisibility(View.VISIBLE);
                     break;
             }
         }
@@ -188,19 +226,16 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showSyncLoading() {
-        flLoading.setVisibility(View.VISIBLE);
-        ivSyncingLoading.clearAnimation();
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSyncingLoading);
+        showSyncLoadingStatus();
     }
 
     private void stopSyncLoading() {
-        Log.e(TAG, "stopSyncLoading: ");
-        flLoading.setVisibility(View.GONE);
-        ivSyncingLoading.clearAnimation();
+        llConnectionStatus.setVisibility(View.GONE);
     }
 
-    private void getContactList() {
-        showSyncLoading();
+    private void getContactList(boolean showLoading) {
+        if (showLoading) showSyncLoading();
+
         new Thread(() -> {
             List<String> newContactsPhoneNumbers = new ArrayList<>();
             ContentResolver cr = getContentResolver();
@@ -223,7 +258,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                                 String phoneNo = pCur.getString(pCur.getColumnIndex(
                                         ContactsContract.CommonDataKinds.Phone.NUMBER));
                                 String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
-                                if (!TAPContactManager.getInstance()
+                                if (!"".equals(phoneNumb) && !TAPContactManager.getInstance()
                                         .isUserPhoneNumberAlreadyExist(phoneNumb) && !newContactsPhoneNumbers.contains(phoneNumb)) {
                                     newContactsPhoneNumbers.add(phoneNumb);
                                 }
@@ -237,12 +272,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 cur.close();
             }
 
-            callAddContactsByPhoneApi(newContactsPhoneNumbers);
+            callAddContactsByPhoneApi(newContactsPhoneNumbers, showLoading);
 
         }).start();
     }
 
-    private void callAddContactsByPhoneApi(List<String> newContactsPhoneNumbers) {
+    private void callAddContactsByPhoneApi(List<String> newContactsPhoneNumbers, boolean showLoading) {
         TAPDataManager.getInstance().addContactByPhone(newContactsPhoneNumbers, new TapDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
@@ -250,8 +285,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     try {
                         // Insert contacts to database
                         if (null == response.getUsers() || response.getUsers().isEmpty()) {
-                            runOnUiThread(() -> stopSyncLoading());
-                            showSyncSuccessStatus(response.getUsers().size());
+                            runOnUiThread(() -> {
+                                //stopSyncLoading();
+                                flSync.setVisibility(View.GONE);
+                            });
+                            if (showLoading)
+                                showSyncSuccessStatus(response.getUsers().size());
                             return;
                         }
                         new Thread(() -> {
@@ -263,14 +302,30 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             }
                             TAPDataManager.getInstance().insertMyContactToDatabase(users);
                             TAPContactManager.getInstance().updateUserDataMap(users);
-                            runOnUiThread(() -> stopSyncLoading());
-                            showSyncSuccessStatus(response.getUsers().size());
+                            runOnUiThread(() -> {
+                                //stopSyncLoading();
+                                flSync.setVisibility(View.GONE);
+                            });
+                            if (showLoading)
+                                showSyncSuccessStatus(response.getUsers().size());
                         }).start();
                     } catch (Exception e) {
                         Log.e(TAG, "initViewModel: ", e);
                         e.printStackTrace();
                     }
                 }).start();
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                runOnUiThread(() -> stopSyncLoading());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                runOnUiThread(() -> stopSyncLoading());
             }
         });
     }
@@ -279,13 +334,26 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
             if (0 == contactSynced)
-            tvConnectionStatus.setText("All contacts synced");
+                tvConnectionStatus.setText("All contacts synced");
             else tvConnectionStatus.setText("Synced " + contactSynced + " Contacts");
+            pbConnecting.setVisibility(View.GONE);
+            ivConnectionStatus.setVisibility(View.VISIBLE);
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
             flSyncStatus.setVisibility(View.VISIBLE);
-            Log.e(TAG, "showSyncSuccessStatus: " );
+            Log.e(TAG, "showSyncSuccessStatus: ");
 
             new Handler().postDelayed(() -> flSyncStatus.setVisibility(View.GONE), 1000L);
+        });
+    }
+
+    private void showSyncLoadingStatus() {
+        runOnUiThread(() -> {
+            llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
+            tvConnectionStatus.setText("Syncing Contacts");
+            ivConnectionStatus.setVisibility(View.GONE);
+            pbConnecting.setVisibility(View.VISIBLE);
+            llConnectionStatus.setVisibility(View.VISIBLE);
+            flSyncStatus.setVisibility(View.VISIBLE);
         });
     }
 }

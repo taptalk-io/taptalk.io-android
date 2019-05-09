@@ -16,7 +16,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -27,13 +26,11 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
@@ -181,15 +178,15 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
             if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(et_keyword.text.toString()))
                 isSameKeyword = true
             et_keyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
-            val placeID : String = item?.prediction?.placeId ?: "0"
-            val placeFields : MutableList<Place.Field> = Arrays.asList(Place.Field.LAT_LNG)
-            val request : FetchPlaceRequest = FetchPlaceRequest.builder(placeID, placeFields).build()
+            val placeID: String = item?.prediction?.placeId ?: "0"
+            val placeFields: MutableList<Place.Field> = Arrays.asList(Place.Field.LAT_LNG)
+            val request: FetchPlaceRequest = FetchPlaceRequest.builder(placeID, placeFields).build()
             placesClient.fetchPlace(request).addOnSuccessListener(this@TAPMapActivity) { p0 ->
                 val place = p0?.place
                 latitude = place?.latLng?.latitude ?: 0.0
                 longitude = place?.latLng?.longitude ?: 0.0
                 centerOfMap = place?.latLng
-                val curr : LatLng = LatLng(latitude, longitude)
+                val curr: LatLng = LatLng(latitude, longitude)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
                 getGeocoderAddress()
                 iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
@@ -234,7 +231,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = ""
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.tap_ic_close_green)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.tap_ic_close_pumpkin_orange)
 
         latitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LATITUDE, 0.0)
         longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
@@ -252,8 +249,12 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
 
         et_keyword.addTextChangedListener(textWatcher)
         et_keyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-            if (hasFocus && !TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty()) {
-                recycler_view.visibility = View.VISIBLE
+            if (hasFocus) {
+                rl_search.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                if (!TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty())
+                    recycler_view.visibility = View.VISIBLE
+            } else {
+                rl_search.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_10dp_stroke_eaeaea_1dp)
             }
         }
         et_keyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {

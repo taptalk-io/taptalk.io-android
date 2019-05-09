@@ -37,6 +37,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -172,7 +174,9 @@ public class TAPFileDownloadManager {
             public void onSuccess(ResponseBody response) {
                 new Thread(() -> {
                     try {
-                        Bitmap bitmap = getBitmapFromResponse(response);
+                        String mimeType = (String) message.getData().get(MEDIA_TYPE);
+                        Log.e(TAG, "mimeType: " + mimeType);
+                        Bitmap bitmap = getBitmapFromResponse(response, null == mimeType ? IMAGE_JPEG : mimeType);
                         saveImageToCacheAndSendBroadcast(context, localID, fileID, bitmap);
                     } catch (Exception e) {
                         setDownloadFailed(localID);
@@ -206,11 +210,12 @@ public class TAPFileDownloadManager {
         removeDownloadProgressMap(localID);
     }
 
-    private Bitmap getBitmapFromResponse(ResponseBody responseBody) throws Exception {
+    private Bitmap getBitmapFromResponse(ResponseBody responseBody, String mimeType) throws Exception {
         Bitmap bitmap;
         bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
+        bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
+        Log.e(TAG, "getBitmapFromResponse: " + (mimeType.equals(IMAGE_PNG) ? "Bitmap.CompressFormat.PNG" : "Bitmap.CompressFormat.JPEG"));
         out.flush();
         out.close();
         return bitmap;
@@ -262,9 +267,10 @@ public class TAPFileDownloadManager {
         }
     }
 
-    public void writeImageFileToDisk(Context context, Long timestamp, Bitmap bitmap, TapTalkActionInterface listener) {
+    public void writeImageFileToDisk(Context context, Long timestamp, Bitmap bitmap, String mimeType, TapTalkActionInterface listener) {
         new Thread(() -> {
-            String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + ".jpeg";
+            String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
+            String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
             File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.appContext.getString(R.string.app_name) + "/" + TapTalk.appContext.getString(R.string.app_name) + " Images");
             dir.mkdirs();
             File file = new File(dir, filename);
@@ -273,7 +279,7 @@ public class TAPFileDownloadManager {
             }
             try {
                 FileOutputStream out = new FileOutputStream(file);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
+                bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
                 out.flush();
                 out.close();
                 scanFile(context, file, TAPUtils.getInstance().getFileMimeType(file));

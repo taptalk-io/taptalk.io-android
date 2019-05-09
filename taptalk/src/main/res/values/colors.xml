@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/tap_warmPurple</color>
-    <color name="colorPrimaryDark">@color/tap_darkPurple</color>
-    <color name="colorAccent">@color/tap_tealish</color>
-    <color name="colorAccentLight">@color/tap_lightTeal</color>
+    <color name="colorPrimary">@color/tap_mango</color>
+    <color name="colorPrimaryDark">@color/tap_pumkin_orange_two</color>
+    <color name="colorAccent">@color/tap_dodger_blue</color>
+    <color name="colorAccentLight">@color/tap_blue_purple</color>
 
     <color name="tap_darkPurple">#51276c</color>
     <color name="tap_purply_two">#673ab7</color>
@@ -26,7 +26,9 @@
     <color name="tap_orangeYellow">#ff9f00</color>
     <color name="tap_pumkin_orange_two">#ff7e00</color>
     <color name="tap_mango">#ff9833</color>
+    <color name="tap_light_orange">#ffa145</color>
     <color name="tap_butterscotch">#ffb438</color>
+    <color name="tap_parchment">#fff4b1</color>
     <color name="tap_leafyGreen">#3bc73d</color>
     <color name="tap_vibrantGreen">#19c700</color>
     <color name="tap_green">#2db80f</color>
@@ -36,9 +38,12 @@
     <color name="tap_tealish">#2eccad</color>
     <color name="tap_aquaMarine">#3de1c1</color>
     <color name="tap_lightTeal">#a7ebde</color>
+    <color name="tap_dodger_blue">#48beff</color>
     <color name="tap_blue_purple">#362ad7</color>
+    <color name="tap_bubble_blue">#483DDA</color>
     <color name="tap_brightBlue">#007aff</color>
     <color name="tap_clear_blue">#188cff</color>
+    <color name="tap_purplish_blue">#4b3fef</color>
     <color name="tap_highlight_blue">#5AC8FA</color>
 
     <color name="tap_cream_white">#fffdea</color>

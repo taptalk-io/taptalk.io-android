@@ -34,6 +34,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 
 public class TAPImageDetailPreviewActivity extends AppCompatActivity {
@@ -48,7 +49,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
     private ProgressBar pbSaving;
     private TAPTouchImageView tivImageDetail;
 
-    private String fileID, title, messageStatus, caption;
+    private String fileID, title, messageStatus, caption, mimeType;
 
     private GestureDetector gestureDetector;
 
@@ -103,6 +104,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         title = message.getUser().getName();
         messageStatus = message.getMessageStatusText();
         caption = (String) message.getData().get(CAPTION);
+        mimeType = (String) message.getData().get(MEDIA_TYPE);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -160,7 +162,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
         } else {
             showLoading();
-            TAPFileDownloadManager.getInstance().writeImageFileToDisk(this, System.currentTimeMillis(), image.getBitmap(), saveImageListener);
+            TAPFileDownloadManager.getInstance().writeImageFileToDisk(this, System.currentTimeMillis(), image.getBitmap(), mimeType, saveImageListener);
         }
     }
 

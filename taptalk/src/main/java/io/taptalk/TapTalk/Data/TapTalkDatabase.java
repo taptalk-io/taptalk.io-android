@@ -29,6 +29,7 @@ public abstract class TapTalkDatabase extends RoomDatabase{
 //                    Editable.Factory.getInstance().newEditable(DB_ENCRYPT_PASS));
             database = Room.databaseBuilder(context,
                     TapTalkDatabase.class, "message_database")
+                    .addMigrations(MIGRATION_1_2)
                     .addMigrations(MIGRATION_2_3)
 //                    .openHelperFactory(factory)
                     .build();

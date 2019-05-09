@@ -51,6 +51,7 @@ import okhttp3.ResponseBody;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASKED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
@@ -155,6 +156,7 @@ public class TAPDataManager {
         removeLastCallCountryTimestamp();
         removeCountryList();
         removeMyCountryCode();
+        removeContactSyncPermissionAsked();
     }
 
     /**
@@ -328,6 +330,23 @@ public class TAPDataManager {
     public void removeUserLastActivityMap() {
         Hawk.delete(K_USER_LAST_ACTIVITY);
     }
+
+    /**
+     * CONTACT SYNC PERMISSION
+     */
+
+    public boolean isContactSyncPermissionAsked() {
+        return Hawk.get(IS_PERMISSION_SYNC_ASKED, false);
+    }
+
+    public void saveContactSyncPermissionAsked(boolean userSyncPermissionAsked) {
+        Hawk.put(IS_PERMISSION_SYNC_ASKED, userSyncPermissionAsked);
+    }
+
+    public void removeContactSyncPermissionAsked() {
+        Hawk.delete(IS_PERMISSION_SYNC_ASKED);
+    }
+
 
     /**
      * MY COUNTRY CODE
@@ -619,6 +638,13 @@ public class TAPDataManager {
             return;
         }
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
+    }
+
+    public void getAllMessageThatNotRead(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null == getActiveUser())
+            return;
+
+        TAPDatabaseManager.getInstance().getAllMessageThatNotRead(getActiveUser().getUserID(), roomID, listener);
     }
 
     public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -926,6 +952,22 @@ public class TAPDataManager {
         intent.putExtra(UploadLocalID, localID);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
+
+    public void uploadProfilePicture(File imageFile, String mimeType,
+                                     ProgressRequestBody.UploadCallbacks uploadCallback,
+                                     TapDefaultDataView<TAPGetUserResponse> view) {
+        cancelUploadProfilePicture();
+        uploadProfilePictureSubscriber = new TAPDefaultSubscriber<>(view);
+        TAPApiManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallback, uploadProfilePictureSubscriber);
+    }
+
+    public void cancelUploadProfilePicture() {
+        if (null != uploadProfilePictureSubscriber) {
+            uploadProfilePictureSubscriber.unsubscribe();
+        }
+    }
+
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TapDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> uploadProfilePictureSubscriber;
 
     // File Download
     private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID

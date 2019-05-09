@@ -5,117 +5,175 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white">
+    android:background="@color/tap_white_f3">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl_button_search"
+    <FrameLayout
+        android:id="@+id/fl_button_search"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/tap_white"
         android:elevation="2dp"
-        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@id/f_connection_status"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/iv_search_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+        <android.support.v7.widget.CardView
+            android:id="@+id/cv_button_search"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:layout_marginStart="16dp"
-            android:src="@drawable/tap_ic_search_grey"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="72dp"
-            android:layout_marginEnd="72dp"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:text="@string/tap_search"
-            android:textColor="@color/tap_grey_9b"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl_selection"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_greenBlue"
-        android:transitionName="searchBar"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/iv_button_cancel_selection"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_selection_count"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:maxLines="1"
-            android:textColor="@color/tap_white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_mute"
-            app:layout_constraintStart_toEndOf="@id/iv_button_cancel_selection"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="1" />
+            android:layout_marginBottom="8dp"
+            android:clipToPadding="true"
+            android:elevation="2dp"
+            app:cardCornerRadius="8dp">
 
-        <ImageView
-            android:id="@+id/iv_button_mute"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp"
-            android:src="@drawable/tap_ic_mute_white"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_delete" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_button_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/tap_white">
 
-        <ImageView
-            android:id="@+id/iv_button_delete"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp"
-            android:src="@drawable/tap_ic_delete_white"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_more" />
+                <ImageView
+                    android:id="@+id/iv_search_icon"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="18dp"
+                    android:src="@drawable/tap_ic_search_grey"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_button_more"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp"
-            android:src="@drawable/tap_ic_more_options_white"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                <TextView
+                    android:id="@+id/tv_search_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginEnd="18dp"
+                    android:fontFamily="@font/tap_font_pt_root_regular"
+                    android:text="@string/tap_search"
+                    android:textColor="@color/tap_grey_9b"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/civ_my_avatar_image"
+                    app:layout_constraintStart_toEndOf="@id/iv_search_icon"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+                <io.taptalk.TapTalk.Helper.CircleImageView
+                    android:id="@+id/civ_my_avatar_image"
+                    android:layout_width="56dp"
+                    android:layout_height="50dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="13dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="13dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/tap_bg_circle_d9d9d9"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_search_text"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!--Clickable area for avatar image-->
+                <View
+                    android:id="@+id/v_my_avatar_image"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_my_avatar_image"
+                    app:layout_constraintEnd_toEndOf="@id/civ_my_avatar_image"
+                    app:layout_constraintStart_toStartOf="@id/civ_my_avatar_image"
+                    app:layout_constraintTop_toTopOf="@id/civ_my_avatar_image" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="bottom"
+            android:background="@color/tap_grey_ea" />
+
+    </FrameLayout>
+
+    <!--JANGAN DIAPUS-->
+
+    <!--<android.support.constraint.ConstraintLayout-->
+    <!--android:id="@+id/cl_selection"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:background="@color/tap_greenBlue"-->
+    <!--android:transitionName="searchBar"-->
+    <!--app:layout_constraintTop_toTopOf="parent">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_button_cancel_selection"-->
+    <!--android:layout_width="?attr/actionBarSize"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:padding="16dp"-->
+    <!--android:src="@drawable/tap_ic_back_white"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/tv_selection_count"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginStart="16dp"-->
+    <!--android:layout_marginEnd="16dp"-->
+    <!--android:ellipsize="end"-->
+    <!--android:fontFamily="@font/tap_font_pt_root_regular"-->
+    <!--android:maxLines="1"-->
+    <!--android:textColor="@color/tap_white"-->
+    <!--android:textSize="16sp"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@id/iv_button_mute"-->
+    <!--app:layout_constraintStart_toEndOf="@id/iv_button_cancel_selection"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--tools:text="1" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_button_mute"-->
+    <!--android:layout_width="?attr/actionBarSize"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:foreground="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:padding="4dp"-->
+    <!--android:src="@drawable/tap_ic_mute_white"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@id/iv_button_delete" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_button_delete"-->
+    <!--android:layout_width="?attr/actionBarSize"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:foreground="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:padding="4dp"-->
+    <!--android:src="@drawable/tap_ic_delete_white"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@id/iv_button_more" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/iv_button_more"-->
+    <!--android:layout_width="?attr/actionBarSize"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:foreground="?attr/selectableItemBackgroundBorderless"-->
+    <!--android:padding="4dp"-->
+    <!--android:src="@drawable/tap_ic_more_options_white"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toEndOf="parent" />-->
+
+    <!--</android.support.constraint.ConstraintLayout>-->
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/tap_white_f3"
         android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/f_connection_status" />
@@ -126,50 +184,68 @@
         android:layout_width="match_parent"
         android:layout_height="20dp"
         app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
-        app:layout_constraintTop_toBottomOf="@+id/cl_button_search" />
+        app:layout_constraintTop_toBottomOf="@+id/fl_button_search" />
 
     <LinearLayout
         android:id="@+id/ll_room_empty"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/tap_white_f3"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/f_connection_status">
 
-        <ImageView
-            android:layout_width="220dp"
-            android:layout_height="138dp"
-            android:padding="12dp"
-            android:src="@drawable/tap_img_chat_empty" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_marginStart="64dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="64dp"
-            android:fontFamily="@font/tap_font_pt_root_bold"
-            android:gravity="center"
-            android:text="@string/tap_no_chats"
-            android:textColor="@color/tap_black_44"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="64dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="64dp"
-            android:layout_marginBottom="78dp"
+            android:layout_marginTop="122dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/tap_font_pt_root_bold"
+                android:gravity="center_horizontal"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="6sp"
+                android:text="@string/tap_no_chats_to_show"
+                android:textColor="@color/tap_black_19"
+                android:textSize="24sp" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:fontFamily="@font/tap_font_pt_root_regular"
             android:gravity="center_horizontal"
+            android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"
-            android:text="@string/tap_new_chat_guide"
-            android:textColor="@color/tap_black_44"
-            android:textSize="13sp" />
+            android:text="@string/tap_room_list_empty"
+            android:textColor="@color/tap_black_19"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_start_new_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/tap_font_pt_root_bold"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="6sp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            android:text="@string/tap_start_a_new_chat"
+            android:textColor="@color/tap_pumkin_orange_two"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -179,11 +255,11 @@
         android:layout_height="56dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_green_circle_button_ripple"
+        android:background="@drawable/tap_bg_gradient_ff7e00_ff9833_circle_button_ripple"
         android:elevation="8dp"
         android:padding="16dp"
-        android:src="@drawable/tap_ic_new_chat_white"
-        android:visibility="gone"
+        android:src="@drawable/tap_ic_pencil_chat"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
