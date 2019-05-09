@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp"
+            android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
             android:orientation="horizontal"
             android:padding="15dp">
 
@@ -103,14 +103,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/tap_bg_rounded_8dp_stroke_dcdcdc_1dp">
+            android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp">
 
             <EditText
                 android:id="@+id/et_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/tap_transparent_white"
-                android:hint="1234 5678 0000"
+                android:hint="82212345678"
                 android:inputType="numberSigned"
                 android:padding="13dp"
                 android:imeOptions="actionSend"

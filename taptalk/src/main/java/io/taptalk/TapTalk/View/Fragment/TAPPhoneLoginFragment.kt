@@ -15,6 +15,7 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -119,13 +120,14 @@ class TAPPhoneLoginFragment : Fragment() {
             if (hasFocus) {
                 fl_phone_number.setBackgroundResource(R.drawable.tap_bg_white_rounded_8dp_stroke_362ad7_1dp)
             } else {
-                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_rounded_8dp_stroke_dcdcdc_1dp)
+                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
             }
         }
 
         ll_country_code.setOnClickListener {
             val intent = Intent(context, TAPCountryListActivity::class.java)
             intent.putExtra(COUNTRY_LIST, countryListitems)
+            intent.putExtra(COUNTRY_ID, defaultCountryID)
             startActivityForResult(intent, COUNTRY_PICK)
         }
     }
@@ -157,8 +159,10 @@ class TAPPhoneLoginFragment : Fragment() {
                 && checkAndEditPhoneNumber() == loginViewModel.phoneNumber
                 && currentOTPTimestampLength <= maxTime * 1000) {
             requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
-        } else
+        } else {
             TapTalk.loginWithRequestOTP(defaultCountryID, checkAndEditPhoneNumber(), requestOTPInterface)
+            loginActivity.vm.lastLoginTimestamp = 0L
+        }
     }
 
     private fun showProgress() {
@@ -282,7 +286,6 @@ class TAPPhoneLoginFragment : Fragment() {
                 when (resultCode) {
                     RESULT_OK -> {
                         val item = data?.getParcelableExtra<TAPCountryListItem>(TAPDefaultConstant.K_COUNTRY_PICK)
-                        Toast.makeText(context, item?.commonName, LENGTH_SHORT).show()
                         val callingCode: String = item?.callingCode ?: ""
                         setCountry(item?.countryID ?: 0, callingCode)
                     }

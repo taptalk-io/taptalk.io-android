@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:colorControlHighlight">
+
+    <item android:id="@android:id/mask">
+        <shape android:shape="oval">
+            <gradient
+                android:startColor="@color/tap_mango"
+                android:endColor="@color/tap_pumkin_orange_two"/>
+        </shape>
+    </item>
+
+    <item android:drawable="@drawable/tap_bg_circle_pumpkin_mango_radial_stroke_pumpkin_1dp" />
+</ripple>

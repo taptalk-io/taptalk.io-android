@@ -90,7 +90,6 @@ import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
-import io.taptalk.TapTalk.View.Fragment.TAPLoadingMessageFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -115,6 +114,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEven
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
@@ -122,7 +122,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -180,9 +179,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPRoundedCornerImageView rcivQuoteImage;
     private TextView tvRoomName, tvRoomStatus, tvChatEmptyGuide, tvProfileDescription, tvQuoteTitle,
             tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
-    private View vStatusBadge, vQuoteDecoration;
+    private View vRoomImage, vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
-    private TAPLoadingMessageFragment fOlderLoading, fNewerLoading;
 
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
@@ -439,11 +437,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
         etChat = (EditText) findViewById(R.id.et_chat);
+        vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
-        fOlderLoading = (TAPLoadingMessageFragment) getSupportFragmentManager().findFragmentById(R.id.f_loading_older);
-        fNewerLoading = (TAPLoadingMessageFragment) getSupportFragmentManager().findFragmentById(R.id.f_loading_newer);
     }
 
     private boolean initViewModel() {
@@ -500,10 +497,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             showTypingIndicator();
         }
 
-        // Set loading texts
-        fOlderLoading.setLoadingText(getString(R.string.tap_loading_older_messages));
-        fNewerLoading.setLoadingText(getString(R.string.tap_loading_new_messages));
-
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(glide, chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
@@ -540,13 +533,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         // TODO: 1 February 2019 UPDATE WELCOME MESSAGE
-        if (null != vm.getOtherUserModel().getUserRole() && vm.getOtherUserModel().getUserRole().getCode().equals("expert")) {
-            tvChatEmptyGuide.setText(Html.fromHtml("<b><font color='#784198'>" + vm.getRoom().getRoomName() + "</font></b> is an Expert."));
-            tvProfileDescription.setText("Hi, there! If you are looking for creative gifts for someone special, please check his/her services!");
-        } else {
-            tvChatEmptyGuide.setText("Are you looking for creative gifts?");
-            tvProfileDescription.setText("Discuss with your friend and discover more about the creative gift in our lists.");
-        }
+        tvChatEmptyGuide.setText(Html.fromHtml("Start a conversation with " + "<b><font color='#191919'>" + vm.getRoom().getRoomName() + "</font></b>"));
+        tvProfileDescription.setText("Say hi to " + vm.getRoom().getRoomName() + " and start a conversation");
 
         //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
@@ -590,7 +578,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         sblChat.setSwipeInterface(swipeInterface);
 
-        civRoomImage.setOnClickListener(v -> openRoomProfile());
+        vRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> closeActivity());
         ivButtonCancelReply.setOnClickListener(v -> hideQuoteLayout());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
@@ -645,7 +633,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
 //        if (TapTalk.isOpenDefaultProfileEnabled) {
-//            Intent intent = new Intent(this, TAPProfileActivity.class);
+//            Intent intent = new Intent(this, TAPChatProfileActivity.class);
 //            intent.putExtra(K_ROOM, vm.getRoom());
 //            startActivity(intent);
 //            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
@@ -864,7 +852,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // Show file quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setImageDrawable(getDrawable(R.drawable.tap_ic_documents_white));
-                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_circle_purply));
+                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_circle_bluepurple));
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));
@@ -1752,11 +1740,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
-        public void startLoading() {
-            fNewerLoading.show();
-        }
-
-        @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
@@ -1798,7 +1781,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 messageAdapter.addMessage(0, messageAfterModels);
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
-                if (vm.isOnBottom() && 0 < messageAfterModels.size()) rvMessageList.scrollToPosition(0);
+                if (vm.isOnBottom() && 0 < messageAfterModels.size())
+                    rvMessageList.scrollToPosition(0);
 
                 if (rvMessageList.getVisibility() != View.VISIBLE)
                     rvMessageList.setVisibility(View.VISIBLE);
@@ -1812,11 +1796,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
-            } else {
-                fNewerLoading.hide();
             }
-            //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
-            vm.setInitialAPICallFinished(true);
+
+            if (!vm.isInitialAPICallFinished()) {
+                //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
+                vm.setInitialAPICallFinished(true);
+
+                //Sementara Temporary buat Mastiin ga ada message nyangkut
+                setAllUnreadMessageToRead();
+            }
         }
 
         @Override
@@ -1850,18 +1838,33 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
+    private void setAllUnreadMessageToRead() {
+        new Thread(() -> TAPDataManager.getInstance().getAllMessageThatNotRead(TAPChatManager.getInstance().getOpenRoom(),
+                new TAPDatabaseListener<TAPMessageEntity>() {
+                    @Override
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                        for (TAPMessageEntity entity : entities) {
+                            if (vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                                markMessageAsRead(vm.getMessagePointer().get(entity.getLocalID()));
+                            } else {
+                                markMessageAsRead(TAPChatManager.getInstance().convertToModel(entity));
+                            }
+                        }
+                    }
+                })).start();
+    }
+
+    private void markMessageAsRead(TAPMessageModel readMessage) {
+        new Thread(() -> {
+            if (null != readMessage.getIsRead() && !readMessage.getIsRead()) {
+                TAPMessageStatusManager.getInstance().addUnreadListByOne(readMessage.getRoom().getRoomID());
+                TAPMessageStatusManager.getInstance().addReadMessageQueue(readMessage);
+            }
+        }).start();
+    }
+
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
-        @Override
-        public void startLoading() {
-            fNewerLoading.show();
-        }
-
-        @Override
-        public void endLoading() {
-            fNewerLoading.hide();
-        }
-
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
@@ -1922,16 +1925,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     //message before yang di panggil pas pagination db balikin data di bawah limit
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
-        @Override
-        public void startLoading() {
-            fOlderLoading.show();
-        }
-
-        @Override
-        public void endLoading() {
-            fOlderLoading.hide();
-        }
-
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database

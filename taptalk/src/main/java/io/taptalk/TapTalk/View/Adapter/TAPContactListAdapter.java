@@ -200,7 +200,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
             } else {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                ivAvatarIcon.setImageResource(R.drawable.tap_ic_close_red_circle);
+                ivAvatarIcon.setImageResource(R.drawable.tap_ic_close_red_circle_border);
             }
 
             itemView.setOnClickListener(v -> deselectContact(item));

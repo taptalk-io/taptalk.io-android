@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -23,6 +24,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +34,7 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -54,17 +59,14 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
-import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_CALLING_CODE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MOBILE_NUMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 
 public class TAPRoomListFragment extends Fragment {
 
@@ -74,8 +76,11 @@ public class TAPRoomListFragment extends Fragment {
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
     private LinearLayout llRoomEmpty;
-    private TextView tvSelectionCount;
+    private TextView tvSelectionCount, tvStartNewChat;
     private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
+    private CircleImageView civMyAvatarImage;
+    private CardView cvButtonSearch;
+    private View vButtonMyAccount;
 
     private RecyclerView rvContactList;
     private LinearLayoutManager llm;
@@ -128,6 +133,13 @@ public class TAPRoomListFragment extends Fragment {
         TAPNotificationManager.getInstance().setRoomListAppear(false);
         TAPBroadcastManager.unregister(getContext(), receiver);
         removeNetworkListener();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == EDIT_PROFILE) {
+            reloadProfilePicture();
+        }
     }
 
     @Override
@@ -215,20 +227,26 @@ public class TAPRoomListFragment extends Fragment {
 
     private void initView(View view) {
         clButtonSearch = view.findViewById(R.id.cl_button_search);
-        clSelection = view.findViewById(R.id.cl_selection);
+        //clSelection = view.findViewById(R.id.cl_selection);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
-        tvSelectionCount = view.findViewById(R.id.tv_selection_count);
+        //tvSelectionCount = view.findViewById(R.id.tv_selection_count);
+        tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
         ivButtonNewChat = view.findViewById(R.id.iv_button_new_chat);
-        ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
-        ivButtonMute = view.findViewById(R.id.iv_button_mute);
-        ivButtonDelete = view.findViewById(R.id.iv_button_delete);
-        ivButtonMore = view.findViewById(R.id.iv_button_more);
+        //ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
+        //ivButtonMute = view.findViewById(R.id.iv_button_mute);
+        //ivButtonDelete = view.findViewById(R.id.iv_button_delete);
+        //ivButtonMore = view.findViewById(R.id.iv_button_more);
         rvContactList = view.findViewById(R.id.rv_contact_list);
+        civMyAvatarImage = view.findViewById(R.id.civ_my_avatar_image);
+        cvButtonSearch = view.findViewById(R.id.cv_button_search);
+        vButtonMyAccount = view.findViewById(R.id.v_my_avatar_image);
 
         if (null != getActivity()) {
             getActivity().getWindow().setBackgroundDrawable(null);
         }
+
+        reloadProfilePicture();
 
         flSetupContainer.setVisibility(View.GONE);
 
@@ -246,44 +264,51 @@ public class TAPRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        clButtonSearch.setOnClickListener(v -> {
-            if (null != fragment)
+        cvButtonSearch.setOnClickListener(v -> {
+            TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
+            if (null != fragment) {
                 fragment.showSearchChat();
+            }
         });
+        vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
-        ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
-        ivButtonMute.setOnClickListener(v -> {
-
+        tvStartNewChat.setOnClickListener(v -> {
+            TAPUtils.getInstance().animateClickButton(tvStartNewChat, 0.95f);
+            openNewChatActivity();
         });
-        ivButtonDelete.setOnClickListener(v -> {
-
-        });
-        ivButtonMore.setOnClickListener(v -> {
-
-        });
+        //ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
+        //ivButtonMute.setOnClickListener(v -> {});
+        //ivButtonDelete.setOnClickListener(v -> {});
+        //ivButtonMore.setOnClickListener(v -> {});
         flSetupContainer.setOnClickListener(v -> {
         });
+    }
 
-        // TODO: 22 April 2019 TESTING
-        if (BuildConfig.DEBUG) {
-            ivButtonNewChat.setOnLongClickListener(view1 -> {
-                Intent intent = new Intent(getContext(), TAPRegisterActivity.class);
-                intent.putExtra(COUNTRY_ID, 1);
-                intent.putExtra(COUNTRY_CALLING_CODE, "62");
-                intent.putExtra(MOBILE_NUMBER, "82113308615");
-                startActivity(intent);
-                if (null != getActivity()) {
-                    getActivity().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-                }
-                return false;
-            });
+    private void reloadProfilePicture() {
+        // TODO: 7 May 2019 CHECK IF PROFILE IS HIDDEN
+        if (null != getContext() && null != TAPChatManager.getInstance().getActiveUser()
+                && null != TAPChatManager.getInstance().getActiveUser().getAvatarURL()
+                && !TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail().isEmpty()) {
+            Glide.with(getContext()).load(TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail())
+                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+        } else if (null != getContext()) {
+            Glide.with(getContext()).load(getContext().getDrawable(R.drawable.tap_img_default_avatar))
+                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+        }
+    }
+
+    private void openMyAccountActivity() {
+        Intent intent = new Intent(getContext(), TAPMyAccountActivity.class);
+        startActivityForResult(intent, EDIT_PROFILE);
+        if (null != getActivity()) {
+            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }
     }
 
     private void openNewChatActivity() {
+        Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
+        startActivity(intent);
         if (null != getActivity()) {
-            Intent intent = new Intent(getContext(), TAPNewChatActivity.class);
-            startActivity(intent);
             getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }
     }
@@ -360,6 +385,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void processMessageFromSocket(TAPMessageModel message) {
+        Log.e(TAG, "processMessageFromSocket: "+message.getBody() );
         String messageRoomID = message.getRoom().getRoomID();
         TAPRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
 
@@ -420,17 +446,17 @@ public class TAPRoomListFragment extends Fragment {
 
     private void showSelectionActionBar() {
         vm.setSelecting(true);
-        tvSelectionCount.setText(vm.getSelectedCount() + "");
+        //tvSelectionCount.setText(vm.getSelectedCount() + "");
         clButtonSearch.setElevation(0);
         clButtonSearch.setVisibility(View.INVISIBLE);
-        clSelection.setVisibility(View.VISIBLE);
+        //clSelection.setVisibility(View.VISIBLE);
     }
 
     private void hideSelectionActionBar() {
         vm.setSelecting(false);
         clButtonSearch.setElevation(TAPUtils.getInstance().dpToPx(2));
         clButtonSearch.setVisibility(View.VISIBLE);
-        clSelection.setVisibility(View.INVISIBLE);
+        //clSelection.setVisibility(View.INVISIBLE);
     }
 
     public void cancelSelection() {
@@ -545,6 +571,7 @@ public class TAPRoomListFragment extends Fragment {
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }
+            showNewChatButton();
         }
 
         @Override

@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -68,6 +69,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
         boolean isBottom;
         private View vListBottomLine, vLine;
         private TextView tvCountryName;
+        private ImageView ivCountryChoosen;
 
         protected CountryItemViewHolder(boolean isBottom, ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -75,6 +77,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
             vListBottomLine = itemView.findViewById(R.id.v_list_bottom_line);
             vLine = itemView.findViewById(R.id.v_line);
             tvCountryName = itemView.findViewById(R.id.tv_country_name);
+            ivCountryChoosen = itemView.findViewById(R.id.iv_country_choosen);
         }
 
         @Override
@@ -89,6 +92,12 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
             tvCountryName.setText(item.getCountryListItem().getCommonName());
 
             itemView.setOnClickListener(v -> countryPickInterface.onPick(item.getCountryListItem()));
+
+            if (item.isSelected()) {
+                ivCountryChoosen.setVisibility(View.VISIBLE);
+            } else {
+                ivCountryChoosen.setVisibility(View.GONE);
+            }
         }
     }
 

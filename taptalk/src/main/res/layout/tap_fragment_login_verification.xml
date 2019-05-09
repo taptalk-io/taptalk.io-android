@@ -314,7 +314,7 @@
                     android:fontFamily="@font/tap_font_pt_root_bold"
                     android:gravity="end"
                     android:lineSpacingExtra="6sp"
-                    android:text="@string/otp_successfully_sent"
+                    android:text="@string/tap_otp_successfully_sent"
                     android:textColor="@color/tap_apple_green"
                     android:textSize="16sp" />
 

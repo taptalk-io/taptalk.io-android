@@ -17,7 +17,7 @@
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/tap_black_44</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="TapTitle">
@@ -28,11 +28,29 @@
         <item name="android:textSize">40sp</item>
     </style>
 
+    <style name="TapPageTitle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tap_black_19</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <style name="TapFormFieldName">
         <item name="android:fontFamily">@font/tap_font_pt_root_medium</item>
         <item name="android:letterSpacing">-0.03</item>
         <item name="android:lineSpacingExtra">6sp</item>
         <item name="android:textColor">@color/tap_black_19</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TapTextButtonOrange">
+        <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tap_pumkin_orange_two</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -83,7 +101,7 @@
 
     <style name="TapButton">
         <item name="android:background">
-            @drawable/tap_bg_green_button_ripple
+            @drawable/tap_bg_orange_button_ripple
         </item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -98,7 +116,7 @@
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tap_white</item>
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="TapSearchBar">
@@ -116,8 +134,8 @@
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">0.09</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/tap_mediumPurple</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/tap_black_19</item>
+        <item name="android:textSize">11sp</item>
     </style>
 
     <style name="TapContactName">
@@ -195,7 +213,7 @@
     </style>
 
     <style name="TapUnreadBadge">
-        <item name="android:background">@drawable/tap_bg_amethyst_mediumpurple_270_rounded_10dp
+        <item name="android:background">@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp
         </item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:paddingStart">7dp</item>
@@ -204,7 +222,7 @@
         <item name="android:paddingBottom">4dp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/tap_white</item>
-        <item name="android:textSize">11dp</item>
+        <item name="android:textSize">12dp</item>
     </style>
 
     <style name="TapProductDetailsLabel">
@@ -271,6 +289,15 @@
         <item name="android:progressTint">@color/tap_white</item>
         <item name="android:progressBackgroundTint">@color/tap_purply_two</item>
         <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="TapSwitchColor">
+        <!-- Active thumb color & Active track color(30% transparency) -->
+        <item name="colorControlActivated">@color/tap_pumkin_orange_two</item>
+        <!-- Inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/tap_grey_9b</item>
+        <!-- Inactive track color(30% transparency) -->
+        <item name="android:colorForeground">@color/tap_grey_9b</item>
     </style>
 
 </resources>

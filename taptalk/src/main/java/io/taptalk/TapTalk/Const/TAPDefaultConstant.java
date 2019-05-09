@@ -104,16 +104,19 @@ public class TAPDefaultConstant {
     }
 
     public static final class RequestCode {
-        public static final int CREATE_GROUP = 10;
-        public static final int PICK_GROUP_IMAGE = 11;
-        public static final int SEND_IMAGE_FROM_CAMERA = 12;
-        public static final int SEND_MEDIA_FROM_GALLERY = 13;
-        public static final int SEND_MEDIA_FROM_PREVIEW = 14;
-        public static final int FORWARD_MESSAGE = 15;
-        public static final int PICK_LOCATION = 16;
-        public static final int SEND_FILE = 17;
-        public static final int COUNTRY_PICK = 18;
-        public static final int REGISTER = 19;
+        public static final int COUNTRY_PICK = 11;
+        public static final int EDIT_PROFILE = 21;
+        public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
+        public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
+        public static final int REGISTER = 31;
+        public static final int SEND_IMAGE_FROM_CAMERA = 51;
+        public static final int SEND_MEDIA_FROM_GALLERY = 52;
+        public static final int SEND_MEDIA_FROM_PREVIEW = 53;
+        public static final int SEND_FILE = 54;
+        public static final int FORWARD_MESSAGE = 61;
+        public static final int PICK_LOCATION = 62;
+        public static final int CREATE_GROUP = 81;
+        public static final int PICK_GROUP_IMAGE = 91;
     }
 
     public static final class PermissionRequest {
@@ -177,6 +180,7 @@ public class TAPDefaultConstant {
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
 //        public static final String UploadRetried = "kTAPUploadRetried";
         public static final String UploadCancelled = "kTAPUploadCancelled";
+        public static final String UploadProgress = "kTAPUploadProgress";
     }
 
     public static final class DownloadBroadcastEvent {
@@ -231,9 +235,9 @@ public class TAPDefaultConstant {
     }
 
     public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://hp.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://hp.moselo.com/";
-        public static final String BASE_WSS_PRODUCTION = "wss://hp.moselo.com/pigeon";
+        public static final String BASE_URL_API_PRODUCTION = "https://taptalk-production.moselo.com/api/v1/";
+        public static final String BASE_URL_SOCKET_PRODUCTION = "https://taptalk-production.moselo.com/";
+        public static final String BASE_WSS_PRODUCTION = "wss://taptalk-production.moselo.com/connect";
 
         public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com/api/v1/";
         public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com/";
@@ -268,6 +272,7 @@ public class TAPDefaultConstant {
     public static final String K_AUTH_TICKET = "kTAPAuthTicket";
     public static final String K_MY_USERNAME = "kTAPMyUsername";
     public static final String K_USER = "kTAPUser";
+    public static final String K_USER_ID = "kTAPUserID";
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
@@ -303,4 +308,6 @@ public class TAPDefaultConstant {
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
     public static final String MY_COUNTRY_CODE = "kMyCountryCode";
+
+    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
 }

@@ -22,14 +22,14 @@ public class TAPAutoStartPermission {
             if (context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
                 new TapTalkDialog.Builder(context)
                         .setTitle("Enable AutoStart")
-                        .setMessage("Please allow auto start in settings to receive chat notifications from Moselo.")
+                        .setMessage("Please allow auto start in settings to receive chat notifications from " + TapTalk.getClientAppName() + ".")
                         .setPrimaryButtonTitle("Allow")
                         .setPrimaryButtonListener(v -> {
                             try {
                                 //context.startActivity(intent);
                                 requestAutoStartPermission(context, intent);
                             } catch (Exception e) {
-                                Log.e("><><><", "showPermissionRequest: ",e );
+                                Log.e("><><><", "showPermissionRequest: ", e);
                                 e.printStackTrace();
                             }
                         })
@@ -39,9 +39,6 @@ public class TAPAutoStartPermission {
     }
 
     private void requestAutoStartPermission(Context context, Intent intent) {
-        //com.coloros.safecenter.permission.singlepage.PermissionSinglePageActivity     listpermissions
-        //com.coloros.privacypermissionsentry.PermissionTopActivity                     privacypermissions
-        // getPackageManager().getLaunchIntentForPackage("com.coloros.safecenter");
         if (Build.MANUFACTURER.equals("OPPO")) {
             try {
                 context.startActivity(new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.FakeActivity")));

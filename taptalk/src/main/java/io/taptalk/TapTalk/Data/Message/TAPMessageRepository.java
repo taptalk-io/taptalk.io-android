@@ -140,6 +140,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getAllMessageThatNotRead(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messageEntities = messageDao.getAllMessageThatNotRead(myID, roomID);
+            listener.onSelectFinished(messageEntities);
+        }).start();
+    }
+
     public void searchAllChatRooms(String myID, String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String queryKeyword = '%' + keyword
