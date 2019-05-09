@@ -117,7 +117,7 @@
 
                 <TextView
                     android:id="@+id/tv_label_change_profile_picture"
-                    style="@style/TapTextButtonOrange"
+                    style="@style/TapTextButtonPrimaryDark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tap_change" />

@@ -83,7 +83,6 @@
         android:text="@string/tap_search_username_welcome_message"
         android:textColor="@color/tap_black_44"
         android:textSize="15sp"
-        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />

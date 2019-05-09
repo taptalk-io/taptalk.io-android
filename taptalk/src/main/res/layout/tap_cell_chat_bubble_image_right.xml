@@ -126,7 +126,7 @@
                 app:minHeight="100dp"
                 app:minWidth="78dp"
                 app:topRightRadius="2dp"
-                tools:src="@drawable/tap_img_setup_chat" />
+                tools:src="@drawable/tap_img_default_avatar" />
 
             <FrameLayout
                 android:id="@+id/fl_progress"

@@ -34,8 +34,12 @@
     <string name="tap_my_account">My Account</string>
 
     <!--Chat Room List-->
-    <string name="tap_setting_up_your_chatroom">Setting up your chatroom</string>
-    <string name="tap_make_sure_you_have_a_stable_connection">Make sure you have a stable connection</string>
+    <string name="tap_chat_room_setting_up">Setting up your chatroom</string>
+    <string name="tap_chat_room_setup_success">Setup successful</string>
+    <string name="tap_chat_room_setup_failed">Setup failed</string>
+    <string name="tap_chat_room_setting_up_description">Make sure you have a stable connection</string>
+    <string name="tap_chat_room_setup_success_description">You are all set and ready to go!</string>
+    <string name="tap_chat_room_setup_failed_description">Retry Setup</string>
     <string name="tap_search_chat_placeholder">Search chats, groups, or contacts</string>
     <string name="tap_search_forward_placeholder">Search chats or contacts</string>
 
@@ -84,7 +88,7 @@
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
-    <string name="tap_search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
+    <string name="tap_search_username_welcome_message">Usernames are <b>not case sensitive</b>, but make sure you input the <b>exact characters</b></string>
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
     <string name="tap_chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
     <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>

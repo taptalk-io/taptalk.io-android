@@ -203,9 +203,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 false,
                 getString(R.string.tap_search_chat));
 
-        menuItems.add(menuNotification);
-        menuItems.add(menuRoomColor);
-        menuItems.add(menuRoomSearchChat);
+        // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
+//        menuItems.add(menuNotification);
+//        menuItems.add(menuRoomColor);
+//        menuItems.add(menuRoomSearchChat);
 
         menuButtonAdapter = new TAPMenuButtonAdapter(menuItems, profileMenuInterface);
         rvMenuButtons.setAdapter(menuButtonAdapter);
@@ -227,8 +228,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     false,
                     false,
                     getString(R.string.tap_clear_chat));
-            menuItems.add(2, menuBlock);
-            menuItems.add(menuClearChat);
+            // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
+//            menuItems.add(2, menuBlock);
+//            menuItems.add(menuClearChat);
         } else {
             // Group
             TAPMenuItem menuViewMembers = new TAPMenuItem(
@@ -244,8 +246,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     false,
                     false,
                     getString(R.string.tap_exit_group));
-            menuItems.add(2, menuViewMembers);
-            menuItems.add(menuExitGroup);
+            // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
+//            menuItems.add(2, menuViewMembers);
+//            menuItems.add(menuExitGroup);
         }
 
         new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
@@ -339,7 +342,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
                 getTransitionWhite().cancel();
-                getTransitionGreen().start();
+                getTransitionPrimaryColor().start();
             } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
                 isShowing = false;
@@ -357,16 +360,16 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .alpha(0f)
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                getTransitionGreen().cancel();
+                getTransitionPrimaryColor().cancel();
                 getTransitionWhite().start();
             }
         }
 
-        private ValueAnimator getTransitionGreen() {
+        private ValueAnimator getTransitionPrimaryColor() {
             if (null == transitionToGreen) {
                 transitionToGreen = ValueAnimator.ofArgb(
                         getResources().getColor(R.color.tap_white),
-                        getResources().getColor(R.color.tap_pumpkin_orange));
+                        getResources().getColor(R.color.colorPrimaryDark));
                 transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToGreen.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -377,7 +380,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionWhite() {
             if (null == transitionToWhite) {
                 transitionToWhite = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tap_greenBlue),
+                        getResources().getColor(R.color.colorPrimaryDark),
                         getResources().getColor(R.color.tap_white));
                 transitionToWhite.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToWhite.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
