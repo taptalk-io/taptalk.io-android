@@ -11,8 +11,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
@@ -40,8 +38,8 @@ class TAPPhoneLoginFragment : Fragment() {
     var defaultCountryID = 1 //Indonesia Default
     var isNeedResetData = true //ini biar dy ga ngambil data hp setiap kali muncul halaman login
 
-    //val oneWeekAgoTimestamp = 604800000L // 7 * 24 * 60 * 60 * 1000
-    private val oneWeekAgoTimestamp: Long = 7 * 24 * 60 * 60 * 1000
+    //val oneDayAgoTimestamp = 604800000L // 7 * 24 * 60 * 60 * 1000
+    private val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
     private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     private var countryListitems = arrayListOf<TAPCountryListItem>()
     private val maxTime = 30L
@@ -61,9 +59,11 @@ class TAPPhoneLoginFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val lastCallCountryTimestamp = TAPDataManager.getInstance().lastCallCountryTimestamp
-        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneWeekAgoTimestamp == lastCallCountryTimestamp)
+
+        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp == lastCallCountryTimestamp)
             callCountryListFromAPI()
         else if (isNeedResetData) {
+            callCountryListFromAPI()
             countryIsoCode = TAPUtils.getInstance().getDeviceCountryCode(context)
             //countryHashMap = TAPDataManager.getInstance().countryList
             countryListitems = TAPDataManager.getInstance().countryList
