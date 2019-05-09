@@ -810,7 +810,19 @@ public class TapTalk {
         openChatRoomWithUserID(activity, xcUserID, quoteTitle, quoteContent, quoteImageURL, userInfo, null, listener);
     }
 
-    public static void setTapTalkEnvironment(@NonNull TapTalkEnvironment environment) {
+    public static void setTapTalkEnvironmentProduction() {
+        setTapTalkEnvironment(TapTalkEnvironmentProduction);
+    }
+
+    public static void setTapTalkEnvironmentStaging() {
+        setTapTalkEnvironment(TapTalkEnvironmentStaging);
+    }
+
+    public static void setTapTalkEnvironmentDevelopment() {
+        setTapTalkEnvironment(TapTalkEnvironmentDevelopment);
+    }
+
+    private static void setTapTalkEnvironment(@NonNull TapTalkEnvironment environment) {
         if (TapTalkEnvironmentProduction == environment) {
             TAPApiManager.setBaseUrlApi(BASE_URL_API_PRODUCTION);
             TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_PRODUCTION);

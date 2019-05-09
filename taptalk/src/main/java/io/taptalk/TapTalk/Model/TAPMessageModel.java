@@ -16,6 +16,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -132,6 +133,10 @@ public class TAPMessageModel implements Parcelable {
         if (quotedMessage.getType() == TYPE_FILE) {
             quoteTitle = TAPUtils.getInstance().getFileDisplayName(quotedMessage);
             quoteContent = TAPUtils.getInstance().getFileDisplayInfo(quotedMessage);
+        } else if (null != TAPChatManager.getInstance().getActiveUser()
+                && TAPChatManager.getInstance().getActiveUser().getUserID().equals(quotedMessage.getUser().getUserID())){
+            quoteTitle = "You";
+            quoteContent = quotedMessage.getBody();
         } else {
             quoteTitle = quotedMessage.getUser().getName();
             quoteContent = quotedMessage.getBody();
