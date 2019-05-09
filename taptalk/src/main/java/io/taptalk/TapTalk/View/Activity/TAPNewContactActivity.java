@@ -190,7 +190,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.tap_pumpkin_orange));
+            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
@@ -244,7 +244,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.tap_pumpkin_orange));
+            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts

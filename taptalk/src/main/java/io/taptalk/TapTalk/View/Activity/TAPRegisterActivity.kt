@@ -322,19 +322,19 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
         } else {
             view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
         }
         if (view == cl_password) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccentLight))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
             } else {
                 v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
             }
         } else if (view == cl_retype_password) {
             if (hasFocus) {
-                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccentLight))
+                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
             } else {
                 v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
             }
@@ -491,7 +491,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexFullName] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -505,7 +505,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexUsername] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -519,7 +519,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexEmail] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -533,8 +533,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             cl_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexPassword] != stateInvalid) {
-                cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
-                v_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccentLight))
+                cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                v_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccent))
             }
         } else {
             cl_password.elevation = 0f
@@ -548,8 +548,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             cl_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexPasswordRetype] != stateInvalid) {
-                cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
-                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccentLight))
+                cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccent))
             }
         } else {
             cl_retype_password.elevation = 0f

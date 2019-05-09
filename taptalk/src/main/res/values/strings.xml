@@ -235,7 +235,7 @@
     <string name="tap_edit">Edit</string>
     <string name="tap_email_address">Email Address</string>
     <string name="tap_full_name">Full Name</string>
-    <string name="tap_highlighted_string"><![CDATA[<font color=\'#ff7e00\'>%s</font>]]></string>
+    <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>

@@ -274,7 +274,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
         } else {
             view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
         }
@@ -425,7 +425,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexFullName] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -439,7 +439,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexEmail] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f

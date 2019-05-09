@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_pumpkin_orange"
+            android:tint="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_search"
             app:layout_constraintStart_toStartOf="parent"

@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,13 +130,20 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Set message body with highlighted text
             String highlightedText;
+            String colorCode = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.colorPrimaryDark)).substring(2);
             try {
-                highlightedText = message.getBody().replaceAll("(?i)([" + searchKeyword + "])", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+                highlightedText = message.getBody().replaceAll("(?i)([" + searchKeyword + "])",
+                        String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
+                                colorCode, "$1"));
             } catch (PatternSyntaxException e) {
                 // Replace regex special characters with Pattern.quote()
-                highlightedText = message.getBody().replaceAll("(?i)(" + Pattern.quote(searchKeyword) + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+                highlightedText = message.getBody().replaceAll("(?i)(" + Pattern.quote(searchKeyword) + ")",
+                        String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
+                                colorCode, "$1"));
             } catch (Exception e) {
-                highlightedText = message.getBody().replaceAll("(?i)(" + searchKeyword.replaceAll("[^A-Za-z0-9 ]", "") + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+                highlightedText = message.getBody().replaceAll(
+                        "(?i)(" + searchKeyword.replaceAll("[^A-Za-z0-9 ]", "") + ")",
+                        String.format(itemView.getContext().getString(R.string.tap_highlighted_string), colorCode, "$1"));
             }
             tvLastMessage.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
                     Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
@@ -219,7 +227,11 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             // Set room name with highlighted text
-            String highlightedText = room.getRoomName().replaceAll("(?i)(" + searchKeyword + ")", String.format(itemView.getContext().getString(R.string.tap_highlighted_string), "$1"));
+            String highlightedText = room.getRoomName().replaceAll(
+                    "(?i)(" + searchKeyword + ")",
+                    String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
+                            Integer.toHexString(ContextCompat.getColor(itemView.getContext(),
+                                    R.color.colorPrimaryDark)).substring(2), "$1"));
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
             // Change avatar icon

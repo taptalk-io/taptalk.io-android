@@ -13,8 +13,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/tap_white"
         android:elevation="2dp"
-        android:transitionName="searchBar"
-        android:foreground="?attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground"
+        android:transitionName="searchBar">
 
         <ImageView
             android:id="@+id/iv_button_back"
@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_pumpkin_orange"
+            android:tint="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_search"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,8 +35,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="@string/tap_search_for_contacts"
-            android:paddingEnd="16dp"
             android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_cancel"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -78,11 +78,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="24dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="14dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="24dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -95,14 +94,13 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tv_add_new_contact"
+                    style="@style/TapTextButtonPrimaryDark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_pt_root_bold"
-                    android:gravity="center"
                     android:layout_marginTop="8dp"
-                    android:text="@string/tap_add_new_contact"
-                    android:textColor="@color/tap_pumpkin_orange"
-                    android:textSize="16sp" />
+                    android:gravity="center"
+                    android:text="@string/tap_add_new_contact" />
 
             </LinearLayout>
 
