@@ -49,9 +49,18 @@
 
     <style name="TapTextButtonPrimaryDark">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
+        <item name="android:gravity">center</item>
         <item name="android:lineSpacingExtra">6sp</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TapTextButtonDescription">
+        <item name="android:fontFamily">@font/tap_font_pt_root_regular</item>
+        <item name="android:gravity">center</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tap_grey_9b</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="TapFormFieldBody">

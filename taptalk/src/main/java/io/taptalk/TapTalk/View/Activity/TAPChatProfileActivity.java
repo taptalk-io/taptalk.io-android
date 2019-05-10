@@ -81,8 +81,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private final int MENU_EXIT_GROUP = 6;
 
     private NestedScrollView nsvProfile;
-    private LinearLayout llToolbarCollapsed;
-    private ImageView ivProfile, ivButtonBack;
+    private LinearLayout llToolbarCollapsed, llReloadSharedMedia;
+    private ImageView ivProfile, ivButtonBack, ivSharedMediaLoading;
     private TextView tvFullName, tvCollapsedName, tvSharedMediaLabel;
     private View vGradient, vProfileSeparator;
     private RecyclerView rvMenuButtons, rvSharedMedia;
@@ -140,8 +140,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void initView() {
         nsvProfile = findViewById(R.id.nsv_profile);
         llToolbarCollapsed = findViewById(R.id.ll_toolbar_collapsed);
+        llReloadSharedMedia = findViewById(R.id.ll_reload_shared_media);
         ivProfile = findViewById(R.id.iv_profile);
         ivButtonBack = findViewById(R.id.iv_button_back);
+        ivSharedMediaLoading = findViewById(R.id.iv_shared_media_loading);
         tvFullName = findViewById(R.id.tv_full_name);
         tvCollapsedName = findViewById(R.id.tv_collapsed_name);
         tvSharedMediaLabel = findViewById(R.id.tv_section_title);
@@ -251,6 +253,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 //            menuItems.add(menuExitGroup);
         }
 
+        TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
+        ivSharedMediaLoading.setVisibility(View.VISIBLE);
         new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
@@ -488,16 +492,21 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPDatabaseListener<TAPMessageEntity> sharedMediaListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
+            Log.e(TAG, "onSelectFinished: " + entities.size());
             if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                 // No shared media
+                Log.e(TAG, "onSelectFinished: No shared media");
                 vm.setFinishedLoadingSharedMedia(true);
                 tvSharedMediaLabel.setVisibility(View.GONE);
                 rvSharedMedia.setVisibility(View.GONE);
+                ivSharedMediaLoading.setVisibility(View.GONE);
+                ivSharedMediaLoading.clearAnimation();
             } else {
                 // Has shared media
                 int previousSize = vm.getSharedMedias().size();
                 if (0 == previousSize) {
                     // First load
+                    Log.e(TAG, "onSelectFinished: First load");
                     tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
                     sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), mediaInterface, glide);
                     sharedMediaLayoutManager = new GridLayoutManager(TAPChatProfileActivity.this, 3) {
@@ -527,6 +536,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                                     // Load more if view holder is visible
                                     if (!vm.isLoadingSharedMedia()) {
                                         vm.setLoadingSharedMedia(true);
+                                        TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
+                                        ivSharedMediaLoading.setVisibility(View.VISIBLE);
                                         new Thread(() -> TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener)).start();
                                     }
                                 }
@@ -537,8 +548,14 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 }
                 if (MAX_ITEMS_PER_PAGE > entities.size()) {
                     // No more medias in database
+                    // TODO: 10 May 2019 CALL API BEFORE?
+                    Log.e(TAG, "onSelectFinished: No more medias in database");
                     vm.setFinishedLoadingSharedMedia(true);
                     nsvProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener);
+                    runOnUiThread(() -> {
+                        ivSharedMediaLoading.setVisibility(View.GONE);
+                        ivSharedMediaLoading.clearAnimation();
+                    });
                 }
                 for (TAPMessageEntity entity : entities) {
                     vm.addSharedMedia(TAPChatManager.getInstance().convertToModel(entity));
