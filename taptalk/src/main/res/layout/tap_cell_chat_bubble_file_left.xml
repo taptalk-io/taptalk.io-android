@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
-                android:textColor="@color/tap_mediumPurple"
+                android:textColor="@color/colorAccentDark"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
                 app:layout_constraintStart_toStartOf="parent"

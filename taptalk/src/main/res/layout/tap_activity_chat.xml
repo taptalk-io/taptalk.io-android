@@ -23,8 +23,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_pumpkin_orange"
+            android:src="@drawable/tap_ic_back_orange"
+            android:tint="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_room_name"
             app:layout_constraintStart_toStartOf="parent"
@@ -472,6 +472,7 @@
         android:elevation="4dp"
         android:padding="15dp"
         android:src="@drawable/tap_ic_scroll_to_bottom_chat"
+        android:tint="@color/colorPrimaryDark"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintEnd_toEndOf="parent" />

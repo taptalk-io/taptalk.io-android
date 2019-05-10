@@ -26,7 +26,7 @@
             android:layout_marginEnd="22dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
+            android:src="@drawable/tap_ic_back_orange"
             android:tint="@color/colorPrimaryDark"/>
 
         <TextView
