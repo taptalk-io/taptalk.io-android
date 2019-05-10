@@ -837,7 +837,22 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
             // Add other quotable message type here
-            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO)
+                    && null != message.getData()
+                    && (null != TAPChatManager.getInstance().getActiveUser()
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID()))) {
+                // Show image quote
+                vQuoteDecoration.setVisibility(View.GONE);
+                // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
+                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID)));
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+            } else if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO)
+                    && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
@@ -858,6 +873,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));
                 tvQuoteContent.setText(TAPUtils.getInstance().getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
+            } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID())) {
+                glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteTitle.setText(getResources().getString(R.string.tap_you));
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
             } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
                 // Unknown message type
                 glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
@@ -868,6 +893,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 tvQuoteTitle.setText(message.getUser().getName());
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
+            } else if (TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID())) {
+                // Show text quote
+                vQuoteDecoration.setVisibility(View.VISIBLE);
+                rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteTitle.setText(getResources().getString(R.string.tap_you));
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(2);
             } else {
                 // Show text quote
                 vQuoteDecoration.setVisibility(View.VISIBLE);
