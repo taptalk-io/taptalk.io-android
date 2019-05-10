@@ -284,7 +284,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_6dp_ripple"
+            android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple"
             android:gravity="center"
             android:orientation="horizontal">
 

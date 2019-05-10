@@ -255,7 +255,7 @@
         android:layout_height="56dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_circle_pumpkin_mango_stroke_pumpkin_1dp_ripple"
+        android:background="@drawable/tap_bg_circle_primary_primarydark_stroke_primarydark_1dp_ripple"
         android:elevation="8dp"
         android:padding="16dp"
         android:src="@drawable/tap_ic_pencil_chat"

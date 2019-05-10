@@ -48,7 +48,7 @@
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_4dp"
+        android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_4dp"
         android:fontFamily="@font/tap_font_pt_root_bold"
         android:gravity="center"
         android:paddingStart="5dp"

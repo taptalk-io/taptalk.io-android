@@ -62,7 +62,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        android:background="@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_10dp"
+        android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_10dp"
         android:translationX="4dp"
         android:translationY="-4dp"
         android:textAlignment="center"

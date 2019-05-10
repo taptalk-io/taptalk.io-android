@@ -852,7 +852,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // Show file quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setImageDrawable(getDrawable(R.drawable.tap_ic_documents_white));
-                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_circle_bluepurple));
+                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_circle_accentdark));
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));

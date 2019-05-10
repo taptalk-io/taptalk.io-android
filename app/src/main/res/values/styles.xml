@@ -5,7 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/tap_mango</item>
         <item name="colorPrimaryDark">@color/tap_pumpkin_orange</item>
-        <item name="colorAccent">@color/tap_dodger_blue</item>
+        <item name="colorAccent">@color/tap_bubble_blue</item>
         <item name="android:statusBarColor">@color/tap_pumpkin_orange</item>
     </style>
 

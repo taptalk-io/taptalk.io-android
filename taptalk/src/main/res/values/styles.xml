@@ -100,7 +100,7 @@
     </style>
 
     <style name="TapButton">
-        <item name="android:background">@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_6dp_ripple</item>
+        <item name="android:background">@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
@@ -211,7 +211,7 @@
     </style>
 
     <style name="TapUnreadBadge">
-        <item name="android:background">@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_10dp</item>
+        <item name="android:background">@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_10dp</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:paddingStart">7dp</item>
         <item name="android:paddingTop">4dp</item>

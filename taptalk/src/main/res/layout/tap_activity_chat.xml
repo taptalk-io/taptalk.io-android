@@ -308,7 +308,7 @@
                 android:id="@+id/v_quote_decoration"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_dodgerblue_rounded_4dp_0dp_4dp_0dp"
+                android:background="@drawable/tap_bg_accentlight_rounded_4dp_0dp_4dp_0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_cancel_reply"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -480,7 +480,7 @@
         android:id="@+id/tv_badge_unread"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_10dp"
+        android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_10dp"
         android:elevation="6dp"
         android:fontFamily="@font/tap_font_pt_root_bold"
         android:paddingStart="8dp"

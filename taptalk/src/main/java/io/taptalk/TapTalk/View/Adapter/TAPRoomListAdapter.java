@@ -134,7 +134,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_mango_pumpkin_stroke_pumpkin_1dp_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_10dp));
             }
 
             // Change Status Message Icon
