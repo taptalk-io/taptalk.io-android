@@ -93,7 +93,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                     if (null != mediaThumbnail) {
                         // Load image from cache
                         activity.runOnUiThread(() -> glide.load(mediaThumbnail)
-                                .apply(new RequestOptions().placeholder(ivThumbnail.getDrawable()))
+                                //.apply(new RequestOptions().placeholder(ivThumbnail.getDrawable()))
                                 .listener(new RequestListener<Drawable>() {
                                     @Override
                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -113,7 +113,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                         Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
                         if (null != videoUri) {
                             activity.runOnUiThread(() -> glide.load(videoUri)
-                                    .apply(new RequestOptions().placeholder(ivThumbnail.getDrawable()))
+                                    //.apply(new RequestOptions().placeholder(ivThumbnail.getDrawable()))
                                     .listener(new RequestListener<Drawable>() {
                                         @Override
                                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -166,43 +166,45 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
             if (null == item.getData()) {
                 return;
             }
-            if (null == thumbnail) {
-                thumbnail = new BitmapDrawable(
-                        itemView.getContext().getResources(),
-                        TAPFileUtils.getInstance().decodeBase64(
-                                (String) (null == item.getData().get(THUMBNAIL) ? "" :
-                                        item.getData().get(THUMBNAIL))));
-                if (thumbnail.getIntrinsicHeight() <= 0) {
-                    // Set placeholder image if thumbnail fails to load
-                    thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+            new Thread(() -> {
+                if (null == thumbnail) {
+                    thumbnail = new BitmapDrawable(
+                            itemView.getContext().getResources(),
+                            TAPFileUtils.getInstance().decodeBase64(
+                                    (String) (null == item.getData().get(THUMBNAIL) ? "" :
+                                            item.getData().get(THUMBNAIL))));
+                    if (thumbnail.getIntrinsicHeight() <= 0) {
+                        // Set placeholder image if thumbnail fails to load
+                        thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+                    }
                 }
-            }
-            Number size = (Number) item.getData().get(SIZE);
-            String videoSize = null == size ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
-            activity.runOnUiThread(() -> {
-                ivThumbnail.setImageDrawable(thumbnail);
-                if (null != downloadProgressValue) {
-                    // Show download progress
-                    //Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
-                    //if (null != downloadProgressBytes) {
-                    //    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
-                    //}
-                    tvMediaInfo.setText(videoSize);
-                    pbProgress.setMax(100);
-                    pbProgress.setProgress(downloadProgressValue);
-                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
-                    clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
-                } else {
-                    // Show download button
-                    tvMediaInfo.setText(videoSize);
-                    pbProgress.setProgress(0);
-                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
-                    clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
-                }
-                tvMediaInfo.setVisibility(View.VISIBLE);
-                flProgress.setVisibility(View.VISIBLE);
-                vThumbnailOverlay.setVisibility(View.VISIBLE);
-            });
+                Number size = (Number) item.getData().get(SIZE);
+                String videoSize = null == size ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
+                activity.runOnUiThread(() -> {
+                    ivThumbnail.setImageDrawable(thumbnail);
+                    if (null != downloadProgressValue) {
+                        // Show download progress
+                        //Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
+                        //if (null != downloadProgressBytes) {
+                        //    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
+                        //}
+                        tvMediaInfo.setText(videoSize);
+                        pbProgress.setMax(100);
+                        pbProgress.setProgress(downloadProgressValue);
+                        ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                        clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
+                    } else {
+                        // Show download button
+                        tvMediaInfo.setText(videoSize);
+                        pbProgress.setProgress(0);
+                        ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                        clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
+                    }
+                    tvMediaInfo.setVisibility(View.VISIBLE);
+                    flProgress.setVisibility(View.VISIBLE);
+                    vThumbnailOverlay.setVisibility(View.VISIBLE);
+                });
+            }).start();
         }
     }
 }

@@ -136,7 +136,8 @@
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never"
                 android:paddingStart="1dp"
-                android:paddingEnd="0dp" />
+                android:paddingEnd="0dp"
+                android:visibility="gone" />
 
             <FrameLayout
                 android:layout_width="match_parent"

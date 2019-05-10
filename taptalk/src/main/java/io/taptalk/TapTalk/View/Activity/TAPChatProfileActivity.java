@@ -255,6 +255,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
         ivSharedMediaLoading.setVisibility(View.VISIBLE);
+        tvSharedMediaLabel.setVisibility(View.GONE);
         new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
@@ -497,8 +498,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 // No shared media
                 Log.e(TAG, "onSelectFinished: No shared media");
                 vm.setFinishedLoadingSharedMedia(true);
-                tvSharedMediaLabel.setVisibility(View.GONE);
-                rvSharedMedia.setVisibility(View.GONE);
                 ivSharedMediaLoading.setVisibility(View.GONE);
                 ivSharedMediaLoading.clearAnimation();
             } else {
@@ -562,7 +561,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 }
                 vm.setLastSharedMediaTimestamp(vm.getSharedMedias().get(vm.getSharedMedias().size() - 1).getCreated());
                 vm.setLoadingSharedMedia(false);
-                runOnUiThread(() -> rvSharedMedia.post(() -> sharedMediaAdapter.notifyItemRangeInserted(previousSize, entities.size())));
+                runOnUiThread(() -> rvSharedMedia.post(() -> {
+                    sharedMediaAdapter.notifyItemRangeInserted(previousSize, entities.size());
+                    if (0 == previousSize) {
+                        tvSharedMediaLabel.setVisibility(View.VISIBLE);
+                        rvSharedMedia.setVisibility(View.VISIBLE);
+                    }
+                }));
             }
         }
     };
