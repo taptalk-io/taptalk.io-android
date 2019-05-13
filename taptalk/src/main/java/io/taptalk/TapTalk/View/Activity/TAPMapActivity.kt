@@ -250,7 +250,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         et_keyword.addTextChangedListener(textWatcher)
         et_keyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                rl_search.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                rl_search.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
                 if (!TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty())
                     recycler_view.visibility = View.VISIBLE
             } else {

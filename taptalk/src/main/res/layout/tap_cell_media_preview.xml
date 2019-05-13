@@ -104,7 +104,7 @@
             android:layout_marginTop="34dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/tap_bg_lightpink_stroke_coralpink_1dp_rounded_8dp"
+            android:background="@drawable/tap_bg_watermelon_rounded_8dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -115,6 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:src="@drawable/tap_ic_failed_red"
+                android:tint="@color/tap_white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

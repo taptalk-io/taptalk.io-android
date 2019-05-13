@@ -3,10 +3,10 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/tap_mango</item>
-        <item name="colorPrimaryDark">@color/tap_pumkin_orange_two</item>
-        <item name="colorAccent">@color/tap_dodger_blue</item>
-        <item name="android:statusBarColor">@color/tap_pumkin_orange_two</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 
 </resources>

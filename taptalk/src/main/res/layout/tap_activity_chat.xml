@@ -23,8 +23,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_pumkin_orange_two"
+            android:src="@drawable/tap_ic_back_orange"
+            android:tint="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_room_name"
             app:layout_constraintStart_toStartOf="parent"
@@ -308,7 +308,7 @@
                 android:id="@+id/v_quote_decoration"
                 android:layout_width="4dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_dodgerblue_rounded_4dp_0dp_4dp_0dp"
+                android:background="@drawable/tap_bg_accentlight_rounded_4dp_0dp_4dp_0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_cancel_reply"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -365,19 +365,30 @@
         </android.support.constraint.ConstraintLayout>
 
         <ImageView
+            android:id="@+id/iv_chat_menu_area"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/tap_bg_circle_primarydark_ripple"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_chat_menu"
+            app:layout_constraintEnd_toEndOf="@+id/iv_chat_menu"
+            app:layout_constraintStart_toStartOf="@+id/iv_chat_menu"
+            app:layout_constraintTop_toTopOf="@id/iv_chat_menu" />
+
+        <ImageView
             android:id="@+id/iv_chat_menu"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/tap_ic_chatmenu_hamburger"
+            android:src="@drawable/tap_ic_burger_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_chat"
             app:layout_constraintStart_toStartOf="parent" />
+
 
         <EditText
             android:id="@+id/et_chat"
@@ -412,10 +423,23 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="2dp"
-            android:background="@drawable/tap_bg_grey_ripple"
+            android:background="@drawable/tap_bg_circle_59ffffff_ripple"
             android:src="@drawable/tap_ic_attach_grey"
             app:layout_constraintBottom_toBottomOf="@id/et_chat"
             app:layout_constraintEnd_toEndOf="@id/et_chat" />
+
+        <ImageView
+            android:id="@+id/iv_send_area"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/tap_bg_circle_9b9b9b"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_send"
+            app:layout_constraintEnd_toEndOf="@+id/iv_send"
+            app:layout_constraintStart_toStartOf="@+id/iv_send"
+            app:layout_constraintTop_toTopOf="@+id/iv_send" />
 
         <ImageView
             android:id="@+id/iv_send"
@@ -423,11 +447,8 @@
             android:layout_height="52dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/tap_ic_send_inactive"
+            android:src="@drawable/tap_ic_send_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/et_chat" />
@@ -468,10 +489,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/tap_bg_white_circle_button_ripple"
+        android:background="@drawable/tap_bg_circle_f3f3f3_ripple"
         android:elevation="4dp"
         android:padding="15dp"
         android:src="@drawable/tap_ic_scroll_to_bottom_chat"
+        android:tint="@color/colorPrimaryDark"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -480,7 +502,7 @@
         android:id="@+id/tv_badge_unread"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp"
+        android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_10dp"
         android:elevation="6dp"
         android:fontFamily="@font/tap_font_pt_root_bold"
         android:paddingStart="8dp"

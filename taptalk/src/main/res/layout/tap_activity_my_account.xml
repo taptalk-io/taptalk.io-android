@@ -32,6 +32,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/tap_ic_close_orange"
+            android:tint="@color/colorPrimaryDark"
             app:layout_constraintDimensionRatio="H, 1:1"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -130,7 +131,7 @@
 
                 <TextView
                     android:id="@+id/tv_label_change_profile_picture"
-                    style="@style/TapTextButtonOrange"
+                    style="@style/TapTextButtonPrimaryDark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tap_change" />
@@ -140,6 +141,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:tint="@color/colorPrimaryDark"
                     android:src="@drawable/tap_ic_edit_orange" />
 
             </LinearLayout>
@@ -352,12 +354,12 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_white_button_ripple"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp_ripple"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_password">
 
                 <TextView
                     android:id="@+id/tv_password"
-                    style="@style/TapTextButtonOrange"
+                    style="@style/TapTextButtonPrimaryDark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/tap_transparent_white"
@@ -378,7 +380,7 @@
                     android:layout_height="0dp"
                     android:scaleType="center"
                     android:src="@drawable/tap_ic_chevron_white"
-                    android:tint="@color/tap_pumkin_orange_two"
+                    android:tint="@color/colorPrimaryDark"
                     app:layout_constraintBottom_toBottomOf="@id/tv_password"
                     app:layout_constraintDimensionRatio="H, 1:1"
                     app:layout_constraintEnd_toEndOf="@id/tv_password"

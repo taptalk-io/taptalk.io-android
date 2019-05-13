@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.content.ContextCompat
@@ -13,7 +14,6 @@ import android.support.v4.content.res.ResourcesCompat
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewTreeObserver
@@ -291,7 +291,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.formCheck[indexPassword] = stateInvalid
             tv_label_password_error.visibility = View.VISIBLE
             cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
-            v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_watermelon_red))
+            v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_watermelon_red))
         }
         if (et_retype_password.text.isNotEmpty()) {
             checkRetypedPassword(et_retype_password.hasFocus())
@@ -315,28 +315,28 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.formCheck[indexPasswordRetype] = stateInvalid
             tv_label_retype_password_error.visibility = View.VISIBLE
             cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
-            v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_watermelon_red))
+            v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_watermelon_red))
         }
         checkContinueButtonAvailability()
     }
 
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
         } else {
             view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
         }
         if (view == cl_password) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
             } else {
-                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_grey_dc))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
             }
         } else if (view == cl_retype_password) {
             if (hasFocus) {
-                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
+                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
             } else {
-                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_grey_dc))
+                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
             }
         }
     }
@@ -357,7 +357,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun enableContinueButton() {
-        fl_button_continue.background = getDrawable(R.drawable.tap_bg_orange_button_ripple)
+        fl_button_continue.background = getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple)
         fl_button_continue.setOnClickListener { register() }
     }
 
@@ -375,10 +375,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
         val cursorPosition = editText.selectionStart
         if (editText.inputType == InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_orange))
+            //button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_orange))
+            button.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimaryDark))
         } else {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_grey))
+            //button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_grey))
+            button.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tap_grey_9b))
         }
         editText.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
         editText.setSelection(cursorPosition)
@@ -489,7 +491,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexFullName] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -503,7 +505,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexUsername] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -517,7 +519,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexEmail] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -531,8 +533,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             cl_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexPassword] != stateInvalid) {
-                cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
-                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
+                cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                v_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccent))
             }
         } else {
             cl_password.elevation = 0f
@@ -546,8 +548,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             cl_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexPasswordRetype] != stateInvalid) {
-                cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
-                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
+                cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccent))
             }
         } else {
             cl_retype_password.elevation = 0f
@@ -764,8 +766,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 }
                 UploadFailed -> {
                     val userID = intent.getStringExtra(TAPDefaultConstant.K_USER_ID)
-                    Log.e("]]]]", "userID: " + userID)
-                    Log.e("]]]]", "active user: " + vm.myUserModel.userID)
                     if (null != userID && userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         TapTalkDialog.Builder(this@TAPRegisterActivity)

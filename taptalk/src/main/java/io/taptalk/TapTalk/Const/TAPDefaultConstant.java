@@ -46,6 +46,9 @@ public class TAPDefaultConstant {
         public static final int TYPE_CONFIRM_MY_PAYMENT = 2004;
 
         public static final int TYPE_HIDDEN = 0x9196;
+
+        public static final int TYPE_SYSTEM_MESSAGE = 9001;
+        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
     }
 
     public static final class BubbleType {
@@ -63,7 +66,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_EMPTY = 9999;
-        public static final int TYPE_UNREAD_STATUS = 9998;
+        public static final int TYPE_BUBBLE_UNREAD_STATUS = 9998;
     }
 
     public static final class MessageData {
