@@ -135,6 +135,10 @@ public class TapTalk {
         return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, tapListener)) : tapTalk;
     }
 
+    public static TapTalk init(Context context, String appID, String appSecret, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, "android", tapListener)) : tapTalk;
+    }
+
     public TapTalk(@NonNull final Context appContext, @NonNull String appID, @NonNull String appSecret
             , @NonNull String userAgent, @NonNull TAPListener tapListener) {
         //init Hawk for Preference
