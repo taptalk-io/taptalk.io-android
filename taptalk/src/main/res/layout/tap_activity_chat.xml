@@ -365,19 +365,30 @@
         </android.support.constraint.ConstraintLayout>
 
         <ImageView
+            android:id="@+id/iv_chat_menu_area"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/tap_bg_circle_primarydark_ripple"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_chat_menu"
+            app:layout_constraintEnd_toEndOf="@+id/iv_chat_menu"
+            app:layout_constraintStart_toStartOf="@+id/iv_chat_menu"
+            app:layout_constraintTop_toTopOf="@id/iv_chat_menu" />
+
+        <ImageView
             android:id="@+id/iv_chat_menu"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/tap_ic_chatmenu_hamburger"
+            android:src="@drawable/tap_ic_burger_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_chat"
             app:layout_constraintStart_toStartOf="parent" />
+
 
         <EditText
             android:id="@+id/et_chat"
@@ -418,16 +429,26 @@
             app:layout_constraintEnd_toEndOf="@id/et_chat" />
 
         <ImageView
+            android:id="@+id/iv_send_area"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/tap_bg_circle_9b9b9b"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_send"
+            app:layout_constraintEnd_toEndOf="@+id/iv_send"
+            app:layout_constraintStart_toStartOf="@+id/iv_send"
+            app:layout_constraintTop_toTopOf="@+id/iv_send" />
+
+        <ImageView
             android:id="@+id/iv_send"
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
             android:padding="12dp"
-            android:src="@drawable/tap_ic_send_inactive"
+            android:src="@drawable/tap_ic_send_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/et_chat" />

@@ -173,7 +173,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private FrameLayout flMessageList;
     private ConstraintLayout clContainer, clEmptyChat, clQuote, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivButtonChatMenu, ivButtonAttach,
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonCancelReply, ivChatMenu, ivButtonChatMenu, ivButtonAttach,
             ivButtonSend, ivToBottom, ivRoomTypingIndicator;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
     private TAPRoundedCornerImageView rcivQuoteImage;
@@ -417,9 +417,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
         ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
         ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
-        ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
+        ivChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
+        ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu_area);
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
-        ivButtonSend = (ImageView) findViewById(R.id.iv_send);
+        ivButtonSend = (ImageView) findViewById(R.id.iv_send_area);
         ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
         ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
@@ -529,6 +530,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             // Disable custom keyboard
             vm.setCustomKeyboardEnabled(false);
+            ivChatMenu.setVisibility(View.GONE);
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
@@ -690,7 +692,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             rvMessageList.scrollToPosition(0);
         } else {
             TAPChatManager.getInstance().checkAndSendForwardedMessage(vm.getRoom());
-            ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+            ivButtonSend.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
         }
     }
 
@@ -936,7 +938,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showNormalKeyboard() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
+        ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         etChat.requestFocus();
     }
 
@@ -945,13 +947,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat.clearFocus();
         new Handler().postDelayed(() -> {
             rvCustomKeyboard.setVisibility(View.VISIBLE);
-            ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_keyboard);
+            ivChatMenu.setImageResource(R.drawable.tap_ic_keyboard_white);
         }, 150L);
     }
 
     private void hideKeyboards() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
+        ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         TAPUtils.getInstance().dismissKeyboard(this);
     }
 
@@ -1493,25 +1495,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (null != TAPChatActivity.this.getCurrentFocus() && TAPChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0 && s.toString().trim().length() > 0) {
+                ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
+                ivButtonSend.setImageResource(R.drawable.tap_bg_circle_primarydark_ripple);
             } else if (null != TAPChatActivity.this.getCurrentFocus() && TAPChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
+                ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+                ivButtonSend.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
             } else if (s.length() > 0 && s.toString().trim().length() > 0) {
                 if (vm.isCustomKeyboardEnabled()) {
+                    ivChatMenu.setVisibility(View.VISIBLE);
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
                 }
-                ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
+                ivButtonSend.setImageResource(R.drawable.tap_bg_circle_primarydark_ripple);
             } else {
                 if (vm.isCustomKeyboardEnabled()) {
+                    ivChatMenu.setVisibility(View.VISIBLE);
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
                 }
                 if (vm.getQuoteAction() == FORWARD) {
-                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_active);
+                    ivButtonSend.setImageResource(R.drawable.tap_bg_circle_primarydark_ripple);
                 } else {
-                    ivButtonSend.setImageResource(R.drawable.tap_ic_send_inactive);
+                    ivButtonSend.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
                 }
             }
         }
@@ -1527,10 +1533,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus && vm.isCustomKeyboardEnabled()) {
                 rvCustomKeyboard.setVisibility(View.GONE);
-                ivButtonChatMenu.setImageResource(R.drawable.tap_ic_chatmenu_hamburger);
+                ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
 
                 if (0 < etChat.getText().toString().length()) {
+                    ivChatMenu.setVisibility(View.GONE);
                     ivButtonChatMenu.setVisibility(View.GONE);
                 }
             } else if (hasFocus) {
