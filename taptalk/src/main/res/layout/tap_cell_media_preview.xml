@@ -115,6 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:src="@drawable/tap_ic_failed_red"
+                android:tint="@color/tap_white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
