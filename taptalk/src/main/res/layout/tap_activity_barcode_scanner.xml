@@ -10,7 +10,7 @@
     <FrameLayout
         android:id="@+id/fl_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/tap_white"
         android:elevation="5dp"
         android:outlineProvider="bounds"
@@ -20,14 +20,14 @@
 
         <ImageView
             android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="6dp"
             android:layout_marginEnd="22dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"
-            android:src="@drawable/tap_ic_back_pumpkin" />
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_back_orange"
+            android:tint="@color/colorPrimaryDark"/>
 
         <TextView
             android:id="@+id/tv_toolbar_title"

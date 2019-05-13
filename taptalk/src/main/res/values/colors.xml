@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimaryLight">@color/tap_light_orange</color>
     <color name="colorPrimary">@color/tap_mango</color>
-    <color name="colorPrimaryDark">@color/tap_pumkin_orange_two</color>
-    <color name="colorAccent">@color/tap_dodger_blue</color>
-    <color name="colorAccentLight">@color/tap_blue_purple</color>
+    <color name="colorPrimaryDark">@color/tap_pumpkin_orange</color>
+    <color name="colorAccentLight">@color/tap_dodger_blue</color>
+    <color name="colorAccent">@color/tap_bubble_blue</color>
+    <color name="colorAccentDark">@color/tap_blue_purple</color>
 
     <color name="tap_darkPurple">#51276c</color>
     <color name="tap_purply_two">#673ab7</color>
@@ -20,11 +22,10 @@
     <color name="tap_tomato">#ec2c2b</color>
     <color name="tap_tomatoTwo">#ed2929</color>
     <color name="tap_red">#d90a0a</color>
-    <color name="tap_pumpkinOrange">#fb7614</color>
+    <color name="tap_pumpkin_orange">#ff7e00</color>
     <color name="tap_tangerine">#ffa107</color>
     <color name="tap_orangeish">#ff9049</color>
     <color name="tap_orangeYellow">#ff9f00</color>
-    <color name="tap_pumkin_orange_two">#ff7e00</color>
     <color name="tap_mango">#ff9833</color>
     <color name="tap_light_orange">#ffa145</color>
     <color name="tap_butterscotch">#ffb438</color>
@@ -38,13 +39,13 @@
     <color name="tap_tealish">#2eccad</color>
     <color name="tap_aquaMarine">#3de1c1</color>
     <color name="tap_lightTeal">#a7ebde</color>
+    <color name="tap_highlight_blue">#5ac8fa</color>
     <color name="tap_dodger_blue">#48beff</color>
-    <color name="tap_blue_purple">#362ad7</color>
-    <color name="tap_bubble_blue">#483DDA</color>
-    <color name="tap_brightBlue">#007aff</color>
     <color name="tap_clear_blue">#188cff</color>
+    <color name="tap_brightBlue">#007aff</color>
     <color name="tap_purplish_blue">#4b3fef</color>
-    <color name="tap_highlight_blue">#5AC8FA</color>
+    <color name="tap_bubble_blue">#483dda</color>
+    <color name="tap_blue_purple">#362ad7</color>
 
     <color name="tap_cream_white">#fffdea</color>
     <color name="tap_lightPink">#fff0f2</color>

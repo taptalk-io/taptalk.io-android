@@ -148,6 +148,7 @@ public class TAPSearchChatFragment extends Fragment {
 
             if (null != hpRecentSearchEntities && hpRecentSearchEntities.size() > 0) {
                 TAPSearchChatModel recentTitleItem = new TAPSearchChatModel(RECENT_TITLE);
+                recentTitleItem.setSectionTitle(getString(R.string.tap_recent));
                 vm.addRecentSearches(recentTitleItem);
             }
 

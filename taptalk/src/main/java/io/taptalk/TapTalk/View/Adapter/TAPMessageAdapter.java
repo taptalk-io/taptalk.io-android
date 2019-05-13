@@ -1539,9 +1539,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
                 } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                 }
                 //vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
@@ -1552,9 +1552,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     // Load file icon
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                     if (isMessageFromMySelf(item)) {
-                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
+                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
                     } else {
-                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_8dp));
+                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                     }
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
@@ -1565,9 +1565,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 }
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bluepurple_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
                 } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                 }
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
@@ -1575,9 +1575,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Show no image
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_purpleblue_rounded_4dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accentdark_rounded_4dp));
                 } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_pumpkin_rounded_4dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_4dp));
                 }
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);

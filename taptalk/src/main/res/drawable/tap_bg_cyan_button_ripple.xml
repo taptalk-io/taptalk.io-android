@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/tap_lightBlueGrey">
-    <item android:drawable="@drawable/tap_bg_palecyan_stroke_lightbluegrey_1dp_rounded_6dp" />
-</ripple>

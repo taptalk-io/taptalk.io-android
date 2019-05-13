@@ -70,19 +70,19 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                         if (isChecked) {
                             // Turn switch ON
                             getTransitionGrey().cancel();
-                            getTransitionOrange().start();
+                            getTransitionPrimary().start();
                         } else {
                             // Turn switch OFF
-                            getTransitionOrange().cancel();
+                            getTransitionPrimary().cancel();
                             getTransitionGrey().start();
                         }
                     }
 
-                    private ValueAnimator getTransitionOrange() {
+                    private ValueAnimator getTransitionPrimary() {
                         if (null == transitionToOrange) {
                             transitionToOrange = ValueAnimator.ofArgb(
                                     itemView.getContext().getResources().getColor(R.color.tap_grey_9b),
-                                    itemView.getContext().getResources().getColor(R.color.tap_pumkin_orange_two));
+                                    itemView.getContext().getResources().getColor(R.color.colorPrimaryDark));
                             transitionToOrange.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToOrange.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -93,7 +93,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     private ValueAnimator getTransitionGrey() {
                         if (null == transitionToGrey) {
                             transitionToGrey = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tap_pumkin_orange_two),
+                                    itemView.getContext().getResources().getColor(R.color.colorPrimaryDark),
                                     itemView.getContext().getResources().getColor(R.color.tap_grey_9b));
                             transitionToGrey.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToGrey.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(

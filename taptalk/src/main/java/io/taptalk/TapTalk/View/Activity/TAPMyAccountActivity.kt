@@ -274,15 +274,15 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
         } else {
             view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
         }
         if (view == cl_password) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_blue_purple))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccentDark))
             } else {
-                v_password_separator.setBackgroundColor(resources.getColor(R.color.tap_grey_dc))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
             }
         }
     }
@@ -303,7 +303,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun enableContinueButton() {
-        fl_button_update.background = getDrawable(R.drawable.tap_bg_orange_button_ripple)
+        fl_button_update.background = getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple)
         //fl_button_update.setOnClickListener { register() }
     }
 
@@ -372,12 +372,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         //fl_button_update.setOnClickListener { updateProfile() }
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_close_orange))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_orange))
         iv_button_close.clearAnimation()
 
 
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_pumkin_orange_two))
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
         iv_edit_profile_picture_icon.visibility = View.VISIBLE
         civ_profile_picture_overlay.visibility = View.GONE
         pb_profile_picture_progress.visibility = View.GONE
@@ -400,11 +400,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
-        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_orange))
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_button_close)
 
         tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this@TAPMyAccountActivity, R.color.tap_grey_9b))
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
         iv_edit_profile_picture_icon.visibility = View.GONE
         civ_profile_picture_overlay.visibility = View.VISIBLE
         pb_profile_picture_progress.visibility = View.VISIBLE
@@ -425,7 +425,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexFullName] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f
@@ -439,7 +439,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexEmail] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_bluepurple_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
             }
         } else {
             view.elevation = 0f

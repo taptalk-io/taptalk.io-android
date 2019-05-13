@@ -156,7 +156,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         llBlockedContacts.setVisibility(View.GONE);
 
         //Animate sync button
-        TAPUtils.getInstance().animateClickButton(llButtonSync, 0.97f);
+        //TAPUtils.getInstance().animateClickButton(llButtonSync, 0.97f);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> searchContact());
