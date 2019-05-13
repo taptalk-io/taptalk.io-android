@@ -63,6 +63,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_EMPTY = 9999;
+        public static final int TYPE_UNREAD_STATUS = 9998;
     }
 
     public static final class MessageData {
