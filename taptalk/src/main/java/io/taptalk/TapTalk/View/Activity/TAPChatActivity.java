@@ -916,7 +916,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void hideQuoteLayout() {
         vm.setQuotedMessage(null, 0);
-        runOnUiThread(() -> clQuote.setVisibility(View.GONE));
+        runOnUiThread(() -> {
+            clQuote.setVisibility(View.GONE);
+            clQuote.post(() -> etChat.requestFocus());
+        });
     }
 
     private void scrollToBottom() {
