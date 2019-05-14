@@ -346,6 +346,58 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_email_address_error" />
 
             <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_white_button_ripple"
+                app:layout_constraintTop_toBottomOf="@id/cl_password">
+
+                <TextView
+                    android:id="@+id/tv_logout"
+                    style="@style/TapTextButtonOrange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/tap_transparent_white"
+                    android:maxLines="1"
+                    android:paddingStart="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingEnd="70dp"
+                    android:paddingBottom="15dp"
+                    android:text="@string/tap_logout"
+                    android:textColor="@color/tap_watermelon_red"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_logout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:scaleType="center"
+                    android:src="@drawable/tap_ic_icon_logout_watermelon"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_logout"
+                    app:layout_constraintDimensionRatio="H, 1:1"
+                    app:layout_constraintEnd_toEndOf="@id/tv_logout"
+                    app:layout_constraintTop_toTopOf="@id/tv_logout" />
+
+                <View
+                    android:id="@+id/v_logout_separator"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/tap_grey_dc"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_logout"
+                    app:layout_constraintStart_toStartOf="@id/iv_logout"
+                    app:layout_constraintTop_toTopOf="@id/iv_logout" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -406,7 +458,7 @@
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cl_password">
+                app:layout_constraintTop_toBottomOf="@id/cl_logout">
 
                 <TextView
                     android:id="@+id/tv_button_update"
