@@ -138,11 +138,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
-        et_full_name.onFocusChangeListener = fullNameFocusListener
-        et_email_address.onFocusChangeListener = emailAddressFocusListener
+        //et_full_name.onFocusChangeListener = fullNameFocusListener
+        //et_email_address.onFocusChangeListener = emailAddressFocusListener
 
-        et_full_name.addTextChangedListener(fullNameWatcher)
-        et_email_address.addTextChangedListener(emailWatcher)
+        //et_full_name.addTextChangedListener(fullNameWatcher)
+        //et_email_address.addTextChangedListener(emailWatcher)
 
         glide.load(vm.currentProfilePicture)
                 .apply(RequestOptions().placeholder(R.drawable.tap_img_default_avatar))
@@ -175,7 +175,16 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_password.visibility = View.GONE
         fl_button_update.visibility = View.GONE
         cl_logout.setOnClickListener {
-            logout()
+            TapTalkDialog.Builder(this)
+                    .setTitle("Log Out")
+                    .setMessage("Are you sure you want to log out?")
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle("Log Out")
+                    .setPrimaryButtonListener { logout() }
+                    .setSecondaryButtonTitle("Cancel")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setSecondaryButtonListener(true) {}
+                    .show()
         }
     }
 
