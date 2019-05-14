@@ -545,12 +545,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (state == STATE.LOADED && 0 < messageAdapter.getItems().size()) {
-                    new Thread(() -> {
-                        vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
-                        state = STATE.WORKING;
-                    }).start();
-                }
+                loadMoreMessagesFromDatabase();
             }
         };
 
@@ -1491,9 +1486,28 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 .show();
     }
 
+    private void loadMoreMessagesFromDatabase() {
+        if (state == STATE.LOADED && 0 < messageAdapter.getItems().size()) {
+            new Thread(() -> {
+                vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
+                state = STATE.WORKING;
+            }).start();
+        }
+    }
+
     private void scrollToMessage(String localID) {
         if (vm.getMessagePointer().containsKey(localID)) {
-            rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+            Log.e(TAG, "scrollToMessage: contains " + localID);
+            vm.setTappedMessageLocalID(null);
+            runOnUiThread(() -> rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID))));
+        } else if (state != STATE.DONE){
+            Log.e(TAG, "scrollToMessage: query");
+            // TODO: 14 May 2019 SHOW LOADING
+            // Find quoted message in database
+            vm.setTappedMessageLocalID(localID);
+            loadMoreMessagesFromDatabase();
+        } else {
+            // Load more messages from API
         }
     }
 
@@ -1714,11 +1728,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
                     messageAdapter.addMessage(models);
-                    new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
+                    new Thread(() -> {
+                        vm.setMessageModels(messageAdapter.getItems());
+                        if (null != vm.getTappedMessageLocalID()) {
+                            Log.e(TAG, "onSelectFinished: " + vm.getMessagePointer().containsKey(vm.getTappedMessageLocalID()));
+                            scrollToMessage(vm.getTappedMessageLocalID());
+                        }
+                    }).start();
 
-                    if (rvMessageList.getVisibility() != View.VISIBLE)
+                    if (rvMessageList.getVisibility() != View.VISIBLE) {
                         rvMessageList.setVisibility(View.VISIBLE);
-                    if (state == STATE.DONE) updateMessageDecoration();
+                    }
+                    if (state == STATE.DONE) {
+                        updateMessageDecoration();
+                    }
                 });
             }
         }
