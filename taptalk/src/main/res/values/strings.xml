@@ -138,6 +138,7 @@
     <string name="tap_error_password_does_not_match">Password does not match</string>
     <string name="tap_error_unable_to_upload">Unable to upload</string>
     <string name="tap_error_upload_profile_picture">An error occurred while uploading your profile picture, would you like to try again?</string>
+    <string name="tap_error_could_not_find_message">Could not find message.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
