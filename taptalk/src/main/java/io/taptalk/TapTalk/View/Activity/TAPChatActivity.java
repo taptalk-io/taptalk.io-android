@@ -26,6 +26,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -506,9 +507,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
-        // FIXME: 9 November 2018 IMAGES CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
+        // FIXME: 9 November 2018 IMAGES/VIDEOS CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0);
+        rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT, 0);
+        rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
@@ -1284,6 +1287,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
             TapTalk.triggerMessageQuoteClicked(TAPChatActivity.this, message);
+            if (null != message.getReplyTo()) {
+                scrollToMessage(message.getReplyTo().getLocalID());
+            }
         }
 
         @Override
@@ -1485,6 +1491,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 .show();
     }
 
+    private void scrollToMessage(String localID) {
+        if (vm.getMessagePointer().containsKey(localID)) {
+            rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+        }
+    }
+
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1546,7 +1558,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    LayoutTransition.TransitionListener containerTransitionListener = new LayoutTransition.TransitionListener() {
+    private LayoutTransition.TransitionListener containerTransitionListener = new LayoutTransition.TransitionListener() {
         @Override
         public void startTransition(LayoutTransition layoutTransition, ViewGroup viewGroup, View view, int i) {
             // Change animation state
