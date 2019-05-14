@@ -291,13 +291,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
-
-            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
-            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
-                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
-            } else {
-                clQuote.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
-            }
         }
 
         @Override
@@ -385,11 +378,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
-
-            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
-            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
-                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
-            }
         }
 
         private void openImageDetailPreview(TAPMessageModel message) {
@@ -658,11 +646,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
-
-            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
-            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
-                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
-            }
         }
 
         private void setVideoProgress(TAPMessageModel item) {
@@ -958,13 +941,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> flFileIcon.performClick());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
-
-            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
-            if (null != item.getData() && item.getData().containsKey(USER_INFO)) {
-                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
-            } else {
-                clQuote.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
-            }
         }
 
         @Override
@@ -1156,11 +1132,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
-
-            // TODO: 6 February 2019 TEMPORARY LISTENER FOR QUOTE
-            if (item.getData().containsKey(USER_INFO)) {
-                clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
-            }
         }
 
         private void setMapData(HashMap<String, Object> mapData) {
@@ -1583,8 +1554,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
             }
-            // TODO: 6 February 2019 ENABLE LISTENER
-//            clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
+            clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
         } else {
             // Hide quote
             clQuote.setVisibility(View.GONE);
