@@ -6,6 +6,8 @@ import android.util.Log;
 import java.io.File;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkDownloadApiService;
@@ -315,8 +317,6 @@ public class TAPApiManager {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
 
-        Log.e(TAG, "uploadImage: "+calculateTimeOutTimeWithFileSize(imageFile.length()) );
-
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("roomID", roomID)
@@ -359,8 +359,8 @@ public class TAPApiManager {
     }
 
     public void uploadProfilePicture(File imageFile, String mimeType,
-                            ProgressRequestBody.UploadCallbacks uploadCallback,
-                            Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+                                     ProgressRequestBody.UploadCallbacks uploadCallback,
+                                     Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
 
@@ -372,8 +372,12 @@ public class TAPApiManager {
         execute(tapMultipart.uploadProfilePicture(requestBody), subscriber);
     }
 
-    public void downloadFile(String roomID, String localID, String fileID, Subscriber<ResponseBody> subscriber) {
-        TAPTalkDownloadApiService tapDownload = TAPApiConnection.getInstance().getTapDownload();
+    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
+
+        TAPTalkDownloadApiService tapDownload;
+        if (null != fileSize) {
+            tapDownload = TAPApiConnection.getInstance().getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
+        } else tapDownload = TAPApiConnection.getInstance().getTapDownload(30 * 60 * 1000);
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }
