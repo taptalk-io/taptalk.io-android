@@ -97,7 +97,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void showPermissionDialog() {
         new TapTalkDialog.Builder(TAPNewChatActivity.this)
                 .setTitle("Contact Access")
-                .setMessage("We need to access your contact to make it easier for you to find your friends")
+                .setMessage("We need your permission to access your contact, we will sync your contact to our server and automatically find your friend so it is easier for you to find your friends.")
                 .setCancelable(false)
                 .setPrimaryButtonTitle("Allow")
                 .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))

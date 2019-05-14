@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Subscriber.TAPBaseSubscriber;
@@ -972,8 +974,8 @@ public class TAPDataManager {
     // File Download
     private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
 
-    public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, getNewDownloadSubscriber(localID, view));
+    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, TapDefaultDataView<ResponseBody> view) {
+        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, fileSize, getNewDownloadSubscriber(localID, view));
     }
 
     public void cancelFileDownload(String localID) {

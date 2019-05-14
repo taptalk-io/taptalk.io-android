@@ -40,7 +40,6 @@ public class TAPApiConnection {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-    private TAPTalkMultipartApiService tapMultipart;
 
     public ObjectMapper objectMapper;
 
@@ -54,18 +53,14 @@ public class TAPApiConnection {
         this.objectMapper = createObjectMapper();
         OkHttpClient httpHpClientAccessToken = buildHttpTapClient(NOT_USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientRefreshToken = buildHttpTapClient(USE_REFRESH_TOKEN);
-        OkHttpClient httpHpClientMultipartToken = buildHttpTapUploadClient(MULTIPART_CONTENT_TYPE);
 
         Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getBaseUrlApi());
         Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getBaseUrlSocket());
         Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPApiManager.getBaseUrlApi());
-        Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPApiManager.getBaseUrlApi());
 
         this.homingPigeon = homingPigeonAdapter.create(TAPTalkApiService.class);
         this.hpSocket = hpSocketAdapter.create(TAPTalkSocketService.class);
         this.hpRefresh = hpRefreshAdapter.create(TAPTalkRefreshTokenService.class);
-        this.tapMultipart = tapMultipartAdapter.create(TAPTalkMultipartApiService.class);
-
     }
 
     public TAPTalkApiService getHomingPigeon() {
@@ -80,12 +75,14 @@ public class TAPApiConnection {
         return hpRefresh;
     }
 
-    public TAPTalkMultipartApiService getTapMultipart() {
-        return tapMultipart;
+    public TAPTalkMultipartApiService getTapMultipart(long timeOutDuration) {
+        OkHttpClient httpHpClientMultipartToken = buildHttpTapUploadClient(MULTIPART_CONTENT_TYPE, timeOutDuration);
+        Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPApiManager.getBaseUrlApi());
+        return tapMultipartAdapter.create(TAPTalkMultipartApiService.class);
     }
 
-    public TAPTalkDownloadApiService getTapDownload() {
-        OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN);
+    public TAPTalkDownloadApiService getTapDownload(long timeOutDuration) {
+        OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN, timeOutDuration);
         Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPApiManager.getBaseUrlApi());
         return tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
     }
@@ -106,40 +103,40 @@ public class TAPApiConnection {
 
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
-                .connectTimeout(2, TimeUnit.MINUTES)
-                .readTimeout(2, TimeUnit.MINUTES)
-                .writeTimeout(2, TimeUnit.MINUTES)
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .writeTimeout(1, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
                 .build();
     }
 
-    private OkHttpClient buildHttpTapUploadClient(int headerAuth) {
+    private OkHttpClient buildHttpTapUploadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
 
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
-                .connectTimeout(10, TimeUnit.MINUTES)
-                .readTimeout(10, TimeUnit.MINUTES)
-                .writeTimeout(10, TimeUnit.MINUTES)
+                .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
+                .readTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
+                .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
                 .build();
     }
 
-    private OkHttpClient buildHttpTapDownloadClient(int headerAuth) {
+    private OkHttpClient buildHttpTapDownloadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         //loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
 
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
-                .connectTimeout(10, TimeUnit.MINUTES)
-                .readTimeout(10, TimeUnit.MINUTES)
-                .writeTimeout(10, TimeUnit.MINUTES)
+                .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
+                .readTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
+                .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(headerAuth))
                 .build();
