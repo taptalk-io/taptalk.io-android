@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -74,11 +75,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_UNREAD_STATUS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_UNREAD_STATUS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
@@ -524,7 +525,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }).start();
             } else if (null != imageUri && !imageUri.isEmpty()) {
                 // Message is not sent to server, load image from Uri
-                rcivImageBody.setOnClickListener(v -> {});
+                rcivImageBody.setOnClickListener(v -> {
+                });
                 Number size = (Number) item.getData().get(SIZE);
                 if (null != size && size.longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
                     // TODO: 30 April 2019 IMAGE THUMBNAIL IS EMPTY, SHOWS GRAY BACKGROUND
@@ -1529,7 +1531,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Show quote
             clQuote.setVisibility(View.VISIBLE);
             vQuoteBackground.setVisibility(View.VISIBLE);
-            tvQuoteTitle.setText(quote.getTitle());
+
+            if (null != item.getReplyTo() && null != item.getReplyTo().getUserID()
+                    && item.getReplyTo().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                tvQuoteTitle.setText(itemView.getResources().getString(R.string.tap_you));
+            } else tvQuoteTitle.setText(quote.getTitle());
+
             tvQuoteContent.setText(quote.getContent());
             String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();

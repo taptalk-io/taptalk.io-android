@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,11 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashMap;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -133,10 +130,6 @@ public class TAPMessageModel implements Parcelable {
         if (quotedMessage.getType() == TYPE_FILE) {
             quoteTitle = TAPUtils.getInstance().getFileDisplayName(quotedMessage);
             quoteContent = TAPUtils.getInstance().getFileDisplayInfo(quotedMessage);
-        } else if (null != TAPChatManager.getInstance().getActiveUser()
-                && TAPChatManager.getInstance().getActiveUser().getUserID().equals(quotedMessage.getUser().getUserID())){
-            quoteTitle = "You";
-            quoteContent = quotedMessage.getBody();
         } else {
             quoteTitle = quotedMessage.getUser().getName();
             quoteContent = quotedMessage.getBody();
@@ -145,7 +138,9 @@ public class TAPMessageModel implements Parcelable {
         String quoteImageURL = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(IMAGE_URL);
         String quoteFileType = String.valueOf(quotedMessage.getType()); // TODO: 8 March 2019 CHANGE FILE TYPE
         TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, quoteFileID, quoteImageURL, quoteFileType);
-        TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID(), quotedMessage.getLocalID(), quotedMessage.getType());
+        TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID()
+                , quotedMessage.getLocalID(), quotedMessage.getType()
+                , quotedMessage.getUser());
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null);
     }
 
