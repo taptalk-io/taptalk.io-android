@@ -71,6 +71,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_FLAG_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
@@ -158,6 +159,7 @@ public class TAPDataManager {
         removeLastCallCountryTimestamp();
         removeCountryList();
         removeMyCountryCode();
+        removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
     }
 
@@ -366,6 +368,17 @@ public class TAPDataManager {
         Hawk.delete(MY_COUNTRY_CODE);
     }
 
+    public String getMyCountryFlagUrl() {
+        return getStringPreference(MY_COUNTRY_FLAG_URL);
+    }
+
+    public void saveMyCountryFlagUrl(String myCountryFlagUrl) {
+        saveStringPreference(MY_COUNTRY_FLAG_URL, myCountryFlagUrl);
+    }
+
+    public void removeMyCountryFlagUrl() {
+        Hawk.delete(MY_COUNTRY_FLAG_URL);
+    }
 
     /**
      * ROOM LIST FIRST SETUP

@@ -12,7 +12,7 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
     private int countryID = 0;
     private boolean isUpdatingProfile, isUploadingProfilePicture;
-    private String countryCallingCode = "62", currentProfilePicture;
+    private String countryCallingCode = "62", countryFlagUrl, currentProfilePicture;
     private Uri profilePictureUri;
     private TAPUserModel myUserModel;
 
@@ -42,6 +42,14 @@ public class TAPRegisterViewModel extends AndroidViewModel {
 
     public void setCountryCallingCode(String countryCallingCode) {
         this.countryCallingCode = countryCallingCode;
+    }
+
+    public String getCountryFlagUrl() {
+        return countryFlagUrl;
+    }
+
+    public void setCountryFlagUrl(String countryFlagUrl) {
+        this.countryFlagUrl = countryFlagUrl;
     }
 
     public boolean isUpdatingProfile() {
