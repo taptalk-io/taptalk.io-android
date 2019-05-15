@@ -20,6 +20,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
+import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -30,10 +31,13 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
+import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
 import kotlinx.android.synthetic.main.tap_activity_my_account.civ_profile_picture_overlay
@@ -134,11 +138,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
-        et_full_name.onFocusChangeListener = fullNameFocusListener
-        et_email_address.onFocusChangeListener = emailAddressFocusListener
+        //et_full_name.onFocusChangeListener = fullNameFocusListener
+        //et_email_address.onFocusChangeListener = emailAddressFocusListener
 
-        et_full_name.addTextChangedListener(fullNameWatcher)
-        et_email_address.addTextChangedListener(emailWatcher)
+        //et_full_name.addTextChangedListener(fullNameWatcher)
+        //et_email_address.addTextChangedListener(emailWatcher)
 
         glide.load(vm.currentProfilePicture)
                 .apply(RequestOptions().placeholder(R.drawable.tap_img_default_avatar))
@@ -170,6 +174,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_label_password.visibility = View.GONE
         cl_password.visibility = View.GONE
         fl_button_update.visibility = View.GONE
+        cl_logout.setOnClickListener {
+            TapTalkDialog.Builder(this)
+                    .setTitle("Log Out")
+                    .setMessage("Are you sure you want to log out?")
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle("Log Out")
+                    .setPrimaryButtonListener { logout() }
+                    .setSecondaryButtonTitle("Cancel")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setSecondaryButtonListener(true) {}
+                    .show()
+        }
     }
 
     private fun registerBroadcastReceiver() {
@@ -447,6 +463,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 updateEditTextBackground(et_email_address, hasFocus)
             }
         }
+    }
+
+    private fun logout() {
+        TAPDataManager.getInstance().deleteAllPreference()
+        TAPDataManager.getInstance().deleteAllFromDatabase()
+        TAPApiManager.getInstance().isLogout = true
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
+        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
+
+        val intent = Intent(this, TAPLoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     private val fullNameWatcher = object : TextWatcher {
