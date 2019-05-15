@@ -221,6 +221,7 @@
     <string name="tap_cancel">Cancel</string>
     <string name="tap_change">Change</string>
     <string name="tap_change_password">Change Password</string>
+    <string name="tap_logout">Logout</string>
     <string name="tap_chat_now">Chat Now</string>
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_history">Clear history</string>
