@@ -26,7 +26,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -551,7 +550,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // Load items from database for the First Time (First Load)
         if (vm.getMessageModels().size() == 0) {
-            vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+            //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+            getAllUnreadMessage();
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -1637,6 +1637,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
+            if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID())) {
+                TAPMessageModel unreadIndicator = new TAPMessageModel();
+                unreadIndicator.setType(TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER);
+                unreadIndicator.setLocalID("");
+
+                vm.addMessagePointer(unreadIndicator);
+
+                models.add(models.indexOf(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID())) + 1, unreadIndicator);
+            }
+
             if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
                 runOnUiThread(() -> {
                     // First load
@@ -1935,6 +1945,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         }
                     }
                 })).start();
+    }
+
+    private void getAllUnreadMessage() {
+        TAPDataManager.getInstance().getAllMessageThatNotRead(TAPChatManager.getInstance().getOpenRoom(),
+                new TAPDatabaseListener<TAPMessageEntity>() {
+                    @Override
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                        if (0 < entities.size()) {
+                            vm.setLastUnreadMessageLocalID(entities.get(0).getLocalID());
+                        }
+
+                        vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+                    }
+                });
     }
 
     private void markMessageAsRead(TAPMessageModel readMessage) {
