@@ -1738,6 +1738,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
+            if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID())) {
+                TAPMessageModel unreadIndicator = new TAPMessageModel();
+                unreadIndicator.setType(TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER);
+                unreadIndicator.setLocalID("");
+
+                vm.addMessagePointer(unreadIndicator);
+
+                models.add(models.indexOf(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID())) + 1, unreadIndicator);
+            }
+
             if (null != messageAdapter) {
                 if (MAX_ITEMS_PER_PAGE > entities.size() && STATE.DONE != state) {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
