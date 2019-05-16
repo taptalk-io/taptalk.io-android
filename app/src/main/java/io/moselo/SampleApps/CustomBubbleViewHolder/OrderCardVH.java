@@ -106,12 +106,12 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
             // Show bubble on right side
             vCardMarginLeft.setVisibility(View.VISIBLE);
             vCardMarginRight.setVisibility(View.GONE);
-            clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purple_header_right_ripple));
+            clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purply_rounded_10dp_2dp_0dp_0dp_ripple));
         } else {
             // Show bubble on left side
             vCardMarginLeft.setVisibility(View.GONE);
             vCardMarginRight.setVisibility(View.VISIBLE);
-            clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purple_header_left_ripple));
+            clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purply_rounded_2dp_10dp_0dp_0dp_ripple));
         }
 
         // Update layout according to order status

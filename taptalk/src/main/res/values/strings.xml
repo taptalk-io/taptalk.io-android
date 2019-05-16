@@ -34,8 +34,12 @@
     <string name="tap_my_account">My Account</string>
 
     <!--Chat Room List-->
-    <string name="tap_setting_up_your_chatroom">Setting up your chatroom</string>
-    <string name="tap_make_sure_you_have_a_stable_connection">Make sure you have a stable connection</string>
+    <string name="tap_chat_room_setting_up">Setting up your chatroom</string>
+    <string name="tap_chat_room_setup_success">Setup successful</string>
+    <string name="tap_chat_room_setup_failed">Setup failed</string>
+    <string name="tap_chat_room_setting_up_description">Make sure you have a stable connection</string>
+    <string name="tap_chat_room_setup_success_description">You are all set and ready to go!</string>
+    <string name="tap_chat_room_setup_failed_description">Retry Setup</string>
     <string name="tap_search_chat_placeholder">Search chats, groups, or contacts</string>
     <string name="tap_search_forward_placeholder">Search chats or contacts</string>
 
@@ -84,13 +88,14 @@
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
-    <string name="tap_search_username_welcome_message">Usernames are <b>case sensitive</b>, so make sure you input correctly</string>
+    <string name="tap_search_username_welcome_message">Usernames are <b>not case sensitive</b>, but make sure you input the <b>exact characters</b></string>
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
     <string name="tap_chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
     <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
     <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
+    <string name="tap_guide_enter_otp">Enter the 6 digit OTP we’ve sent to</string>
     <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
     <string name="tap_guide_username">Username is always required.\nMust be between 4–32 characters.\nCan only contain a–z, 0–9, underscores, and dot.\nCan\'t start with number or underscore or dot.\nCan\'t end with underscore or dot.\nCan\'t contain consecutive underscores, consecutive dot, underscore followed with dot, and otherwise.</string>
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
@@ -133,6 +138,7 @@
     <string name="tap_error_password_does_not_match">Password does not match</string>
     <string name="tap_error_unable_to_upload">Unable to upload</string>
     <string name="tap_error_upload_profile_picture">An error occurred while uploading your profile picture, would you like to try again?</string>
+    <string name="tap_error_could_not_find_message">Could not find message.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -221,6 +227,7 @@
     <string name="tap_cancel">Cancel</string>
     <string name="tap_change">Change</string>
     <string name="tap_change_password">Change Password</string>
+    <string name="tap_logout">Logout</string>
     <string name="tap_chat_now">Chat Now</string>
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_history">Clear history</string>
@@ -230,7 +237,7 @@
     <string name="tap_edit">Edit</string>
     <string name="tap_email_address">Email Address</string>
     <string name="tap_full_name">Full Name</string>
-    <string name="tap_highlighted_string"><![CDATA[<font color=\'#ff7e00\'>%s</font>]]></string>
+    <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>
@@ -244,6 +251,7 @@
     <string name="tap_permission_request">Permission Request</string>
     <string name="tap_profile_picture">Profile Picture</string>
     <string name="tap_reply">Reply</string>
+    <string name="tap_request_again">Request again</string>
     <string name="tap_requesting_otp">Requesting OTP</string>
     <string name="tap_retry">Retry</string>
     <string name="tap_retype_password">Retype Password</string>
@@ -258,6 +266,7 @@
     <string name="tap_select_country">Select Country</string>
     <string name="tap_skip">Skip</string>
     <string name="tap_start_a_new_chat">Start a New Chat</string>
+    <string name="tap_sync_contacts_now">Sync Contacts Now</string>
     <string name="tap_typing">typing</string>
     <string name="tap_typing_1">Typing.</string>
     <string name="tap_typing_2">Typing..</string>
@@ -269,6 +278,5 @@
     <string name="tap_verifying_otp">Verifying OTP</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
-    <string name="usernames_are_case_sensitive_so_make_sure_you_input_correctly">Usernames are case sensitive, so make sure you input correctly</string>
 
 </resources>

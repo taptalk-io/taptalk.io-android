@@ -135,6 +135,10 @@ public class TapTalk {
         return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, tapListener)) : tapTalk;
     }
 
+    public static TapTalk init(Context context, String appID, String appSecret, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, "android", tapListener)) : tapTalk;
+    }
+
     public TapTalk(@NonNull final Context appContext, @NonNull String appID, @NonNull String appSecret
             , @NonNull String userAgent, @NonNull TAPListener tapListener) {
         //init Hawk for Preference
@@ -810,7 +814,19 @@ public class TapTalk {
         openChatRoomWithUserID(activity, xcUserID, quoteTitle, quoteContent, quoteImageURL, userInfo, null, listener);
     }
 
-    public static void setTapTalkEnvironment(@NonNull TapTalkEnvironment environment) {
+    public static void setTapTalkEnvironmentProduction() {
+        setTapTalkEnvironment(TapTalkEnvironmentProduction);
+    }
+
+    public static void setTapTalkEnvironmentStaging() {
+        setTapTalkEnvironment(TapTalkEnvironmentStaging);
+    }
+
+    public static void setTapTalkEnvironmentDevelopment() {
+        setTapTalkEnvironment(TapTalkEnvironmentDevelopment);
+    }
+
+    private static void setTapTalkEnvironment(@NonNull TapTalkEnvironment environment) {
         if (TapTalkEnvironmentProduction == environment) {
             TAPApiManager.setBaseUrlApi(BASE_URL_API_PRODUCTION);
             TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_PRODUCTION);

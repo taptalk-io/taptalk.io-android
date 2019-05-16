@@ -136,7 +136,51 @@
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never"
                 android:paddingStart="1dp"
-                android:paddingEnd="0dp" />
+                android:paddingEnd="0dp"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_shared_media_loading"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="108dp"
+                    android:src="@drawable/tap_ic_loading_progress_circle_orange" />
+
+                <LinearLayout
+                    android:id="@+id/ll_reload_shared_media"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="@style/TapTextButtonDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tap_cant_find_contact" />
+
+                    <TextView
+                        style="@style/TapTextButtonPrimaryDark"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/tap_view_blocked_contacts" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
         </LinearLayout>
 

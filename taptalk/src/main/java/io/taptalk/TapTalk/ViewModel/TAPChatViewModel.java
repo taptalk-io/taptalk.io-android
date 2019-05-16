@@ -39,6 +39,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
+    private String tappedMessageLocalID;
     private Integer quoteAction;
     private long lastTimestamp = 0;
     private int numUsers, containerAnimationState;
@@ -227,6 +228,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.quotedMessage = quotedMessage;
         this.quoteAction = quoteAction;
         TAPChatManager.getInstance().setQuotedMessage(quotedMessage, quoteAction);
+    }
+
+    public String getTappedMessageLocalID() {
+        return tappedMessageLocalID;
+    }
+
+    public void setTappedMessageLocalID(String tappedMessageLocalID) {
+        this.tappedMessageLocalID = tappedMessageLocalID;
     }
 
     /**

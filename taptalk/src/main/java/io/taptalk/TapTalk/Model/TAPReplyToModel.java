@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,11 +10,31 @@ public class TAPReplyToModel implements Parcelable {
     @JsonProperty("messageID") private String messageID;
     @JsonProperty("localID") private String localID;
     @JsonProperty("messageType") private Integer messageType;
+    @JsonProperty("userID") private String userID;
+    @JsonProperty("xcUserID") private String xcUserID;
+    @JsonProperty("fullname") private String fullname;
 
-    public TAPReplyToModel(String messageID, String localID, Integer messageType) {
+    public TAPReplyToModel(String messageID, String localID, Integer messageType,
+                           String userID, String xcUserID, String fullname) {
         this.messageID = messageID;
         this.localID = localID;
         this.messageType = messageType;
+        this.xcUserID = xcUserID;
+        this.userID = userID;
+        this.fullname = fullname;
+    }
+
+    public TAPReplyToModel(String messageID, String localID, Integer messageType,
+                           TAPUserModel user) {
+        this.messageID = messageID;
+        this.localID = localID;
+        this.messageType = messageType;
+        this.xcUserID = user.getXcUserID();
+        this.userID = user.getUserID();
+        this.fullname = user.getName();
+    }
+
+    public TAPReplyToModel() {
     }
 
     public String getMessageID() {
@@ -40,6 +61,31 @@ public class TAPReplyToModel implements Parcelable {
         this.messageType = messageType;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getXcUserID() {
+        return xcUserID;
+    }
+
+    public void setXcUserID(String xcUserID) {
+        this.xcUserID = xcUserID;
+    }
+
+    public String getUsername() {
+        return fullname;
+    }
+
+    public void setUsername(String fullname) {
+        this.fullname = fullname;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -50,15 +96,18 @@ public class TAPReplyToModel implements Parcelable {
         dest.writeString(this.messageID);
         dest.writeString(this.localID);
         dest.writeValue(this.messageType);
-    }
-
-    public TAPReplyToModel() {
+        dest.writeString(this.userID);
+        dest.writeString(this.xcUserID);
+        dest.writeString(this.fullname);
     }
 
     protected TAPReplyToModel(Parcel in) {
         this.messageID = in.readString();
         this.localID = in.readString();
         this.messageType = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.userID = in.readString();
+        this.xcUserID = in.readString();
+        this.fullname = in.readString();
     }
 
     public static final Creator<TAPReplyToModel> CREATOR = new Creator<TAPReplyToModel>() {

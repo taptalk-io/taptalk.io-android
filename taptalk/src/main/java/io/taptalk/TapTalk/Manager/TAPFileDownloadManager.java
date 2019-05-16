@@ -43,6 +43,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
@@ -130,10 +131,11 @@ public class TAPFileDownloadManager {
         }
         String localID = message.getLocalID();
         String fileID = (String) message.getData().get(FILE_ID);
+        Number fileSize = (Number) message.getData().get(SIZE);
 
         addDownloadProgressMap(localID, 0, 0);
 
-        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, new TapDefaultDataView<ResponseBody>() {
+        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, fileSize, new TapDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
                 writeFileToDiskAndSendBroadcast(context, message, response);
@@ -165,11 +167,12 @@ public class TAPFileDownloadManager {
         }
         String localID = message.getLocalID();
         String fileID = (String) message.getData().get(FILE_ID);
+        Number fileSize = (Number) message.getData().get(SIZE);
 
         addDownloadProgressMap(localID, 0, 0);
 
         // Download image
-        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, new TapDefaultDataView<ResponseBody>() {
+        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, fileSize, new TapDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
                 new Thread(() -> {

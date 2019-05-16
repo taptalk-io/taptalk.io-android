@@ -61,7 +61,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                 swMenuSwitch.setVisibility(View.VISIBLE);
                 swMenuSwitch.setChecked(item.isChecked());
                 swMenuSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    private ValueAnimator transitionToOrange, transitionToGrey;
+                    private ValueAnimator transitionToPrimary, transitionToGrey;
 
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -70,30 +70,30 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                         if (isChecked) {
                             // Turn switch ON
                             getTransitionGrey().cancel();
-                            getTransitionOrange().start();
+                            getTransitionPrimary().start();
                         } else {
                             // Turn switch OFF
-                            getTransitionOrange().cancel();
+                            getTransitionPrimary().cancel();
                             getTransitionGrey().start();
                         }
                     }
 
-                    private ValueAnimator getTransitionOrange() {
-                        if (null == transitionToOrange) {
-                            transitionToOrange = ValueAnimator.ofArgb(
+                    private ValueAnimator getTransitionPrimary() {
+                        if (null == transitionToPrimary) {
+                            transitionToPrimary = ValueAnimator.ofArgb(
                                     itemView.getContext().getResources().getColor(R.color.tap_grey_9b),
-                                    itemView.getContext().getResources().getColor(R.color.tap_pumkin_orange_two));
-                            transitionToOrange.setDuration(DEFAULT_ANIMATION_TIME);
-                            transitionToOrange.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
+                                    itemView.getContext().getResources().getColor(R.color.colorPrimaryDark));
+                            transitionToPrimary.setDuration(DEFAULT_ANIMATION_TIME);
+                            transitionToPrimary.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
                         }
-                        return transitionToOrange;
+                        return transitionToPrimary;
                     }
 
                     private ValueAnimator getTransitionGrey() {
                         if (null == transitionToGrey) {
                             transitionToGrey = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tap_pumkin_orange_two),
+                                    itemView.getContext().getResources().getColor(R.color.colorPrimaryDark),
                                     itemView.getContext().getResources().getColor(R.color.tap_grey_9b));
                             transitionToGrey.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToGrey.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(

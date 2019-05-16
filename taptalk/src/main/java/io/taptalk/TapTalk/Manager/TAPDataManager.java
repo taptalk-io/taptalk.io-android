@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Subscriber.TAPBaseSubscriber;
@@ -69,6 +71,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_FLAG_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
@@ -156,6 +159,7 @@ public class TAPDataManager {
         removeLastCallCountryTimestamp();
         removeCountryList();
         removeMyCountryCode();
+        removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
     }
 
@@ -364,6 +368,17 @@ public class TAPDataManager {
         Hawk.delete(MY_COUNTRY_CODE);
     }
 
+    public String getMyCountryFlagUrl() {
+        return getStringPreference(MY_COUNTRY_FLAG_URL);
+    }
+
+    public void saveMyCountryFlagUrl(String myCountryFlagUrl) {
+        saveStringPreference(MY_COUNTRY_FLAG_URL, myCountryFlagUrl);
+    }
+
+    public void removeMyCountryFlagUrl() {
+        Hawk.delete(MY_COUNTRY_FLAG_URL);
+    }
 
     /**
      * ROOM LIST FIRST SETUP
@@ -972,8 +987,8 @@ public class TAPDataManager {
     // File Download
     private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
 
-    public void downloadFile(String roomID, String localID, String fileID, TapDefaultDataView<ResponseBody> view) {
-        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, getNewDownloadSubscriber(localID, view));
+    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, TapDefaultDataView<ResponseBody> view) {
+        TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, fileSize, getNewDownloadSubscriber(localID, view));
     }
 
     public void cancelFileDownload(String localID) {

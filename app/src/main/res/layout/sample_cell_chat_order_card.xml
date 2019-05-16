@@ -36,7 +36,7 @@
             android:id="@+id/cl_button_detail"
             android:layout_width="match_parent"
             android:layout_height="36dp"
-            android:background="@drawable/tap_bg_purple_header_left_ripple">
+            android:background="@drawable/tap_bg_purply_rounded_2dp_10dp_0dp_0dp_ripple">
 
             <TextView
                 android:id="@+id/tv_order_id"
@@ -444,7 +444,7 @@
                 android:layout_width="6dp"
                 android:layout_height="6dp"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/tap_bg_circle_pumpkinorange"
+                android:background="@drawable/tap_bg_circle_primarydark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_additional_cost_label"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -515,7 +515,7 @@
                 android:layout_width="6dp"
                 android:layout_height="6dp"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/tap_bg_circle_pumpkinorange"
+                android:background="@drawable/tap_bg_circle_primarydark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_discount_label"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -668,7 +668,7 @@
             android:id="@+id/tv_button_order_action"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/tap_bg_green_footer_ripple"
+            android:background="@drawable/tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_0dp_0dp_10dp_10dp_ripple"
             android:fontFamily="@font/tap_font_pt_root_bold"
             android:gravity="center"
             android:paddingStart="16dp"
@@ -687,7 +687,7 @@
         android:layout_height="28dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/tap_bg_cyan_button_ripple"
+        android:background="@drawable/tap_bg_palecyan_stroke_lightbluegrey_1dp_rounded_6dp_ripple"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -62,9 +62,9 @@ public class TAPAttachmentModel {
                 R.drawable.tap_ic_documents_pumpkin_orange,
                 R.drawable.tap_ic_camera_pumpkin_orange,
                 R.drawable.tap_ic_gallery_pumpkin_orange,
-//                R.drawable.tap_ic_audio_green_blue,
+//                R.drawable.tap_ic_audio_pumpkin_orange,
                 R.drawable.tap_ic_location_pumpkin_orange,
-//                R.drawable.tap_ic_contact_green_blue
+//                R.drawable.tap_ic_contact_pumpkin_orange
         };
 
         int[] titleResIds = {

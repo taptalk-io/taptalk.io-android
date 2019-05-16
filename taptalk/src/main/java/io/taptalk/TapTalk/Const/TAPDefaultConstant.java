@@ -46,6 +46,9 @@ public class TAPDefaultConstant {
         public static final int TYPE_CONFIRM_MY_PAYMENT = 2004;
 
         public static final int TYPE_HIDDEN = 0x9196;
+
+        public static final int TYPE_SYSTEM_MESSAGE = 9001;
+        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
     }
 
     public static final class BubbleType {
@@ -63,6 +66,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_EMPTY = 9999;
+        public static final int TYPE_BUBBLE_UNREAD_STATUS = 9998;
     }
 
     public static final class MessageData {
@@ -100,6 +104,7 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_LIST = "kTAPExtraCountryList";
         public static final String COUNTRY_ID = "kTAPExtraCountryID";
         public static final String COUNTRY_CALLING_CODE = "kTAPExtraCountryCallingCode";
+        public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
     }
 
@@ -308,6 +313,7 @@ public class TAPDefaultConstant {
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
     public static final String MY_COUNTRY_CODE = "kMyCountryCode";
+    public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
 
     public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
 }

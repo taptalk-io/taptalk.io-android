@@ -112,7 +112,7 @@
                 app:minHeight="100dp"
                 app:minWidth="78dp"
                 app:topLeftRadius="2dp"
-                tools:src="@drawable/tap_img_setup_chat" />
+                tools:src="@drawable/tap_img_default_avatar" />
 
             <FrameLayout
                 android:id="@+id/fl_progress"
@@ -173,7 +173,7 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
                 android:textColor="@color/tap_black_2c"
-                android:textColorLink="@color/tap_dodger_blue"
+                android:textColorLink="@color/colorAccentLight"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"

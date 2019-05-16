@@ -103,7 +103,7 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:background="@drawable/tap_bg_pumpkin_right_rounded_2dp"
+                            android:background="@drawable/tap_bg_primarydark_rounded_0dp_2dp_0dp_2dp"
                             android:src="@drawable/tap_ic_checked_location" />
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

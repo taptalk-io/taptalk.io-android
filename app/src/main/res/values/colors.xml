@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorPrimaryLight">@color/tap_light_orange</color>
     <color name="colorPrimary">@color/tap_mango</color>
-    <color name="colorPrimaryDark">@color/tap_pumkin_orange_two</color>
-    <color name="colorAccent">@color/tap_dodger_blue</color>
-    <color name="colorAccentLight">@color/tap_blue_purple</color>
+    <color name="colorPrimaryDark">@color/tap_pumpkin_orange</color>
+    <color name="colorAccentLight">@color/tap_dodger_blue</color>
+    <color name="colorAccent">@color/tap_bubble_blue</color>
+    <color name="colorAccentDark">@color/tap_blue_purple</color>
 </resources>
