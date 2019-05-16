@@ -811,25 +811,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
-    // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
-    private void addAfterTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempAfterMessages) {
-        String newID = newMessage.getLocalID();
-        runOnUiThread(() -> {
-            if (vm.getMessagePointer().containsKey(newID)) {
-                //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
-                vm.updateMessagePointer(newMessage);
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            } else if (!vm.getMessagePointer().containsKey(newID)) {
-                //kalau belom ada masukin kedalam list dan hash map
-                tempAfterMessages.add(newMessage);
-                vm.addMessagePointer(newMessage);
-                //runOnUiThread(() -> messageAdapter.addMessage(newMessage));
-            }
-            //updateMessageDecoration();
-        });
-    }
-
     private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
         if (null == message) {
             return;
@@ -1856,10 +1837,39 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageAfterModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
             List<TAPMessageModel> messageAfterModels = new ArrayList<>();
+
+            //untuk tau index mana buat disisipin unread message identifier
+            int unreadMessageIndex = -1;
+            //untuk dapet created yang paling kecil dari unread message
+            long smallestUnreadCreated = 0L;
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    addAfterTextMessage(message, messageAfterModels);
+
+                    //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
+                    // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
+                    String newID = message.getLocalID();
+                    if (vm.getMessagePointer().containsKey(newID)) {
+                        //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
+                        runOnUiThread(() -> {
+                            vm.updateMessagePointer(message);
+                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                        });
+                    } else if (!vm.getMessagePointer().containsKey(newID)) {
+                        //kalau belom ada masukin kedalam list dan hash map
+                        messageAfterModels.add(message);
+                        vm.addMessagePointer(message);
+
+                        Log.e(TAG, "data: "+vm.getLastUnreadMessageLocalID()+" "+smallestUnreadCreated+" "+message.getIsRead() );
+                        if ("".equals(vm.getLastUnreadMessageLocalID())
+                                && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
+                                && (null != message.getIsRead() && !message.getIsRead())
+                                && !vm.isUnreadIdentifierShown()) {
+                            unreadMessageIndex = messageAfterModels.indexOf(message);
+                            smallestUnreadCreated = message.getCreated();
+                        }
+                    }
+
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                     new Thread(() -> {
                         //ini buat update last update timestamp yang ada di preference
@@ -1872,6 +1882,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+
+            Log.e(TAG, "onSuccess: " + unreadMessageIndex + " " + smallestUnreadCreated);
+            if (-1 != unreadMessageIndex && 0L != smallestUnreadCreated) {
+                TAPMessageModel unreadIndicator = new TAPMessageModel();
+                unreadIndicator.setType(TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER);
+                unreadIndicator.setLocalID("");
+                unreadIndicator.setCreated(messageAfterModels.get(unreadMessageIndex).getCreated());
+                unreadIndicator.setUser(messageAfterModels.get(unreadMessageIndex).getUser());
+
+                messageAfterModels.add(unreadMessageIndex, unreadIndicator);
             }
 
             //sorting message balikan dari api after
@@ -1889,7 +1910,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //masukin datanya ke dalem recyclerView
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 updateMessageDecoration();
-                messageAdapter.addMessage(0, messageAfterModels);
+                messageAdapter.addMessage(0, messageAfterModels, true);
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
                 if (vm.isOnBottom() && 0 < messageAfterModels.size())
