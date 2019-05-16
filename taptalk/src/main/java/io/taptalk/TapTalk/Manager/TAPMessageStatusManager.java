@@ -237,7 +237,8 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
-                messageIds.add(model.getMessageID());
+                if (null != model)
+                    messageIds.add(model.getMessageID());
             }
             TAPDataManager.getInstance().updateMessageStatusAsRead(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override

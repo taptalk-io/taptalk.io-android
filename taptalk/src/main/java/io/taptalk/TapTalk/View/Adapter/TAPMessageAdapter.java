@@ -1777,8 +1777,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         notifyDataSetChanged();
     }
 
-    public void addMessage(int position, List<TAPMessageModel> messages) {
-        addItem(position, messages, true);
+    public void addMessage(int position, List<TAPMessageModel> messages, boolean isNotify) {
+        addItem(position, messages, isNotify);
     }
 
     public void setMessageAt(int position, TAPMessageModel message) {
