@@ -26,6 +26,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1641,10 +1642,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 TAPMessageModel unreadIndicator = new TAPMessageModel();
                 unreadIndicator.setType(TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER);
                 unreadIndicator.setLocalID("");
+                unreadIndicator.setCreated(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getCreated());
+                unreadIndicator.setUser(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getUser());
 
                 vm.addMessagePointer(unreadIndicator);
 
                 models.add(models.indexOf(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID())) + 1, unreadIndicator);
+                vm.setUnreadIdentifierShown(true);
             }
 
             if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
@@ -1738,16 +1742,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
             }
 
-            if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID())) {
-                TAPMessageModel unreadIndicator = new TAPMessageModel();
-                unreadIndicator.setType(TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER);
-                unreadIndicator.setLocalID("");
-
-                vm.addMessagePointer(unreadIndicator);
-
-                models.add(models.indexOf(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID())) + 1, unreadIndicator);
-            }
-
             if (null != messageAdapter) {
                 if (MAX_ITEMS_PER_PAGE > entities.size() && STATE.DONE != state) {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
@@ -1758,6 +1752,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
                     messageAdapter.addMessage(models);
+
+                    if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID()) && !vm.isUnreadIdentifierShown()) {
+                        TAPMessageModel unreadIndicator = new TAPMessageModel();
+                        unreadIndicator.setType(TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER);
+                        unreadIndicator.setLocalID("");
+                        unreadIndicator.setCreated(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getCreated());
+                        unreadIndicator.setUser(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getUser());
+
+                        vm.addMessagePointer(unreadIndicator);
+
+                        messageAdapter.getItems().add(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID())) + 1, unreadIndicator);
+                        vm.setUnreadIdentifierShown(true);
+                    }
+
                     new Thread(() -> {
                         vm.setMessageModels(messageAdapter.getItems());
                         if (null != vm.getTappedMessageLocalID()) {
