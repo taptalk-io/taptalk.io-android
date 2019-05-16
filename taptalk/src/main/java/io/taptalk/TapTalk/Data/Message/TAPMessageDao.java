@@ -63,13 +63,13 @@ public interface TAPMessageDao {
 
     @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
             "from Message_Table where type in (" + TYPE_IMAGE + ", " + TYPE_VIDEO +
-            ") and roomID = :roomID and isHidden = 0 and isDeleted = 0 " +
+            ") and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
             "order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getRoomMedias(String roomID);
 
     @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
             "from Message_Table where type in (" + TYPE_IMAGE + ", " + TYPE_VIDEO +
-            ") and created < :lastTimestamp and roomID = :roomID and isHidden = 0 and isDeleted = 0 " +
+            ") and created < :lastTimestamp and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
             "order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getRoomMedias(Long lastTimestamp, String roomID);
 
