@@ -54,7 +54,7 @@ public interface TAPMessageDao {
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
 
-    @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID")
+    @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID order by created asc")
     List<TAPMessageEntity> getAllMessageThatNotRead(String userID, String roomID);
 
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
