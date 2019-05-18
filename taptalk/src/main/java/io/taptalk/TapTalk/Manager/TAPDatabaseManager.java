@@ -115,9 +115,9 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getAllMessages(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getAllMessagesInRoom(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
-            messageRepository.getAllMessages(roomID, listener);
+            messageRepository.getAllMessagesInRoom(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -182,6 +182,12 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void getRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getRoomMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
+        else throw new IllegalStateException("Message Repository was not initialized");
+    }
+
     public void getRoom(String myID, TAPUserModel otherUserModel, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoom(myID, otherUserModel, listener);
@@ -201,9 +207,9 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
-    public void getMinCreatedOfUnreadMessage(String myID, final TAPDatabaseListener<Long> listener) {
+    public void getMinCreatedOfUnreadMessage(String myID, String roomID, final TAPDatabaseListener<Long> listener) {
         if (null != messageRepository) {
-            messageRepository.getMinCreatedOfUnreadMessage(myID, listener);
+            messageRepository.getMinCreatedOfUnreadMessage(myID, roomID, listener);
         } else throw new IllegalStateException("Message Repository was not initialized");
     }
 
