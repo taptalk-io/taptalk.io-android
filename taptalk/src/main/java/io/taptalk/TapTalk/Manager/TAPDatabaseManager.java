@@ -110,7 +110,14 @@ public class TAPDatabaseManager {
 
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         if (null != messageRepository)
-            return messageRepository.getAllMessages();
+            return messageRepository.getAllMessagesLiveData();
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getAllMessages(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getAllMessages(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -192,6 +199,12 @@ public class TAPDatabaseManager {
         if (null != messageRepository)
             messageRepository.getUnreadCount(myID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
+    }
+
+    public void getMinCreatedOfUnreadMessage(String myID, final TAPDatabaseListener<Long> listener) {
+        if (null != messageRepository) {
+            messageRepository.getMinCreatedOfUnreadMessage(myID, listener);
+        } else throw new IllegalStateException("Message Repository was not initialized");
     }
 
     public void updatePendingStatus() {

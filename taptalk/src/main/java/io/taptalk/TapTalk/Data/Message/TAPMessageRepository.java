@@ -30,7 +30,7 @@ public class TAPMessageRepository {
     public TAPMessageRepository(Application application) {
         TapTalkDatabase db = TapTalkDatabase.getDatabase(application);
         messageDao = db.messageDao();
-        allMessages = messageDao.getAllMessage();
+        allMessages = messageDao.getAllMessageLiveData();
     }
 
     public void delete(List<TAPMessageEntity> messageEntities, TAPDatabaseListener listener) {
@@ -86,8 +86,15 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public LiveData<List<TAPMessageEntity>> getAllMessages() {
+    public LiveData<List<TAPMessageEntity>> getAllMessagesLiveData() {
         return allMessages;
+    }
+
+    public void getAllMessages(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> allMessages = messageDao.getAllMessagesInRoom(roomID);
+            listener.onSelectFinished(allMessages);
+        }).start();
     }
 
     public void getMessageListDesc(final String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -217,6 +224,13 @@ public class TAPMessageRepository {
         new Thread(() -> {
             int unreadCount = messageDao.getUnreadCount(myID);
             listener.onCountedUnreadCount(unreadCount);
+        }).start();
+    }
+
+    public void getMinCreatedOfUnreadMessage(String myID, final TAPDatabaseListener<Long> listener) {
+        new Thread(() -> {
+            long minCreatedOfUnreadMessage = messageDao.getMinCreatedOfUnreadMessage(myID);
+            listener.onSelectFinished(minCreatedOfUnreadMessage);
         }).start();
     }
 

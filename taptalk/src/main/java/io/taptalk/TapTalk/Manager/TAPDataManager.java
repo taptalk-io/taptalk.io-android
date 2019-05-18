@@ -619,6 +619,10 @@ public class TAPDataManager {
         return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }
 
+    public void getAllMessagesFromDatabase(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance().getAllMessages(roomID, listener);
+    }
+
     public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
     }
@@ -686,6 +690,13 @@ public class TAPDataManager {
             return;
         }
         TAPDatabaseManager.getInstance().getUnreadCount(getActiveUser().getUserID(), listener);
+    }
+
+    public void getMinCreatedOfUnreadMessage(final TAPDatabaseListener<Long> listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
+        TAPDatabaseManager.getInstance().getMinCreatedOfUnreadMessage(getActiveUser().getUserID(), listener);
     }
 
     public void deleteAllMessage() {

@@ -34,7 +34,10 @@ public interface TAPMessageDao {
     void deleteAllMessage();
 
     @Query("select * from Message_Table order by created desc")
-    LiveData<List<TAPMessageEntity>> getAllMessage();
+    LiveData<List<TAPMessageEntity>> getAllMessageLiveData();
+
+    @Query("select * from Message_Table where RoomID like :roomID order by created desc")
+    List<TAPMessageEntity> getAllMessagesInRoom(String roomID);
 
     @Query("select * from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getAllMessageListDesc(String roomID);
@@ -81,6 +84,9 @@ public interface TAPMessageDao {
 
     @Query("select count(isRead) from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and userID not like :userID")
     Integer getUnreadCount(String userID);
+
+    @Query("select min(created) from message_table where isRead = 0 and isHidden = 0 and isDeleted = 0 and userID not like :userID")
+    Long getMinCreatedOfUnreadMessage(String userID);
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();

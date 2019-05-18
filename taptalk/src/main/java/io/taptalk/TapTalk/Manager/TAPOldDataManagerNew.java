@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import java.util.List;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 
 public class TAPOldDataManagerNew {
@@ -16,11 +17,13 @@ public class TAPOldDataManagerNew {
     public void startAutoCleanProcess() {
         new Thread(() -> {
             long currentTimestamp = System.currentTimeMillis();
-            if (TAPDataManager.getInstance().checkLastDeleteTimestamp()) {
+            boolean isOverOneWeek = TAPTimeFormatter.getInstance().checkOverOneWeekOrNot(TAPDataManager.getInstance().getLastDeleteTimestamp());
+
+            if (TAPDataManager.getInstance().checkLastDeleteTimestamp() && isOverOneWeek) {
                 TAPDataManager.getInstance().getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
                     @Override
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
-                        autoCleanProcessFromRoomQueryResult(entities);
+                        autoCleanProcessFromRoomQueryResult(entities, currentTimestamp);
                     }
                 });
             } else {
@@ -29,9 +32,10 @@ public class TAPOldDataManagerNew {
         }).start();
     }
 
-    private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities) {
+    private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities, long currentTimestamp) {
+        long oneMonthAgoTimestamp = TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp);
         for (TAPMessageEntity roomEntity : entities) {
-            
+
         }
     }
 }
