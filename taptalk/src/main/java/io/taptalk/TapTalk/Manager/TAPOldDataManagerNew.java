@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.Manager;
 
 import android.util.Log;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,54 +57,50 @@ public class TAPOldDataManagerNew {
                         public void onSelectFinished(List<TAPMessageEntity> entities) {
                             if (null != entities && 51 <= entities.size() && entities.get(50).getCreated() < smallestTimestamp[0]) {
                                 smallestTimestamp[0] = entities.get(50).getCreated();
-                            }
 
-                            TAPDataManager.getInstance().getRoomMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
-                                @Override
-                                public void onSelectFinished(List<TAPMessageEntity> entities) {
-                                    List<TAPMessageEntity> deleteMessages = new ArrayList<>();
-                                    for (TAPMessageEntity message : entities) {
-                                        if (TYPE_IMAGE == message.getType()) {
-                                            try {
-                                                //apus file image fisiknya
-                                                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
-                                                TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
+                                TAPDataManager.getInstance().getRoomMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
+                                    @Override
+                                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                        List<TAPMessageEntity> deleteMessages = new ArrayList<>();
+                                        for (TAPMessageEntity message : entities) {
+                                            if (TYPE_IMAGE == message.getType()) {
+                                                try {
+                                                    //apus file image fisiknya
+                                                    HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                                                    TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
 
-                                                if (!"".equals(TAPFileDownloadManager.getInstance().getFileMessagePath(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)))) {
-                                                    File file = new File(TAPFileDownloadManager.getInstance().getFileMessagePath(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)));
-                                                    TapTalk.appContext.deleteFile(file.getName());
+                                                    if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID))) {
+                                                        TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
+                                                    }
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    Log.e(TAG, "onSelectFinished: ", e);
                                                 }
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                                Log.e(TAG, "onSelectFinished: ", e);
+                                            } else if (TYPE_VIDEO == message.getType()
+                                                    || TYPE_FILE == message.getType()) {
+                                                //apus file fisiknya
+                                                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                                                if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID))) {
+                                                    TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
+                                                }
                                             }
-                                        } else if (TYPE_VIDEO == message.getType()
-                                                || TYPE_FILE == message.getType()) {
-                                            //apus file fisiknya
-                                            HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
-                                            if (!"".equals(TAPFileDownloadManager.getInstance().getFileMessagePath(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)))) {
-                                                File file = new File(TAPFileDownloadManager.getInstance().getFileMessagePath(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)));
-                                                TapTalk.appContext.deleteFile(file.getName());
-                                            }
+
+                                            deleteMessages.add(message);
                                         }
 
-                                        deleteMessages.add(message);
+                                        TAPDataManager.getInstance().deleteMessage(deleteMessages, new TAPDatabaseListener() {
+                                            @Override
+                                            public void onDeleteFinished() {
+                                                Log.e(TAG, "onDeleteFinished: ");
+                                            }
+                                        });
                                     }
-
-                                    TAPDataManager.getInstance().deleteMessage(deleteMessages, new TAPDatabaseListener() {
-                                        @Override
-                                        public void onDeleteFinished() {
-                                            Log.e(TAG, "onDeleteFinished: " );
-                                        }
-                                    });
-                                }
-                            });
+                                });
+                            }
                         }
                     });
                 }
             });
         }
     }
-
-
 }
