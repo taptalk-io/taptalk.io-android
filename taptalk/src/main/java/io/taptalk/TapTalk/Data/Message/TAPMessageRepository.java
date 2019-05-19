@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -30,7 +31,7 @@ public class TAPMessageRepository {
     public TAPMessageRepository(Application application) {
         TapTalkDatabase db = TapTalkDatabase.getDatabase(application);
         messageDao = db.messageDao();
-        allMessages = messageDao.getAllMessage();
+        allMessages = messageDao.getAllMessageLiveData();
     }
 
     public void delete(List<TAPMessageEntity> messageEntities, TAPDatabaseListener listener) {
@@ -86,8 +87,15 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public LiveData<List<TAPMessageEntity>> getAllMessages() {
+    public LiveData<List<TAPMessageEntity>> getAllMessagesLiveData() {
         return allMessages;
+    }
+
+    public void getAllMessagesInRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> allMessages = messageDao.getAllMessagesInRoom(roomID);
+            listener.onSelectFinished(allMessages);
+        }).start();
     }
 
     public void getMessageListDesc(final String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -174,6 +182,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messages = messageDao.getRoomMessageBeforeTimestamp(roomID, minimumTimestamp);
+            listener.onSelectFinished(messages);
+        }).start();
+    }
+
     public void getRoom(String myID, TAPUserModel otherUserModel, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String roomID = TAPChatManager.getInstance().arrangeRoomId(myID, otherUserModel.getUserID());
@@ -217,6 +232,18 @@ public class TAPMessageRepository {
         new Thread(() -> {
             int unreadCount = messageDao.getUnreadCount(myID);
             listener.onCountedUnreadCount(unreadCount);
+        }).start();
+    }
+
+    public void getMinCreatedOfUnreadMessage(String myID, String roomID, final TAPDatabaseListener<Long> listener) {
+        new Thread(() -> {
+            TAPMessageEntity tempUnreadEntity = messageDao.getMinCreatedOfUnreadMessage(myID, roomID);
+
+            if (null != tempUnreadEntity) {
+                Long minCreatedOfUnreadMessage = tempUnreadEntity.getCreated();
+                Log.e(TAG, "getMinCreatedOfUnreadMessage: " + minCreatedOfUnreadMessage);
+                listener.onSelectFinished(minCreatedOfUnreadMessage);
+            } else listener.onSelectFinished(0L);
         }).start();
     }
 
