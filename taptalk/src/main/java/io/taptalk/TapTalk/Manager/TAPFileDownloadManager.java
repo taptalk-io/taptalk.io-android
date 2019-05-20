@@ -15,6 +15,7 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -239,6 +240,16 @@ public class TAPFileDownloadManager {
         File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.appContext.getString(R.string.app_name) + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.appContext.getString(R.string.app_name) + "Videos" :
                 "/" + TapTalk.appContext.getString(R.string.app_name) + " Files"));
         dir.mkdirs();
+
+        File noMediaFile = new File(dir, ".nomedia");
+        if (!noMediaFile.exists()) {
+            try {
+                noMediaFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         File file = new File(dir, filename);
         file = TAPFileUtils.getInstance().renameDuplicateFile(file);
         try {
