@@ -62,6 +62,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -1827,6 +1828,25 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onPhoneSmsSelected(String phoneNumber) {
             TAPUtils.getInstance().composeSMS(TAPChatActivity.this, phoneNumber);
+        }
+
+        @Override
+        public void onSaveImageToGallery(TAPMessageModel message) {
+            if (null != message.getData().get(FILE_ID) && null != message.getData().get(MEDIA_TYPE)) {
+                TAPFileDownloadManager.getInstance().writeImageFileToDisk(TAPChatActivity.this,
+                        System.currentTimeMillis(), TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable((String) message.getData().get(FILE_ID)).getBitmap(),
+                        (String) message.getData().get(MEDIA_TYPE), new TapTalkActionInterface() {
+                            @Override
+                            public void onSuccess(String message) {
+                                runOnUiThread(() -> Toast.makeText(TAPChatActivity.this, message, Toast.LENGTH_SHORT).show());
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
+            }
         }
     };
 

@@ -29,8 +29,9 @@ public class TAPAttachmentModel {
     public static final int ID_COMPOSE = 11;
     public static final int ID_CALL = 12;
     public static final int ID_SEND_SMS = 13;
-    public static final int ID_SAVE_GALLERY = 14;
-    public static final int ID_SAVE_DOWNLOAD = 15;
+    public static final int ID_SAVE_IMAGE_GALLERY = 14;
+    public static final int ID_SAVE_VIDEO_GALLERY = 15;
+    public static final int ID_SAVE_DOWNLOAD = 16;
 
     public TAPAttachmentModel(int icon, int titleIds, int id) {
         this.icon = icon;
@@ -201,7 +202,7 @@ public class TAPAttachmentModel {
                     ID_REPLY,
 //                    ID_FORWARD,
                     ID_COPY,
-                    ID_SAVE_GALLERY
+                    ID_SAVE_IMAGE_GALLERY
             };
         } else if (null != messageModel.getData() &&
                 null != messageModel.getData().get(CAPTION) &&
@@ -240,7 +241,7 @@ public class TAPAttachmentModel {
 
             ids = new int[]{
                     ID_REPLY,
-                    ID_SAVE_GALLERY
+                    ID_SAVE_IMAGE_GALLERY
 //                    ID_FORWARD,
             };
         } else {
@@ -297,7 +298,7 @@ public class TAPAttachmentModel {
                     ID_REPLY,
 //                    ID_FORWARD,
                     ID_COPY,
-                    ID_SAVE_GALLERY
+                    ID_SAVE_VIDEO_GALLERY
             };
         } else if (null != messageModel.getData() &&
                 null != messageModel.getData().get(CAPTION) &&
@@ -337,7 +338,7 @@ public class TAPAttachmentModel {
 
             ids = new int[]{
                     ID_REPLY,
-                    ID_SAVE_GALLERY
+                    ID_SAVE_VIDEO_GALLERY
 //                    ID_FORWARD,
             };
         } else {

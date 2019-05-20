@@ -16,6 +16,7 @@ public interface TapTalkAttachmentInterface {
     void onComposeSelected(String emailRecipient);
     void onPhoneCallSelected(String phoneNumber);
     void onPhoneSmsSelected(String phoneNumber);
-    void onSaveToGallery();
+    void onSaveImageToGallery(TAPMessageModel message);
+    void onSaveVideoToGallery(TAPMessageModel message);
     void onSaveToDownload();
 }
