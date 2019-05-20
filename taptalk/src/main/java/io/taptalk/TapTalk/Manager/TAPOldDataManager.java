@@ -54,8 +54,10 @@ public class TAPOldDataManager {
                     TAPDataManager.getInstance().getAllMessagesInRoomFromDatabase(roomEntity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
                         @Override
                         public void onSelectFinished(List<TAPMessageEntity> entities) {
-                            if (null != entities && 51 <= entities.size() && entities.get(50).getCreated() < smallestTimestamp[0]) {
-                                smallestTimestamp[0] = entities.get(50).getCreated();
+                            if (null != entities && 51 <= entities.size()) {
+
+                                if (entities.get(50).getCreated() < smallestTimestamp[0])
+                                    smallestTimestamp[0] = entities.get(50).getCreated();
 
                                 TAPDataManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
                                     @Override
@@ -66,10 +68,6 @@ public class TAPOldDataManager {
                                                     //apus file image fisiknya
                                                     HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
                                                     TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
-
-                                                    if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID))) {
-                                                        TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
-                                                    }
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                     Log.e(TAG, "onSelectFinished: ", e);
