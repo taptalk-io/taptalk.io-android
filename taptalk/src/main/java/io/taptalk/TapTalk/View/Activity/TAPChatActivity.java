@@ -1848,6 +1848,44 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         });
             }
         }
+
+        @Override
+        public void onSaveVideoToGallery(TAPMessageModel message) {
+            if (null != message.getData().get(FILE_ID) &&
+                    null != message.getData().get(MEDIA_TYPE) &&
+                    null != message.getData().get(FILE_ID)) {
+                TAPFileDownloadManager.getInstance().writeFileToDisk(TAPChatActivity.this, message, new TapTalkActionInterface() {
+                    @Override
+                    public void onSuccess(String message) {
+                        runOnUiThread(() -> Toast.makeText(TAPChatActivity.this, message, Toast.LENGTH_SHORT).show());
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(() -> Toast.makeText(TAPChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onSaveToDownload(TAPMessageModel message) {
+            if (null != message.getData().get(FILE_ID) &&
+                    null != message.getData().get(MEDIA_TYPE) &&
+                    null != message.getData().get(FILE_ID)) {
+                TAPFileDownloadManager.getInstance().writeFileToDisk(TAPChatActivity.this, message, new TapTalkActionInterface() {
+                    @Override
+                    public void onSuccess(String message) {
+                        runOnUiThread(() -> Toast.makeText(TAPChatActivity.this, message, Toast.LENGTH_SHORT).show());
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        runOnUiThread(() -> Toast.makeText(TAPChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
+                    }
+                });
+            }
+        }
     };
 
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {

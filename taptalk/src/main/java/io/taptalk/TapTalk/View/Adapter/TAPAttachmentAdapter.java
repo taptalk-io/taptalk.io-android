@@ -30,6 +30,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_LOCATION;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_OPEN;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_REPLY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SAVE_DOWNLOAD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SAVE_IMAGE_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SAVE_VIDEO_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_SEND_SMS;
@@ -173,6 +174,9 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case ID_SAVE_VIDEO_GALLERY:
                     attachmentListener.onSaveVideoToGallery(message);
+                    break;
+                case ID_SAVE_DOWNLOAD:
+                    attachmentListener.onSaveToDownload(message);
                     break;
             }
             onClickListener.onClick(itemView);
