@@ -164,4 +164,8 @@ public class TAPTimeFormatter {
     public boolean checkOverOneMonthOrNot(long timestamp) {
         return timestamp >= times.get(1);
     }
+
+    public long oneMonthAgoTimeStamp(long currentTimestamp) {
+        return currentTimestamp - times.get(1);
+    }
 }

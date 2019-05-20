@@ -110,7 +110,14 @@ public class TAPDatabaseManager {
 
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         if (null != messageRepository)
-            return messageRepository.getAllMessages();
+            return messageRepository.getAllMessagesLiveData();
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getAllMessagesInRoom(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getAllMessagesInRoom(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -175,6 +182,12 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void getRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getRoomMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
+        else throw new IllegalStateException("Message Repository was not initialized");
+    }
+
     public void getRoom(String myID, TAPUserModel otherUserModel, TAPDatabaseListener listener) {
         if (null != messageRepository)
             messageRepository.getRoom(myID, otherUserModel, listener);
@@ -192,6 +205,12 @@ public class TAPDatabaseManager {
         if (null != messageRepository)
             messageRepository.getUnreadCount(myID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
+    }
+
+    public void getMinCreatedOfUnreadMessage(String myID, String roomID, final TAPDatabaseListener<Long> listener) {
+        if (null != messageRepository) {
+            messageRepository.getMinCreatedOfUnreadMessage(myID, roomID, listener);
+        } else throw new IllegalStateException("Message Repository was not initialized");
     }
 
     public void updatePendingStatus() {

@@ -632,6 +632,10 @@ public class TAPDataManager {
         return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }
 
+    public void getAllMessagesInRoomFromDatabase(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance().getAllMessagesInRoom(roomID, listener);
+    }
+
     public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getMessagesDesc(roomID, listener);
     }
@@ -687,6 +691,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
+    public void getRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance().getRoomMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
+    }
+
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
@@ -699,6 +707,13 @@ public class TAPDataManager {
             return;
         }
         TAPDatabaseManager.getInstance().getUnreadCount(getActiveUser().getUserID(), listener);
+    }
+
+    public void getMinCreatedOfUnreadMessage(String roomID, final TAPDatabaseListener<Long> listener) {
+        if (null == getActiveUser()) {
+            return;
+        }
+        TAPDatabaseManager.getInstance().getMinCreatedOfUnreadMessage(getActiveUser().getUserID(), roomID, listener);
     }
 
     public void deleteAllMessage() {

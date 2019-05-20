@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TAPOldDataManagerNew;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -169,7 +170,10 @@ public class TapTalk {
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance().connect();
             TAPContactManager.getInstance().setMyCountryCode(TAPDataManager.getInstance().getMyCountryCode());
-            TAPOldDataManager.getInstance().startAutoCleanProcess();
+
+            TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
+            TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
+            TAPOldDataManagerNew.getInstance().startAutoCleanProcess();
         }
 
         TAPDataManager.getInstance().updateSendingMessageToFailed();
