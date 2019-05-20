@@ -478,6 +478,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private val profilePicturePickerListener = object : TAPAttachmentListener() {
+
         override fun onCameraSelected() {
             vm.profilePictureUri = TAPUtils.getInstance().takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
