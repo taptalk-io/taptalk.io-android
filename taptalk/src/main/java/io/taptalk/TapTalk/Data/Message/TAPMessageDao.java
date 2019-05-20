@@ -9,11 +9,10 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 
 @Dao
 public interface TAPMessageDao {
@@ -22,6 +21,9 @@ public interface TAPMessageDao {
 
     @Delete
     void delete(List<TAPMessageEntity> messageEntities);
+
+    @Query("delete from message_table where roomID = :roomID and created < :minimumTimestamp")
+    void deleteRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(TAPMessageEntity messageEntity);
@@ -78,8 +80,10 @@ public interface TAPMessageDao {
             "order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getRoomMedias(Long lastTimestamp, String roomID);
 
-    @Query("select * from message_table where roomID = :roomID and created < :minimumTimestamp")
-    List<TAPMessageEntity> getRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp);
+    @Query("select * from message_table where" +
+            " type in (" + TYPE_IMAGE + ", " + TYPE_FILE + ", " + TYPE_VIDEO + ") " +
+            "and roomID = :roomID and created < :minimumTimestamp")
+    List<TAPMessageEntity> getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp);
 
     @Query("select localID, roomName, roomImage, roomType, roomColor from Message_Table where roomID = :roomID")
     TAPMessageEntity getRoom(String roomID);

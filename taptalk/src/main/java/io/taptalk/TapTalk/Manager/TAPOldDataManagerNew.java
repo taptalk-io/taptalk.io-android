@@ -58,10 +58,9 @@ public class TAPOldDataManagerNew {
                             if (null != entities && 51 <= entities.size() && entities.get(50).getCreated() < smallestTimestamp[0]) {
                                 smallestTimestamp[0] = entities.get(50).getCreated();
 
-                                TAPDataManager.getInstance().getRoomMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
+                                TAPDataManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
                                     @Override
                                     public void onSelectFinished(List<TAPMessageEntity> entities) {
-                                        List<TAPMessageEntity> deleteMessages = new ArrayList<>();
                                         for (TAPMessageEntity message : entities) {
                                             if (TYPE_IMAGE == message.getType()) {
                                                 try {
@@ -84,11 +83,9 @@ public class TAPOldDataManagerNew {
                                                     TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
                                                 }
                                             }
-
-                                            deleteMessages.add(message);
                                         }
 
-                                        TAPDataManager.getInstance().deleteMessage(deleteMessages, new TAPDatabaseListener() {
+                                        TAPDataManager.getInstance().deleteRoomMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener() {
                                             @Override
                                             public void onDeleteFinished() {
                                                 Log.e(TAG, "onDeleteFinished: ");

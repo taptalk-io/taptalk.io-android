@@ -41,6 +41,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void deleteRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener listener) {
+        new Thread(() -> {
+            messageDao.deleteRoomMessageBeforeTimestamp(roomID, minimumTimestamp);
+            listener.onDeleteFinished();
+        }).start();
+    }
+
     public void insert(TAPMessageEntity message) {
         new InsertAsyncTask(messageDao).execute(message);
     }
@@ -182,9 +189,9 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void getRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, final TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, final TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
-            List<TAPMessageEntity> messages = messageDao.getRoomMessageBeforeTimestamp(roomID, minimumTimestamp);
+            List<TAPMessageEntity> messages = messageDao.getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp);
             listener.onSelectFinished(messages);
         }).start();
     }
