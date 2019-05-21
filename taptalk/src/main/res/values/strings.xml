@@ -279,4 +279,8 @@
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
 
+    <!--Save Media-->
+    <string name="tap_save_to_gallery">Save to Gallery</string>
+    <string name="tap_save_to_download">Save to Download</string>
+
 </resources>

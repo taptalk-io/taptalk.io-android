@@ -84,11 +84,11 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_VIDEO -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(message),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createVideoBubbleLongPressMenu(message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_FILE -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFileBubbleLongPressMenu(),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFileBubbleLongPressMenu(message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_LOCATION -> {

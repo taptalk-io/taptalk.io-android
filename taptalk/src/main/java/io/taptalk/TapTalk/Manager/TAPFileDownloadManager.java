@@ -14,7 +14,10 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -239,6 +242,16 @@ public class TAPFileDownloadManager {
         File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.appContext.getString(R.string.app_name) + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.appContext.getString(R.string.app_name) + "Videos" :
                 "/" + TapTalk.appContext.getString(R.string.app_name) + " Files"));
         dir.mkdirs();
+
+        File noMediaFile = new File(dir, ".nomedia");
+        if (!noMediaFile.exists()) {
+            try {
+                noMediaFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         File file = new File(dir, filename);
         file = TAPFileUtils.getInstance().renameDuplicateFile(file);
         try {
@@ -274,12 +287,14 @@ public class TAPFileDownloadManager {
         new Thread(() -> {
             String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
-            File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.appContext.getString(R.string.app_name) + "/" + TapTalk.appContext.getString(R.string.app_name) + " Images");
+            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.appContext.getString(R.string.app_name));
             dir.mkdirs();
+
             File file = new File(dir, filename);
             if (file.exists()) {
                 file.delete();
             }
+
             try {
                 FileOutputStream out = new FileOutputStream(file);
                 bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
@@ -293,6 +308,74 @@ public class TAPFileDownloadManager {
             }
         }).start();
     }
+
+    public void writeFileToDisk(Context context, TAPMessageModel message, TapTalkActionInterface listener) {
+        new Thread(() -> {
+            try {
+                String filename;
+                if (null != message.getData() && null != message.getData().get(FILE_NAME)) {
+                    filename = (String) message.getData().get(FILE_NAME);
+                } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+                    String mimeType = (String) message.getData().get(MEDIA_TYPE);
+                    String extension = null == mimeType ? "" : mimeType.substring(mimeType.lastIndexOf("/") + 1);
+                    filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS") + extension;
+                } else {
+                    filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
+                }
+
+                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + appContext.getString(R.string.app_name)
+                        : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
+                dir.mkdirs();
+
+                File targetFile = new File(dir, filename);
+                targetFile = TAPFileUtils.getInstance().renameDuplicateFile(targetFile);
+
+                if (null != message.getData() && null != message.getData().get(FILE_ID) &&
+                        null != getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))) {
+                    File sourceFile = new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))));
+                    if (sourceFile.exists()) {
+                        copyFile(sourceFile, targetFile);
+                        scanFile(context, targetFile, TAPUtils.getInstance().getFileMimeType(targetFile));
+                        listener.onSuccess("Successfully saved " + filename);
+                    } else {
+                        listener.onFailure("File is Missing Please download the File again");
+                    }
+                } else {
+                    listener.onFailure("File is Missing Please download the File again");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "writeFileToDisk: ", e);
+                listener.onFailure(e.getMessage());
+            }
+        }).start();
+    }
+
+    public void copyFile(File sourceFile, File destFile) throws IOException {
+        if (!destFile.getParentFile().exists())
+            destFile.getParentFile().mkdirs();
+
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        } finally {
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+        }
+    }
+
 
     private void saveImageToCacheAndSendBroadcast(Context context, String localID, String fileID, Bitmap bitmap) {
         try {
@@ -366,15 +449,6 @@ public class TAPFileDownloadManager {
         }
     }
 
-    public String getFileMessagePath(String roomID, String fileID) {
-        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
-        if (null != roomUriMap && null != roomUriMap.get(fileID)) {
-            return roomUriMap.get(fileID);
-        } else {
-            return "";
-        }
-    }
-
     public void saveFileMessageUri(String roomID, String fileID, Uri fileUri) {
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
@@ -408,5 +482,14 @@ public class TAPFileDownloadManager {
         MediaScannerConnection
                 .scanFile(context, new String[]{f.getAbsolutePath()},
                         new String[]{mimeType}, null);
+    }
+
+    public boolean checkPhysicalFileIsExist(TAPMessageModel message) {
+        return null != message.getData() && null != message.getData().get(FILE_ID) &&
+                null != getFileMessageUri(message.getRoom().getRoomID(),
+                (String) message.getData().get(FILE_ID)) && null != getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(),
+                (String) message.getData().get(FILE_ID))) &&
+                new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(),
+                (String) message.getData().get(FILE_ID)))).exists();
     }
 }

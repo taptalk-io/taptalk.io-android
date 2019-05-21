@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Listener;
 
-import android.content.Context;
-
 import io.taptalk.TapTalk.Interface.TapTalkAttachmentInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
@@ -19,4 +17,7 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     @Override public void onComposeSelected(String emailRecipient) {}
     @Override public void onPhoneCallSelected(String phoneNumber) {}
     @Override public void onPhoneSmsSelected(String phoneNumber) {}
+    @Override public void onSaveImageToGallery(TAPMessageModel message) {}
+    @Override public void onSaveVideoToGallery(TAPMessageModel message) {}
+    @Override public void onSaveToDownload(TAPMessageModel message) {}
 }

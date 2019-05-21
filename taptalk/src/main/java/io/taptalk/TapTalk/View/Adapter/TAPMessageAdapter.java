@@ -35,6 +35,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -745,12 +746,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivVideoThumbnail);
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressPercent) && null != videoUri) {
+                    && null == downloadProgressPercent) && null != videoUri &&
+                   TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)) {
                 // Video has finished downloading or uploading
                 tvMediaInfo.setText(null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
                 pbProgress.setVisibility(View.GONE);
-                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
+                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)));
                 new Thread(() -> {
                     BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null == videoThumbnail) {
@@ -775,7 +777,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .placeholder(thumbnail)
                                             .centerCrop())
                                     .into(rcivVideoThumbnail);
-                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
+                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)));
                         });
                     }
                 }).start();
@@ -829,12 +831,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
-        private void openVideoPlayer(TAPMessageModel message) {
+        private void openVideoPlayer(TAPMessageModel message, boolean isPysicalFileExist) {
             if (null == message.getData()) {
                 return;
             }
             Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
-            if (null == videoUri) {
+            if (null == videoUri || !isPysicalFileExist) {
                 // Prompt download
                 this.videoUri = null;
                 String fileID = (String) message.getData().get(FILE_ID);
@@ -987,7 +989,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     flFileIcon.setOnClickListener(v -> downloadFile(item));
                 }
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressPercent) && null != fileUri) {
+                    && null == downloadProgressPercent) && null != fileUri &&
+                    TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)) {
                 // File has finished downloading or uploading
                 tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
