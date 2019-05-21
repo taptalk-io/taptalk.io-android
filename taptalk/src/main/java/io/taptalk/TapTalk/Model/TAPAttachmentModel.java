@@ -277,8 +277,7 @@ public class TAPAttachmentModel {
         if (null != messageModel.getData() &&
                 null != messageModel.getData().get(CAPTION) &&
                 !((String) messageModel.getData().get(CAPTION)).isEmpty() &&
-                null != TAPFileDownloadManager.getInstance().getFileMessageUri(messageModel.getRoom().getRoomID(),
-                        (String) messageModel.getData().get(FILE_ID))) {
+                TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(messageModel)) {
             // Show Copy option to copy caption
             imageResIds = new int[]{
                     R.drawable.tap_ic_reply_pumpkin_orange,
@@ -321,8 +320,7 @@ public class TAPAttachmentModel {
 //                    ID_FORWARD,
                     ID_COPY
             };
-        } else if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(messageModel.getRoom().getRoomID(),
-                (String) messageModel.getData().get(FILE_ID))) {
+        } else if (TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(messageModel)) {
             // Show only forward and reply
             imageResIds = new int[]{
                     R.drawable.tap_ic_reply_pumpkin_orange,
@@ -372,8 +370,7 @@ public class TAPAttachmentModel {
 
         int[] imageResIds, titleResIds, ids;
 
-        if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(messageModel.getRoom().getRoomID(),
-                (String) messageModel.getData().get(FILE_ID))) {
+        if (TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(messageModel)) {
             imageResIds = new int[]{
                     R.drawable.tap_ic_reply_pumpkin_orange,
                     R.drawable.tap_ic_download_pumpkin_orange,
