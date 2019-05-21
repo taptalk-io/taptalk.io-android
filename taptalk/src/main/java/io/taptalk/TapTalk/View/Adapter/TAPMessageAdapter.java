@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -162,7 +161,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_EMPTY:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
             case TYPE_BUBBLE_UNREAD_STATUS:
-                return new BasicVH(parent, R.layout.tap_cell_unread_status);
+                return new UnreadIdentifierVH(parent, R.layout.tap_cell_unread_status);
             default:
                 return new LogVH(parent, R.layout.tap_cell_chat_log);
         }
@@ -1245,10 +1244,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    public class BasicVH extends TAPBaseChatViewHolder {
+    public class UnreadIdentifierVH extends TAPBaseChatViewHolder {
 
-        protected BasicVH(ViewGroup parent, int itemLayoutId) {
+        UnreadIdentifierVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
+            chatListener.onUnreadIdentifierShown();
         }
 
         @Override

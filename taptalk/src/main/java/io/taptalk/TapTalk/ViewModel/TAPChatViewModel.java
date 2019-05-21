@@ -40,10 +40,10 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private String tappedMessageLocalID;
-    private Integer initialUnreadCount, quoteAction;
+    private Integer quoteAction;
     private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
-    private int numUsers, containerAnimationState;
+    private int initialUnreadCount, numUsers, containerAnimationState;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished, isUnreadButtonShown;
 
     public final int IDLE = 0;
@@ -221,11 +221,11 @@ public class TAPChatViewModel extends AndroidViewModel {
         return null == quotedMessage ? TAPChatManager.getInstance().getQuotedMessage() : quotedMessage;
     }
 
-    public Integer getInitialUnreadCount() {
+    public int getInitialUnreadCount() {
         return initialUnreadCount;
     }
 
-    public void setInitialUnreadCount(Integer initialUnreadCount) {
+    public void setInitialUnreadCount(int initialUnreadCount) {
         this.initialUnreadCount = initialUnreadCount;
     }
 

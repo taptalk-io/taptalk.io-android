@@ -24,4 +24,5 @@ public interface TapTalkChatInterface {
     void onBubbleExpanded();
     void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
     void onReadMessage(String roomID);
+    void onUnreadIdentifierShown();
 }
