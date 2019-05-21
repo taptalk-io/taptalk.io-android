@@ -124,7 +124,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
                     TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
                     addedContactUserModel.getName(),
-                    addedContactUserModel.getAvatarURL(), 1, "#2eccad");
+                    addedContactUserModel.getAvatarURL(),
+                    1,
+                    ""); // TODO: 20 May 2019 GET ROOM COLOR
             finish();
         });
     }
@@ -187,10 +189,13 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             pbAddLoading.setVisibility(View.GONE);
             animateAddSuccess(contactModel);
             llButton.setOnClickListener(v -> {
-                TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
+                TAPUtils.getInstance().startChatActivity(
+                        TAPScanResultActivity.this,
                         TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
-                        contactModel.getName(), contactModel.getAvatarURL(),
-                        1, "#2eccad");
+                        contactModel.getName(),
+                        contactModel.getAvatarURL(),
+                        1,
+                        ""); // TODO: 20 May 2019 GET ROOM COLOR
                 finish();
             });
         }
@@ -276,9 +281,13 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             llButton.setOnClickListener(v -> {
-                TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
+                TAPUtils.getInstance().startChatActivity(
+                        TAPScanResultActivity.this,
                         TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
-                        contactModel.getName(), contactModel.getAvatarURL(), 1, "#2eccad");
+                        contactModel.getName(),
+                        contactModel.getAvatarURL(),
+                        1,
+                        ""); // TODO: 20 May 2019 GET ROOM COLOR
                 finish();
             });
             tvAlreadyContact.setText(Html.fromHtml("<b>" + contactModel.getName() + "</b> "

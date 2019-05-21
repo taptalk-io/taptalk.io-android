@@ -35,16 +35,16 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage;
+    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIdentifier;
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private String tappedMessageLocalID;
-    private Integer quoteAction;
+    private Integer initialUnreadCount, quoteAction;
     private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
     private int numUsers, containerAnimationState;
-    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished, isUnreadIdentifierShown;
+    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished, isUnreadButtonShown;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -221,6 +221,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         return null == quotedMessage ? TAPChatManager.getInstance().getQuotedMessage() : quotedMessage;
     }
 
+    public Integer getInitialUnreadCount() {
+        return initialUnreadCount;
+    }
+
+    public void setInitialUnreadCount(Integer initialUnreadCount) {
+        this.initialUnreadCount = initialUnreadCount;
+    }
+
     public Integer getQuoteAction() {
         return null == quoteAction ? null == TAPChatManager.getInstance().getQuoteAction() ? -1 : TAPChatManager.getInstance().getQuoteAction() : quoteAction;
     }
@@ -259,6 +267,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setOpenedFileMessage(TAPMessageModel openedFileMessage) {
         this.openedFileMessage = openedFileMessage;
+    }
+
+    public TAPMessageModel getUnreadIdentifier() {
+        return unreadIdentifier;
+    }
+
+    public void setUnreadIdentifier(TAPMessageModel unreadIdentifier) {
+        this.unreadIdentifier = unreadIdentifier;
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {
@@ -345,6 +361,17 @@ public class TAPChatViewModel extends AndroidViewModel {
         isOnBottom = onBottom;
     }
 
+    /**
+     * Unread button will only show once
+     */
+    public boolean isUnreadButtonShown() {
+        return isUnreadButtonShown;
+    }
+
+    public void setUnreadButtonShown(boolean unreadButtonShown) {
+        isUnreadButtonShown = unreadButtonShown;
+    }
+
     public int getMessageSize() {
         if (null != allMessages.getValue()) {
             return allMessages.getValue().size();
@@ -369,13 +396,5 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setLastUnreadMessageLocalID(String lastUnreadMessageLocalID) {
         this.lastUnreadMessageLocalID = lastUnreadMessageLocalID;
-    }
-
-    public boolean isUnreadIdentifierShown() {
-        return isUnreadIdentifierShown;
-    }
-
-    public void setUnreadIdentifierShown(boolean unreadIdentifierShown) {
-        isUnreadIdentifierShown = unreadIdentifierShown;
     }
 }

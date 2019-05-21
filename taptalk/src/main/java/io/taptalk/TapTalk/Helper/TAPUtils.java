@@ -384,8 +384,8 @@ public class TAPUtils {
     }
 
     // Open chat room from room list to pass typing status
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, boolean isTyping) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), isTyping);
+    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, boolean isTyping) {
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), isTyping);
     }
 
     // Open chat room from notification

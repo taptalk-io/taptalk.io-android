@@ -267,7 +267,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                             room.getRoomName(),
                             room.getRoomImage(),
                             room.getRoomType(),
-                            room.getRoomColor());
+                            room.getRoomColor(),
+                            room.getUnreadCount(),
+                            false);
 
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                     TAPDataManager.getInstance().insertToDatabase(recentItem);
