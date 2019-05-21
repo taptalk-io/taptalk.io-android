@@ -143,4 +143,8 @@ public class TAPCacheManager {
             diskLruCache.remove(key);
         }).start();
     }
+
+    public boolean containsCache(String key) {
+        return null != getMemoryCache().get(key) || diskLruCache.containsKey(key);
+    }
 }

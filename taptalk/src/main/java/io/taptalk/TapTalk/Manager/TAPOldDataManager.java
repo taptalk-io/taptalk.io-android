@@ -78,6 +78,7 @@ public class TAPOldDataManager {
                                                 HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
                                                 if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID))) {
                                                     TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
+                                                    TAPFileDownloadManager.getInstance().removeFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID));
                                                 }
                                             }
                                         }
