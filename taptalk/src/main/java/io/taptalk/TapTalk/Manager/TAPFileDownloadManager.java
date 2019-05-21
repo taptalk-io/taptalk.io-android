@@ -331,8 +331,8 @@ public class TAPFileDownloadManager {
                 targetFile = TAPFileUtils.getInstance().renameDuplicateFile(targetFile);
 
                 if (null != message.getData() && null != message.getData().get(FILE_ID) &&
-                        null != TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))) {
-                    File sourceFile = new File(getFileProviderPath(TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))));
+                        null != getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))) {
+                    File sourceFile = new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))));
                     if (sourceFile.exists()) {
                         copyFile(sourceFile, targetFile);
                         scanFile(context, targetFile, TAPUtils.getInstance().getFileMimeType(targetFile));
