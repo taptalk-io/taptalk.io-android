@@ -166,6 +166,6 @@ public class TAPTimeFormatter {
     }
 
     public long oneMonthAgoTimeStamp(long currentTimestamp) {
-        return currentTimestamp - times.get(1);
+        return currentTimestamp - times.get(3);
     }
 }

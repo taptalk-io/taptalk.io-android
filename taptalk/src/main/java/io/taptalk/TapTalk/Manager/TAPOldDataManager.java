@@ -1,11 +1,20 @@
 package io.taptalk.TapTalk.Manager;
 
-import java.util.ArrayList;
+import android.util.Log;
+
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
+import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPOldDataManager {
     private static final String TAG = TAPOldDataManager.class.getSimpleName();
@@ -18,55 +27,74 @@ public class TAPOldDataManager {
     public void startAutoCleanProcess() {
         new Thread(() -> {
             long currentTimestamp = System.currentTimeMillis();
-            if (TAPDataManager.getInstance().checkLastDeleteTimestamp()) {
-                boolean isOverOneWeek = TAPTimeFormatter.getInstance().checkOverOneWeekOrNot(TAPDataManager.getInstance().getLastDeleteTimestamp());
+            boolean isOverOneWeek = TAPTimeFormatter.getInstance().checkOverOneWeekOrNot(TAPDataManager.getInstance().getLastDeleteTimestamp());
 
-                if (isOverOneWeek)
-                    TAPDataManager.getInstance().getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
-                        @Override
-                        public void onSelectFinished(List<TAPMessageEntity> entities) {
-                            loopingRoomEntitiesArrayToGetAllMessage(entities);
-                        }
-                    });
+            if (TAPDataManager.getInstance().checkLastDeleteTimestamp() && isOverOneWeek) {
+                TAPDataManager.getInstance().getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
+                    @Override
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                        autoCleanProcessFromRoomQueryResult(entities, currentTimestamp);
+                    }
+                });
             } else {
                 TAPDataManager.getInstance().saveLastDeleteTimestamp(currentTimestamp);
             }
         }).start();
     }
 
-    private void loopingRoomEntitiesArrayToGetAllMessage(List<TAPMessageEntity> entities) {
-        new Thread(() -> {
-            for (TAPMessageEntity entity : entities) {
-                TAPDataManager.getInstance().getMessagesFromDatabaseAsc(entity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
-                    @Override
-                    public void onSelectFinished(List<TAPMessageEntity> entities) {
-                        int entitiesSize = entities.size();
-                        if (50 < entitiesSize)
-                            loopToCheckMessageAndExecuteDeleteQuery(entities, entitiesSize);
-                    }
-                });
-            }
-        }).start();
-    }
+    private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities, long currentTimestamp) {
+        final long[] smallestTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
+        for (TAPMessageEntity roomEntity : entities) {
+            TAPDataManager.getInstance().getMinCreatedOfUnreadMessage(roomEntity.getRoomID(), new TAPDatabaseListener<Long>() {
+                @Override
+                public void onSelectFinished(Long minCreated) {
+                    if (0L != minCreated && minCreated < smallestTimestamp[0])
+                        smallestTimestamp[0] = minCreated;
 
-    private void loopToCheckMessageAndExecuteDeleteQuery(List<TAPMessageEntity> entities, int entitiesSize) {
-        new Thread(() -> {
-            List<TAPMessageEntity> deleteMessageTempList = new ArrayList<>();
-            for (int index = 0; index < entitiesSize - 50; index++) {
-                if (TAPTimeFormatter.getInstance().checkOverOneMonthOrNot(entities.get(index).getCreated())) {
-                    deleteMessageTempList.add(entities.get(index));
+                    TAPDataManager.getInstance().getAllMessagesInRoomFromDatabase(roomEntity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
+                        @Override
+                        public void onSelectFinished(List<TAPMessageEntity> entities) {
+                            if (null != entities && 51 <= entities.size()) {
+
+                                if (entities.get(50).getCreated() < smallestTimestamp[0])
+                                    smallestTimestamp[0] = entities.get(50).getCreated();
+
+                                TAPDataManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
+                                    @Override
+                                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                        for (TAPMessageEntity message : entities) {
+                                            if (TYPE_IMAGE == message.getType()) {
+                                                try {
+                                                    //apus file image fisiknya
+                                                    HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                                                    TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                    Log.e(TAG, "onSelectFinished: ", e);
+                                                }
+                                            } else if (TYPE_VIDEO == message.getType()
+                                                    || TYPE_FILE == message.getType()) {
+                                                //apus file fisiknya
+                                                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                                                if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID))) {
+                                                    TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
+                                                }
+                                            }
+                                        }
+
+                                        TAPDataManager.getInstance().deleteRoomMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener() {
+                                            @Override
+                                            public void onDeleteFinished() {
+                                                Log.e(TAG, "onDeleteFinished: ");
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
-            }
-
-            if (!deleteMessageTempList.isEmpty()) {
-                TAPDataManager.getInstance().deleteMessage(deleteMessageTempList, new TAPDatabaseListener() {
-                    @Override
-                    public void onDeleteFinished() {
-                        TAPDataManager.getInstance().saveLastDeleteTimestamp(System.currentTimeMillis());
-                    }
-                });
-            }
-        }).start();
+            });
+        }
     }
-
 }

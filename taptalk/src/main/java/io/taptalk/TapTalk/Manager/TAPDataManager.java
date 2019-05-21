@@ -5,7 +5,6 @@ import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -24,7 +23,6 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -600,6 +598,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().deleteMessage(new ArrayList<>(messageEntities), listener);
     }
 
+    public void deleteRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().deleteRoomMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
+    }
+
     public void insertToDatabase(TAPMessageEntity messageEntity) {
         TAPDatabaseManager.getInstance().insert(messageEntity);
     }
@@ -691,8 +693,8 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
-    public void getRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
-        TAPDatabaseManager.getInstance().getRoomMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
+    public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
     }
 
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
