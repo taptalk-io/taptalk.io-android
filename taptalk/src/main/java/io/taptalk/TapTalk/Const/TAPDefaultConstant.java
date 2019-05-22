@@ -106,6 +106,7 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_CALLING_CODE = "kTAPExtraCountryCallingCode";
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
+        public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
     }
 
     public static final class RequestCode {
@@ -314,6 +315,7 @@ public class TAPDefaultConstant {
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
     public static final String MY_COUNTRY_CODE = "kMyCountryCode";
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
+    public static final String UNREAD_INDICATOR_LOCAL_ID = "kTAPUnreadIndicatorLocalIdentity";
 
     public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
 }

@@ -139,7 +139,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="12dp"
-                android:text="@string/tap_error_please_remove_video"
+                android:text="@string/tap_error_media_will_not_be_sent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_warning_icon"

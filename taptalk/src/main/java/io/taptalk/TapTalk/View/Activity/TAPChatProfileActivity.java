@@ -463,10 +463,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    Intent intent = new Intent(TAPChatProfileActivity.this, TAPVideoPlayerActivity.class);
-                    intent.putExtra(URI, videoUri.toString());
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(intent);
+                    TAPUtils.getInstance().openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
                 }
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video
@@ -535,8 +532,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                                 sharedMediaPagingScrollListener = () -> {
                                     // Get coordinates of view holder (last index - half of max item per load)
                                     View view = sharedMediaLayoutManager.findViewByPosition(sharedMediaAdapter.getItemCount() - (MAX_ITEMS_PER_PAGE / 2));
-                                    int[] location = new int[2];
                                     if (null != view) {
+                                        int[] location = new int[2];
                                         view.getLocationOnScreen(location);
                                         if (!vm.isFinishedLoadingSharedMedia() && location[1] < TAPUtils.getInstance().getScreenHeight()) {
                                             // Load more if view holder is visible

@@ -30,11 +30,24 @@ public class TAPRoomModel implements Parcelable {
         this.roomColor = roomColor;
     }
 
+    public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor, int unreadCount) {
+        this.roomID = roomID;
+        this.roomName = roomName;
+        this.roomType = roomType;
+        this.roomImage = roomImage;
+        this.roomColor = roomColor;
+        this.unreadCount = unreadCount;
+    }
+
     public TAPRoomModel() {
     }
 
-    public static TAPRoomModel Builder(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor){
+    public static TAPRoomModel Builder(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor) {
         return new TAPRoomModel(roomID, roomName, roomType, roomImage, roomColor);
+    }
+
+    public static TAPRoomModel Builder(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor, int unreadCount) {
+        return new TAPRoomModel(roomID, roomName, roomType, roomImage, roomColor, unreadCount);
     }
 
     public String getRoomID() {

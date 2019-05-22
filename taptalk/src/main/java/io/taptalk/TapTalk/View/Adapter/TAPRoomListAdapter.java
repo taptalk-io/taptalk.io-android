@@ -255,6 +255,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                         item.getLastMessage().getRoom().getRoomImage(),
                         item.getLastMessage().getRoom().getRoomType(),
                         item.getLastMessage().getRoom().getRoomColor(),
+                        item.getLastMessage().getRoom().getUnreadCount(),
                         item.isTyping());
                 TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
             } else {

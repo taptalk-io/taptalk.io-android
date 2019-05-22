@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,8 +44,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
     private LinearLayout llCaption;
     private FrameLayout flLoading;
     private TextView tvTitle, tvMessageStatus, tvCaption, tvLoadingText;
-    private ImageView ivButtonBack, ivSave, ivSaved;
-    private ProgressBar pbSaving;
+    private ImageView ivButtonBack, ivButtonSave, ivSaving;
     private TAPTouchImageView tivImageDetail;
 
     private String fileID, title, messageStatus, caption, mimeType;
@@ -117,9 +115,8 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         tvCaption = findViewById(R.id.tv_caption);
         tvLoadingText = findViewById(R.id.tv_loading_text);
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivSave = findViewById(R.id.iv_save);
-        ivSaved = findViewById(R.id.iv_saved);
-        pbSaving = findViewById(R.id.pb_saving);
+        ivButtonSave = findViewById(R.id.iv_save);
+        ivSaving = findViewById(R.id.iv_saving);
         tivImageDetail = findViewById(R.id.tiv_image_detail);
 
         tvTitle.setText(title);
@@ -135,7 +132,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         tivImageDetail.setOnTouchListener(touchListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivSave.setOnClickListener(saveButtonListener);
+        ivButtonSave.setOnClickListener(saveButtonListener);
         clActionBar.setOnClickListener(emptyListener);
         llCaption.setOnClickListener(emptyListener);
         flLoading.setOnClickListener(emptyListener);
@@ -168,18 +165,20 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            flLoading.setVisibility(View.VISIBLE);
-            pbSaving.setVisibility(View.VISIBLE);
-            ivSaved.setVisibility(View.GONE);
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+            if (null == ivSaving.getAnimation()) {
+                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
+            }
             tvLoadingText.setText(getString(R.string.tap_saving));
-            ivSave.setOnClickListener(null);
+            ivButtonSave.setOnClickListener(null);
+            flLoading.setVisibility(View.VISIBLE);
         });
     }
 
     private void endLoading() {
         runOnUiThread(() -> {
-            pbSaving.setVisibility(View.GONE);
-            ivSaved.setVisibility(View.VISIBLE);
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.clearAnimation();
             tvLoadingText.setText(getString(R.string.tap_image_saved));
             flLoading.setOnClickListener(v -> hideLoading());
 
@@ -189,7 +188,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
     private void hideLoading() {
         flLoading.setVisibility(View.GONE);
-        ivSave.setOnClickListener(saveButtonListener);
+        ivButtonSave.setOnClickListener(saveButtonListener);
         flLoading.setOnClickListener(emptyListener);
     }
 

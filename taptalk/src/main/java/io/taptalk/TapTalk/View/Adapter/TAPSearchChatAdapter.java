@@ -185,7 +185,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                                 }, message.getRoomImage())
                                 /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                         message.getRoomType(),
-                        message.getRoomColor());
+                        message.getRoomColor(),
+                        message.getLocalID());
             });
         }
     }
@@ -267,7 +268,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                             room.getRoomName(),
                             room.getRoomImage(),
                             room.getRoomType(),
-                            room.getRoomColor());
+                            room.getRoomColor(),
+                            room.getUnreadCount(),
+                            false);
 
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                     TAPDataManager.getInstance().insertToDatabase(recentItem);

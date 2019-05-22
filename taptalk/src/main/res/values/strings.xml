@@ -123,7 +123,7 @@
     <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
     <string name="tap_error_no_app_to_open_file">No suitable app to open this file.</string>
     <string name="tap_error_exceed_upload_limit">Exceeded %s upload limit</string>
-    <string name="tap_error_please_remove_video">Please remove this video to continue</string>
+    <string name="tap_error_media_will_not_be_sent">This media will not be sent</string>
     <string name="tap_error_could_not_find_file">Could not find file</string>
     <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
     <string name="tap_error_invalid_otp">Invalid OTP, please try again</string>
@@ -232,6 +232,7 @@
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_history">Clear history</string>
     <string name="tap_continue_s">Continue</string>
+    <string name="tap_s_unread_messages">%s unread messages</string>
     <string name="tap_delivered_at">Delivered at</string>
     <string name="tap_details">Details</string>
     <string name="tap_edit">Edit</string>
@@ -239,6 +240,7 @@
     <string name="tap_full_name">Full Name</string>
     <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
+    <string name="tap_loading">Loading</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>
     <string name="tap_no_chats_to_show">No chats to show</string>
@@ -276,6 +278,7 @@
     <string name="tap_uploading">Uploading</string>
     <string name="tap_username">Username</string>
     <string name="tap_verifying_otp">Verifying OTP</string>
+    <string name="tap_video_saved">Video Saved</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
 
