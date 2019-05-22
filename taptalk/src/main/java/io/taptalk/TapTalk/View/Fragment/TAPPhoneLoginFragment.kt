@@ -45,6 +45,7 @@ class TAPPhoneLoginFragment : Fragment() {
     private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     private var countryListitems = arrayListOf<TAPCountryListItem>()
     private val maxTime = 30L
+    private var countryFlagUrl = ""
 
     companion object {
         fun getInstance(): TAPPhoneLoginFragment {
@@ -188,7 +189,7 @@ class TAPPhoneLoginFragment : Fragment() {
                     val phoneNumber = "+$phone"
                     val loginActivity = activity as TAPLoginActivity
                     loginActivity.setLastLoginData(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
-                    loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
+                    loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Log.e("><><><", "Masuk ", e)
@@ -303,6 +304,7 @@ class TAPPhoneLoginFragment : Fragment() {
         tv_country_code.text = "+$callingCode"
         defaultCountryID = countryID
         defaultCallingCode = callingCode
+        countryFlagUrl = flagIconUrl
 
         if ("" != flagIconUrl)
             Glide.with(this).load(flagIconUrl).apply(object : RequestOptions() {}.centerCrop()).into(iv_country_flag)
