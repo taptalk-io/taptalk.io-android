@@ -492,4 +492,12 @@ public class TAPFileDownloadManager {
                 new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(),
                 (String) message.getData().get(FILE_ID)))).exists();
     }
+
+    public void resetTAPFileDownloadManager() {
+        getFileProviderPathMap().clear();
+        getFileMessageUriMap().clear();
+        getDownloadProgressMapBytes().clear();
+        getDownloadProgressMapPercent().clear();
+        getFailedDownloads().clear();
+    }
 }

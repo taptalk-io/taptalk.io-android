@@ -78,6 +78,10 @@ public class TAPContactManager {
         return null == userDataMap ? userDataMap = new HashMap<>() : userDataMap;
     }
 
+    public void clearUserDataMap() {
+        getUserDataMap().clear();
+    }
+
     private List<TAPUserModel> convertUserDataToList(HashMap<String, TAPUserModel> userModelMap) {
         List<TAPUserModel> userModelList = new ArrayList<>();
         for (Map.Entry<String, TAPUserModel> entry : userModelMap.entrySet()) {
@@ -107,6 +111,10 @@ public class TAPContactManager {
 
     public void setUserMapByPhoneNumber(HashMap<String, TAPUserModel> userMapByPhoneNumber) {
         this.userMapByPhoneNumber = userMapByPhoneNumber;
+    }
+
+    public void clearUserMapByPhoneNumber() {
+        getUserMapByPhoneNumber().clear();
     }
 
     public void addUserMapByPhoneNumber(TAPUserModel userModel) {
@@ -140,6 +148,10 @@ public class TAPContactManager {
         return null == myCountryCode ? myCountryCode = "62" : myCountryCode;
     }
 
+    public void resetMyCountryCode() {
+        setMyCountryCode(null);
+    }
+
     public void setMyCountryCode(String myCountryCode) {
         this.myCountryCode = myCountryCode;
     }
@@ -155,5 +167,9 @@ public class TAPContactManager {
 
     public void setContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
         isContactSyncPermissionAsked = contactSyncPermissionAsked;
+    }
+
+    public void resetContactSyncPermissionAsked() {
+        setContactSyncPermissionAsked(false);
     }
 }
