@@ -133,6 +133,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
         vm.currentProfilePicture = vm.myUserModel.avatarURL.thumbnail
+        vm.countryFlagUrl = TAPDataManager.getInstance().myCountryFlagUrl
     }
 
     private fun initView() {
@@ -147,6 +148,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         glide.load(vm.currentProfilePicture)
                 .apply(RequestOptions().placeholder(R.drawable.tap_img_default_avatar))
                 .into(civ_profile_picture)
+        if (vm.countryFlagUrl != "") {
+            glide.load(vm.countryFlagUrl)
+                    .apply(RequestOptions().placeholder(R.drawable.tap_ic_default_flag))
+                    .into(iv_country_flag)
+        }
         et_full_name.setText(vm.myUserModel.name)
         et_username.setText(vm.myUserModel.username)
         tv_country_code.text = "+" + vm.myUserModel.countryCallingCode
@@ -468,6 +474,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun logout() {
         TAPDataManager.getInstance().deleteAllPreference()
         TAPDataManager.getInstance().deleteAllFromDatabase()
+        TAPDataManager.getInstance().deleteAllManagerData()
         TAPApiManager.getInstance().isLogout = true
         TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()

@@ -75,6 +75,10 @@ public class TAPNotificationManager {
         }
     }
 
+    public void clearAllNotifMessageMap() {
+        getNotifMessagesMap().clear();
+    }
+
     public boolean checkMapContainsRoomID(String roomID) {
         return getNotifMessagesMap().containsKey(roomID);
     }

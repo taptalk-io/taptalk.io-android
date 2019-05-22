@@ -58,7 +58,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
-        private ImageView ivAvatarIcon, ivMute, ivMessageStatus;
+        private ImageView ivAvatarIcon, ivMute, ivMessageStatus, ivRoomTypingIndicator;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
         private View vSeparator, vSeparatorFull;
 
@@ -69,6 +69,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivMute = itemView.findViewById(R.id.iv_mute);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+            ivRoomTypingIndicator = itemView.findViewById(R.id.iv_room_typing_indicator);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
@@ -117,15 +118,20 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             if (item.isTyping()) {
                 // Set message to Typing
-                tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
-                typingAnimationTimer.start();
-                typingIndicatorTimeOutTimer.cancel();
-                typingIndicatorTimeOutTimer.start();
+                tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing));
+                ivRoomTypingIndicator.setVisibility(View.VISIBLE);
+                if (null == ivRoomTypingIndicator.getDrawable()) {
+                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+                }
+                //typingAnimationTimer.start();
+                //typingIndicatorTimeOutTimer.cancel();
+                //typingIndicatorTimeOutTimer.start();
             } else {
                 // Set last message as text
                 tvLastMessage.setText(item.getLastMessage().getBody());
-                typingAnimationTimer.cancel();
-                typingIndicatorTimeOutTimer.cancel();
+                ivRoomTypingIndicator.setVisibility(View.GONE);
+                //typingAnimationTimer.cancel();
+                //typingIndicatorTimeOutTimer.cancel();
             }
 
             // Check if room is muted
@@ -183,45 +189,45 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
 
-        private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                getItem().setTyping(false);
-                int position = getItems().indexOf(getItem());
-                if (position < 0) {
-                    notifyDataSetChanged();
-                } else {
-                    notifyItemChanged(position);
-                }
-            }
-        };
-
-        private CountDownTimer typingAnimationTimer = new CountDownTimer(300L, 100L) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                switch (tvLastMessage.length()) {
-                    case 7:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_2));
-                        break;
-                    case 8:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_3));
-                        break;
-                    default:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
-                }
-                start();
-            }
-        };
+//        private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                getItem().setTyping(false);
+//                int position = getItems().indexOf(getItem());
+//                if (position < 0) {
+//                    notifyDataSetChanged();
+//                } else {
+//                    notifyItemChanged(position);
+//                }
+//            }
+//        };
+//
+//        private CountDownTimer typingAnimationTimer = new CountDownTimer(300L, 100L) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                switch (tvLastMessage.length()) {
+//                    case 7:
+//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_2));
+//                        break;
+//                    case 8:
+//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_3));
+//                        break;
+//                    default:
+//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
+//                }
+//                start();
+//            }
+//        };
     }
 
     private void onRoomClicked(View itemView, TAPRoomListModel item, int position) {

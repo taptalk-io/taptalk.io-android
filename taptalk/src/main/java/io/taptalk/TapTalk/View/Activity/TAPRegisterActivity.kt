@@ -22,6 +22,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TapDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
@@ -119,6 +120,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
         vm.countryID = intent.getIntExtra(COUNTRY_ID, 1)
         vm.countryCallingCode = intent.getStringExtra(COUNTRY_CALLING_CODE)
+        vm.countryFlagUrl = intent.getStringExtra(COUNTRY_FLAG_URL)
     }
 
     private fun initView() {
@@ -135,6 +137,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_email_address.addTextChangedListener(emailWatcher)
         et_password.addTextChangedListener(passwordWatcher)
         et_retype_password.addTextChangedListener(passwordRetypeWatcher)
+
+        if (vm.countryFlagUrl != "") {
+            glide.load(vm.countryFlagUrl)
+                    .apply(RequestOptions().placeholder(R.drawable.tap_ic_default_flag))
+                    .into(iv_country_flag)
+        }
 
         et_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         et_retype_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -717,6 +725,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                     ?: "", object : TAPVerifyOTPInterface {
                 override fun verifyOTPSuccessToLogin() {
                     TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
+                    TAPDataManager.getInstance().saveMyCountryFlagUrl(vm.countryFlagUrl)
                     if (null != vm.profilePictureUri) {
                         uploadProfilePicture()
                     } else {

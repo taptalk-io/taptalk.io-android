@@ -61,7 +61,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                 swMenuSwitch.setVisibility(View.VISIBLE);
                 swMenuSwitch.setChecked(item.isChecked());
                 swMenuSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    private ValueAnimator transitionToOrange, transitionToGrey;
+                    private ValueAnimator transitionToPrimary, transitionToGrey;
 
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -79,15 +79,15 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     }
 
                     private ValueAnimator getTransitionPrimary() {
-                        if (null == transitionToOrange) {
-                            transitionToOrange = ValueAnimator.ofArgb(
+                        if (null == transitionToPrimary) {
+                            transitionToPrimary = ValueAnimator.ofArgb(
                                     itemView.getContext().getResources().getColor(R.color.tap_grey_9b),
                                     itemView.getContext().getResources().getColor(R.color.colorPrimaryDark));
-                            transitionToOrange.setDuration(DEFAULT_ANIMATION_TIME);
-                            transitionToOrange.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
+                            transitionToPrimary.setDuration(DEFAULT_ANIMATION_TIME);
+                            transitionToPrimary.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
                         }
-                        return transitionToOrange;
+                        return transitionToPrimary;
                     }
 
                     private ValueAnimator getTransitionGrey() {

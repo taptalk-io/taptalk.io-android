@@ -36,6 +36,7 @@ class TAPLoginVerificationFragment : Fragment() {
     var otpKey = ""
     var countryID = 0
     var countryCallingCode = ""
+    var countryFlagUrl = ""
 
     companion object {
         //Arguments Data
@@ -45,8 +46,9 @@ class TAPLoginVerificationFragment : Fragment() {
         val kOTPKey = "OTPKey"
         val kCountryID = "CountryID"
         val kCountryCallingCode = "CountryCallingCode"
+        val kCountryFlagUrl = "CountryFlagUrl"
 
-        fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String, countryID: Int, countryCallingCode: String): TAPLoginVerificationFragment {
+        fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String, countryID: Int, countryCallingCode: String, countryFlagUrl: String): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
             val args = Bundle()
             args.putString(kPhoneNumberWithCode, phoneNumberWithCode)
@@ -55,6 +57,7 @@ class TAPLoginVerificationFragment : Fragment() {
             args.putString(kOTPKey, otpKey)
             args.putInt(kCountryID, countryID)
             args.putString(kCountryCallingCode, countryCallingCode)
+            args.putString(kCountryFlagUrl, countryFlagUrl)
             instance.arguments = args
             return instance
         }
@@ -78,6 +81,7 @@ class TAPLoginVerificationFragment : Fragment() {
         otpKey = arguments?.getString(kOTPKey, "") ?: ""
         countryID = arguments?.getInt(kCountryID) ?: 0
         countryCallingCode = arguments?.getString(kCountryCallingCode, "") ?: ""
+        countryFlagUrl = arguments?.getString(kCountryFlagUrl, "") ?: ""
         TAPUtils.getInstance().animateClickButton(iv_back_button, 0.95f)
         iv_back_button.setOnClickListener { activity?.onBackPressed() }
         et_otp_code.addTextChangedListener(otpTextWatcher)
@@ -187,6 +191,7 @@ class TAPLoginVerificationFragment : Fragment() {
             TAPApiManager.getInstance().isLogout = false
             activity?.runOnUiThread {
                 TAPDataManager.getInstance().saveMyCountryCode(countryCallingCode)
+                TAPDataManager.getInstance().saveMyCountryFlagUrl(countryFlagUrl)
                 val intent = Intent(context, TAPRoomListActivity::class.java)
                 startActivity(intent)
                 activity?.finish()
@@ -198,6 +203,7 @@ class TAPLoginVerificationFragment : Fragment() {
                 val intent = Intent(context, TAPRegisterActivity::class.java)
                 intent.putExtra(COUNTRY_ID, countryID)
                 intent.putExtra(COUNTRY_CALLING_CODE, countryCallingCode)
+                intent.putExtra(COUNTRY_FLAG_URL, countryFlagUrl)
                 intent.putExtra(MOBILE_NUMBER, phoneNumber)
                 activity?.startActivityForResult(intent, REGISTER)
                 (activity as TAPLoginActivity).initFirstPage()
