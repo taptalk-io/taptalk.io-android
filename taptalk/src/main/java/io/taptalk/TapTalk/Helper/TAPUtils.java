@@ -394,8 +394,11 @@ public class TAPUtils {
     }
 
     private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping) {
+        if (TAPDataManager.getInstance().getActiveUser().getUserID().equals(
+                TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
+            return;
+        }
         Activity activity = (Activity) context;
-
         activity.runOnUiThread(() -> dismissKeyboard(activity));
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);

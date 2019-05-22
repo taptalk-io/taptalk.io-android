@@ -1573,10 +1573,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                 }
             }
-            tvUnreadButtonCount.setText(String.format(getString(R.string.tap_d_unread_messages), vm.getInitialUnreadCount()));
-            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange)); // TODO: 20 May 2019 CHANGE DRAWABLE
+            tvUnreadButtonCount.setText(String.format(getString(R.string.tap_s_unread_messages),
+                    vm.getInitialUnreadCount() > 99 ? getString(R.string.tap_over_99) : vm.getInitialUnreadCount()));
+            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_up_chevron_circle_orange));
             ivUnreadButtonImage.clearAnimation();
-            tvUnreadButtonCount.setVisibility(View.VISIBLE);
             clUnreadButton.setVisibility(View.VISIBLE);
             clUnreadButton.setOnClickListener(v -> scrollToMessage(UNREAD_INDICATOR_LOCAL_ID));
         }));
@@ -1584,12 +1584,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showUnreadButtonLoading() {
         runOnUiThread(() -> {
+            tvUnreadButtonCount.setText(getString(R.string.tap_loading));
             ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
-            tvUnreadButtonCount.setVisibility(View.GONE);
-            clUnreadButton.setVisibility(View.VISIBLE);
             if (null == ivUnreadButtonImage.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivUnreadButtonImage);
             }
+            clUnreadButton.setVisibility(View.VISIBLE);
+            clUnreadButton.setOnClickListener(null);
         });
     }
 

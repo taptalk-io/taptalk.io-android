@@ -232,7 +232,7 @@
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_history">Clear history</string>
     <string name="tap_continue_s">Continue</string>
-    <string name="tap_d_unread_messages">%d unread messages</string>
+    <string name="tap_s_unread_messages">%s unread messages</string>
     <string name="tap_delivered_at">Delivered at</string>
     <string name="tap_details">Details</string>
     <string name="tap_edit">Edit</string>
@@ -240,6 +240,7 @@
     <string name="tap_full_name">Full Name</string>
     <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
+    <string name="tap_loading">Loading</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>
     <string name="tap_no_chats_to_show">No chats to show</string>

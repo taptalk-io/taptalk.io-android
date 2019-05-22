@@ -276,8 +276,8 @@
         android:id="@+id/cl_unread_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp_ripple"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/tap_bg_white_rounded_8dp_ripple"
         android:elevation="8dp"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
@@ -290,22 +290,21 @@
 
         <TextView
             android:id="@+id/tv_unread_button_count"
-            style="@style/TapQuoteTitle"
+            style="@style/TapProductDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textColor="@color/colorPrimaryDark"
+            android:layout_marginEnd="2dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_unread_button_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="2 unread messages" />
+            tools:text="99 unread messages" />
 
         <ImageView
             android:id="@+id/iv_unread_button_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/tap_ic_chevron_white"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/tap_ic_up_chevron_circle_orange"
             android:tint="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
