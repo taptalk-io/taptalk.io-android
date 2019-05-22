@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
@@ -83,6 +84,7 @@ import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -380,20 +382,24 @@ public class TAPUtils {
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, null);
+    }
+
+    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, jumpToMessageLocalID);
     }
 
     // Open chat room from room list to pass typing status
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, boolean isTyping) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), isTyping);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), isTyping, null);
     }
 
     // Open chat room from notification
     public void startChatActivity(Context context, TAPRoomModel roomModel) {
-        startChatActivity(context, roomModel, false);
+        startChatActivity(context, roomModel, false, null);
     }
 
-    private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping) {
+    private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping, @Nullable String jumpToMessageLocalID) {
         if (TAPDataManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             return;
@@ -404,6 +410,9 @@ public class TAPUtils {
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(ROOM, roomModel);
         intent.putExtra(IS_TYPING, isTyping);
+        if (null != jumpToMessageLocalID) {
+            intent.putExtra(JUMP_TO_MESSAGE, jumpToMessageLocalID);
+        }
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }

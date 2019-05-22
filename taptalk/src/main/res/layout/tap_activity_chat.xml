@@ -293,7 +293,7 @@
             style="@style/TapProductDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="2dp"
+            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_unread_button_image"
             app:layout_constraintStart_toStartOf="parent"

@@ -185,7 +185,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                                 }, message.getRoomImage())
                                 /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                         message.getRoomType(),
-                        message.getRoomColor());
+                        message.getRoomColor(),
+                        message.getLocalID());
             });
         }
     }

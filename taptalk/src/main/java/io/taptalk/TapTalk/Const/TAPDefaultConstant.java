@@ -106,6 +106,7 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_CALLING_CODE = "kTAPExtraCountryCallingCode";
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
+        public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
     }
 
     public static final class RequestCode {
