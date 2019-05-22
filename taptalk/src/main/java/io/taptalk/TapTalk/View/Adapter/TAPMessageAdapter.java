@@ -61,7 +61,6 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
-import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_LEFT;
@@ -84,7 +83,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -850,10 +848,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .show();
             } else {
                 // Open video
-                Intent intent = new Intent(itemView.getContext(), TAPVideoPlayerActivity.class);
-                intent.putExtra(URI, videoUri.toString());
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                itemView.getContext().startActivity(intent);
+                TAPUtils.getInstance().openVideoPreview(itemView.getContext(), videoUri, message);
             }
         }
 

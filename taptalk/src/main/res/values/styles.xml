@@ -256,11 +256,11 @@
 
     <style name="TapLoadingText">
         <item name="android:ellipsize">end</item>
-        <item name="android:fontFamily">@font/tap_font_pt_root_medium</item>
+        <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:maxLines">1</item>
         <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/colorAccentDark</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
         <item name="android:textSize">14sp</item>
     </style>
 

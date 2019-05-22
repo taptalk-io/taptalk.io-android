@@ -463,10 +463,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    Intent intent = new Intent(TAPChatProfileActivity.this, TAPVideoPlayerActivity.class);
-                    intent.putExtra(URI, videoUri.toString());
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(intent);
+                    TAPUtils.getInstance().openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
                 }
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video

@@ -85,6 +85,7 @@ import io.taptalk.Taptalk.R;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -540,8 +541,16 @@ public class TAPUtils {
     }
 
     public void openVideoPreview(Context context, Uri uri) {
+        openVideoPreview(context, uri, null);
+    }
+
+    public void openVideoPreview(Context context, Uri uri, @Nullable TAPMessageModel message) {
         Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
         intent.putExtra(URI, uri.toString());
+        if (null != message) {
+            intent.putExtra(MESSAGE, message);
+        }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(intent);
         if (context instanceof Activity) {
             ((Activity) context).overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
