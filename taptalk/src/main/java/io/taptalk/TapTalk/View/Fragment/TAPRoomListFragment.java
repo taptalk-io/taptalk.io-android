@@ -125,7 +125,6 @@ public class TAPRoomListFragment extends Fragment {
         updateQueryRoomListFromBackground();
         addNetworkListener();
         TAPBroadcastManager.register(getContext(), receiver, REFRESH_TOKEN_RENEWED);
-        new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
     }
 
     @Override
@@ -640,29 +639,6 @@ public class TAPRoomListFragment extends Fragment {
             } else {
                 flSetupContainer.setVisibility(View.GONE);
                 showNewChatButton();
-            }
-        }
-    };
-
-    private TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
-        @Override
-        public void onSuccess(TAPContactResponse response) {
-            try {
-                // Insert contacts to database
-                if (null == response.getContacts() || response.getContacts().isEmpty()) {
-                    return;
-                }
-                new Thread(() -> {
-                    List<TAPUserModel> users = new ArrayList<>();
-                    for (TAPContactModel contact : response.getContacts()) {
-                        users.add(contact.getUser().setUserAsContact());
-                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contact.getUser());
-                    }
-                    TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                    TAPContactManager.getInstance().updateUserDataMap(users);
-                }).start();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     };
