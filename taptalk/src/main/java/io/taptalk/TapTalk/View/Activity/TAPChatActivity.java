@@ -123,6 +123,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
@@ -143,6 +144,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UNREAD_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFileData;
@@ -467,6 +469,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             finish();
             return false;
         }
+
+        getInitialUnreadCount();
 
         return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
     }
@@ -1318,11 +1322,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
             hideTypingIndicator();
         }
-
-        @Override
-        public void onUnreadIdentifierShown() {
-            showUnreadButton(vm.getUnreadIdentifier());
-        }
     };
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -1523,26 +1522,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private TAPMessageModel insertUnreadMessageIdentifier(long created, TAPUserModel user) {
         TAPMessageModel unreadIndicator = new TAPMessageModel();
-        unreadIndicator.setType(TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER);
-        unreadIndicator.setLocalID("");
+        unreadIndicator.setType(TYPE_UNREAD_MESSAGE_IDENTIFIER);
+        unreadIndicator.setLocalID(UNREAD_INDICATOR_LOCAL_ID);
         unreadIndicator.setCreated(created);
         unreadIndicator.setUser(user);
 
         vm.addMessagePointer(unreadIndicator);
         vm.setUnreadIdentifier(unreadIndicator);
 
-        getInitialUnreadCount();
-
         return unreadIndicator;
     }
 
     private void getInitialUnreadCount() {
-        if (null == vm.getUnreadIdentifier() || vm.isUnreadButtonShown()) {
-            return;
-        }
         // Get room's unread count
         vm.setInitialUnreadCount(vm.getRoom().getUnreadCount());
-        Log.e(TAG, "setInitialUnreadCount: " + vm.getInitialUnreadCount());
         if (0 == vm.getInitialUnreadCount()) {
             // Query unread count from database
             TAPDataManager.getInstance().getUnreadCountPerRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
@@ -1551,34 +1544,33 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (!roomID.equals(vm.getRoom().getRoomID())) {
                         vm.setInitialUnreadCount(0);
                         hideUnreadButton();
-                        Log.e(TAG, "onCountedUnreadCount 0");
                         return;
                     }
                     vm.setInitialUnreadCount(unreadCount);
-                    Log.e(TAG, "onCountedUnreadCount: " + vm.getInitialUnreadCount());
+                    if (vm.isUnreadButtonShown() && clUnreadButton.getVisibility() == View.GONE) {
+                        vm.setUnreadButtonShown(false);
+                        showUnreadButton(vm.getUnreadIdentifier());
+                    }
                 }
             });
         }
     }
 
-    private void showUnreadButton(TAPMessageModel unreadIndicator) {
-        Log.e(TAG, "showUnreadButton: " + vm.getInitialUnreadCount());
+    private void showUnreadButton(@Nullable TAPMessageModel unreadIndicator) {
         if (0 >= vm.getInitialUnreadCount() || vm.isUnreadButtonShown()) {
             return;
         }
         vm.setUnreadButtonShown(true);
         rvMessageList.post(() -> runOnUiThread(() -> {
-            Log.e(TAG, "showUnreadButton unreadIndicator index: " + messageAdapter.getItems().indexOf(unreadIndicator));
-            View view = messageLayoutManager.findViewByPosition(messageAdapter.getItems().indexOf(unreadIndicator));
-            Log.e(TAG, "showUnreadButton view: " + view);
-            if (null != view) {
-                int[] location = new int[2];
-                view.getLocationOnScreen(location);
-                Log.e(TAG, "showUnreadButton Y: " + location[1]);
-                Log.e(TAG, "showUnreadButton screen: " + TAPUtils.getInstance().getScreenHeight());
-                if (location[1] < TAPUtils.getInstance().getScreenHeight()) {
-                    // Do not show button if unread indicator is visible on screen
-                    return;
+            if (null != unreadIndicator) {
+                View view = messageLayoutManager.findViewByPosition(messageAdapter.getItems().indexOf(unreadIndicator));
+                if (null != view) {
+                    int[] location = new int[2];
+                    view.getLocationOnScreen(location);
+                    if (location[1] < TAPUtils.getInstance().getScreenHeight()) {
+                        // Do not show button if unread indicator is visible on screen
+                        return;
+                    }
                 }
             }
             tvUnreadButtonCount.setText(String.format(getString(R.string.tap_d_unread_messages), vm.getInitialUnreadCount()));
@@ -1586,7 +1578,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivUnreadButtonImage.clearAnimation();
             tvUnreadButtonCount.setVisibility(View.VISIBLE);
             clUnreadButton.setVisibility(View.VISIBLE);
-            clUnreadButton.setOnClickListener(v -> scrollToMessage(unreadIndicator.getLocalID()));
+            clUnreadButton.setOnClickListener(v -> scrollToMessage(UNREAD_INDICATOR_LOCAL_ID));
         }));
     }
 
@@ -1764,6 +1756,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             clEmptyChat.setVisibility(View.GONE);
                         }
                         flMessageList.setVisibility(View.VISIBLE);
+                        showUnreadButton(vm.getUnreadIdentifier());
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
@@ -1843,6 +1836,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                     new Thread(() -> {
                         vm.setMessageModels(messageAdapter.getItems());
+                        showUnreadButton(vm.getUnreadIdentifier());
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
                         }
@@ -2035,7 +2029,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
             }
 
-//            Log.e(TAG, "onSuccess: " + unreadMessageIndex + " " + smallestUnreadCreated);
             if (-1 != unreadMessageIndex && 0L != smallestUnreadCreated) {
                 TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
                         messageAfterModels.get(unreadMessageIndex).getCreated(),
@@ -2059,6 +2052,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 updateMessageDecoration();
                 messageAdapter.addMessage(0, messageAfterModels, true);
+                showUnreadButton(vm.getUnreadIdentifier());
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
                 if (vm.isOnBottom() && 0 < messageAfterModels.size()) {

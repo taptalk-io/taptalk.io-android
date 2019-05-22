@@ -314,6 +314,7 @@ public class TAPDefaultConstant {
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
     public static final String MY_COUNTRY_CODE = "kMyCountryCode";
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
+    public static final String UNREAD_INDICATOR_LOCAL_ID = "kTAPUnreadIndicatorLocalIdentity";
 
     public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
 }

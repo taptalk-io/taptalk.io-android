@@ -34,7 +34,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -162,7 +161,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_EMPTY:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
             case TYPE_BUBBLE_UNREAD_STATUS:
-                return new UnreadIdentifierVH(parent, R.layout.tap_cell_unread_status);
+                return new BasicVH(parent, R.layout.tap_cell_unread_status);
             default:
                 return new LogVH(parent, R.layout.tap_cell_chat_log);
         }
@@ -1247,11 +1246,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    public class UnreadIdentifierVH extends TAPBaseChatViewHolder {
+    public class BasicVH extends TAPBaseChatViewHolder {
 
-        UnreadIdentifierVH(ViewGroup parent, int itemLayoutId) {
+        BasicVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
-            chatListener.onUnreadIdentifierShown();
         }
 
         @Override
