@@ -33,7 +33,6 @@
         android:fontFamily="@font/tap_font_pt_root_regular"
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="5sp"
-        android:maxLines="3"
         android:minLines="3"
         android:textColor="@color/tap_black_19"
         android:textSize="14sp"
