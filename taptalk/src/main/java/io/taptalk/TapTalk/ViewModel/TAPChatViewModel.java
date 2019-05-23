@@ -26,6 +26,9 @@ import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
+
 public class TAPChatViewModel extends AndroidViewModel {
 
     private static final String TAG = TAPChatViewModel.class.getSimpleName();
@@ -35,7 +38,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIdentifier;
+    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIndicator, loadingIndicator;
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
@@ -269,12 +272,24 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.openedFileMessage = openedFileMessage;
     }
 
-    public TAPMessageModel getUnreadIdentifier() {
-        return unreadIdentifier;
+    public TAPMessageModel getUnreadIndicator() {
+        return unreadIndicator;
     }
 
-    public void setUnreadIdentifier(TAPMessageModel unreadIdentifier) {
-        this.unreadIdentifier = unreadIdentifier;
+    public void setUnreadIndicator(TAPMessageModel unreadIndicator) {
+        this.unreadIndicator = unreadIndicator;
+    }
+
+    public TAPMessageModel getLoadingIndicator() {
+        if (null == loadingIndicator) {
+            loadingIndicator = new TAPMessageModel();
+            loadingIndicator.setType(TYPE_LOADING_MESSAGE_IDENTIFIER);
+            loadingIndicator.setLocalID(LOADING_INDICATOR_LOCAL_ID);
+            loadingIndicator.setUser(TAPDataManager.getInstance().getActiveUser());
+        }
+        // Update created time for loading indicator to array's last message created time
+        loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated());
+        return loadingIndicator;
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {
