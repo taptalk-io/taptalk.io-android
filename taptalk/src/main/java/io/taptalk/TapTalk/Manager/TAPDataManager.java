@@ -101,6 +101,7 @@ public class TAPDataManager {
      */
     public void deleteAllManagerData() {
         TAPCacheManager.getInstance(TapTalk.appContext).clearCache();
+        TAPChatManager.getInstance().resetChatManager();
         TAPContactManager.getInstance().clearUserDataMap();
         TAPContactManager.getInstance().clearUserMapByPhoneNumber();
         TAPContactManager.getInstance().resetMyCountryCode();

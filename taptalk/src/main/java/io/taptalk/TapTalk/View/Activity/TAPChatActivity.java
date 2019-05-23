@@ -808,20 +808,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
     // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
-    private void addBeforeTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempBeforeMessages) {
+    private List<TAPMessageModel> addBeforeTextMessage(final TAPMessageModel newMessage) {
+        List<TAPMessageModel> tempBeforeMessages = new ArrayList<>();
         String newID = newMessage.getLocalID();
-        runOnUiThread(() -> {
-            if (vm.getMessagePointer().containsKey(newID)) {
-                //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
-                vm.updateMessagePointer(newMessage);
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            } else {
-                //kalau belom ada masukin kedalam list dan hash map
-                tempBeforeMessages.add(newMessage);
-                vm.addMessagePointer(newMessage);
-            }
-            //updateMessageDecoration();
-        });
+
+        if (vm.getMessagePointer().containsKey(newID)) {
+            //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
+            vm.updateMessagePointer(newMessage);
+            runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID))));
+        } else {
+            //kalau belom ada masukin kedalam list dan hash map
+            tempBeforeMessages.add(newMessage);
+            vm.addMessagePointer(newMessage);
+        }
+        //updateMessageDecoration();
+        return tempBeforeMessages;
     }
 
     private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
@@ -1611,7 +1612,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void showLoadingOlderMessagesIndicator() {
         hideLoadingOlderMessagesIndicator();
         vm.addMessagePointer(vm.getLoadingIndicator());
-        runOnUiThread(() ->  {
+        runOnUiThread(() -> {
             messageAdapter.addItem(vm.getLoadingIndicator()); // Add loading indicator to last index
             messageAdapter.notifyItemInserted(messageAdapter.getItemCount() - 1);
         });
@@ -2199,7 +2200,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    addBeforeTextMessage(message, messageBeforeModels);
+                    messageBeforeModels = addBeforeTextMessage(message);
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2210,14 +2211,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageBeforeModels, ASCENDING);
 
+            List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
             runOnUiThread(() -> {
-                if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < messageBeforeModels.size()) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < finalMessageBeforeModels.size()) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
                 flMessageList.setVisibility(View.VISIBLE);
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                messageAdapter.addMessageFirstFromAPI(messageBeforeModels);
+                messageAdapter.addMessageFirstFromAPI(finalMessageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
@@ -2268,7 +2270,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    addBeforeTextMessage(message, messageBeforeModels);
+                    messageBeforeModels = addBeforeTextMessage(message);
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2284,9 +2286,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //sorting message balikan dari api before
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageBeforeModels, ASCENDING);
+            List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                messageAdapter.addMessage(messageBeforeModels);
+                messageAdapter.addMessage(finalMessageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
