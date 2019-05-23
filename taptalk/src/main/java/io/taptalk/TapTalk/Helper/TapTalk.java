@@ -335,6 +335,7 @@ public class TapTalk {
         } else {
             TAPDataManager.getInstance().deleteAllPreference();
             TAPDataManager.getInstance().deleteAllFromDatabase();
+            TAPDataManager.getInstance().deleteAllManagerData();
             TAPApiManager.getInstance().setLogout(true);
             TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
             TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired();

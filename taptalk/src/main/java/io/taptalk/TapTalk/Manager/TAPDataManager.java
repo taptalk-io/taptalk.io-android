@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -91,6 +92,24 @@ public class TAPDataManager {
 
     public void setNeedToQueryUpdateRoomList(boolean needToQueryUpdateRoomList) {
         isNeedToQueryUpdateRoomList = needToQueryUpdateRoomList;
+    }
+
+    /**
+     * ==========================================================================================
+     * ALL MANAGER DATA
+     * ==========================================================================================
+     */
+    public void deleteAllManagerData() {
+        TAPCacheManager.getInstance(TapTalk.appContext).clearCache();
+        TAPContactManager.getInstance().clearUserDataMap();
+        TAPContactManager.getInstance().clearUserMapByPhoneNumber();
+        TAPContactManager.getInstance().resetMyCountryCode();
+        TAPContactManager.getInstance().resetContactSyncPermissionAsked();
+        setNeedToQueryUpdateRoomList(false);
+        TAPFileDownloadManager.getInstance().resetTAPFileDownloadManager();
+        TAPFileUploadManager.getInstance().resetFileUploadManager();
+        TAPNotificationManager.getInstance().clearAllNotifMessageMap();
+        TAPMessageStatusManager.getInstance().resetMessageStatusManager();
     }
 
     /**

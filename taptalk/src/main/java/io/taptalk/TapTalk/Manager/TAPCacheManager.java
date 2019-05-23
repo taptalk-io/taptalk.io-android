@@ -147,4 +147,12 @@ public class TAPCacheManager {
     public boolean containsCache(String key) {
         return null != getMemoryCache().get(key) || diskLruCache.containsKey(key);
     }
+
+    public void clearCache() {
+        new Thread(() -> {
+            getMemoryCache().evictAll();
+            diskLruCache.clearCache();
+            diskLruCache = null;
+        }).start();
+    }
 }

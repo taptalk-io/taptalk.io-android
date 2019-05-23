@@ -844,4 +844,11 @@ public class TAPFileUploadManager {
     public boolean isSizeAllowedForUpload(long size) {
         return maxUploadSize >= size;
     }
+
+    public void resetFileUploadManager() {
+        getUploadProgressMapBytes().clear();
+        getUploadProgressMapPercent().clear();
+        getBitmapQueue().clear();
+        getUploadQueuePerRoom().clear();
+    }
 }

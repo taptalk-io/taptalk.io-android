@@ -273,4 +273,14 @@ public class TAPMessageStatusManager {
             });
         }).start();
     }
+
+    public void resetMessageStatusManager() {
+        clearReadMessageQueue();
+        clearDeliveredMessageQueue();
+        readRequestID = 0;
+        deliveredRequestID = 0;
+        getApiDeliveredRequestMap().clear();
+        getApiReadRequestMap().clear();
+        clearUnreadList();
+    }
 }
