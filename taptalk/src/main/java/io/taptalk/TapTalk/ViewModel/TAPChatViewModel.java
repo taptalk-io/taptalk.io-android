@@ -47,7 +47,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
     private int initialUnreadCount, numUsers, containerAnimationState;
-    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished, isUnreadButtonShown;
+    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -280,15 +280,17 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.unreadIndicator = unreadIndicator;
     }
 
-    public TAPMessageModel getLoadingIndicator() {
+    public TAPMessageModel getLoadingIndicator(boolean updateCreated) {
         if (null == loadingIndicator) {
             loadingIndicator = new TAPMessageModel();
             loadingIndicator.setType(TYPE_LOADING_MESSAGE_IDENTIFIER);
             loadingIndicator.setLocalID(LOADING_INDICATOR_LOCAL_ID);
             loadingIndicator.setUser(TAPDataManager.getInstance().getActiveUser());
         }
-        // Update created time for loading indicator to array's last message created time
-        loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated());
+        if (updateCreated) {
+            // Update created time for loading indicator to array's last message created time
+            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated());
+        }
         return loadingIndicator;
     }
 
@@ -387,6 +389,17 @@ public class TAPChatViewModel extends AndroidViewModel {
         isUnreadButtonShown = unreadButtonShown;
     }
 
+    /**
+     * Show loading when fetching older messages
+     */
+    public boolean isNeedToShowLoading() {
+        return isNeedToShowLoading;
+    }
+
+    public void setNeedToShowLoading(boolean needToShowLoading) {
+        isNeedToShowLoading = needToShowLoading;
+    }
+
     public int getMessageSize() {
         if (null != allMessages.getValue()) {
             return allMessages.getValue().size();
@@ -400,7 +413,7 @@ public class TAPChatViewModel extends AndroidViewModel {
             String[] tempUserID = room.getRoomID().split("-");
             return tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
         } catch (Exception e) {
-            Log.e(TAG, "getOtherUserID: ",e );
+            Log.e(TAG, "getOtherUserID: ", e);
             return "0";
         }
     }
