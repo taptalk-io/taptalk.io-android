@@ -2221,7 +2221,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    messageBeforeModels = addBeforeTextMessage(message);
+                    messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2292,7 +2292,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    messageBeforeModels = addBeforeTextMessage(message);
+                    messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
