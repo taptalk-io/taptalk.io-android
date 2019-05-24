@@ -1535,7 +1535,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accentdark_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                 } else {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                 }
@@ -1548,7 +1548,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     // Load file icon
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                     if (isMessageFromMySelf(item)) {
-                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accentdark_rounded_8dp));
+                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                     } else {
                         rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                     }
@@ -1566,7 +1566,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     }).start();
                 }
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accentdark_rounded_8dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                 } else {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                 }
@@ -1576,7 +1576,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Show no image
                 if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accentdark_rounded_4dp));
+                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
                 } else {
                     vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_4dp));
                 }
