@@ -295,7 +295,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_loading_progress_circle_orange" />
+                    android:src="@drawable/tap_ic_loading_progress_circle_orange"
+                    android:tint="@color/colorPrimaryDark" />
 
             </LinearLayout>
 

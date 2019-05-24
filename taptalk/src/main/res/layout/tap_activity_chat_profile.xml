@@ -150,7 +150,8 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="108dp"
-                    android:src="@drawable/tap_ic_loading_progress_circle_orange" />
+                    android:src="@drawable/tap_ic_loading_progress_circle_orange"
+                    android:tint="@color/colorPrimaryDark" />
 
                 <LinearLayout
                     android:id="@+id/ll_reload_shared_media"
