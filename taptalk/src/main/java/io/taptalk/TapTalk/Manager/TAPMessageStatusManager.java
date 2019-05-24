@@ -161,8 +161,10 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             List<TAPMessageEntity> messageEntities = new ArrayList<>();
             for (TAPMessageModel messageModel : tempMessageModel) {
-                messageModel.updateReadMessage();
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                if (null != messageModel) {
+                    messageModel.updateReadMessage();
+                    messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                }
             }
             TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
         }).start();
