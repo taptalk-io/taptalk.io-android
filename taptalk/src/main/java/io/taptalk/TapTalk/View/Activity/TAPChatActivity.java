@@ -110,6 +110,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
@@ -807,20 +808,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
     // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
-    private void addBeforeTextMessage(final TAPMessageModel newMessage, List<TAPMessageModel> tempBeforeMessages) {
+    private List<TAPMessageModel> addBeforeTextMessage(final TAPMessageModel newMessage) {
+        List<TAPMessageModel> tempBeforeMessages = new ArrayList<>();
         String newID = newMessage.getLocalID();
-        runOnUiThread(() -> {
-            if (vm.getMessagePointer().containsKey(newID)) {
-                //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
-                vm.updateMessagePointer(newMessage);
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-            } else {
-                //kalau belom ada masukin kedalam list dan hash map
-                tempBeforeMessages.add(newMessage);
-                vm.addMessagePointer(newMessage);
-            }
-            //updateMessageDecoration();
-        });
+
+        if (vm.getMessagePointer().containsKey(newID)) {
+            //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
+            vm.updateMessagePointer(newMessage);
+            runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID))));
+        } else {
+            //kalau belom ada masukin kedalam list dan hash map
+            tempBeforeMessages.add(newMessage);
+            vm.addMessagePointer(newMessage);
+        }
+        //updateMessageDecoration();
+        return tempBeforeMessages;
     }
 
     private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
@@ -1063,6 +1065,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         beforeView);
             }
         }).start();
+//        showLoadingOlderMessagesIndicator();
     }
 
     private void callApiGetUserByUserID() {
@@ -1489,6 +1492,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void loadMoreMessagesFromDatabase() {
         if (state == STATE.LOADED && 0 < messageAdapter.getItems().size()) {
+            showLoadingOlderMessagesIndicator();
             new Thread(() -> {
                 vm.getMessageByTimestamp(vm.getRoom().getRoomID(), dbListenerPaging, vm.getLastTimestamp());
                 state = STATE.WORKING;
@@ -1531,7 +1535,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         unreadIndicator.setUser(user);
 
         vm.addMessagePointer(unreadIndicator);
-        vm.setUnreadIdentifier(unreadIndicator);
+        vm.setUnreadIndicator(unreadIndicator);
 
         return unreadIndicator;
     }
@@ -1552,7 +1556,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setInitialUnreadCount(unreadCount);
                     if (vm.isUnreadButtonShown() && clUnreadButton.getVisibility() == View.GONE) {
                         vm.setUnreadButtonShown(false);
-                        showUnreadButton(vm.getUnreadIdentifier());
+                        showUnreadButton(vm.getUnreadIndicator());
                     }
                 }
             });
@@ -1602,6 +1606,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.GONE);
             clUnreadButton.setOnClickListener(null);
+        });
+    }
+
+    private void showLoadingOlderMessagesIndicator() {
+        hideLoadingOlderMessagesIndicator();
+        vm.addMessagePointer(vm.getLoadingIndicator());
+        runOnUiThread(() -> {
+            messageAdapter.addItem(vm.getLoadingIndicator()); // Add loading indicator to last index
+            messageAdapter.notifyItemInserted(messageAdapter.getItemCount() - 1);
+        });
+        Log.e(TAG, "showLoadingOlderMessagesIndicator: " + (messageAdapter.getItemCount() - 1));
+    }
+
+    private void hideLoadingOlderMessagesIndicator() {
+        if (!messageAdapter.getItems().contains(vm.getLoadingIndicator())) {
+            return;
+        }
+        int index = messageAdapter.getItems().indexOf(vm.getLoadingIndicator());
+        Log.e(TAG, "hideLoadingOlderMessagesIndicator: " + index);
+        vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
+        runOnUiThread(() -> {
+            messageAdapter.removeMessage(vm.getLoadingIndicator());
+            messageAdapter.notifyItemRemoved(index);
         });
     }
 
@@ -1760,7 +1787,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             clEmptyChat.setVisibility(View.GONE);
                         }
                         flMessageList.setVisibility(View.VISIBLE);
-                        showUnreadButton(vm.getUnreadIdentifier());
+                        showUnreadButton(vm.getUnreadIndicator());
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
@@ -1774,9 +1801,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
                     kalau last updated dari getUpdated */
                         callApiAfter();
+                        if (null != vm.getTappedMessageLocalID()) {
+                            scrollToMessage(vm.getTappedMessageLocalID());
+                        }
                     } else if (MAX_ITEMS_PER_PAGE <= vm.getMessageModels().size()) {
                         rvMessageList.addOnScrollListener(endlessScrollListener);
                         callApiAfter();
+                        if (null != vm.getTappedMessageLocalID()) {
+                            scrollToMessage(vm.getTappedMessageLocalID());
+                        }
                     } else {
                         fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
                     }
@@ -1788,7 +1821,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
                     flMessageList.setVisibility(View.VISIBLE);
                     messageAdapter.setMessages(models);
-                    new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
+                    new Thread(() -> {
+                        vm.setMessageModels(messageAdapter.getItems());
+                        if (null != vm.getTappedMessageLocalID()) {
+                            scrollToMessage(vm.getTappedMessageLocalID());
+                        }
+                    }).start();
                     if (rvMessageList.getVisibility() != View.VISIBLE) {
                         rvMessageList.setVisibility(View.VISIBLE);
                     }
@@ -1825,13 +1863,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeViewPaging);
                 } else if (STATE.WORKING == state) {
                     state = STATE.LOADED;
+                    hideLoadingOlderMessagesIndicator();
                 }
 
                 runOnUiThread(() -> {
                     flMessageList.setVisibility(View.VISIBLE);
                     messageAdapter.addMessage(models);
 
-                    if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID()) && null == vm.getUnreadIdentifier()) {
+                    if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID()) && null == vm.getUnreadIndicator()) {
                         TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
                                 vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getCreated(),
                                 vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getUser());
@@ -1840,7 +1879,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                     new Thread(() -> {
                         vm.setMessageModels(messageAdapter.getItems());
-                        showUnreadButton(vm.getUnreadIdentifier());
+                        showUnreadButton(vm.getUnreadIndicator());
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
                         }
@@ -2013,7 +2052,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if ("".equals(vm.getLastUnreadMessageLocalID())
                                 && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
                                 && (null != message.getIsRead() && !message.getIsRead())
-                                && null == vm.getUnreadIdentifier()) {
+                                && null == vm.getUnreadIndicator()) {
                             unreadMessageIndex = messageAfterModels.indexOf(message);
                             smallestUnreadCreated = message.getCreated();
                         }
@@ -2056,7 +2095,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 updateMessageDecoration();
                 messageAdapter.addMessage(0, messageAfterModels, true);
-                showUnreadButton(vm.getUnreadIdentifier());
+                showUnreadButton(vm.getUnreadIndicator());
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
                 if (vm.isOnBottom() && 0 < messageAfterModels.size()) {
@@ -2090,17 +2129,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            if (BuildConfig.DEBUG) {
-                new TapTalkDialog.Builder(TAPChatActivity.this)
-                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(error.getMessage())
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .show();
-            }
-
-            if (0 < vm.getMessageModels().size())
-                fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+            onError(error.getMessage());
         }
 
         @Override
@@ -2108,14 +2137,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (BuildConfig.DEBUG) {
                 new TapTalkDialog.Builder(TAPChatActivity.this)
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle("Error")
+                        .setTitle(getString(R.string.tap_error))
                         .setMessage(errorMessage)
                         .setPrimaryButtonTitle(getString(R.string.tap_ok))
                         .show();
             }
 
-            if (0 < vm.getMessageModels().size())
+            if (0 < vm.getMessageModels().size()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+            }
         }
     };
 
@@ -2162,6 +2192,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
+            hideLoadingOlderMessagesIndicator();
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
@@ -2169,7 +2200,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    addBeforeTextMessage(message, messageBeforeModels);
+                    messageBeforeModels = addBeforeTextMessage(message);
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2180,21 +2211,30 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageBeforeModels, ASCENDING);
 
+            List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
             runOnUiThread(() -> {
-                if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < messageBeforeModels.size()) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < finalMessageBeforeModels.size()) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
                 flMessageList.setVisibility(View.VISIBLE);
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                messageAdapter.addMessageFirstFromAPI(messageBeforeModels);
+                messageAdapter.addMessageFirstFromAPI(finalMessageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
-                new Thread(() -> vm.setMessageModels(messageAdapter.getItems())).start();
+                new Thread(() -> {
+                    vm.setMessageModels(messageAdapter.getItems());
+                    if (null != vm.getTappedMessageLocalID()) {
+                        scrollToMessage(vm.getTappedMessageLocalID());
+                    }
+                }).start();
 
-                if (rvMessageList.getVisibility() != View.VISIBLE)
+                if (rvMessageList.getVisibility() != View.VISIBLE) {
                     rvMessageList.setVisibility(View.VISIBLE);
-                if (state == STATE.DONE) updateMessageDecoration();
+                }
+                if (state == STATE.DONE) {
+                    updateMessageDecoration();
+                }
             });
 
             TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
@@ -2222,6 +2262,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
+            hideLoadingOlderMessagesIndicator();
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
@@ -2229,7 +2270,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                    addBeforeTextMessage(message, messageBeforeModels);
+                    messageBeforeModels = addBeforeTextMessage(message);
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -2239,14 +2280,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //ini ngecek kalau misalnya balikan apinya itu perPagenya > pageCount brati berenti ga usah pagination lagi (State.DONE)
             //selain itu paginationnya bisa lanjut lagi
             state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
-            if (state == STATE.DONE) updateMessageDecoration();
+
+//            if (state == STATE.DONE) updateMessageDecoration();
 
             //sorting message balikan dari api before
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageBeforeModels, ASCENDING);
+            List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                messageAdapter.addMessage(messageBeforeModels);
+                messageAdapter.addMessage(finalMessageBeforeModels);
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
@@ -2270,12 +2313,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
+            onError(error.getMessage());
         }
 
         @Override
         public void onError(Throwable throwable) {
-            super.onError(throwable);
+            hideLoadingOlderMessagesIndicator();
         }
     };
 

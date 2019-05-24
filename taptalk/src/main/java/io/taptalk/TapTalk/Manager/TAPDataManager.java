@@ -101,6 +101,7 @@ public class TAPDataManager {
      */
     public void deleteAllManagerData() {
         TAPCacheManager.getInstance(TapTalk.appContext).clearCache();
+        TAPChatManager.getInstance().resetChatManager();
         TAPContactManager.getInstance().clearUserDataMap();
         TAPContactManager.getInstance().clearUserMapByPhoneNumber();
         TAPContactManager.getInstance().resetMyCountryCode();
@@ -932,8 +933,8 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getUserByXcUserID(xcUserID, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getUserByUsernameFromApi(String username, TapDefaultDataView<TAPGetUserResponse> view) {
-        TAPApiManager.getInstance().getUserByUsername(username, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
+    public void getUserByUsernameFromApi(String username, boolean ignoreCase, TapDefaultDataView<TAPGetUserResponse> view) {
+        TAPApiManager.getInstance().getUserByUsername(username, ignoreCase, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
     public void getMultipleUsersByIdFromApi(List<String> ids, TapDefaultDataView<TAPGetMultipleUserResponse> view) {

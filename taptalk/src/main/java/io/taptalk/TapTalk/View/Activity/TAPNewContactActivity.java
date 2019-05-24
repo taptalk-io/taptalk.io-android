@@ -110,7 +110,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private boolean onSearchEditorClicked() {
         TAPDataManager.getInstance().cancelUserSearchApiCall();
-        TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
+        TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         return true;
     }
 
@@ -331,7 +331,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onFinish() {
-            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
+            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         }
     };
 
@@ -461,7 +461,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             if (null == vm.getPendingSearch() || vm.getPendingSearch().isEmpty()) {
                 return;
             }
-            TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), getUserView);
+            TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), true, getUserView);
             vm.setPendingSearch("");
         }
     };

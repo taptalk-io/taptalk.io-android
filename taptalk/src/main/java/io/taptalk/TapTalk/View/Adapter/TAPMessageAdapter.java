@@ -67,6 +67,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOADING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_ORDER_CARD;
@@ -96,6 +97,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -156,10 +158,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_BUBBLE_ORDER_CARD:
                 TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD);
                 return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
-            case TYPE_EMPTY:
-                return new EmptyVH(parent, R.layout.tap_cell_empty);
             case TYPE_BUBBLE_UNREAD_STATUS:
                 return new BasicVH(parent, R.layout.tap_cell_unread_status);
+            case TYPE_BUBBLE_LOADING:
+                return new LoadingVH(parent, R.layout.tap_cell_chat_loading);
+            case TYPE_EMPTY:
+                return new EmptyVH(parent, R.layout.tap_cell_empty);
             default:
                 return new LogVH(parent, R.layout.tap_cell_chat_log);
         }
@@ -219,6 +223,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     return TYPE_BUBBLE_ORDER_CARD;
                 case TYPE_UNREAD_MESSAGE_IDENTIFIER:
                     return TYPE_BUBBLE_UNREAD_STATUS;
+                case TYPE_LOADING_MESSAGE_IDENTIFIER:
+                    return TYPE_BUBBLE_LOADING;
                 default:
                     return TYPE_LOG;
             }
@@ -741,9 +747,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivVideoThumbnail);
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if ((((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent) && null != videoUri &&
-                   TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)) {
+                    TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item))) {
                 // Video has finished downloading or uploading
                 tvMediaInfo.setText(null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
@@ -1229,15 +1235,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    public class EmptyVH extends TAPBaseChatViewHolder {
+    public class LoadingVH extends TAPBaseChatViewHolder {
 
-        EmptyVH(ViewGroup parent, int itemLayoutId) {
+        ImageView ivLoadingProgress;
+
+        LoadingVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
+            ivLoadingProgress = itemView.findViewById(R.id.iv_loading_progress);
         }
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            markMessageAsRead(item, myUserModel);
+            if (null == ivLoadingProgress.getAnimation()) {
+                TAPUtils.getInstance().rotateAnimateInfinitely(itemView.getContext(), ivLoadingProgress);
+            }
         }
     }
 
@@ -1250,6 +1261,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             super.onBind(item, position);
+        }
+    }
+
+    public class EmptyVH extends TAPBaseChatViewHolder {
+
+        EmptyVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            markMessageAsRead(item, myUserModel);
         }
     }
 

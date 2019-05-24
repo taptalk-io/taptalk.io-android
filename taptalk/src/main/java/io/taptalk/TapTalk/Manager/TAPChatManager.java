@@ -1370,4 +1370,16 @@ public class TAPChatManager {
             }
         }).start();
     }
+
+    public void resetChatManager() {
+        clearSaveMessages();
+        pendingMessages.clear();
+        waitingUploadProgress.clear();
+        waitingResponses.clear();
+        incomingMessages.clear();
+        getQuotedMessages().clear();
+        getReplyMessageLocalIDs().clear();
+        getQuoteActions().clear();
+        setActiveUser(null);
+    }
 }
