@@ -1612,10 +1612,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void showLoadingOlderMessagesIndicator() {
         hideLoadingOlderMessagesIndicator();
         vm.addMessagePointer(vm.getLoadingIndicator());
-        runOnUiThread(() -> {
+        rvMessageList.post(() -> runOnUiThread(() -> {
             messageAdapter.addItem(vm.getLoadingIndicator()); // Add loading indicator to last index
             messageAdapter.notifyItemInserted(messageAdapter.getItemCount() - 1);
-        });
+        }));
         Log.e(TAG, "showLoadingOlderMessagesIndicator: " + (messageAdapter.getItemCount() - 1));
     }
 
@@ -1623,13 +1623,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (!messageAdapter.getItems().contains(vm.getLoadingIndicator())) {
             return;
         }
-        int index = messageAdapter.getItems().indexOf(vm.getLoadingIndicator());
-        Log.e(TAG, "hideLoadingOlderMessagesIndicator: " + index);
         vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
-        runOnUiThread(() -> {
+        rvMessageList.post(() -> runOnUiThread(() -> {
+            int index = messageAdapter.getItems().indexOf(vm.getLoadingIndicator());
+            Log.e(TAG, "hideLoadingOlderMessagesIndicator: " + index);
             messageAdapter.removeMessage(vm.getLoadingIndicator());
             messageAdapter.notifyItemRemoved(index);
-        });
+        }));
     }
 
     private TextWatcher chatWatcher = new TextWatcher() {
@@ -2026,6 +2026,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //messageAfterModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
             List<TAPMessageModel> messageAfterModels = new ArrayList<>();
 
+            int unreadCount = 0;
             //untuk tau index mana buat disisipin unread message identifier
             int unreadMessageIndex = -1;
             //untuk dapet created yang paling kecil dari unread message
@@ -2047,6 +2048,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         //kalau belom ada masukin kedalam list dan hash map
                         messageAfterModels.add(message);
                         vm.addMessagePointer(message);
+                        if (null == message.getIsRead() || !message.getIsRead()) {
+                            // Add unread count if new message has not been read
+                            unreadCount++;
+                        }
 
                         Log.e(TAG, "data: " + vm.getLastUnreadMessageLocalID() + " " + smallestUnreadCreated + " " + message.getIsRead());
                         if ("".equals(vm.getLastUnreadMessageLocalID())
