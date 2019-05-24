@@ -1848,9 +1848,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             final List<TAPMessageModel> models = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
-                models.add(model);
-                vm.addMessagePointer(model);
+                if (!vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                    TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
+                    models.add(model);
+                    vm.addMessagePointer(model);
+                }
             }
 
             if (0 < models.size()) {
@@ -2241,6 +2243,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 messageAdapter.addMessageFirstFromAPI(finalMessageBeforeModels);
+
+                if (0 < finalMessageBeforeModels.size())
+                    vm.setLastTimestamp(finalMessageBeforeModels.get(finalMessageBeforeModels.size() - 1).getCreated());
+
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
@@ -2316,6 +2322,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 Log.e(TAG, "messageBeforeViewPaging prev: " + messageAdapter.getItemCount());
                 messageAdapter.addMessage(finalMessageBeforeModels);
+
+                if (0 < finalMessageBeforeModels.size())
+                    vm.setLastTimestamp(finalMessageBeforeModels.get(finalMessageBeforeModels.size() - 1).getCreated());
+
                 Log.e(TAG, "messageBeforeViewPaging current: " + messageAdapter.getItemCount());
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
