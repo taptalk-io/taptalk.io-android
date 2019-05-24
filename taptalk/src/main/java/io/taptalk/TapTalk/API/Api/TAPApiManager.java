@@ -300,8 +300,8 @@ public class TAPApiManager {
         execute(homingPigeon.getUserByXcUserID(request), subscriber);
     }
 
-    public void getUserByUsername(String username, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
-        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
+    public void getUserByUsername(String username, boolean ignoreCase, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username, ignoreCase);
         execute(homingPigeon.getUserByUsername(request), subscriber);
     }
 
@@ -392,7 +392,7 @@ public class TAPApiManager {
     }
 
     public void checkUsernameExists(String username, Subscriber<TAPBaseResponse<TAPCheckUsernameResponse>> subscriber) {
-        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
+        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username, false);
         execute(homingPigeon.checkUsernameExists(request), subscriber);
     }
 
