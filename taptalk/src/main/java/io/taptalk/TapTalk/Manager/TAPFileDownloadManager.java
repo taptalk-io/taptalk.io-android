@@ -485,12 +485,15 @@ public class TAPFileDownloadManager {
     }
 
     public boolean checkPhysicalFileIsExist(TAPMessageModel message) {
-        return null != message.getData() && null != message.getData().get(FILE_ID) &&
+        return (null != message.getData() && null != message.getData().get(FILE_ID) &&
                 null != getFileMessageUri(message.getRoom().getRoomID(),
                 (String) message.getData().get(FILE_ID)) && null != getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(),
                 (String) message.getData().get(FILE_ID))) &&
                 new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(),
-                (String) message.getData().get(FILE_ID)))).exists();
+                (String) message.getData().get(FILE_ID)))).exists()) || (null != message.getData() && null != message.getData().get(FILE_ID) &&
+                null != getFileMessageUri(message.getRoom().getRoomID(),
+                        (String) message.getData().get(FILE_ID)) && new File(getFileMessageUri(message.getRoom().getRoomID(),
+                (String) message.getData().get(FILE_ID)).getPath()).exists());
     }
 
     public void resetTAPFileDownloadManager() {

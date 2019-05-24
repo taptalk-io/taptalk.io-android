@@ -747,9 +747,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivVideoThumbnail);
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if ((((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent) && null != videoUri &&
-                   TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)) {
+                    TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item))) {
                 // Video has finished downloading or uploading
                 tvMediaInfo.setText(null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));

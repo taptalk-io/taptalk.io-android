@@ -301,10 +301,10 @@ public class TAPUtils {
         int size = filteredContacts.size();
         for (int i = 1; i <= size; i++) {
             if (i == size ||
-                    filteredContacts.get(i).getName().charAt(0) !=
-                            filteredContacts.get(i - 1).getName().charAt(0)) {
+                    filteredContacts.get(i).getName().toLowerCase().charAt(0) !=
+                            filteredContacts.get(i - 1).getName().toLowerCase().charAt(0)) {
                 List<TAPUserModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
-                if (Character.isAlphabetic(contactSubList.get(0).getName().charAt(0))) {
+                if (Character.isAlphabetic(contactSubList.get(0).getName().toLowerCase().charAt(0))) {
                     separatedContacts.add(contactSubList);
                 } else {
                     nonAlphabeticContacts.addAll(contactSubList);

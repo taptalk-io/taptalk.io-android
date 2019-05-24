@@ -32,10 +32,10 @@ public interface TAPMyContactDao {
     @Update
     void update(TAPUserModel userModel);
 
-    @Query("select * from MyContact where isContact = 1 order by name asc")
+    @Query("select * from MyContact where isContact = 1 order by name collate nocase asc")
     List<TAPUserModel> getAllMyContact();
 
-    @Query("select * from MyContact where isContact = 1 order by name asc")
+    @Query("select * from MyContact where isContact = 1 order by name collate nocase asc")
     LiveData<List<TAPUserModel>> getAllMyContactLive();
 
     @Query("select * from MyContact where name like :keyword escape '\\' and isContact = 1 order by name asc")
