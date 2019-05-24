@@ -1878,9 +1878,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             final List<TAPMessageModel> models = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
-                models.add(model);
-                vm.addMessagePointer(model);
+                if (!vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                    TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
+                    models.add(model);
+                    vm.addMessagePointer(model);
+                }
             }
 
             if (0 < models.size()) {
@@ -2269,6 +2271,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 messageAdapter.addMessageFirstFromAPI(finalMessageBeforeModels);
+
+                if (0 < finalMessageBeforeModels.size())
+                    vm.setLastTimestamp(finalMessageBeforeModels.get(finalMessageBeforeModels.size() - 1).getCreated());
+
                 updateMessageDecoration();
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
@@ -2312,7 +2318,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             hideLoadingOlderMessagesIndicator();
-            Log.e(TAG, "messageBeforeViewPaging response: " + response.getMessages().size());
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
@@ -2326,8 +2331,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     e.printStackTrace();
                 }
             }
-            Log.e(TAG, "messageBeforeViewPaging responseMessages: " + responseMessages.size());
-            Log.e(TAG, "messageBeforeViewPaging messageBeforeModels: " + messageBeforeModels.size());
 
             //ini ngecek kalau misalnya balikan apinya itu perPagenya > pageCount brati berenti ga usah pagination lagi (State.DONE)
             //selain itu paginationnya bisa lanjut lagi
@@ -2341,6 +2344,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
                 messageAdapter.addMessage(messageBeforeModels);
+
+                if (0 < messageBeforeModels.size())
+                    vm.setLastTimestamp(messageBeforeModels.get(messageBeforeModels.size() - 1).getCreated());
+
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
                     vm.setMessageModels(messageAdapter.getItems());
