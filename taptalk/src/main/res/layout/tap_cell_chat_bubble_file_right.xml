@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@drawable/tap_bg_accent_rounded_8dp_1dp_8dp_8dp"
+            android:background="@drawable/tap_bg_primary_rounded_8dp_1dp_8dp_8dp"
             android:paddingStart="10dp"
             android:paddingTop="10dp"
             android:paddingEnd="10dp"
@@ -104,7 +104,7 @@
                     android:id="@+id/fl_file_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/tap_bg_circle_accentdark_ripple"
+                    android:background="@drawable/tap_bg_circle_primarydark_ripple"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">

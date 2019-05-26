@@ -57,7 +57,7 @@
                 android:id="@+id/cl_forwarded_quote"
                 android:layout_width="234dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_accent_rounded_8dp_1dp_0dp_0dp"
+                android:background="@drawable/tap_bg_primary_rounded_8dp_1dp_0dp_0dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -181,7 +181,7 @@
                 style="@style/TapMessageBody"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_accent_rounded_0dp_0dp_8dp_8dp"
+                android:background="@drawable/tap_bg_primary_rounded_0dp_0dp_8dp_8dp"
                 android:paddingStart="10dp"
                 android:paddingTop="10dp"
                 android:paddingEnd="10dp"
