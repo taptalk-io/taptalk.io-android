@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@drawable/tap_bg_accentlight_accentdark_270"
+    android:background="@drawable/tap_bg_primarylight_primarydark_270"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity">
 
     <ProgressBar

@@ -515,7 +515,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         // Initialize chat message RecyclerView
         messageAdapter = new TAPMessageAdapter(glide, chatListener);
         messageAdapter.setMessages(vm.getMessageModels());
-        messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true) {
+            @Override
+            public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                try {
+                    super.onLayoutChildren(recycler, state);
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
         messageLayoutManager.setStackFromEnd(true);
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
@@ -539,6 +548,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
                     tapListener.onCustomKeyboardItemClicked(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
                 }
+                hideUnreadButton();
             });
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);
             rvCustomKeyboard.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -580,6 +590,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setOnBottom(false);
                     ivToBottom.setVisibility(View.VISIBLE);
                 }
+                hideUnreadButton();
             });
         }
 
@@ -906,6 +917,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
             if (showKeyboard) {
                 TAPUtils.getInstance().showKeyboard(this, etChat);
+                hideUnreadButton();
             }
         });
     }
@@ -933,12 +945,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             showCustomKeyboard();
         }
+        hideUnreadButton();
     }
 
     private void showNormalKeyboard() {
         rvCustomKeyboard.setVisibility(View.GONE);
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         etChat.requestFocus();
+        hideUnreadButton();
     }
 
     private void showCustomKeyboard() {
@@ -958,6 +972,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void openAttachMenu() {
         TAPUtils.getInstance().dismissKeyboard(this);
+        hideUnreadButton();
         TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
@@ -1246,11 +1261,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onSendMessage(TAPMessageModel message) {
             addNewMessage(message);
             hideQuoteLayout();
+            hideUnreadButton();
         }
 
         @Override
         public void onReplyMessage(TAPMessageModel message) {
             showQuoteLayout(message, REPLY, true);
+            hideUnreadButton();
             TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
         }
 
@@ -1509,13 +1526,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 // Message does not exist
                 runOnUiThread(() -> {
                     Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
-                    hideUnreadButton();
+                    hideUnreadButtonLoading();
                 });
             } else {
                 // Scroll to message
                 runOnUiThread(() -> {
                     rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-                    hideUnreadButton();
+                    hideUnreadButtonLoading();
                 });
             }
         } else if (state != STATE.DONE) {
@@ -1588,6 +1605,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }));
     }
 
+    private void hideUnreadButton() {
+        if (null != ivUnreadButtonImage.getAnimation()) {
+            return;
+        }
+        runOnUiThread(() -> {
+            clUnreadButton.setVisibility(View.GONE);
+            clUnreadButton.setOnClickListener(null);
+        });
+    }
+
     private void showUnreadButtonLoading() {
         runOnUiThread(() -> {
             tvUnreadButtonCount.setText(getString(R.string.tap_loading));
@@ -1600,7 +1627,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    private void hideUnreadButton() {
+    private void hideUnreadButtonLoading() {
+        if (null == ivUnreadButtonImage.getAnimation()) {
+            return;
+        }
         runOnUiThread(() -> {
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.GONE);
@@ -1615,7 +1645,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             messageAdapter.addItem(vm.getLoadingIndicator(false)); // Add loading indicator to last index
             messageAdapter.notifyItemInserted(messageAdapter.getItemCount() - 1);
         }));
-        Log.e(TAG, "showLoadingOlderMessagesIndicator: " + (messageAdapter.getItemCount() - 1));
     }
 
     private void hideLoadingOlderMessagesIndicator() {
@@ -1625,7 +1654,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
         rvMessageList.post(() -> runOnUiThread(() -> {
             int index = messageAdapter.getItems().indexOf(vm.getLoadingIndicator(false));
-            Log.e(TAG, "hideLoadingOlderMessagesIndicator: " + index);
             messageAdapter.removeMessage(vm.getLoadingIndicator(false));
             messageAdapter.notifyItemRemoved(index);
         }));
@@ -1681,6 +1709,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
+                hideUnreadButton();
 
                 if (0 < etChat.getText().toString().length()) {
                     ivChatMenu.setVisibility(View.GONE);
@@ -1688,6 +1717,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
             } else if (hasFocus) {
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
+                hideUnreadButton();
             }
         }
     };
@@ -1941,8 +1971,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReplySelected(TAPMessageModel message) {
-            showQuoteLayout(message, REPLY, true);
-            TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
+            chatListener.onReplyMessage(message);
         }
 
         @Override
@@ -2066,7 +2095,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             unreadCount++;
                         }
 
-                        Log.e(TAG, "data: " + vm.getLastUnreadMessageLocalID() + " " + smallestUnreadCreated + " " + message.getIsRead());
                         if ("".equals(vm.getLastUnreadMessageLocalID())
                                 && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
                                 && (null != message.getIsRead() && !message.getIsRead())
@@ -2290,7 +2318,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             hideLoadingOlderMessagesIndicator();
-            Log.e(TAG, "messageBeforeViewPaging response: " + response.getMessages().size());
             //response message itu entity jadi buat disimpen ke database
             List<TAPMessageEntity> responseMessages = new ArrayList<>();
             //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
@@ -2304,8 +2331,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     e.printStackTrace();
                 }
             }
-            Log.e(TAG, "messageBeforeViewPaging responseMessages: " + responseMessages.size());
-            Log.e(TAG, "messageBeforeViewPaging messageBeforeModels: " + messageBeforeModels.size());
 
             //ini ngecek kalau misalnya balikan apinya itu perPagenya > pageCount brati berenti ga usah pagination lagi (State.DONE)
             //selain itu paginationnya bisa lanjut lagi
@@ -2316,17 +2341,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //sorting message balikan dari api before
             //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
             mergeSort(messageBeforeModels, ASCENDING);
-            List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
-            Log.e(TAG, "messageBeforeViewPaging finalMessageBeforeModels: " + finalMessageBeforeModels.size());
             runOnUiThread(() -> {
                 //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                Log.e(TAG, "messageBeforeViewPaging prev: " + messageAdapter.getItemCount());
-                messageAdapter.addMessage(finalMessageBeforeModels);
+                messageAdapter.addMessage(messageBeforeModels);
 
-                if (0 < finalMessageBeforeModels.size())
-                    vm.setLastTimestamp(finalMessageBeforeModels.get(finalMessageBeforeModels.size() - 1).getCreated());
+                if (0 < messageBeforeModels.size())
+                    vm.setLastTimestamp(messageBeforeModels.get(messageBeforeModels.size() - 1).getCreated());
 
-                Log.e(TAG, "messageBeforeViewPaging current: " + messageAdapter.getItemCount());
                 //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
                     vm.setMessageModels(messageAdapter.getItems());

@@ -50,6 +50,7 @@
             android:layout_height="?attr/actionBarSize"
             android:padding="18dp"
             android:src="@drawable/tap_ic_loading_progress_circle_orange"
+            android:tint="@color/colorPrimaryDark"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
