@@ -57,10 +57,10 @@ public abstract class TapTalkDatabase extends RoomDatabase{
         }
     };
 
-    private static final Migration MIGRATION_3_4 = new Migration(2, 3) {
+    private static final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'deleted' LONG");
+            database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'deleted' INTEGER");
         }
     };
 

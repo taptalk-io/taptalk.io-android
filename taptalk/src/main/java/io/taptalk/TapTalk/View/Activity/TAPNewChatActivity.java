@@ -85,6 +85,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void permissionCheckAndGetContactList() {
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+            Log.e(TAG, "permissionCheckAndGetContactList: " );
             showPermissionDialog();
         } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
@@ -103,7 +104,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showPermissionDialog() {
-        new TapTalkDialog.Builder(TAPNewChatActivity.this)
+        runOnUiThread(() -> new TapTalkDialog.Builder(TAPNewChatActivity.this)
                 .setTitle("Contact Access")
                 .setMessage("We need your permission to access your contact, we will sync your contact to our server and automatically find your friend so it is easier for you to find your friends.")
                 .setCancelable(false)
@@ -111,7 +112,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
                 .setSecondaryButtonTitle("Cancel")
                 .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
-                .show();
+                .show());
         TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
     }
 
