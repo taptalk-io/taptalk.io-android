@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -1499,17 +1498,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void showForwardedFrom(TAPMessageModel item, ConstraintLayout clForwardedFrom, TextView tvForwardedFrom) {
         TAPForwardFromModel forwardFrom = item.getForwardFrom();
-        if (null != forwardFrom) {
-            Log.e(TAG, "showForwardedFrom: " + forwardFrom.getFullname());
-        }
         if (null != forwardFrom && null != forwardFrom.getFullname() && !forwardFrom.getFullname().isEmpty()) {
             // Show forwarded layout
             clForwardedFrom.setVisibility(View.VISIBLE);
             tvForwardedFrom.setText(forwardFrom.getFullname());
-            Log.e(TAG, "showForwardedFrom: " + item.getLocalID());
         } else {
             clForwardedFrom.setVisibility(View.GONE);
-            Log.e(TAG, "hideForwardedFrom: " + item.getLocalID());
         }
     }
 
@@ -1518,9 +1512,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                  TextView tvQuoteContent, TAPRoundedCornerImageView rcivQuoteImage,
                                  View vQuoteBackground, View vQuoteDecoration) {
         TAPQuoteModel quote = item.getQuote();
-        if (null != quote) {
-            Log.e(TAG, "showOrHideQuote: " + quote.getContent());
-        }
         if (null != quote && null != quote.getTitle() && !quote.getTitle().isEmpty()) {
             // Show quote
             clQuote.setVisibility(View.VISIBLE);
@@ -1552,7 +1543,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_black_19));
                     updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
-                    Log.e(TAG, "showQuote file: " + item.getLocalID());
                 } else {
                     // Load image from file ID
                     // TODO: 8 March 2019 IMAGE MIGHT NOT EXIST IN CACHE
@@ -1562,7 +1552,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             rcivQuoteImage.setImageDrawable(image);
                             rcivQuoteImage.setBackground(null);
                             rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            Log.e(TAG, "showQuote image: " + item.getLocalID());
                         });
                     }).start();
                 }
@@ -1570,21 +1559,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
-                Log.e(TAG, "showQuote image/file: " + item.getLocalID());
             } else {
                 // Show no image
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
-                Log.e(TAG, "showQuote text: " + item.getLocalID());
             }
             clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
         } else {
             // Hide quote
             clQuote.setVisibility(View.GONE);
             vQuoteBackground.setVisibility(View.GONE);
-            Log.e(TAG, "HideQuote: " + item.getLocalID());
         }
     }
 
