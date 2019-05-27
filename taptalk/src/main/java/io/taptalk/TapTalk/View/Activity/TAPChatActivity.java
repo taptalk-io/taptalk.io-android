@@ -917,7 +917,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
             if (showKeyboard) {
                 TAPUtils.getInstance().showKeyboard(this, etChat);
-                hideUnreadButton();
             }
         });
     }
@@ -948,14 +947,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             showCustomKeyboard();
         }
-        hideUnreadButton();
     }
 
     private void showNormalKeyboard() {
         rvCustomKeyboard.setVisibility(View.GONE);
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         etChat.requestFocus();
-        hideUnreadButton();
     }
 
     private void showCustomKeyboard() {
@@ -975,7 +972,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void openAttachMenu() {
         TAPUtils.getInstance().dismissKeyboard(this);
-        hideUnreadButton();
         TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
@@ -1269,7 +1265,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReplyMessage(TAPMessageModel message) {
             showQuoteLayout(message, REPLY, true);
-            hideUnreadButton();
             TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
         }
 
@@ -1712,7 +1707,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
-                hideUnreadButton();
 
                 if (0 < etChat.getText().toString().length()) {
                     ivChatMenu.setVisibility(View.GONE);
@@ -1720,7 +1714,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 }
             } else if (hasFocus) {
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
-                hideUnreadButton();
             }
         }
     };
