@@ -2185,15 +2185,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (BuildConfig.DEBUG) {
-                new TapTalkDialog.Builder(TAPChatActivity.this)
-                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(errorMessage)
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .show();
-            }
-
             if (0 < vm.getMessageModels().size()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             }
