@@ -275,21 +275,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (item.isAnimating()) {
-                return;
+            if (!item.isAnimating()) {
+                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             tvMessageBody.setText(item.getBody());
             tvMessageStatus.setText(item.getMessageStatusText());
-            setLinkDetection(itemView.getContext(), tvMessageBody);
-            enableLongPress(itemView.getContext(), flBubble, item);
 
-            markMessageAsRead(item, myUserModel);
-
-            checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
-            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+
+            markMessageAsRead(item, myUserModel);
+            setLinkDetection(itemView.getContext(), tvMessageBody);
+            enableLongPress(itemView.getContext(), flBubble, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
@@ -367,17 +366,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
+
+            setImageViewButtonProgress(item);
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            setProgress(item);
+            setImageData(item);
+
+            markMessageAsRead(item, myUserModel);
             setLinkDetection(itemView.getContext(), tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
-
-            setImageViewButtonProgress(item);
-            showForwardedFrom(item, clForwarded, tvForwardedFrom);
-            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-
-            markMessageAsRead(item, myUserModel);
-            setProgress(item);
-            setImageData(item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -638,15 +637,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             tvMediaInfo.setVisibility(View.VISIBLE);
             tvMessageStatus.setText(item.getMessageStatusText());
-            setLinkDetection(itemView.getContext(), tvMessageBody);
-            enableLongPress(itemView.getContext(), flBubble, item);
-            enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
-            showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
             setVideoProgress(item);
 
             markMessageAsRead(item, myUserModel);
+            setLinkDetection(itemView.getContext(), tvMessageBody);
+            enableLongPress(itemView.getContext(), flBubble, item);
+            enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -925,20 +924,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (item.isAnimating()) {
-                return;
+            if (!item.isAnimating()) {
+                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
 
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
             setFileProgress(item);
-            enableLongPress(itemView.getContext(), flBubble, item);
 
             markMessageAsRead(item, myUserModel);
-
-            checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
-            showForwardedFrom(item, clForwarded, tvForwardedFrom);
-            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            enableLongPress(itemView.getContext(), flBubble, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> flFileIcon.performClick());
@@ -1102,14 +1099,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
             }
 
-            setMapData(mapData);
 
             if (null == item.getFailedSend() || (null != item.getFailedSend() && !item.getFailedSend())) {
                 tvMessageStatus.setText(item.getMessageStatusText());
             }
-
-            enableLongPress(itemView.getContext(), flBubble, item);
-            enableLongPress(itemView.getContext(), vMapBorder, item);
 
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
@@ -1129,8 +1122,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
                 clForwardedQuote.setVisibility(View.GONE);
             }
+            setMapData(mapData);
 
             markMessageAsRead(item, myUserModel);
+            enableLongPress(itemView.getContext(), flBubble, item);
+            enableLongPress(itemView.getContext(), vMapBorder, item);
 
             vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -1524,7 +1520,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != item.getReplyTo() && null != item.getReplyTo().getUserID()
                     && item.getReplyTo().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
                 tvQuoteTitle.setText(itemView.getResources().getString(R.string.tap_you));
-            } else tvQuoteTitle.setText(quote.getTitle());
+            } else {
+                tvQuoteTitle.setText(quote.getTitle());
+            }
 
             tvQuoteContent.setText(quote.getContent());
             String quoteImageURL = quote.getImageURL();
@@ -1534,11 +1532,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 glide.load(quoteImageURL).into(rcivQuoteImage);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
-                } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
-                }
+                updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                 //vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
@@ -1546,13 +1540,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Get quote image from file ID
                 if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
                     // Load file icon
-//                    rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_black_19));
-                    if (isMessageFromMySelf(item)) {
-                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
-                    } else {
-                        rcivQuoteImage.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
-                    }
+                    updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
                     // Load image from file ID
@@ -1566,21 +1555,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         });
                     }).start();
                 }
-                if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
-                } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
-                }
+                updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else {
                 // Show no image
-                if (isMessageFromMySelf(item)) {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
-                } else {
-                    vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
-                }
+                updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
@@ -1590,6 +1571,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Hide quote
             clQuote.setVisibility(View.GONE);
             vQuoteBackground.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateQuoteBackground(View itemView, View vQuoteBackground, boolean isMessageFromMyself) {
+        if (isMessageFromMyself) {
+            vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
+        } else {
+            vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_accent_rounded_8dp));
         }
     }
 

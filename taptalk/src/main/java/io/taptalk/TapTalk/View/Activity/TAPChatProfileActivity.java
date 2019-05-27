@@ -62,11 +62,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 
 public class TAPChatProfileActivity extends TAPBaseActivity {
@@ -162,7 +161,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else {
-            ivProfile.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tap_grey_9b)));
         }
 
         tvFullName.setText(vm.getRoom().getRoomName());
@@ -257,7 +256,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
 
         TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
-        ivSharedMediaLoading.setVisibility(View.VISIBLE);
         tvSharedMediaLabel.setVisibility(View.GONE);
         new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
 
@@ -427,6 +425,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     public interface MediaInterface {
         void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady);
+
         void onCancelDownloadClicked(TAPMessageModel item);
     }
 
@@ -499,10 +498,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     // No shared media
                     Log.e(TAG, "onSelectFinished: No shared media");
                     vm.setFinishedLoadingSharedMedia(true);
-                    runOnUiThread(() -> {
-                        ivSharedMediaLoading.setVisibility(View.GONE);
-                        ivSharedMediaLoading.clearAnimation();
-                    });
+                    runOnUiThread(() -> ivSharedMediaLoading.setVisibility(View.GONE));
                 } else {
                     // Has shared media
                     int previousSize = vm.getSharedMedias().size();
@@ -539,7 +535,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                                             // Load more if view holder is visible
                                             if (!vm.isLoadingSharedMedia()) {
                                                 vm.setLoadingSharedMedia(true);
-                                                TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
                                                 ivSharedMediaLoading.setVisibility(View.VISIBLE);
                                                 new Thread(() -> TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener)).start();
                                             }
@@ -555,11 +550,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         // TODO: 10 May 2019 CALL API BEFORE?
                         Log.e(TAG, "onSelectFinished: No more medias in database");
                         vm.setFinishedLoadingSharedMedia(true);
-                        runOnUiThread(() -> {
-                            nsvProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener);
-                            ivSharedMediaLoading.setVisibility(View.GONE);
-                            ivSharedMediaLoading.clearAnimation();
-                        });
+                        runOnUiThread(() -> nsvProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener));
                     }
                     for (TAPMessageEntity entity : entities) {
                         vm.addSharedMedia(TAPChatManager.getInstance().convertToModel(entity));
@@ -568,6 +559,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     vm.setLoadingSharedMedia(false);
                     runOnUiThread(() -> rvSharedMedia.post(() -> {
                         sharedMediaAdapter.notifyItemRangeInserted(previousSize, entities.size());
+                        ivSharedMediaLoading.setVisibility(View.GONE);
                         if (0 == previousSize) {
                             tvSharedMediaLabel.setVisibility(View.VISIBLE);
                             rvSharedMedia.setVisibility(View.VISIBLE);
@@ -589,8 +581,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 case DownloadProgressLoading:
                 case DownloadFinish:
                 case DownloadFailed:
-                    String localID = intent.getStringExtra(DownloadLocalID);
-                    runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(vm.getSharedMedia(localID))));
+                    if (null != sharedMediaAdapter) {
+                        String localID = intent.getStringExtra(DownloadLocalID);
+                        runOnUiThread(() -> sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(vm.getSharedMedia(localID))));
+                    }
                     break;
             }
         }
