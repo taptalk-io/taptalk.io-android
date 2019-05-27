@@ -8,10 +8,11 @@
 
     <ImageView
         android:id="@+id/iv_taptalk_logo"
-        android:layout_width="132dp"
-        android:layout_height="22dp"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="80dp"
+        android:scaleType="fitStart"
         android:src="@drawable/taptalk_logo_with_name_color"
         app:layout_constraintBottom_toTopOf="@id/tv_welcome"
         app:layout_constraintStart_toStartOf="parent"
