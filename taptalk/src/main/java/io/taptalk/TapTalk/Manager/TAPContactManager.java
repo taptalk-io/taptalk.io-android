@@ -71,7 +71,7 @@ public class TAPContactManager {
     }
 
     public void saveUserDataMapToDatabase() {
-        TAPDataManager.getInstance().insertMyContactToDatabase(convertUserDataToList(userDataMap));
+        TAPDataManager.getInstance().insertMyContactToDatabase(convertUserDataToList(getUserDataMap()));
     }
 
     private HashMap<String, TAPUserModel> getUserDataMap() {

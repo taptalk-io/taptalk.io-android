@@ -71,6 +71,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (vm.isFirstContactSyncDone()) permissionCheckAndGetContactList();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
@@ -81,7 +87,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showPermissionDialog();
         } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
-            flSync.setVisibility(View.VISIBLE);
+            runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
         } else {
             //getContactList(false);
             getContactList(false);
@@ -170,8 +176,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         clButtonNewGroup.setOnClickListener(v -> createNewGroup());
         llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
         llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
-
-        permissionCheckAndGetContactList();
     }
 
     @Override
@@ -296,14 +300,14 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             });
                             if (showLoading)
                                 showSyncSuccessStatus(response.getUsers().size());
+                            vm.setFirstContactSyncDone(true);
                             return;
                         }
                         new Thread(() -> {
                             List<TAPUserModel> users = new ArrayList<>();
                             for (TAPUserModel contact : response.getUsers()) {
-                                contact.setIsContact(1);
+                                contact.setUserAsContact();
                                 users.add(contact);
-                                TAPContactManager.getInstance().addUserMapByPhoneNumber(contact);
                             }
                             TAPDataManager.getInstance().insertMyContactToDatabase(users);
                             TAPContactManager.getInstance().updateUserDataMap(users);
@@ -313,6 +317,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             });
                             if (showLoading)
                                 showSyncSuccessStatus(response.getUsers().size());
+
+                            vm.setFirstContactSyncDone(true);
                         }).start();
                     } catch (Exception e) {
                         Log.e(TAG, "initViewModel: ", e);
@@ -373,11 +379,15 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 new Thread(() -> {
                     List<TAPUserModel> users = new ArrayList<>();
                     for (TAPContactModel contact : response.getContacts()) {
-                        users.add(contact.getUser().setUserAsContact());
-                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contact.getUser());
+                        TAPUserModel contactUserModel = contact.getUser().setUserAsContact();
+                        users.add(contactUserModel);
+                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contactUserModel);
+                        TAPContactManager.getInstance().updateUserDataMap(contactUserModel);
                     }
+
                     TAPDataManager.getInstance().insertMyContactToDatabase(users);
                     TAPContactManager.getInstance().updateUserDataMap(users);
+                    permissionCheckAndGetContactList();
                 }).start();
             } catch (Exception e) {
                 e.printStackTrace();

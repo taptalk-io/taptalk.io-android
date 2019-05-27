@@ -23,6 +23,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private TAPImageURL groupImage;
     private String groupName;
     private boolean isSelecting;
+    private boolean isFirstContactSyncDone;
 
     public TAPContactListViewModel(@NonNull Application application) {
         super(application);
@@ -87,5 +88,13 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setSelecting(boolean selecting) {
         isSelecting = selecting;
+    }
+
+    public boolean isFirstContactSyncDone() {
+        return isFirstContactSyncDone;
+    }
+
+    public void setFirstContactSyncDone(boolean firstContactSyncDone) {
+        isFirstContactSyncDone = firstContactSyncDone;
     }
 }
