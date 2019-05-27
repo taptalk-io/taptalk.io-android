@@ -189,15 +189,15 @@ public class TAPDefaultConstant {
     public static final class BaseUrl {
         public static final String BASE_URL_API_PRODUCTION = "https://hp.moselo.com/api/v1/";
         public static final String BASE_URL_SOCKET_PRODUCTION = "https://hp.moselo.com/";
-        public static final String BASE_WSS_PRODUCTION = "wss://hp.moselo.com/pigeon";
+        public static final String BASE_WSS_PRODUCTION = "wss://hp.moselo.com/connect";
 
         public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com/api/v1/";
         public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com/";
-        public static final String BASE_WSS_STAGING = "wss://hp-staging.moselo.com/pigeon";
+        public static final String BASE_WSS_STAGING = "wss://hp-staging.moselo.com/connect";
 
         public static final String BASE_URL_API_DEVELOPMENT = "https://hp-dev.moselo.com/api/v1/";
         public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://hp-dev.moselo.com/";
-        public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com/pigeon";
+        public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com/connect";
     }
 
     public static final Intent[] AUTO_START_INTENTS = {
