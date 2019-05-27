@@ -173,7 +173,7 @@
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
                 android:textColor="@color/tap_black_2c"
-                android:textColorLink="@color/colorAccentLight"
+                android:textColorLink="@color/colorPrimaryDark"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
