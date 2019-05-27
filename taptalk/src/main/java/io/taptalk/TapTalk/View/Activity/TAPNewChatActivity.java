@@ -78,7 +78,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        finish();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
     }
 
@@ -113,7 +113,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
                 .show();
         TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
-
     }
 
     private void initViewModel() {
@@ -125,8 +124,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 vm.getContactList().addAll(userModels);
                 vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
                 runOnUiThread(() -> {
-                    if (null != adapter)
-                        adapter.updateAdapterData(vm.getSeparatedContacts());
+                    if (null != adapter) {
+                        adapter.setItems(vm.getSeparatedContacts(), true);
+                    }
+                        //adapter.updateAdapterData(vm.getSeparatedContacts());
                 });
             }
         });

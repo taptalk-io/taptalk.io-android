@@ -34,6 +34,7 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;
     @Nullable @JsonProperty("created") private Long created;
     @Nullable @JsonProperty("updated") private Long updated;
+    @Nullable @JsonProperty("deleted") private Long deleted;
     @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
     @Nullable @JsonProperty("isEmailVerified") private Boolean isEmailVerified;
     @Nullable @JsonProperty("isPhoneVerified") private Boolean isPhoneVerified;
@@ -234,6 +235,15 @@ public class TAPUserModel implements Parcelable {
     }
 
     @Nullable
+    public Long getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(@Nullable Long deleted) {
+        this.deleted = deleted;
+    }
+
+    @Nullable
     public Boolean getRequestPending() {
         return isRequestPending;
     }
@@ -331,6 +341,7 @@ public class TAPUserModel implements Parcelable {
         this.requireChangePassword = userModel.getRequireChangePassword();
         this.created = userModel.getCreated();
         this.updated = userModel.getUpdated();
+        this.deleted = userModel.getDeleted();
         this.isRequestPending = userModel.getRequestPending();
         this.isRequestAccepted = userModel.getRequestAccepted();
         this.isEmailVerified = userModel.getEmailVerified();
@@ -341,6 +352,7 @@ public class TAPUserModel implements Parcelable {
             this.isContact = userModel.isContact;
         }
     }
+
 
     @Override
     public int describeContents() {
@@ -363,6 +375,7 @@ public class TAPUserModel implements Parcelable {
         dest.writeValue(this.requireChangePassword);
         dest.writeValue(this.created);
         dest.writeValue(this.updated);
+        dest.writeValue(this.deleted);
         dest.writeValue(this.isRequestPending);
         dest.writeValue(this.isEmailVerified);
         dest.writeValue(this.isPhoneVerified);
@@ -388,6 +401,7 @@ public class TAPUserModel implements Parcelable {
         this.requireChangePassword = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
+        this.deleted = (Long) in.readValue(Long.class.getClassLoader());
         this.isRequestPending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isEmailVerified = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isPhoneVerified = (Boolean) in.readValue(Boolean.class.getClassLoader());
