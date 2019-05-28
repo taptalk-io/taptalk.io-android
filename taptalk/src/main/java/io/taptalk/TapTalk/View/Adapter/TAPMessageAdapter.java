@@ -722,6 +722,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
             }
 
+            // Fix media info text width
+            rcivVideoThumbnail.post(() -> {
+                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) tvMediaInfo.getLayoutParams();
+                params.matchConstraintMaxWidth = rcivVideoThumbnail.getMeasuredWidth() - TAPUtils.getInstance().dpToPx(16);
+                tvMediaInfo.setLayoutParams(params);
+            });
+
             // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID()) || null != dataUri) {
                 rcivVideoThumbnail.setImageDrawable(thumbnail);
@@ -832,12 +839,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
-        private void openVideoPlayer(TAPMessageModel message, boolean isPysicalFileExist) {
+        private void openVideoPlayer(TAPMessageModel message, boolean isPhysicalFileExist) {
             if (null == message.getData()) {
                 return;
             }
             Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
-            if (null == videoUri || !isPysicalFileExist) {
+            if (null == videoUri || !isPhysicalFileExist) {
                 // Prompt download
                 this.videoUri = null;
                 String fileID = (String) message.getData().get(FILE_ID);
