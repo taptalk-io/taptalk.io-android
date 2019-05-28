@@ -400,25 +400,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    private void checkPermissions() {
-        // Check and request write storage permission (only request once)
-        if (!TAPDataManager.getInstance().isWriteStoragePermissionRequested() &&
-                !TAPUtils.getInstance().hasPermissions(
-                        TAPChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            new TapTalkDialog.Builder(TAPChatActivity.this)
-                    .setTitle(getString(R.string.tap_permission_request))
-                    .setMessage(getString(R.string.tap_write_storage_permission))
-                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                    .setCancelable(false)
-                    .setPrimaryButtonListener(v -> {
-                                ActivityCompat.requestPermissions(TAPChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
-                                TAPDataManager.getInstance().setWriteStoragePermissionRequested(true);
-                            }
-                    )
-                    .show();
-        }
-    }
-
     private void bindViews() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
@@ -1285,8 +1266,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReplyMessage(TAPMessageModel message) {
-            showQuoteLayout(message, REPLY, true);
-            TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
+            if (null != vm.getOtherUserModel()) {
+                showQuoteLayout(message, REPLY, true);
+                TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
+            }
         }
 
         @Override
