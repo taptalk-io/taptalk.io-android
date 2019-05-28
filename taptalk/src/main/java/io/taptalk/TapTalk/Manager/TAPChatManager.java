@@ -63,7 +63,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -301,7 +300,7 @@ public class TAPChatManager {
                         TAPUtils.getInstance().fromJSON(new TypeReference<TAPUserRoleModel>() {
                         }, entity.getUserRole()),
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
-                        entity.getUserUpdated()),
+                        entity.getUserUpdated(), entity.getUserDeleted()),
                 entity.getRecipientID(),
                 null == entity.getData() ? null : TAPUtils.getInstance().toHashMap(entity.getData()),
                 null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {
@@ -310,7 +309,7 @@ public class TAPChatManager {
                 }, entity.getReplyTo()),
                 null == entity.getForwardFrom() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPForwardFromModel>() {
                 }, entity.getForwardFrom()),
-                entity.getDeleted(),
+                entity.getIsDeleted(),
                 entity.getSending(),
                 entity.getFailedSend(),
                 entity.getDelivered(),
@@ -331,7 +330,7 @@ public class TAPChatManager {
                 null == model.getQuote() ? null : TAPUtils.getInstance().toJsonString(model.getQuote()),
                 null == model.getReplyTo() ? null : TAPUtils.getInstance().toJsonString(model.getReplyTo()),
                 null == model.getForwardFrom() ? null : TAPUtils.getInstance().toJsonString(model.getForwardFrom()),
-                model.getUpdated(),
+                model.getUpdated(), model.getDeleted(),
                 model.getIsRead(), model.getDelivered(), model.getHidden(), model.getIsDeleted(),
                 model.getSending(), model.getFailedSend(), model.getRoom().getRoomID(),
                 model.getRoom().getRoomName(), model.getRoom().getRoomColor(),
@@ -344,7 +343,7 @@ public class TAPChatManager {
                 TAPUtils.getInstance().toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated(), model.getDeleted()
+                model.getUser().getCreated(), model.getUser().getUpdated(), model.getUser().getDeleted()
         );
     }
 

@@ -60,7 +60,7 @@ public class TAPUserModel implements Parcelable {
     public TAPUserModel(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable TAPUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
-            , @Nullable Long updated) {
+            , @Nullable Long updated, @Nullable Long deleted) {
         this.userID = userID;
         this.xcUserID = xcUserID;
         this.name = name;
@@ -74,6 +74,7 @@ public class TAPUserModel implements Parcelable {
         this.requireChangePassword = requireChangePassword;
         this.created = created;
         this.updated = updated;
+        this.deleted = deleted;
     }
 
     @Ignore
@@ -88,9 +89,9 @@ public class TAPUserModel implements Parcelable {
     public static TAPUserModel Builder(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable TAPUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
-            , @Nullable Long updated) {
+            , @Nullable Long updated, @Nullable Long deleted) {
         return new TAPUserModel(userID, xcUserID, name, avatarURL, username, email, phoneNumber, userRole
-                , lastLogin, lastActivity, requireChangePassword, created, updated);
+                , lastLogin, lastActivity, requireChangePassword, created, updated, deleted);
     }
 
     public static TAPUserModel Builder(String userID, String name) {
