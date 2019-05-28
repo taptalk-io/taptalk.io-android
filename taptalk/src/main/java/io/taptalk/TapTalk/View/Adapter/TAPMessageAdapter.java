@@ -280,7 +280,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             tvMessageBody.setText(item.getBody());
-            tvMessageStatus.setText(item.getMessageStatusText());
+
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                tvMessageStatus.setText(itemView.getContext().getText(R.string.tap_message_send_failed));
+            } else {
+                tvMessageStatus.setText(item.getMessageStatusText());
+            }
 
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
