@@ -282,5 +282,7 @@
     <string name="tap_video_saved">Video Saved</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
+    <string name="this_is_a_chat_history">This is a chat history</string>
+    <string name="this_user_is_no_longer_availbale">This user is no longer availbale</string>
 
 </resources>

@@ -22,6 +22,7 @@ public class TAPMessageEntity {
     @Nullable @ColumnInfo(name = "replyTo") private String replyTo;
     @Nullable @ColumnInfo(name = "forwardFrom") private String forwardFrom;
     @Nullable @ColumnInfo(name = "updated") private Long updated;
+    @Nullable @ColumnInfo(name = "deleted") private Long deleted;
     @Nullable @ColumnInfo(name = "isRead") private Boolean isRead;
     @Nullable @ColumnInfo(name = "isDelivered") private Boolean isDelivered;
     @Nullable @ColumnInfo(name = "isHidden") private Boolean isHidden;
@@ -51,7 +52,7 @@ public class TAPMessageEntity {
     public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                             String recipientID, Integer type, Long created,
                             @Nullable String data, @Nullable String quote, @Nullable String replyTo,
-                            @Nullable String forwardFrom, @Nullable Long updated,
+                            @Nullable String forwardFrom, @Nullable Long updated, @Nullable Long deleted,
                             @Nullable Boolean isRead, @Nullable Boolean isDelivered,
                             @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                             @Nullable Boolean isSending, @Nullable Boolean isFailedSend, String roomID,
@@ -73,6 +74,7 @@ public class TAPMessageEntity {
         this.replyTo = replyTo;
         this.forwardFrom = forwardFrom;
         this.updated = updated;
+        this.deleted = deleted;
         this.isRead = isRead;
         this.isDelivered = isDelivered;
         this.isHidden = isHidden;
@@ -205,6 +207,15 @@ public class TAPMessageEntity {
     }
 
     @Nullable
+    public Long getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(@Nullable Long deleted) {
+        this.deleted = deleted;
+    }
+
+    @Nullable
     public Boolean getIsRead() {
         return isRead;
     }
@@ -232,11 +243,11 @@ public class TAPMessageEntity {
     }
 
     @Nullable
-    public Boolean getDeleted() {
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(@Nullable Boolean deleted) {
+    public void setIsDeleted(@Nullable Boolean deleted) {
         isDeleted = deleted;
     }
 
