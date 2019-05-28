@@ -26,7 +26,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -579,7 +578,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     vm.setOnBottom(false);
                     ivToBottom.setVisibility(View.VISIBLE);
                 }
-                hideUnreadButton();
+
+                if (!vm.isScrollFromKeyboard())
+                    hideUnreadButton();
+                else vm.setScrollFromKeyboard(false);
             });
         }
 
@@ -1096,7 +1098,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null != clChatComposer) clChatComposer.setVisibility(View.INVISIBLE);
                     }
                 });
-            else if (null == vm.getOtherUserModel()){
+            else if (null == vm.getOtherUserModel()) {
                 if (null != clDeletedUser) clDeletedUser.setVisibility(View.VISIBLE);
 
                 if (null != clChatComposer) clChatComposer.setVisibility(View.INVISIBLE);
@@ -1708,6 +1710,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus && vm.isCustomKeyboardEnabled()) {
+                vm.setScrollFromKeyboard(true);
                 rvCustomKeyboard.setVisibility(View.GONE);
                 ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
@@ -1717,6 +1720,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     ivButtonChatMenu.setVisibility(View.GONE);
                 }
             } else if (hasFocus) {
+                vm.setScrollFromKeyboard(true);
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
             }
         }

@@ -47,7 +47,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
     private int initialUnreadCount, numUsers, containerAnimationState;
-    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading;
+    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
+            isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading, isScrollFromKeyboard;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -424,5 +425,13 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setLastUnreadMessageLocalID(String lastUnreadMessageLocalID) {
         this.lastUnreadMessageLocalID = lastUnreadMessageLocalID;
+    }
+
+    public boolean isScrollFromKeyboard() {
+        return isScrollFromKeyboard;
+    }
+
+    public void setScrollFromKeyboard(boolean scrollFromKeyboard) {
+        isScrollFromKeyboard = scrollFromKeyboard;
     }
 }
