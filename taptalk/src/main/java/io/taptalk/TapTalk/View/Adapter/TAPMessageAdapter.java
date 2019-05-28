@@ -165,7 +165,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_EMPTY:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
             default:
-                return new LogVH(parent, R.layout.tap_cell_chat_log);
+                return new EmptyVH(parent, R.layout.tap_cell_empty);
         }
     }
 
