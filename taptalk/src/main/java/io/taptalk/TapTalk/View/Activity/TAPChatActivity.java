@@ -77,6 +77,7 @@ import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -177,7 +178,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
     private ConstraintLayout clContainer, clUnreadButton, clEmptyChat, clQuote, clChatComposer,
-            clRoomOnlineStatus, clRoomTypingStatus;
+            clRoomOnlineStatus, clRoomTypingStatus, clDeletedUser;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivUnreadButtonImage, ivButtonCancelReply, ivChatMenu,
             ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom, ivRoomTypingIndicator;
@@ -389,6 +390,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             initListener();
             cancelNotificationWhenEnterRoom();
             registerBroadcastManager();
+
+            if (null != clDeletedUser) clDeletedUser.setVisibility(View.GONE);
+
+            if (null != clChatComposer) clChatComposer.setVisibility(View.VISIBLE);
+
         } else if (vm.getMessageModels().size() == 0) {
             initView();
         }
@@ -419,6 +425,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
+        clDeletedUser = (ConstraintLayout) findViewById(R.id.cl_deleted_user);
         clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
@@ -1084,7 +1091,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void callApiGetUserByUserID() {
         new Thread(() -> {
-            if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI())
+            if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI() &&
+                    TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
                 TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
@@ -1099,7 +1107,19 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             initRoom();
                         }
                     }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        if (null != clDeletedUser) clDeletedUser.setVisibility(View.VISIBLE);
+
+                        if (null != clChatComposer) clChatComposer.setVisibility(View.INVISIBLE);
+                    }
                 });
+            else if (null == vm.getOtherUserModel()){
+                if (null != clDeletedUser) clDeletedUser.setVisibility(View.VISIBLE);
+
+                if (null != clChatComposer) clChatComposer.setVisibility(View.INVISIBLE);
+            }
         }).start();
     }
 
