@@ -26,7 +26,10 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -574,14 +577,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     ivToBottom.setVisibility(View.INVISIBLE);
                     tvBadgeUnread.setVisibility(View.INVISIBLE);
                     vm.clearUnreadMessages();
+                } else if (!vm.isScrollFromKeyboard()) {
+                    vm.setOnBottom(false);
+                    ivToBottom.setVisibility(View.VISIBLE);
+                    hideUnreadButton();
                 } else {
                     vm.setOnBottom(false);
                     ivToBottom.setVisibility(View.VISIBLE);
+                    vm.setScrollFromKeyboard(false);
                 }
-
-                if (!vm.isScrollFromKeyboard())
-                    hideUnreadButton();
-                else vm.setScrollFromKeyboard(false);
             });
         }
 
@@ -744,7 +748,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-                } else if (vm.isOnBottom() || ownMessage) {
+                } else if (vm.isOnBottom() && !ownMessage) {
+                    // Scroll recycler to bottom if own message or recycler is already on bottom
+                    vm.setScrollFromKeyboard(true);
+                    messageAdapter.addMessage(newMessage);
+                    rvMessageList.scrollToPosition(0);
+                    vm.addMessagePointer(newMessage);
+                } else if (ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     messageAdapter.addMessage(newMessage);
                     rvMessageList.scrollToPosition(0);
