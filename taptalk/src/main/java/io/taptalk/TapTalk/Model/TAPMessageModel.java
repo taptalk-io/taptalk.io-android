@@ -389,16 +389,31 @@ public class TAPMessageModel implements Parcelable {
         isAnimating = animating;
     }
 
-    public void updateValue(TAPMessageModel model) {
-        this.messageID = model.getMessageID();
-        this.localID = model.getLocalID();
-        this.body = model.getBody();
-        this.room = model.getRoom();
-        this.type = model.getType();
-        this.created = model.getCreated();
-        this.user = model.getUser();
+    public TAPMessageModel updateMessageStatus(TAPMessageModel model) {
+        if (null != model && null != model.isDeleted && (null == this.isDeleted || !this.isDeleted))
+            this.isDeleted = model.getIsDeleted();
+        if (null != model && null != model.deleted && (null == this.deleted || 0 == this.deleted))
+            this.deleted = model.getDeleted();
+        if (null != model && null != model.isHidden && (null == this.isHidden || !this.isHidden))
+            this.isHidden = model.getHidden();
+        if (null != model && null != model.isDelivered && (null != this.isDelivered && !this.isDelivered))
+            this.isDelivered = model.getDelivered();
+        if (null != model && null != model.isRead && (null != this.isRead && !this.isRead))
+            this.isRead = model.getIsRead();
 
-        if (null == this.data) {
+        return this;
+    }
+
+    public void updateValue(TAPMessageModel model) {
+        //Ini semuanya di jagain biar kalau ada yang null ga ngubah datanya yang udah ada
+        if (null != model.messageID && !"".equals(model.messageID)) this.messageID = model.getMessageID();
+        if (!"".equals(model.localID)) this.localID = model.getLocalID();
+        if (null != model.body && !"".equals(model.body)) this.body = model.getBody();
+        if (null != model.room) this.room = model.getRoom();
+        this.type = model.getType();
+        if (null != model.created && 0L != model.created) this.created = model.getCreated();
+        if (null != model.user) this.user = model.getUser();
+        if (null == this.data && null != model.data) {
             this.data = model.getData();
         } else if (null != model.data && (model.type == TYPE_IMAGE || model.type == TYPE_VIDEO) &&
                 (null == model.isSending || !model.isSending) &&
@@ -408,22 +423,18 @@ public class TAPMessageModel implements Parcelable {
         } else if (null != model.data) {
             this.data.putAll(model.data);
         }
-
-        this.quote = model.getQuote();
-        this.recipientID = model.getRecipientID();
-        this.replyTo = model.getReplyTo();
-        this.forwardFrom = model.getForwardFrom();
-        this.isDeleted = model.getIsDeleted();
-        this.isSending = model.getSending();
-        this.isFailedSend = model.getFailedSend();
-        this.updated = model.getUpdated();
-        this.deleted = model.getDeleted();
-        if (null == this.isHidden || !this.isHidden)
-            this.isHidden = model.getHidden();
-        if (null != this.isDelivered && !this.isDelivered)
-            this.isDelivered = model.getDelivered();
-        if (null != this.isRead && !this.isRead)
-            this.isRead = model.getIsRead();
+        if (null != model.getQuote()) this.quote = model.getQuote();
+        if (null != model.getRecipientID() && !"".equals(model.getRecipientID())) this.recipientID = model.getRecipientID();
+        if (null != model.getReplyTo()) this.replyTo = model.getReplyTo();
+        if (null != model.getForwardFrom()) this.forwardFrom = model.getForwardFrom();
+        if (null != model.getIsDeleted() && (null == this.isDeleted || !this.isDeleted)) this.isDeleted = model.getIsDeleted();
+        if (null != model.getSending()) this.isSending = model.getSending();
+        if (null != model.getFailedSend()) this.isFailedSend = model.getFailedSend();
+        if (null != model.getUpdated() && 0L < model.getUpdated()) this.updated = model.getUpdated();
+        if (null != model.getDeleted() && 0L < model.getDeleted() && (null == this.deleted || 0 == this.deleted)) this.deleted = model.getDeleted();
+        if (null != model.getHidden() && (null == this.isHidden || !this.isHidden)) this.isHidden = model.getHidden();
+        if (null != model.getDelivered() && (null != this.isDelivered && !this.isDelivered)) this.isDelivered = model.getDelivered();
+        if (null != model.getIsRead() && (null != this.isRead && !this.isRead)) this.isRead = model.getIsRead();
         // Update when adding fields to model
     }
 
