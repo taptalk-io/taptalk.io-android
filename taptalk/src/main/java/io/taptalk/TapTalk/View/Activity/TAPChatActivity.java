@@ -1317,7 +1317,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
             TapTalk.triggerMessageQuoteClicked(TAPChatActivity.this, message);
-            if (null != message.getReplyTo()) {
+            if (null != message.getReplyTo() && (
+                    null == message.getForwardFrom() ||
+                            null == message.getForwardFrom().getFullname() ||
+                            message.getForwardFrom().getFullname().isEmpty())) {
                 scrollToMessage(message.getReplyTo().getLocalID());
             }
         }
@@ -1554,6 +1557,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.setTappedMessageLocalID(localID);
             showUnreadButtonLoading();
             loadMoreMessagesFromDatabase();
+        } else {
+            // Message not found
+            runOnUiThread(() -> {
+                Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
+                hideUnreadButtonLoading();
+            });
         }
     }
 
