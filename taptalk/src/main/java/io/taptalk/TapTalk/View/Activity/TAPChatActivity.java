@@ -647,11 +647,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void openRoomProfile() {
-        if (null != vm.getOtherUserModel())
+        if (null != vm.getOtherUserModel()) {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
                 // TODO: 21 December 2018 HANDLE GROUP CHAT
                 tapListener.onUserProfileClicked(TAPChatActivity.this, vm.getOtherUserModel());
             }
+            hideUnreadButton();
+        }
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
 //        if (TapTalk.isOpenDefaultProfileEnabled) {
 //            Intent intent = new Intent(this, TAPChatProfileActivity.class);
