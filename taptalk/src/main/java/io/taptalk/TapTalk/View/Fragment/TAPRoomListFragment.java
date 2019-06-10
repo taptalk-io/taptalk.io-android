@@ -526,9 +526,9 @@ public class TAPRoomListFragment extends Fragment {
     private void showChatRoomSetupSuccess() {
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_green));
+        ivSetupChatLoading.clearAnimation();
         tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
         tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
-        TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivSetupChatLoading);
 
         tvSetupChatDescription.setVisibility(View.VISIBLE);
         llRetrySetup.setVisibility(View.GONE);
