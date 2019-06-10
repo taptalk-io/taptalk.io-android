@@ -235,6 +235,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
         TAPChatManager.getInstance().setOpenRoom(null); // Reset open room
         TAPChatManager.getInstance().removeChatListener(chatListener);
+        TAPConnectionManager.getInstance().removeSocketListener(socketListener);
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
         TAPBroadcastManager.unregister(this, broadcastReceiver);
