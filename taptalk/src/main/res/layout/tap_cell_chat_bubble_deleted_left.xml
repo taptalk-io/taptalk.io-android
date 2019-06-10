@@ -45,59 +45,30 @@
             android:paddingEnd="10dp"
             android:paddingBottom="10dp">
 
-            <TextView
-                android:id="@+id/tv_user_name"
-                style="@style/TapMessageUserName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:textColor="@color/colorAccentDark"
-                android:visibility="gone"
+            <ImageView
+                android:id="@+id/iv_deleted_icon"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/tap_ic_deleted_white"
+                android:tint="@color/tap_grey_9b"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_body"
+                app:layout_constraintEnd_toStartOf="@id/tv_message_body"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/cl_quote"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="User Name" />
-
-            <include
-                android:id="@+id/cl_forwarded"
-                layout="@layout/tap_layout_forwarded_bubble_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toTopOf="@id/cl_quote"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/v_quote_background"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:background="@drawable/tap_bg_f3f3f3_rounded_4dp"
-                app:layout_constraintBottom_toBottomOf="@id/cl_quote"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/cl_quote" />
-
-            <include
-                android:id="@+id/cl_quote"
-                layout="@layout/tap_layout_quote_bubble_left"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toTopOf="@id/tv_message_body"
-                app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
+                app:layout_constraintTop_toTopOf="@id/tv_message_body" />
 
             <TextView
                 android:id="@+id/tv_message_body"
                 style="@style/TapMessageBody"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:layout_marginTop="2dp"
-                android:textColor="@color/tap_black_2c"
+                android:textColor="@color/tap_grey_9b"
                 android:textColorLink="@color/colorPrimaryDark"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cl_quote"
-                tools:text="Hey there, love your work!" />
+                app:layout_constraintStart_toEndOf="@id/iv_deleted_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@string/this_deleted_message" />
 
         </android.support.constraint.ConstraintLayout>
 

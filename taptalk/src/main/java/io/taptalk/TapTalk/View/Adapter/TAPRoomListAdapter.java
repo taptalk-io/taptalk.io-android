@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -144,6 +145,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Message Sender is not the active User
             if (null != item.getLastMessage() && !item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
                 ivMessageStatus.setImageDrawable(null);
+            }
+            //message is deleted
+            else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+               ivMessageStatus.setImageResource(R.drawable.tap_ic_deleted_white);
+               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_grey_d9)));
             }
             // Message is read
             else if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {

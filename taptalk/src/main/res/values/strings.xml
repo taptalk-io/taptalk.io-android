@@ -2,36 +2,30 @@
     <string name="app_name">TapTalk</string>
 
     <!--Title/Menu-->
+    <string name="tap_block_user">Block User</string>
+    <string name="tap_blocked_list">Blocked List</string>
+    <string name="tap_change_password">Change Password</string>
+    <string name="tap_chats_and_contacts">Chats and Contacts</string>
+    <string name="tap_clear_chat">Clear Chat</string>
+    <string name="tap_conversation_color">Conversation Color</string>
+    <string name="tap_exit_group">Exit Group</string>
+    <string name="tap_forward">Forward</string>
+    <string name="tap_group_subject">Group Subject</string>
+    <string name="tap_my_account">My Account</string>
     <string name="tap_new_chat">New Chat</string>
     <string name="tap_new_contact">New Contact</string>
     <string name="tap_new_group">New Group</string>
-    <string name="tap_scan_qr_code">Scan QR Code</string>
-    <string name="tap_show_qr_code">Show QR Code</string>
-    <string name="tap_blocked_list">Blocked List</string>
-    <string name="tap_group_subject">Group Subject</string>
-    <string name="tap_see_price_list">See price list</string>
-    <string name="tap_see_price_list_icon">👀</string>
-    <string name="tap_read_expert_notes">Read expert’s notes</string>
-    <string name="tap_read_expert_notes_icon">🔍</string>
-    <string name="tap_send_services">Send services</string>
-    <string name="tap_send_services_icon">💌</string>
-    <string name="tap_create_order_card">Create order card</string>
-    <string name="tap_create_order_card_icon">✏️</string>
+    <string name="tap_notifications">Notifications</string>
     <string name="tap_recent">Recent</string>
     <string name="tap_recent_chats">Recent Chats</string>
-    <string name="tap_search_results">Search Results</string>
-    <string name="tap_notifications">Notifications</string>
-    <string name="tap_conversation_color">Conversation Color</string>
-    <string name="tap_block_user">Block User</string>
-    <string name="tap_view_members">View Members</string>
-    <string name="tap_clear_chat">Clear Chat</string>
-    <string name="tap_search_chat">Search Chat</string>
-    <string name="tap_exit_group">Exit Group</string>
-    <string name="tap_shared_media">Shared Media</string>
-    <string name="tap_forward">Forward</string>
-    <string name="tap_welcome">Welcome</string>
     <string name="tap_register">Register</string>
-    <string name="tap_my_account">My Account</string>
+    <string name="tap_search_chat">Search Chat</string>
+    <string name="tap_search_results">Search Results</string>
+    <string name="tap_shared_media">Shared Media</string>
+    <string name="tap_scan_qr_code">Scan QR Code</string>
+    <string name="tap_show_qr_code">Show QR Code</string>
+    <string name="tap_view_members">View Members</string>
+    <string name="tap_welcome">Welcome</string>
 
     <!--Chat Room List-->
     <string name="tap_chat_room_setting_up">Setting up your chatroom</string>
@@ -161,6 +155,7 @@
     <string name="tap_compose">Compose</string>
     <string name="tap_call">Call</string>
     <string name="tap_send_sms">Send SMS</string>
+    <string name="tap_delete">Delete Message</string>
 
     <!--Product/Order-->
     <string name="tap_price">Price</string>
@@ -177,8 +172,10 @@
     <string name="tap_order_now">Order Now</string>
     <string name="tap_no_review_yet">No review yet</string>
 
-    <!--File-->
+    <!--Media-->
     <string name="tap_file_info_progress_dummy">9999.99 MB / %s</string>
+    <string name="tap_save_to_gallery">Save to Gallery</string>
+    <string name="tap_save_to_download">Save to Downloads</string>
 
     <!--Hints-->
     <string name="tap_hint_username">e.g user_1234</string>
@@ -221,15 +218,23 @@
     <string name="tap_cfp_type_word">Document</string>
     <string name="tap_cfp_type_apk">APK</string>
 
+    <!--Sample Custom Keyboard-->
+    <string name="tap_see_price_list">See price list</string>
+    <string name="tap_see_price_list_icon">👀</string>
+    <string name="tap_read_expert_notes">Read expert’s notes</string>
+    <string name="tap_read_expert_notes_icon">🔍</string>
+    <string name="tap_send_services">Send services</string>
+    <string name="tap_send_services_icon">💌</string>
+    <string name="tap_create_order_card">Create order card</string>
+    <string name="tap_create_order_card_icon">✏️</string>
+
     <!--General-->
     <string name="tap_add_a_caption">Add a caption</string>
     <string name="tap_add_to_contacts">Add to Contacts</string>
     <string name="tap_cancel">Cancel</string>
     <string name="tap_change">Change</string>
-    <string name="tap_change_password">Change Password</string>
     <string name="tap_logout">Logout</string>
     <string name="tap_chat_now">Chat Now</string>
-    <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_history">Clear history</string>
     <string name="tap_continue_s">Continue</string>
     <string name="tap_s_unread_messages">%s unread messages</string>
@@ -270,9 +275,6 @@
     <string name="tap_start_a_new_chat">Start a New Chat</string>
     <string name="tap_sync_contacts_now">Sync Contacts Now</string>
     <string name="tap_typing">typing</string>
-    <string name="tap_typing_1">Typing.</string>
-    <string name="tap_typing_2">Typing..</string>
-    <string name="tap_typing_3">Typing...</string>
     <string name="tap_unread_messages">Unread Messages</string>
     <string name="tap_update">Update</string>
     <string name="tap_uploading">Uploading</string>
@@ -281,9 +283,9 @@
     <string name="tap_video_saved">Video Saved</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
-
-    <!--Save Media-->
-    <string name="tap_save_to_gallery">Save to Gallery</string>
-    <string name="tap_save_to_download">Save to Download</string>
+    <string name="this_is_a_chat_history">This is a chat history</string>
+    <string name="this_user_is_no_longer_availbale">This user is no longer availbale</string>
+    <string name="you_deleted_this_message">You deleted this message.</string>
+    <string name="this_deleted_message">This message was deleted.</string>
 
 </resources>

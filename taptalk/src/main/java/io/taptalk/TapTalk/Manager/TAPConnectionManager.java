@@ -22,6 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
@@ -39,7 +40,7 @@ public class TAPConnectionManager {
     private String TAG = TAPConnectionManager.class.getSimpleName();
     private static TAPConnectionManager instance;
     private WebSocketClient webSocketClient;
-    @NonNull private String webSocketEndpoint = "wss://hp.moselo.com:8080/pigeon";
+    @NonNull private String webSocketEndpoint = TAPDefaultConstant.BaseUrl.BASE_WSS_PRODUCTION;
     //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;

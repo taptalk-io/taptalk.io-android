@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 3;
+        public static final int kDatabaseVersion = 5;
     }
 
     public static final class ConnectionEvent {
@@ -68,6 +68,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_BUBBLE_UNREAD_STATUS = 9002;
         public static final int TYPE_BUBBLE_LOADING = 9003;
+        public static final int TYPE_BUBBLE_DELETED_RIGHT = 9004;
+        public static final int TYPE_BUBBLE_DELETED_LEFT = 9005;
         public static final int TYPE_EMPTY = 9999;
     }
 
