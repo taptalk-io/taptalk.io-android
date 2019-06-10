@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -75,9 +76,9 @@ public class TAPRoomListFragment extends Fragment {
 
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
-    private LinearLayout llRoomEmpty;
-    private TextView tvSelectionCount, tvStartNewChat;
-    private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore;
+    private LinearLayout llRoomEmpty, llRetrySetup;
+    private TextView tvSelectionCount, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
+    private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivSetupChat, ivSetupChatLoading;
     private CircleImageView civMyAvatarImage;
     private CardView cvButtonSearch;
     private View vButtonMyAccount;
@@ -124,7 +125,6 @@ public class TAPRoomListFragment extends Fragment {
         updateQueryRoomListFromBackground();
         addNetworkListener();
         TAPBroadcastManager.register(getContext(), receiver, REFRESH_TOKEN_RENEWED);
-        new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
     }
 
     @Override
@@ -230,13 +230,18 @@ public class TAPRoomListFragment extends Fragment {
         //clSelection = view.findViewById(R.id.cl_selection);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
+        llRetrySetup = view.findViewById(R.id.ll_retry_setup);
         //tvSelectionCount = view.findViewById(R.id.tv_selection_count);
         tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
+        tvSetupChat = view.findViewById(R.id.tv_setup_chat);
+        tvSetupChatDescription = view.findViewById(R.id.tv_setup_chat_description);
         ivButtonNewChat = view.findViewById(R.id.iv_button_new_chat);
         //ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
         //ivButtonMute = view.findViewById(R.id.iv_button_mute);
         //ivButtonDelete = view.findViewById(R.id.iv_button_delete);
         //ivButtonMore = view.findViewById(R.id.iv_button_more);
+        ivSetupChat = view.findViewById(R.id.iv_setup_chat);
+        ivSetupChatLoading = view.findViewById(R.id.iv_setup_chat_loading);
         rvContactList = view.findViewById(R.id.rv_contact_list);
         civMyAvatarImage = view.findViewById(R.id.civ_my_avatar_image);
         cvButtonSearch = view.findViewById(R.id.cv_button_search);
@@ -385,7 +390,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void processMessageFromSocket(TAPMessageModel message) {
-        Log.e(TAG, "processMessageFromSocket: "+message.getBody() );
+        Log.e(TAG, "processMessageFromSocket: " + message.getBody());
         String messageRoomID = message.getRoom().getRoomID();
         TAPRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
 
@@ -502,13 +507,61 @@ public class TAPRoomListFragment extends Fragment {
         getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel)));
     }
 
+    private void showChatRoomSettingUp() {
+        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
+        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+        tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
+        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
+        TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivSetupChatLoading);
+
+        tvSetupChatDescription.setVisibility(View.VISIBLE);
+        llRetrySetup.setVisibility(View.GONE);
+        flSetupContainer.setVisibility(View.VISIBLE);
+
+        llRetrySetup.setOnClickListener(null);
+
+        hideNewChatButton();
+    }
+
+    private void showChatRoomSetupSuccess() {
+        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
+        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_green));
+        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
+        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
+        TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivSetupChatLoading);
+
+        tvSetupChatDescription.setVisibility(View.VISIBLE);
+        llRetrySetup.setVisibility(View.GONE);
+
+        llRetrySetup.setOnClickListener(null);
+
+        showNewChatButton();
+
+        new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+    }
+
+    private void showChatRoomSetupFailed() {
+        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
+        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+        ivSetupChatLoading.clearAnimation();
+        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
+
+        tvSetupChatDescription.setVisibility(View.GONE);
+        llRetrySetup.setVisibility(View.VISIBLE);
+
+        llRetrySetup.setOnClickListener(view -> {
+            TAPUtils.getInstance().animateClickButton(llRetrySetup, 0.95f);
+            TAPDataManager.getInstance().getMessageRoomListAndUnread(
+                    TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
+        });
+    }
+
     private TapDefaultDataView<TAPGetRoomListResponse> roomListView = new TapDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
             //ini buat munculin setup dialog pas pertama kali buka apps
             if (!vm.isDoneFirstApiSetup()) {
-                flSetupContainer.setVisibility(View.VISIBLE);
-                hideNewChatButton();
+                showChatRoomSettingUp();
             }
         }
 
@@ -517,11 +570,6 @@ public class TAPRoomListFragment extends Fragment {
             super.onSuccess(response);
             //sebagai tanda kalau udah manggil api (Get message from API)
             vm.setDoneFirstSetup(true);
-            //save preference kalau kita udah munculin setup dialog
-            if (!vm.isDoneFirstApiSetup()) {
-                vm.setDoneFirstApiSetup(true);
-                TAPDataManager.getInstance().setRoomListSetupFinished();
-            }
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
@@ -571,43 +619,26 @@ public class TAPRoomListFragment extends Fragment {
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
             }
-            showNewChatButton();
+            //save preference kalau kita udah munculin setup dialog
+            if (!vm.isDoneFirstApiSetup()) {
+                vm.setDoneFirstApiSetup(true);
+                TAPDataManager.getInstance().setRoomListSetupFinished();
+                showChatRoomSetupSuccess();
+            }
         }
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
-            flSetupContainer.setVisibility(View.GONE);
-            showNewChatButton();
+            onError(error.getMessage());
         }
 
         @Override
         public void onError(String errorMessage) {
-            super.onError(errorMessage);
-            flSetupContainer.setVisibility(View.GONE);
-            showNewChatButton();
-        }
-    };
-
-    private TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
-        @Override
-        public void onSuccess(TAPContactResponse response) {
-            try {
-                // Insert contacts to database
-                if (null == response.getContacts() || response.getContacts().isEmpty()) {
-                    return;
-                }
-                new Thread(() -> {
-                    List<TAPUserModel> users = new ArrayList<>();
-                    for (TAPContactModel contact : response.getContacts()) {
-                        users.add(contact.getUser().setUserAsContact());
-                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contact.getUser());
-                    }
-                    TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                    TAPContactManager.getInstance().updateUserDataMap(users);
-                }).start();
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (!vm.isDoneFirstApiSetup()) {
+                showChatRoomSetupFailed();
+            } else {
+                flSetupContainer.setVisibility(View.GONE);
+                showNewChatButton();
             }
         }
     };

@@ -51,7 +51,7 @@
             android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
             android:launchMode="singleTask" />

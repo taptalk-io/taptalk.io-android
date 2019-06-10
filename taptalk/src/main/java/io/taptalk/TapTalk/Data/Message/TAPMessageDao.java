@@ -9,9 +9,10 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 
 @Dao
 public interface TAPMessageDao {
@@ -20,6 +21,9 @@ public interface TAPMessageDao {
 
     @Delete
     void delete(List<TAPMessageEntity> messageEntities);
+
+    @Query("delete from message_table where roomID = :roomID and created < :minimumTimestamp")
+    void deleteRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(TAPMessageEntity messageEntity);
@@ -34,7 +38,10 @@ public interface TAPMessageDao {
     void deleteAllMessage();
 
     @Query("select * from Message_Table order by created desc")
-    LiveData<List<TAPMessageEntity>> getAllMessage();
+    LiveData<List<TAPMessageEntity>> getAllMessageLiveData();
+
+    @Query("select * from Message_Table where RoomID like :roomID order by created desc")
+    List<TAPMessageEntity> getAllMessagesInRoom(String roomID);
 
     @Query("select * from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getAllMessageListDesc(String roomID);
@@ -54,7 +61,7 @@ public interface TAPMessageDao {
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
 
-    @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID")
+    @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID order by created asc")
     List<TAPMessageEntity> getAllMessageThatNotRead(String userID, String roomID);
 
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
@@ -63,15 +70,20 @@ public interface TAPMessageDao {
 
     @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
             "from Message_Table where type in (" + TYPE_IMAGE + ", " + TYPE_VIDEO +
-            ") and roomID = :roomID and isHidden = 0 and isDeleted = 0 " +
+            ") and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
             "order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getRoomMedias(String roomID);
 
     @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
             "from Message_Table where type in (" + TYPE_IMAGE + ", " + TYPE_VIDEO +
-            ") and created < :lastTimestamp and roomID = :roomID and isHidden = 0 and isDeleted = 0 " +
+            ") and created < :lastTimestamp and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
             "order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getRoomMedias(Long lastTimestamp, String roomID);
+
+    @Query("select * from message_table where" +
+            " type in (" + TYPE_IMAGE + ", " + TYPE_FILE + ", " + TYPE_VIDEO + ") " +
+            "and roomID = :roomID and created < :minimumTimestamp")
+    List<TAPMessageEntity> getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp);
 
     @Query("select localID, roomName, roomImage, roomType, roomColor from Message_Table where roomID = :roomID")
     TAPMessageEntity getRoom(String roomID);
@@ -81,6 +93,10 @@ public interface TAPMessageDao {
 
     @Query("select count(isRead) from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and userID not like :userID")
     Integer getUnreadCount(String userID);
+
+    //@Query("select min(created) as created from message_table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID")
+    @Query("select localID, created from message_table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID order by created asc limit 1")
+    TAPMessageEntity getMinCreatedOfUnreadMessage(String userID, String roomID);
 
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();

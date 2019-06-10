@@ -135,9 +135,24 @@ public class TAPCacheManager {
     }
 
     public void removeFromCache(String key) {
+        if (null == key) {
+            return;
+        }
         new Thread(() -> {
             getMemoryCache().remove(key);
             diskLruCache.remove(key);
+        }).start();
+    }
+
+    public boolean containsCache(String key) {
+        return null != getMemoryCache().get(key) || diskLruCache.containsKey(key);
+    }
+
+    public void clearCache() {
+        new Thread(() -> {
+            getMemoryCache().evictAll();
+            diskLruCache.clearCache();
+            diskLruCache = null;
         }).start();
     }
 }

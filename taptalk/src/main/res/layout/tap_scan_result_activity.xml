@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@drawable/tap_bg_bluepurple_dodger_blue"
+    android:background="@drawable/tap_bg_primarylight_primarydark_270"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity">
 
     <ProgressBar
@@ -59,12 +59,7 @@
                 app:layout_constraintBottom_toTopOf="@id/fl_name_card_data"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:background="@color/colorAccent">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                app:layout_constraintTop_toTopOf="parent">
 
                 <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_my_avatar"
@@ -75,6 +70,7 @@
                     app:civ_border_width="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:background="@color/tap_brightBlue" />
 
                 <io.taptalk.TapTalk.Helper.CircleImageView
@@ -86,6 +82,7 @@
                     app:civ_border_width="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:background="@color/tap_red" />
 
             </android.support.constraint.ConstraintLayout>
@@ -119,9 +116,9 @@
                         android:fontFamily="@font/tap_font_pt_root_bold"
                         android:gravity="center_horizontal"
                         android:maxLines="2"
-                        tools:text="NAMANYABERNAMA"
                         android:textColor="@color/tap_black_19"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        tools:text="NAMANYABERNAMA" />
 
                     <TextView
                         android:id="@+id/tv_contact_fullname"
@@ -130,9 +127,9 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/tap_font_pt_root_regular"
                         android:gravity="center_horizontal"
-                        tools:text="Vivamus adipiscing fermentum quam "
                         android:textColor="@color/tap_grey_9b"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        tools:text="Vivamus adipiscing fermentum quam " />
 
                 </LinearLayout>
 
@@ -150,7 +147,8 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="40dp"
-                        android:src="@drawable/tap_ic_add_contact" />
+                        android:src="@drawable/tap_ic_add_contact"
+                        android:tint="@color/colorPrimaryDark" />
 
                     <TextView
                         android:id="@+id/tv_add_success"
@@ -188,11 +186,9 @@
                 android:layout_height="54dp"
                 android:alpha="1"
                 android:animateLayoutChanges="true"
-                android:background="@drawable/tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_6dp"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_ripple"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -231,7 +227,7 @@
                 android:gravity="center"
                 android:letterSpacing="0.01"
                 android:text="@string/tap_this_is_you"
-                android:textColor="@color/tap_pumkin_orange_two"
+                android:textColor="@color/colorPrimaryDark"
                 android:textSize="13sp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -239,9 +235,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fl_name_card_data" />
 
-
         </android.support.constraint.ConstraintLayout>
-    </android.support.v7.widget.CardView>
 
+    </android.support.v7.widget.CardView>
 
 </android.support.constraint.ConstraintLayout>

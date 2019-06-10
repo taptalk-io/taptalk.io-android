@@ -111,22 +111,13 @@
             android:layout_gravity="center"
             android:background="@drawable/tap_bg_white_rounded_6dp">
 
-            <ProgressBar
-                android:id="@+id/pb_saving"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginBottom="4dp"
-                app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
             <ImageView
-                android:id="@+id/iv_saved"
+                android:id="@+id/iv_saving"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_marginBottom="4dp"
-                android:src="@drawable/tap_ic_tick_green"
-                android:visibility="gone"
+                android:src="@drawable/tap_ic_checklist_pumpkin"
+                android:tint="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

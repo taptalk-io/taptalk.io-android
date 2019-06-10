@@ -26,6 +26,9 @@ import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
+
 public class TAPChatViewModel extends AndroidViewModel {
 
     private static final String TAG = TAPChatViewModel.class.getSimpleName();
@@ -35,14 +38,17 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
-    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage;
+    private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIndicator, loadingIndicator;
     private TAPOnlineStatusModel onlineStatus;
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
+    private String tappedMessageLocalID;
     private Integer quoteAction;
+    private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
-    private int numUsers, containerAnimationState;
-    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled, isInitialAPICallFinished;
+    private int initialUnreadCount, numUsers, containerAnimationState;
+    private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
+            isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading, isScrollFromKeyboard;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -219,6 +225,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         return null == quotedMessage ? TAPChatManager.getInstance().getQuotedMessage() : quotedMessage;
     }
 
+    public int getInitialUnreadCount() {
+        return initialUnreadCount;
+    }
+
+    public void setInitialUnreadCount(int initialUnreadCount) {
+        this.initialUnreadCount = initialUnreadCount;
+    }
+
     public Integer getQuoteAction() {
         return null == quoteAction ? null == TAPChatManager.getInstance().getQuoteAction() ? -1 : TAPChatManager.getInstance().getQuoteAction() : quoteAction;
     }
@@ -227,6 +241,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.quotedMessage = quotedMessage;
         this.quoteAction = quoteAction;
         TAPChatManager.getInstance().setQuotedMessage(quotedMessage, quoteAction);
+    }
+
+    public String getTappedMessageLocalID() {
+        return tappedMessageLocalID;
+    }
+
+    public void setTappedMessageLocalID(String tappedMessageLocalID) {
+        this.tappedMessageLocalID = tappedMessageLocalID;
     }
 
     /**
@@ -249,6 +271,28 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setOpenedFileMessage(TAPMessageModel openedFileMessage) {
         this.openedFileMessage = openedFileMessage;
+    }
+
+    public TAPMessageModel getUnreadIndicator() {
+        return unreadIndicator;
+    }
+
+    public void setUnreadIndicator(TAPMessageModel unreadIndicator) {
+        this.unreadIndicator = unreadIndicator;
+    }
+
+    public TAPMessageModel getLoadingIndicator(boolean updateCreated) {
+        if (null == loadingIndicator) {
+            loadingIndicator = new TAPMessageModel();
+            loadingIndicator.setType(TYPE_LOADING_MESSAGE_IDENTIFIER);
+            loadingIndicator.setLocalID(LOADING_INDICATOR_LOCAL_ID);
+            loadingIndicator.setUser(TAPDataManager.getInstance().getActiveUser());
+        }
+        if (updateCreated) {
+            // Update created time for loading indicator to array's last message created time
+            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated());
+        }
+        return loadingIndicator;
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {
@@ -335,6 +379,28 @@ public class TAPChatViewModel extends AndroidViewModel {
         isOnBottom = onBottom;
     }
 
+    /**
+     * Unread button will only show once
+     */
+    public boolean isUnreadButtonShown() {
+        return isUnreadButtonShown;
+    }
+
+    public void setUnreadButtonShown(boolean unreadButtonShown) {
+        isUnreadButtonShown = unreadButtonShown;
+    }
+
+    /**
+     * Show loading when fetching older messages
+     */
+    public boolean isNeedToShowLoading() {
+        return isNeedToShowLoading;
+    }
+
+    public void setNeedToShowLoading(boolean needToShowLoading) {
+        isNeedToShowLoading = needToShowLoading;
+    }
+
     public int getMessageSize() {
         if (null != allMessages.getValue()) {
             return allMessages.getValue().size();
@@ -348,8 +414,24 @@ public class TAPChatViewModel extends AndroidViewModel {
             String[] tempUserID = room.getRoomID().split("-");
             return tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
         } catch (Exception e) {
-            Log.e(TAG, "getOtherUserID: ",e );
+            Log.e(TAG, "getOtherUserID: ", e);
             return "0";
         }
+    }
+
+    public String getLastUnreadMessageLocalID() {
+        return null == lastUnreadMessageLocalID ? "" : lastUnreadMessageLocalID;
+    }
+
+    public void setLastUnreadMessageLocalID(String lastUnreadMessageLocalID) {
+        this.lastUnreadMessageLocalID = lastUnreadMessageLocalID;
+    }
+
+    public boolean isScrollFromKeyboard() {
+        return isScrollFromKeyboard;
+    }
+
+    public void setScrollFromKeyboard(boolean scrollFromKeyboard) {
+        isScrollFromKeyboard = scrollFromKeyboard;
     }
 }

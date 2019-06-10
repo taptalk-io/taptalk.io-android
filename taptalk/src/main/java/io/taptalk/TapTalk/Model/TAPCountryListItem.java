@@ -9,6 +9,7 @@ public class TAPCountryListItem implements Parcelable {
     @JsonProperty("id") private int countryID;
     @JsonProperty("commonName") private String commonName;
     @JsonProperty("officialName") private String officialName;
+    @JsonProperty("flagIconURL") private String flagIconUrl;
     @JsonProperty("iso2Code") private String iso2Code;
     @JsonProperty("iso3Code") private String iso3Code;
     @JsonProperty("callingCode") private String callingCode;
@@ -19,12 +20,13 @@ public class TAPCountryListItem implements Parcelable {
     public TAPCountryListItem() {
     }
 
-    public TAPCountryListItem(int countryID, String commonName, String officialName, String iso2Code,
+    public TAPCountryListItem(int countryID, String commonName, String officialName, String flagIconUrl, String iso2Code,
                               String iso3Code, String callingCode, String currencyCode,
                               boolean isEnabled, boolean isHidden) {
         this.countryID = countryID;
         this.commonName = commonName;
         this.officialName = officialName;
+        this.flagIconUrl = flagIconUrl;
         this.iso2Code = iso2Code;
         this.iso3Code = iso3Code;
         this.callingCode = callingCode;
@@ -55,6 +57,14 @@ public class TAPCountryListItem implements Parcelable {
 
     public void setOfficialName(String officialName) {
         this.officialName = officialName;
+    }
+
+    public String getFlagIconUrl() {
+        return flagIconUrl;
+    }
+
+    public void setFlagIconUrl(String flagIconUrl) {
+        this.flagIconUrl = flagIconUrl;
     }
 
     public String getIso2Code() {
@@ -116,6 +126,7 @@ public class TAPCountryListItem implements Parcelable {
         dest.writeInt(this.countryID);
         dest.writeString(this.commonName);
         dest.writeString(this.officialName);
+        dest.writeString(this.flagIconUrl);
         dest.writeString(this.iso2Code);
         dest.writeString(this.iso3Code);
         dest.writeString(this.callingCode);
@@ -128,6 +139,7 @@ public class TAPCountryListItem implements Parcelable {
         this.countryID = in.readInt();
         this.commonName = in.readString();
         this.officialName = in.readString();
+        this.flagIconUrl = in.readString();
         this.iso2Code = in.readString();
         this.iso3Code = in.readString();
         this.callingCode = in.readString();
@@ -136,7 +148,7 @@ public class TAPCountryListItem implements Parcelable {
         this.isHidden = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<TAPCountryListItem> CREATOR = new Parcelable.Creator<TAPCountryListItem>() {
+    public static final Creator<TAPCountryListItem> CREATOR = new Creator<TAPCountryListItem>() {
         @Override
         public TAPCountryListItem createFromParcel(Parcel source) {
             return new TAPCountryListItem(source);

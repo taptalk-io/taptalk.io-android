@@ -6,6 +6,8 @@ import android.util.Log;
 import java.io.File;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Service.TAPTalkApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkDownloadApiService;
@@ -76,7 +78,6 @@ public class TAPApiManager {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-    private TAPTalkMultipartApiService tapMultipart;
     private static TAPApiManager instance;
     private int isShouldRefreshToken = 0;
     //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
@@ -91,7 +92,10 @@ public class TAPApiManager {
         this.homingPigeon = connection.getHomingPigeon();
         this.hpSocket = connection.getHpValidate();
         this.hpRefresh = connection.getHpRefresh();
-        this.tapMultipart = connection.getTapMultipart();
+    }
+
+    private long calculateTimeOutTimeWithFileSize(long fileSize) {
+        return fileSize / 10 + 60000;
     }
 
     public boolean isLogout() {
@@ -296,8 +300,8 @@ public class TAPApiManager {
         execute(homingPigeon.getUserByXcUserID(request), subscriber);
     }
 
-    public void getUserByUsername(String username, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
-        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
+    public void getUserByUsername(String username, boolean ignoreCase, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username, ignoreCase);
         execute(homingPigeon.getUserByUsername(request), subscriber);
     }
 
@@ -310,6 +314,7 @@ public class TAPApiManager {
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
 
         RequestBody requestBody = new MultipartBody.Builder()
@@ -325,6 +330,7 @@ public class TAPApiManager {
     public void uploadVideo(File videoFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(videoFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(videoFile, mimeType, uploadCallback);
 
         RequestBody requestBody = new MultipartBody.Builder()
@@ -340,6 +346,7 @@ public class TAPApiManager {
     public void uploadFile(File file, String roomID, String mimeType,
                            ProgressRequestBody.UploadCallbacks uploadCallback,
                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
 
         RequestBody requestBody = new MultipartBody.Builder()
@@ -352,8 +359,9 @@ public class TAPApiManager {
     }
 
     public void uploadProfilePicture(File imageFile, String mimeType,
-                            ProgressRequestBody.UploadCallbacks uploadCallback,
-                            Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+                                     ProgressRequestBody.UploadCallbacks uploadCallback,
+                                     Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
 
         RequestBody requestBody = new MultipartBody.Builder()
@@ -364,8 +372,12 @@ public class TAPApiManager {
         execute(tapMultipart.uploadProfilePicture(requestBody), subscriber);
     }
 
-    public void downloadFile(String roomID, String localID, String fileID, Subscriber<ResponseBody> subscriber) {
-        TAPTalkDownloadApiService tapDownload = TAPApiConnection.getInstance().getTapDownload();
+    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
+
+        TAPTalkDownloadApiService tapDownload;
+        if (null != fileSize) {
+            tapDownload = TAPApiConnection.getInstance().getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
+        } else tapDownload = TAPApiConnection.getInstance().getTapDownload(30 * 60 * 1000);
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }
@@ -380,7 +392,7 @@ public class TAPApiManager {
     }
 
     public void checkUsernameExists(String username, Subscriber<TAPBaseResponse<TAPCheckUsernameResponse>> subscriber) {
-        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username);
+        TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username, false);
         execute(homingPigeon.checkUsernameExists(request), subscriber);
     }
 

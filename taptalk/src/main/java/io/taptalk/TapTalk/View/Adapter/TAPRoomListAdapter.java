@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.content.res.Resources;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.util.DiffUtil;
@@ -28,8 +27,6 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 
 public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
@@ -58,7 +55,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
-        private ImageView ivAvatarIcon, ivMute, ivMessageStatus;
+        private ImageView ivAvatarIcon, ivMute, ivMessageStatus, ivRoomTypingIndicator;
         private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread;
         private View vSeparator, vSeparatorFull;
 
@@ -69,6 +66,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivMute = itemView.findViewById(R.id.iv_mute);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+            ivRoomTypingIndicator = itemView.findViewById(R.id.iv_room_typing_indicator);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
@@ -117,15 +115,20 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             if (item.isTyping()) {
                 // Set message to Typing
-                tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
-                typingAnimationTimer.start();
-                typingIndicatorTimeOutTimer.cancel();
-                typingIndicatorTimeOutTimer.start();
+                tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing));
+                ivRoomTypingIndicator.setVisibility(View.VISIBLE);
+                if (null == ivRoomTypingIndicator.getDrawable()) {
+                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+                }
+                //typingAnimationTimer.start();
+                //typingIndicatorTimeOutTimer.cancel();
+                //typingIndicatorTimeOutTimer.start();
             } else {
                 // Set last message as text
                 tvLastMessage.setText(item.getLastMessage().getBody());
-                typingAnimationTimer.cancel();
-                typingIndicatorTimeOutTimer.cancel();
+                ivRoomTypingIndicator.setVisibility(View.GONE);
+                //typingAnimationTimer.cancel();
+                //typingIndicatorTimeOutTimer.cancel();
             }
 
             // Check if room is muted
@@ -134,7 +137,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_mango_pumpkin2_stroke_pumpkin2_1dp_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_12dp));
             }
 
             // Change Status Message Icon
@@ -183,45 +186,45 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
 
-        private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                getItem().setTyping(false);
-                int position = getItems().indexOf(getItem());
-                if (position < 0) {
-                    notifyDataSetChanged();
-                } else {
-                    notifyItemChanged(position);
-                }
-            }
-        };
-
-        private CountDownTimer typingAnimationTimer = new CountDownTimer(300L, 100L) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                switch (tvLastMessage.length()) {
-                    case 7:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_2));
-                        break;
-                    case 8:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_3));
-                        break;
-                    default:
-                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
-                }
-                start();
-            }
-        };
+//        private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                getItem().setTyping(false);
+//                int position = getItems().indexOf(getItem());
+//                if (position < 0) {
+//                    notifyDataSetChanged();
+//                } else {
+//                    notifyItemChanged(position);
+//                }
+//            }
+//        };
+//
+//        private CountDownTimer typingAnimationTimer = new CountDownTimer(300L, 100L) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                switch (tvLastMessage.length()) {
+//                    case 7:
+//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_2));
+//                        break;
+//                    case 8:
+//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_3));
+//                        break;
+//                    default:
+//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
+//                }
+//                start();
+//            }
+//        };
     }
 
     private void onRoomClicked(View itemView, TAPRoomListModel item, int position) {
@@ -249,6 +252,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                         item.getLastMessage().getRoom().getRoomImage(),
                         item.getLastMessage().getRoom().getRoomType(),
                         item.getLastMessage().getRoom().getRoomColor(),
+                        item.getLastMessage().getRoom().getUnreadCount(),
                         item.isTyping());
                 TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
             } else {

@@ -70,6 +70,8 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonCancel.setOnClickListener(v -> clearSearch());
         llAddNewContact.setOnClickListener(v -> openNewContactActivity());
+
+        TAPUtils.getInstance().animateClickButton(llAddNewContact, 0.97f);
     }
 
     private void clearSearch() {

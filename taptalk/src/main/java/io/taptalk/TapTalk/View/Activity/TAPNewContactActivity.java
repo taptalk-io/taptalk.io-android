@@ -110,7 +110,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private boolean onSearchEditorClicked() {
         TAPDataManager.getInstance().cancelUserSearchApiCall();
-        TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
+        TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         return true;
     }
 
@@ -190,7 +190,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.tap_pumkin_orange_two));
+            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
@@ -244,7 +244,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.tap_pumkin_orange_two));
+            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
@@ -331,7 +331,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onFinish() {
-            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), getUserView);
+            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         }
     };
 
@@ -340,7 +340,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
             runOnUiThread(() -> {
-                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_orange_button_ripple));
+                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple));
                 tvButtonText.setTextColor(getResources().getColor(R.color.tap_white));
                 if (isContact == 0) {
                     // Searched user is not a contact
@@ -461,7 +461,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             if (null == vm.getPendingSearch() || vm.getPendingSearch().isEmpty()) {
                 return;
             }
-            TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), getUserView);
+            TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), true, getUserView);
             vm.setPendingSearch("");
         }
     };

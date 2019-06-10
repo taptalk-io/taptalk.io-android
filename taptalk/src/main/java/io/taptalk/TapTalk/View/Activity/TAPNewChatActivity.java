@@ -33,6 +33,8 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
+import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
@@ -69,17 +71,24 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (vm.isFirstContactSyncDone()) permissionCheckAndGetContactList();
+    }
+
+    @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        finish();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
     }
 
     private void permissionCheckAndGetContactList() {
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+            Log.e(TAG, "permissionCheckAndGetContactList: " );
             showPermissionDialog();
         } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
-            flSync.setVisibility(View.VISIBLE);
+            runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
         } else {
             //getContactList(false);
             getContactList(false);
@@ -95,17 +104,16 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showPermissionDialog() {
-        new TapTalkDialog.Builder(TAPNewChatActivity.this)
+        runOnUiThread(() -> new TapTalkDialog.Builder(TAPNewChatActivity.this)
                 .setTitle("Contact Access")
-                .setMessage("We need to access your contact to make it easier for you to find your friends")
+                .setMessage("We need your permission to access your contact, we will sync your contact to our server and automatically find your friend so it is easier for you to find your friends.")
                 .setCancelable(false)
                 .setPrimaryButtonTitle("Allow")
                 .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
                 .setSecondaryButtonTitle("Cancel")
                 .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
-                .show();
+                .show());
         TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
-
     }
 
     private void initViewModel() {
@@ -116,7 +124,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 vm.getContactList().clear();
                 vm.getContactList().addAll(userModels);
                 vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
-                runOnUiThread(() -> adapter.updateAdapterData(vm.getSeparatedContacts()));
+                runOnUiThread(() -> {
+                    if (null != adapter) {
+                        adapter.setItems(vm.getSeparatedContacts(), true);
+                    }
+                        //adapter.updateAdapterData(vm.getSeparatedContacts());
+                });
             }
         });
     }
@@ -142,6 +155,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         pbConnecting.setVisibility(View.GONE);
         ivConnectionStatus.setVisibility(View.VISIBLE);
 
+        new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
+
         getWindow().setBackgroundDrawable(null);
 
         OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
@@ -151,12 +166,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
 
+
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
         clButtonNewGroup.setVisibility(View.GONE);
         llBlockedContacts.setVisibility(View.GONE);
-
-        //Animate sync button
-        TAPUtils.getInstance().animateClickButton(llButtonSync, 0.97f);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> searchContact());
@@ -165,8 +178,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         clButtonNewGroup.setOnClickListener(v -> createNewGroup());
         llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
         llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
-
-        permissionCheckAndGetContactList();
     }
 
     @Override
@@ -291,14 +302,14 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             });
                             if (showLoading)
                                 showSyncSuccessStatus(response.getUsers().size());
+                            vm.setFirstContactSyncDone(true);
                             return;
                         }
                         new Thread(() -> {
                             List<TAPUserModel> users = new ArrayList<>();
                             for (TAPUserModel contact : response.getUsers()) {
-                                contact.setIsContact(1);
+                                contact.setUserAsContact();
                                 users.add(contact);
-                                TAPContactManager.getInstance().addUserMapByPhoneNumber(contact);
                             }
                             TAPDataManager.getInstance().insertMyContactToDatabase(users);
                             TAPContactManager.getInstance().updateUserDataMap(users);
@@ -308,6 +319,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             });
                             if (showLoading)
                                 showSyncSuccessStatus(response.getUsers().size());
+
+                            vm.setFirstContactSyncDone(true);
                         }).start();
                     } catch (Exception e) {
                         Log.e(TAG, "initViewModel: ", e);
@@ -356,4 +369,31 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             flSyncStatus.setVisibility(View.VISIBLE);
         });
     }
+
+    private TapDefaultDataView<TAPContactResponse> getContactView = new TapDefaultDataView<TAPContactResponse>() {
+        @Override
+        public void onSuccess(TAPContactResponse response) {
+            try {
+                // Insert contacts to database
+                if (null == response.getContacts() || response.getContacts().isEmpty()) {
+                    return;
+                }
+                new Thread(() -> {
+                    List<TAPUserModel> users = new ArrayList<>();
+                    for (TAPContactModel contact : response.getContacts()) {
+                        TAPUserModel contactUserModel = contact.getUser().setUserAsContact();
+                        users.add(contactUserModel);
+                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contactUserModel);
+                        TAPContactManager.getInstance().updateUserDataMap(contactUserModel);
+                    }
+
+                    TAPDataManager.getInstance().insertMyContactToDatabase(users);
+                    TAPContactManager.getInstance().updateUserDataMap(users);
+                    permissionCheckAndGetContactList();
+                }).start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
 }

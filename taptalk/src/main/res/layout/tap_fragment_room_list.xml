@@ -193,7 +193,7 @@
         android:background="@color/tap_white_f3"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/f_connection_status">
 
@@ -244,7 +244,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
             android:text="@string/tap_start_a_new_chat"
-            android:textColor="@color/tap_pumkin_orange_two"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp" />
 
     </LinearLayout>
@@ -255,7 +255,7 @@
         android:layout_height="56dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_gradient_ff7e00_ff9833_circle_button_ripple"
+        android:background="@drawable/tap_bg_circle_primary_primarydark_stroke_primarydark_1dp_ripple"
         android:elevation="8dp"
         android:padding="16dp"
         android:src="@drawable/tap_ic_pencil_chat"

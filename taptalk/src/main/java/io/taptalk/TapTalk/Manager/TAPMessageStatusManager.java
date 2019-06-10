@@ -161,8 +161,10 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             List<TAPMessageEntity> messageEntities = new ArrayList<>();
             for (TAPMessageModel messageModel : tempMessageModel) {
-                messageModel.updateReadMessage();
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                if (null != messageModel) {
+                    messageModel.updateReadMessage();
+                    messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                }
             }
             TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
         }).start();
@@ -237,7 +239,8 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
-                messageIds.add(model.getMessageID());
+                if (null != model)
+                    messageIds.add(model.getMessageID());
             }
             TAPDataManager.getInstance().updateMessageStatusAsRead(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
@@ -271,5 +274,15 @@ public class TAPMessageStatusManager {
                 }
             });
         }).start();
+    }
+
+    public void resetMessageStatusManager() {
+        clearReadMessageQueue();
+        clearDeliveredMessageQueue();
+        readRequestID = 0;
+        deliveredRequestID = 0;
+        getApiDeliveredRequestMap().clear();
+        getApiReadRequestMap().clear();
+        clearUnreadList();
     }
 }

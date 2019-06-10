@@ -8,10 +8,11 @@
 
     <ImageView
         android:id="@+id/iv_taptalk_logo"
-        android:layout_width="132dp"
-        android:layout_height="22dp"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="80dp"
+        android:scaleType="fitStart"
         android:src="@drawable/taptalk_logo_with_name_color"
         app:layout_constraintBottom_toTopOf="@id/tv_welcome"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,12 +67,20 @@
             android:orientation="horizontal"
             android:padding="15dp">
 
-            <ImageView
-                android:id="@+id/iv_country_flag"
+            <android.support.v7.widget.CardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/tap_ic_default_flag" />
+                android:clipToPadding="true"
+                app:cardCornerRadius="2dp">
+
+                <ImageView
+                    android:id="@+id/iv_country_flag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/tap_ic_default_flag" />
+
+            </android.support.v7.widget.CardView>
 
             <TextView
                 android:id="@+id/tv_country_code"
@@ -81,10 +90,10 @@
                 android:layout_marginStart="10dp"
                 android:letterSpacing="-0.01"
                 android:lineSpacingExtra="4sp"
-                tools:text="+62"
                 android:textColor="@color/tap_black_19"
                 android:textSize="16sp"
-                android:visibility="visible"/>
+                android:visibility="visible"
+                tools:text="+62" />
 
             <ImageView
                 android:id="@+id/iv_loading_progress_country"
@@ -92,8 +101,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="10dp"
-                android:visibility="gone"
-                android:src="@drawable/tap_ic_loading_progress_circle_orange"/>
+                android:src="@drawable/tap_ic_loading_progress_circle_orange"
+                android:tint="@color/colorPrimaryDark"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -111,11 +121,11 @@
                 android:layout_height="wrap_content"
                 android:background="@color/tap_transparent_white"
                 android:hint="82212345678"
+                android:imeOptions="actionSend"
                 android:inputType="numberSigned"
                 android:padding="13dp"
-                android:imeOptions="actionSend"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
-                android:textColorHint="@color/tap_grey_9b" />
+                android:textColorHint="@color/tap_grey_9b"
+                android:textCursorDrawable="@drawable/tap_login_color_cursor" />
 
         </FrameLayout>
 
@@ -128,32 +138,29 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:visibility="visible"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:background="@drawable/tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintTop_toBottomOf="@id/ll_input_phone_number">
 
         <TextView
             android:id="@+id/tv_btn_continue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/tap_white"
-            android:lineSpacingExtra="14sp"
-            android:gravity="center_horizontal"
-            android:fontFamily="@font/tap_font_pt_root_bold"
-            android:text="@string/tap_continue_s"
             android:layout_gravity="center"
-            android:visibility="visible"
-            />
+            android:fontFamily="@font/tap_font_pt_root_bold"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="14sp"
+            android:text="@string/tap_continue_s"
+            android:textColor="@color/tap_white"
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/iv_loading_progress_request_otp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/tap_ic_loading_progress_circle_white"
             android:layout_gravity="center"
-            android:visibility="gone"/>
+            android:src="@drawable/tap_ic_loading_progress_circle_white"
+            android:visibility="gone" />
 
     </FrameLayout>
 

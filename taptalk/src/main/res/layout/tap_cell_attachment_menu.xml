@@ -14,10 +14,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:tint="@color/colorPrimaryDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_ic_documents_green_blue" />
+        tools:src="@drawable/tap_ic_camera_pumpkin_orange" />
 
     <TextView
         android:id="@+id/tv_attach_title"
