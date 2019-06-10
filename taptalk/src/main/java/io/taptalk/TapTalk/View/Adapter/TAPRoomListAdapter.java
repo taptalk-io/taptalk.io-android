@@ -124,6 +124,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 //typingAnimationTimer.start();
                 //typingIndicatorTimeOutTimer.cancel();
                 //typingIndicatorTimeOutTimer.start();
+            } else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_deleted_message));
+                ivRoomTypingIndicator.setVisibility(View.GONE);
             } else {
                 // Set last message as text
                 tvLastMessage.setText(item.getLastMessage().getBody());
@@ -149,7 +152,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //message is deleted
             else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                ivMessageStatus.setImageResource(R.drawable.tap_ic_deleted_white);
-               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_grey_d9)));
+               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_grey_9b)));
+               ivMessageStatus.setPadding(TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5));
             }
             // Message is read
             else if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {

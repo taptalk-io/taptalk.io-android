@@ -283,9 +283,10 @@
     <string name="tap_video_saved">Video Saved</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
-    <string name="this_is_a_chat_history">This is a chat history</string>
-    <string name="this_user_is_no_longer_availbale">This user is no longer availbale</string>
-    <string name="you_deleted_this_message">You deleted this message.</string>
-    <string name="this_deleted_message">This message was deleted.</string>
+    <string name="tap_this_is_a_chat_history">This is a chat history</string>
+    <string name="tap_this_user_is_no_longer_availbale">This user is no longer availbale</string>
+    <string name="tap_you_deleted_this_message">You deleted this message.</string>
+    <string name="tap_this_deleted_message">This message was deleted.</string>
+    <string name="tap_deleted_message">Deleted Message</string>
 
 </resources>
