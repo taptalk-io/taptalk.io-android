@@ -155,6 +155,7 @@
     <string name="tap_compose">Compose</string>
     <string name="tap_call">Call</string>
     <string name="tap_send_sms">Send SMS</string>
+    <string name="tap_delete">Delete Message</string>
 
     <!--Product/Order-->
     <string name="tap_price">Price</string>
@@ -284,5 +285,6 @@
     <string name="tap_over_99">99+</string>
     <string name="this_is_a_chat_history">This is a chat history</string>
     <string name="this_user_is_no_longer_availbale">This user is no longer availbale</string>
+    <string name="you_deleted_this_message">You deleted this message.</string>
 
 </resources>

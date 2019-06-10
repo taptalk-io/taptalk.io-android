@@ -96,7 +96,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_TEXT -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         else -> {

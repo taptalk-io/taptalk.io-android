@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.Taptalk.R;
 
@@ -32,6 +33,7 @@ public class TAPAttachmentModel {
     public static final int ID_SAVE_IMAGE_GALLERY = 14;
     public static final int ID_SAVE_VIDEO_GALLERY = 15;
     public static final int ID_SAVE_DOWNLOAD = 16;
+    public static final int ID_DELETE = 17;
 
     public TAPAttachmentModel(int icon, int titleIds, int id) {
         this.icon = icon;
@@ -147,24 +149,53 @@ public class TAPAttachmentModel {
         return attachMenus;
     }
 
-    public static List<TAPAttachmentModel> createTextBubbleLongPressMenu() {
-        int[] imageResIds = {
-                R.drawable.tap_ic_reply_pumpkin_orange,
-                R.drawable.tap_ic_forward_pumpkin_orange,
-                R.drawable.tap_ic_copy_pumpkin_orange
-        };
+    public static List<TAPAttachmentModel> createTextBubbleLongPressMenu(TAPMessageModel messageModel) {
 
-        int[] titleResIds = {
-                R.string.tap_reply,
-                R.string.tap_forward,
-                R.string.tap_copy
-        };
+        int[] imageResIds, titleResIds, ids;
 
-        int[] ids = {
-                ID_REPLY,
-                ID_FORWARD,
-                ID_COPY
-        };
+        if (null != messageModel && null != TAPChatManager.getInstance().getActiveUser() &&
+                messageModel.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())
+                && null != messageModel.getSending() && !messageModel.getSending()) {
+            imageResIds = new int[]{
+                    R.drawable.tap_ic_reply_pumpkin_orange,
+                    R.drawable.tap_ic_forward_pumpkin_orange,
+                    R.drawable.tap_ic_copy_pumpkin_orange,
+                    R.drawable.tap_ic_trash_watermelon_red
+            };
+
+            titleResIds = new int[]{
+                    R.string.tap_reply,
+                    R.string.tap_forward,
+                    R.string.tap_copy,
+                    R.string.tap_delete
+            };
+
+            ids = new int[]{
+                    ID_REPLY,
+                    ID_FORWARD,
+                    ID_COPY,
+                    ID_DELETE
+            };
+        } else {
+            imageResIds = new int[]{
+                    R.drawable.tap_ic_reply_pumpkin_orange,
+                    R.drawable.tap_ic_forward_pumpkin_orange,
+                    R.drawable.tap_ic_copy_pumpkin_orange
+            };
+
+            titleResIds = new int[]{
+                    R.string.tap_reply,
+                    R.string.tap_forward,
+                    R.string.tap_copy
+            };
+
+            ids = new int[]{
+                    ID_REPLY,
+                    ID_FORWARD,
+                    ID_COPY
+            };
+        }
+
 
         List<TAPAttachmentModel> attachMenus = new ArrayList<>();
         int size = imageResIds.length;

@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COMPOSE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CONTACT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COPY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DELETE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DOCUMENT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_GALLERY;
@@ -120,6 +122,11 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         protected void onBind(TAPAttachmentModel item, int position) {
             ivAttachIcon.setImageDrawable(itemView.getResources().getDrawable(item.getIcon()));
             tvAttachTitle.setText(itemView.getResources().getText(item.getTitleIds()));
+
+            if (item.getId() == ID_DELETE) {
+                tvAttachTitle.setTextColor(itemView.getResources().getColor(R.color.tap_watermelon_red));
+                ivAttachIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_watermelon_red)));
+            }
 
             if (getItemCount() - 1 == position)
                 vAttachMenuSeparator.setVisibility(View.GONE);

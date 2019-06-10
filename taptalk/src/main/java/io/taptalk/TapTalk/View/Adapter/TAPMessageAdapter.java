@@ -63,6 +63,8 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_LEFT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
@@ -164,6 +166,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return new LoadingVH(parent, R.layout.tap_cell_chat_loading);
             case TYPE_EMPTY:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
+            case TYPE_BUBBLE_DELETED_RIGHT:
+                return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_right);
+            case TYPE_BUBBLE_DELETED_LEFT:
+                return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_left);
             default:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
         }
@@ -182,6 +188,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != messageModel && null != messageModel.getHidden() && messageModel.getHidden()) {
                 // Return empty layout if item is hidden
                 return TYPE_EMPTY;
+            } else if (null != messageModel && null != messageModel.getIsDeleted() && messageModel.getIsDeleted() && isMessageFromMySelf(messageModel)) {
+                return TYPE_BUBBLE_DELETED_RIGHT;
+            } else if (null != messageModel && null != messageModel.getIsDeleted() && messageModel.getIsDeleted()) {
+                return TYPE_BUBBLE_DELETED_LEFT;
             } else if (null != messageModel) {
                 messageType = messageModel.getType();
             }
