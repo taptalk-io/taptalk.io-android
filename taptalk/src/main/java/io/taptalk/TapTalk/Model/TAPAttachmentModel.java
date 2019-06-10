@@ -151,56 +151,32 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createTextBubbleLongPressMenu(TAPMessageModel messageModel) {
 
-        int[] imageResIds, titleResIds, ids;
+        List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
+
+        imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
+        imageResIds.add(R.drawable.tap_ic_forward_pumpkin_orange);
+        imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);
+
+        titleResIds.add(R.string.tap_reply);
+        titleResIds.add(R.string.tap_forward);
+        titleResIds.add(R.string.tap_copy);
+
+        ids.add(ID_REPLY);
+        ids.add(ID_FORWARD);
+        ids.add(ID_COPY);
 
         if (null != messageModel && null != TAPChatManager.getInstance().getActiveUser() &&
-                messageModel.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())
-                && null != messageModel.getSending() && !messageModel.getSending()) {
-            imageResIds = new int[]{
-                    R.drawable.tap_ic_reply_pumpkin_orange,
-                    R.drawable.tap_ic_forward_pumpkin_orange,
-                    R.drawable.tap_ic_copy_pumpkin_orange,
-                    R.drawable.tap_ic_trash_watermelon_red
-            };
-
-            titleResIds = new int[]{
-                    R.string.tap_reply,
-                    R.string.tap_forward,
-                    R.string.tap_copy,
-                    R.string.tap_delete
-            };
-
-            ids = new int[]{
-                    ID_REPLY,
-                    ID_FORWARD,
-                    ID_COPY,
-                    ID_DELETE
-            };
-        } else {
-            imageResIds = new int[]{
-                    R.drawable.tap_ic_reply_pumpkin_orange,
-                    R.drawable.tap_ic_forward_pumpkin_orange,
-                    R.drawable.tap_ic_copy_pumpkin_orange
-            };
-
-            titleResIds = new int[]{
-                    R.string.tap_reply,
-                    R.string.tap_forward,
-                    R.string.tap_copy
-            };
-
-            ids = new int[]{
-                    ID_REPLY,
-                    ID_FORWARD,
-                    ID_COPY
-            };
+                messageModel.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) &&
+                null != messageModel.getSending() && !messageModel.getSending()) {
+            imageResIds.add(R.drawable.tap_ic_trash_watermelon_red);
+            titleResIds.add(R.string.tap_delete);
+            ids.add(ID_DELETE);
         }
 
-
         List<TAPAttachmentModel> attachMenus = new ArrayList<>();
-        int size = imageResIds.length;
+        int size = imageResIds.size();
         for (int index = 0; index < size; index++) {
-            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+            attachMenus.add(new TAPAttachmentModel(imageResIds.get(index), titleResIds.get(index), ids.get(index)));
         }
         return attachMenus;
     }
