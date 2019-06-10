@@ -68,7 +68,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_deleted_icon"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Hey there, love your work!" />
+                android:text="@string/this_deleted_message" />
 
         </android.support.constraint.ConstraintLayout>
 

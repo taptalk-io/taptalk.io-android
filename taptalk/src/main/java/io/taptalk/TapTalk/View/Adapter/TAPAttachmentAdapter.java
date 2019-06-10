@@ -11,6 +11,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
@@ -184,6 +185,10 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case ID_SAVE_DOWNLOAD:
                     attachmentListener.onSaveToDownload(message);
+                    break;
+                case ID_DELETE:
+                    if (null != TAPChatManager.getInstance().getOpenRoom())
+                        attachmentListener.onDeleteMessage(TAPChatManager.getInstance().getOpenRoom(), message);
                     break;
             }
             onClickListener.onClick(itemView);

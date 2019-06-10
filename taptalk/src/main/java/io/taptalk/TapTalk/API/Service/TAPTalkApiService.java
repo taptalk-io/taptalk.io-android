@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.API.Service;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
@@ -23,6 +24,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -72,6 +74,9 @@ public interface TAPTalkApiService {
 
     @POST("chat/message/list_by_room/after")
     Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getMessageListByRoomAfter(@Body TAPGetMessageListbyRoomAfterRequest request);
+
+    @POST("chat/message/delete")
+    Observable<TAPBaseResponse<TAPDeleteMessageResponse>> deleteMessages(@Body TAPDeleteMessageRequest request);
 
     @POST("client/contact/list")
     Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();

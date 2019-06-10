@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
@@ -43,6 +44,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -55,6 +57,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -261,6 +264,10 @@ public class TAPApiManager {
         execute(homingPigeon.getMessageListByRoomAfter(request), subscriber);
     }
 
+    public void deleteMessages(String roomID, List<String> messageIds, boolean isForEveryone) {
+        TAPDeleteMessageRequest request = new TAPDeleteMessageRequest(roomID, messageIds, isForEveryone);
+    }
+
     public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
         TAPGetMessageListbyRoomBeforeRequest request = new TAPGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
         execute(homingPigeon.getMessageListByRoomBefore(request), subscriber);
@@ -276,6 +283,10 @@ public class TAPApiManager {
         execute(homingPigeon.updateMessageStatusAsRead(request), subscriber);
     }
 
+    public void deleteMessagesAPI(String roomID, List<String> messageIDs, boolean isForEveryone, Subscriber<TAPBaseResponse<TAPDeleteMessageResponse>> subscriber) {
+        TAPDeleteMessageRequest request = new TAPDeleteMessageRequest(roomID, messageIDs, isForEveryone);
+        execute(homingPigeon.deleteMessages(request), subscriber);
+    }
     public void getMyContactListFromAPI(Subscriber<TAPBaseResponse<TAPContactResponse>> subscriber) {
         execute(homingPigeon.getMyContactListFromAPI(), subscriber);
     }
