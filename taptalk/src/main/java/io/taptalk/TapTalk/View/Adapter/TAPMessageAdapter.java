@@ -286,7 +286,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markMessageAsRead(item, myUserModel);
 
-            checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
+            checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvUsername);
             expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
@@ -363,7 +363,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
@@ -633,7 +633,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             tvMediaInfo.setVisibility(View.VISIBLE);
@@ -936,7 +936,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markMessageAsRead(item, myUserModel);
 
-            checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, tvUsername);
+            checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvUsername);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
 
@@ -1099,7 +1099,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             setMapData(mapData);
@@ -1376,7 +1376,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void checkAndUpdateMessageStatus(TAPBaseChatViewHolder vh, TAPMessageModel item,
-                                             TextView tvMessageStatus,
                                              @Nullable ImageView ivMessageStatus,
                                              @Nullable ImageView ivSending,
                                              @Nullable CircleImageView civAvatar,

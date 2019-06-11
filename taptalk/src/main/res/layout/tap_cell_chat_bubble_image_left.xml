@@ -12,7 +12,6 @@
         android:layout_height="28dp"
         android:layout_marginStart="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -44,21 +43,29 @@
                 android:layout_width="234dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/tap_bg_white_rounded_1dp_8dp_0dp_0dp_stroke_eaeaea_1dp"
+                android:padding="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_user_name"
+                    style="@style/TapMessageUserName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    app:layout_constraintBottom_toTopOf="@id/cl_forwarded"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="User Name" />
 
                 <include
                     android:id="@+id/cl_forwarded"
                     layout="@layout/tap_layout_forwarded_bubble_left"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
                     android:layout_marginBottom="4dp"
-                    android:visibility="gone"
-                    app:layout_constrainedWidth="true"
-                    app:layout_constraintBottom_toTopOf="@id/v_quote_background"
+                    app:layout_constraintBottom_toTopOf="@id/cl_quote"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -67,31 +74,20 @@
                     android:id="@+id/v_quote_background"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
                     android:background="@drawable/tap_bg_f3f3f3_rounded_4dp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/cl_quote"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/cl_forwarded"
-                    app:layout_goneMarginTop="10dp" />
+                    app:layout_constraintTop_toTopOf="@id/cl_quote" />
 
                 <include
                     android:id="@+id/cl_quote"
                     layout="@layout/tap_layout_quote_bubble_left"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/v_quote_background"
-                    app:layout_goneMarginTop="10dp" />
+                    app:layout_constraintTop_toBottomOf="@id/cl_forwarded" />
 
             </android.support.constraint.ConstraintLayout>
 
