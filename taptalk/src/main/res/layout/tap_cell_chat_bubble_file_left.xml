@@ -11,7 +11,6 @@
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_marginStart="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -44,11 +43,12 @@
             <TextView
                 android:id="@+id/tv_user_name"
                 style="@style/TapMessageUserName"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_forwarded"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="User Name" />
@@ -56,11 +56,12 @@
             <include
                 android:id="@+id/cl_forwarded"
                 layout="@layout/tap_layout_forwarded_bubble_left"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
 
@@ -77,10 +78,13 @@
             <include
                 android:id="@+id/cl_quote"
                 layout="@layout/tap_layout_quote_bubble_left"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_file"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded" />
 
             <android.support.constraint.ConstraintLayout
@@ -89,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
@@ -181,6 +185,13 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_file_name" />
 
             </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.Barrier
+                android:id="@+id/barrier_end"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="tv_user_name, cl_forwarded, cl_quote, v_quote_background, cl_file" />
 
         </android.support.constraint.ConstraintLayout>
 

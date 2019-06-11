@@ -31,6 +31,12 @@ public class TAPDefaultConstant {
         public static final String MY_CONTACT_DB = "kTAPMyContactDB";
     }
 
+    public static final class RoomType {
+        public static final int TYPE_PERSONAL = 1;
+        public static final int TYPE_GROUP = 2;
+        public static final int TYPE_CHANNEL = 3;
+    }
+
     public static final class MessageType {
         public static final int TYPE_TEXT = 1001;
         public static final int TYPE_IMAGE = 1002;
