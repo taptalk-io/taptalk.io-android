@@ -124,8 +124,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 //typingAnimationTimer.start();
                 //typingIndicatorTimeOutTimer.cancel();
                 //typingIndicatorTimeOutTimer.start();
+            } else if (null != TAPChatManager.getInstance().getActiveUser() && null != item.getLastMessage().getUser() &&
+                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
+                    null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_you_deleted_this_message));
+                ivRoomTypingIndicator.setVisibility(View.GONE);
             } else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
-                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_deleted_message));
+                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_this_deleted_message));
                 ivRoomTypingIndicator.setVisibility(View.GONE);
             } else {
                 // Set last message as text

@@ -390,7 +390,6 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void processMessageFromSocket(TAPMessageModel message) {
-        Log.e(TAG, "processMessageFromSocket: " + message.getBody());
         String messageRoomID = message.getRoom().getRoomID();
         TAPRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
 

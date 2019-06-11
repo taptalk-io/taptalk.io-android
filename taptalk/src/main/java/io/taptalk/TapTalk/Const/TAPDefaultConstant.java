@@ -48,8 +48,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_HIDDEN = 0x9196;
 
         public static final int TYPE_SYSTEM_MESSAGE = 9001;
-        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
-        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9003;
+        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9003;
+        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9004;
     }
 
     public static final class BubbleType {
@@ -68,8 +68,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_BUBBLE_UNREAD_STATUS = 9002;
         public static final int TYPE_BUBBLE_LOADING = 9003;
-        public static final int TYPE_BUBBLE_DELETED_RIGHT = 9004;
-        public static final int TYPE_BUBBLE_DELETED_LEFT = 9005;
+        public static final int TYPE_BUBBLE_DELETED_RIGHT = 90041;
+        public static final int TYPE_BUBBLE_DELETED_LEFT = 90042;
         public static final int TYPE_EMPTY = 9999;
     }
 
@@ -245,17 +245,17 @@ public class TAPDefaultConstant {
     }
 
     public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://taptalk-production.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://taptalk-production.moselo.com/";
-        public static final String BASE_WSS_PRODUCTION = "wss://taptalk-production.moselo.com/connect";
+        public static final String BASE_URL_API_PRODUCTION = "https://engine.taptalk.io/api/v1/";
+        public static final String BASE_URL_SOCKET_PRODUCTION = "https://engine.taptalk.io/";
+        public static final String BASE_WSS_PRODUCTION = "wss://engine.taptalk.io/connect";
 
-        public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com/";
-        public static final String BASE_WSS_STAGING = "wss://hp-staging.moselo.com/connect";
+        public static final String BASE_URL_API_STAGING = "https://engine-staging.taptalk.io/api/v1/";
+        public static final String BASE_URL_SOCKET_STAGING = "https://engine-staging.taptalk.io/";
+        public static final String BASE_WSS_STAGING = "wss://engine-staging.taptalk.io/connect";
 
-        public static final String BASE_URL_API_DEVELOPMENT = "https://hp-dev.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://hp-dev.moselo.com/";
-        public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com/connect";
+        public static final String BASE_URL_API_DEVELOPMENT = "https://engine-dev.taptalk.io/api/v1/";
+        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://engine-dev.taptalk.io/";
+        public static final String BASE_WSS_DEVELOPMENT = "wss://engine-dev.taptalk.io/connect";
     }
 
     public static final Intent[] AUTO_START_INTENTS = {
