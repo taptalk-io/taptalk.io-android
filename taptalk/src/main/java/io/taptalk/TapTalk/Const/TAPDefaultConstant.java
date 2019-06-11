@@ -249,9 +249,9 @@ public class TAPDefaultConstant {
         public static final String BASE_URL_SOCKET_PRODUCTION = "https://engine.taptalk.io/";
         public static final String BASE_WSS_PRODUCTION = "wss://engine.taptalk.io/connect";
 
-        public static final String BASE_URL_API_STAGING = "https://engine-staging.taptalk.io/api/v1/";
-        public static final String BASE_URL_SOCKET_STAGING = "https://engine-staging.taptalk.io/";
-        public static final String BASE_WSS_STAGING = "wss://engine-staging.taptalk.io/connect";
+        public static final String BASE_URL_API_STAGING = "https://engine-stg.taptalk.io/api/v1/";
+        public static final String BASE_URL_SOCKET_STAGING = "https://engine-stg.taptalk.io/";
+        public static final String BASE_WSS_STAGING = "wss://engine-stg.taptalk.io/connect";
 
         public static final String BASE_URL_API_DEVELOPMENT = "https://engine-dev.taptalk.io/api/v1/";
         public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://engine-dev.taptalk.io/";
