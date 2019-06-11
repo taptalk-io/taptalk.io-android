@@ -147,16 +147,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/tap_bg_2d000000_rounded_8dp"
                 android:paddingStart="8dp"
                 android:paddingTop="4dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="4dp"
                 android:textColor="@color/tap_white"
-                android:visibility="gone"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintEnd_toEndOf="@id/rciv_image"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
                 app:layout_constraintTop_toTopOf="@id/rciv_image"
+                app:layout_constraintWidth_max="218dp"
                 tools:text="12.8 MB - 00:37" />
+            android:visibility="gone"
 
             <TextView
                 android:id="@+id/tv_message_body"

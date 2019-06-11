@@ -314,6 +314,63 @@
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_deleted_user"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/tap_parchment"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/cl_chat_composer"
+        app:layout_constraintTop_toTopOf="@id/cl_chat_composer">
+
+        <ImageView
+            android:id="@+id/iv_history_icon"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center"
+            android:src="@drawable/tap_ic_icon_history"
+            app:layout_constraintBottom_toBottomOf="@id/tv_chat_is_history"
+            app:layout_constraintEnd_toStartOf="@id/tv_chat_is_history"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_chat_is_history"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tv_chat_is_history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/tap_font_pt_root_bold"
+            android:gravity="center"
+            android:letterSpacing="-0.01"
+            android:text="@string/tap_this_is_a_chat_history"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_history_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="@font/tap_font_pt_root_regular"
+            android:gravity="center_horizontal"
+            android:letterSpacing="-0.01"
+            android:lineSpacingExtra="6sp"
+            android:text="@string/tap_this_user_is_no_longer_availbale"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_chat_is_history" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_chat_composer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -322,6 +379,7 @@
         android:elevation="1dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/rv_custom_keyboard">
 
         <android.support.constraint.ConstraintLayout

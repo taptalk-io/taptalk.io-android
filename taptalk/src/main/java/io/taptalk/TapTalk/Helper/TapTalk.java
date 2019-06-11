@@ -543,6 +543,9 @@ public class TapTalk {
         TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
             public void onSelectFinished(TAPRoomModel roomModel) {
+                if (null == context) {
+                    return;
+                }
                 Intent intent = new Intent(context, TAPChatProfileActivity.class);
                 intent.putExtra(ROOM, roomModel);
                 context.startActivity(intent);

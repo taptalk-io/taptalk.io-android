@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -709,7 +710,7 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
     }
 
-    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
+    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
@@ -898,6 +899,20 @@ public class TAPDataManager {
         TAPApiManager.getInstance().updateMessageStatusAsRead(messageIDs, new TAPDefaultSubscriber<>(view));
     }
 
+    public void deleteMessagesAPI(String roomID, List<String> messageIDs, boolean isForEveryone, TapDefaultDataView<TAPDeleteMessageResponse> view) {
+        TAPApiManager.getInstance().deleteMessagesAPI(roomID, messageIDs, isForEveryone, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteMessagesAPI(String roomID, String messageID, boolean isForEveryone, TapDefaultDataView<TAPDeleteMessageResponse> view) {
+        List<String> messageIDs = new ArrayList<>();
+        messageIDs.add(messageID);
+        TAPApiManager.getInstance().deleteMessagesAPI(roomID, messageIDs, isForEveryone, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteMessagesAPI(String roomID, String messageID, boolean isForEveryone) {
+        deleteMessagesAPI(roomID, messageID, isForEveryone, new TapDefaultDataView<TAPDeleteMessageResponse>() {});
+    }
+
     public void getMyContactListFromAPI(TapDefaultDataView<TAPContactResponse> view) {
         TAPApiManager.getInstance().getMyContactListFromAPI(new TAPDefaultSubscriber<>(view));
     }
@@ -1029,7 +1044,7 @@ public class TAPDataManager {
     }
 
     public void cancelFileDownload(String localID) {
-        TAPBaseSubscriber downloadSubscriber = getDownloadSubscribers().get(localID);
+        TAPBaseSubscriber<TapDefaultDataView<ResponseBody>> downloadSubscriber = getDownloadSubscribers().get(localID);
         if (null != downloadSubscriber) {
             downloadSubscriber.unsubscribe();
             removeDownloadSubscriber(localID);

@@ -19,4 +19,5 @@ public interface TapTalkAttachmentInterface {
     void onSaveImageToGallery(TAPMessageModel message);
     void onSaveVideoToGallery(TAPMessageModel message);
     void onSaveToDownload(TAPMessageModel message);
+    void onDeleteMessage(String roomID, TAPMessageModel message);
 }

@@ -34,6 +34,7 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;
     @Nullable @JsonProperty("created") private Long created;
     @Nullable @JsonProperty("updated") private Long updated;
+    @Nullable @JsonProperty("deleted") private Long deleted;
     @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
     @Nullable @JsonProperty("isEmailVerified") private Boolean isEmailVerified;
     @Nullable @JsonProperty("isPhoneVerified") private Boolean isPhoneVerified;
@@ -59,7 +60,7 @@ public class TAPUserModel implements Parcelable {
     public TAPUserModel(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable TAPUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
-            , @Nullable Long updated) {
+            , @Nullable Long updated, @Nullable Long deleted) {
         this.userID = userID;
         this.xcUserID = xcUserID;
         this.name = name;
@@ -73,6 +74,7 @@ public class TAPUserModel implements Parcelable {
         this.requireChangePassword = requireChangePassword;
         this.created = created;
         this.updated = updated;
+        this.deleted = deleted;
     }
 
     @Ignore
@@ -87,9 +89,9 @@ public class TAPUserModel implements Parcelable {
     public static TAPUserModel Builder(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
             , @Nullable String email, @Nullable String phoneNumber, @Nullable TAPUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
-            , @Nullable Long updated) {
+            , @Nullable Long updated, @Nullable Long deleted) {
         return new TAPUserModel(userID, xcUserID, name, avatarURL, username, email, phoneNumber, userRole
-                , lastLogin, lastActivity, requireChangePassword, created, updated);
+                , lastLogin, lastActivity, requireChangePassword, created, updated, deleted);
     }
 
     public static TAPUserModel Builder(String userID, String name) {
@@ -234,6 +236,15 @@ public class TAPUserModel implements Parcelable {
     }
 
     @Nullable
+    public Long getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(@Nullable Long deleted) {
+        this.deleted = deleted;
+    }
+
+    @Nullable
     public Boolean getRequestPending() {
         return isRequestPending;
     }
@@ -331,6 +342,7 @@ public class TAPUserModel implements Parcelable {
         this.requireChangePassword = userModel.getRequireChangePassword();
         this.created = userModel.getCreated();
         this.updated = userModel.getUpdated();
+        this.deleted = userModel.getDeleted();
         this.isRequestPending = userModel.getRequestPending();
         this.isRequestAccepted = userModel.getRequestAccepted();
         this.isEmailVerified = userModel.getEmailVerified();
@@ -341,6 +353,7 @@ public class TAPUserModel implements Parcelable {
             this.isContact = userModel.isContact;
         }
     }
+
 
     @Override
     public int describeContents() {
@@ -363,6 +376,7 @@ public class TAPUserModel implements Parcelable {
         dest.writeValue(this.requireChangePassword);
         dest.writeValue(this.created);
         dest.writeValue(this.updated);
+        dest.writeValue(this.deleted);
         dest.writeValue(this.isRequestPending);
         dest.writeValue(this.isEmailVerified);
         dest.writeValue(this.isPhoneVerified);
@@ -388,6 +402,7 @@ public class TAPUserModel implements Parcelable {
         this.requireChangePassword = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.created = (Long) in.readValue(Long.class.getClassLoader());
         this.updated = (Long) in.readValue(Long.class.getClassLoader());
+        this.deleted = (Long) in.readValue(Long.class.getClassLoader());
         this.isRequestPending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isEmailVerified = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isPhoneVerified = (Boolean) in.readValue(Boolean.class.getClassLoader());

@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Listener;
 
 import io.taptalk.TapTalk.Interface.TapTalkAttachmentInterface;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 public abstract class TAPAttachmentListener implements TapTalkAttachmentInterface {
@@ -20,4 +21,7 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     @Override public void onSaveImageToGallery(TAPMessageModel message) {}
     @Override public void onSaveVideoToGallery(TAPMessageModel message) {}
     @Override public void onSaveToDownload(TAPMessageModel message) {}
+    @Override public void onDeleteMessage(String roomID, TAPMessageModel message) {
+        TAPDataManager.getInstance().deleteMessagesAPI(roomID, message.getMessageID(), true);
+    }
 }

@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.R;
@@ -24,6 +26,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COMPOSE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_CONTACT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_COPY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DELETE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_DOCUMENT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ID_GALLERY;
@@ -121,6 +124,11 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
             ivAttachIcon.setImageDrawable(itemView.getResources().getDrawable(item.getIcon()));
             tvAttachTitle.setText(itemView.getResources().getText(item.getTitleIds()));
 
+            if (item.getId() == ID_DELETE) {
+                tvAttachTitle.setTextColor(itemView.getResources().getColor(R.color.tap_watermelon_red));
+                ivAttachIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_watermelon_red)));
+            }
+
             if (getItemCount() - 1 == position)
                 vAttachMenuSeparator.setVisibility(View.GONE);
             else vAttachMenuSeparator.setVisibility(View.VISIBLE);
@@ -177,6 +185,10 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case ID_SAVE_DOWNLOAD:
                     attachmentListener.onSaveToDownload(message);
+                    break;
+                case ID_DELETE:
+                    if (null != TAPChatManager.getInstance().getOpenRoom())
+                        attachmentListener.onDeleteMessage(TAPChatManager.getInstance().getOpenRoom(), message);
                     break;
             }
             onClickListener.onClick(itemView);

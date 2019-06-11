@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -123,6 +124,14 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 //typingAnimationTimer.start();
                 //typingIndicatorTimeOutTimer.cancel();
                 //typingIndicatorTimeOutTimer.start();
+            } else if (null != TAPChatManager.getInstance().getActiveUser() && null != item.getLastMessage().getUser() &&
+                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
+                    null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_you_deleted_this_message));
+                ivRoomTypingIndicator.setVisibility(View.GONE);
+            } else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+                tvLastMessage.setText(itemView.getResources().getString(R.string.tap_this_deleted_message));
+                ivRoomTypingIndicator.setVisibility(View.GONE);
             } else {
                 // Set last message as text
                 tvLastMessage.setText(item.getLastMessage().getBody());
@@ -144,6 +153,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Message Sender is not the active User
             if (null != item.getLastMessage() && !item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
                 ivMessageStatus.setImageDrawable(null);
+            }
+            //message is deleted
+            else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+               ivMessageStatus.setImageResource(R.drawable.tap_ic_deleted_white);
+               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_grey_9b)));
+               ivMessageStatus.setPadding(TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5));
             }
             // Message is read
             else if (null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {

@@ -77,10 +77,8 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            switch (requestCode) {
-                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO:
-                    saveVideo();
-                    break;
+            if (requestCode == PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO) {
+                saveVideo();
             }
         }
     }
@@ -204,12 +202,18 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             hideLayout(ivButtonClose);
             hideLayout(ivButtonMute);
             hideLayout(ivButtonPlayPause);
+            if (null != message) {
+                hideLayout(ivButtonSave);
+            }
         } else {
             // Show UI
             showLayout(clFooter);
             showLayout(ivButtonClose);
             showLayout(ivButtonMute);
             showLayout(ivButtonPlayPause);
+            if (null != message) {
+                showLayout(ivButtonSave);
+            }
             if (isVideoPlaying) {
                 startHidePauseButtonTimer();
             }
