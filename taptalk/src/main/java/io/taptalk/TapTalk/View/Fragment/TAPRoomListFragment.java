@@ -536,7 +536,10 @@ public class TAPRoomListFragment extends Fragment {
 
         showNewChatButton();
 
-        new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+        new Handler().postDelayed(() -> {
+            flSetupContainer.setVisibility(View.GONE);
+            showNewChatButton();
+        }, 2000L);
     }
 
     private void showChatRoomSetupFailed() {
