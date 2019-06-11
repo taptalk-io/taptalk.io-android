@@ -83,9 +83,9 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void permissionCheckAndGetContactList() {
+        Log.e(TAG, "permissionCheckAndGetContactList: " );
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
-            Log.e(TAG, "permissionCheckAndGetContactList: " );
             showPermissionDialog();
         } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
@@ -376,6 +376,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             try {
                 // Insert contacts to database
                 if (null == response.getContacts() || response.getContacts().isEmpty()) {
+                    permissionCheckAndGetContactList();
                     return;
                 }
                 new Thread(() -> {
