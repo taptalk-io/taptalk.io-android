@@ -79,6 +79,7 @@
     <color name="tap_transparent_white_20">#33ffffff</color>
     <color name="tap_transparent_white_40">#66ffffff</color>
     <color name="tap_transparent_white_60">#99ffffff</color>
+    <color name="tap_transparent_white_82">#d1ffffff</color>
     <color name="tap_transparent_black">#00000000</color>
     <color name="tap_transparent_black_10">#1a000000</color>
     <color name="tap_transparent_black_18">#2d000000</color>

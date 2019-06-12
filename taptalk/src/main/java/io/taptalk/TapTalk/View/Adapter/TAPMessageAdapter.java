@@ -74,6 +74,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_UNREAD_STATUS;
@@ -103,6 +104,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADI
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -170,6 +172,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_right);
             case TYPE_BUBBLE_DELETED_LEFT:
                 return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_left);
+            case TYPE_BUBBLE_SYSTEM_MESSAGE:
+                return new SystemMessageVH(parent, R.layout.tap_cell_chat_system_message);
             default:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
         }
@@ -231,6 +235,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     return TYPE_BUBBLE_PRODUCT_LIST;
                 case TYPE_ORDER_CARD:
                     return TYPE_BUBBLE_ORDER_CARD;
+                case TYPE_SYSTEM_MESSAGE:
+                    return TYPE_BUBBLE_SYSTEM_MESSAGE;
                 case TYPE_UNREAD_MESSAGE_IDENTIFIER:
                     return TYPE_BUBBLE_UNREAD_STATUS;
                 case TYPE_LOADING_MESSAGE_IDENTIFIER:
@@ -1232,6 +1238,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     adapter.getItemCount(),
                     0, 0));
             OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        }
+    }
+
+    public class SystemMessageVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer;
+        private TextView tv_message;
+
+        SystemMessageVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            tv_message = itemView.findViewById(R.id.tv_message);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            tv_message.setText(item.getBody());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
         }
     }
 
