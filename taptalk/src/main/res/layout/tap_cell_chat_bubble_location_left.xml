@@ -11,6 +11,7 @@
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_marginStart="16dp"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -51,7 +52,7 @@
                 <!--style="@style/TapMessageUserName"-->
                 <!--android:layout_width="0dp"-->
                 <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginBottom="2dp"-->
+                <!--android:layout_marginBottom="4dp"-->
                 <!--app:layout_constraintBottom_toTopOf="@id/cl_forwarded"-->
                 <!--app:layout_constraintStart_toStartOf="parent"-->
                 <!--app:layout_constraintTop_toTopOf="parent"-->

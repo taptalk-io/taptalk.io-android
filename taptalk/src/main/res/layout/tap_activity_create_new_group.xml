@@ -92,11 +92,11 @@
 
         <TextView
             android:id="@+id/tv_member_count"
-            style="@style/TapSectionLabel"
+            style="@style/TapSectionLabelPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             tools:text="Group Members (5/50)" />
 
         <android.support.v7.widget.RecyclerView

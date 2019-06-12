@@ -69,7 +69,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             case RESULT_OK:
                 switch (requestCode) {
                     case CREATE_GROUP:
-                        finish();
+                        onBackPressed();
                         break;
                 }
             case RESULT_CANCELED:
@@ -166,7 +166,6 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonAction = findViewById(R.id.iv_button_action);
         tvTitle = findViewById(R.id.tv_title);
-        tvMemberCount = findViewById(R.id.tv_member_count);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etSearch = findViewById(R.id.et_search);
         btnContinue = findViewById(R.id.btn_continue);
