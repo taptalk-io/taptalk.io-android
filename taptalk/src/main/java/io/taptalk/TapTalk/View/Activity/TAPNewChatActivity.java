@@ -83,7 +83,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void permissionCheckAndGetContactList() {
-        Log.e(TAG, "permissionCheckAndGetContactList: " );
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showPermissionDialog();
