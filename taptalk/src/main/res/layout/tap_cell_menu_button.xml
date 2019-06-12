@@ -4,7 +4,7 @@
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     android:elevation="2dp"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="horizontal">
@@ -44,7 +44,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyEa"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 

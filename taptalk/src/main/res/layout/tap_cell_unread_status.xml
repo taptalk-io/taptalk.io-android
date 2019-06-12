@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="@id/ll_text_unread"
         app:layout_constraintBottom_toBottomOf="@id/ll_text_unread"
         android:alpha="0.1"
-        android:background="@color/colorPrimary" />
+        android:background="@color/tapColorPrimary" />
 
     <LinearLayout
         android:id="@+id/ll_text_unread"
@@ -33,7 +33,7 @@
             android:letterSpacing="-0.02"
             android:lineSpacingExtra="4sp"
             android:text="@string/tap_unread_messages"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/tapColorPrimary"
             android:textSize="12sp" />
 
         <ImageView

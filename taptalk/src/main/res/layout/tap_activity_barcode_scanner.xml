@@ -11,7 +11,7 @@
         android:id="@+id/fl_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_white"
+        android:background="@color/tapWhite"
         android:elevation="5dp"
         android:outlineProvider="bounds"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +27,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_orange"
-            android:tint="@color/colorPrimaryDark"/>
+            android:tint="@color/tapColorPrimaryDark"/>
 
         <TextView
             android:id="@+id/tv_toolbar_title"

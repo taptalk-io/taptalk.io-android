@@ -5,14 +5,14 @@
     android:id="@+id/fl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity">
 
     <FrameLayout
         android:id="@+id/fl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_white">
+        android:background="@color/tapWhite">
 
         <ImageView
             android:id="@+id/iv_button_back"
@@ -22,7 +22,7 @@
             android:paddingTop="18dp"
             android:paddingEnd="10.5dp"
             android:paddingBottom="18dp"
-            android:tint="@color/colorPrimaryDark"
+            android:tint="@color/tapColorPrimaryDark"
             android:src="@drawable/tap_ic_back_arrow_pumpkin_orange" />
 
     </FrameLayout>
@@ -129,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/colorPrimaryDark" />
+                    android:tint="@color/tapColorPrimaryDark" />
 
             </LinearLayout>
 
@@ -271,7 +271,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
                     android:hint="+62"
-                    android:textColor="@color/tap_grey_9b" />
+                    android:textColor="@color/tapGrey9b" />
 
             </LinearLayout>
 
@@ -289,7 +289,7 @@
                 android:inputType="number"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tap_grey_9b"
+                android:textColor="@color/tapGrey9b"
                 android:textCursorDrawable="@drawable/tap_login_color_cursor"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -402,7 +402,7 @@
                     style="@style/TapFormFieldBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/tap_transparent_white"
+                    android:background="@color/tapTransparentWhite"
                     android:hint="@string/tap_hint_insert_password"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
@@ -434,7 +434,7 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="1dp"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/tap_grey_dc"
+                    android:background="@color/tapGreyDc"
                     app:layout_constraintBottom_toBottomOf="@id/iv_view_password"
                     app:layout_constraintStart_toStartOf="@id/iv_view_password"
                     app:layout_constraintTop_toTopOf="@id/iv_view_password" />
@@ -495,7 +495,7 @@
                     style="@style/TapFormFieldBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/tap_transparent_white"
+                    android:background="@color/tapTransparentWhite"
                     android:hint="@string/tap_retype_password"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
@@ -527,7 +527,7 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="1dp"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/tap_grey_dc"
+                    android:background="@color/tapGreyDc"
                     app:layout_constraintBottom_toBottomOf="@id/iv_view_password_retype"
                     app:layout_constraintStart_toStartOf="@id/iv_view_password_retype"
                     app:layout_constraintTop_toTopOf="@id/iv_view_password_retype" />
@@ -571,7 +571,7 @@
                     android:gravity="center_horizontal"
                     android:lineSpacingExtra="14sp"
                     android:text="@string/tap_continue_s"
-                    android:textColor="@color/tap_white"
+                    android:textColor="@color/tapWhite"
                     android:textSize="16sp" />
 
                 <ImageView

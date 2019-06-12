@@ -20,7 +20,7 @@
             android:layout_height="140dp"
             android:scaleType="centerCrop"
             app:layout_constraintTop_toTopOf="parent"
-            tools:background="@color/tap_brightBlue" />
+            tools:background="@color/tapBrightBlue" />
 
         <TextView
             android:id="@+id/tv_product_name"
@@ -33,7 +33,7 @@
             android:maxLines="2"
             android:minLines="2"
             android:padding="8dp"
-            android:textColor="@color/tap_black_44"
+            android:textColor="@color/tapBlack44"
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/rciv_product_image"
             tools:text="Product Name" />
@@ -41,7 +41,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/tap_grey_ea"
+            android:background="@color/tapGreyEa"
             app:layout_constraintBottom_toBottomOf="@id/tv_product_name" />
 
         <TextView
@@ -112,7 +112,7 @@
             android:id="@+id/v_description_separator"
             android:layout_width="1dp"
             android:layout_height="0dp"
-            android:background="@color/tap_grey_ea"
+            android:background="@color/tapGreyEa"
             app:layout_constraintBottom_toBottomOf="@id/tv_price"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +121,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/tap_grey_ea"
+            android:background="@color/tapGreyEa"
             app:layout_constraintBottom_toBottomOf="@id/tv_price" />
 
         <TextView
@@ -140,7 +140,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/tap_grey_ea"
+            android:background="@color/tapGreyEa"
             app:layout_constraintBottom_toBottomOf="@id/tv_product_description" />
 
         <TextView
@@ -152,7 +152,7 @@
             android:gravity="center_horizontal"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
-            android:textColor="@color/tap_black_44"
+            android:textColor="@color/tapBlack44"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/v_button_separator"
@@ -169,7 +169,7 @@
             android:gravity="center_horizontal"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
-            android:textColor="@color/colorAccentDark"
+            android:textColor="@color/tapColorAccentDark"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -181,7 +181,7 @@
             android:id="@+id/v_button_separator"
             android:layout_width="1dp"
             android:layout_height="0dp"
-            android:background="@color/tap_grey_ea"
+            android:background="@color/tapGreyEa"
             app:layout_constraintBottom_toBottomOf="@id/tv_button_one"
             app:layout_constraintEnd_toStartOf="@id/tv_button_two"
             app:layout_constraintStart_toEndOf="@id/tv_button_one"

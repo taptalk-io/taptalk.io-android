@@ -157,7 +157,7 @@ public class TapTalk {
         TAPDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
         //ini buat ambil context dr app utama karena library module ga bsa punya app context sndiri
         TapTalk.appContext = appContext;
-        clientAppName = appContext.getResources().getString(R.string.app_name);
+        clientAppName = appContext.getResources().getString(R.string.tap_app_name);
 
         //save header requirement
         new Thread(() -> {

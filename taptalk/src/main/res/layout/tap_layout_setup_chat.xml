@@ -4,7 +4,7 @@
     android:id="@+id/fl_setup_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_transparent_charcoal_40"
+    android:background="@color/tapTransparentCharcoal40"
     android:elevation="4dp">
 
     <android.support.constraint.ConstraintLayout
@@ -23,7 +23,7 @@
             android:layout_height="110dp"
             android:layout_marginTop="32dp"
             android:src="@drawable/tap_ic_loading_progress_circle_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:tint="@color/tapColorPrimaryDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -101,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/tap_ic_retry_orange"
-                android:tint="@color/colorPrimaryDark" />
+                android:tint="@color/tapColorPrimaryDark" />
 
         </LinearLayout>
 

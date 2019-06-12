@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="44dp"
-    android:background="@color/tap_white">
+    android:background="@color/tapWhite">
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv_country_flag"
@@ -35,7 +35,7 @@
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="4sp"
         android:maxLines="1"
-        android:textColor="@color/tap_black_19"
+        android:textColor="@color/tapBlack19"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_country_choosen"
@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:src="@drawable/tap_ic_checklist_pumpkin"
-        android:tint="@color/colorPrimaryDark"
+        android:tint="@color/tapColorPrimaryDark"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,7 +61,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
-        android:background="@color/tap_grey_dc"
+        android:background="@color/tapGreyDc"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/cv_country_flag" />
@@ -70,7 +70,7 @@
         android:id="@+id/v_list_bottom_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tap_grey_dc"
+        android:background="@color/tapGreyDc"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

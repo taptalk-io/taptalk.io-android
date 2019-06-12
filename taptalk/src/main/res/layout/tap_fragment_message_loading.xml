@@ -5,7 +5,7 @@
     android:id="@+id/ll_connection_status"
     android:layout_width="match_parent"
     android:layout_height="20dp"
-    android:background="@color/tap_lightPurple"
+    android:background="@color/tapLightPurple"
     android:gravity="center"
     android:orientation="horizontal"
     android:visibility="gone"
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/tap_font_pt_root_bold"
-        android:textColor="@color/tap_purply"
+        android:textColor="@color/tapPurply"
         android:textSize="12dp"
         tools:text="@string/tap_loading_new_messages" />
 
@@ -27,6 +27,6 @@
         android:layout_width="9dp"
         android:layout_height="9dp"
         android:layout_marginStart="4dp"
-        android:indeterminateTint="@color/tap_purply" />
+        android:indeterminateTint="@color/tapPurply" />
 
 </LinearLayout>

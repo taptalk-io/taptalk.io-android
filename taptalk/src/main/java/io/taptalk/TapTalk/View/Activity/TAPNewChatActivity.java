@@ -83,7 +83,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void permissionCheckAndGetContactList() {
-        Log.e(TAG, "permissionCheckAndGetContactList: " );
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showPermissionDialog();
@@ -168,7 +167,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
 
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
-        clButtonNewGroup.setVisibility(View.GONE);
+        //clButtonNewGroup.setVisibility(View.GONE);
         llBlockedContacts.setVisibility(View.GONE);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
