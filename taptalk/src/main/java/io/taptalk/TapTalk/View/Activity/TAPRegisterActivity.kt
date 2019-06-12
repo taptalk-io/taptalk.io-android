@@ -299,7 +299,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.formCheck[indexPassword] = stateInvalid
             tv_label_password_error.visibility = View.VISIBLE
             cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
-            v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_watermelon_red))
+            v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapWatermelonRed))
         }
         if (et_retype_password.text.isNotEmpty()) {
             checkRetypedPassword(et_retype_password.hasFocus())
@@ -323,7 +323,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.formCheck[indexPasswordRetype] = stateInvalid
             tv_label_retype_password_error.visibility = View.VISIBLE
             cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
-            v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_watermelon_red))
+            v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapWatermelonRed))
         }
         checkContinueButtonAvailability()
     }
@@ -336,15 +336,15 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
         if (view == cl_password) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorAccent))
             } else {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapGreyDc))
             }
         } else if (view == cl_retype_password) {
             if (hasFocus) {
-                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
+                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorAccent))
             } else {
-                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
+                v_retype_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapGreyDc))
             }
         }
     }
@@ -384,11 +384,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (editText.inputType == InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD) {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             //button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_orange))
-            button.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            button.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimaryDark))
         } else {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             //button.setImageDrawable(getDrawable(R.drawable.tap_ic_view_grey))
-            button.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tap_grey_9b))
+            button.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapGrey9b))
         }
         editText.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
         editText.setSelection(cursorPosition)
@@ -435,11 +435,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.isEnabled = false
         et_retype_password.isEnabled = false
 
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
-        et_username.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
-        et_password.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
-        et_retype_password.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
+        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
+        et_username.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
+        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
+        et_password.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
+        et_retype_password.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
 
         tv_button_continue.visibility = View.GONE
         iv_register_progress.visibility = View.VISIBLE
@@ -462,11 +462,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.isEnabled = true
         et_retype_password.isEnabled = true
 
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
-        et_username.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
-        et_password.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
-        et_retype_password.setTextColor(ContextCompat.getColor(this, R.color.tap_black_19))
+        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tapBlack19))
+        et_username.setTextColor(ContextCompat.getColor(this, R.color.tapBlack19))
+        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tapBlack19))
+        et_password.setTextColor(ContextCompat.getColor(this, R.color.tapBlack19))
+        et_retype_password.setTextColor(ContextCompat.getColor(this, R.color.tapBlack19))
 
         tv_button_continue.visibility = View.VISIBLE
         iv_register_progress.visibility = View.GONE
@@ -543,7 +543,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             cl_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexPassword] != stateInvalid) {
                 cl_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
-                v_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccent))
+                v_password_separator.setBackgroundColor(resources.getColor(R.color.tapColorAccent))
             }
         } else {
             cl_password.elevation = 0f
@@ -558,7 +558,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             cl_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexPasswordRetype] != stateInvalid) {
                 cl_retype_password.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
-                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.colorAccent))
+                v_retype_password_separator.setBackgroundColor(resources.getColor(R.color.tapColorAccent))
             }
         } else {
             cl_retype_password.elevation = 0f

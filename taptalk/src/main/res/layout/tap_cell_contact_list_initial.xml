@@ -10,7 +10,7 @@
         style="@style/TapSectionLabel"
         android:layout_width="match_parent"
         android:layout_height="34dp"
-        android:background="@color/tap_white_f8"
+        android:background="@color/tapWhiteF8"
         android:gravity="start|center_vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"

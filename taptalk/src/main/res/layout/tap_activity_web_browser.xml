@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_purply_two"
+        android:background="@color/tapPurplyTwo"
         android:elevation="2dp"
         app:layout_scrollFlags="scroll|snap|enterAlways">
 
@@ -49,7 +49,7 @@
                 android:fontFamily="@font/tap_font_pt_root_bold"
                 android:lineSpacingExtra="10sp"
                 android:maxLines="1"
-                android:textColor="@color/tap_white"
+                android:textColor="@color/tapWhite"
                 android:textSize="14sp"
                 android:textStyle="normal"
                 tools:text="A place to find unique products, services,…" />
@@ -63,7 +63,7 @@
                 android:fontFamily="@font/tap_font_pt_root_regular"
                 android:lineSpacingExtra="4sp"
                 android:maxLines="1"
-                android:textColor="@color/tap_white"
+                android:textColor="@color/tapWhite"
                 android:textSize="12sp"
                 android:textStyle="normal"
                 tools:text="www.moselo.com" />
@@ -77,7 +77,7 @@
         style="@style/TapMyProgressBarNoPadding"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:background="@color/tap_purply_two"
+        android:background="@color/tapPurplyTwo"
         android:max="100"
         android:progress="0" />
 

@@ -102,13 +102,13 @@
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
                 app:topLeftRadius="1dp"
                 app:topRightRadius="8dp"
-                tools:background="@color/tap_cream_white" />
+                tools:background="@color/tapCreamWhite" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/tap_ic_location_marker"
-                android:tint="@color/colorPrimaryDark"
+                android:tint="@color/tapColorPrimaryDark"
                 app:layout_constraintBottom_toBottomOf="@id/map_view"
                 app:layout_constraintEnd_toEndOf="@id/map_view"
                 app:layout_constraintStart_toStartOf="@id/map_view"
@@ -135,8 +135,8 @@
                 android:paddingTop="10dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
-                android:textColor="@color/tap_black_2c"
-                android:textColorLink="@color/colorPrimaryDark"
+                android:textColor="@color/tapBlack2c"
+                android:textColorLink="@color/tapColorPrimaryDark"
                 app:layout_constraintEnd_toEndOf="@id/map_view"
                 app:layout_constraintStart_toStartOf="@id/map_view"
                 app:layout_constraintTop_toBottomOf="@id/map_view"
@@ -153,7 +153,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/tap_font_pt_root_regular"
-        android:textColor="@color/tap_grey_9b"
+        android:textColor="@color/tapGrey9b"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/fl_bubble"

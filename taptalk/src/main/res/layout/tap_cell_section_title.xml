@@ -5,7 +5,7 @@
     android:id="@+id/cl_title_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/tap_white_f3">
+    android:background="@color/tapWhiteF3">
 
     <TextView
         android:id="@+id/tv_section_title"
@@ -15,7 +15,7 @@
         android:layout_marginStart="6dp"
         android:letterSpacing="0.1"
         android:padding="10dp"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/tapColorPrimaryDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tv_clear_history"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +34,7 @@
         android:padding="10dp"
         android:text="@string/tap_clear_history"
         android:textAllCaps="true"
-        android:textColor="@color/tap_grey_9b"
+        android:textColor="@color/tapGrey9b"
         android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -44,7 +44,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyEa"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

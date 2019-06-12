@@ -130,13 +130,13 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, true);
-                    showOrderStatus("Waiting User Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
+                    showOrderStatus("Waiting User Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
             case 2:
                 // Order is canceled
-                showOrderStatus("Order Canceled", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
+                showOrderStatus("Order Canceled", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -153,7 +153,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 llOrderStatusGuide.setVisibility(View.GONE);
                 if (isCustomer(order)) {
                     showOrderPrice(order, true);
-                    showOrderStatus("Waiting Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
+                    showOrderStatus("Waiting Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, false);
@@ -163,7 +163,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 break;
             case 4:
                 // Order is canceled
-                showOrderStatus("Order Declined", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
+                showOrderStatus("Order Declined", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -185,13 +185,13 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, true);
-                    showOrderStatus("Waiting Payment", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
+                    showOrderStatus("Waiting Payment", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
             case 7:
                 // Order is canceled
-                showOrderStatus("User Disagreed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
+                showOrderStatus("User Disagreed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -212,7 +212,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
                     showOrderPrice(order, true);
-                    showOrderStatus("Payment Incomplete", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_orangeish));
+                    showOrderStatus("Payment Incomplete", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 }
                 break;
@@ -225,16 +225,16 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 clCourier.setVisibility(View.GONE);
                 llOrderStatusGuide.setVisibility(View.GONE);
                 if (isCustomer(order)) {
-                    showOrderStatus("Payment Confirmed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
+                    showOrderStatus("Payment Confirmed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
                     tvButtonOrderAction.setVisibility(View.GONE);
                 } else {
-                    showOrderStatus("Active Order", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
+                    showOrderStatus("Active Order", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
                     showActionButton("Mark as Finished");
                 }
                 break;
             case 10:
                 // Order is canceled
-                showOrderStatus("Order Overpaid", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tomato));
+                showOrderStatus("Order Overpaid", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);
@@ -254,13 +254,13 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                     llOrderStatusGuide.setVisibility(View.VISIBLE);
                     tvOrderStatus.setVisibility(View.GONE);
                 } else {
-                    showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
+                    showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
                     llOrderStatusGuide.setVisibility(View.GONE);
                 }
                 break;
             case 12:
                 // Order is completed for both sides
-                showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tap_tealish));
+                showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
                 hideOrderPrice();
                 clRecipient.setVisibility(View.GONE);
                 clNotes.setVisibility(View.GONE);

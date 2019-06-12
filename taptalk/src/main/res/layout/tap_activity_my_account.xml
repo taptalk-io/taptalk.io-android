@@ -5,14 +5,14 @@
     android:id="@+id/fl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_white_f3"
+    android:background="@color/tapWhiteF3"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_white">
+        android:background="@color/tapWhite">
 
         <TextView
             android:id="@+id/tv_title"
@@ -32,7 +32,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/tap_ic_close_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:tint="@color/tapColorPrimaryDark"
             app:layout_constraintDimensionRatio="H, 1:1"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -142,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/colorPrimaryDark" />
+                    android:tint="@color/tapColorPrimaryDark" />
 
             </LinearLayout>
 
@@ -214,7 +214,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tap_grey_9b"
+                android:textColor="@color/tapGrey9b"
                 android:textCursorDrawable="@drawable/tap_login_color_cursor"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username"
                 tools:text="@string/tap_hint_username" />
@@ -257,7 +257,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
                     android:hint="+62"
-                    android:textColor="@color/tap_grey_9b" />
+                    android:textColor="@color/tapGrey9b" />
 
             </LinearLayout>
 
@@ -275,7 +275,7 @@
                 android:inputType="number"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tap_grey_9b"
+                android:textColor="@color/tapGrey9b"
                 android:textCursorDrawable="@drawable/tap_login_color_cursor"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -362,7 +362,7 @@
                     style="@style/TapTextButtonPrimaryDark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/tap_transparent_white"
+                    android:background="@color/tapTransparentWhite"
                     android:gravity="start"
                     android:maxLines="1"
                     android:paddingStart="15dp"
@@ -370,7 +370,7 @@
                     android:paddingEnd="70dp"
                     android:paddingBottom="15dp"
                     android:text="@string/tap_logout"
-                    android:textColor="@color/tap_watermelon_red"
+                    android:textColor="@color/tapWatermelonRed"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -393,7 +393,7 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="1dp"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/tap_grey_dc"
+                    android:background="@color/tapGreyDc"
                     app:layout_constraintBottom_toBottomOf="@id/iv_logout"
                     app:layout_constraintStart_toStartOf="@id/iv_logout"
                     app:layout_constraintTop_toTopOf="@id/iv_logout" />
@@ -415,7 +415,7 @@
                     style="@style/TapTextButtonPrimaryDark"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/tap_transparent_white"
+                    android:background="@color/tapTransparentWhite"
                     android:gravity="start"
                     android:maxLines="1"
                     android:paddingStart="15dp"
@@ -434,7 +434,7 @@
                     android:layout_height="0dp"
                     android:scaleType="center"
                     android:src="@drawable/tap_ic_chevron_white"
-                    android:tint="@color/colorPrimaryDark"
+                    android:tint="@color/tapColorPrimaryDark"
                     app:layout_constraintBottom_toBottomOf="@id/tv_password"
                     app:layout_constraintDimensionRatio="H, 1:1"
                     app:layout_constraintEnd_toEndOf="@id/tv_password"
@@ -446,7 +446,7 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="1dp"
                     android:layout_marginBottom="1dp"
-                    android:background="@color/tap_grey_dc"
+                    android:background="@color/tapGreyDc"
                     app:layout_constraintBottom_toBottomOf="@id/iv_change_password"
                     app:layout_constraintStart_toStartOf="@id/iv_change_password"
                     app:layout_constraintTop_toTopOf="@id/iv_change_password" />
@@ -473,7 +473,7 @@
                     android:gravity="center_horizontal"
                     android:lineSpacingExtra="14sp"
                     android:text="@string/tap_update"
-                    android:textColor="@color/tap_white"
+                    android:textColor="@color/tapWhite"
                     android:textSize="16sp" />
 
                 <ImageView

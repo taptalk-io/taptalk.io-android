@@ -5,7 +5,7 @@
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="69dp"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     android:foreground="?attr/selectableItemBackground">
 
     <TextView
@@ -45,7 +45,7 @@
         android:gravity="end"
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="5sp"
-        android:textColor="@color/tap_grey_9b"
+        android:textColor="@color/tapGrey9b"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/iv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyEa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

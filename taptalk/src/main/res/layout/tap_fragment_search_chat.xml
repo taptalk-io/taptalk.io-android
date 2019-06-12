@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:animateLayoutChanges="true"
-        android:background="@color/tap_white"
+        android:background="@color/tapWhite"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,7 +21,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:tint="@color/tapColorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,7 +57,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/tap_white_f3"
+        android:background="@color/tapWhiteF3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 

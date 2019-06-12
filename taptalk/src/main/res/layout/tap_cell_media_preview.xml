@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:background="@color/tap_amethyst">
+    tools:background="@color/tapAmethyst">
 
     <ImageView
         android:id="@+id/iv_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="center"
-        tools:background="@color/colorPrimaryDark" />
+        tools:background="@color/tapColorPrimaryDark" />
 
     <ImageView
         android:id="@+id/iv_video_icon"
@@ -30,7 +30,7 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:background="@drawable/tap_bg_circle_6604040f"
-        android:indeterminateTint="@color/tap_white"
+        android:indeterminateTint="@color/tapWhite"
         android:padding="4dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -55,13 +55,13 @@
             android:layout_marginTop="9dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="9dp"
-            android:background="@color/tap_transparent_white"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_add_a_caption"
             android:maxHeight="75sp"
             android:maxLength="100"
             android:minHeight="36sp"
-            android:textColor="@color/tap_white"
-            android:textColorHint="@color/tap_white"
+            android:textColor="@color/tapWhite"
+            android:textColorHint="@color/tapWhite"
             android:theme="@style/EditTextTheme"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_typing_indicator"
@@ -76,7 +76,7 @@
             android:fontFamily="@font/tap_font_pt_root_bold"
             android:gravity="end"
             android:letterSpacing="0.04"
-            android:textColor="@color/tap_white"
+            android:textColor="@color/tapWhite"
             android:textSize="12sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -91,7 +91,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
-            android:background="@color/tap_white"
+            android:background="@color/tapWhite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_caption" />
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:src="@drawable/tap_ic_failed_red"
-                android:tint="@color/tap_white"
+                android:tint="@color/tapWhite"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

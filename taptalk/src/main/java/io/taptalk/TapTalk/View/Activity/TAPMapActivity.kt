@@ -87,7 +87,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         longitude = centerOfMap?.longitude ?: 0.0
         ll_set_location.visibility = View.GONE
         iv_location.setImageResource(R.drawable.tap_ic_pin_location_grey)
-        tv_location.setTextColor(resources.getColor(R.color.tap_grey_aa))
+        tv_location.setTextColor(resources.getColor(R.color.tapGreyAa))
         tv_location.setHint(R.string.tap_searching_for_address)
         tv_location.text = ""
         recycler_view.visibility = View.GONE
@@ -99,7 +99,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
     override fun onCameraIdle() {
         getGeocoderAddress()
         iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
-        tv_location.setTextColor(resources.getColor(R.color.tap_black_44))
+        tv_location.setTextColor(resources.getColor(R.color.tapBlack44))
         recycler_view.visibility = View.GONE
         isSearch = !isSameKeyword
     }
@@ -190,7 +190,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
                 getGeocoderAddress()
                 iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
-                tv_location.setTextColor(resources.getColor(R.color.tap_black_44))
+                tv_location.setTextColor(resources.getColor(R.color.tapBlack44))
                 recycler_view.visibility = View.GONE
                 if (et_keyword.isFocused)
                     et_keyword.clearFocus()
@@ -423,10 +423,10 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
             isSearch = true
             recycler_view.visibility = View.GONE
             if (0 < et_keyword.text.toString().length) {
-                et_keyword.setTextColor(resources.getColor(R.color.tap_black_44))
+                et_keyword.setTextColor(resources.getColor(R.color.tapBlack44))
                 tv_clear.visibility = View.VISIBLE
             } else {
-                et_keyword.setTextColor(resources.getColor(R.color.tap_grey_9b))
+                et_keyword.setTextColor(resources.getColor(R.color.tapGrey9b))
                 tv_clear.visibility = View.GONE
             }
         }

@@ -14,7 +14,7 @@ public class TAPMenuItem {
     public TAPMenuItem(int menuID, int iconRes, boolean isSwitchMenu, boolean isChecked, String menuLabel) {
         this.menuID = menuID;
         this.iconRes = iconRes;
-        this.textColorRes = R.color.tap_black_44;
+        this.textColorRes = R.color.tapBlack44;
         this.isSwitchMenu = isSwitchMenu;
         this.isChecked = isChecked;
         this.menuLabel = menuLabel;

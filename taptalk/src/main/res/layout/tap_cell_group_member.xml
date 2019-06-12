@@ -41,7 +41,7 @@
         android:gravity="center_horizontal"
         android:letterSpacing="-0.01"
         android:maxLines="1"
-        android:textColor="@color/tap_black_44"
+        android:textColor="@color/tapBlack44"
         android:textSize="11sp"
         app:layout_constraintEnd_toEndOf="@id/civ_avatar"
         app:layout_constraintStart_toStartOf="@id/civ_avatar"

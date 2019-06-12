@@ -125,8 +125,8 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
             tvAttachTitle.setText(itemView.getResources().getText(item.getTitleIds()));
 
             if (item.getId() == ID_DELETE) {
-                tvAttachTitle.setTextColor(itemView.getResources().getColor(R.color.tap_watermelon_red));
-                ivAttachIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_watermelon_red)));
+                tvAttachTitle.setTextColor(itemView.getResources().getColor(R.color.tapWatermelonRed));
+                ivAttachIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapWatermelonRed)));
             }
 
             if (getItemCount() - 1 == position)

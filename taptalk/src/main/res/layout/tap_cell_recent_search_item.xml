@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="37dp"
-    android:background="@color/tap_white_f3">
+    android:background="@color/tapWhiteF3">
 
     <TextView
         android:id="@+id/tv_search_text"
@@ -13,7 +13,7 @@
         android:layout_marginStart="16dp"
         android:fontFamily="@font/tap_font_pt_root_regular"
         android:letterSpacing="-0.02"
-        android:textColor="@color/tap_grey_9b"
+        android:textColor="@color/tapGrey9b"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyEa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

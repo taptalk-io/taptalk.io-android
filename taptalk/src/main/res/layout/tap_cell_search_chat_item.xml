@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/tap_white">
+    android:background="@color/tapWhite">
 
     <io.taptalk.TapTalk.Helper.CircleImageView
         android:id="@+id/civ_avatar"
@@ -45,7 +45,7 @@
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="4sp"
             android:minLines="2"
-            android:textColor="@color/tap_grey_9b"
+            android:textColor="@color/tapGrey9b"
             android:textSize="13sp"
             android:text="Who did you get the flowers from ?" />
 
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="@color/tap_grey_9b"
+            android:textColor="@color/tapGrey9b"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="5sp"
             android:gravity="end"

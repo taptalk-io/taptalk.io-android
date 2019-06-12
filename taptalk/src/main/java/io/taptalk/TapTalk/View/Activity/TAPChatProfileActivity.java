@@ -161,7 +161,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else {
-            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tap_grey_9b)));
+            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tapGrey9b)));
         }
 
         tvFullName.setText(vm.getRoom().getRoomName());
@@ -170,10 +170,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
-                getResources().getColor(R.color.tap_transparent_black_40),
-                getResources().getColor(R.color.tap_transparent_black_18),
-                getResources().getColor(R.color.tap_transparent_black),
-                getResources().getColor(R.color.tap_transparent_black_40)}));
+                getResources().getColor(R.color.tapTransparentBlack40),
+                getResources().getColor(R.color.tapTransparentBlack18),
+                getResources().getColor(R.color.tapTransparentBlack),
+                getResources().getColor(R.color.tapTransparentBlack40)}));
 
         // Initialize menus
         List<TAPMenuItem> menuItems = new ArrayList<>();
@@ -228,7 +228,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuClearChat = new TAPMenuItem(
                     MENU_CLEAR_CHAT,
                     R.drawable.tap_ic_delete_red,
-                    R.color.tap_tomato,
+                    R.color.tapTomato,
                     false,
                     false,
                     getString(R.string.tap_clear_chat));
@@ -246,7 +246,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuExitGroup = new TAPMenuItem(
                     MENU_EXIT_GROUP,
                     R.drawable.tap_ic_exit_red,
-                    R.color.tap_tomato,
+                    R.color.tapTomato,
                     false,
                     false,
                     getString(R.string.tap_exit_group));
@@ -374,8 +374,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionPrimaryColor() {
             if (null == transitionToGreen) {
                 transitionToGreen = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tap_white),
-                        getResources().getColor(R.color.colorPrimaryDark));
+                        getResources().getColor(R.color.tapWhite),
+                        getResources().getColor(R.color.tapColorPrimaryDark));
                 transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToGreen.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -386,8 +386,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionWhite() {
             if (null == transitionToWhite) {
                 transitionToWhite = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.colorPrimaryDark),
-                        getResources().getColor(R.color.tap_white));
+                        getResources().getColor(R.color.tapColorPrimaryDark),
+                        getResources().getColor(R.color.tapWhite));
                 transitionToWhite.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToWhite.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));

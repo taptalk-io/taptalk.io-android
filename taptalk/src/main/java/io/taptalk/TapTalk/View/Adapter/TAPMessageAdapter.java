@@ -1622,9 +1622,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
                     // TODO: 11 June 2019 CHANGE COLOR TINT TO TEXT COLOR
                     if (isMessageFromMySelf(item)) {
-                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_white)));
+                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapWhite)));
                     } else {
-                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_black_19)));
+                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapBlack19)));
                     }
                     updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
