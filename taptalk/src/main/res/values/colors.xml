@@ -1,114 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimaryLight">@color/tap_light_orange_two</color>
-    <color name="colorPrimary">@color/tap_pumpkin_orange</color>
-    <color name="colorPrimaryDark">@color/tap_pumpkin_orange_dark</color>
-    <color name="colorAccentLight">@color/tap_white</color>
-    <color name="colorAccent">@color/tap_white_f3</color>
-    <color name="colorAccentDark">@color/tap_grey_9b</color>
+    <color name="tapColorPrimaryLight">@color/tapLightOrangeTwo</color>
+    <color name="tapColorPrimary">@color/tapPumpkinOrange</color>
+    <color name="tapColorPrimaryDark">@color/tapPumpkinOrangeDark</color>
+    <color name="tapColorAccentLight">@color/tapWhite</color>
+    <color name="tapColorAccent">@color/tapWhiteF3</color>
+    <color name="tapColorAccentDark">@color/tapGrey9b</color>
 
-    <color name="tap_darkPurple">#51276c</color>
-    <color name="tap_purply_two">#673ab7</color>
-    <color name="tap_warmPurple">#6d3492</color>
-    <color name="tap_purply">#793da0</color>
-    <color name="tap_mediumPurple">#784198</color>
-    <color name="tap_amethyst">#9954c2</color>
-    <color name="tap_easterPurple">#c96cff</color>
-    <color name="tap_lightPurple">#e6e0ea</color>
-    <color name="tap_purplishPink">#c854a5</color>
-    <color name="tap_coral_pink">#ff566a</color>
-    <color name="tap_watermelon_red">#ff3f57</color>
-    <color name="tap_brightRed">#ff2323</color>
-    <color name="tap_tomato">#ec2c2b</color>
-    <color name="tap_tomatoTwo">#ed2929</color>
-    <color name="tap_red">#d90a0a</color>
-    <color name="tap_pumpkin_orange_dark">#e87200</color>
-    <color name="tap_pumpkin_orange">#ff7e00</color>
-    <color name="tap_tangerine">#ffa107</color>
-    <color name="tap_orangeish">#ff9049</color>
-    <color name="tap_orangeYellow">#ff9f00</color>
-    <color name="tap_mango">#ff9833</color>
-    <color name="tap_light_orange">#ffa145</color>
-    <color name="tap_light_orange_two">#ffa045</color>
-    <color name="tap_butterscotch">#ffb438</color>
-    <color name="tap_parchment">#fff4b1</color>
-    <color name="tap_leafyGreen">#3bc73d</color>
-    <color name="tap_vibrantGreen">#19c700</color>
-    <color name="tap_green">#2db80f</color>
-    <color name="tap_apple_green">#7ec82a</color>
-    <color name="tap_greenBlue">#00b793</color>
-    <color name="tap_darkGreenBlue">#09b291</color>
-    <color name="tap_tealish">#2eccad</color>
-    <color name="tap_aquaMarine">#3de1c1</color>
-    <color name="tap_lightTeal">#a7ebde</color>
-    <color name="tap_highlight_blue">#5ac8fa</color>
-    <color name="tap_dodger_blue">#48beff</color>
-    <color name="tap_clear_blue">#188cff</color>
-    <color name="tap_brightBlue">#007aff</color>
-    <color name="tap_purplish_blue">#4b3fef</color>
-    <color name="tap_bubble_blue">#483dda</color>
-    <color name="tap_blue_purple">#362ad7</color>
+    <color name="tapDarkPurple">#51276c</color>
+    <color name="tapPurplyTwo">#673ab7</color>
+    <color name="tapWarmPurple">#6d3492</color>
+    <color name="tapPurply">#793da0</color>
+    <color name="tapMediumPurple">#784198</color>
+    <color name="tapAmethyst">#9954c2</color>
+    <color name="tapEasterPurple">#c96cff</color>
+    <color name="tapLightPurple">#e6e0ea</color>
+    <color name="tapPurplishPink">#c854a5</color>
+    <color name="tapCoralPink">#ff566a</color>
+    <color name="tapWatermelonRed">#ff3f57</color>
+    <color name="tapBrightRed">#ff2323</color>
+    <color name="tapTomato">#ec2c2b</color>
+    <color name="tapTomatoTwo">#ed2929</color>
+    <color name="tapRed">#d90a0a</color>
+    <color name="tapPumpkinOrangeDark">#e87200</color>
+    <color name="tapPumpkinOrange">#ff7e00</color>
+    <color name="tapTangerine">#ffa107</color>
+    <color name="tapOrangeish">#ff9049</color>
+    <color name="tapOrangeYellow">#ff9f00</color>
+    <color name="tapMango">#ff9833</color>
+    <color name="tapLightOrange">#ffa145</color>
+    <color name="tapLightOrangeTwo">#ffa045</color>
+    <color name="tapButterscotch">#ffb438</color>
+    <color name="tapParchment">#fff4b1</color>
+    <color name="tapLeafyGreen">#3bc73d</color>
+    <color name="tapVibrantGreen">#19c700</color>
+    <color name="tapGreen">#2db80f</color>
+    <color name="tapAppleGreen">#7ec82a</color>
+    <color name="tapGreenBlue">#00b793</color>
+    <color name="tapDarkGreenBlue">#09b291</color>
+    <color name="tapTealish">#2eccad</color>
+    <color name="tapAquaMarine">#3de1c1</color>
+    <color name="tapLightTeal">#a7ebde</color>
+    <color name="tapHighlightBlue">#5ac8fa</color>
+    <color name="tapDodgerBlue">#48beff</color>
+    <color name="tapClearBlue">#188cff</color>
+    <color name="tapBrightBlue">#007aff</color>
+    <color name="tapPurplishBlue">#4b3fef</color>
+    <color name="tapBubbleBlue">#483dda</color>
+    <color name="tapBluePurple">#362ad7</color>
 
-    <color name="tap_cream_white">#fffdea</color>
-    <color name="tap_lightPink">#fff0f2</color>
-    <color name="tap_lightBlueGrey">#cce7e2</color>
-    <color name="tap_paleCyan">#eefaf8</color>
+    <color name="tapCreamWhite">#fffdea</color>
+    <color name="tapLightPink">#fff0f2</color>
+    <color name="tapLightBlueGrey">#cce7e2</color>
+    <color name="tapPaleCyan">#eefaf8</color>
 
-    <color name="tap_white">#ffffff</color>
-    <color name="tap_white_fe">#fefefe</color>
-    <color name="tap_white_fa">#fafafa</color>
-    <color name="tap_white_f8">#f8f8f8</color>
-    <color name="tap_white_f5">#f5f5f5</color>
-    <color name="tap_white_f3">#f3f3f3</color>
-    <color name="tap_grey_ea">#eaeaea</color>
-    <color name="tap_grey_e4">#e4e4e4</color>
-    <color name="tap_grey_dc">#dcdcdc</color>
-    <color name="tap_grey_d9">#d9d9d9</color>
-    <color name="tap_grey_ce">#cecece</color>
-    <color name="tap_grey_cb">#cbcbcb</color>
-    <color name="tap_grey_aa">#aaaaaa</color>
-    <color name="tap_grey_9b">#9b9b9b</color>
-    <color name="tap_black_4a">#4a4a4a</color>
-    <color name="tap_black_44">#444444</color>
-    <color name="tap_black_2c">#2c2c2c</color>
-    <color name="tap_black">#000000</color>
-    <color name="tap_black_19">#191919</color>
-    <color name="tap_charcoal">#04040f</color>
+    <color name="tapWhite">#ffffff</color>
+    <color name="tapWhiteFe">#fefefe</color>
+    <color name="tapWhiteFa">#fafafa</color>
+    <color name="tapWhiteF8">#f8f8f8</color>
+    <color name="tapWhiteF5">#f5f5f5</color>
+    <color name="tapWhiteF3">#f3f3f3</color>
+    <color name="tapGreyEa">#eaeaea</color>
+    <color name="tapGreyE4">#e4e4e4</color>
+    <color name="tapGreyDc">#dcdcdc</color>
+    <color name="tapGreyD9">#d9d9d9</color>
+    <color name="tapGreyCe">#cecece</color>
+    <color name="tapGreyCb">#cbcbcb</color>
+    <color name="tapGreyAa">#aaaaaa</color>
+    <color name="tapGrey9b">#9b9b9b</color>
+    <color name="tapBlack4a">#4a4a4a</color>
+    <color name="tapBlack44">#444444</color>
+    <color name="tapBlack2c">#2c2c2c</color>
+    <color name="tapBlack">#000000</color>
+    <color name="tapBlack19">#191919</color>
+    <color name="tapCharcoal">#04040f</color>
 
-    <color name="tap_transparent_white">#00ffffff</color>
-    <color name="tap_transparent_white_20">#33ffffff</color>
-    <color name="tap_transparent_white_40">#66ffffff</color>
-    <color name="tap_transparent_white_60">#99ffffff</color>
-    <color name="tap_transparent_black">#00000000</color>
-    <color name="tap_transparent_black_10">#1a000000</color>
-    <color name="tap_transparent_black_18">#2d000000</color>
-    <color name="tap_transparent_black_40">#66000000</color>
-    <color name="tap_transparent_charcoal">#0004040f</color>
-    <color name="tap_transparent_charcoal_50">#8004040f</color>
-    <color name="tap_transparent_charcoal_40">#6604040f</color>
-    <color name="tap_transparent_black_47_70">#b3474747</color>
+    <color name="tapTransparentWhite">#00ffffff</color>
+    <color name="tapTransparentWhite20">#33ffffff</color>
+    <color name="tapTransparentWhite40">#66ffffff</color>
+    <color name="tapTransparentWhite60">#99ffffff</color>
+    <color name="tapTransparentBlack">#00000000</color>
+    <color name="tapTransparentBlack10">#1a000000</color>
+    <color name="tapTransparentBlack18">#2d000000</color>
+    <color name="tapTransparentBlack40">#66000000</color>
+    <color name="tapTransparentCharcoal">#0004040f</color>
+    <color name="tapTransparentCharcoal50">#8004040f</color>
+    <color name="tapTransparentCharcoal40">#6604040f</color>
+    <color name="tapTransparentBlack4770">#b3474747</color>
 
-    <color name="color0">#fdc3a7</color>
-    <color name="color1">#d0e69d</color>
-    <color name="color2">#99d39e</color>
-    <color name="color3">#a9ddc7</color>
-    <color name="color4">#c6d3e9</color>
-    <color name="color5">#d5c0e2</color>
-    <color name="color6">#f599b5</color>
-    <color name="color7">#ffb3b8</color>
-    <color name="color8">#fdd38d</color>
-    <color name="color9">#b4e6f1</color>
+    <color name="pastelOrange">#fdc3a7</color>
+    <color name="pastelLightGreen">#d0e69d</color>
+    <color name="pastelGreen">#99d39e</color>
+    <color name="pastelGreenBlue">#a9ddc7</color>
+    <color name="pastelLightBlue">#c6d3e9</color>
+    <color name="pastelPurple">#d5c0e2</color>
+    <color name="pastelRed">#f599b5</color>
+    <color name="pastelPink">#ffb3b8</color>
+    <color name="pastelYellow">#fdd38d</color>
+    <color name="pastelBlue">#b4e6f1</color>
 
     <array name="pastel_colors">
-        <item>@color/color0</item>
-        <item>@color/color1</item>
-        <item>@color/color2</item>
-        <item>@color/color3</item>
-        <item>@color/color4</item>
-        <item>@color/color5</item>
-        <item>@color/color6</item>
-        <item>@color/color7</item>
-        <item>@color/color8</item>
-        <item>@color/color9</item>
+        <item>@color/pastelOrange</item>
+        <item>@color/pastelLightGreen</item>
+        <item>@color/pastelGreen</item>
+        <item>@color/pastelGreenBlue</item>
+        <item>@color/pastelLightBlue</item>
+        <item>@color/pastelPurple</item>
+        <item>@color/pastelRed</item>
+        <item>@color/pastelPink</item>
+        <item>@color/pastelYellow</item>
+        <item>@color/pastelBlue</item>
     </array>
 </resources>

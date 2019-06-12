@@ -66,24 +66,24 @@
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:scaleType="centerCrop"
-                    app:civ_border_color="@color/tap_white"
+                    app:civ_border_color="@color/tapWhite"
                     app:civ_border_width="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:background="@color/tap_brightBlue" />
+                    tools:background="@color/tapBrightBlue" />
 
                 <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_contact_avatar"
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:scaleType="centerCrop"
-                    app:civ_border_color="@color/tap_white"
+                    app:civ_border_color="@color/tapWhite"
                     app:civ_border_width="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:background="@color/tap_red" />
+                    tools:background="@color/tapRed" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -116,7 +116,7 @@
                         android:fontFamily="@font/tap_font_pt_root_bold"
                         android:gravity="center_horizontal"
                         android:maxLines="2"
-                        android:textColor="@color/tap_black_19"
+                        android:textColor="@color/tapBlack19"
                         android:textSize="20sp"
                         tools:text="NAMANYABERNAMA" />
 
@@ -127,7 +127,7 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/tap_font_pt_root_regular"
                         android:gravity="center_horizontal"
-                        android:textColor="@color/tap_grey_9b"
+                        android:textColor="@color/tapGrey9b"
                         android:textSize="13sp"
                         tools:text="Vivamus adipiscing fermentum quam " />
 
@@ -148,7 +148,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="40dp"
                         android:src="@drawable/tap_ic_add_contact"
-                        android:tint="@color/colorPrimaryDark" />
+                        android:tint="@color/tapColorPrimaryDark" />
 
                     <TextView
                         android:id="@+id/tv_add_success"
@@ -159,7 +159,7 @@
                         android:fontFamily="@font/tap_font_pt_root_regular"
                         android:gravity="center_horizontal"
                         android:text="@string/you_have_added_to_your_contacts"
-                        android:textColor="@color/tap_black_19"
+                        android:textColor="@color/tapBlack19"
                         android:textSize="13sp" />
 
                 </LinearLayout>
@@ -175,7 +175,7 @@
                     android:gravity="center_horizontal"
                     android:text="@string/tap_is_already_in_your_contacts"
                     android:textAlignment="center"
-                    android:textColor="@color/tap_black_19"
+                    android:textColor="@color/tapBlack19"
                     android:visibility="gone" />
 
             </FrameLayout>
@@ -198,7 +198,7 @@
                     android:id="@+id/pb_add_loading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:indeterminateTint="@color/tap_white"
+                    android:indeterminateTint="@color/tapWhite"
                     android:visibility="gone" />
 
                 <ImageView
@@ -214,7 +214,7 @@
                     android:layout_marginStart="4dp"
                     android:fontFamily="@font/tap_font_pt_root_bold"
                     android:text="@string/tap_add_to_contacts"
-                    android:textColor="@color/tap_white"
+                    android:textColor="@color/tapWhite"
                     android:textSize="15sp" />
 
             </LinearLayout>
@@ -227,7 +227,7 @@
                 android:gravity="center"
                 android:letterSpacing="0.01"
                 android:text="@string/tap_this_is_you"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/tapColorPrimaryDark"
                 android:textSize="13sp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -877,7 +877,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
      */
     public void openCustomTabLayout(Activity activity, String url) {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tap_purply_two));
+        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tapPurplyTwo));
         intentBuilder.setShowTitle(true);
         intentBuilder.setStartAnimations(activity, R.anim.tap_slide_left, R.anim.tap_stay);
         intentBuilder.setExitAnimations(activity, R.anim.tap_stay,

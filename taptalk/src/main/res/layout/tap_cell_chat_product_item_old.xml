@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@color/tap_brightBlue">
+    tools:background="@color/tapBrightBlue">
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv_product_item"
@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="134dp"
                 android:scaleType="centerCrop"
-                tools:src="@color/tap_black_44" />
+                tools:src="@color/tapBlack44" />
 
             <LinearLayout
                 android:id="@+id/ll_name_price"
@@ -42,12 +42,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     tools:text="Regular Make Up"
-                    tools:background="@color/tap_aquaMarine"
+                    tools:background="@color/tapAquaMarine"
                     android:textSize="15sp"
                     android:fontFamily="@font/tap_font_pt_root_bold"
                     android:letterSpacing="-0.02"
                     android:layout_marginTop="11dp"
-                    android:textColor="@color/tap_black"
+                    android:textColor="@color/tapBlack"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     />
@@ -56,12 +56,12 @@
                     android:id="@+id/tv_product_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:background="@color/tap_butterscotch"
+                    tools:background="@color/tapButterscotch"
                     tools:text="Rp.1.500.000"
                     android:fontFamily="@font/tap_font_pt_root_regular"
                     android:textSize="13sp"
                     android:letterSpacing="-0.2"
-                    android:textColor="@color/tap_grey_9b"
+                    android:textColor="@color/tapGrey9b"
                     android:layout_marginTop="7dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
@@ -70,7 +70,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/tap_grey_ea"
+                    android:background="@color/tapGreyEa"
                     android:layout_marginTop="7dp"/>
 
             </LinearLayout>
@@ -84,7 +84,7 @@
                     android:id="@+id/v_btn_separator"
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
-                    android:background="@color/tap_grey_ea"
+                    android:background="@color/tapGreyEa"
                     app:layout_constraintStart_toEndOf="@id/tv_btn_details"
                     app:layout_constraintEnd_toStartOf="@id/tv_btn_order"
                     android:visibility="visible"/>
@@ -98,7 +98,7 @@
                     android:gravity="center"
                     android:text="Details"
                     android:fontFamily="@font/tap_font_pt_root_regular"
-                    android:textColor="@color/tap_grey_9b"
+                    android:textColor="@color/tapGrey9b"
                     android:textSize="15sp"
                     android:letterSpacing="-0.2"
                     android:background="?attr/selectableItemBackgroundBorderless"/>
@@ -112,7 +112,7 @@
                     android:gravity="center"
                     android:text="Order"
                     android:fontFamily="@font/tap_font_pt_root_bold"
-                    android:textColor="@color/tap_greenBlue"
+                    android:textColor="@color/tapGreenBlue"
                     android:textSize="15sp"
                     android:letterSpacing="-0.2"
                     android:visibility="visible"

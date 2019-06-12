@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/tap_font_pt_root_bold"
         android:text="@string/tap_connecting"
-        android:textColor="@color/tap_white"
+        android:textColor="@color/tapWhite"
         android:textSize="12dp" />
 
     <ProgressBar
@@ -24,7 +24,7 @@
         android:layout_width="9dp"
         android:layout_height="9dp"
         android:layout_marginStart="4dp"
-        android:indeterminateTint="@color/tap_white" />
+        android:indeterminateTint="@color/tapWhite" />
 
     <ImageView
         android:id="@+id/iv_connection_status"

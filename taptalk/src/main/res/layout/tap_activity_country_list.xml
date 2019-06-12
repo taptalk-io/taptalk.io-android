@@ -11,7 +11,7 @@
         android:id="@+id/cl_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_white">
+        android:background="@color/tapWhite">
 
         <TextView
             android:id="@+id/tv_close_btn"
@@ -23,7 +23,7 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/tap_cfp_action_close"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/tapColorPrimaryDark"
             android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -36,7 +36,7 @@
             android:letterSpacing="-0.02"
             android:lineSpacingExtra="4sp"
             android:text="@string/tap_select_country"
-            android:textColor="@color/tap_black_2c"
+            android:textColor="@color/tapBlack2c"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +48,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:background="@color/tap_white">
+        android:background="@color/tapWhite">
 
         <LinearLayout
             android:id="@+id/ll_search"
@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
-                android:background="@color/tap_white"
+                android:background="@color/tapWhite"
                 android:fontFamily="@font/tap_font_pt_root_regular"
                 android:gravity="center_vertical"
                 android:hint="@string/tap_search_for_country"
@@ -91,7 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="bottom"
-            android:background="@color/tap_grey_dc" />
+            android:background="@color/tapGreyDc" />
 
     </FrameLayout>
 
@@ -99,14 +99,14 @@
         android:id="@+id/rv_country_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/tap_white_f3"
+        android:background="@color/tapWhiteF3"
         app:fastScrollPopupBackgroundSize="88dp"
-        app:fastScrollPopupBgColor="@color/colorPrimaryDark"
+        app:fastScrollPopupBgColor="@color/tapColorPrimaryDark"
         app:fastScrollPopupPosition="adjacent"
         app:fastScrollPopupTextColor="@android:color/primary_text_dark"
         app:fastScrollPopupTextSize="56sp"
-        app:fastScrollThumbColor="@color/colorPrimaryDark"
-        app:fastScrollThumbInactiveColor="@color/tap_grey_9b"
+        app:fastScrollThumbColor="@color/tapColorPrimaryDark"
+        app:fastScrollThumbInactiveColor="@color/tapGrey9b"
         app:fastScrollTrackColor="#1f000000" />
 
 </LinearLayout>

@@ -98,7 +98,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //} else {
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-                clContainer.setBackgroundColor(resource.getColor(R.color.tap_white));
+                clContainer.setBackgroundColor(resource.getColor(R.color.tapWhite));
                 ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
                 ivAvatarIcon.setVisibility(View.GONE);
                 if (position == getItemCount() - 1) {
@@ -157,7 +157,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //message is deleted
             else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                ivMessageStatus.setImageResource(R.drawable.tap_ic_deleted_white);
-               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tap_grey_9b)));
+               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapGrey9b)));
                ivMessageStatus.setPadding(TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5));
             }
             // Message is read

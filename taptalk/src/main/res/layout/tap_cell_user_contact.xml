@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     android:elevation="2dp"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
@@ -65,7 +65,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyEa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar" />
 

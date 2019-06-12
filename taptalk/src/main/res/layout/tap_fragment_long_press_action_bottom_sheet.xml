@@ -3,7 +3,7 @@
     android:id="@+id/rv_long_press"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@color/tap_purply_two"
+    tools:background="@color/tapPurplyTwo"
     tools:context="io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet">
 
 </android.support.v7.widget.RecyclerView>

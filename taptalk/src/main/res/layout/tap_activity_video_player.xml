@@ -5,7 +5,7 @@
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_black"
+    android:background="@color/tapBlack"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity">
 
     <VideoView
@@ -26,7 +26,7 @@
         android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
         android:padding="14dp"
         android:src="@drawable/tap_ic_close_grey_small"
-        android:tint="@color/tap_transparent_white_60"
+        android:tint="@color/tapTransparentWhite60"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +39,7 @@
         android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
         android:padding="12dp"
         android:src="@drawable/tap_ic_save_white"
-        android:tint="@color/tap_transparent_white_60"
+        android:tint="@color/tapTransparentWhite60"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -81,13 +81,13 @@
             android:id="@+id/seek_bar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:indeterminateTint="@color/tap_white"
+            android:indeterminateTint="@color/tapWhite"
             android:max="100"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:progressBackgroundTint="@color/tap_white"
-            android:progressTint="@color/tap_transparent_white_40"
-            android:thumbTint="@color/tap_white"
+            android:progressBackgroundTint="@color/tapWhite"
+            android:progressTint="@color/tapTransparentWhite40"
+            android:thumbTint="@color/tapWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_duration"
             app:layout_constraintStart_toEndOf="@id/tv_current_time"
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:textColor="@color/tap_transparent_white_60"
+            android:textColor="@color/tapTransparentWhite60"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/seek_bar"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:textColor="@color/tap_transparent_white_60"
+            android:textColor="@color/tapTransparentWhite60"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/seek_bar"
@@ -126,7 +126,7 @@
         android:id="@+id/fl_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/tap_transparent_charcoal_40"
+        android:background="@color/tapTransparentCharcoal40"
         android:visibility="gone">
 
         <android.support.constraint.ConstraintLayout
@@ -141,7 +141,7 @@
                 android:layout_height="60dp"
                 android:layout_marginBottom="4dp"
                 android:src="@drawable/tap_ic_checklist_pumpkin"
-                android:tint="@color/colorPrimaryDark"
+                android:tint="@color/tapColorPrimaryDark"
                 app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

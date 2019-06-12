@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/tap_bg_white_rounded_4dp"
     android:padding="16dp"
-    tools:background="@color/tap_brightBlue">
+    tools:background="@color/tapBrightBlue">
 
 
     <TextView
@@ -18,7 +18,7 @@
         android:gravity="start"
         android:lineSpacingExtra="5sp"
         android:maxLines="1"
-        android:textColor="@color/tap_black_19"
+        android:textColor="@color/tapBlack19"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,7 +34,7 @@
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="5sp"
         android:minLines="3"
-        android:textColor="@color/tap_black_19"
+        android:textColor="@color/tapBlack19"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/tv_primary_btn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,7 +74,7 @@
         android:paddingTop="9dp"
         android:paddingEnd="5dp"
         android:paddingBottom="9dp"
-        android:textColor="@color/tap_grey_9b"
+        android:textColor="@color/tapGrey9b"
         android:textSize="12dp"
         app:layout_constraintEnd_toStartOf="@id/tv_primary_btn"
         app:layout_constraintTop_toBottomOf="@id/tv_dialog_message"

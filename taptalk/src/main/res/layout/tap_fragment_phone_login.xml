@@ -28,7 +28,7 @@
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="6sp"
         android:text="@string/tap_welcome"
-        android:textColor="@color/tap_black_19"
+        android:textColor="@color/tapBlack19"
         android:textSize="40sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_taptalk_logo" />
@@ -43,7 +43,7 @@
         android:letterSpacing="-0.03"
         android:lineSpacingExtra="6sp"
         android:text="@string/tap_enter_your_mobile_number_to_continue"
-        android:textColor="@color/tap_black_19"
+        android:textColor="@color/tapBlack19"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_welcome" />
@@ -90,7 +90,7 @@
                 android:layout_marginStart="10dp"
                 android:letterSpacing="-0.01"
                 android:lineSpacingExtra="4sp"
-                android:textColor="@color/tap_black_19"
+                android:textColor="@color/tapBlack19"
                 android:textSize="16sp"
                 android:visibility="visible"
                 tools:text="+62" />
@@ -102,7 +102,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="10dp"
                 android:src="@drawable/tap_ic_loading_progress_circle_orange"
-                android:tint="@color/colorPrimaryDark"
+                android:tint="@color/tapColorPrimaryDark"
                 android:visibility="gone" />
 
         </LinearLayout>
@@ -119,12 +119,12 @@
                 android:id="@+id/et_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/tap_transparent_white"
+                android:background="@color/tapTransparentWhite"
                 android:hint="82212345678"
                 android:imeOptions="actionSend"
                 android:inputType="numberSigned"
                 android:padding="13dp"
-                android:textColorHint="@color/tap_grey_9b"
+                android:textColorHint="@color/tapGrey9b"
                 android:textCursorDrawable="@drawable/tap_login_color_cursor" />
 
         </FrameLayout>
@@ -151,7 +151,7 @@
             android:gravity="center_horizontal"
             android:lineSpacingExtra="14sp"
             android:text="@string/tap_continue_s"
-            android:textColor="@color/tap_white"
+            android:textColor="@color/tapWhite"
             android:textSize="16sp" />
 
         <ImageView

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_white">
+    android:background="@color/tapWhite">
 
     <ImageView
         android:id="@+id/iv_qr_code"
@@ -41,7 +41,7 @@
         android:letterSpacing="-0.01"
         android:lineSpacingExtra="6sp"
         android:text="@string/tap_scan_qr_code_guide"
-        android:textColor="@color/tap_black_19"
+        android:textColor="@color/tapBlack19"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
         app:layout_constraintEnd_toEndOf="parent"

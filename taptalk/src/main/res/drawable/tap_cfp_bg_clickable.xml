@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/tap_grey_ea" android:state_pressed="true"/>
-    <item android:drawable="@color/tap_grey_ea" android:state_focused="true"/>
-    <item android:drawable="@color/tap_transparent_white"/>
+    <item android:drawable="@color/tapGreyEa" android:state_pressed="true"/>
+    <item android:drawable="@color/tapGreyEa" android:state_focused="true"/>
+    <item android:drawable="@color/tapTransparentWhite"/>
 </selector>
 

@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Forwarded"
-        android:textColor="@color/tap_white"
+        android:textColor="@color/tapWhite"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="From: "
-        android:textColor="@color/tap_white"
+        android:textColor="@color/tapWhite"
         app:layout_constraintBottom_toBottomOf="@id/tv_forwarded_from"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_forwarded_from" />
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
-        android:textColor="@color/tap_white"
+        android:textColor="@color/tapWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_label_from"
         app:layout_constraintTop_toBottomOf="@id/tv_label_forwarded"

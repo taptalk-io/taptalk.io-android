@@ -48,7 +48,7 @@
                 android:fontFamily="@font/tap_font_pt_root_regular"
                 android:letterSpacing="-0.01"
                 android:maxLines="1"
-                android:textColor="@color/tap_white_fe"
+                android:textColor="@color/tapWhiteFe"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_label_detail"
                 app:layout_constraintEnd_toStartOf="@id/tv_label_detail"
@@ -64,7 +64,7 @@
                 android:letterSpacing="0.15"
                 android:text="@string/tap_view_details"
                 android:textAllCaps="true"
-                android:textColor="@color/tap_white"
+                android:textColor="@color/tapWhite"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/iv_ic_chevron"
@@ -99,7 +99,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_product_qty"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@color/colorAccent" />
+                tools:src="@color/tapColorAccent" />
 
             <TextView
                 android:id="@+id/tv_product_name"
@@ -124,7 +124,7 @@
                 android:fontFamily="@font/tap_font_pt_root_regular"
                 android:maxLines="1"
                 android:paddingBottom="8dp"
-                android:textColor="@color/tap_purply"
+                android:textColor="@color/tapPurply"
                 android:textSize="11sp"
                 app:layout_constraintEnd_toStartOf="@id/tv_product_qty"
                 app:layout_constraintStart_toStartOf="@id/tv_product_name"
@@ -139,7 +139,7 @@
                 android:fontFamily="@font/tap_font_pt_root_bold"
                 android:gravity="end"
                 android:paddingBottom="8dp"
-                android:textColor="@color/tap_black_44"
+                android:textColor="@color/tapBlack44"
                 android:textSize="11sp"
                 app:layout_constraintEnd_toEndOf="@id/tv_product_name"
                 app:layout_constraintTop_toBottomOf="@id/tv_product_name"
@@ -150,7 +150,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/tap_grey_ea"
+            android:background="@color/tapGreyEa"
             app:layout_constraintTop_toTopOf="@+id/cl_button_more_items" />
 
         <android.support.constraint.ConstraintLayout
@@ -164,7 +164,7 @@
                 android:id="@+id/tv_button_more_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/tap_paleCyan"
+                android:background="@color/tapPaleCyan"
                 android:fontFamily="@font/tap_font_pt_root_bold"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center_horizontal"
@@ -172,21 +172,21 @@
                 android:paddingTop="6dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="6dp"
-                android:textColor="@color/tap_darkGreenBlue"
+                android:textColor="@color/tapDarkGreenBlue"
                 android:textSize="11sp"
                 tools:text="And 2 More Items" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_lightBlueGrey"
+                android:background="@color/tapLightBlueGrey"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_gravity="bottom"
-                android:background="@color/tap_lightBlueGrey"
+                android:background="@color/tapLightBlueGrey"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
@@ -255,7 +255,7 @@
                 android:id="@+id/v_description_separator"
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="@id/tv_date"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -264,7 +264,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="@id/tv_date" />
 
         </android.support.constraint.ConstraintLayout>
@@ -306,7 +306,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="@id/tv_recipient_details" />
 
         </android.support.constraint.ConstraintLayout>
@@ -368,12 +368,12 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_courier_cost"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@color/tap_leafyGreen" />
+                tools:src="@color/tapLeafyGreen" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="@id/tv_courier_cost" />
 
         </android.support.constraint.ConstraintLayout>
@@ -412,7 +412,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
@@ -421,7 +421,7 @@
             android:id="@+id/cl_additional_cost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/tap_white_f8"
+            android:background="@color/tapWhiteF8"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/cl_notes">
 
@@ -467,13 +467,13 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -481,7 +481,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -492,7 +492,7 @@
             android:id="@+id/cl_discount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/tap_white_f8"
+            android:background="@color/tapWhiteF8"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/cl_additional_cost">
 
@@ -529,7 +529,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="end"
-                android:textColor="@color/tap_tomato"
+                android:textColor="@color/tapTomato"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/v_badge_discount_updated"
@@ -539,13 +539,13 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -553,7 +553,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -564,7 +564,7 @@
             android:id="@+id/cl_total_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/tap_cream_white"
+            android:background="@color/tapCreamWhite"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/cl_discount">
 
@@ -595,13 +595,13 @@
                 android:id="@+id/v_total_price_separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -609,7 +609,7 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="0dp"
-                android:background="@color/tap_grey_ea"
+                android:background="@color/tapGreyEa"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -624,7 +624,7 @@
             android:gravity="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:textColor="@color/tap_tealish"
+            android:textColor="@color/tapTealish"
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/cl_total_price"
             tools:text="Active Order" />
@@ -660,7 +660,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:padding="3sp"
                 android:text="report this order."
-                android:textColor="@color/tap_tomatoTwo" />
+                android:textColor="@color/tapTomatoTwo" />
 
         </LinearLayout>
 
@@ -673,7 +673,7 @@
             android:gravity="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:textColor="@color/tap_white"
+            android:textColor="@color/tapWhite"
             android:textSize="14sp"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/ll_order_status_guide"
@@ -706,7 +706,7 @@
             android:layout_marginStart="8dp"
             android:fontFamily="@font/tap_font_pt_root_regular"
             android:text="View your order status."
-            android:textColor="@color/tap_darkGreenBlue"
+            android:textColor="@color/tapDarkGreenBlue"
             android:textSize="12sp" />
 
     </LinearLayout>

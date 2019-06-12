@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
 
@@ -85,7 +85,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="62dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyEa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

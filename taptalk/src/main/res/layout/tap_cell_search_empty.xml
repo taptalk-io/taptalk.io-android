@@ -25,7 +25,7 @@
             android:letterSpacing="-0.02"
             android:lineSpacingExtra="6sp"
             android:text="@string/tap_oops"
-            android:textColor="@color/tap_black_19"
+            android:textColor="@color/tapBlack19"
             android:textSize="24sp" />
 
         <TextView
@@ -37,7 +37,7 @@
             android:letterSpacing="-0.02"
             android:lineHeight="20sp"
             android:text="@string/tap_could_not_find_any_results"
-            android:textColor="@color/tap_black_19"
+            android:textColor="@color/tapBlack19"
             android:textSize="14sp" />
 
     </LinearLayout>

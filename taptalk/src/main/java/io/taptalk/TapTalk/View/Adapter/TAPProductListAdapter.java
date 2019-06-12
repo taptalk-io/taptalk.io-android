@@ -120,12 +120,12 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 String ratingString = item.getRating();
                 ivRatingIcon.setVisibility(View.VISIBLE);
                 tvRating.setText(ratingString);
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.colorPrimaryDark));
+                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapColorPrimaryDark));
             } else {
                 // Product has no rating
                 ivRatingIcon.setVisibility(View.GONE);
                 tvRating.setText(itemView.getContext().getString(R.string.tap_no_review_yet));
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tap_grey_9b));
+                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapGrey9b));
             }
 
             flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());

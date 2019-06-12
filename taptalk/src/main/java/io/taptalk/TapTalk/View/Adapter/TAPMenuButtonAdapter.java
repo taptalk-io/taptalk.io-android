@@ -81,8 +81,8 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     private ValueAnimator getTransitionPrimary() {
                         if (null == transitionToPrimary) {
                             transitionToPrimary = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tap_grey_9b),
-                                    itemView.getContext().getResources().getColor(R.color.colorPrimaryDark));
+                                    itemView.getContext().getResources().getColor(R.color.tapGrey9b),
+                                    itemView.getContext().getResources().getColor(R.color.tapColorPrimaryDark));
                             transitionToPrimary.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToPrimary.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -93,8 +93,8 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     private ValueAnimator getTransitionGrey() {
                         if (null == transitionToGrey) {
                             transitionToGrey = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.colorPrimaryDark),
-                                    itemView.getContext().getResources().getColor(R.color.tap_grey_9b));
+                                    itemView.getContext().getResources().getColor(R.color.tapColorPrimaryDark),
+                                    itemView.getContext().getResources().getColor(R.color.tapGrey9b));
                             transitionToGrey.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToGrey.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));

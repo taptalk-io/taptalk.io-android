@@ -190,7 +190,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            tvButtonText.setTextColor(getResources().getColor(R.color.tapColorPrimaryDark));
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
@@ -244,7 +244,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            tvButtonText.setTextColor(getResources().getColor(R.color.tapColorPrimaryDark));
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
@@ -341,7 +341,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             // Update action button after contact check finishes
             runOnUiThread(() -> {
                 clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple));
-                tvButtonText.setTextColor(getResources().getColor(R.color.tap_white));
+                tvButtonText.setTextColor(getResources().getColor(R.color.tapWhite));
                 if (isContact == 0) {
                     // Searched user is not a contact
                     runOnUiThread(() -> {

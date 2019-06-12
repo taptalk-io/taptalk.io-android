@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white_f3">
+    android:background="@color/tapWhiteF3">
 
     <FrameLayout
         android:id="@+id/fl_button_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/tap_white"
+        android:background="@color/tapWhite"
         android:elevation="2dp"
         app:layout_constraintBottom_toTopOf="@id/f_connection_status"
         app:layout_constraintTop_toTopOf="parent">
@@ -32,7 +32,7 @@
                 android:id="@+id/cl_button_search"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/tap_white">
+                android:background="@color/tapWhite">
 
                 <ImageView
                     android:id="@+id/iv_search_icon"
@@ -52,7 +52,7 @@
                     android:layout_marginEnd="18dp"
                     android:fontFamily="@font/tap_font_pt_root_regular"
                     android:text="@string/tap_search"
-                    android:textColor="@color/tap_grey_9b"
+                    android:textColor="@color/tapGrey9b"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/civ_my_avatar_image"
@@ -93,7 +93,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_gravity="bottom"
-            android:background="@color/tap_grey_ea" />
+            android:background="@color/tapGreyEa" />
 
     </FrameLayout>
 
@@ -173,7 +173,7 @@
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/tap_white_f3"
+        android:background="@color/tapWhiteF3"
         android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/f_connection_status" />
@@ -190,7 +190,7 @@
         android:id="@+id/ll_room_empty"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/tap_white_f3"
+        android:background="@color/tapWhiteF3"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone"
@@ -212,7 +212,7 @@
                 android:letterSpacing="-0.02"
                 android:lineSpacingExtra="6sp"
                 android:text="@string/tap_no_chats_to_show"
-                android:textColor="@color/tap_black_19"
+                android:textColor="@color/tapBlack19"
                 android:textSize="24sp" />
 
 
@@ -229,7 +229,7 @@
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"
             android:text="@string/tap_room_list_empty"
-            android:textColor="@color/tap_black_19"
+            android:textColor="@color/tapBlack19"
             android:textSize="14sp" />
 
         <TextView
@@ -244,7 +244,7 @@
             android:paddingEnd="16dp"
             android:paddingBottom="8dp"
             android:text="@string/tap_start_a_new_chat"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/tapColorPrimaryDark"
             android:textSize="16sp" />
 
     </LinearLayout>

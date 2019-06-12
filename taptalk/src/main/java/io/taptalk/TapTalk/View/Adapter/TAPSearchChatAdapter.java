@@ -130,7 +130,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Set message body with highlighted text
             String highlightedText;
-            String colorCode = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.colorPrimaryDark)).substring(2);
+            String colorCode = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.tapColorPrimaryDark)).substring(2);
             try {
                 highlightedText = message.getBody().replaceAll("(?i)([" + searchKeyword + "])",
                         String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
@@ -232,7 +232,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                     "(?i)(" + searchKeyword + ")",
                     String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
                             Integer.toHexString(ContextCompat.getColor(itemView.getContext(),
-                                    R.color.colorPrimaryDark)).substring(2), "$1"));
+                                    R.color.tapColorPrimaryDark)).substring(2), "$1"));
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
             // Change avatar icon
