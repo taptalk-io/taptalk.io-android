@@ -205,6 +205,13 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="TapSystemMessage">
+        <item name="android:fontFamily">@font/tap_font_pt_root_medium</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">@color/tap_grey_9b</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="TapQuoteTitle">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">0.01</item>
