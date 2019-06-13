@@ -27,9 +27,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -560,7 +558,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                loadMoreMessagesFromDatabase();
+                if (!vm.isOnBottom())
+                    loadMoreMessagesFromDatabase();
             }
         };
 
