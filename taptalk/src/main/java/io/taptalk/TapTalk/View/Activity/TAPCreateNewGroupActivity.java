@@ -276,6 +276,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
             updateFilteredContacts(etSearch.getText().toString().toLowerCase());
+            TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
             return true;
         }
     };

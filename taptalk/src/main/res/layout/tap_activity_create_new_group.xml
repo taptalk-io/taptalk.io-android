@@ -81,14 +81,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/tapWhite"
+        android:elevation="4dp"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/tapGreyD9" />
 
         <TextView
             android:id="@+id/tv_member_count"
