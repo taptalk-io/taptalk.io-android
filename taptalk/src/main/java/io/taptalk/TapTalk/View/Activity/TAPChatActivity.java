@@ -1427,11 +1427,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     }
-                    String fileID = intent.getStringExtra(FILE_ID);
-                    fileUri = intent.getParcelableExtra(FILE_URI);
-                    if (null != fileID && null != fileUri) {
-                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), fileID, fileUri);
-                    }
                     break;
                 case DownloadFailed:
                     localID = intent.getStringExtra(DownloadLocalID);
