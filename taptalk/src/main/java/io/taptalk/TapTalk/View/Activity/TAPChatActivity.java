@@ -236,13 +236,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPConnectionManager.getInstance().removeSocketListener(socketListener);
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-        TAPBroadcastManager.unregister(this, broadcastReceiver);
         TAPFileDownloadManager.getInstance().clearFailedDownloads(); // Remove failed download list from active room
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        registerBroadcastManager();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
@@ -257,6 +257,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        TAPBroadcastManager.unregister(this, broadcastReceiver);
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
@@ -390,7 +391,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             initHelper();
             initListener();
             cancelNotificationWhenEnterRoom();
-            registerBroadcastManager();
+            //registerBroadcastManager();
 
             if (null != clDeletedUser) clDeletedUser.setVisibility(View.GONE);
 

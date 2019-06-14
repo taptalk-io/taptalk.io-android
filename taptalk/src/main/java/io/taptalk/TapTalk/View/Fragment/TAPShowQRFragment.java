@@ -57,7 +57,7 @@ public class TAPShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap(TAPChatManager.getInstance().getActiveUser().getUserID());
+            bitmap = encodeAsBitmap("id:"+TAPChatManager.getInstance().getActiveUser().getUserID());
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();
