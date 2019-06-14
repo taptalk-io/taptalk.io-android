@@ -132,7 +132,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void setUpFromScanQR() {
-        TAPDataManager.getInstance().getUserByIdFromApi(scanResult, getUserView);
+        TAPDataManager.getInstance().getUserByIdFromApi(scanResult.replace("id:",""), getUserView);
     }
 
     private void validateScanResult(TAPUserModel userModel) {

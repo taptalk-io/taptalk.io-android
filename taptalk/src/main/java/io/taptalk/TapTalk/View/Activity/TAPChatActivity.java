@@ -27,9 +27,7 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -238,13 +236,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPConnectionManager.getInstance().removeSocketListener(socketListener);
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-        TAPBroadcastManager.unregister(this, broadcastReceiver);
         TAPFileDownloadManager.getInstance().clearFailedDownloads(); // Remove failed download list from active room
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        registerBroadcastManager();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
@@ -259,6 +257,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        TAPBroadcastManager.unregister(this, broadcastReceiver);
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
@@ -392,7 +391,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             initHelper();
             initListener();
             cancelNotificationWhenEnterRoom();
-            registerBroadcastManager();
+            //registerBroadcastManager();
 
             if (null != clDeletedUser) clDeletedUser.setVisibility(View.GONE);
 
@@ -560,7 +559,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                loadMoreMessagesFromDatabase();
+                if (!vm.isOnBottom())
+                    loadMoreMessagesFromDatabase();
             }
         };
 
@@ -1426,11 +1426,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     localID = intent.getStringExtra(DownloadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-                    }
-                    String fileID = intent.getStringExtra(FILE_ID);
-                    fileUri = intent.getParcelableExtra(FILE_URI);
-                    if (null != fileID && null != fileUri) {
-                        TAPFileDownloadManager.getInstance().saveFileMessageUri(vm.getRoom().getRoomID(), fileID, fileUri);
                     }
                     break;
                 case DownloadFailed:

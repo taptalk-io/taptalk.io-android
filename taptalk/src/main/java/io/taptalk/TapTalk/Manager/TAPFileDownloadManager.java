@@ -276,6 +276,9 @@ public class TAPFileDownloadManager {
             intent.putExtra(FILE_ID, fileID);
             intent.putExtra(FILE_URI, fileProviderUri);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (null != fileID && null != fileProviderUri) {
+                TAPFileDownloadManager.getInstance().saveFileMessageUri(message.getRoom().getRoomID(), fileID, fileProviderUri);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             setDownloadFailed(localID);
