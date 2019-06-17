@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="tapColorPrimaryLight">@color/tapLightOrangeTwo</color>
+    <color name="tapColorPrimaryExtraLight">@color/tapLightOrangeTwo</color>
+    <color name="tapColorPrimaryLight">@color/tapMango</color>
     <color name="tapColorPrimary">@color/tapPumpkinOrange</color>
     <color name="tapColorPrimaryDark">@color/tapPumpkinOrangeDark</color>
-    <color name="tapColorAccentLight">@color/tapWhite</color>
-    <color name="tapColorAccent">@color/tapWhiteF3</color>
+    <color name="tapColorAccent">@color/tapColorPrimary</color>
+
+    <color name="tapColorTextLight">@color/tapWhite</color>
+    <color name="tapColorTextMedium">@color/tapGrey9b</color>
+    <color name="tapColorTextDark">@color/tapBlack19</color>
+
+    <color name="tapColorSuccess">@color/tapAppleGreen</color>
+    <color name="tapColorError">@color/tapWatermelonRed</color>
+
     <color name="tapColorAccentDark">@color/tapGrey9b</color>
 
     <color name="tapDarkPurple">#51276c</color>

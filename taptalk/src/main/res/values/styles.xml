@@ -9,10 +9,25 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentTransitions">true</item>
     </style>
+    
+    <style name="tapFontFamilyLight">
+        <item name="android:fontFamily">@font/tap_font_pt_root_light</item>
+    </style>
 
-    <style name="TapToolbarTitle">
-        <item name="android:ellipsize">end</item>
+    <style name="tapFontFamilyRegular">
+        <item name="android:fontFamily">@font/tap_font_pt_root_regular</item>
+    </style>
+
+    <style name="tapFontFamilyMedium">
+        <item name="android:fontFamily">@font/tap_font_pt_root_medium</item>
+    </style>
+
+    <style name="tapFontFamilyBold">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
+    </style>
+
+    <style name="TapToolbarTitle" parent="tapFontFamilyBold">
+        <item name="android:ellipsize">end</item>
         <item name="android:gravity">center</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:maxLines">1</item>
