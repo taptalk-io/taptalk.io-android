@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -509,6 +510,7 @@ public class TAPRoomListFragment extends Fragment {
     private void showChatRoomSettingUp() {
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapColorPrimaryDark));
         tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
         tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
         TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivSetupChatLoading);
@@ -525,6 +527,7 @@ public class TAPRoomListFragment extends Fragment {
     private void showChatRoomSetupSuccess() {
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_green));
+        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapTransparentWhite));
         tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
         tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
         TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivSetupChatLoading);
@@ -545,6 +548,7 @@ public class TAPRoomListFragment extends Fragment {
     private void showChatRoomSetupFailed() {
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapTransparentWhite));
         ivSetupChatLoading.clearAnimation();
         tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
 
