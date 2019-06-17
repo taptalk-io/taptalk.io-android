@@ -31,6 +31,12 @@ public class TAPDefaultConstant {
         public static final String MY_CONTACT_DB = "kTAPMyContactDB";
     }
 
+    public static final class RoomType {
+        public static final int TYPE_PERSONAL = 1;
+        public static final int TYPE_GROUP = 2;
+        public static final int TYPE_CHANNEL = 3;
+    }
+
     public static final class MessageType {
         public static final int TYPE_TEXT = 1001;
         public static final int TYPE_IMAGE = 1002;
@@ -66,6 +72,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
+        public static final int TYPE_BUBBLE_SYSTEM_MESSAGE = 9001;
         public static final int TYPE_BUBBLE_UNREAD_STATUS = 9002;
         public static final int TYPE_BUBBLE_LOADING = 9003;
         public static final int TYPE_BUBBLE_DELETED_RIGHT = 90041;

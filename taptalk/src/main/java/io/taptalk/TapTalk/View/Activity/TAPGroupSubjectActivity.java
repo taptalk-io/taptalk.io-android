@@ -192,7 +192,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
-                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_6dp);
+                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple);
                 vm.getGroupData().setRoomName(s.toString());
             } else {
                 btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp);

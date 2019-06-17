@@ -102,8 +102,6 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
             // Change avatar icon and background
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
-            //if (null != item.getAvatarURL())
-            //  Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).apply(new RequestOptions().centerCrop()).into(ivAvatar);
 
             // Set name
             tvFullName.setText(item.getName());
@@ -160,14 +158,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
     class SelectedGroupMemberHolder extends TAPBaseViewHolder<TAPUserModel> {
 
-        private CircleImageView ivAvatar;
+        private CircleImageView civAvatar;
         private ImageView ivAvatarIcon;
         private TextView tvFullName;
 
         SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
-            ivAvatar = itemView.findViewById(R.id.civ_avatar);
+            civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
         }
@@ -175,12 +173,12 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
         @Override
         protected void onBind(TAPUserModel item, int position) {
             if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty()) {
-                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).into(ivAvatar);
-                ivAvatar.setBackground(null);
+                Glide.with(itemView.getContext())
+                        .load(item.getAvatarURL().getThumbnail())
+                        .apply(new RequestOptions().centerCrop())
+                        .into(civAvatar);
             } else {
-                ivAvatar.setImageDrawable(null);
-                ivAvatar.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-                ivAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
+                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             }
 
             // Set name

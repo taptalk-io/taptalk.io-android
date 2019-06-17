@@ -137,6 +137,14 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="TapSectionLabelPrimary">
+        <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
+        <item name="android:letterSpacing">0.15</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/tapColorPrimaryDark</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="TapSectionLabel">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">0.09</item>
@@ -194,13 +202,21 @@
     <style name="TapMessageUserName">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/tapColorPrimaryDark</item>
     </style>
 
     <style name="TapMessageLog">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapGrey9b</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TapSystemMessage">
+        <item name="android:fontFamily">@font/tap_font_pt_root_medium</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">@color/tapColorPrimaryDark</item>
         <item name="android:textSize">12sp</item>
     </style>
 

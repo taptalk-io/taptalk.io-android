@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -74,6 +75,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_TEXT_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_UNREAD_STATUS;
@@ -103,9 +105,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADI
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
@@ -170,6 +174,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_right);
             case TYPE_BUBBLE_DELETED_LEFT:
                 return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_left);
+            case TYPE_BUBBLE_SYSTEM_MESSAGE:
+                return new SystemMessageVH(parent, R.layout.tap_cell_chat_system_message);
             default:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
         }
@@ -231,6 +237,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     return TYPE_BUBBLE_PRODUCT_LIST;
                 case TYPE_ORDER_CARD:
                     return TYPE_BUBBLE_ORDER_CARD;
+                case TYPE_SYSTEM_MESSAGE:
+                    return TYPE_BUBBLE_SYSTEM_MESSAGE;
                 case TYPE_UNREAD_MESSAGE_IDENTIFIER:
                     return TYPE_BUBBLE_UNREAD_STATUS;
                 case TYPE_LOADING_MESSAGE_IDENTIFIER:
@@ -254,7 +262,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private CircleImageView civAvatar;
         private ImageView ivMessageStatus, ivReply, ivSending;
         private TAPRoundedCornerImageView rcivQuoteImage;
-        private TextView tvUsername, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
+        private TextView tvUserName, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
@@ -276,7 +284,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
-                tvUsername = itemView.findViewById(R.id.tv_user_name);
+                tvUserName = itemView.findViewById(R.id.tv_user_name);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
@@ -286,7 +294,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvUserName);
             }
 
             tvMessageBody.setText(item.getBody());
@@ -377,7 +385,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             tvMessageStatus.setText(item.getMessageStatusText());
@@ -387,6 +395,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             setProgress(item);
             setImageData(item);
+            fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
             setLinkDetection(itemView.getContext(), tvMessageBody);
@@ -417,14 +426,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else if ((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressValue) {
                 flProgress.setVisibility(View.GONE);
-                flBubble.setForeground(null);
+//                flBubble.setForeground(null);
             } else {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
-                if (null != uploadProgressValue)
+                if (null != uploadProgressValue) {
                     pbProgress.setProgress(uploadProgressValue);
-                else pbProgress.setProgress(downloadProgressValue);
+                } else {
+                    pbProgress.setProgress(downloadProgressValue);
+                }
             }
         }
 
@@ -533,22 +544,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 });
                 Number size = (Number) item.getData().get(SIZE);
                 if (null != size && size.longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
-                    // TODO: 30 April 2019 IMAGE THUMBNAIL IS EMPTY, SHOWS GRAY BACKGROUND
                     activity.runOnUiThread(() -> {
-                        if (isMessageFromMySelf(item)) {
-                            flBubble.setForeground(bubbleOverlayRight);
-                        } else {
-                            flBubble.setForeground(bubbleOverlayLeft);
-                        }
+//                        if (isMessageFromMySelf(item)) {
+//                            flBubble.setForeground(bubbleOverlayRight);
+//                        } else {
+//                            flBubble.setForeground(bubbleOverlayLeft);
+//                        }
                         rcivImageBody.setImageDrawable(thumbnail);
                     });
                 } else {
                     activity.runOnUiThread(() -> {
-                        if (isMessageFromMySelf(item)) {
-                            flBubble.setForeground(bubbleOverlayRight);
-                        } else {
-                            flBubble.setForeground(bubbleOverlayLeft);
-                        }
+//                        if (isMessageFromMySelf(item)) {
+//                            flBubble.setForeground(bubbleOverlayRight);
+//                        } else {
+//                            flBubble.setForeground(bubbleOverlayLeft);
+//                        }
                         glide.load(imageUri)
                                 .transition(DrawableTransitionOptions.withCrossFade(100))
                                 .apply(new RequestOptions()
@@ -636,7 +646,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
-            if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
+            if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
@@ -647,7 +657,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, null);
             }
 
             tvMediaInfo.setVisibility(View.VISIBLE);
@@ -656,6 +666,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             setVideoProgress(item);
+            fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
             setLinkDetection(itemView.getContext(), tvMessageBody);
@@ -756,10 +767,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
                 pbProgress.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
-                    flBubble.setForeground(bubbleOverlayRight);
+//                    flBubble.setForeground(bubbleOverlayRight);
                     rcivVideoThumbnail.setOnClickListener(v -> resendMessage(item));
                 } else {
-                    flBubble.setForeground(bubbleOverlayLeft);
+//                    flBubble.setForeground(bubbleOverlayLeft);
                     rcivVideoThumbnail.setOnClickListener(v -> downloadVideo(item));
                 }
                 glide.load(videoUri)
@@ -907,13 +918,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private CircleImageView civAvatar;
         private ImageView ivFileIcon, ivMessageStatus, ivReply, ivSending;
         private TAPRoundedCornerImageView rcivQuoteImage;
-        private TextView tvUsername, tvFileName, tvFileInfo, tvFileInfoDummy, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
+        private TextView tvUserName, tvFileName, tvFileInfo, tvFileInfoDummy, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
         private View vQuoteBackground, vQuoteDecoration;
         private ProgressBar pbProgress;
 
         private Uri fileUri;
 
-        protected FileVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+        FileVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
             clContainer = itemView.findViewById(R.id.cl_container);
@@ -935,9 +946,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
-            if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
+            if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
-                tvUsername = itemView.findViewById(R.id.tv_user_name);
+                tvUserName = itemView.findViewById(R.id.tv_user_name);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
@@ -947,7 +958,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvUserName);
             }
 
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
@@ -1105,8 +1116,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             mapView = itemView.findViewById(R.id.map_view);
             mapView.onCreate(new Bundle());
 
-            if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
+            if (bubbleType == TYPE_BUBBLE_LOCATION_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
+//                tvUserName = itemView.findViewById(R.id.tv_user_name);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
@@ -1121,9 +1133,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, tvMessageStatus, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, null);
             }
-
 
             if (null == item.getFailedSend() || (null != item.getFailedSend() && !item.getFailedSend())) {
                 tvMessageStatus.setText(item.getMessageStatusText());
@@ -1131,6 +1142,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            fixBubbleMarginForGroupRoom(item, flBubble);
+
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
                     (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
                 // Fix layout when quote/forward exists
@@ -1199,6 +1212,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
+    private void fixBubbleMarginForGroupRoom(TAPMessageModel item, View flBubble) {
+        if (isMessageFromMySelf(item) || !(flBubble.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) {
+            return;
+        }
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) flBubble.getLayoutParams();
+        if (item.getRoom().getRoomType() == TYPE_GROUP) {
+            // Fix bubble margin on group room
+            params.setMarginEnd(TAPUtils.getInstance().dpToPx(64));
+        } else {
+            params.setMarginEnd(TAPUtils.getInstance().dpToPx(110));
+        }
+    }
+
     public class ProductVH extends TAPBaseChatViewHolder {
 
         RecyclerView rvProductList;
@@ -1232,6 +1258,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     adapter.getItemCount(),
                     0, 0));
             OverScrollDecoratorHelper.setUpOverScroll(rvProductList, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        }
+    }
+
+    public class SystemMessageVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer;
+        private TextView tv_message;
+
+        SystemMessageVH(ViewGroup parent, int itemLayoutId) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            tv_message = itemView.findViewById(R.id.tv_message);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            tv_message.setText(item.getBody());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
         }
     }
 
@@ -1397,11 +1442,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void checkAndUpdateMessageStatus(TAPBaseChatViewHolder vh, TAPMessageModel item,
-                                             TextView tvMessageStatus,
                                              @Nullable ImageView ivMessageStatus,
                                              @Nullable ImageView ivSending,
                                              @Nullable CircleImageView civAvatar,
-                                             @Nullable TextView tvUsername) {
+                                             @Nullable TextView tvUserName) {
         if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
             // Message has been read
             if (null != item.getIsRead() && item.getIsRead()) {
@@ -1422,14 +1466,24 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
         } else {
             // Message from others
-            // TODO: 26 September 2018 LOAD USER NAME AND AVATAR IF ROOM TYPE IS GROUP
-            if (null != civAvatar && null != item.getUser().getAvatarURL()) {
-                glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
-                //civAvatar.setVisibility(View.VISIBLE);
-            }
-            if (null != tvUsername) {
-                tvUsername.setText(item.getUser().getUsername());
-                //tvUsername.setVisibility(View.VISIBLE);
+            if (item.getRoom().getRoomType() == TYPE_GROUP) {
+                // Load avatar and name if room type is group
+                if (null != civAvatar && null != item.getUser().getAvatarURL()) {
+                    glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                    civAvatar.setVisibility(View.VISIBLE);
+                }
+                if (null != tvUserName) {
+                    tvUserName.setText(item.getUser().getUsername());
+                    tvUserName.setVisibility(View.VISIBLE);
+                }
+            } else {
+                // Hide avatar and name
+                if (null != civAvatar) {
+                    civAvatar.setVisibility(View.GONE);
+                }
+                if (null != tvUserName) {
+                    tvUserName.setVisibility(View.GONE);
+                }
             }
             chatListener.onMessageRead(item);
         }
@@ -1565,7 +1619,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Get quote image from file ID
                 if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
                     // Load file icon
-                    rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_black_19));
+                    rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
+                    // TODO: 11 June 2019 CHANGE COLOR TINT TO TEXT COLOR
+                    if (isMessageFromMySelf(item)) {
+                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapWhite)));
+                    } else {
+                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapBlack19)));
+                    }
                     updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {

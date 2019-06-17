@@ -79,6 +79,7 @@
     <color name="tapTransparentWhite20">#33ffffff</color>
     <color name="tapTransparentWhite40">#66ffffff</color>
     <color name="tapTransparentWhite60">#99ffffff</color>
+    <color name="tapTransparentWhite82">#d1ffffff</color>
     <color name="tapTransparentBlack">#00000000</color>
     <color name="tapTransparentBlack10">#1a000000</color>
     <color name="tapTransparentBlack18">#2d000000</color>
@@ -111,4 +112,5 @@
         <item>@color/pastelYellow</item>
         <item>@color/pastelBlue</item>
     </array>
+
 </resources>

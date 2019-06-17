@@ -523,11 +523,12 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSetupSuccess() {
+        Log.e(TAG, "showChatRoomSetupSuccess: ");
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_green));
+        ivSetupChatLoading.clearAnimation();
         tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
         tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
-        TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivSetupChatLoading);
 
         tvSetupChatDescription.setVisibility(View.VISIBLE);
         llRetrySetup.setVisibility(View.GONE);
@@ -543,6 +544,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSetupFailed() {
+        Log.e(TAG, "showChatRoomSetupFailed: ");
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
         ivSetupChatLoading.clearAnimation();

@@ -167,7 +167,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
 
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
-        //clButtonNewGroup.setVisibility(View.GONE);
         llBlockedContacts.setVisibility(View.GONE);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
