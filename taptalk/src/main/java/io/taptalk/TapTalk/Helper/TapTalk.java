@@ -26,6 +26,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -540,17 +541,18 @@ public class TapTalk {
     }
 
     public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
+        WeakReference<Context> contextWeakReference = new WeakReference<>(context);
         TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
             public void onSelectFinished(TAPRoomModel roomModel) {
-                if (null == context) {
+                if (null == contextWeakReference.get()) {
                     return;
                 }
-                Intent intent = new Intent(context, TAPChatProfileActivity.class);
+                Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
                 intent.putExtra(ROOM, roomModel);
-                context.startActivity(intent);
-                if (context instanceof Activity) {
-                    ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                contextWeakReference.get().startActivity(intent);
+                if (contextWeakReference.get() instanceof Activity) {
+                    ((Activity) contextWeakReference.get()).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
                 }
             }
         });
