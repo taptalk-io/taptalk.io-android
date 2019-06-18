@@ -35,7 +35,7 @@
 
     <TextView
         android:id="@+id/tv_full_name"
-        style="@style/TapContactName"
+        style="@style/tapRoomListNameStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -73,7 +73,7 @@
 
     <TextView
         android:id="@+id/tv_last_message"
-        style="@style/TapRoomMessage"
+        style="@style/tapRoomListMessageStyle"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
@@ -88,12 +88,11 @@
 
     <TextView
         android:id="@+id/tv_last_message_time"
-        style="@style/TapMessageStatus"
+        style="@style/tapRoomListTimeStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
-        android:gravity="end"
         app:layout_constraintBottom_toBottomOf="@id/tv_full_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_mute"
@@ -119,13 +118,18 @@
 
         <TextView
             android:id="@+id/tv_badge_unread"
-            style="@style/TapUnreadBadge"
+            style="@style/tapRoomListUnreadBadgeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="18dp"
+            android:background="@drawable/tap_bg_room_list_unread_badge"
             android:gravity="center"
             android:minWidth="24dp"
+            android:paddingStart="7dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="4dp"
             android:visibility="invisible"
             tools:text="1" />
 

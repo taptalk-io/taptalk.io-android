@@ -31,7 +31,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapToolbarTitle"
+            style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/tap_forward"

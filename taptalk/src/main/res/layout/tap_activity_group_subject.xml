@@ -31,7 +31,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapToolbarTitle"
+            style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="?attr/actionBarSize"
@@ -45,7 +45,7 @@
 
     <TextView
         android:id="@+id/tv_member_count"
-        style="@style/TapSectionLabelPrimary"
+        style="@style/tapSectionHeaderLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
@@ -73,7 +73,7 @@
 
     <TextView
         android:id="@+id/tv_label_group_picture"
-        style="@style/TapSectionLabelPrimary"
+        style="@style/tapSectionHeaderLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -120,7 +120,7 @@
 
     <TextView
         android:id="@+id/tv_label_group_name"
-        style="@style/TapSectionLabelPrimary"
+        style="@style/tapSectionHeaderLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"

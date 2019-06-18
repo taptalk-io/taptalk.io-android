@@ -76,7 +76,7 @@
 
         <TextView
             android:id="@+id/tv_collapsed_name"
-            style="@style/TapToolbarTitle"
+            style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginStart="64dp"
@@ -173,7 +173,7 @@
                         android:text="@string/tap_cant_find_contact" />
 
                     <TextView
-                        style="@style/TapTextButtonPrimaryDark"
+                        style="@style/tapClickableLabelStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
