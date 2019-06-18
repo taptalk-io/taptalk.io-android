@@ -54,7 +54,6 @@ import kotlinx.android.synthetic.main.tap_activity_register.et_mobile_number
 import kotlinx.android.synthetic.main.tap_activity_register.et_username
 import kotlinx.android.synthetic.main.tap_activity_register.fl_container
 import kotlinx.android.synthetic.main.tap_activity_register.iv_remove_profile_picture
-import kotlinx.android.synthetic.main.tap_activity_register.ll_change_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_register.tv_country_code
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_email_address_error
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_full_name_error
