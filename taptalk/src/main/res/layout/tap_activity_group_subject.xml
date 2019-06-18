@@ -1,191 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="@color/tapWhiteF3"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/cl_action_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/tapWhite"
-            android:elevation="2dp"
-            android:foreground="?attr/selectableItemBackground"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/iv_button_back"
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="16dp"
-                android:src="@drawable/tap_ic_back_white"
-                android:tint="@color/tapColorPrimaryDark"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/tv_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_title"
-                style="@style/TapToolbarTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="?attr/actionBarSize"
-                android:text="@string/tap_group_subject"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_button_back"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/tapWhiteF3"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/tapWhite"
+        android:elevation="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/iv_group_pic_background"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@drawable/tap_bg_half_circle_bottom_white"
-            android:paddingBottom="12dp"
-            app:layout_constraintDimensionRatio="W, 1:2"
-            app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
-
-        <io.taptalk.TapTalk.Helper.CircleImageView
-            android:id="@+id/civ_group_image"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_marginBottom="12dp"
+            android:id="@+id/iv_button_back"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerCrop"
-            android:src="@drawable/tap_img_default_avatar"
-            app:layout_constraintBottom_toBottomOf="@id/iv_group_pic_background"
-            app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
-            app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
-            app:layout_constraintTop_toTopOf="@id/iv_group_pic_background" />
-
-        <LinearLayout
-            android:id="@+id/ll_change_group_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:elevation="2dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
-            app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
-            app:layout_constraintTop_toBottomOf="@id/civ_group_image">
-
-            <TextView
-                android:id="@+id/tv_label_change_profile_picture"
-                style="@style/TapTextButtonPrimaryDark"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tap_change" />
-
-            <ImageView
-                android:id="@+id/iv_edit_profile_picture_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:src="@drawable/tap_ic_edit_orange"
-                android:tint="@color/tapColorPrimaryDark" />
-
-        </LinearLayout>
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_back_white"
+            android:tint="@color/tapColorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_label_full_name"
-            style="@style/TapFormFieldName"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_title"
+            style="@style/TapToolbarTitle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/tap_group_name"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_group_pic_background" />
-
-        <EditText
-            android:id="@+id/et_group_name"
-            style="@style/TapFormFieldBody"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
-            android:hint="@string/tap_hint_insert_name"
-            android:imeOptions="actionNext"
-            android:inputType="textCapWords"
-            android:maxLines="1"
-            android:padding="15dp"
-            android:textCursorDrawable="@drawable/tap_login_color_cursor"
-            app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="54dp"
-            android:background="@color/tapWhite"
-            android:elevation="2dp"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:text="@string/tap_group_subject"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/et_group_name"
-            app:layout_constraintVertical_bias="1">
-
-            <TextView
-                android:id="@+id/tv_member_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:textAllCaps="true"
-                android:textColor="@color/tapColorPrimary"
-                android:textSize="11sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Group Members (5/50)" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_group_members"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="10dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_member_count" />
-
-            <Button
-                android:id="@+id/btn_create_group"
-                style="@style/TapButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/tap_create_group"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_group_members" />
-
-        </android.support.constraint.ConstraintLayout>
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 
-</ScrollView>
+    <ScrollView
+        android:id="@+id/sv_group_subject"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_group_pic_background"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@drawable/tap_bg_half_circle_bottom_white"
+                android:paddingBottom="12dp"
+                app:layout_constraintDimensionRatio="W, 1:2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_group_image"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginBottom="12dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerCrop"
+                android:src="@drawable/tap_img_default_avatar"
+                app:layout_constraintBottom_toBottomOf="@id/iv_group_pic_background"
+                app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
+                app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
+                app:layout_constraintTop_toTopOf="@id/iv_group_pic_background" />
+
+            <LinearLayout
+                android:id="@+id/ll_change_group_picture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:elevation="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
+                app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
+                app:layout_constraintTop_toBottomOf="@id/civ_group_image">
+
+                <TextView
+                    android:id="@+id/tv_label_change_profile_picture"
+                    style="@style/TapTextButtonPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tap_change" />
+
+                <ImageView
+                    android:id="@+id/iv_edit_profile_picture_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/tap_ic_edit_orange"
+                    android:tint="@color/tapColorPrimaryDark" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_label_full_name"
+                style="@style/TapFormFieldName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/tap_group_name"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_group_pic_background" />
+
+            <EditText
+                android:id="@+id/et_group_name"
+                style="@style/TapFormFieldBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+                android:hint="@string/tap_hint_insert_name"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="54dp"
+                android:background="@color/tapWhite"
+                android:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_group_name"
+                app:layout_constraintVertical_bias="1">
+
+                <TextView
+                    android:id="@+id/tv_member_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:textAllCaps="true"
+                    android:textColor="@color/tapColorPrimary"
+                    android:textSize="11sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Group Members (5/50)" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_group_members"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_member_count" />
+
+                <Button
+                    android:id="@+id/btn_create_group"
+                    style="@style/TapButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/tap_create_group"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rv_group_members" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
