@@ -289,5 +289,7 @@
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_this_deleted_message">This message was deleted.</string>
     <string name="tap_deleted_message">Deleted Message</string>
+    <string name="title_activity_tapedit_group">TAPEditGroupActivity</string>
+    <string name="tap_edit_group">Edit Group</string>
 
 </resources>

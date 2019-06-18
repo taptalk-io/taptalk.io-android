@@ -9,7 +9,7 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentTransitions">true</item>
     </style>
-    
+
     <style name="tapFontFamilyLight">
         <item name="android:fontFamily">@font/tap_font_pt_root_light</item>
     </style>
@@ -124,7 +124,9 @@
     </style>
 
     <style name="TapButton">
-        <item name="android:background">@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple</item>
+        <item name="android:background">
+            @drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple
+        </item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
@@ -251,7 +253,9 @@
     </style>
 
     <style name="TapUnreadBadge">
-        <item name="android:background">@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_12dp</item>
+        <item name="android:background">
+            @drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_12dp
+        </item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:paddingStart">7dp</item>
         <item name="android:paddingTop">4dp</item>
@@ -327,5 +331,14 @@
         <item name="android:progressBackgroundTint">@color/tapPurplyTwo</item>
         <item name="android:padding">0dp</item>
     </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
