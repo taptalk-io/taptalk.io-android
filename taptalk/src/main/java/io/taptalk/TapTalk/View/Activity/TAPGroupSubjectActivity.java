@@ -127,6 +127,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         llChangeGroupPicture = findViewById(R.id.ll_change_group_picture);
 
         etGroupName.addTextChangedListener(groupNameWatcher);
+        etGroupName.setOnFocusChangeListener(focusListener);
 
         adapter = new TAPContactListAdapter(TAPContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
         rvGroupMembers.setAdapter(adapter);
@@ -207,6 +208,14 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void afterTextChanged(Editable s) {
 
+        }
+    };
+
+    private View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+        if (hasFocus) {
+            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp));
+        } else {
+            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp));
         }
     };
 }
