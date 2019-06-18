@@ -182,6 +182,7 @@
     <string name="tap_hint_phone_number">82212345678</string>
     <string name="tap_hint_email_address">e.g example@work.com</string>
     <string name="tap_hint_insert_password">Insert Password</string>
+    <string name="tap_hint_insert_name">Insert Name</string>
 
     <!--Intent-->
     <string name="tap_intent_type_all">*/*</string>

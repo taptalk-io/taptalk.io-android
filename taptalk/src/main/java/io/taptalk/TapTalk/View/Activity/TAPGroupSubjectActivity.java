@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,12 +45,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP
 
 public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
-    private ImageView ivButtonBack, ivCamera;
+    private ImageView ivButtonBack;
     private CircleImageView civGroupImage;
     private TextView tvTitle, tvMemberCount;
     private EditText etGroupName;
     private Button btnCreateGroup;
     private RecyclerView rvGroupMembers;
+    private LinearLayout llChangeGroupPicture;
 
     private TAPContactListAdapter adapter;
     private TAPGroupViewModel vm;
@@ -116,13 +118,13 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
     private void initView() {
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivCamera = findViewById(R.id.iv_camera);
         civGroupImage = findViewById(R.id.civ_group_image);
         tvTitle = findViewById(R.id.tv_title);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etGroupName = findViewById(R.id.et_group_name);
         btnCreateGroup = findViewById(R.id.btn_create_group);
         rvGroupMembers = findViewById(R.id.rv_group_members);
+        llChangeGroupPicture = findViewById(R.id.ll_change_group_picture);
 
         etGroupName.addTextChangedListener(groupNameWatcher);
 
@@ -140,7 +142,10 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        civGroupImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false));
+        llChangeGroupPicture.setOnClickListener(v -> {
+            TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
+            TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
+        });
         btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
     }
 
@@ -161,7 +166,6 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                ivCamera.setVisibility(View.GONE);
                 return false;
             }
         }).into(civGroupImage);
