@@ -7,14 +7,18 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,12 +48,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP
 
 public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
-    private ImageView ivButtonBack, ivCamera;
+    private ImageView ivButtonBack, ivGroupPicBackground;
     private CircleImageView civGroupImage;
     private TextView tvTitle, tvMemberCount;
     private EditText etGroupName;
     private Button btnCreateGroup;
     private RecyclerView rvGroupMembers;
+    private LinearLayout llChangeGroupPicture;
+    private ConstraintLayout clActionBar;
+    private ScrollView svGroupSubject;
 
     private TAPContactListAdapter adapter;
     private TAPGroupViewModel vm;
@@ -116,15 +123,20 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
     private void initView() {
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivCamera = findViewById(R.id.iv_camera);
+        ivGroupPicBackground = findViewById(R.id.iv_group_pic_background);
         civGroupImage = findViewById(R.id.civ_group_image);
         tvTitle = findViewById(R.id.tv_title);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etGroupName = findViewById(R.id.et_group_name);
         btnCreateGroup = findViewById(R.id.btn_create_group);
         rvGroupMembers = findViewById(R.id.rv_group_members);
+        llChangeGroupPicture = findViewById(R.id.ll_change_group_picture);
+        svGroupSubject = findViewById(R.id.sv_group_subject);
+        clActionBar = findViewById(R.id.cl_action_bar);
 
         etGroupName.addTextChangedListener(groupNameWatcher);
+        etGroupName.setOnFocusChangeListener(focusListener);
+        svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
 
         adapter = new TAPContactListAdapter(TAPContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
         rvGroupMembers.setAdapter(adapter);
@@ -140,7 +152,10 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         loadGroupImage();
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        civGroupImage.setOnClickListener(v -> TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false));
+        llChangeGroupPicture.setOnClickListener(v -> {
+            TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
+            TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
+        });
         btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
     }
 
@@ -161,7 +176,6 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                ivCamera.setVisibility(View.GONE);
                 return false;
             }
         }).into(civGroupImage);
@@ -203,6 +217,27 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void afterTextChanged(Editable s) {
 
+        }
+    };
+
+    private View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
+        if (hasFocus) {
+            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp));
+        } else {
+            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp));
+        }
+    };
+
+    private ViewTreeObserver.OnScrollChangedListener toolbarScrollListener = () -> {
+        int y = svGroupSubject.getScrollY();
+        int x = ivGroupPicBackground.getHeight();
+
+        if (y == 0) {
+            clActionBar.setElevation(0);
+        } else if (y < x) {
+            clActionBar.setElevation(TAPUtils.getInstance().dpToPx(1));
+        } else {
+            clActionBar.setElevation(TAPUtils.getInstance().dpToPx(2));
         }
     };
 }
