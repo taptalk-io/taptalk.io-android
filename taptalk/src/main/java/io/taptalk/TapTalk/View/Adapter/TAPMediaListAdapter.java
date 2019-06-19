@@ -18,7 +18,6 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
@@ -54,7 +53,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
     @NonNull
     @Override
     public TAPBaseViewHolder<TAPMessageModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ThumbnailGridVH(parent, R.layout.tap_cell_thumbnail_grid);
+        return new ThumbnailGridVH(parent, R.layout.tap_cell_media_thumbnail_grid);
     }
 
     class ThumbnailGridVH extends TAPBaseViewHolder<TAPMessageModel> {

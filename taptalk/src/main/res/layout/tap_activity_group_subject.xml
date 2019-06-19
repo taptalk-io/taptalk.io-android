@@ -31,7 +31,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapToolbarTitle"
+            style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="?attr/actionBarSize"
@@ -48,8 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -93,7 +93,7 @@
 
                 <TextView
                     android:id="@+id/tv_label_change_profile_picture"
-                    style="@style/TapTextButtonPrimaryDark"
+                    style="@style/tapClickableLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tap_change" />
@@ -110,7 +110,7 @@
 
             <TextView
                 android:id="@+id/tv_label_full_name"
-                style="@style/TapFormFieldName"
+                style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -122,7 +122,7 @@
 
             <EditText
                 android:id="@+id/et_group_name"
-                style="@style/TapFormFieldBody"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

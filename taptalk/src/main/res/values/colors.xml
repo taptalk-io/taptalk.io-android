@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--Default Colors-->
     <color name="tapColorPrimaryExtraLight">@color/tapLightOrangeTwo</color>
     <color name="tapColorPrimaryLight">@color/tapMango</color>
     <color name="tapColorPrimary">@color/tapPumpkinOrange</color>
@@ -13,8 +14,136 @@
     <color name="tapColorSuccess">@color/tapAppleGreen</color>
     <color name="tapColorError">@color/tapWatermelonRed</color>
 
-    <color name="tapColorAccentDark">@color/tapGrey9b</color>
+    <!--General Component Colors-->
+    <color name="tapDefaultNavBarBackgroundColor">@color/tapWhite</color>
+    <color name="tapDefaultBackgroundColor">@color/tapWhiteF3</color>
 
+    <color name="tapTextFieldCursorColor">@color/tapColorPrimary</color>
+    <color name="tapTextFieldBorderActiveColor">@color/tapColorPrimary</color>
+    <color name="tapTextFieldBorderInactiveColor">@color/tapGreyDc</color>
+    <color name="tapTextFieldBorderErrorColor">@color/tapColorError</color>
+
+    <color name="tapButtonInactiveBackgroundGradientLightColor">@color/tapGreyCe</color>
+    <color name="tapButtonInactiveBackgroundGradientDarkColor">@color/tapGrey9b</color>
+    <color name="tapButtonInactiveBorderColor">@color/tapGreyCe</color>
+    <color name="tapButtonActiveBackgroundGradientLightColor">@color/tapColorPrimaryLight</color>
+    <color name="tapButtonActiveBackgroundGradientDarkColor">@color/tapColorPrimary</color>
+    <color name="tapButtonActiveBorderColor">@color/tapColorPrimary</color>
+
+    <color name="tapSwitchActiveBackgroundColor">@color/tapColorPrimary</color>
+    <color name="tapSwitchInactiveBackgroundColor">@color/tapColorTextMedium</color>
+
+    <color name="tapPopupDialogPrimaryButtonBackgroundSuccessColor">@color/tapColorSuccess</color>
+    <color name="tapPopupDialogPrimaryButtonBackgroundErrorColor">@color/tapColorError</color>
+
+    <color name="tapUnreadBadgeBackgroundColor">@color/tapColorPrimary</color>
+
+    <color name="tapDefaultPrimaryIconColor">@color/tapColorPrimary</color>
+    <color name="tapDefaultSecondaryIconColor">@color/tapColorTextMedium</color>
+    <color name="tapSuccessIconColor">@color/tapColorSuccess</color>
+    <color name="tapDestructiveIconColor">@color/tapColorError</color>
+
+    <color name="tapRightBubbleBackgroundColor">@color/tapColorPrimary</color>
+    <color name="tapLeftBubbleBackgroundColor">@color/tapWhite</color>
+    <color name="tapRightBubbleQuoteBackgroundColor">@color/tapColorPrimaryDark</color>
+    <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapWhiteF3</color>
+    <color name="tapQuoteLayoutDecorationBackgroundColor">@color/tapColorPrimaryExtraLight</color>
+    <color name="tapFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
+
+    <!--Icon Component Colors-->
+    <color name="tapRoomListUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
+    <color name="tapChatRoomUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
+
+    <color name="tapIconLoadingProgress">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLoadingProgressLight">@color/tapWhite</color>
+    <color name="tapIconChevronRightPrimary">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChevronRightSecondary">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconChecklist">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconCircleSelectionActive">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconCircleSelectionInactive">@color/tapWhite</color>
+    <color name="tapIconLoadingPopupSuccess">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatNow">@color/tapWhite</color>
+    <color name="tapIconMediaListVideo">@color/tapWhite</color>
+    <color name="tapIconAddMember">@color/tapDefaultPrimaryIconColor</color>
+
+    <color name="tapIconViewPasswordActive">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconViewPasswordInactive">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconSelectPictureCamera">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconSelectPictureGallery">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconEditPicture">@color/tapDefaultPrimaryIconColor</color>
+
+    <color name="tapIconNavBarBackButton">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconTransparentBackgroundBackButton">@color/tapWhite</color>
+    <color name="tapIconNavBarCloseButton">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconNavBarMagnifier">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconSearchBarMagnifier">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconClearTextButton">@color/tapDefaultSecondaryIconColor</color>
+
+    <color name="tapIconRoomListSettingUp">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconRoomListSetupSuccess">@color/tapSuccessIconColor</color>
+    <color name="tapIconRoomListSetupFailure">@color/tapDestructiveIconColor</color>
+    <color name="tapRoomListRetrySetupButton">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconRoomListMessageSending">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconRoomListMessageFailed">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconRoomListMessageSent">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconRoomListMessageDelivered">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconRoomListMessageRead">@color/tapSentGreen</color>
+    <color name="tapIconRoomListMessageDeleted">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconStartNewChatButton">@color/tapWhite</color>
+    <color name="tapIconSyncContactButton">@color/tapWhite</color>
+
+    <color name="tapIconNewContact">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconScanQRCode">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconCreateNewGroup">@color/tapDefaultPrimaryIconColor</color>
+
+    <color name="tapIconChatProfileNotifications">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatProfileConversationColor">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconChatProfileBlockUser">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconChatProfileSearchChat">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconChatProfileClearChat">@color/tapDestructiveIconColor</color>
+    <color name="tapIconGroupProfileViewMembers">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapGroupMemberProfileMenuAppointAdmin">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapGroupMemberProfileMenuRemoveMember">@color/tapDestructiveIconColor</color>
+
+    <color name="tapIconMediaPreviewAdd">@color/tapWhite</color>
+    <color name="tapIconMediaPreviewWarning">@color/tapWhite</color>
+    <color name="tapIconMediaPreviewThumbnailWarning">@color/tapWhite</color>
+    <color name="tapIconMediaPreviewThumbnailWarningBackground">@color/tapDestructiveIconColor</color>
+    <color name="tapIconMediaPreviewThumbnailRemoveItem">@color/tapWhite</color>
+    <color name="tapIconMediaPreviewThumbnailRemoveItemBackground">@color/tapDestructiveIconColor</color>
+    <color name="tapIconSaveImage">@color/tapWhite</color>
+
+    <color name="tapIconLongPressActionCopy">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLongPressActionReply">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLongPressActionForward">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLongPressActionDelete">@color/tapDestructiveIconColor</color>
+    <color name="tapIconLongPressActionCallNumber">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLongPressActionSmsNumber">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLongPressActionOpenLink">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLongPressActionComposeEmail">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconLongPressActionSaveToGallery">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconAttachDocuments">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconAttachCamera">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconAttachGallery">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconAttachAudio">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconAttachContact">@color/tapDefaultPrimaryIconColor</color>
+
+    <color name="tapIconChatComposerSend">@color/tapWhite</color>
+    <color name="tapIconChatComposerBurgerMenu">@color/tapWhite</color>
+    <color name="tapIconChatComposerShowKeyboard">@color/tapWhite</color>
+    <color name="tapIconChatComposerSendBackground">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatComposerBurgerMenuBackground">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatComposerShowKeyboardBackground">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatComposerAttach">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconFile">@color/tapWhite</color>
+    <color name="tapIconFileDownload">@color/tapWhite</color>
+    <color name="tapIconFileCancelDownload">@color/tapWhite</color>
+    <color name="tapIconFileRetryDownload">@color/tapWhite</color>
+    <color name="tapIconChatRoomUnreadButtonIcon">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatRoomScrollToBottomIcon">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatRoomScrollToBottomBackground">@color/tapWhite</color>
+
+    <!--Color Palette-->
     <color name="tapDarkPurple">#51276c</color>
     <color name="tapPurplyTwo">#673ab7</color>
     <color name="tapWarmPurple">#6d3492</color>
@@ -44,6 +173,7 @@
     <color name="tapVibrantGreen">#19c700</color>
     <color name="tapGreen">#2db80f</color>
     <color name="tapAppleGreen">#7ec82a</color>
+    <color name="tapSentGreen">#12d840</color>
     <color name="tapGreenBlue">#00b793</color>
     <color name="tapDarkGreenBlue">#09b291</color>
     <color name="tapTealish">#2eccad</color>

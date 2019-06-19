@@ -147,7 +147,7 @@
 
             <TextView
                 android:id="@+id/tv_full_name"
-                style="@style/TapPageTitle"
+                style="@style/tapSearchNewContactResultNameStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -162,18 +162,11 @@
 
             <TextView
                 android:id="@+id/tv_username"
+                style="@style/tapSearchNewContactResultUsernameStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/tap_font_pt_root_regular"
-                android:gravity="center_horizontal"
-                android:letterSpacing="-0.01"
-                android:lineSpacingExtra="3sp"
-                android:maxLines="1"
-                android:textColor="@color/tapGrey9b"
-                android:textSize="14sp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -295,7 +288,7 @@
 
         <TextView
             android:id="@+id/tv_connection_lost"
-            style="@style/TapRoomName"
+            style="@style/tapSearchConnectionLostTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -309,6 +302,7 @@
 
         <TextView
             android:id="@+id/tv_connection_lost_description"
+            style="@style/tapSearchConnectionLostDescriptionStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

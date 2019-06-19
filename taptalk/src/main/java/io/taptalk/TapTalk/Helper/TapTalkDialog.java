@@ -121,7 +121,7 @@ public class TapTalkDialog extends Dialog {
                 break;
             case DEFAULT:
             default:
-                primary.setBackground(res.getDrawable(R.drawable.tap_bg_apple_green_rounded_4dp_ripple));
+                primary.setBackground(res.getDrawable(R.drawable.tap_bg_success_rounded_4dp_ripple));
                 //secondary.setBackground(res.getDrawable(R.drawable.tap_bg_white_stroke_tealish_1dp_rounded_4dp));
                 //secondary.setTextColor(res.getColor(R.color.tap_tealish));
                 break;

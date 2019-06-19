@@ -301,7 +301,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
         if (view == cl_password) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorAccentDark))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
             } else {
                 v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapGreyDc))
             }
