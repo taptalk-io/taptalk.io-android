@@ -37,6 +37,7 @@
     <color name="tapPopupDialogPrimaryButtonBackgroundErrorColor">@color/tapColorError</color>
 
     <color name="tapUnreadBadgeBackgroundColor">@color/tapColorPrimary</color>
+    <color name="tapUnreadBadgeInactiveBackgroundColor">@color/tapColorTextMedium</color>
 
     <color name="tapDefaultPrimaryIconColor">@color/tapColorPrimary</color>
     <color name="tapDefaultSecondaryIconColor">@color/tapColorTextMedium</color>
@@ -52,7 +53,9 @@
 
     <!--Icon Component Colors-->
     <color name="tapRoomListUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
+    <color name="tapRoomListUnreadBadgeInactiveBackgroundColor">@color/tapUnreadBadgeInactiveBackgroundColor</color>
     <color name="tapChatRoomUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
+    <color name="tapChatRoomUnreadBadgeInactiveBackgroundColor">@color/tapUnreadBadgeInactiveBackgroundColor</color>
 
     <color name="tapIconLoadingProgress">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconLoadingProgressLight">@color/tapWhite</color>
@@ -89,12 +92,16 @@
     <color name="tapIconRoomListMessageDelivered">@color/tapDefaultSecondaryIconColor</color>
     <color name="tapIconRoomListMessageRead">@color/tapSentGreen</color>
     <color name="tapIconRoomListMessageDeleted">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconRoomListMuted">@color/tapDefaultSecondaryIconColor</color>
     <color name="tapIconStartNewChatButton">@color/tapWhite</color>
-    <color name="tapIconSyncContactButton">@color/tapWhite</color>
+    <color name="tapIconStartNewChatButtonGradientLightColor">@color/tapButtonActiveBackgroundGradientLightColor</color>
+    <color name="tapIconStartNewChatButtonGradientDarkColor">@color/tapButtonActiveBackgroundGradientDarkColor</color>
+    <color name="tapIconStartNewChatButtonBorderColor">@color/tapButtonActiveBorderColor</color>
 
     <color name="tapIconNewContact">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconScanQRCode">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconCreateNewGroup">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconSyncContactButton">@color/tapWhite</color>
 
     <color name="tapIconChatProfileNotifications">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatProfileConversationColor">@color/tapDefaultSecondaryIconColor</color>

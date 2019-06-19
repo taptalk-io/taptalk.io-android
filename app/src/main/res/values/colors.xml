@@ -5,6 +5,7 @@
     <color name="tapColorPrimaryLight">@color/tapMango</color>
     <color name="tapColorPrimary">@color/tapPumpkinOrange</color>
     <color name="tapColorPrimaryDark">@color/tapPumpkinOrangeDark</color>
+    <color name="tapColorAccent">@color/tapColorPrimary</color>
 
     <color name="tapColorTextLight">@color/tapWhite</color>
     <color name="tapColorTextMedium">@color/tapGrey9b</color>

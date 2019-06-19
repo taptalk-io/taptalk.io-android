@@ -159,7 +159,7 @@
                 android:inputType="textCapWords"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <TextView
@@ -202,7 +202,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username" />
 
             <TextView
@@ -290,7 +290,7 @@
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textColor="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ll_country_code"
@@ -347,7 +347,7 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_email_address" />
 
             <TextView
@@ -411,7 +411,7 @@
                     android:paddingTop="15dp"
                     android:paddingEnd="70dp"
                     android:paddingBottom="15dp"
-                    android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                    android:textCursorDrawable="@drawable/tap_cursor_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -504,7 +504,7 @@
                     android:paddingTop="15dp"
                     android:paddingEnd="70dp"
                     android:paddingBottom="15dp"
-                    android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                    android:textCursorDrawable="@drawable/tap_cursor_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

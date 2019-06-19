@@ -134,7 +134,7 @@
                 android:inputType="textCapWords"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <android.support.constraint.ConstraintLayout

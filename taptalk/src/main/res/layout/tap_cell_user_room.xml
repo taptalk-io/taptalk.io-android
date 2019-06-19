@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
-    android:layout_height="68dp"
+    android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:background="@color/tapWhite"
     android:descendantFocusability="blocksDescendants"
     android:foreground="?attr/selectableItemBackground"
+    android:minHeight="70dp"
     android:orientation="vertical">
 
     <io.taptalk.TapTalk.Helper.CircleImageView
@@ -16,19 +17,22 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/tap_bg_circle_9b9b9b"
         android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tv_full_name"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0" />
 
     <ImageView
         android:id="@+id/iv_avatar_icon"
         android:layout_width="22dp"
         android:layout_height="22dp"
-        android:src="@drawable/tap_ic_verified"
+        tools:src="@drawable/tap_ic_verified"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
         app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
@@ -40,6 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         app:layout_constrainedWidth="true"
+        app:layout_constraintVertical_bias="0"
         app:layout_constraintBottom_toTopOf="@id/tv_last_message"
         app:layout_constraintEnd_toEndOf="@id/iv_mute"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -54,6 +59,7 @@
         android:layout_height="24dp"
         android:scaleType="fitStart"
         android:src="@drawable/tap_ic_mute_grey"
+        android:tint="@color/tapIconRoomListMuted"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/tv_last_message_time"
         app:layout_constraintStart_toEndOf="@id/tv_full_name"
@@ -75,14 +81,15 @@
         android:id="@+id/tv_last_message"
         style="@style/tapRoomListMessageStyle"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:maxLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
         app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
         app:layout_constraintTop_toBottomOf="@id/tv_full_name"
+        app:layout_constraintVertical_bias="0"
         app:layout_goneMarginStart="8dp"
         tools:text="Last Message" />
 
@@ -103,34 +110,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp"
         android:animateLayoutChanges="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_last_message_time">
+        app:layout_constraintEnd_toEndOf="@id/tv_last_message_time"
+        app:layout_constraintTop_toBottomOf="@id/tv_last_message_time"
+        app:layout_constraintVertical_bias="0">
 
         <ImageView
             android:id="@+id/iv_message_status"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="16dp"
-            android:src="@drawable/tap_ic_message_sending_grey" />
+            android:layout_gravity="end"
+            android:src="@drawable/tap_ic_message_sending_grey"
+            android:visibility="invisible" />
 
         <TextView
             android:id="@+id/tv_badge_unread"
             style="@style/tapRoomListUnreadBadgeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="18dp"
+            android:layout_gravity="end"
             android:background="@drawable/tap_bg_room_list_unread_badge"
             android:gravity="center"
-            android:minWidth="24dp"
-            android:paddingStart="7dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="7dp"
-            android:paddingBottom="4dp"
-            android:visibility="invisible"
+            android:minWidth="18dp"
+            android:paddingStart="2dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="2dp"
+            android:paddingBottom="2dp"
             tools:text="1" />
 
     </FrameLayout>
@@ -148,10 +155,17 @@
         android:id="@+id/v_separator_full"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginStart="8dp"
         android:background="@color/tapGreyEa"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="tv_last_message, fl_status, civ_avatar"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
