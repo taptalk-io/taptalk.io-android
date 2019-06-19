@@ -186,7 +186,10 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         String groupName = etGroupName.getText().toString();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
             // TODO: 19 September 2018 CREATE GROUP
-            Intent intent = new Intent(this, TAPChatProfileActivity.class);
+            //Intent intent = new Intent(this, TAPChatProfileActivity.class);
+            //intent.putExtra(ROOM, vm.getGroupData());
+            //startActivity(intent);
+            Intent intent = new Intent(this, TAPEditGroupActivity.class);
             intent.putExtra(ROOM, vm.getGroupData());
             startActivity(intent);
             setResult(RESULT_OK);

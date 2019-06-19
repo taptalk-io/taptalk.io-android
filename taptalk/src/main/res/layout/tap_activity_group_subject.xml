@@ -69,13 +69,13 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 android:layout_marginBottom="12dp"
+                android:layout_marginTop="24dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerCrop"
                 android:src="@drawable/tap_img_default_avatar"
-                app:layout_constraintBottom_toBottomOf="@id/iv_group_pic_background"
                 app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
                 app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
-                app:layout_constraintTop_toTopOf="@id/iv_group_pic_background" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/ll_change_group_picture"
@@ -92,14 +92,14 @@
                 app:layout_constraintTop_toBottomOf="@id/civ_group_image">
 
                 <TextView
-                    android:id="@+id/tv_label_change_profile_picture"
+                    android:id="@+id/tv_label_change_group_picture"
                     style="@style/tapClickableLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tap_change" />
 
                 <ImageView
-                    android:id="@+id/iv_edit_profile_picture_icon"
+                    android:id="@+id/iv_edit_group_picture_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
