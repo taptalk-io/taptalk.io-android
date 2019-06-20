@@ -29,6 +29,7 @@
     <color name="tapButtonActiveBackgroundGradientLightColor">@color/tapColorPrimaryLight</color>
     <color name="tapButtonActiveBackgroundGradientDarkColor">@color/tapColorPrimary</color>
     <color name="tapButtonActiveBorderColor">@color/tapColorPrimary</color>
+    <color name="tapButtonImageColor">@color/tapColorTextLight</color>
 
     <color name="tapSwitchActiveBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSwitchInactiveBackgroundColor">@color/tapColorTextMedium</color>
@@ -101,7 +102,6 @@
     <color name="tapIconNewContact">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconScanQRCode">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconCreateNewGroup">@color/tapDefaultPrimaryIconColor</color>
-    <color name="tapIconSyncContactButton">@color/tapWhite</color>
 
     <color name="tapIconChatProfileNotifications">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatProfileConversationColor">@color/tapDefaultSecondaryIconColor</color>

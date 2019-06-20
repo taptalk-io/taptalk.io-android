@@ -408,6 +408,18 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="tapRightBubbleMessageBodyURLHighlightedStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapHighlightBlue</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="tapLeftBubbleMessageBodyURLHighlightedStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/tapHighlightBlue</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="tapRightBubbleQuoteTitleStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapColorTextLight</item>
