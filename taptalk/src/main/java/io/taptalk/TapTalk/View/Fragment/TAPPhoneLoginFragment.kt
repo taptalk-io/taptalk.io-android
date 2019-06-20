@@ -98,7 +98,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
                 when (textCount) {
                     in 7..15 -> {
-                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple)
+                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_button_active_ripple)
                         fl_continue_btn.setOnClickListener { attemptLogin() }
                         fl_continue_btn.isClickable = true
                     }

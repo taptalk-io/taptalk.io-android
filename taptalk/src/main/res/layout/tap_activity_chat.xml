@@ -360,7 +360,7 @@
             android:gravity="center_horizontal"
             android:letterSpacing="-0.01"
             android:lineSpacingExtra="6sp"
-            android:text="@string/tap_this_user_is_no_longer_availbale"
+            android:text="@string/tap_this_user_is_no_longer_available"
             android:textColor="@color/tapColorPrimary"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"

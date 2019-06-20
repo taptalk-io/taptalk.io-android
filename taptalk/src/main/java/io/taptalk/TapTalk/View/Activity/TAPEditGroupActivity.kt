@@ -120,7 +120,7 @@ class TAPEditGroupActivity : AppCompatActivity(), View.OnClickListener {
         if (groupViewModel?.isGroupPicChanged == false && groupViewModel?.isGroupNameChanged == false) {
             btn_edit_group.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp)
         } else {
-            btn_edit_group.setBackgroundResource(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple)
+            btn_edit_group.setBackgroundResource(R.drawable.tap_bg_button_active_ripple)
         }
     }
 

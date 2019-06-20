@@ -399,7 +399,7 @@ public class TAPRoomListFragment extends Fragment {
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != getActivity()) {
                 //last messagenya sama cuma update datanya aja
                 roomLastMessage.updateValue(message);
-                Integer roomPos = vm.getRoomList().indexOf(roomList);
+                int roomPos = vm.getRoomList().indexOf(roomList);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
             } else if (roomLastMessage.getCreated() < message.getCreated()) {
                 //last message nya beda sama yang ada di tampilan
@@ -507,7 +507,8 @@ public class TAPRoomListFragment extends Fragment {
     private void showChatRoomSettingUp() {
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapColorPrimaryDark));
+        ivSetupChat.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconRoomListSettingUp));
+        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconLoadingProgress));
         tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
         tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
         TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivSetupChatLoading);
@@ -522,11 +523,11 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSetupSuccess() {
-        Log.e(TAG, "showChatRoomSetupSuccess: ");
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_green));
+        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+        ivSetupChat.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconRoomListSetupSuccess));
+        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconRoomListSetupSuccess));
         ivSetupChatLoading.clearAnimation();
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapTransparentWhite));
         tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
         tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
 
@@ -537,17 +538,14 @@ public class TAPRoomListFragment extends Fragment {
 
         showNewChatButton();
 
-        new Handler().postDelayed(() -> {
-            flSetupContainer.setVisibility(View.GONE);
-            showNewChatButton();
-        }, 2000L);
+        new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
     }
 
     private void showChatRoomSetupFailed() {
-        Log.e(TAG, "showChatRoomSetupFailed: ");
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
         ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapTransparentWhite));
+        ivSetupChat.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconRoomListSetupFailure));
+        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconRoomListSetupFailure));
         ivSetupChatLoading.clearAnimation();
         tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
 
@@ -686,7 +684,6 @@ public class TAPRoomListFragment extends Fragment {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "onCountedUnreadCount: ", e);
             }
         }
 

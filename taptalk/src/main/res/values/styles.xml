@@ -76,6 +76,14 @@
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textColorHint">@color/tapColorTextMedium</item>
+        <item name="android:textCursorDrawable">@drawable/tap_cursor_color</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapFormTextFieldPlaceholderStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tapColorTextMedium</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -95,7 +103,7 @@
 
     <style name="tapButtonLabelStyle" parent="tapFontFamilyBold">
         <item name="android:gravity">center</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -117,6 +125,7 @@
     <style name="tapInfoLabelBodyStyle" parent="tapFontFamilyRegular">
         <item name="android:gravity">center</item>
         <item name="android:letterSpacing">-0.01</item>
+        <item name="android:lineSpacingExtra">6sp</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">14sp</item>
     </style>
@@ -169,7 +178,7 @@
     <style name="tapPopupDialogButtonTextPrimaryStyle" parent="tapFontFamilyBold">
         <item name="android:gravity">center</item>
         <item name="android:lineSpacingExtra">4sp</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">12sp</item>
     </style>
 
@@ -240,7 +249,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">start</item>
         <item name="android:letterSpacing">-0.01</item>
-        <item name="android:lineSpacingExtra">5sp</item>
+        <item name="android:lineSpacingExtra">1sp</item>
         <item name="android:textColor">@color/tapColorTextMedium</item>
         <item name="android:textSize">14sp</item>
     </style>
@@ -255,14 +264,14 @@
 
     <style name="tapRoomListUnreadBadgeLabelStyle" parent="tapFontFamilyBold">
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">11dp</item>
     </style>
 
     <style name="tapNewChatMenuLabelStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:letterSpacing">-0.02</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapChatProfileMenuLabelStyle" parent="tapFontFamilyRegular">
@@ -280,7 +289,7 @@
     <style name="tapMediaListInfoLabelStyle" parent="tapFontFamilyBold">
         <item name="android:gravity">end</item>
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">12sp</item>
     </style>
 
@@ -355,7 +364,7 @@
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textColorHint">@color/tapColorTextMedium</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:textCursorDrawable">@drawable/tap_login_color_cursor</item>
+        <item name="android:textCursorDrawable">@drawable/tap_cursor_color</item>
     </style>
 
     <style name="tapCustomKeyboardItemLabelStyle" parent="tapFontFamilyRegular">
@@ -365,21 +374,19 @@
     </style>
 
     <style name="tapQuoteLayoutTitleLabelStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapQuoteLayoutContentLabelStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">12sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
     <style name="tapRightBubbleMessageBodyStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -390,8 +397,8 @@
     </style>
 
     <style name="tapRightBubbleMessageBodyURLStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -403,25 +410,25 @@
 
     <style name="tapRightBubbleQuoteTitleStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapLeftBubbleQuoteTitleStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing">0.01</item>
+        <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapRightBubbleQuoteContentStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">12sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
     <style name="tapLeftBubbleQuoteContentStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">0.01</item>
+        <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">12sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
@@ -434,7 +441,7 @@
 
     <style name="tapBubbleMediaInfoStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">12sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
@@ -447,7 +454,7 @@
 
     <style name="tapChatRoomUnreadBadgeLabelStyle" parent="tapFontFamilyBold">
         <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">11dp</item>
     </style>
 
@@ -463,6 +470,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textColorHint">@color/tapColorTextMedium</item>
+        <item name="android:textCursorDrawable">@drawable/tap_cursor_color</item>
         <item name="android:textSize">13sp</item>
     </style>
 
@@ -498,31 +506,31 @@
 
     <style name="tapMediaPreviewCancelButtonStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="tapMediaPreviewItemCountStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="tapMediaPreviewCaptionStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapMediaPreviewCaptionLetterCountStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">10sp</item>
     </style>
 
     <style name="tapMediaPreviewSendLabelButtonStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -530,39 +538,45 @@
         <item name="android:ellipsize">end</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapMediaPreviewWarningBodyStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapImageDetailSenderNameStyle" parent="tapFontFamilyBold">
         <item name="android:ellipsize">end</item>
-        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:letterSpacing">0.01</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapImageDetailMessageStatusStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapImageDetailCaptionStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="tapSelectedMemberListName" parent="tapFontFamilyBold">
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
+        <item name="android:textSize">11sp</item>
+    </style>
 
-
-<!--______________________________________Old Styles______________________________________-->
+    <!--______________________________________Old Styles______________________________________-->
 
     <style name="TapTextButtonDescription">
         <item name="android:fontFamily">@font/tap_font_pt_root_regular</item>
@@ -578,27 +592,25 @@
         <item name="android:gravity">start</item>
         <item name="android:letterSpacing">0.01</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">15sp</item>
     </style>
 
     <style name="TapButton">
-        <item name="android:background">
-            @drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple
-        </item>
+        <item name="android:background">@drawable/tap_bg_button_active_ripple</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">17sp</item>
     </style>
 
     <style name="TapButtonText">
         <item name="android:fontFamily">@font/tap_font_pt_root_bold</item>
         <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -626,7 +638,7 @@
         <item name="android:fontFamily">@font/tap_font_pt_root_regular</item>
         <item name="android:gravity">start</item>
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapWhite</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">13sp</item>
     </style>
 

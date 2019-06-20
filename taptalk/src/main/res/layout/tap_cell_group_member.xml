@@ -13,14 +13,11 @@
         android:id="@+id/civ_avatar"
         android:layout_width="52dp"
         android:layout_height="52dp"
-        android:background="@drawable/tap_bg_circle_9b9b9b"
-        android:gravity="center"
-        android:textColor="#ffffff"
-        android:textSize="24dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="A" />
+        tools:src="@drawable/tap_img_default_avatar" />
 
+    <!--TODO UPDATE ICON-->
     <ImageView
         android:id="@+id/iv_avatar_icon"
         android:layout_width="22dp"
@@ -33,16 +30,10 @@
 
     <TextView
         android:id="@+id/tv_full_name"
+        style="@style/tapSelectedMemberListName"
         android:layout_width="52dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/tap_font_pt_root_bold"
-        android:gravity="center_horizontal"
-        android:letterSpacing="-0.01"
-        android:maxLines="1"
-        android:textColor="@color/tapBlack44"
-        android:textSize="11sp"
         app:layout_constraintEnd_toEndOf="@id/civ_avatar"
         app:layout_constraintStart_toStartOf="@id/civ_avatar"
         app:layout_constraintTop_toBottomOf="@id/civ_avatar"

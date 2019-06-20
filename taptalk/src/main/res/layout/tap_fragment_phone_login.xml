@@ -125,7 +125,7 @@
                 android:inputType="numberSigned"
                 android:padding="13dp"
                 android:textColorHint="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor" />
+                android:textCursorDrawable="@drawable/tap_cursor_color" />
 
         </FrameLayout>
 

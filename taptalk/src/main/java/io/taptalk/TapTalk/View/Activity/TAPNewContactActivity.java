@@ -340,7 +340,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
             runOnUiThread(() -> {
-                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple));
+                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
                 tvButtonText.setTextColor(getResources().getColor(R.color.tapWhite));
                 if (isContact == 0) {
                     // Searched user is not a contact
