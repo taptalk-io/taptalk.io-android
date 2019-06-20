@@ -172,7 +172,7 @@
                 android:minLines="1"
                 android:singleLine="true"
                 android:textColor="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 android:textSize="13sp" />
 
             <TextView

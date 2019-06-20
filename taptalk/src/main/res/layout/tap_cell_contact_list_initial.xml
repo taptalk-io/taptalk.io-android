@@ -7,13 +7,15 @@
 
     <TextView
         android:id="@+id/tv_initial"
-        style="@style/TapSectionLabel"
+        style="@style/tapSectionHeaderLabelStyle"
         android:layout_width="match_parent"
-        android:layout_height="34dp"
+        android:layout_height="wrap_content"
         android:background="@color/tapWhiteF8"
         android:gravity="start|center_vertical"
         android:paddingStart="16dp"
+        android:paddingTop="8dp"
         android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         tools:text="A" />
 
     <android.support.v7.widget.RecyclerView

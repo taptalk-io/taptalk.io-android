@@ -114,6 +114,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             }
 
             // Show/hide selection
+            // TODO: 20 June 2019 UPDATE ICONS
             if (viewType == SELECT && selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active);
@@ -187,9 +188,11 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 tvFullName.setText(R.string.tap_you);
             } else if (fullName.contains(" ")) {
                 tvFullName.setText(fullName.substring(0, fullName.indexOf(' ')));
-            } else tvFullName.setText(fullName);
+            } else {
+                tvFullName.setText(fullName);
+            }
 
-            // TODO: 19 September 2018 UPDATE EXPERT ICON
+            // TODO: 19 September 2018 UPDATE ICONS
             // Update avatar icon
             if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("1")*/) {
                 ivAvatarIcon.setVisibility(View.GONE);

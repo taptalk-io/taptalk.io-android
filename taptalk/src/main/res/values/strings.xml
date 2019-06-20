@@ -47,6 +47,11 @@
     <string name="tap_this_is_you">This is you</string>
     <string name="you_have_added_to_your_contacts"><![CDATA[You have added <b>%s</b> to your contacts]]></string>
     <string name="tap_is_already_in_your_contacts">is already in your contacts</string>
+    <string name="tap_contact_access">Contact Access</string>
+    <string name="tap_sync_contact_description">We need your permission to access your contact, we will sync your contact to our server and automatically find your friend so it is easier for you to find your friends.</string>
+    <string name="tap_all_contacts_synced">All contacts synced</string>
+    <string name="tap_synced_d_contacts">Synced %d Contacts</string>
+    <string name="tap_syncing_contacts">Syncing Contacts</string>
 
     <!--Connection Status-->
     <string name="tap_connected">Connected</string>
@@ -76,6 +81,7 @@
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
+    <string name="tap_edit_group">Edit Group</string>
     <string name="tap_type_group_name">Type group name</string>
     <string name="tap_cannot_add_more_people">Cannot add more people</string>
     <string name="tap_group_limit_reached">The max limit number of people in one group chat has been reached</string>
@@ -232,6 +238,7 @@
     <!--General-->
     <string name="tap_add_a_caption">Add a caption</string>
     <string name="tap_add_to_contacts">Add to Contacts</string>
+    <string name="tap_allow">Allow</string>
     <string name="tap_cancel">Cancel</string>
     <string name="tap_change">Change</string>
     <string name="tap_logout">Logout</string>
@@ -239,6 +246,7 @@
     <string name="tap_clear_history">Clear history</string>
     <string name="tap_continue_s">Continue</string>
     <string name="tap_s_unread_messages">%s unread messages</string>
+    <string name="tap_deleted_message">Deleted Message</string>
     <string name="tap_delivered_at">Delivered at</string>
     <string name="tap_details">Details</string>
     <string name="tap_edit">Edit</string>
@@ -275,6 +283,9 @@
     <string name="tap_skip">Skip</string>
     <string name="tap_start_a_new_chat">Start a New Chat</string>
     <string name="tap_sync_contacts_now">Sync Contacts Now</string>
+    <string name="tap_this_deleted_message">This message was deleted.</string>
+    <string name="tap_this_is_a_chat_history">This is a chat history</string>
+    <string name="tap_this_user_is_no_longer_available">This user is no longer available</string>
     <string name="tap_typing">typing</string>
     <string name="tap_unread_messages">Unread Messages</string>
     <string name="tap_update">Update</string>
@@ -283,11 +294,8 @@
     <string name="tap_verifying_otp">Verifying OTP</string>
     <string name="tap_video_saved">Video Saved</string>
     <string name="tap_you">You</string>
-    <string name="tap_over_99">99+</string>
-    <string name="tap_this_is_a_chat_history">This is a chat history</string>
-    <string name="tap_this_user_is_no_longer_availbale">This user is no longer availbale</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
-    <string name="tap_this_deleted_message">This message was deleted.</string>
-    <string name="tap_deleted_message">Deleted Message</string>
+    <string name="title_activity_tapedit_group">TAPEditGroupActivity</string>
+    <string name="tap_over_99">99+</string>
 
 </resources>

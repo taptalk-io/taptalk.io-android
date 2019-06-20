@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tapWhiteF3"
+    android:background="@color/tapDefaultBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_orange"
-            android:tint="@color/tapColorPrimaryDark"
+            android:tint="@color/tapIconNavBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_search"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,10 +31,13 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/TapSearchBar"
+            style="@style/tapFormTextFieldStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_for_contacts"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,6 +52,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="13dp"
             android:src="@drawable/tap_ic_close_grey"
+            android:tint="@color/tapIconClearTextButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/et_search"
@@ -85,14 +89,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/TapTextButtonDescription"
+                    style="@style/tapInfoLabelBodyStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/tap_cant_find_person" />
 
                 <TextView
                     android:id="@+id/tv_add_new_contact"
-                    style="@style/TapTextButtonPrimaryDark"
+                    style="@style/tapClickableLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"

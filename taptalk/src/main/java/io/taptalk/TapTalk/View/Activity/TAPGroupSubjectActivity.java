@@ -186,7 +186,10 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         String groupName = etGroupName.getText().toString();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
             // TODO: 19 September 2018 CREATE GROUP
-            Intent intent = new Intent(this, TAPChatProfileActivity.class);
+            //Intent intent = new Intent(this, TAPChatProfileActivity.class);
+            //intent.putExtra(ROOM, vm.getGroupData());
+            //startActivity(intent);
+            Intent intent = new Intent(this, TAPEditGroupActivity.class);
             intent.putExtra(ROOM, vm.getGroupData());
             startActivity(intent);
             setResult(RESULT_OK);
@@ -206,7 +209,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
-                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple);
+                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
                 vm.getGroupData().setRoomName(s.toString());
             } else {
                 btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp);

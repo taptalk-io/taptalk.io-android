@@ -34,7 +34,7 @@
             android:hint="@string/tap_search_chat_placeholder"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textCursorDrawable="@drawable/tap_login_color_cursor"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"

@@ -99,7 +99,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Item not selected
                 // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
                 clContainer.setBackgroundColor(resource.getColor(R.color.tapWhite));
-                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
+                //ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
                 ivAvatarIcon.setVisibility(View.GONE);
                 if (position == getItemCount() - 1) {
                     vSeparator.setVisibility(View.GONE);
@@ -143,10 +143,10 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Check if room is muted
             if (item.getLastMessage().getRoom().isMuted()) {
                 ivMute.setVisibility(View.VISIBLE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge_inactive));
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_12dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge));
             }
 
             // Change Status Message Icon
@@ -158,32 +158,37 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Message is deleted
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                ivMessageStatus.setImageResource(R.drawable.tap_ic_deleted_white);
-               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapGrey9b)));
+               ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageDeleted)));
                ivMessageStatus.setPadding(TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5));
             }
             // Message is read
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageRead)));
                 ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message is delivered
             else if (null != item.getLastMessage() && null != item.getLastMessage().getDelivered() && item.getLastMessage().getDelivered()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageDelivered)));
                 ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message failed to send
             else if (null != item.getLastMessage() && null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageFailed)));
                 ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message sent
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageSent)));
                 ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message is sending
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sending_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageSending)));
                 ivMessageStatus.setPadding(0, 0, 0, 0);
             }
 
@@ -206,46 +211,6 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
             //itemView.setOnLongClickListener(v -> onRoomLongClicked(v, item, position));
         }
-
-//        private CountDownTimer typingIndicatorTimeOutTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//                getItem().setTyping(false);
-//                int position = getItems().indexOf(getItem());
-//                if (position < 0) {
-//                    notifyDataSetChanged();
-//                } else {
-//                    notifyItemChanged(position);
-//                }
-//            }
-//        };
-//
-//        private CountDownTimer typingAnimationTimer = new CountDownTimer(300L, 100L) {
-//            @Override
-//            public void onTick(long millisUntilFinished) {
-//
-//            }
-//
-//            @Override
-//            public void onFinish() {
-//                switch (tvLastMessage.length()) {
-//                    case 7:
-//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_2));
-//                        break;
-//                    case 8:
-//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_3));
-//                        break;
-//                    default:
-//                        tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing_1));
-//                }
-//                start();
-//            }
-//        };
     }
 
     private void onRoomClicked(View itemView, TAPRoomListModel item, int position) {

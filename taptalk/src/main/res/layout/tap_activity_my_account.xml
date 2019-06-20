@@ -16,7 +16,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapPageTitle"
+            style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/tap_my_account"
@@ -131,7 +131,7 @@
 
                 <TextView
                     android:id="@+id/tv_label_change_profile_picture"
-                    style="@style/TapTextButtonPrimaryDark"
+                    style="@style/tapClickableLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tap_change" />
@@ -148,7 +148,7 @@
 
             <TextView
                 android:id="@+id/tv_label_full_name"
-                style="@style/TapFormFieldName"
+                style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -160,7 +160,7 @@
 
             <EditText
                 android:id="@+id/et_full_name"
-                style="@style/TapFormFieldBody"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -172,12 +172,12 @@
                 android:inputType="textCapWords"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <TextView
                 android:id="@+id/tv_label_full_name_error"
-                style="@style/TapFormError"
+                style="@style/tapFormErrorInfoLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -192,7 +192,7 @@
 
             <TextView
                 android:id="@+id/tv_label_username"
-                style="@style/TapFormFieldName"
+                style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -203,7 +203,7 @@
 
             <EditText
                 android:id="@+id/et_username"
-                style="@style/TapFormFieldBody"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -215,13 +215,13 @@
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textColor="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username"
                 tools:text="@string/tap_hint_username" />
 
             <TextView
                 android:id="@+id/tv_label_mobile_number"
-                style="@style/TapFormFieldName"
+                style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -251,7 +251,7 @@
 
                 <TextView
                     android:id="@+id/tv_country_code"
-                    style="@style/TapFormFieldBody"
+                    style="@style/tapFormTextFieldStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -263,7 +263,7 @@
 
             <EditText
                 android:id="@+id/et_mobile_number"
-                style="@style/TapFormFieldBody"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -276,7 +276,7 @@
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textColor="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ll_country_code"
@@ -284,7 +284,7 @@
 
             <TextView
                 android:id="@+id/tv_label_email_address"
-                style="@style/TapFormFieldName"
+                style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -295,7 +295,7 @@
 
             <TextView
                 android:id="@+id/tv_label_email_address_optional"
-                style="@style/TapFormGuide"
+                style="@style/tapFormDescriptionLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
@@ -305,7 +305,7 @@
 
             <EditText
                 android:id="@+id/et_email_address"
-                style="@style/TapFormFieldBody"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -317,12 +317,12 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_email_address" />
 
             <TextView
                 android:id="@+id/tv_label_email_address_error"
-                style="@style/TapFormError"
+                style="@style/tapFormErrorInfoLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -338,7 +338,7 @@
 
             <TextView
                 android:id="@+id/tv_label_password"
-                style="@style/TapFormFieldName"
+                style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -359,7 +359,7 @@
 
                 <TextView
                     android:id="@+id/tv_logout"
-                    style="@style/TapTextButtonPrimaryDark"
+                    style="@style/tapClickableLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/tapTransparentWhite"
@@ -412,7 +412,7 @@
 
                 <TextView
                     android:id="@+id/tv_password"
-                    style="@style/TapTextButtonPrimaryDark"
+                    style="@style/tapClickableLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/tapTransparentWhite"
