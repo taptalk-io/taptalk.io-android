@@ -15,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -89,7 +88,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
         } else {
-            //getContactList(false);
             getContactList(false);
         }
     }
@@ -104,12 +102,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void showPermissionDialog() {
         runOnUiThread(() -> new TapTalkDialog.Builder(TAPNewChatActivity.this)
-                .setTitle("Contact Access")
-                .setMessage("We need your permission to access your contact, we will sync your contact to our server and automatically find your friend so it is easier for you to find your friends.")
+                .setTitle(getString(R.string.tap_contact_access))
+                .setMessage(getString(R.string.tap_sync_contact_description))
                 .setCancelable(false)
-                .setPrimaryButtonTitle("Allow")
+                .setPrimaryButtonTitle(getString(R.string.tap_allow))
                 .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
-                .setSecondaryButtonTitle("Cancel")
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
                 .show());
         TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
@@ -117,7 +115,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
-        //setting up listener for Live Data
+        // Set up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
             if (null != userModels) {
                 vm.getContactList().clear();
@@ -280,9 +278,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             if (cur != null) {
                 cur.close();
             }
-
             callAddContactsByPhoneApi(newContactsPhoneNumbers, showLoading);
-
         }).start();
     }
 
@@ -321,7 +317,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             vm.setFirstContactSyncDone(true);
                         }).start();
                     } catch (Exception e) {
-                        Log.e(TAG, "initViewModel: ", e);
                         e.printStackTrace();
                     }
                 }).start();
@@ -344,14 +339,15 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void showSyncSuccessStatus(int contactSynced) {
         runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
-            if (0 == contactSynced)
-                tvConnectionStatus.setText("All contacts synced");
-            else tvConnectionStatus.setText("Synced " + contactSynced + " Contacts");
+            if (0 == contactSynced) {
+                tvConnectionStatus.setText(getString(R.string.tap_all_contacts_synced));
+            } else {
+                tvConnectionStatus.setText(String.format(getString(R.string.tap_synced_d_contacts), contactSynced));
+            }
             pbConnecting.setVisibility(View.GONE);
             ivConnectionStatus.setVisibility(View.VISIBLE);
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
             flSyncStatus.setVisibility(View.VISIBLE);
-            Log.e(TAG, "showSyncSuccessStatus: ");
 
             new Handler().postDelayed(() -> flSyncStatus.setVisibility(View.GONE), 1000L);
         });
@@ -360,7 +356,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void showSyncLoadingStatus() {
         runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
-            tvConnectionStatus.setText("Syncing Contacts");
+            tvConnectionStatus.setText(getString(R.string.tap_syncing_contacts));
             ivConnectionStatus.setVisibility(View.GONE);
             pbConnecting.setVisibility(View.VISIBLE);
             llConnectionStatus.setVisibility(View.VISIBLE);

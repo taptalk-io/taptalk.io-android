@@ -324,7 +324,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun enableContinueButton() {
-        fl_button_update.background = getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple)
+        fl_button_update.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
         //fl_button_update.setOnClickListener { register() }
     }
 
