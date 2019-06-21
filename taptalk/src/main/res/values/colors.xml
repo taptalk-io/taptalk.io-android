@@ -50,7 +50,9 @@
     <color name="tapRightBubbleQuoteBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapWhiteF3</color>
     <color name="tapQuoteLayoutDecorationBackgroundColor">@color/tapColorPrimaryExtraLight</color>
-    <color name="tapFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
+    <color name="tapRightFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
+    <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
+    <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
 
     <!--Icon Component Colors-->
     <color name="tapRoomListUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
@@ -149,6 +151,7 @@
     <color name="tapIconChatRoomUnreadButtonIcon">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatRoomScrollToBottomIcon">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatRoomScrollToBottomBackground">@color/tapWhite</color>
+    <color name="tapIconDeletedChatRoom">@color/tapDefaultPrimaryIconColor</color>
 
     <!--Color Palette-->
     <color name="tapDarkPurple">#51276c</color>

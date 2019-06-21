@@ -104,6 +104,7 @@
     <style name="tapButtonLabelStyle" parent="tapFontFamilyBold">
         <item name="android:gravity">center</item>
         <item name="android:textColor">@color/tapColorTextLight</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -446,6 +447,32 @@
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
+    <style name="tapRightFileBubbleNameStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="tapLeftFileBubbleNameStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="tapRightFileBubbleInfoStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">1sp</item>
+    </style>
+
+    <style name="tapLeftFileBubbleInfoStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingExtra">1sp</item>
+    </style>
+
     <style name="tapBubbleMessageStatusStyle" parent="tapFontFamilyRegular">
         <item name="android:textColor">@color/tapColorTextMedium</item>
         <item name="android:textSize">12sp</item>
@@ -470,11 +497,34 @@
         <item name="android:textSize">11dp</item>
     </style>
 
-    <style name="tapUnreadMessageIdentifierStyle" parent="tapFontFamilyMedium">
+    <style name="tapUnreadMessageIdentifierStyle" parent="tapFontFamilyBold">
         <item name="android:ellipsize">end</item>
+        <item name="android:letterSpacing">-0.02</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textColor">@color/tapColorPrimaryDark</item>
+        <item name="android:textColor">@color/tapColorPrimary</item>
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="tapUnreadMessageButtonLabelStyle" parent="tapFontFamilyMedium">
+        <item name="android:ellipsize">end</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tapColorPrimary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="tapDeletedChatRoomInfoTitleStyle" parent="tapFontFamilyBold">
+        <item name="android:ellipsize">end</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tapColorPrimary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapDeletedChatRoomInfoContentStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">@color/tapColorPrimary</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapLocationPickerTextFieldStyle" parent="tapFontFamilyRegular">
