@@ -81,7 +81,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         et_group_name.onFocusChangeListener = groupNameFocusListener
         et_group_name.addTextChangedListener(groupNameWatcher)
 
-        groupViewModel?.groupData = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
+        groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
 
         et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
 

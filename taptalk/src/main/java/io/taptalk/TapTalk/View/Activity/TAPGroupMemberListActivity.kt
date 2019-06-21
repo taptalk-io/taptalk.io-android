@@ -2,7 +2,9 @@ package io.taptalk.TapTalk.View.Activity
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel
 import io.taptalk.Taptalk.R
@@ -23,6 +25,12 @@ class TAPGroupMemberListActivity : TAPBaseActivity() {
     private fun initView() {
         tv_title.text = resources.getString(R.string.tap_group_members)
         ll_group_members.visibility = View.GONE
+        groupViewModel?.groupData = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
+
+        adapter = TAPGroupMemberAdapter(groupViewModel?.groupData?.groupParticipants ?: mutableListOf())
+        rv_contact_list.adapter = adapter
+        rv_contact_list.layoutManager = LinearLayoutManager(this)
+        rv_contact_list.setHasFixedSize(true)
     }
 
     private fun initViewModel() {

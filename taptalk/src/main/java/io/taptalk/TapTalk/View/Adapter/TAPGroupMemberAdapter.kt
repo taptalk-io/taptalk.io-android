@@ -28,7 +28,10 @@ class TAPGroupMemberAdapter(members: List<TAPUserModel>) : TAPBaseAdapter<TAPUse
 
         override fun onBind(item: TAPUserModel?, position: Int) {
             //activate / show member role (Admin)
-            tvMemberRole.visibility = View.VISIBLE
+            when(position) {
+                in 0..1 -> tvMemberRole.visibility = View.VISIBLE
+                else -> tvMemberRole.visibility = View.GONE
+            }
 
             //load member avatar
             if (item?.avatarURL?.thumbnail.isNullOrEmpty()) {

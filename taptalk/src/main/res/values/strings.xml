@@ -85,6 +85,7 @@
     <string name="tap_group_members">Group Members</string>
     <string name="tap_type_group_name">Type group name</string>
     <string name="tap_cannot_add_more_people">Cannot add more people</string>
+    <string name="tap_admin">Admin</string>
     <string name="tap_group_limit_reached">The max limit number of people in one group chat has been reached</string>
 
     <!--Guides-->
