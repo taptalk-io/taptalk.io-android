@@ -19,10 +19,6 @@
     <application
         android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupActivity"
-            android:label="@string/title_activity_tapedit_group"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
@@ -71,6 +67,12 @@
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:launchMode="singleTask" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
