@@ -81,6 +81,7 @@
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
+    <string name="tap_edit_group">Edit Group</string>
     <string name="tap_type_group_name">Type group name</string>
     <string name="tap_cannot_add_more_people">Cannot add more people</string>
     <string name="tap_group_limit_reached">The max limit number of people in one group chat has been reached</string>
@@ -294,6 +295,7 @@
     <string name="tap_video_saved">Video Saved</string>
     <string name="tap_you">You</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
+    <string name="title_activity_tapedit_group">TAPEditGroupActivity</string>
     <string name="tap_over_99">99+</string>
 
 </resources>

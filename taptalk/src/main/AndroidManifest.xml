@@ -19,6 +19,10 @@
     <application
         android:largeHeap="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupActivity"
+            android:label="@string/title_activity_tapedit_group"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <service
             android:name="io.taptalk.TapTalk.Helper.TapTalkEndAppService"
