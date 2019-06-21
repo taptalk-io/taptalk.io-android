@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.view.View
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel
@@ -13,24 +12,27 @@ import kotlinx.android.synthetic.main.tap_activity_create_new_group.*
 class TAPGroupMemberListActivity : TAPBaseActivity() {
 
     var groupViewModel: TAPGroupViewModel? = null
-    var adapter : TAPGroupMemberAdapter? = null
+    var adapter: TAPGroupMemberAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_create_new_group)
+        setContentView(R.layout.tap_activity_group_members)
         initViewModel()
         initView()
     }
 
     private fun initView() {
         tv_title.text = resources.getString(R.string.tap_group_members)
-        ll_group_members.visibility = View.GONE
         groupViewModel?.groupData = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
 
-        adapter = TAPGroupMemberAdapter(groupViewModel?.groupData?.groupParticipants ?: mutableListOf())
+        adapter = TAPGroupMemberAdapter(groupViewModel?.groupData?.groupParticipants
+                ?: mutableListOf())
         rv_contact_list.adapter = adapter
         rv_contact_list.layoutManager = LinearLayoutManager(this)
         rv_contact_list.setHasFixedSize(true)
+
+        //set total member count
+        tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
     }
 
     private fun initViewModel() {
