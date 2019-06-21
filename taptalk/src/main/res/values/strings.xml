@@ -298,4 +298,5 @@
     <string name="tap_you">You</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
+    <string name="tap_guide_show_qr_code">Show your QR code by tapping the button below</string>
 </resources>

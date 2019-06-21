@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:clipToPadding="false">
 
     <FrameLayout
         android:id="@+id/fl_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tapWhite"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="5dp"
         android:outlineProvider="bounds"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +27,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_orange"
-            android:tint="@color/tapColorPrimaryDark"/>
+            android:tint="@color/tapIconNavBarBackButton" />
 
         <TextView
             android:id="@+id/tv_toolbar_title"

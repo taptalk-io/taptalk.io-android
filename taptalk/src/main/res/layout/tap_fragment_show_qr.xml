@@ -14,16 +14,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_ic_scan_area_white" />
+        tools:src="@color/tapWhiteF3" />
 
     <Button
         android:id="@+id/btn_scan_qr_code"
-        style="@style/TapButton"
+        style="@style/tapButtonLabelStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/tap_bg_button_active_ripple"
         android:text="@string/tap_scan_qr_code"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,21 +32,15 @@
 
     <TextView
         android:id="@+id/tv_scan_qr_code"
+        style="@style/tapInfoLabelBodyStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:gravity="center_horizontal"
-        android:letterSpacing="-0.01"
-        android:lineSpacingExtra="6sp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="15dp"
         android:text="@string/tap_scan_qr_code_guide"
-        android:textColor="@color/tapBlack19"
-        android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/btn_scan_qr_code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 
 </android.support.constraint.ConstraintLayout>
