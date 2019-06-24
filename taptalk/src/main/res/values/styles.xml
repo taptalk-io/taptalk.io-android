@@ -640,6 +640,43 @@
         <item name="android:textSize">11sp</item>
     </style>
 
+    <style name="tapCountryListLabelStyle" parent="tapFontFamilyRegular">
+        <item name="android:ellipsize">end</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="tapLoginVerificationInfoLabelStyle" parent="tapFontFamilyMedium">
+        <item name="android:letterSpacing">-0.03</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapLoginVerificationPhoneNumberLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing">-0.03</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapLoginVerificationStatusCountdownLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:textColor">@color/tapColorTextMedium</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapLoginVerificationStatusLoadingLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:textColor">@color/tapColorPrimary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapLoginVerificationStatusSuccessLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:textColor">@color/tapColorSuccess</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <!--______________________________________Old Styles______________________________________-->
 
     <style name="TapTextButtonDescription">

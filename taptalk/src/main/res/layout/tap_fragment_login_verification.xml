@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/tapWhite"
     tools:context="io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment">
 
     <ImageView
@@ -14,7 +15,7 @@
         android:paddingEnd="15dp"
         android:paddingBottom="12dp"
         android:src="@drawable/tap_ic_back_arrow_pumpkin_orange"
-        android:tint="@color/tapColorPrimaryDark"
+        android:tint="@color/tapIconNavBarBackButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,34 +30,23 @@
         app:layout_constraintTop_toBottomOf="@id/iv_back_button">
 
         <TextView
+            style="@style/tapLoginVerificationInfoLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:fontFamily="@font/tap_font_pt_root_medium"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.03"
-            android:lineSpacingExtra="6sp"
-            android:text="@string/tap_guide_enter_otp"
-            android:textColor="@color/tapBlack19"
-            android:textSize="16sp" />
+            android:text="@string/tap_guide_enter_otp" />
 
         <TextView
             android:id="@+id/tv_phone_number"
+            style="@style/tapLoginVerificationPhoneNumberLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:fontFamily="@font/tap_font_pt_root_bold"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.03"
-            android:lineSpacingExtra="6sp"
-            android:textColor="@color/tapBlack19"
-            android:textSize="16sp"
             tools:text="+628197304402" />
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:background="@color/quantum_bluegrey300">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/ll_otp_pointer"
@@ -76,7 +66,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/tap_bg_circle_191919"
+                        android:src="@drawable/tap_bg_otp_filled"
                         android:visibility="invisible" />
 
                     <View
@@ -84,7 +74,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapBlack19" />
+                        android:background="@color/tapColorTextDark" />
 
                 </LinearLayout>
 
@@ -100,7 +90,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/tap_bg_circle_191919"
+                        android:src="@drawable/tap_bg_otp_filled"
                         android:visibility="invisible" />
 
                     <View
@@ -108,7 +98,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapBlack19" />
+                        android:background="@color/tapColorTextDark" />
 
                 </LinearLayout>
 
@@ -124,7 +114,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/tap_bg_circle_191919"
+                        android:src="@drawable/tap_bg_otp_filled"
                         android:visibility="invisible" />
 
                     <View
@@ -132,7 +122,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapBlack19" />
+                        android:background="@color/tapColorTextDark" />
 
                 </LinearLayout>
 
@@ -148,7 +138,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/tap_bg_circle_191919"
+                        android:src="@drawable/tap_bg_otp_filled"
                         android:visibility="invisible" />
 
                     <View
@@ -156,7 +146,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapBlack19" />
+                        android:background="@color/tapColorTextDark" />
 
                 </LinearLayout>
 
@@ -172,7 +162,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/tap_bg_circle_191919"
+                        android:src="@drawable/tap_bg_otp_filled"
                         android:visibility="invisible" />
 
                     <View
@@ -180,7 +170,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapBlack19" />
+                        android:background="@color/tapColorTextDark" />
 
                 </LinearLayout>
 
@@ -196,7 +186,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/tap_bg_circle_191919"
+                        android:src="@drawable/tap_bg_otp_filled"
                         android:visibility="invisible" />
 
                     <View
@@ -204,7 +194,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapBlack19" />
+                        android:background="@color/tapColorTextDark" />
 
                 </LinearLayout>
 
@@ -224,17 +214,12 @@
 
         <TextView
             android:id="@+id/tv_didnt_receive_and_invalid"
+            style="@style/tapInfoLabelBodyStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="34dp"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.01"
-            android:lineSpacingExtra="6sp"
-            android:text="@string/tap_didnt_receive_the_6_digit_otp"
-            android:textColor="@color/tapBlack19"
-            android:textSize="14sp" />
+            android:text="@string/tap_didnt_receive_the_6_digit_otp" />
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -246,28 +231,19 @@
 
             <TextView
                 android:id="@+id/tv_otp_timer"
+                style="@style/tapLoginVerificationStatusCountdownLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/tap_font_pt_root_bold"
-                android:gravity="center"
-                android:lineSpacingExtra="14sp"
                 android:padding="10dp"
-                android:textColor="@color/tapGrey9b"
-                android:textSize="16sp"
-                android:visibility="visible"
                 tools:text="Wait 0:23" />
 
             <TextView
                 android:id="@+id/tv_request_otp_again"
+                style="@style/tapClickableLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/tap_font_pt_root_bold"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="14sp"
                 android:padding="10dp"
                 android:text="@string/tap_request_again"
-                android:textColor="@color/tapColorPrimaryDark"
-                android:textSize="16sp"
                 android:visibility="gone" />
 
             <LinearLayout
@@ -281,14 +257,10 @@
 
                 <TextView
                     android:id="@+id/tv_loading_otp"
+                    style="@style/tapLoginVerificationStatusLoadingLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_pt_root_bold"
-                    android:gravity="end"
-                    android:lineSpacingExtra="6sp"
-                    android:text="@string/tap_verifying_otp"
-                    android:textColor="@color/tapColorPrimaryDark"
-                    android:textSize="16sp" />
+                    android:text="@string/tap_verifying_otp" />
 
                 <ImageView
                     android:id="@+id/iv_progress_otp"
@@ -296,7 +268,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/tap_ic_loading_progress_circle_orange"
-                    android:tint="@color/tapColorPrimaryDark" />
+                    android:tint="@color/tapIconLoadingProgress" />
 
             </LinearLayout>
 
@@ -311,14 +283,11 @@
 
                 <TextView
                     android:id="@+id/tv_otp_sent"
+                    style="@style/tapLoginVerificationStatusSuccessLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/tap_font_pt_root_bold"
-                    android:gravity="end"
                     android:lineSpacingExtra="6sp"
-                    android:text="@string/tap_otp_successfully_sent"
-                    android:textColor="@color/tapAppleGreen"
-                    android:textSize="16sp" />
+                    android:text="@string/tap_otp_successfully_sent" />
 
                 <ImageView
                     android:id="@+id/iv_otp_sent"
@@ -326,7 +295,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_check_green_background" />
+                    android:src="@drawable/tap_ic_check_green_background"
+                    android:tint="@color/tapSuccessIconColor" />
 
             </LinearLayout>
 
