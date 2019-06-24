@@ -227,7 +227,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         if (hasFocus) {
             etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp));
         } else {
-            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp));
+            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_text_field_inactive));
         }
     };
 

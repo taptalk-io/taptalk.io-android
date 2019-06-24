@@ -72,6 +72,7 @@
     </style>
 
     <style name="tapFormTextFieldStyle" parent="tapFontFamilyRegular">
+        <item name="android:background">@color/tapTransparentWhite</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
@@ -155,11 +156,12 @@
     </style>
 
     <style name="tapSearchBarTextStyle" parent="tapFontFamilyRegular">
+        <item name="android:background">@color/tapTransparentWhite</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textColorHint">@color/tapColorTextMedium</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapPopupDialogTitleStyle" parent="tapFontFamilyBold">

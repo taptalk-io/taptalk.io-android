@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -81,7 +80,6 @@ public class TAPCountryListActivity extends AppCompatActivity {
             rvCountryList.setLayoutManager(new LinearLayoutManager(TAPCountryListActivity.this, LinearLayoutManager.VERTICAL, false));
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("><><><", "initAdapter: ", e);
         }
     }
 

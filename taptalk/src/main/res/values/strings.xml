@@ -88,6 +88,7 @@
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
+    <string name="tap_guide_show_qr_code">Show your QR code by tapping the button below</string>
     <string name="tap_search_username_welcome_message">Usernames are <b>not case sensitive</b>, but make sure you input the <b>exact characters</b></string>
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
     <string name="tap_chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
@@ -297,6 +298,5 @@
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="title_activity_tapedit_group">TAPEditGroupActivity</string>
     <string name="tap_over_99">99+</string>
-    <string name="tap_guide_show_qr_code">Show your QR code by tapping the button below</string>
 
 </resources>

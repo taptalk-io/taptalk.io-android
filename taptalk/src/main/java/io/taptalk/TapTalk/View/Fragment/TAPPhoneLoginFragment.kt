@@ -63,9 +63,9 @@ class TAPPhoneLoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val lastCallCountryTimestamp = TAPDataManager.getInstance().lastCallCountryTimestamp
 
-        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp == lastCallCountryTimestamp)
+        if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp == lastCallCountryTimestamp) {
             callCountryListFromAPI()
-        else if (isNeedResetData) {
+        } else if (isNeedResetData) {
             callCountryListFromAPI()
             countryIsoCode = TAPUtils.getInstance().getDeviceCountryCode(context)
             //countryHashMap = TAPDataManager.getInstance().countryList
@@ -103,7 +103,7 @@ class TAPPhoneLoginFragment : Fragment() {
                         fl_continue_btn.isClickable = true
                     }
                     else -> {
-                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp)
+                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_button_inactive_ripple)
                         fl_continue_btn.setOnClickListener(null)
                         fl_continue_btn.isClickable = false
                     }
@@ -122,9 +122,9 @@ class TAPPhoneLoginFragment : Fragment() {
 
         et_phone_number.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_white_rounded_8dp_stroke_accentdark_1dp)
+                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_text_field_active)
             } else {
-                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
+                fl_phone_number.setBackgroundResource(R.drawable.tap_bg_text_field_inactive)
             }
         }
 
@@ -192,13 +192,12 @@ class TAPPhoneLoginFragment : Fragment() {
                     loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Log.e("><><><", "Masuk ", e)
                 }
             }
         }
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
-            showDialog("ERROR", errorMessage ?: generalErrorMessage)
+            showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
         }
     }
 

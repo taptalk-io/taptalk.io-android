@@ -332,7 +332,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
         } else {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_text_field_inactive)
         }
         if (view == cl_password) {
             if (hasFocus) {
@@ -370,7 +370,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun disableContinueButton() {
-        fl_button_continue.background = getDrawable(R.drawable.tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp)
+        fl_button_continue.background = getDrawable(R.drawable.tap_bg_button_inactive)
         fl_button_continue.setOnClickListener(null)
     }
 
