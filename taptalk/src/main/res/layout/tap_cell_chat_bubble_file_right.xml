@@ -117,7 +117,7 @@
                         android:layout_gravity="center"
                         android:indeterminate="false"
                         android:max="100"
-                        android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                        android:progressDrawable="@drawable/tap_file_circular_progress"
                         tools:progress="65" />
 
                     <ImageView

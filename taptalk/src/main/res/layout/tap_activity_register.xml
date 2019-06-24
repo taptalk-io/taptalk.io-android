@@ -12,7 +12,7 @@
         android:id="@+id/fl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tapWhite">
+        android:background="@color/tapDefaultNavBarBackgroundColor">
 
         <ImageView
             android:id="@+id/iv_button_back"
@@ -22,7 +22,7 @@
             android:paddingTop="18dp"
             android:paddingEnd="10.5dp"
             android:paddingBottom="18dp"
-            android:tint="@color/tapColorPrimaryDark"
+            android:tint="@color/tapIconNavBarBackButton"
             android:src="@drawable/tap_ic_back_arrow_pumpkin_orange" />
 
     </FrameLayout>
@@ -83,14 +83,15 @@
                 android:elevation="2dp"
                 android:indeterminate="false"
                 android:max="100"
-                android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
-                android:visibility="gone"
+                android:progressDrawable="@drawable/tap_file_circular_progress"
                 app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
                 app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
                 app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
                 app:layout_constraintTop_toTopOf="@id/civ_profile_picture"
+                android:visibility="gone"
                 tools:progress="65" />
 
+            <!--TODO CHANGE ICON-->
             <ImageView
                 android:id="@+id/iv_remove_profile_picture"
                 android:layout_width="36dp"
@@ -129,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tapColorPrimaryDark" />
+                    android:tint="@color/tapDefaultPrimaryIconColor" />
 
             </LinearLayout>
 
@@ -402,7 +403,6 @@
                     style="@style/tapFormTextFieldStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/tapTransparentWhite"
                     android:hint="@string/tap_hint_insert_password"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
@@ -423,6 +423,7 @@
                     android:layout_height="0dp"
                     android:padding="18dp"
                     android:src="@drawable/tap_ic_view_grey"
+                    android:tint="@color/tapIconViewPasswordInactive"
                     app:layout_constraintBottom_toBottomOf="@id/et_password"
                     app:layout_constraintDimensionRatio="H, 1:1"
                     app:layout_constraintEnd_toEndOf="@id/et_password"
@@ -495,7 +496,6 @@
                     style="@style/tapFormTextFieldStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/tapTransparentWhite"
                     android:hint="@string/tap_retype_password"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
@@ -516,6 +516,7 @@
                     android:layout_height="0dp"
                     android:padding="18dp"
                     android:src="@drawable/tap_ic_view_grey"
+                    android:tint="@color/tapIconViewPasswordInactive"
                     app:layout_constraintBottom_toBottomOf="@id/et_retype_password"
                     app:layout_constraintDimensionRatio="H, 1:1"
                     app:layout_constraintEnd_toEndOf="@id/et_retype_password"
@@ -564,15 +565,10 @@
 
                 <TextView
                     android:id="@+id/tv_button_continue"
+                    style="@style/tapButtonLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="@font/tap_font_pt_root_bold"
-                    android:gravity="center_horizontal"
-                    android:lineSpacingExtra="14sp"
-                    android:text="@string/tap_continue_s"
-                    android:textColor="@color/tapWhite"
-                    android:textSize="16sp" />
+                    android:text="@string/tap_continue_s" />
 
                 <ImageView
                     android:id="@+id/iv_register_progress"
@@ -580,6 +576,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/tap_ic_loading_progress_circle_white"
+                    android:tint="@color/tapIconLoadingProgressLight"
                     android:visibility="gone" />
 
             </FrameLayout>

@@ -94,7 +94,7 @@
                 android:elevation="2dp"
                 android:indeterminate="false"
                 android:max="100"
-                android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                android:progressDrawable="@drawable/tap_file_circular_progress"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
                 app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"

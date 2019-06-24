@@ -225,7 +225,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
     private View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
         if (hasFocus) {
-            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp));
+            etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_text_field_active));
         } else {
             etGroupName.setBackground(getResources().getDrawable(R.drawable.tap_bg_text_field_inactive));
         }

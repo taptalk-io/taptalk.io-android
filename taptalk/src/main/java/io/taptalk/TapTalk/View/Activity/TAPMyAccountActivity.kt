@@ -263,7 +263,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             // Invalid full name
             vm.formCheck[indexFullName] = stateInvalid
             tv_label_full_name_error.visibility = View.VISIBLE
-            et_full_name.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            et_full_name.background = getDrawable(R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
     }
@@ -288,14 +288,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             // Invalid email address
             vm.formCheck[indexEmail] = stateInvalid
             tv_label_email_address_error.visibility = View.VISIBLE
-            et_email_address.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            et_email_address.background = getDrawable(R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
     }
 
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_text_field_active)
         } else {
             view.background = getDrawable(R.drawable.tap_bg_text_field_inactive)
         }
@@ -446,7 +446,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexFullName] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_text_field_active)
             }
         } else {
             view.elevation = 0f
@@ -460,7 +460,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexEmail] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_text_field_active)
             }
         } else {
             view.elevation = 0f
