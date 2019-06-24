@@ -174,19 +174,19 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         // TODO temporarily disable editing
         et_full_name.isEnabled = false
         et_email_address.isEnabled = false
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
+        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
+        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
         tv_label_password.visibility = View.GONE
         cl_password.visibility = View.GONE
         fl_button_update.visibility = View.GONE
         cl_logout.setOnClickListener {
             TapTalkDialog.Builder(this)
-                    .setTitle("Log Out")
-                    .setMessage("Are you sure you want to log out?")
+                    .setTitle(getString(R.string.tap_log_out))
+                    .setMessage(getString(R.string.tap_log_out_confirmation))
                     .setCancelable(false)
-                    .setPrimaryButtonTitle("Log Out")
+                    .setPrimaryButtonTitle(getString(R.string.tap_log_out))
                     .setPrimaryButtonListener { logout() }
-                    .setSecondaryButtonTitle("Cancel")
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setSecondaryButtonListener(true) {}
                     .show()
@@ -301,7 +301,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
         if (view == cl_password) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTextFieldBorderActiveColor))
             } else {
                 v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapGreyDc))
             }
@@ -396,9 +396,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_orange))
         iv_button_close.clearAnimation()
 
-
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimaryDark))
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
         iv_edit_profile_picture_icon.visibility = View.VISIBLE
         civ_profile_picture_overlay.visibility = View.GONE
         pb_profile_picture_progress.visibility = View.GONE
@@ -425,7 +424,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_button_close)
 
         tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapGrey9b))
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
         iv_edit_profile_picture_icon.visibility = View.GONE
         civ_profile_picture_overlay.visibility = View.VISIBLE
         pb_profile_picture_progress.visibility = View.VISIBLE

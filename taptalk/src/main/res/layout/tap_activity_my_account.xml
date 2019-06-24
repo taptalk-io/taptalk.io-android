@@ -5,14 +5,14 @@
     android:id="@+id/fl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tapWhiteF3"
+    android:background="@color/tapDefaultBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tapWhite">
+        android:background="@color/tapDefaultNavBarBackgroundColor">
 
         <TextView
             android:id="@+id/tv_title"
@@ -32,7 +32,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@drawable/tap_ic_close_orange"
-            android:tint="@color/tapColorPrimaryDark"
+            android:tint="@color/tapIconNavBarCloseButton"
             app:layout_constraintDimensionRatio="H, 1:1"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -102,6 +102,7 @@
                 app:layout_constraintTop_toTopOf="@id/civ_profile_picture"
                 tools:progress="65" />
 
+            <!--TODO CHANGE ICON-->
             <ImageView
                 android:id="@+id/iv_remove_profile_picture"
                 android:layout_width="36dp"
@@ -142,7 +143,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tapColorPrimaryDark" />
+                    android:tint="@color/tapDefaultPrimaryIconColor" />
 
             </LinearLayout>
 
@@ -172,7 +173,6 @@
                 android:inputType="textCapWords"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <TextView
@@ -201,6 +201,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_full_name_error" />
 
+            <!--TODO REMOVE TEXT COLOR IF FIELD IS ENABLED-->
             <EditText
                 android:id="@+id/et_username"
                 style="@style/tapFormTextFieldStyle"
@@ -214,8 +215,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
+                android:textColor="@color/tapColorTextMedium"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username"
                 tools:text="@string/tap_hint_username" />
 
@@ -249,6 +249,7 @@
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/tap_ic_default_flag" />
 
+                <!--TODO REMOVE TEXT COLOR IF FIELD IS ENABLED-->
                 <TextView
                     android:id="@+id/tv_country_code"
                     style="@style/tapFormTextFieldStyle"
@@ -257,10 +258,11 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
                     android:hint="+62"
-                    android:textColor="@color/tapGrey9b" />
+                    android:textColor="@color/tapColorTextMedium" />
 
             </LinearLayout>
 
+            <!--TODO REMOVE TEXT COLOR IF FIELD IS ENABLED-->
             <EditText
                 android:id="@+id/et_mobile_number"
                 style="@style/tapFormTextFieldStyle"
@@ -275,8 +277,7 @@
                 android:inputType="number"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
+                android:textColor="@color/tapColorTextMedium"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ll_country_code"
@@ -317,7 +318,6 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_email_address" />
 
             <TextView
@@ -348,66 +348,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_email_address_error" />
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/cl_logout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp_ripple"
-                app:layout_constraintTop_toBottomOf="@id/cl_password">
-
-                <TextView
-                    android:id="@+id/tv_logout"
-                    style="@style/tapClickableLabelStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/tapTransparentWhite"
-                    android:gravity="start"
-                    android:maxLines="1"
-                    android:paddingStart="15dp"
-                    android:paddingTop="15dp"
-                    android:paddingEnd="70dp"
-                    android:paddingBottom="15dp"
-                    android:text="@string/tap_logout"
-                    android:textColor="@color/tapWatermelonRed"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/iv_logout"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:scaleType="center"
-                    android:src="@drawable/tap_ic_icon_logout_watermelon"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_logout"
-                    app:layout_constraintDimensionRatio="H, 1:1"
-                    app:layout_constraintEnd_toEndOf="@id/tv_logout"
-                    app:layout_constraintTop_toTopOf="@id/tv_logout" />
-
-                <View
-                    android:id="@+id/v_logout_separator"
-                    android:layout_width="1dp"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_marginBottom="1dp"
-                    android:background="@color/tapGreyDc"
-                    app:layout_constraintBottom_toBottomOf="@id/iv_logout"
-                    app:layout_constraintStart_toStartOf="@id/iv_logout"
-                    app:layout_constraintTop_toTopOf="@id/iv_logout" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp_ripple"
+                android:background="@drawable/tap_bg_text_field_inactive_ripple"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_password">
 
                 <TextView
@@ -415,7 +362,6 @@
                     style="@style/tapClickableLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/tapTransparentWhite"
                     android:gravity="start"
                     android:maxLines="1"
                     android:paddingStart="15dp"
@@ -434,7 +380,7 @@
                     android:layout_height="0dp"
                     android:scaleType="center"
                     android:src="@drawable/tap_ic_chevron_white"
-                    android:tint="@color/tapColorPrimaryDark"
+                    android:tint="@color/tapDefaultPrimaryIconColor"
                     app:layout_constraintBottom_toBottomOf="@id/tv_password"
                     app:layout_constraintDimensionRatio="H, 1:1"
                     app:layout_constraintEnd_toEndOf="@id/tv_password"
@@ -453,6 +399,58 @@
 
             </android.support.constraint.ConstraintLayout>
 
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/cl_logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/tap_bg_text_field_inactive_ripple"
+                app:layout_constraintTop_toBottomOf="@id/cl_password">
+
+                <TextView
+                    android:id="@+id/tv_logout"
+                    style="@style/tapClickableDestructiveLabelStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:maxLines="1"
+                    android:paddingStart="15dp"
+                    android:paddingTop="15dp"
+                    android:paddingEnd="70dp"
+                    android:paddingBottom="15dp"
+                    android:text="@string/tap_logout"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_logout"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:scaleType="center"
+                    android:src="@drawable/tap_ic_icon_logout_watermelon"
+                    android:tint="@color/tapDestructiveIconColor"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_logout"
+                    app:layout_constraintDimensionRatio="H, 1:1"
+                    app:layout_constraintEnd_toEndOf="@id/tv_logout"
+                    app:layout_constraintTop_toTopOf="@id/tv_logout" />
+
+                <View
+                    android:id="@+id/v_logout_separator"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/tapGreyDc"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_logout"
+                    app:layout_constraintStart_toStartOf="@id/iv_logout"
+                    app:layout_constraintTop_toTopOf="@id/iv_logout" />
+
+            </android.support.constraint.ConstraintLayout>
+
             <FrameLayout
                 android:id="@+id/fl_button_update"
                 android:layout_width="match_parent"
@@ -466,15 +464,11 @@
 
                 <TextView
                     android:id="@+id/tv_button_update"
+                    style="@style/tapButtonLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:fontFamily="@font/tap_font_pt_root_bold"
-                    android:gravity="center_horizontal"
-                    android:lineSpacingExtra="14sp"
-                    android:text="@string/tap_update"
-                    android:textColor="@color/tapWhite"
-                    android:textSize="16sp" />
+                    android:text="@string/tap_update" />
 
                 <ImageView
                     android:id="@+id/iv_update_progress"
@@ -482,6 +476,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:src="@drawable/tap_ic_loading_progress_circle_white"
+                    android:tint="@color/tapIconLoadingProgressLight"
                     android:visibility="gone" />
 
             </FrameLayout>

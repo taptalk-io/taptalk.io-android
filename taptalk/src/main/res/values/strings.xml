@@ -256,6 +256,8 @@
     <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_loading">Loading</string>
+    <string name="tap_log_out">Log Out</string>
+    <string name="tap_log_out_confirmation">Are you sure you want to log out?</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>
     <string name="tap_no_chats_to_show">No chats to show</string>
