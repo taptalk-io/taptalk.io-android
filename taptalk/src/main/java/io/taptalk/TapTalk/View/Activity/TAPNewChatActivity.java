@@ -54,7 +54,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private RecyclerView rvContactList;
     private NestedScrollView nsvNewChat;
     private FrameLayout flSyncStatus, flSync;
-    private ProgressBar pbConnecting;
     private ConstraintLayout clButtonNewContact, clButtonScanQR, clButtonNewGroup;
 
     private TAPContactInitialAdapter adapter;
@@ -147,10 +146,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         nsvNewChat = findViewById(R.id.nsv_new_chat);
         flSyncStatus = findViewById(R.id.fl_sync_status);
         flSync = findViewById(R.id.fl_sync);
-        pbConnecting = findViewById(R.id.pb_connecting);
-
-        pbConnecting.setVisibility(View.GONE);
-        ivConnectionStatus.setVisibility(View.VISIBLE);
 
         new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
 
@@ -344,9 +339,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             } else {
                 tvConnectionStatus.setText(String.format(getString(R.string.tap_synced_d_contacts), contactSynced));
             }
-            pbConnecting.setVisibility(View.GONE);
-            ivConnectionStatus.setVisibility(View.VISIBLE);
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
+            ivConnectionStatus.clearAnimation();
             flSyncStatus.setVisibility(View.VISIBLE);
 
             new Handler().postDelayed(() -> flSyncStatus.setVisibility(View.GONE), 1000L);
@@ -357,8 +351,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
             tvConnectionStatus.setText(getString(R.string.tap_syncing_contacts));
-            ivConnectionStatus.setVisibility(View.GONE);
-            pbConnecting.setVisibility(View.VISIBLE);
+            ivConnectionStatus.setImageResource(R.drawable.tap_ic_loading_progress_circle_white);
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivConnectionStatus);
             llConnectionStatus.setVisibility(View.VISIBLE);
             flSyncStatus.setVisibility(View.VISIBLE);
         });
