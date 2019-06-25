@@ -72,7 +72,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustNothing"/>
     </application>
 
 </manifest>
