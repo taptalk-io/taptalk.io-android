@@ -10,6 +10,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
+import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
 import io.taptalk.Taptalk.R
@@ -19,6 +21,19 @@ class TAPGroupMemberListActivity : TAPBaseActivity() {
 
     var groupViewModel: TAPGroupMemberViewModel? = null
     var adapter: TAPGroupMemberAdapter? = null
+    val groupInterface = object : TapTalkGroupMemberListInterface {
+        override fun onContactSelected(contact: TAPUserModel?): Boolean {
+            return super.onContactSelected(contact)
+        }
+
+        override fun onContactDeselected(contact: TAPUserModel?) {
+            super.onContactDeselected(contact)
+        }
+
+        override fun onContactLongPress(contact: TAPUserModel?) {
+            adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +48,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity() {
         groupViewModel?.participantsList = groupViewModel?.groupData?.groupParticipants?.toMutableList()
                 ?: mutableListOf()
 
-        adapter = TAPGroupMemberAdapter(groupViewModel?.participantsList
-                ?: mutableListOf())
+        adapter = TAPGroupMemberAdapter(TAPGroupMemberAdapter.NORMAL_MODE, groupViewModel?.participantsList
+                ?: mutableListOf(), groupInterface)
         rv_contact_list.adapter = adapter
         rv_contact_list.layoutManager = LinearLayoutManager(this)
         rv_contact_list.setHasFixedSize(true)
