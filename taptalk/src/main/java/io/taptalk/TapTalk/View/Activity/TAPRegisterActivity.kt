@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
@@ -123,6 +124,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         vm.countryFlagUrl = intent.getStringExtra(COUNTRY_FLAG_URL)
     }
 
+    @SuppressLint("PrivateResource")
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
@@ -144,15 +146,27 @@ class TAPRegisterActivity : TAPBaseActivity() {
                     .into(iv_country_flag)
         }
 
+        // Obtain text field style attributes
+        val typedArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
+        vm.fontResourceId = typedArray.getResourceId(R.styleable.TextAppearance_android_fontFamily, -1)
+        vm.textFieldFontColor = typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
+        vm.textFieldFontColorHint = typedArray.getColor(R.styleable.TextAppearance_android_textColorHint, -1)
+
+        typedArray.recycle()
+
+        // Set password field input type and typeface
         et_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         et_retype_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
-        et_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
-        et_retype_password.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
+        et_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
+        et_retype_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
 
+        // Set mobile number & disable editing
         tv_country_code.text = "+" + vm.countryCallingCode
         et_mobile_number.isEnabled = false
         et_mobile_number.setText(intent.getStringExtra(MOBILE_NUMBER))
+        tv_country_code.setTextColor(vm.textFieldFontColorHint)
+        et_mobile_number.setTextColor(vm.textFieldFontColorHint)
         if (et_mobile_number.text.isNotEmpty()) {
             vm.formCheck[indexMobileNumber] = stateValid
         }
@@ -181,6 +195,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         tv_label_retype_password.visibility = View.GONE
         tv_label_retype_password_error.visibility = View.GONE
         cl_retype_password.visibility = View.GONE
+        et_email_address.setOnEditorActionListener{ v, a, e -> fl_button_continue.callOnClick() }
     }
 
     private fun registerBroadcastReceiver() {
@@ -388,7 +403,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             button.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapIconViewPasswordInactive))
         }
-        editText.typeface = ResourcesCompat.getFont(this, R.font.tap_font_pt_root_regular)
+        editText.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
         editText.setSelection(cursorPosition)
     }
 
@@ -433,11 +448,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.isEnabled = false
         et_retype_password.isEnabled = false
 
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
-        et_username.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
-        et_password.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
-        et_retype_password.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
+        et_full_name.setTextColor(vm.textFieldFontColorHint)
+        et_username.setTextColor(vm.textFieldFontColorHint)
+        et_email_address.setTextColor(vm.textFieldFontColorHint)
+        et_password.setTextColor(vm.textFieldFontColorHint)
+        et_retype_password.setTextColor(vm.textFieldFontColorHint)
 
         tv_button_continue.visibility = View.GONE
         iv_register_progress.visibility = View.VISIBLE
@@ -460,11 +475,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.isEnabled = true
         et_retype_password.isEnabled = true
 
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
-        et_username.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
-        et_password.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
-        et_retype_password.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextDark))
+        et_full_name.setTextColor(vm.textFieldFontColor)
+        et_username.setTextColor(vm.textFieldFontColor)
+        et_email_address.setTextColor(vm.textFieldFontColor)
+        et_password.setTextColor(vm.textFieldFontColor)
+        et_retype_password.setTextColor(vm.textFieldFontColor)
 
         tv_button_continue.visibility = View.VISIBLE
         iv_register_progress.visibility = View.GONE

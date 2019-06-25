@@ -22,8 +22,8 @@
             android:paddingTop="18dp"
             android:paddingEnd="10.5dp"
             android:paddingBottom="18dp"
-            android:tint="@color/tapIconNavBarBackButton"
-            android:src="@drawable/tap_ic_back_arrow_pumpkin_orange" />
+            android:src="@drawable/tap_ic_back_arrow_pumpkin_orange"
+            android:tint="@color/tapIconNavBarBackButton" />
 
     </FrameLayout>
 
@@ -84,11 +84,11 @@
                 android:indeterminate="false"
                 android:max="100"
                 android:progressDrawable="@drawable/tap_file_circular_progress"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
                 app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
                 app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
                 app:layout_constraintTop_toTopOf="@id/civ_profile_picture"
-                android:visibility="gone"
                 tools:progress="65" />
 
             <!--TODO CHANGE ICON-->
@@ -160,7 +160,6 @@
                 android:inputType="textCapWords"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <TextView
@@ -203,7 +202,6 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username" />
 
             <TextView
@@ -271,8 +269,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:hint="+62"
-                    android:textColor="@color/tapGrey9b" />
+                    android:hint="+62" />
 
             </LinearLayout>
 
@@ -290,8 +287,6 @@
                 android:inputType="number"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tapGrey9b"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ll_country_code"
@@ -334,6 +329,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_label_email_address"
                 app:layout_constraintStart_toEndOf="@id/tv_label_email_address" />
 
+            <!--TODO CHANGE IME TO ACTIONNEXT IF PASSWORD IS ENABLED-->
             <EditText
                 android:id="@+id/et_email_address"
                 style="@style/tapFormTextFieldStyle"
@@ -344,11 +340,10 @@
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_text_field_inactive"
                 android:hint="@string/tap_hint_email_address"
-                android:imeOptions="actionNext"
+                android:imeOptions="actionDone"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_email_address" />
 
             <TextView
@@ -411,7 +406,6 @@
                     android:paddingTop="15dp"
                     android:paddingEnd="70dp"
                     android:paddingBottom="15dp"
-                    android:textCursorDrawable="@drawable/tap_cursor_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -504,7 +498,6 @@
                     android:paddingTop="15dp"
                     android:paddingEnd="70dp"
                     android:paddingBottom="15dp"
-                    android:textCursorDrawable="@drawable/tap_cursor_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -568,6 +561,7 @@
                     style="@style/tapButtonLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="@string/tap_continue_s" />
 
                 <ImageView
