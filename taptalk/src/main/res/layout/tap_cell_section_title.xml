@@ -5,17 +5,17 @@
     android:id="@+id/cl_title_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/tapWhiteF3">
+    android:background="@color/tapDefaultBackgroundColor">
 
     <TextView
         android:id="@+id/tv_section_title"
-        style="@style/TapSectionLabel"
+        style="@style/tapSectionHeaderLabelStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:letterSpacing="0.1"
-        android:padding="10dp"
-        android:textColor="@color/tapColorPrimaryDark"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tv_clear_history"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,27 +24,25 @@
 
     <TextView
         android:id="@+id/tv_clear_history"
+        style="@style/tapSectionHeaderLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="6dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:fontFamily="@font/tap_font_pt_root_bold"
-        android:gravity="end"
-        android:letterSpacing="0.09"
-        android:padding="10dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         android:text="@string/tap_clear_history"
-        android:textAllCaps="true"
-        android:textColor="@color/tapGrey9b"
-        android:textSize="12sp"
+        android:textColor="@color/tapColorTextMedium"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/tapGreyEa"
-        app:layout_constraintBottom_toBottomOf="parent" />
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="2dp"-->
+    <!--android:background="@color/tapGreyDc"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent" />-->
 
 </android.support.constraint.ConstraintLayout>

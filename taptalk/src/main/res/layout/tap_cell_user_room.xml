@@ -132,7 +132,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:background="@drawable/tap_bg_room_list_unread_badge"
-            android:gravity="center"
             android:minWidth="18dp"
             android:paddingStart="2dp"
             android:paddingTop="2dp"

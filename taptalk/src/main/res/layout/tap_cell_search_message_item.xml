@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
-    android:layout_height="69dp"
+    android:layout_height="70dp"
     android:background="@color/tapWhite"
     android:foreground="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/tv_user_name"
-        style="@style/tapContactListNameStyle"
+        style="@style/tapRoomListNameStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -28,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="2dp"
-        android:ellipsize="end"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_message_status"
@@ -38,15 +37,10 @@
 
     <TextView
         android:id="@+id/tv_message_time"
+        style="@style/tapRoomListTimeStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:gravity="end"
-        android:letterSpacing="-0.01"
-        android:lineSpacingExtra="5sp"
-        android:textColor="@color/tapGrey9b"
-        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/iv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -59,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="12dp"
-        android:src="@drawable/tap_ic_read_green"
+        tools:src="@drawable/tap_ic_read_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_message_time" />
@@ -69,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
-        android:background="@color/tapGreyEa"
+        android:background="@color/tapGreyDc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

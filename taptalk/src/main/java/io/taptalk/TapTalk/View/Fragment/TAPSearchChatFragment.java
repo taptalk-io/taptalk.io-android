@@ -10,11 +10,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -36,6 +38,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPSearchChatViewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.EMPTY_STATE;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.MESSAGE_ITEM;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.RECENT_TITLE;
@@ -133,6 +136,11 @@ public class TAPSearchChatFragment extends Fragment {
             TAPUtils.getInstance().dismissKeyboard(getActivity());
         });
         ivButtonAction.setOnClickListener(v -> clearSearch());
+
+        etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
+            TAPUtils.getInstance().dismissKeyboard(getActivity());
+            return false;
+        });
     }
 
     private void clearSearch() {
@@ -283,7 +291,7 @@ public class TAPSearchChatFragment extends Fragment {
                     TAPRoomModel room = new TAPRoomModel(
                             TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
-                            /* 1 ON 1 ROOM TYPE */ 1,
+                            TYPE_PERSONAL,
                             contact.getAvatarURL(),
                             /* SET DEFAULT ROOM COLOR*/""
                     );
