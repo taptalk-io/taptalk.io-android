@@ -269,7 +269,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:hint="+62" />
+                    android:hint="@string/tap_hint_calling_code" />
 
             </LinearLayout>
 

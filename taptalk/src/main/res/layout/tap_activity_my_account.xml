@@ -155,7 +155,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:text="@string/tap_full_name"
-                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/iv_profile_background" />
 
@@ -201,7 +200,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_full_name_error" />
 
-            <!--TODO REMOVE TEXT COLOR IF FIELD IS ENABLED-->
             <EditText
                 android:id="@+id/et_username"
                 style="@style/tapFormTextFieldStyle"
@@ -215,7 +213,6 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tapColorTextMedium"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username"
                 tools:text="@string/tap_hint_username" />
 
@@ -249,7 +246,6 @@
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/tap_ic_default_flag" />
 
-                <!--TODO REMOVE TEXT COLOR IF FIELD IS ENABLED-->
                 <TextView
                     android:id="@+id/tv_country_code"
                     style="@style/tapFormTextFieldStyle"
@@ -257,12 +253,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="10dp"
-                    android:hint="+62"
-                    android:textColor="@color/tapColorTextMedium" />
+                    android:hint="@string/tap_hint_calling_code" />
 
             </LinearLayout>
 
-            <!--TODO REMOVE TEXT COLOR IF FIELD IS ENABLED-->
             <EditText
                 android:id="@+id/et_mobile_number"
                 style="@style/tapFormTextFieldStyle"
@@ -277,7 +271,6 @@
                 android:inputType="number"
                 android:maxLines="1"
                 android:padding="15dp"
-                android:textColor="@color/tapColorTextMedium"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ll_country_code"
@@ -404,7 +397,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_text_field_inactive_ripple"
                 app:layout_constraintTop_toBottomOf="@id/cl_password">

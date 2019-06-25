@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
@@ -135,6 +136,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         vm.countryFlagUrl = TAPDataManager.getInstance().myCountryFlagUrl
     }
 
+    @SuppressLint("PrivateResource")
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
@@ -158,9 +160,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_mobile_number.setText(vm.myUserModel.phoneNumber)
         et_email_address.setText(vm.myUserModel.email)
 
-        et_username.isEnabled = false
-        et_mobile_number.isEnabled = false
-
         iv_button_close.setOnClickListener { onBackPressed() }
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
@@ -168,29 +167,36 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         cl_password.setOnClickListener { openChangePasswordPage() }
+        cl_logout.setOnClickListener { promptUserLogout() }
 
         sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
 
+        // Obtain text field style attributes
+        val textFieldArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
+        vm.fontResourceId = textFieldArray.getResourceId(R.styleable.TextAppearance_android_fontFamily, -1)
+        vm.textFieldFontColor = textFieldArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
+        vm.textFieldFontColorHint = textFieldArray.getColor(R.styleable.TextAppearance_android_textColorHint, -1)
+        textFieldArray.recycle()
+
+        val clickableLabelArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance)
+        vm.clickableLabelFontColor = clickableLabelArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
+        clickableLabelArray.recycle()
+
         // TODO temporarily disable editing
         et_full_name.isEnabled = false
+        et_username.isEnabled = false
+        et_mobile_number.isEnabled = false
         et_email_address.isEnabled = false
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
+
+        et_full_name.setTextColor(vm.textFieldFontColorHint)
+        et_username.setTextColor(vm.textFieldFontColorHint)
+        tv_country_code.setTextColor(vm.textFieldFontColorHint)
+        et_mobile_number.setTextColor(vm.textFieldFontColorHint)
+        et_email_address.setTextColor(vm.textFieldFontColorHint)
+
         tv_label_password.visibility = View.GONE
         cl_password.visibility = View.GONE
         fl_button_update.visibility = View.GONE
-        cl_logout.setOnClickListener {
-            TapTalkDialog.Builder(this)
-                    .setTitle(getString(R.string.tap_log_out))
-                    .setMessage(getString(R.string.tap_log_out_confirmation))
-                    .setCancelable(false)
-                    .setPrimaryButtonTitle(getString(R.string.tap_log_out))
-                    .setPrimaryButtonListener { logout() }
-                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setSecondaryButtonListener(true) {}
-                    .show()
-        }
     }
 
     private fun registerBroadcastReceiver() {
@@ -342,6 +348,32 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         // TODO
     }
 
+    private fun promptUserLogout() {
+        TapTalkDialog.Builder(this)
+                .setTitle(getString(R.string.tap_log_out))
+                .setMessage(getString(R.string.tap_log_out_confirmation))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_log_out))
+                .setPrimaryButtonListener { logout() }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setSecondaryButtonListener(true) {}
+                .show()
+    }
+
+    private fun logout() {
+        TAPDataManager.getInstance().deleteAllPreference()
+        TAPDataManager.getInstance().deleteAllFromDatabase()
+        TAPDataManager.getInstance().deleteAllManagerData()
+        TAPApiManager.getInstance().isLogout = true
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
+        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
+
+        val intent = Intent(this, TAPLoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+    }
+
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
         showProfilePictureUploading()
@@ -397,7 +429,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.clearAnimation()
 
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        tv_label_change_profile_picture.setTextColor(vm.clickableLabelFontColor)
         iv_edit_profile_picture_icon.visibility = View.VISIBLE
         civ_profile_picture_overlay.visibility = View.GONE
         pb_profile_picture_progress.visibility = View.GONE
@@ -467,19 +499,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 updateEditTextBackground(et_email_address, hasFocus)
             }
         }
-    }
-
-    private fun logout() {
-        TAPDataManager.getInstance().deleteAllPreference()
-        TAPDataManager.getInstance().deleteAllFromDatabase()
-        TAPDataManager.getInstance().deleteAllManagerData()
-        TAPApiManager.getInstance().isLogout = true
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
-        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
-
-        val intent = Intent(this, TAPLoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
     }
 
     private val fullNameWatcher = object : TextWatcher {
