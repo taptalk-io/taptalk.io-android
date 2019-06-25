@@ -10,7 +10,6 @@ public class TAPGroupViewModel extends AndroidViewModel {
 
     private TAPRoomModel groupData;
     private String myID;
-    private boolean isSearchActive;
 
     public TAPGroupViewModel(@NonNull Application application) {
         super(application);
@@ -30,13 +29,5 @@ public class TAPGroupViewModel extends AndroidViewModel {
 
     public void setMyID(String myID) {
         this.myID = myID;
-    }
-
-    public boolean isSearchActive() {
-        return isSearchActive;
-    }
-
-    public void setSearchActive(boolean searchActive) {
-        isSearchActive = searchActive;
     }
 }
