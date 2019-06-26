@@ -41,6 +41,8 @@ public class TAPBarcodeScannerActivity extends TAPBaseActivity {
     }
 
     private void initView() {
+        getWindow().setBackgroundDrawable(null);
+
         tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
         ivBack = findViewById(R.id.iv_back);
         flToolbar = findViewById(R.id.fl_toolbar);

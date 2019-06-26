@@ -272,6 +272,13 @@ public class TAPUtils {
         if (view == null) {
             view = new View(activity);
         }
+
+        Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
+        view.clearFocus();
+    }
+
+    public void dismissKeyboard(Activity activity, View view) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
         view.clearFocus();
     }

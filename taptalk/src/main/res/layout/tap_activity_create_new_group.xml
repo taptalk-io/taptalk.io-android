@@ -47,6 +47,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:hint="@string/tap_search_for_contacts"
+            android:imeOptions="actionSearch"
+            android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:visibility="gone"
@@ -62,6 +64,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_search_grey"
+            android:tint="@color/tapColorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

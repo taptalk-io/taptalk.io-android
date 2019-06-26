@@ -41,17 +41,35 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="68dp"
-        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintBottom_toTopOf="@id/tv_member_role"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="@id/civ_avatar"
         tools:text="Username" />
 
+    <TextView
+        android:id="@+id/tv_member_role"
+        style="@style/tapFontFamilyRegular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="68dp"
+        android:letterSpacing="-0.01"
+        android:lineSpacingExtra="6sp"
+        android:textColor="@color/tapGrey9b"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toBottomOf="@id/tv_full_name"
+        android:text="@string/tap_admin" />
+
     <!--TODO UPDATE ICON-->
     <ImageView
         android:id="@+id/iv_selection"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/tap_ic_circle_inactive"
         android:visibility="gone"
