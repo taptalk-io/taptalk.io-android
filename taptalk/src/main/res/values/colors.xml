@@ -53,6 +53,7 @@
     <color name="tapRightFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
+    <color name="tapFileProgressBackgroundColor">@color/tapWhite</color>
 
     <!--Icon Component Colors-->
     <color name="tapRoomListUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>

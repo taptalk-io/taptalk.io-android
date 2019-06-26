@@ -28,15 +28,10 @@
 
     <TextView
         android:id="@+id/tv_country_name"
+        style="@style/tapCountryListLabelStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:letterSpacing="-0.01"
-        android:lineSpacingExtra="4sp"
-        android:maxLines="1"
-        android:textColor="@color/tapBlack19"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_country_choosen"
         app:layout_constraintStart_toEndOf="@id/cv_country_flag"
@@ -49,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:src="@drawable/tap_ic_checklist_pumpkin"
-        android:tint="@color/tapColorPrimaryDark"
+        android:tint="@color/tapIconChecklist"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -62,7 +57,6 @@
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
         android:background="@color/tapGreyDc"
-        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/cv_country_flag" />
 

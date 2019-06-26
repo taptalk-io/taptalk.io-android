@@ -19,19 +19,12 @@
         android:textColor="@color/tapWhite"
         android:textSize="12dp" />
 
-    <ProgressBar
-        android:id="@+id/pb_connecting"
-        android:layout_width="9dp"
-        android:layout_height="9dp"
-        android:layout_marginStart="4dp"
-        android:indeterminateTint="@color/tapWhite" />
-
     <ImageView
         android:id="@+id/iv_connection_status"
         android:layout_width="9dp"
         android:layout_height="9dp"
         android:layout_marginStart="4dp"
         android:src="@drawable/tap_ic_connected_white"
-        android:visibility="gone" />
+        android:tint="@color/tapWhite" />
 
 </LinearLayout>

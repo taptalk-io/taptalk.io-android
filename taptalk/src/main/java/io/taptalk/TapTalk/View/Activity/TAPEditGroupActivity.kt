@@ -115,8 +115,8 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
     private val groupNameFocusListener = View.OnFocusChangeListener { _, hasFocus ->
         when (hasFocus) {
-            true -> et_group_name.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
-            else -> et_group_name.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
+            true -> et_group_name.background = resources.getDrawable(R.drawable.tap_bg_text_field_active)
+            else -> et_group_name.background = resources.getDrawable(R.drawable.tap_bg_text_field_inactive)
         }
     }
 

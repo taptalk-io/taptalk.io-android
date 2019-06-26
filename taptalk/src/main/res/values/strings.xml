@@ -34,7 +34,7 @@
     <string name="tap_chat_room_setting_up_description">Make sure you have a stable connection</string>
     <string name="tap_chat_room_setup_success_description">You are all set and ready to go!</string>
     <string name="tap_chat_room_setup_failed_description">Retry Setup</string>
-    <string name="tap_search_chat_placeholder">Search chats, groups, or contacts</string>
+    <string name="tap_search_chat_placeholder">Chats, groups, and contacts</string>
     <string name="tap_search_forward_placeholder">Search chats or contacts</string>
 
     <!--Contacts-->
@@ -91,6 +91,7 @@
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
+    <string name="tap_guide_show_qr_code">Show your QR code by tapping the button below</string>
     <string name="tap_search_username_welcome_message">Usernames are <b>not case sensitive</b>, but make sure you input the <b>exact characters</b></string>
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
     <string name="tap_chat_other_user_is_expert"><![CDATA[<b><font color=\'#784198\'>%s</font></b> is an expert don\'t forget to check out his/her services!]]></string>
@@ -188,6 +189,7 @@
 
     <!--Hints-->
     <string name="tap_hint_username">e.g user_1234</string>
+    <string name="tap_hint_calling_code">+62</string>
     <string name="tap_hint_phone_number">82212345678</string>
     <string name="tap_hint_email_address">e.g example@work.com</string>
     <string name="tap_hint_insert_password">Insert Password</string>
@@ -258,6 +260,8 @@
     <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_loading">Loading</string>
+    <string name="tap_log_out">Log Out</string>
+    <string name="tap_log_out_confirmation">Are you sure you want to log out?</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>
     <string name="tap_no_chats_to_show">No chats to show</string>
@@ -299,6 +303,7 @@
     <string name="tap_you">You</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
-    <string name="tap_guide_show_qr_code">Show your QR code by tapping the button below</string>
     <string name="tap_add_members">Add Members</string>
+
+>>>>>>> 796e9c41a57bdcab20997e41b8f8dca7caaaa1cf
 </resources>

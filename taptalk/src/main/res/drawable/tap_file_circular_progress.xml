@@ -11,8 +11,8 @@
 
         <gradient
             android:angle="0"
-            android:endColor="@color/tapWhite"
-            android:startColor="@color/tapWhite"
+            android:endColor="@color/tapFileProgressBackgroundColor"
+            android:startColor="@color/tapFileProgressBackgroundColor"
             android:type="sweep"
             android:useLevel="false" />
 

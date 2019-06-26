@@ -128,7 +128,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+                android:background="@drawable/tap_bg_text_field_inactive"
                 android:hint="@string/tap_hint_insert_name"
                 android:imeOptions="actionDone"
                 android:inputType="textCapWords"

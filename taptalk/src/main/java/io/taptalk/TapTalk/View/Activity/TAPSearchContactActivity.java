@@ -11,8 +11,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
-
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -73,6 +71,11 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
         llAddNewContact.setOnClickListener(v -> openNewContactActivity());
 
         TAPUtils.getInstance().animateClickButton(llAddNewContact, 0.97f);
+
+        etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
+            TAPUtils.getInstance().dismissKeyboard(TAPSearchContactActivity.this);
+            return false;
+        });
     }
 
     private void clearSearch() {

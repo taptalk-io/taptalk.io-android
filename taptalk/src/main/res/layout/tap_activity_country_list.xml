@@ -11,33 +11,24 @@
         android:id="@+id/cl_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tapWhite">
+        android:background="@color/tapDefaultNavBarBackgroundColor">
 
         <TextView
             android:id="@+id/tv_close_btn"
+            style="@style/tapNavBarCloseButtonLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:gravity="center_vertical"
-            android:letterSpacing="-0.01"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/tap_cfp_action_close"
-            android:textColor="@color/tapColorPrimaryDark"
-            android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/tv_toolbar_title"
+            style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/tap_font_pt_root_bold"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.02"
-            android:lineSpacingExtra="4sp"
             android:text="@string/tap_select_country"
-            android:textColor="@color/tapBlack2c"
-            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +39,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:background="@color/tapWhite">
+        android:background="@color/tapDefaultNavBarBackgroundColor">
 
         <LinearLayout
             android:id="@+id/ll_search"
@@ -58,31 +49,27 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="15.4dp"
             android:layout_marginBottom="8dp"
-            android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+            android:background="@drawable/tap_bg_text_field_inactive"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/iv_search_icon"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/tap_ic_search_grey" />
+                android:src="@drawable/tap_ic_search_grey"
+                android:tint="@color/tapDefaultSecondaryIconColor" />
 
             <EditText
                 android:id="@+id/et_search"
+                style="@style/tapSearchBarTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
-                android:background="@color/tapWhite"
-                android:fontFamily="@font/tap_font_pt_root_regular"
                 android:gravity="center_vertical"
-                android:hint="@string/tap_search_for_country"
-                android:letterSpacing="-0.01"
-                android:lineSpacingExtra="6sp"
-                android:textSize="14sp" />
+                android:hint="@string/tap_search_for_country" />
 
         </LinearLayout>
 

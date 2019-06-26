@@ -31,7 +31,7 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/tapFormTextFieldStyle"
+            style="@style/tapNavBarSearchTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@color/tapTransparentWhite"
