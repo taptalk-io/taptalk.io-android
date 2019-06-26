@@ -184,7 +184,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onSaveVideoToGallery(message);
                     break;
                 case ID_SAVE_DOWNLOAD:
-                    attachmentListener.onSaveToDownload(message);
+                    attachmentListener.onSaveToDownloads(message);
                     break;
                 case ID_DELETE:
                     if (null != TAPChatManager.getInstance().getOpenRoom())

@@ -20,7 +20,7 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     @Override public void onPhoneSmsSelected(String phoneNumber) {}
     @Override public void onSaveImageToGallery(TAPMessageModel message) {}
     @Override public void onSaveVideoToGallery(TAPMessageModel message) {}
-    @Override public void onSaveToDownload(TAPMessageModel message) {}
+    @Override public void onSaveToDownloads(TAPMessageModel message) {}
     @Override public void onDeleteMessage(String roomID, TAPMessageModel message) {
         TAPDataManager.getInstance().deleteMessagesAPI(roomID, message.getMessageID(), true);
     }

@@ -406,11 +406,15 @@
     </style>
 
     <style name="tapQuoteLayoutTitleLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapQuoteLayoutContentLabelStyle" parent="tapFontFamilyRegular">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">12sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
@@ -523,6 +527,7 @@
     </style>
 
     <style name="tapChatRoomUnreadBadgeLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:gravity">center</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/tapColorTextLight</item>
         <item name="android:textSize">11dp</item>
