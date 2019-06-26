@@ -21,17 +21,17 @@ class TAPGroupMemberListActivity : TAPBaseActivity() {
 
     var groupViewModel: TAPGroupMemberViewModel? = null
     var adapter: TAPGroupMemberAdapter? = null
-    val groupInterface = object : TapTalkGroupMemberListInterface {
+    private val groupInterface = object : TapTalkGroupMemberListInterface {
+        override fun onContactLongPress(contact: TAPUserModel?) {
+            adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
+        }
+
         override fun onContactSelected(contact: TAPUserModel?): Boolean {
             return super.onContactSelected(contact)
         }
 
         override fun onContactDeselected(contact: TAPUserModel?) {
             super.onContactDeselected(contact)
-        }
-
-        override fun onContactLongPress(contact: TAPUserModel?) {
-            adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
         }
     }
 
