@@ -16,6 +16,13 @@ import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.*
+import kotlinx.android.synthetic.main.tap_activity_create_new_group.et_search
+import kotlinx.android.synthetic.main.tap_activity_create_new_group.iv_button_action
+import kotlinx.android.synthetic.main.tap_activity_create_new_group.iv_button_back
+import kotlinx.android.synthetic.main.tap_activity_create_new_group.rv_contact_list
+import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_member_count
+import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_title
+import kotlinx.android.synthetic.main.tap_activity_group_members.*
 
 class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
@@ -25,11 +32,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.iv_button_back -> {
-                if (groupViewModel?.isSelectionMode == true) {
-                    cancelSelectionMode(true)
-                } else {
-                    onBackPressed()
-                }
+                onBackPressed()
             }
         }
     }
@@ -130,6 +133,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         adapter?.items = groupViewModel?.participantsList
     }
 
+    override fun onBackPressed() {
+        if (groupViewModel?.isSelectionMode == true) {
+            cancelSelectionMode(true)
+        } else {
+            finish()
+        }
+    }
+
     private val searchTextWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
 
@@ -140,7 +151,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             updateSearchedMember(s?.toString() ?: "")
             et_search.addTextChangedListener(this)
         }
-
     }
 
     private val searchEditorActionListener = TextView.OnEditorActionListener { _, actionId, _ ->
@@ -153,7 +163,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun cancelSelectionMode(isNeedClearAll: Boolean) {
         groupViewModel?.isSelectionMode = false
-        iv_button_back.setImageResource(R.drawable.tap_ic_back_white)
+        ll_remove_button.visibility = View.GONE
+        ll_add_button.visibility = View.VISIBLE
         adapter?.updateCellMode(TAPGroupMemberAdapter.NORMAL_MODE)
 
         if (isNeedClearAll) {
@@ -167,7 +178,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun startSelectionMode() {
         groupViewModel?.isSelectionMode = true
-        iv_button_back.setImageResource(R.drawable.tap_ic_close_darkgrey)
+        ll_remove_button.visibility = View.VISIBLE
+        ll_add_button.visibility = View.GONE
         adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
     }
 }
