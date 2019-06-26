@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.API.Service;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
@@ -24,6 +25,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -113,4 +115,7 @@ public interface TAPTalkApiService {
 
     @POST("client/contact/add_by_phones")
     Observable<TAPBaseResponse<TAPAddContactByPhoneResponse>> addContactByPhone(@Body TAPAddContactByPhoneRequest request);
+
+    @POST("client/room/create")
+    Observable<TAPBaseResponse<TAPCreateRoomResponse>> createChatRoom(@Body TAPCreateRoomRequest request);
 }
