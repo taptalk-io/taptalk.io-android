@@ -15,7 +15,6 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
 import io.taptalk.Taptalk.R
-import kotlinx.android.synthetic.main.tap_activity_create_new_group.*
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.et_search
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.iv_button_action
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.iv_button_back
