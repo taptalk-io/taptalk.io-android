@@ -17,21 +17,41 @@ import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.*
 
-class TAPGroupMemberListActivity : TAPBaseActivity() {
+class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.iv_button_action -> {
+                toggleSearchBar()
+            }
+
+            R.id.iv_button_back -> {
+                if (groupViewModel?.isSelectionMode == true) {
+                    cancelSelectionMode(true)
+                } else {
+                    onBackPressed()
+                }
+            }
+        }
+    }
 
     var groupViewModel: TAPGroupMemberViewModel? = null
     var adapter: TAPGroupMemberAdapter? = null
     private val groupInterface = object : TapTalkGroupMemberListInterface {
         override fun onContactLongPress(contact: TAPUserModel?) {
-            adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
+            groupViewModel?.addSelectedMember(contact)
+            startSelectionMode()
         }
 
         override fun onContactSelected(contact: TAPUserModel?): Boolean {
-            return super.onContactSelected(contact)
+            groupViewModel?.addSelectedMember(contact)
+            return true
         }
 
         override fun onContactDeselected(contact: TAPUserModel?) {
-            super.onContactDeselected(contact)
+            groupViewModel?.removeSelectedMember(contact?.userID ?: "")
+            if (groupViewModel?.isSelectedMembersEmpty() == true) {
+                cancelSelectionMode(false)
+            }
         }
     }
 
@@ -58,8 +78,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity() {
         tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
         tv_member_count.visibility = View.VISIBLE
 
-        //Action button click Listener
-        iv_button_action.setOnClickListener { toggleSearchBar() }
+        iv_button_back.setOnClickListener(this)
+        iv_button_action.setOnClickListener(this)
 
         et_search.addTextChangedListener(searchTextWatcher)
         et_search.setOnEditorActionListener(searchEditorActionListener)
@@ -129,5 +149,25 @@ class TAPGroupMemberListActivity : TAPBaseActivity() {
             return@OnEditorActionListener true
         }
         return@OnEditorActionListener false
+    }
+
+    private fun cancelSelectionMode(isNeedClearAll: Boolean) {
+        groupViewModel?.isSelectionMode = false
+        iv_button_back.setImageResource(R.drawable.tap_ic_back_white)
+        adapter?.updateCellMode(TAPGroupMemberAdapter.NORMAL_MODE)
+
+        if (isNeedClearAll) {
+            Thread(Runnable {
+                adapter?.items?.forEach {
+                    it.isSelected = false
+                }
+            }).start()
+        }
+    }
+
+    private fun startSelectionMode() {
+        groupViewModel?.isSelectionMode = true
+        iv_button_back.setImageResource(R.drawable.tap_ic_close_darkgrey)
+        adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
     }
 }

@@ -83,11 +83,11 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, groupInt
             //setListener for Click
             itemView.setOnClickListener {
                 if (SELECT_MODE == groupAdapter.cellMode && false == item?.isSelected) {
-                    //groupAdapter.groupInterface.onContactSelected(item)
+                    groupAdapter.groupInterface.onContactSelected(item)
                     item.isSelected = true
                     ivSelection.setImageResource(R.drawable.tap_ic_circle_active)
                 } else if (SELECT_MODE == groupAdapter.cellMode && true == item?.isSelected) {
-                    //groupAdapter.groupInterface.onContactDeselected(item)
+                    groupAdapter.groupInterface.onContactDeselected(item)
                     item.isSelected = false
                     ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive)
                 }
