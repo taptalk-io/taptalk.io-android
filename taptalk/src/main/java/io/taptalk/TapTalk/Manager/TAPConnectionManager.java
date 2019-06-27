@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
@@ -239,7 +239,7 @@ public class TAPConnectionManager {
                             for (TapTalkSocketInterface listener : socketListenersCopy)
                                 listener.onSocketConnecting();
                         }
-                        TAPDataManager.getInstance().validateAccessToken(new TapDefaultDataView<TAPErrorModel>() {
+                        TAPDataManager.getInstance().validateAccessToken(new TAPDefaultDataView<TAPErrorModel>() {
                         });
                         close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
@@ -280,6 +280,6 @@ public class TAPConnectionManager {
         //return websocketHeader;
     }
 
-    private TapDefaultDataView<TAPErrorModel> validateAccessView = new TapDefaultDataView<TAPErrorModel>() {
+    private TAPDefaultDataView<TAPErrorModel> validateAccessView = new TAPDefaultDataView<TAPErrorModel>() {
     };
 }

@@ -19,6 +19,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> contactList;
     private List<TAPUserModel> filteredContacts;
     private List<TAPUserModel> selectedContacts;
+    private List<String> selectedContactsIds;
     private List<List<TAPUserModel>> separatedContacts;
     private TAPImageURL groupImage;
     private String groupName;
@@ -56,6 +57,18 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setSelectedContacts(List<TAPUserModel> selectedContacts) {
         this.selectedContacts = selectedContacts;
+    }
+
+    public void setContactListLive(LiveData<List<TAPUserModel>> contactListLive) {
+        this.contactListLive = contactListLive;
+    }
+
+    public List<String> getSelectedContactsIds() {
+        return null == selectedContactsIds? selectedContactsIds = new ArrayList<>() : selectedContactsIds;
+    }
+
+    public void setSelectedContactsIds(List<String> selectedContactsIds) {
+        this.selectedContactsIds = selectedContactsIds;
     }
 
     public List<List<TAPUserModel>> getSeparatedContacts() {
@@ -96,5 +109,15 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setFirstContactSyncDone(boolean firstContactSyncDone) {
         isFirstContactSyncDone = firstContactSyncDone;
+    }
+
+    public void addSelectedContact(TAPUserModel contactModel) {
+        getSelectedContacts().add(contactModel);
+        getSelectedContactsIds().add(contactModel.getUserID());
+    }
+
+    public void removeSelectedContact(TAPUserModel contactModel) {
+        getSelectedContacts().remove(contactModel);
+        getSelectedContactsIds().remove(contactModel.getUserID());
     }
 }

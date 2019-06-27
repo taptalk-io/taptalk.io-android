@@ -170,20 +170,37 @@
                     android:layout_marginTop="10dp"
                     app:layout_constraintTop_toBottomOf="@id/tv_member_count" />
 
-                <Button
-                    android:id="@+id/btn_create_group"
-                    style="@style/TapButton"
+                <FrameLayout
+                    android:id="@+id/fl_create_group_btn"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/tap_create_group"
+                    android:background="@drawable/tap_bg_button_inactive_ripple"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rv_group_members" />
+                    app:layout_constraintTop_toBottomOf="@id/rv_group_members">
+
+                    <TextView
+                        android:id="@+id/tv_create_group_btn"
+                        style="@style/tapButtonLabelStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="@string/tap_create_group" />
+
+                    <ImageView
+                        android:id="@+id/iv_loading_progress_create_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:src="@drawable/tap_ic_loading_progress_circle_white"
+                        android:tint="@color/tapIconLoadingProgressLight"
+                        android:visibility="gone" />
+
+                </FrameLayout>
 
             </android.support.constraint.ConstraintLayout>
 

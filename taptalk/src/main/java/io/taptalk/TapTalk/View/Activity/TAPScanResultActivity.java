@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
@@ -164,7 +164,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView)));
     }
 
-    TapDefaultDataView<TAPCommonResponse> addContactView = new TapDefaultDataView<TAPCommonResponse>() {
+    TAPDefaultDataView<TAPCommonResponse> addContactView = new TAPDefaultDataView<TAPCommonResponse>() {
         @Override
         public void startLoading() {
             tvButtonTitle.setVisibility(View.GONE);
@@ -216,7 +216,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         }
     };
 
-    TapDefaultDataView<TAPGetUserResponse> getUserView = new TapDefaultDataView<TAPGetUserResponse>() {
+    TAPDefaultDataView<TAPGetUserResponse> getUserView = new TAPDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
             validateScanResult(response.getUser());

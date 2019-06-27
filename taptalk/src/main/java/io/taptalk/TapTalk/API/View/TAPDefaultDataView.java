@@ -6,7 +6,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
  * Created by Fadhlan on 6/15/17.
  */
 
-public abstract class TapDefaultDataView<T> implements TapView<T> {
+public abstract class TAPDefaultDataView<T> implements TapView<T> {
     @Override public void startLoading() {}
     @Override public void startLoading(String localID) {}
     @Override public void endLoading() {}

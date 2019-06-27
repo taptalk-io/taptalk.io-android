@@ -59,7 +59,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -701,7 +701,7 @@ public class TAPUtils {
                 } else {
                     // Get user data from API
                     if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
-                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
@@ -1009,6 +1009,10 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         Animation rotation = AnimationUtils.loadAnimation(context, R.anim.tap_rotation_infinite);
         rotation.setFillAfter(true);
         view.startAnimation(rotation);
+    }
+
+    public void stopViewAnimation(View view) {
+        view.clearAnimation();
     }
 
 
