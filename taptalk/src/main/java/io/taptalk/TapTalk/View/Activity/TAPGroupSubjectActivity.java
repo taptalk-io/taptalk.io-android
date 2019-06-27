@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -52,7 +53,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private CircleImageView civGroupImage;
     private TextView tvTitle, tvMemberCount;
     private EditText etGroupName;
-    private Button btnCreateGroup;
+    private FrameLayout flCreateGroupBtn;
     private RecyclerView rvGroupMembers;
     private LinearLayout llChangeGroupPicture;
     private ConstraintLayout clActionBar;
@@ -128,7 +129,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         tvTitle = findViewById(R.id.tv_title);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etGroupName = findViewById(R.id.et_group_name);
-        btnCreateGroup = findViewById(R.id.btn_create_group);
+        flCreateGroupBtn = findViewById(R.id.fl_create_group_btn);
         rvGroupMembers = findViewById(R.id.rv_group_members);
         llChangeGroupPicture = findViewById(R.id.ll_change_group_picture);
         svGroupSubject = findViewById(R.id.sv_group_subject);
@@ -147,7 +148,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
         tvMemberCount.setText(String.format(getString(R.string.tap_group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
-        btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp);
+        flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
         loadGroupName();
         loadGroupImage();
 
@@ -156,7 +157,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
             TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
         });
-        btnCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
+        flCreateGroupBtn.setOnClickListener(v -> validateAndCreateGroup());
     }
 
     private void loadGroupName() {
@@ -209,10 +210,10 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0) {
-                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
+                flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
                 vm.getGroupData().setRoomName(s.toString());
             } else {
-                btnCreateGroup.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp);
+                flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
                 vm.getGroupData().setRoomName("");
             }
         }

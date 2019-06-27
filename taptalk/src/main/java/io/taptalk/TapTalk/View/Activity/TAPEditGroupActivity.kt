@@ -34,7 +34,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                 TAPUtils.getInstance().pickImageFromGallery(this, PICK_GROUP_IMAGE, false)
             }
 
-            R.id.btn_edit_group -> {
+            R.id.fl_create_group_btn -> {
 
                 if (groupViewModel?.isGroupPicChanged == true || groupViewModel?.isGroupNameChanged == true) {
                     groupViewModel?.groupData?.roomName = et_group_name.text.toString()
@@ -87,7 +87,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
         iv_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
-        btn_edit_group.setOnClickListener(this)
+        fl_create_group_btn.setOnClickListener(this)
 
         if (null != groupViewModel?.groupData?.roomImage) {
             val imageURL = groupViewModel?.groupData?.roomImage
@@ -96,7 +96,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.isGroupPicStartEmpty = true
         }
 
-        btn_edit_group.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp)
+        fl_create_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
     }
 
     private val groupNameWatcher = object : TextWatcher {
@@ -128,9 +128,9 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun showingButton() {
         if (groupViewModel?.isGroupPicChanged == false && groupViewModel?.isGroupNameChanged == false) {
-            btn_edit_group.setBackgroundResource(R.drawable.tap_bg_d9d9d9_rounded_6dp)
+            fl_create_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
         } else {
-            btn_edit_group.setBackgroundResource(R.drawable.tap_bg_button_active_ripple)
+            fl_create_group_btn.setBackgroundResource(R.drawable.tap_bg_button_active_ripple)
         }
     }
 
