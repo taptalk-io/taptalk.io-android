@@ -139,6 +139,7 @@
     <color name="tapIconAttachGallery">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconAttachAudio">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconAttachContact">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconAttachLocation">@color/tapDefaultPrimaryIconColor</color>
 
     <color name="tapIconChatComposerSend">@color/tapWhite</color>
     <color name="tapIconChatComposerSendInactive">@color/tapWhite</color>
