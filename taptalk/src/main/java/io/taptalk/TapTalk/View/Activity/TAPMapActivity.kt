@@ -45,7 +45,7 @@ import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_map.*
 import java.util.*
 
-class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
+class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener, View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 

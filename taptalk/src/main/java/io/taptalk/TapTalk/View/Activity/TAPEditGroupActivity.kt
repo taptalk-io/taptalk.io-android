@@ -11,13 +11,14 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.ViewModel.TAPEditGroupViewModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_edit_group.*
 
-class TAPEditGroupActivity : AppCompatActivity(), View.OnClickListener {
+class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.iv_remove_group_picture -> {
@@ -34,8 +35,16 @@ class TAPEditGroupActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.btn_edit_group -> {
-                groupViewModel?.groupData?.roomName = et_group_name.text.toString()
-                //Call Edit API
+
+                if (groupViewModel?.isGroupPicChanged == true || groupViewModel?.isGroupNameChanged == true) {
+                    groupViewModel?.groupData?.roomName = et_group_name.text.toString()
+                    //TODO() API EDIT CALL
+
+                    //TODO() Apus Setelah ada API CALL / Flow yang pasti
+                    val intent = Intent(this, TAPGroupMemberListActivity::class.java)
+                    intent.putExtra(ROOM, groupViewModel?.groupData)
+                    startActivity(intent)
+                }
             }
         }
     }
@@ -72,12 +81,13 @@ class TAPEditGroupActivity : AppCompatActivity(), View.OnClickListener {
         et_group_name.onFocusChangeListener = groupNameFocusListener
         et_group_name.addTextChangedListener(groupNameWatcher)
 
-        groupViewModel?.groupData = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
+        groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
 
         et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
 
         iv_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
+        btn_edit_group.setOnClickListener(this)
 
         if (null != groupViewModel?.groupData?.roomImage) {
             val imageURL = groupViewModel?.groupData?.roomImage
