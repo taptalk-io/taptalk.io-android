@@ -37,40 +37,52 @@ public class SampleApplication extends Application {
         @Override
         public List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
             // DUMMY CUSTOM KEYBOARD ITEMS
-            TAPCustomKeyboardItemModel seePriceList = new TAPCustomKeyboardItemModel("1", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_star_yellow), "See price list");
-            TAPCustomKeyboardItemModel readExpertNotes = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_search_grey), "Read expert's notes");
-            TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_gallery_green_blue), "Send services");
-            TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_documents_green_blue), "Create order card");
+            TAPCustomKeyboardItemModel customKeyboard1 = new TAPCustomKeyboardItemModel("1", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_new_group_orange), "Say Hello to " + otherUser.getName());
+            TAPCustomKeyboardItemModel customKeyboard2 = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_view_orange), "View Profile");
+            TAPCustomKeyboardItemModel customKeyboard3 = new TAPCustomKeyboardItemModel("3", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_exit_red), "Leave Room");
+            List<TAPCustomKeyboardItemModel> customKeyboards = new ArrayList<>();
+            customKeyboards.add(customKeyboard1);
+            customKeyboards.add(customKeyboard2);
+            customKeyboards.add(customKeyboard3);
+            customKeyboards.add(customKeyboard1);
+            customKeyboards.add(customKeyboard2);
+            customKeyboards.add(customKeyboard3);
+            return customKeyboards;
 
-            if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("1") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("2")) {
-                List<TAPCustomKeyboardItemModel> userToExpert = new ArrayList<>();
-                userToExpert.add(seePriceList);
-                userToExpert.add(readExpertNotes);
-                return userToExpert;
-            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("2") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("1")) {
-                List<TAPCustomKeyboardItemModel> expertToUser = new ArrayList<>();
-                expertToUser.add(sendServices);
-                expertToUser.add(createOrderCard);
-                return expertToUser;
-            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("2") &&
-                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("2")) {
-                List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
-                expertToExpert.add(seePriceList);
-                expertToExpert.add(readExpertNotes);
-                expertToExpert.add(sendServices);
-                expertToExpert.add(createOrderCard);
-                return expertToExpert;
-            } else {
-                return null;
-            }
+//            TAPCustomKeyboardItemModel seePriceList = new TAPCustomKeyboardItemModel("1", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_star_yellow), "See price list");
+//            TAPCustomKeyboardItemModel readExpertNotes = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_search_grey), "Read expert's notes");
+//            TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_gallery_green_blue), "Send services");
+//            TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_documents_green_blue), "Create order card");
+//
+//            if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("1") &&
+//                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("2")) {
+//                List<TAPCustomKeyboardItemModel> userToExpert = new ArrayList<>();
+//                userToExpert.add(seePriceList);
+//                userToExpert.add(readExpertNotes);
+//                return userToExpert;
+//            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("2") &&
+//                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("1")) {
+//                List<TAPCustomKeyboardItemModel> expertToUser = new ArrayList<>();
+//                expertToUser.add(sendServices);
+//                expertToUser.add(createOrderCard);
+//                return expertToUser;
+//            } else if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("2") &&
+//                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("2")) {
+//                List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
+//                expertToExpert.add(seePriceList);
+//                expertToExpert.add(readExpertNotes);
+//                expertToExpert.add(sendServices);
+//                expertToExpert.add(createOrderCard);
+//                return expertToExpert;
+//            } else {
+//                return null;
+//            }
         }
 
         @Override
         public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             if (customKeyboardItemModel.getItemID().equals("1")) {
-                String message = "Hi " + otherUser.getName() + ", I want to see services & pricing";
+                String message = "Hi " + otherUser.getName() + "! How are you?";
                 TapTalk.sendTextMessageWithRecipientUser(message, otherUser, new TAPSendMessageWithIDListener() {
                     @Override
                     public void sendSuccess() {
@@ -82,28 +94,46 @@ public class SampleApplication extends Application {
                         Log.e("><><><", "sendFailed: ");
                     }
                 });
+            } else if (customKeyboardItemModel.getItemID().equals("2")) {
+                TapTalk.openTapTalkUserProfile(activity, otherUser);
             } else if (customKeyboardItemModel.getItemID().equals("3")) {
-                TAPProductModel prod1 = TAPProductModel.Builder("2eccad", "Button1",
-                        "2eccad", "Button2",
-                        "IDR", "", "4475",
-                        "https://pbs.twimg.com/profile_images/934765447144030211/kaK6qlJc_400x400.jpg",
-                        "A5 - lettering pieces", "75000", "0.0");
-
-                TAPProductModel prod2 = TAPProductModel.Builder("2eccad", "Button1",
-                        "2eccad", "Button2",
-                        "IDR", "", "4458",
-                        "https://pbs.twimg.com/profile_images/934765447144030211/kaK6qlJc_400x400.jpg",
-                        "Custom Mahar/Gift [3D frame]", "400000", "5.0");
-                List<TAPProductModel> productModels = new ArrayList<>();
-                productModels.add(prod1);
-                productModels.add(prod1);
-                productModels.add(prod2);
-                productModels.add(prod2);
-                productModels.add(prod2);
-                productModels.add(prod2);
-                productModels.add(prod2);
-                TapTalk.sendProductMessage(productModels, otherUser);
+                activity.finish();
             }
+//            if (customKeyboardItemModel.getItemID().equals("1")) {
+//                String message = "Hi " + otherUser.getName() + ", I want to see services & pricing";
+//                TapTalk.sendTextMessageWithRecipientUser(message, otherUser, new TAPSendMessageWithIDListener() {
+//                    @Override
+//                    public void sendSuccess() {
+//                        Log.e("><><><", "sendSuccess: ");
+//                    }
+//
+//                    @Override
+//                    public void sendFailed(TAPErrorModel errorModel) {
+//                        Log.e("><><><", "sendFailed: ");
+//                    }
+//                });
+//            } else if (customKeyboardItemModel.getItemID().equals("3")) {
+//                TAPProductModel prod1 = TAPProductModel.Builder("2eccad", "Button1",
+//                        "2eccad", "Button2",
+//                        "IDR", "", "4475",
+//                        "https://pbs.twimg.com/profile_images/934765447144030211/kaK6qlJc_400x400.jpg",
+//                        "A5 - lettering pieces", "75000", "0.0");
+//
+//                TAPProductModel prod2 = TAPProductModel.Builder("2eccad", "Button1",
+//                        "2eccad", "Button2",
+//                        "IDR", "", "4458",
+//                        "https://pbs.twimg.com/profile_images/934765447144030211/kaK6qlJc_400x400.jpg",
+//                        "Custom Mahar/Gift [3D frame]", "400000", "5.0");
+//                List<TAPProductModel> productModels = new ArrayList<>();
+//                productModels.add(prod1);
+//                productModels.add(prod1);
+//                productModels.add(prod2);
+//                productModels.add(prod2);
+//                productModels.add(prod2);
+//                productModels.add(prod2);
+//                productModels.add(prod2);
+//                TapTalk.sendProductMessage(productModels, otherUser);
+//            }
         }
 
         @Override

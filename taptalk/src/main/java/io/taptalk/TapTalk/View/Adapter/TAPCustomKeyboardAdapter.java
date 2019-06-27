@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,8 +45,10 @@ public class TAPCustomKeyboardAdapter extends TAPBaseAdapter<TAPCustomKeyboardIt
         protected void onBind(TAPCustomKeyboardItemModel item, int position) {
             if (null != item.getIconImage()) {
                 Glide.with(itemView.getContext()).load(item.getIconImage()).into(ivMenuIcon);
-            } else {
+            } else if (null != item.getIconURL()) {
                 Glide.with(itemView.getContext()).load(item.getIconURL()).into(ivMenuIcon);
+            } else {
+                ivMenuIcon.setVisibility(View.GONE);
             }
             tvMenuLabel.setText(item.getItemName());
 
