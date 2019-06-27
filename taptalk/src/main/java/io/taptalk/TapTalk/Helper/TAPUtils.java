@@ -1011,6 +1011,10 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         view.startAnimation(rotation);
     }
 
+    public void stopViewAnimation(View view) {
+        view.clearAnimation();
+    }
+
 
     public void animateClickButton(View view, Float resize) {
         view.setOnTouchListener((v, event) -> {

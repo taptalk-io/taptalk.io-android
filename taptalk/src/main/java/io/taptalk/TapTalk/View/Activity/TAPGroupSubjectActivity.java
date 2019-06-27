@@ -14,7 +14,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -54,9 +53,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP
 
 public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
-    private ImageView ivButtonBack, ivGroupPicBackground;
+    private ImageView ivButtonBack, ivGroupPicBackground, ivLoadingProgressCreateGroup;
     private CircleImageView civGroupImage;
-    private TextView tvTitle, tvMemberCount;
+    private TextView tvTitle, tvMemberCount, tvCreateGroupBtn;
     private EditText etGroupName;
     private FrameLayout flCreateGroupBtn;
     private RecyclerView rvGroupMembers;
@@ -130,9 +129,11 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
     private void initView() {
         ivButtonBack = findViewById(R.id.iv_button_back);
+        ivLoadingProgressCreateGroup = findViewById(R.id.iv_loading_progress_create_group);
         ivGroupPicBackground = findViewById(R.id.iv_group_pic_background);
         civGroupImage = findViewById(R.id.civ_group_image);
         tvTitle = findViewById(R.id.tv_title);
+        tvCreateGroupBtn = findViewById(R.id.tv_create_group_btn);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etGroupName = findViewById(R.id.et_group_name);
         flCreateGroupBtn = findViewById(R.id.fl_create_group_btn);
@@ -242,15 +243,33 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         }
     };
 
+    private void btnStartLoadingState() {
+        tvCreateGroupBtn.setVisibility(View.GONE);
+        ivLoadingProgressCreateGroup.setVisibility(View.VISIBLE);
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressCreateGroup);
+    }
+
+    private void btnStopLoadingState() {
+        tvCreateGroupBtn.setVisibility(View.VISIBLE);
+        ivLoadingProgressCreateGroup.setVisibility(View.GONE);
+        TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressCreateGroup);
+    }
+
+    private void updateGroupData(TAPCreateRoomResponse response) {
+        vm.setGroupData(response.getRoom());
+        vm.getGroupData().setGroupParticipants(response.getParticipants());
+        //vm.getGroupData().setRoomImage();
+    }
+
     private TAPDefaultDataView<TAPCreateRoomResponse> createGroupRoomView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
         @Override
         public void startLoading() {
-            super.startLoading();
+            btnStartLoadingState();
         }
 
         @Override
         public void endLoading() {
-            super.endLoading();
+            btnStopLoadingState();
         }
 
         @Override
@@ -258,6 +277,8 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             //Intent intent = new Intent(this, TAPChatProfileActivity.class);
             //intent.putExtra(ROOM, vm.getGroupData());
             //startActivity(intent);
+            updateGroupData(response);
+
             Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
             intent.putExtra(ROOM, vm.getGroupData());
             startActivity(intent);
