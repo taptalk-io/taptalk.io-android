@@ -29,10 +29,14 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel;
@@ -40,6 +44,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -118,6 +123,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         vm = ViewModelProviders.of(this).get(TAPGroupViewModel.class);
         vm.setMyID(getIntent().getStringExtra(MY_ID));
         vm.getGroupData().setGroupParticipants(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
+        vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBERSIDs));
         vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
         vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
     }
@@ -180,22 +186,13 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
                 return false;
             }
         }).into(civGroupImage);
-
     }
 
     private void validateAndCreateGroup() {
         String groupName = etGroupName.getText().toString();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
             // TODO: 19 September 2018 CREATE GROUP
-            //Intent intent = new Intent(this, TAPChatProfileActivity.class);
-            //intent.putExtra(ROOM, vm.getGroupData());
-            //startActivity(intent);
-            Intent intent = new Intent(this, TAPEditGroupActivity.class);
-            intent.putExtra(ROOM, vm.getGroupData());
-            startActivity(intent);
-            setResult(RESULT_OK);
-            finish();
-            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+            TAPDataManager.getInstance().createGroupChatRoom(groupName, vm.getParticipantsIDs(), createGroupRoomView);
         } else {
             Toast.makeText(this, R.string.tap_error_message_group_name_empty, Toast.LENGTH_SHORT).show();
         }
@@ -242,6 +239,41 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             clActionBar.setElevation(TAPUtils.getInstance().dpToPx(1));
         } else {
             clActionBar.setElevation(TAPUtils.getInstance().dpToPx(2));
+        }
+    };
+
+    private TAPDefaultDataView<TAPCreateRoomResponse> createGroupRoomView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPCreateRoomResponse response) {
+            //Intent intent = new Intent(this, TAPChatProfileActivity.class);
+            //intent.putExtra(ROOM, vm.getGroupData());
+            //startActivity(intent);
+            Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
+            intent.putExtra(ROOM, vm.getGroupData());
+            startActivity(intent);
+            setResult(RESULT_OK);
+            finish();
+            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
         }
     };
 }
