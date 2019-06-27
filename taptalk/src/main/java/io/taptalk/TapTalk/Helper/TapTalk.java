@@ -33,7 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
@@ -230,7 +230,7 @@ public class TapTalk {
             verifyOTPInterface.verifyOTPFailed("401", "Invalid Auth Ticket");
         } else {
             TAPDataManager.getInstance().saveAuthTicket(authTicket);
-            TAPDataManager.getInstance().getAccessTokenFromApi(new TapDefaultDataView<TAPGetAccessTokenResponse>() {
+            TAPDataManager.getInstance().getAccessTokenFromApi(new TAPDefaultDataView<TAPGetAccessTokenResponse>() {
                 @Override
                 public void onSuccess(TAPGetAccessTokenResponse response) {
                     super.onSuccess(response);
@@ -271,7 +271,7 @@ public class TapTalk {
     }
 
     public static void loginWithRequestOTP(int countryID, String phoneNumber, TAPRequestOTPInterface requestOTPInterface) {
-        TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, new TapDefaultDataView<TAPLoginOTPResponse>() {
+        TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, new TAPDefaultDataView<TAPLoginOTPResponse>() {
             @Override
             public void onSuccess(TAPLoginOTPResponse response) {
                 super.onSuccess(response);
@@ -292,7 +292,7 @@ public class TapTalk {
     }
 
     public static void verifyOTP(long otpID, String otpKey, String otpCode, TAPVerifyOTPInterface verifyOTPInterface) {
-        TAPDataManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TapDefaultDataView<TAPLoginOTPVerifyResponse>() {
+        TAPDataManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             @Override
             public void onSuccess(TAPLoginOTPVerifyResponse response) {
                 if (response.isRegistered())
@@ -716,7 +716,7 @@ public class TapTalk {
                             .addOnCompleteListener(task -> {
                                 if (null != task.getResult()) {
                                     String fcmToken = task.getResult().getToken();
-                                    TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TapDefaultDataView<TAPCommonResponse>() {
+                                    TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TAPDefaultDataView<TAPCommonResponse>() {
                                     });
                                     TAPDataManager.getInstance().saveFirebaseToken(fcmToken);
                                 }
@@ -726,7 +726,7 @@ public class TapTalk {
                     Log.e(TAG, "registerFcmToken: ", e);
                 }
             } else {
-                TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
+                TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TAPDefaultDataView<TAPCommonResponse>() {
                 });
             }
         }).start();
@@ -854,7 +854,7 @@ public class TapTalk {
     public static void refreshActiveUser() {
         new Thread(() -> {
             if (null != TAPChatManager.getInstance().getActiveUser()) {
-                TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
+                TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
                         TAPDataManager.getInstance().saveActiveUser(response.getUser());
@@ -869,7 +869,7 @@ public class TapTalk {
     }
 
     public static void getTaptalkUserWithClientUserID(String clientUserID, TAPGetUserInterface getUserInterface) {
-        TAPDataManager.getInstance().getUserByXcUserIdFromApi(clientUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+        TAPDataManager.getInstance().getUserByXcUserIdFromApi(clientUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
                 getUserInterface.getUserSuccess(response.getUser());

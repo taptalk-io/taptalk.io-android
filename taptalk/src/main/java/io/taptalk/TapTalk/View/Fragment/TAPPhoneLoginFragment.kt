@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import io.taptalk.TapTalk.API.View.TapDefaultDataView
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
@@ -201,7 +201,7 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun callCountryListFromAPI() {
-        TAPDataManager.getInstance().getCountryList(object : TapDefaultDataView<TAPCountryListResponse>() {
+        TAPDataManager.getInstance().getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
                 tv_country_code.visibility = View.GONE
                 iv_loading_progress_country.visibility = View.VISIBLE

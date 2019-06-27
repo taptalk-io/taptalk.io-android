@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -174,7 +174,7 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             List<String> messageIds = new ArrayList<>();
             messageIds.add(newMessageModel.getMessageID());
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
             });
         }).start();
     }
@@ -190,7 +190,7 @@ public class TAPMessageStatusManager {
                         && null != model.getIsRead() && !model.getIsRead())
                     messageIds.add(model.getMessageID());
             }
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
             });
         }).start();
     }
@@ -201,7 +201,7 @@ public class TAPMessageStatusManager {
             for (TAPMessageModel model : newMessageModels) {
                 messageIds.add(model.getMessageID());
             }
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
                     super.onSuccess(response);
@@ -242,7 +242,7 @@ public class TAPMessageStatusManager {
                 if (null != model)
                     messageIds.add(model.getMessageID());
             }
-            TAPDataManager.getInstance().updateMessageStatusAsRead(messageIds, new TapDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance().updateMessageStatusAsRead(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
                     super.onSuccess(response);

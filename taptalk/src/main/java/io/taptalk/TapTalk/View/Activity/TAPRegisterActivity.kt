@@ -24,7 +24,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
-import io.taptalk.TapTalk.API.View.TapDefaultDataView
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -686,7 +686,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
     }
 
-    private val checkUsernameView = object : TapDefaultDataView<TAPCheckUsernameResponse>() {
+    private val checkUsernameView = object : TAPDefaultDataView<TAPCheckUsernameResponse>() {
         override fun onSuccess(response: TAPCheckUsernameResponse?) {
             if (response?.exists == false) {
                 vm.formCheck[indexUsername] = stateValid
@@ -727,7 +727,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
     }
 
-    private val registerView = object : TapDefaultDataView<TAPRegisterResponse>() {
+    private val registerView = object : TAPDefaultDataView<TAPRegisterResponse>() {
         override fun startLoading() {
             vm.isUpdatingProfile = true
             disableEditing()
