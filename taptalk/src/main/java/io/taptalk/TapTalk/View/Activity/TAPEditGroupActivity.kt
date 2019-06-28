@@ -4,13 +4,11 @@ import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -89,7 +87,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         ll_change_group_picture.setOnClickListener(this)
         fl_create_group_btn.setOnClickListener(this)
 
-        if (null != groupViewModel?.groupData?.roomImage) {
+        if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
             val imageURL = groupViewModel?.groupData?.roomImage
             loadImage(imageURL?.thumbnail ?: "")
         } else {
