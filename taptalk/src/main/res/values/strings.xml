@@ -258,6 +258,8 @@
     <string name="tap_edit">Edit</string>
     <string name="tap_email_address">Email Address</string>
     <string name="tap_full_name">Full Name</string>
+    <string name="tap_forwarded">Forwarded</string>
+    <string name="tap_from">From:</string>
     <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_loading">Loading</string>
@@ -306,5 +308,4 @@
     <string name="tap_over_99">99+</string>
     <string name="tap_add_members">Add Members</string>
 
->>>>>>> 796e9c41a57bdcab20997e41b8f8dca7caaaa1cf
 </resources>
