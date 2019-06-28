@@ -418,4 +418,9 @@ public class TAPApiManager {
         TAPCreateRoomRequest request = new TAPCreateRoomRequest(roomName, roomType, participantIDs);
         execute(homingPigeon.createChatRoom(request), subscriber);
     }
+
+    public void getChatRoomData(String roomID, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomID);
+        execute(homingPigeon.getChatRoomData(request), subscriber);
+    }
 }

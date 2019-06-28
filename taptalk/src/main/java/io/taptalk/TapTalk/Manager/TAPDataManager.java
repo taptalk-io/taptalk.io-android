@@ -945,6 +945,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance().createChatRoom(roomName, TYPE_GROUP, participantIDs, new TAPDefaultSubscriber<>(view));
     }
 
+    public void getChatRoomData(String roomID, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().getChatRoomData(roomID, new TAPDefaultSubscriber<>(view));
+    }
+
     // Search User
     private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TAPDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> searchUserSubscriber;
 

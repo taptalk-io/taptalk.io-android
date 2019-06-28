@@ -118,4 +118,7 @@ public interface TAPTalkApiService {
 
     @POST("client/room/create")
     Observable<TAPBaseResponse<TAPCreateRoomResponse>> createChatRoom(@Body TAPCreateRoomRequest request);
+
+    @POST("client/room/get")
+    Observable<TAPBaseResponse<TAPCreateRoomResponse>> getChatRoomData(@Body TAPCommonRequest request);
 }
