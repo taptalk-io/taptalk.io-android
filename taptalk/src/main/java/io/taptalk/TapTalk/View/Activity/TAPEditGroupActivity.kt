@@ -16,6 +16,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.ViewModel.TAPEditGroupViewModel
 import io.taptalk.Taptalk.R
@@ -38,11 +39,10 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.fl_update_group_btn -> {
-
                 if (groupViewModel?.isGroupPicChanged == true || groupViewModel?.isGroupNameChanged == true) {
                     groupViewModel?.groupData?.roomName = et_group_name.text.toString()
                     //TODO() API EDIT CALL
-
+                    TAPDataManager.getInstance().updateChatRoom(groupViewModel?.groupData?.roomID, et_group_name.text.toString(), updateRoomDataView)
                     //TODO() Apus Setelah ada API CALL / Flow yang pasti
                     val intent = Intent(this, TAPGroupMemberListActivity::class.java)
                     intent.putExtra(ROOM, groupViewModel?.groupData)
@@ -160,6 +160,28 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             } else {
                 groupViewModel?.isGroupPicStartEmpty = true
             }
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+        }
+    }
+
+    private val updateRoomDataView = object : TAPDefaultDataView<TAPUpdateRoomResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+        }
+
+        override fun onSuccess(response: TAPUpdateRoomResponse?) {
+            super.onSuccess(response)
         }
 
         override fun onError(error: TAPErrorModel?) {
